@@ -124,39 +124,39 @@ export class AssetBuyer {
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
     public async getBuyQuoteAsync(
-        assetData: string,
-        assetBuyAmount: BigNumber,
+        makerAssetData: string,
+        takerAssetData: string,
+        makerAssetBuyAmount: BigNumber,
         options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
-        const { feePercentage, shouldForceOrderRefresh, slippagePercentage } = _.merge(
+        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
             {},
             constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
             options,
         );
-        assert.isString('assetData', assetData);
-        assert.isBigNumber('assetBuyAmount', assetBuyAmount);
-        assert.isValidPercentage('feePercentage', feePercentage);
+        assert.isString('makerAssetData', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         // get the relevant orders for the makerAsset and fees
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this.getOrdersAndFillableAmountsAsync(assetData, shouldForceOrderRefresh),
+            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
             isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, shouldForceOrderRefresh),
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
-            throw new Error(`${AssetBuyerError.AssetUnavailable}: For assetData ${assetData}`);
+            throw new Error(`${AssetBuyerError.AssetUnavailable}: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`);
         }
         const buyQuote = buyQuoteCalculator.calculate(
             ordersAndFillableAmounts,
             feeOrdersAndFillableAmounts,
-            assetBuyAmount,
-            feePercentage,
+            makerAssetBuyAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
         );
@@ -172,14 +172,17 @@ export class AssetBuyer {
      * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
      */
     public async getBuyQuoteForERC20TokenAddressAsync(
-        tokenAddress: string,
-        assetBuyAmount: BigNumber,
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        makerAssetBuyAmount: BigNumber,
         options: Partial<BuyQuoteRequestOpts> = {},
     ): Promise<BuyQuote> {
-        assert.isETHAddressHex('tokenAddress', tokenAddress);
-        assert.isBigNumber('assetBuyAmount', assetBuyAmount);
-        const assetData = assetDataUtils.encodeERC20AssetData(tokenAddress);
-        const buyQuote = this.getBuyQuoteAsync(assetData, assetBuyAmount, options);
+        assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
+        assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
+        assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        const buyQuote = this.getBuyQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, options);
         return buyQuote;
     }
     /**
@@ -190,125 +193,162 @@ export class AssetBuyer {
      *
      * @return  An object that conforms to LiquidityForAssetData that satisfies the request. See type definition for more information.
      */
-    public async getLiquidityForAssetDataAsync(
-        assetData: string,
+    public async getLiquidityForMakerTakerAssetdataPairAsync(
+        makerAssetData: string,
+        takerAssetData: string,
         options: Partial<LiquidityRequestOpts> = {},
     ): Promise<LiquidityForAssetData> {
         const shouldForceOrderRefresh =
             options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
-        assert.isString('assetData', assetData);
-        assetDataUtils.decodeAssetDataOrThrow(assetData);
+        assert.isString('makerAssetDataa', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         assert.isBoolean('options.shouldForceOrderRefresh', shouldForceOrderRefresh);
 
-        const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(assetData);
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
-        if (!assetPairs.includes(etherTokenAssetData)) {
+        const assetPairs = await this.orderProvider.getAvailableMakerAssetDatasAsync(takerAssetData);
+        if (!assetPairs.includes(makerAssetData)) {
             return {
-                tokensAvailableInBaseUnits: new BigNumber(0),
-                ethValueAvailableInWei: new BigNumber(0),
+                makerTokensAvailableInBaseUnits: new BigNumber(0),
+                takerTokensAvailableInBaseUnits: new BigNumber(0),
             };
         }
 
         const ordersAndFillableAmounts = await this.getOrdersAndFillableAmountsAsync(
-            assetData,
+            makerAssetData,
+            takerAssetData,
             shouldForceOrderRefresh,
         );
 
         return calculateLiquidity(ordersAndFillableAmounts);
     }
 
+    // /**
+    //  * Given a BuyQuote and desired rate, attempt to execute the buy.
+    //  * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
+    //  * @param   options         Options for the execution of the BuyQuote. See type definition for more information.
+    //  *
+    //  * @return  A promise of the txHash.
+    //  */
+    // public async executeBuyQuoteAsync(
+    //     buyQuote: BuyQuote,
+    //     options: Partial<BuyQuoteExecutionOpts> = {},
+    // ): Promise<string> {
+    //     const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = _.merge(
+    //         {},
+    //         constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
+    //         options,
+    //     );
+    //     assert.isValidBuyQuote('buyQuote', buyQuote);
+    //     if (ethAmount !== undefined) {
+    //         assert.isBigNumber('ethAmount', ethAmount);
+    //     }
+    //     if (takerAddress !== undefined) {
+    //         assert.isETHAddressHex('takerAddress', takerAddress);
+    //     }
+    //     assert.isETHAddressHex('feeRecipient', feeRecipient);
+    //     if (gasLimit !== undefined) {
+    //         assert.isNumber('gasLimit', gasLimit);
+    //     }
+    //     if (gasPrice !== undefined) {
+    //         assert.isBigNumber('gasPrice', gasPrice);
+    //     }
+    //     const { orders, feeOrders, makerAssetBuyAmount, worstCaseQuoteInfo } = buyQuote;
+    //     // TODO(dave4506) upgrade logic for asset-buyer2.0
+    //     // if no takerAddress is provided, try to get one from the provider
+    //     // let finalTakerAddress;
+    //     // if (takerAddress !== undefined) {
+    //     //     finalTakerAddress = takerAddress;
+    //     // } else {
+    //     //     const web3Wrapper = new Web3Wrapper(this.provider);
+    //     //     const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
+    //     //     const firstAvailableAddress = _.head(availableAddresses);
+    //     //     if (firstAvailableAddress !== undefined) {
+    //     //         finalTakerAddress = firstAvailableAddress;
+    //     //     } else {
+    //     //         throw new Error(AssetBuyerError.NoAddressAvailable);
+    //     //     }
+    //     // }
+    //     // try {
+    //     //     // if no ethAmount is provided, default to the worst ethAmount from buyQuote
+    //     //     const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+    //     //         orders,
+    //     //         assetBuyAmount,
+    //     //         finalTakerAddress,
+    //     //         ethAmount || worstCaseQuoteInfo.totalEthAmount,
+    //     //         feeOrders,
+    //     //         feePercentage,
+    //     //         feeRecipient,
+    //     //         {
+    //     //             gasLimit,
+    //     //             gasPrice,
+    //     //             shouldValidate: true,
+    //     //         },
+    //     //     );
+    //     //     return txHash;
+    //     // } catch (err) {
+    //     //     if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+    //     //         throw new Error(AssetBuyerError.SignatureRequestDenied);
+    //     //     } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+    //     //         throw new Error(AssetBuyerError.TransactionValueTooLow);
+    //     //     } else {
+    //     //         throw err;
+    //     //     }
+    //     // }
+    //     return Promise.resolve('test');
+    // }
+
     /**
-     * Given a BuyQuote and desired rate, attempt to execute the buy.
-     * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
-     * @param   options         Options for the execution of the BuyQuote. See type definition for more information.
-     *
-     * @return  A promise of the txHash.
-     */
-    public async executeBuyQuoteAsync(
-        buyQuote: BuyQuote,
-        options: Partial<BuyQuoteExecutionOpts> = {},
-    ): Promise<string> {
-        const { ethAmount, takerAddress, feeRecipient, gasLimit, gasPrice } = _.merge(
-            {},
-            constants.DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
-            options,
-        );
-        assert.isValidBuyQuote('buyQuote', buyQuote);
-        if (ethAmount !== undefined) {
-            assert.isBigNumber('ethAmount', ethAmount);
-        }
-        if (takerAddress !== undefined) {
-            assert.isETHAddressHex('takerAddress', takerAddress);
-        }
-        assert.isETHAddressHex('feeRecipient', feeRecipient);
-        if (gasLimit !== undefined) {
-            assert.isNumber('gasLimit', gasLimit);
-        }
-        if (gasPrice !== undefined) {
-            assert.isBigNumber('gasPrice', gasPrice);
-        }
-        const { orders, feeOrders, feePercentage, assetBuyAmount, worstCaseQuoteInfo } = buyQuote;
-        // if no takerAddress is provided, try to get one from the provider
-        let finalTakerAddress;
-        if (takerAddress !== undefined) {
-            finalTakerAddress = takerAddress;
-        } else {
-            const web3Wrapper = new Web3Wrapper(this.provider);
-            const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-            const firstAvailableAddress = _.head(availableAddresses);
-            if (firstAvailableAddress !== undefined) {
-                finalTakerAddress = firstAvailableAddress;
-            } else {
-                throw new Error(AssetBuyerError.NoAddressAvailable);
-            }
-        }
-        try {
-            // if no ethAmount is provided, default to the worst ethAmount from buyQuote
-            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
-                orders,
-                assetBuyAmount,
-                finalTakerAddress,
-                ethAmount || worstCaseQuoteInfo.totalEthAmount,
-                feeOrders,
-                feePercentage,
-                feeRecipient,
-                {
-                    gasLimit,
-                    gasPrice,
-                    shouldValidate: true,
-                },
-            );
-            return txHash;
-        } catch (err) {
-            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
-                throw new Error(AssetBuyerError.SignatureRequestDenied);
-            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
-                throw new Error(AssetBuyerError.TransactionValueTooLow);
-            } else {
-                throw err;
-            }
-        }
-    }
-    /**
-     * Get the asset data of all assets that are purchaseable with ether token (wETH) in the order provider passed in at init.
+     * Get the asset data of all assets that can be used to purchase makerAssetData in the order provider passed in at init.
      *
      * @return  An array of asset data strings that can be purchased using wETH.
      */
-    public async getAvailableAssetDatasAsync(): Promise<string[]> {
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
-        return this.orderProvider.getAvailableMakerAssetDatasAsync(etherTokenAssetData);
+    public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
+        assert.isString('makerAssetDataa', makerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
+        return this.orderProvider.getAvailableTakerAssetDatasAsync(makerAssetData);
     }
+
+    /**
+     * Get the asset data of all assets that are purchaseable with makerAssetData in the order provider passed in at init.
+     *
+     * @return  An array of asset data strings that can be purchased using wETH.
+     */
+    public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
+        assert.isString('takerAssetData', takerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
+        return this.orderProvider.getAvailableMakerAssetDatasAsync(takerAssetData);
+    }
+
+    /**
+     * validates that the taker + maker asset pair is availalbe from the order provider passed
+     *
+     * @return  A boolean on  if the taker + maker pair exists
+     */
+    public async isTakerMakerAssetDataPairAvailableAsync(makerAssetData: string, takerAssetData: string): Promise<boolean> {
+        assert.isString('makerAssetDataa', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
+        return _.findIndex(await this.getAvailableMakerAssetDatasAsync(takerAssetData), makerAssetData) !== -1;
+    }
+
     /**
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
      * @param assetData                The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param shouldForceOrderRefresh  If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.
      */
     public async getOrdersAndFillableAmountsAsync(
-        assetData: string,
+        makerAssetData: string,
+        takerAssetData: string,
         shouldForceOrderRefresh: boolean,
     ): Promise<OrdersAndFillableAmounts> {
+        assert.isString('makerAssetDataa', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
+        assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         // try to get ordersEntry from the map
-        const ordersEntryIfExists = this._ordersEntryMap[assetData];
+        const ordersEntryIfExists = this._ordersEntryMap[this._getOrdersEntryMapKey(makerAssetData, takerAssetData)];
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
@@ -322,12 +362,11 @@ export class AssetBuyer {
             const result = ordersEntryIfExists.ordersAndFillableAmounts;
             return result;
         }
-        const etherTokenAssetData = this._getEtherTokenAssetDataOrThrow();
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
         // construct orderProvider request
         const orderProviderRequest = {
-            makerAssetData: assetData,
-            takerAssetData: etherTokenAssetData,
+            makerAssetData,
+            takerAssetData,
             networkId: this.networkId,
         };
         const request = orderProviderRequest;
@@ -337,7 +376,7 @@ export class AssetBuyer {
         // ie. it should only return maker/taker assetDatas that are specified
         orderProviderResponseProcessor.throwIfInvalidResponse(response, request);
         // process the responses into one object
-        const isMakerAssetZrxToken = assetData === zrxTokenAssetData;
+        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
         const ordersAndFillableAmounts = await orderProviderResponseProcessor.processAsync(
             response,
             isMakerAssetZrxToken,
@@ -349,16 +388,26 @@ export class AssetBuyer {
             ordersAndFillableAmounts,
             lastRefreshTime,
         };
-        this._ordersEntryMap[assetData] = updatedOrdersEntry;
+        this._ordersEntryMap[this._getOrdersEntryMapKey(makerAssetData, takerAssetData)] = updatedOrdersEntry;
         return ordersAndFillableAmounts;
     }
+
+    /**
+     *
+     * get the key for _orderEntryMap for maker + taker asset pair
+     */
+    // tslint:disable-next-line: prefer-function-over-method
+    private _getOrdersEntryMapKey(makerAssetData: string, takerAssetData: string): string {
+        return `${makerAssetData}_${takerAssetData}`;
+    }
+
     /**
      * Get the assetData that represents the WETH token.
      * Will throw if WETH does not exist for the current network.
      */
-    private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
-    }
+    // private _getEtherTokenAssetDataOrThrow(): string {
+    //     return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
+    // }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
