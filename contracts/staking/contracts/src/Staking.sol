@@ -23,12 +23,13 @@ import "./core/MixinStake.sol";
 
 
 contract Staking is
+    //IStaking,
+    //IStakingEvents,
     MixinStorage,
     MixinStake
 {
-    constructor(address zrxVault)
+    constructor()
         public
-        MixinStake(zrxVault)
     {}
 
     ///// STAKING /////
@@ -113,5 +114,13 @@ contract Staking is
     {
         balance = _getTotalStakeDelegatedToMaker(makerId);
         return balance;
+    }
+
+    ///// SETTERS /////
+
+    function setZrxVault(address _zrxVault)
+        external
+    {
+        zrxVault = IVault(_zrxVault);
     }
 }
