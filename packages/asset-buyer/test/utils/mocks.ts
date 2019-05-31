@@ -16,6 +16,10 @@ class OrderProviderClass implements OrderProvider {
     public async getAvailableMakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
         return Promise.resolve([]);
     }
+    // tslint:disable-next-line:prefer-function-over-method
+    public async getAvailableTakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
+        return Promise.resolve([]);
+    }
 }
 
 export const orderProviderMock = () => {
