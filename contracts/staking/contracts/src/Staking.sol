@@ -18,10 +18,12 @@
 
 pragma solidity ^0.5.9;
 
-import "./MixinStake.sol";
+import "./core/MixinStorage.sol";
+import "./core/MixinStake.sol";
 
 
 contract Staking is
+    MixinStorage,
     MixinStake
 {
     constructor(address zrxVault)
@@ -29,4 +31,87 @@ contract Staking is
         MixinStake(zrxVault)
     {}
 
+    ///// STAKING /////
+
+    function stake(uint256 amount)
+        external
+        returns (uint256 amountOfStakeMinted)
+    {
+        amountOfStakeMinted = _stake(amount);
+        return amountOfStakeMinted;
+    }
+
+    function unstake(uint256 amount)
+        external
+        returns (uint256 amountOfStakeBurned)
+    {
+        amountOfStakeBurned = _unstake(amount);
+        return amountOfStakeBurned;
+    }
+
+    function getStakeBalance(address owner)
+        external
+        view
+        returns (uint256 balance)
+    {
+        balance = _getStakeBalance(owner);
+        return balance;
+    }
+
+    function delegateStake(bytes32 makerId, uint256 amount)
+        external
+        returns (uint256 amountOfStakeDelegated)
+    {
+        amountOfStakeDelegated = _delegateStake(makerId, amount);
+        return amountOfStakeDelegated;
+    }
+
+    function undelegateStake(bytes32 makerId, uint256 amount)
+        external
+        returns (uint256 amountOfStakeUndelegated)
+    {
+        amountOfStakeUndelegated = _undelegateStake(makerId, amount);
+        return amountOfStakeUndelegated;
+    }
+
+    function stakeAndDelegate(bytes32 makerId, uint256 amount)
+        external
+        returns (uint256 amountOfStakeMintedAndDelegated)
+    {
+        amountOfStakeMintedAndDelegated = _stakeAndDelegate(makerId, amount);
+        return amountOfStakeMintedAndDelegated;
+    }
+
+    function undelegateAndUnstake(bytes32 makerId, uint256 amount)
+        external
+        returns (uint256 amountOfStakeUndelegatedAndUnstaked)
+    {
+        
+    }
+
+    ///// STAKE BALANCES /////
+
+    function getStakeDelegatedByOwner(address owner, bytes32 makerId)
+        external
+        returns (uint256 balance)
+    {
+        balance = _getStakeDelegatedByOwner(owner, makerId);
+        return balance;
+    }
+
+    function getTotalStakeDelegatedByOwner(address owner)
+        external
+        returns (uint256 balance)
+    {
+        balance = _getTotalStakeDelegatedByOwner(owner);
+        return balance;
+    }
+
+    function getTotalStakeDelegatedToMaker(bytes32 makerId)
+        external
+        returns (uint256 balance)
+    {
+        balance = _getTotalStakeDelegatedToMaker(makerId);
+        return balance;
+    }
 }

@@ -96,7 +96,7 @@ contract LibMathTest {
         uint8 alphaDenominator
     )
         public
-        pure
+       // pure
         returns (uint256)
     {
         return LibMath._cobbDouglasSimplifiedInverse(

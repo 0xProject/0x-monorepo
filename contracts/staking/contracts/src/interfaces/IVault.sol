@@ -22,10 +22,7 @@ pragma solidity ^0.5.5;
 interface IVault {
 
     function depositFrom(address owner, uint256 amount) external;
-
     function withdrawFrom(address owner, uint256 amount) external;
-
     function withdrawAllFrom(address owner) external returns (uint256);
-
     function balanceOf(address owner) external view returns (uint256);
 }
