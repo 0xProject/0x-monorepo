@@ -5,32 +5,17 @@
         "abi": [
             {
                 "constant": true,
-                "inputs": [
-                    {
-                        "name": "hash",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "signature",
-                        "type": "bytes"
-                    }
-                ],
+                "inputs": [{ "name": "hash", "type": "bytes32" }, { "name": "signature", "type": "bytes" }],
                 "name": "isValidSignature",
-                "outputs": [
-                    {
-                        "name": "isValid",
-                        "type": "bool"
-                    }
-                ],
+                "outputs": [{ "name": "isValid", "type": "bool" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             }
         ],
         "evm": {
-            "bytecode": {
-                "object": "0x"
-            }
+            "bytecode": { "linkReferences": {}, "object": "0x" },
+            "deployedBytecode": { "linkReferences": {}, "object": "0x" }
         }
     },
     "networks": {}

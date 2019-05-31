@@ -10,6 +10,8 @@
         "test": "test"
     },
     "scripts": {
+        "prettier": "prettier --write '**/*.{ts,tsx,json,md}' --config ../../.prettierrc",
+        "lint": "node lib/src/lint_properties.js && yarn prettier",
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
         "test": "yarn run_mocha",

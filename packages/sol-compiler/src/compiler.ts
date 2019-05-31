@@ -55,7 +55,7 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
     },
     outputSelection: {
         [ALL_FILES_IDENTIFIER]: {
-            [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object'],
+            [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object', 'evm.deployedBytecode.object'],
         },
     },
 };
