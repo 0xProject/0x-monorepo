@@ -124,11 +124,6 @@ const team: TeamMember[] = [
         title: 'Research Fellow',
     },
     {
-        imageUrl: '/images/team/rahuls.jpg',
-        name: 'Rahul Singireddy',
-        title: 'Relayer Success Manager',
-    },
-    {
         imageUrl: '/images/team/jasons.jpg',
         name: 'Jason Somensatto',
         title: 'Strategic Legal Counsel',
