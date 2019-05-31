@@ -8,6 +8,7 @@
         "generated-artifacts/MixinStake.json",
         "generated-artifacts/MixinVaultCore.json",
         "generated-artifacts/Staking.json",
+        "generated-artifacts/StakingProxy.json",
         "generated-artifacts/ZrxVault.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
