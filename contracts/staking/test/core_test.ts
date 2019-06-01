@@ -19,6 +19,7 @@ import { constants as stakingConstants } from './utils/constants';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
+import { StakingContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -48,7 +49,8 @@ describe('Staking Core', () => {
         // create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
-        stakers = accounts.slice(1);
+        stakers = accounts.slice(1, 5);
+        makers = accounts.slice(6, 10);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, stakers, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -232,7 +234,27 @@ describe('Staking Core', () => {
             const expectedNextPoolId = "0x0000000000000000000000000000000200000000000000000000000000000000";
             const nextPoolId = await stakingWrapper.getNextPoolIdAsync();
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
-            // 
+            // add maker to pool
+            const makerAddress = makers[0];
+            const makerSignature = "0x";
+            await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerSignature, operatorAddress);
+            // check the pool id of the maker
+            const poolIdOfMaker = await stakingWrapper.getMakerPoolId(makerAddress);
+            expect(poolIdOfMaker).to.be.equal(poolId);
+            // check the list of makers for the pool
+            const makerAddressesForPool = await stakingWrapper.getMakerAddressesForPool(poolId);
+            expect(makerAddressesForPool).to.be.deep.equal([makerAddress]);
+            // try to add the same maker address again
+            //await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerSignature, operatorAddress);
+            // try to add a new maker address from an address other than the pool operator
+
+            // try to remove the maker address from an address other than the operator
+
+            // remove maker from pool
+            
+            // check that maker was removed
+
+            // try to add 
         });
     });
 });
