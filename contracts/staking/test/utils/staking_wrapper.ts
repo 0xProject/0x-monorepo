@@ -93,9 +93,9 @@ export class StakingWrapper {
             txDefaults,
         );
     }
-    private async _executeTransactionAsync(calldata: string, from: string): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(calldata: string, from?: string): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
-            from,
+            from: (from ? from : this._ownerAddres),
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000
@@ -105,9 +105,9 @@ export class StakingWrapper {
         );
         return txReceipt;
     }
-    private async _callAsync(calldata: string, from: string): Promise<any> {
+    private async _callAsync(calldata: string, from?: string): Promise<any> {
         const txData = {
-            from,
+            from: (from ? from : this._ownerAddres),
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000
@@ -134,6 +134,32 @@ export class StakingWrapper {
         const balance = await this._callAsync(calldata, holder);
         return balance;
     }
+    public async getNextPoolIdAsync(): Promise<string> {
+        const calldata = this.getStakingContract().getNextPoolId.getABIEncodedTransactionData();
+        const nextPoolId = await this._callAsync(calldata);
+        return nextPoolId;
+    }
+    public async createPoolAsync(operatorAddress: string, operatorShare: number): Promise<string> {
+        const calldata = this.getStakingContract().createPool.getABIEncodedTransactionData(operatorShare);
+        const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
+        const createPoolLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[0]);
+        const poolId = (createPoolLog as any).args.poolId;
+        return poolId;
+    }
+    /*
+    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string): Promise<void> {
+
+    }
+    public async removeMakerFromPoolAsync(poolId: string, makerAddress: string): Promise<void> {
+
+    }
+    public async getMakerPoolId(makerAddress: string): Promise<string> {
+
+    }
+    public async getMakersForPool(poolId: string): Promise<string[]> {
+
+    }
+    */
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;

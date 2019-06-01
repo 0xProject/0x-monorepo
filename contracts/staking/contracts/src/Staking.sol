@@ -30,9 +30,6 @@ contract Staking is
     MixinStake,
     MixinPools
 {
-    constructor()
-        public
-    {}
 
     ///// STAKING /////
 
@@ -119,14 +116,6 @@ contract Staking is
     }
 
     ///// POOLS /////
-    function createPool(uint8 operatorShare)
-        external
-        returns (bytes32 poolId)
-    {
-        poolId = _createPool(msg.sender, operatorShare);
-        return poolId;
-    }
-
     modifier onlyPoolOperator(bytes32 poolId) {
         require(
             msg.sender == _getPoolOperator(poolId),
@@ -134,6 +123,22 @@ contract Staking is
         );
 
         _;
+    }
+    
+    function getNextPoolId()
+        external
+        returns (bytes32 nextPoolId)
+    {
+        nextPoolId = _getNextPoolId();
+        return nextPoolId;
+    }
+    
+    function createPool(uint8 operatorShare)
+        external
+        returns (bytes32 poolId)
+    {
+        poolId = _createPool(msg.sender, operatorShare);
+        return poolId;
     }
 
     function addMakerToPool(
