@@ -36,7 +36,6 @@ contract ZrxVault is
         public
     {}
 
-
     function depositFrom(address owner, uint256 amount)
         external
         onlyStakingContract

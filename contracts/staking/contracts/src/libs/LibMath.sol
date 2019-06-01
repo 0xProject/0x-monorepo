@@ -67,39 +67,6 @@ library LibMath {
             // 4. Run Newton's Approximation to approximate the root
             root := add(x, div(y, mul(n, exp(2, mul(div(m, n), sub(n, 1))))))
 
-
-            /**
-             * Note 1:
-             * On some clients (like ganache), execution freezes when running exponentiation
-             * with a dynamically generated base. Because of this, all exponentiation above
-             * is done base-2.
-             * Example:
-             * Call the solidity function below with `n >= 1` and execution will timeout.
-             *
-             *      function repro(uint256 n) public pure returns (uint256) {
-             *          uint256 m = 2**n;
-             *          return m**n;
-             *      }
-             *
-             * Call a similar function with the same input _does not_ timeout:
-             *
-             *  function fix(uint256 n) public pure returns (uint256) {
-             *      uint256 m = 2**(n*n);
-             *       return m;
-             *   }
-             */
-
-            // ganache core workaround (issue #430)
-            function exp2(b,p) -> z {
-                z := b
-                for {p := sub(p, 1)}
-                    gt(p, 0)
-                    {p := sub(p, 1)}
-                {
-                    z := mul(z, b)
-                }
-            }
-
             // 5. Run Newton's nth Root Algorithm
             let delta := 1 // run at least once
             for {let i := 0}
@@ -121,6 +88,17 @@ library LibMath {
                     // overestimate
                     delta := div(sub(root, lhs), n)
                     root := sub(root, delta)
+                }
+            }
+
+            // ganache core workaround (issue #430)
+            function exp2(b,p) -> z {
+                z := b
+                for {p := sub(p, 1)}
+                    gt(p, 0)
+                    {p := sub(p, 1)}
+                {
+                    z := mul(z, b)
                 }
             }
         }
