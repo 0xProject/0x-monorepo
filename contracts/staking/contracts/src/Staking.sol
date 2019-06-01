@@ -127,15 +127,14 @@ contract Staking is
         return poolId;
     }
 
-    /*
-    modifier onlyPoolOperator() {
+    modifier onlyPoolOperator(bytes32 poolId) {
         require(
             msg.sender == _getPoolOperator(poolId),
-            "ONLY_CALLABLE_BY_POOL_OPERATOR"  
+            "ONLY_CALLABLE_BY_POOL_OPERATOR"
         );
 
         _;
-    }*/
+    }
 
     function addMakerToPool(
         bytes32 poolId,
@@ -143,6 +142,7 @@ contract Staking is
         bytes calldata makerSignature
     )
         external
+        onlyPoolOperator(poolId)
     {
         _addMakerToPool(
             poolId,
@@ -154,6 +154,7 @@ contract Staking is
 
     function removeMakerFromPool(bytes32 poolId, address makerAddress)
         external
+        onlyPoolOperator(poolId)
     {
         _removeMakerFromPool(
             poolId,
