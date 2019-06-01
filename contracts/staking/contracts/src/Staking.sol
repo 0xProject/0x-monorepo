@@ -20,7 +20,7 @@ pragma solidity ^0.5.9;
 
 import "./core/MixinStorage.sol";
 import "./core/MixinStake.sol";
-import "./core/MixinMakerRegistry.sol";
+import "./core/MixinPools.sol";
 
 
 contract Staking is
@@ -28,7 +28,7 @@ contract Staking is
     //IStakingEvents,
     MixinStorage,
     MixinStake,
-    MixinMakerRegistry
+    MixinPools
 {
     constructor()
         public
@@ -118,51 +118,65 @@ contract Staking is
         return balance;
     }
 
-    ///// MAKERS /////
-    function createMakerId()
+    ///// POOLS /////
+    function createPool(uint8 operatorShare)
         external
-        returns (bytes32 makerId)
+        returns (bytes32 poolId)
     {
-        makerId = _createMakerId(msg.sender);
-        return makerId;
+        poolId = _createPool(msg.sender, operatorShare);
+        return poolId;
     }
 
-    function addMakerAddress(
-        bytes32 makerId,
+    /*
+    modifier onlyPoolOperator() {
+        require(
+            msg.sender == _getPoolOperator(poolId),
+            "ONLY_CALLABLE_BY_POOL_OPERATOR"  
+        );
+
+        _;
+    }*/
+
+    function addMakerToPool(
+        bytes32 poolId,
         address makerAddress,
         bytes calldata makerSignature
     )
         external
     {
-        _addMakerAddress(
-            makerId,
+        _addMakerToPool(
+            poolId,
             makerAddress,
             makerSignature,
             msg.sender
         );
     }
 
-    function removeMakerAddress(bytes32 makerId, address makerAddress)
+    function removeMakerFromPool(bytes32 poolId, address makerAddress)
         external
     {
-        _removeMakerAddress(makerId, makerAddress, msg.sender);
+        _removeMakerFromPool(
+            poolId,
+            makerAddress,
+            msg.sender
+        );
     }
 
-    function getMakerId(address makerAddress)
+    function getMakerPoolId(address makerAddress)
         external
         view
         returns (bytes32 makerId)
     {
-        makerId = _getMakerId(makerAddress);
+        makerId = _getMakerPoolId(makerAddress);
         return makerId;
     }
 
-    function getMakerAddresses(bytes32 makerId)
+    function getMakerAddressesForPool(bytes32 makerId)
         external
         view
         returns (address[] memory makerAddresses)
     {
-        makerAddresses = _getMakerAddresses(makerId);
+        makerAddresses = _getMakerAddressesForPool(makerId);
         return makerAddresses;
     }
 
