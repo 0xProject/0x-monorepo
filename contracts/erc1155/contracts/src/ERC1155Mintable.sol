@@ -37,7 +37,7 @@ contract ERC1155Mintable is
     )
         external
         returns (uint256 type_)
-    { 
+    {
         // Store the type in the upper 128 bits
         type_ = (++nonce << 128);
 
@@ -127,6 +127,7 @@ contract ERC1155Mintable is
     )
         external
         creatorOnly(type_)
+        returns (uint256 tokenId)
     {
         // No need to check this is a nf type rather than an id since
         // creatorOnly() will only let a type pass through.
@@ -141,21 +142,21 @@ contract ERC1155Mintable is
         for (uint256 i = 0; i < to.length; ++i) {
             // cache to reduce number of loads
             address dst = to[i];
-            uint256 id  = type_ | index + i;
+            tokenId  = type_ | index + i;
 
-            nfOwners[id] = dst;
+            nfOwners[tokenId] = dst;
 
-            // You could use base-type id to store NF type balances if you wish.
+            // You could use base-type tokenId to store NF type balances if you wish.
             // balances[_type][dst] = quantity.safeAdd(balances[_type][dst]);
 
-            emit TransferSingle(msg.sender, address(0x0), dst, id, 1);
+            emit TransferSingle(msg.sender, address(0x0), dst, tokenId, 1);
 
             // if `to` is a contract then trigger its callback
             if (dst.isContract()) {
                 bytes4 callbackReturnValue = IERC1155Receiver(dst).onERC1155Received(
                     msg.sender,
                     msg.sender,
-                    id,
+                    tokenId,
                     1,
                     ""
                 );
