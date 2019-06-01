@@ -11,4 +11,10 @@ interface IStakingEvents {
         address owner,
         uint256 amount
     );
+
+    event PoolCreated(
+        bytes32 poolId,
+        address operatorAddress,
+        uint8 operatorShare
+    );
 }
