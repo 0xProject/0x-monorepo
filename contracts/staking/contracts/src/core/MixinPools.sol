@@ -21,35 +21,45 @@ pragma solidity ^0.5.5;
 import "./MixinStorage.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinConstants.sol";
+import "../interfaces/IStakingEvents.sol";
 
 contract MixinPools is
     SafeMath,
+    IStakingEvents,
     MixinConstants,
     MixinStorage
 {
 
-    constructor()
+    function _getNextPoolId()
         internal
+        returns (bytes32)
     {
-        // the upper 128 bits are used for pool id
-        nextPoolId = INITIAL_POOL_ID;
+        return nextPoolId;
     }
 
     function _createPool(address operatorAddress, uint8 operatorShare)
         internal
         returns (bytes32 poolId)
     {
+        // validate input
+        require(
+            operatorShare <= 100,
+            "OPERATOR_SHARE_MUST_BE_A_PERCENTAGE_BETWEEN_0_AND_100"
+        );
+
         // 
         poolId = nextPoolId;
-        nextPoolId = bytes32(_safeAdd(uint256(nextPoolId), 1));
+        nextPoolId = bytes32(_safeAdd(uint256(nextPoolId >> 128), 1) << 128);
 
         // 
         Pool memory pool = Pool({
             operatorAddress: operatorAddress,
             operatorShare: operatorShare
         });
-
         poolById[poolId] = pool;
+        
+        // 
+        emit PoolCreated(poolId, operatorAddress, operatorShare);
         return poolId;
     }
 
