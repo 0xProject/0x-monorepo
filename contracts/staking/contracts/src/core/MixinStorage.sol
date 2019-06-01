@@ -35,6 +35,16 @@ contract MixinStorage {
     // mapping from Maker Id to Amount of Delegated Staked
     mapping (bytes32 => uint256) totalDelegatedStake;
 
+    // tracking Maker Id
+    bytes32 nextMakerId;
+
+    // mapping from Maker address to Maker Id
+    // A Maker can only hold a single token
+    mapping (address => bytes32) makerIds;
+
+    // mapping from Maker Id to Addresses
+    mapping (bytes32 => address[]) makerAddresses;
+
     // ZRX vault
     IVault zrxVault;
 
