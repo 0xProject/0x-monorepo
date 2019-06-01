@@ -36,14 +36,20 @@ contract MixinStorage {
     mapping (bytes32 => uint256) totalDelegatedStake;
 
     // tracking Maker Id
-    bytes32 nextMakerId;
+    bytes32 nextPoolId;
 
-    // mapping from Maker address to Maker Id
+    struct Pool {
+        address operatorAddress;
+        uint8 operatorShare;
+    }
+    mapping (bytes32 => Pool) poolById;
+
+    // mapping from Maker Address to Pool Id
     // A Maker can only hold a single token
-    mapping (address => bytes32) makerIds;
+    mapping (address => bytes32) poolIdByMakerAddress;
 
-    // mapping from Maker Id to Addresses
-    mapping (bytes32 => address[]) makerAddresses;
+    // mapping from Pool Id to Addresses
+    mapping (bytes32 => address[]) makerAddressesByPoolId;
 
     // ZRX vault
     IVault zrxVault;
