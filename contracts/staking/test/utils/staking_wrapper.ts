@@ -146,20 +146,26 @@ export class StakingWrapper {
         const poolId = (createPoolLog as any).args.poolId;
         return poolId;
     }
-    /*
-    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string): Promise<void> {
-
+    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string, operatorAddress: string): Promise<void> {
+        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
+        await this._executeTransactionAsync(calldata, operatorAddress);
     }
+    /*
     public async removeMakerFromPoolAsync(poolId: string, makerAddress: string): Promise<void> {
 
     }
-    public async getMakerPoolId(makerAddress: string): Promise<string> {
-
-    }
-    public async getMakersForPool(poolId: string): Promise<string[]> {
-
-    }
     */
+    public async getMakerPoolId(makerAddress: string): Promise<string> {
+        const calldata = this.getStakingContract().getMakerPoolId.getABIEncodedTransactionData(makerAddress);
+        const poolId = await this._callAsync(calldata);
+        return poolId;
+    }
+    public async getMakerAddressesForPool(poolId: string): Promise<string[]> {
+        const calldata = this.getStakingContract().getMakerAddressesForPool.getABIEncodedTransactionData(poolId);
+        const returndata = await this._callAsync(calldata);
+        const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
+        return makerAddresses;
+    }
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
