@@ -27,8 +27,8 @@
         "@0x/contracts-exchange/contracts/examples/ExchangeWrapper.sol",
         "@0x/contracts-exchange/contracts/src/Exchange.sol",
         "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
+        "src/DevUtils/DevUtils.sol",
         "src/DutchAuction/DutchAuction.sol",
-        "src/OrderMatcher/OrderMatcher.sol",
-        "src/OrderValidator/OrderValidator.sol"
+        "src/OrderMatcher/OrderMatcher.sol"
     ]
 }

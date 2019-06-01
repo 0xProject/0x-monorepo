@@ -6,11 +6,11 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as BalanceThresholdFilter from '../generated-artifacts/BalanceThresholdFilter.json';
+import * as DevUtils from '../generated-artifacts/DevUtils.json';
 import * as DutchAuction from '../generated-artifacts/DutchAuction.json';
 import * as Exchange from '../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
 import * as OrderMatcher from '../generated-artifacts/OrderMatcher.json';
-import * as OrderValidator from '../generated-artifacts/OrderValidator.json';
 import * as WETH9 from '../generated-artifacts/WETH9.json';
 export const artifacts = {
     WETH9: WETH9 as ContractArtifact,
@@ -19,5 +19,5 @@ export const artifacts = {
     BalanceThresholdFilter: BalanceThresholdFilter as ContractArtifact,
     DutchAuction: DutchAuction as ContractArtifact,
     OrderMatcher: OrderMatcher as ContractArtifact,
-    OrderValidator: OrderValidator as ContractArtifact,
+    DevUtils: DevUtils as ContractArtifact,
 };

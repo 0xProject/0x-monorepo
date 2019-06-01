@@ -325,7 +325,7 @@ describe('LibAssetData', () => {
                 anotherApprovedSpenderAddress,
                 await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
             ),
-        ).to.bignumber.equal(1);
+        ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
     });
 
     it('should query ERC1155 allowances by asset data', async () => {
@@ -348,7 +348,7 @@ describe('LibAssetData', () => {
                     '0x',
                 ),
             ),
-        ).to.bignumber.equal(1);
+        ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
     });
 
     it('should query multi-asset allowances by asset data', async () => {
@@ -383,10 +383,14 @@ describe('LibAssetData', () => {
         await setERC20AllowanceAsync();
         await setERC721AllowanceAsync();
         expect(
-            await libAssetData.getBatchAllowances.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
-            ]),
+            await libAssetData.getBatchAllowances.callAsync(
+                tokenOwnerAddress,
+                [approvedSpenderAddress, approvedSpenderAddress],
+                [
+                    await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                    await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                ],
+            ),
         ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
     });
 
@@ -418,9 +422,11 @@ describe('LibAssetData', () => {
     it('should query balances and allowances together, from an asset data array', async () => {
         await setERC20AllowanceAsync();
         expect(
-            await libAssetData.getBatchBalancesAndAllowances.callAsync(tokenOwnerAddress, approvedSpenderAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-            ]),
+            await libAssetData.getBatchBalancesAndAllowances.callAsync(
+                tokenOwnerAddress,
+                [approvedSpenderAddress, approvedSpenderAddress],
+                [await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress)],
+            ),
         ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [new BigNumber(1)]]);
     });
 });

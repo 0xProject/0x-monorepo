@@ -18,13 +18,13 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, OrderValidatorContract } from '../src';
+import { artifacts, DevUtilsContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('OrderValidator', () => {
+describe('DevUtils', () => {
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -35,7 +35,7 @@ describe('OrderValidator', () => {
     let zrxToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
-    let orderValidator: OrderValidatorContract;
+    let devUtils: DevUtilsContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
 
@@ -46,7 +46,6 @@ describe('OrderValidator', () => {
     const tokenId = new BigNumber(123456789);
     const tokenId2 = new BigNumber(987654321);
     const ERC721_BALANCE = new BigNumber(1);
-    const ERC721_ALLOWANCE = new BigNumber(1);
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -83,8 +82,8 @@ describe('OrderValidator', () => {
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
-        orderValidator = await OrderValidatorContract.deployFrom0xArtifactAsync(
-            artifacts.OrderValidator,
+        devUtils = await DevUtilsContract.deployFrom0xArtifactAsync(
+            artifacts.DevUtils,
             provider,
             txDefaults,
             exchange.address,
@@ -115,7 +114,7 @@ describe('OrderValidator', () => {
     describe('getBalanceAndAllowance', () => {
         describe('getERC721TokenOwner', async () => {
             it('should return the null address when tokenId is not owned', async () => {
-                const tokenOwner = await orderValidator.getERC721TokenOwner.callAsync(makerAddress, tokenId);
+                const tokenOwner = await devUtils.getERC721TokenOwner.callAsync(makerAddress, tokenId);
                 expect(tokenOwner).to.be.equal(constants.NULL_ADDRESS);
             });
             it('should return the owner address when tokenId is owned', async () => {
@@ -123,14 +122,15 @@ describe('OrderValidator', () => {
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                const tokenOwner = await orderValidator.getERC721TokenOwner.callAsync(erc721Token.address, tokenId);
+                const tokenOwner = await devUtils.getERC721TokenOwner.callAsync(erc721Token.address, tokenId);
                 expect(tokenOwner).to.be.equal(makerAddress);
             });
         });
         describe('ERC20 assetData', () => {
             it('should return the correct balances and allowances when both values are 0', async () => {
-                const [newBalance, newAllowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [newBalance, newAllowance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc20Proxy.address,
                     erc20AssetData,
                 );
                 expect(constants.ZERO_AMOUNT).to.be.bignumber.equal(newBalance);
@@ -149,8 +149,9 @@ describe('OrderValidator', () => {
                     }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                const [newBalance, newAllowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [newBalance, newAllowance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc20Proxy.address,
                     erc20AssetData,
                 );
                 expect(balance).to.be.bignumber.equal(newBalance);
@@ -159,15 +160,17 @@ describe('OrderValidator', () => {
         });
         describe('ERC721 assetData', () => {
             it('should return a balance of 0 when the tokenId is not owned by target', async () => {
-                const [newBalance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [newBalance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc721Proxy.address,
                     erc721AssetData,
                 );
                 expect(newBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             });
             it('should return an allowance of 0 when no approval is set', async () => {
-                const [, newAllowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [, newAllowance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc721Proxy.address,
                     erc721AssetData,
                 );
                 expect(newAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -177,13 +180,14 @@ describe('OrderValidator', () => {
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                const [newBalance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [newBalance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc721Proxy.address,
                     erc721AssetData,
                 );
                 expect(newBalance).to.be.bignumber.equal(ERC721_BALANCE);
             });
-            it('should return an allowance of 1 when ERC721Proxy is approved for all', async () => {
+            it('should return an allowance of MAX_UINT256 when ERC721Proxy is approved for all', async () => {
                 const isApproved = true;
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
@@ -191,13 +195,14 @@ describe('OrderValidator', () => {
                     }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                const [, newAllowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [, newAllowance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc721Proxy.address,
                     erc721AssetData,
                 );
-                expect(newAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+                expect(newAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             });
-            it('should return an allowance of 0 when ERC721Proxy is approved for specific tokenId', async () => {
+            it('should return an allowance of 1 when ERC721Proxy is approved for specific tokenId', async () => {
                 await web3Wrapper.awaitTransactionSuccessAsync(
                     await erc721Token.mint.sendTransactionAsync(makerAddress, tokenId),
                     constants.AWAIT_TRANSACTION_MINED_MS,
@@ -208,23 +213,25 @@ describe('OrderValidator', () => {
                     }),
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
-                const [, newAllowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+                const [, newAllowance] = await devUtils.getBalanceAndAllowance.callAsync(
                     makerAddress,
+                    erc721Proxy.address,
                     erc721AssetData,
                 );
-                expect(newAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+                expect(newAllowance).to.be.bignumber.equal(new BigNumber(1));
             });
         });
     });
-    describe('getBalancesAndAllowances', () => {
+    describe('getBatchBalancesAndAllowances', () => {
         it('should return the correct balances and allowances when all values are 0', async () => {
             const [
                 [erc20Balance, erc721Balance],
                 [erc20Allowance, erc721Allowance],
-            ] = await orderValidator.getBalancesAndAllowances.callAsync(makerAddress, [
-                erc20AssetData,
-                erc721AssetData,
-            ]);
+            ] = await devUtils.getBatchBalancesAndAllowances.callAsync(
+                makerAddress,
+                [erc20Proxy.address, erc721Proxy.address],
+                [erc20AssetData, erc721AssetData],
+            );
             expect(erc20Balance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(erc721Balance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(erc20Allowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -257,14 +264,15 @@ describe('OrderValidator', () => {
             const [
                 [erc20Balance, erc721Balance],
                 [erc20Allowance, erc721Allowance],
-            ] = await orderValidator.getBalancesAndAllowances.callAsync(makerAddress, [
-                erc20AssetData,
-                erc721AssetData,
-            ]);
+            ] = await devUtils.getBatchBalancesAndAllowances.callAsync(
+                makerAddress,
+                [erc20Proxy.address, erc721Proxy.address],
+                [erc20AssetData, erc721AssetData],
+            );
             expect(erc20Balance).to.be.bignumber.equal(balance);
             expect(erc721Balance).to.be.bignumber.equal(ERC721_BALANCE);
             expect(erc20Allowance).to.be.bignumber.equal(allowance);
-            expect(erc721Allowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(erc721Allowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
     describe('getTraderInfo', () => {
@@ -272,7 +280,7 @@ describe('OrderValidator', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
         it('should return the correct info when no balances or allowances are set', async () => {
-            const traderInfo = await orderValidator.getTraderInfo.callAsync(signedOrder, takerAddress);
+            const traderInfo = await devUtils.getTraderInfo.callAsync(signedOrder, takerAddress);
             expect(traderInfo.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -318,11 +326,11 @@ describe('OrderValidator', () => {
                 }),
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const traderInfo = await orderValidator.getTraderInfo.callAsync(signedOrder, takerAddress);
+            const traderInfo = await devUtils.getTraderInfo.callAsync(signedOrder, takerAddress);
             expect(traderInfo.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -339,7 +347,7 @@ describe('OrderValidator', () => {
         it('should return the correct info when no balances or allowances have been set', async () => {
             const orders = [signedOrder, signedOrder2];
             const takers = [takerAddress, takerAddress];
-            const [traderInfo1, traderInfo2] = await orderValidator.getTradersInfo.callAsync(orders, takers);
+            const [traderInfo1, traderInfo2] = await devUtils.getTradersInfo.callAsync(orders, takers);
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -395,12 +403,12 @@ describe('OrderValidator', () => {
             );
             const orders = [signedOrder, signedOrder2];
             const takers = [takerAddress, takerAddress];
-            const [traderInfo1, traderInfo2] = await orderValidator.getTradersInfo.callAsync(orders, takers);
+            const [traderInfo1, traderInfo2] = await devUtils.getTradersInfo.callAsync(orders, takers);
 
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -408,7 +416,7 @@ describe('OrderValidator', () => {
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -419,9 +427,11 @@ describe('OrderValidator', () => {
         beforeEach(async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
-        it('should return the correct info when no balances or allowances are set', async () => {
-            const [orderInfo, traderInfo] = await orderValidator.getOrderAndTraderInfo.callAsync(
+        it('should return the correct info when no balances/allowances are set and the signature is invalid', async () => {
+            const invalidSignature = '0x01';
+            const [orderInfo, traderInfo, isValidSignature] = await devUtils.getOrderAndTraderInfo.callAsync(
                 signedOrder,
+                invalidSignature,
                 takerAddress,
             );
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -436,45 +446,56 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(isValidSignature).to.equal(false);
         });
-        it('should return the correct info when balances and allowances are set', async () => {
+        it('should return the correct info when balances/allowances are set and the signature is valid', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                makerBalance,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
+            await erc20Token.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                makerAllowance,
+                {
                     from: makerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+            await zrxToken.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                makerZrxBalance,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+            await zrxToken.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                takerZrxAllowance,
+                {
                     from: takerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId),
+            await erc721Token.mint.awaitTransactionSuccessAsync(
+                takerAddress,
+                tokenId,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
+            await erc721Token.setApprovalForAll.awaitTransactionSuccessAsync(
+                erc721Proxy.address,
+                isApproved,
+                {
                     from: takerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            const [orderInfo, traderInfo] = await orderValidator.getOrderAndTraderInfo.callAsync(
+            const [orderInfo, traderInfo, isValidSignature] = await devUtils.getOrderAndTraderInfo.callAsync(
                 signedOrder,
+                signedOrder.signature,
                 takerAddress,
             );
             const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
@@ -484,11 +505,12 @@ describe('OrderValidator', () => {
             expect(traderInfo.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
+            expect(isValidSignature).to.equal(true);
         });
     });
     describe('getOrdersAndTradersInfo', () => {
@@ -498,13 +520,16 @@ describe('OrderValidator', () => {
                 takerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, tokenId2),
             });
         });
-        it('should return the correct info when no balances or allowances have been set', async () => {
+        it('should return the correct info when no balances or allowances have been set and the signatures are invalid', async () => {
+            const invalidSignature = '0x01';
             const orders = [signedOrder, signedOrder2];
+            const signatures = [invalidSignature, invalidSignature];
             const takers = [takerAddress, takerAddress];
             const [
                 [orderInfo1, orderInfo2],
                 [traderInfo1, traderInfo2],
-            ] = await orderValidator.getOrdersAndTradersInfo.callAsync(orders, takers);
+                [isValidSignature1, isValidSignature2],
+            ] = await devUtils.getOrdersAndTradersInfo.callAsync(orders, signatures, takers);
             const expectedOrderHash1 = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedOrderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
             expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.Fillable);
@@ -529,41 +554,52 @@ describe('OrderValidator', () => {
             expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
+            expect(isValidSignature1).to.equal(false);
+            expect(isValidSignature2).to.equal(false);
         });
-        it('should return the correct info when balances and allowances are set', async () => {
+        it('should return the correct info when balances and allowances are set and the signatures are valid', async () => {
             const makerBalance = new BigNumber(123);
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20Token.setBalance.sendTransactionAsync(makerAddress, makerBalance),
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                makerBalance,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20Token.approve.sendTransactionAsync(erc20Proxy.address, makerAllowance, {
+            await erc20Token.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                makerAllowance,
+                {
                     from: makerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.setBalance.sendTransactionAsync(makerAddress, makerZrxBalance),
+            await zrxToken.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                makerZrxBalance,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await zrxToken.approve.sendTransactionAsync(erc20Proxy.address, takerZrxAllowance, {
+            await zrxToken.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                takerZrxAllowance,
+                {
                     from: takerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.setApprovalForAll.sendTransactionAsync(erc721Proxy.address, isApproved, {
+            await erc721Token.setApprovalForAll.awaitTransactionSuccessAsync(
+                erc721Proxy.address,
+                isApproved,
+                {
                     from: takerAddress,
-                }),
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc721Token.mint.sendTransactionAsync(takerAddress, tokenId2),
+            await erc721Token.mint.awaitTransactionSuccessAsync(
+                takerAddress,
+                tokenId2,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const orders = [signedOrder, signedOrder2];
@@ -571,7 +607,8 @@ describe('OrderValidator', () => {
             const [
                 [orderInfo1, orderInfo2],
                 [traderInfo1, traderInfo2],
-            ] = await orderValidator.getOrdersAndTradersInfo.callAsync(orders, takers);
+                [isValidSignature1, isValidSignature2],
+            ] = await devUtils.getOrdersAndTradersInfo.callAsync(orders, orders.map(order => order.signature), takers);
             const expectedOrderHash1 = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedOrderHash2 = orderHashUtils.getOrderHashHex(signedOrder2);
             expect(orderInfo1.orderStatus).to.be.equal(OrderStatus.Fillable);
@@ -583,7 +620,7 @@ describe('OrderValidator', () => {
             expect(traderInfo1.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo1.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo1.takerBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo1.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo1.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo1.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo1.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
@@ -591,11 +628,13 @@ describe('OrderValidator', () => {
             expect(traderInfo2.makerBalance).to.be.bignumber.equal(makerBalance);
             expect(traderInfo2.makerAllowance).to.be.bignumber.equal(makerAllowance);
             expect(traderInfo2.takerBalance).to.be.bignumber.equal(ERC721_BALANCE);
-            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(ERC721_ALLOWANCE);
+            expect(traderInfo2.takerAllowance).to.be.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
             expect(traderInfo2.makerZrxBalance).to.be.bignumber.equal(makerZrxBalance);
             expect(traderInfo2.makerZrxAllowance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
             expect(traderInfo2.takerZrxAllowance).to.be.bignumber.equal(takerZrxAllowance);
+            expect(isValidSignature1).to.equal(true);
+            expect(isValidSignature2).to.equal(true);
         });
     });
 });
