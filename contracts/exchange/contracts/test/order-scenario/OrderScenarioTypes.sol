@@ -22,11 +22,25 @@ pragma experimental ABIEncoderV2;
 import "../../src/MSignatureValidator.sol";
 
 
-contract OrderScenarioUtil {
-    constant uint256 internal ORDER_MAKER_ADDRESS_INDEX_START = 1;
-    constant uint256 internal ORDER_MAKER_ADDRESS_INDEX_END = 257;
-    constant uint256 internal ORDER_TAKER_ADDRESS_INDEX_START = 258;
-    constant uint256 internal ORDER_TAKER_ADDRESS_INDEX_END = 2306;
+contract OrderScenarioTypes {
+
+    /// @dev The token ID used for all `ERC1155_Fungible` assets.
+    uint256 constant public ERC1155_FUNGIBLE_TOKEN_ID = 0x1337b33f;
+    /// @dev The base units for nested MultiAsset ERC20s.
+    uint256 constant public MULTI_ASSET_FUNGIBLES_ERC20_UNITS = 2;
+    /// @dev The base units for nested MultiAsset ERC1155s.
+    uint256 constant public MULTI_ASSET_FUNGIBLES_ERC1155_UNITS = 3;
+    /// @dev The address to which zero-balance NFTs will be minted to.
+    address constant public BURN_ADDRESS = address(bytes20(keccak256("BURN_ADDRESS")));
+
+    uint256 constant internal ORDER_MAKER_ADDRESS_INDEX_START = 1;
+    uint256 constant internal ORDER_MAKER_ADDRESS_INDEX_END = 257;
+    uint256 constant internal ORDER_TAKER_ADDRESS_INDEX_START = 258;
+    uint256 constant internal ORDER_TAKER_ADDRESS_INDEX_END = 2306;
+    bytes4 constant internal ERC20_PROXY_ID = bytes4(keccak256("ERC20Token(address)"));
+    bytes4 constant internal ERC721_PROXY_ID = bytes4(keccak256("ERC721Token(address,uint256)"));
+    bytes4 constant internal ERC1155_PROXY_ID = bytes4(keccak256("ERC1155Assets(address,uint256[],uint256[],bytes)"));
+    bytes4 constant internal MULTI_ASSET_PROXY_ID = bytes4(keccak256("MultiAsset(uint256[],bytes[])"));
 
     enum AssetType {
         // ZRX fee token.
