@@ -19,9 +19,12 @@
 pragma solidity ^0.5.5;
 
 import "../interfaces/IVault.sol";
+import "./MixinConstants.sol";
 
 
-contract MixinStorage {
+contract MixinStorage is
+  MixinConstants
+{
 
     // address of staking contract
     address stakingContract;
@@ -36,7 +39,7 @@ contract MixinStorage {
     mapping (bytes32 => uint256) totalDelegatedStake;
 
     // tracking Maker Id
-    bytes32 nextPoolId;
+    bytes32 nextPoolId = INITIAL_POOL_ID;
 
     struct Pool {
         address operatorAddress;

@@ -14,6 +14,8 @@ import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { constants as stakingConstants } from './utils/constants';
+
 import { StakingWrapper } from './utils/staking_wrapper';
 
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
@@ -218,6 +220,19 @@ describe('Staking Core', () => {
             const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 12);
             // validation
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
+        });
+
+        it.only('pools', async() => {
+            // create first pool
+            const operatorAddress = stakers[0];
+            const operatorShare = 39;
+            const poolId = await stakingWrapper.createPoolAsync(operatorAddress, operatorShare);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // check that the next pool id was incremented
+            const expectedNextPoolId = "0x0000000000000000000000000000000200000000000000000000000000000000";
+            const nextPoolId = await stakingWrapper.getNextPoolIdAsync();
+            expect(nextPoolId).to.be.equal(expectedNextPoolId);
+            // 
         });
     });
 });
