@@ -20,13 +20,15 @@ pragma solidity ^0.5.9;
 
 import "./core/MixinStorage.sol";
 import "./core/MixinStake.sol";
+import "./core/MixinMakerRegistry.sol";
 
 
 contract Staking is
     //IStaking,
     //IStakingEvents,
     MixinStorage,
-    MixinStake
+    MixinStake,
+    MixinMakerRegistry
 {
     constructor()
         public
@@ -114,6 +116,54 @@ contract Staking is
     {
         balance = _getTotalStakeDelegatedToMaker(makerId);
         return balance;
+    }
+
+    ///// MAKERS /////
+    function createMakerId()
+        external
+        returns (bytes32 makerId)
+    {
+        makerId = _createMakerId(msg.sender);
+        return makerId;
+    }
+
+    function addMakerAddress(
+        bytes32 makerId,
+        address makerAddress,
+        bytes calldata makerSignature
+    )
+        external
+    {
+        _addMakerAddress(
+            makerId,
+            makerAddress,
+            makerSignature,
+            msg.sender
+        );
+    }
+
+    function removeMakerAddress(bytes32 makerId, address makerAddress)
+        external
+    {
+        _removeMakerAddress(makerId, makerAddress, msg.sender);
+    }
+
+    function getMakerId(address makerAddress)
+        external
+        view
+        returns (bytes32 makerId)
+    {
+        makerId = _getMakerId(makerAddress);
+        return makerId;
+    }
+
+    function getMakerAddresses(bytes32 makerId)
+        external
+        view
+        returns (address[] memory makerAddresses)
+    {
+        makerAddresses = _getMakerAddresses(makerId);
+        return makerAddresses;
     }
 
     ///// SETTERS /////
