@@ -4,7 +4,7 @@ import { Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 
-import { artifacts, LibTransactionDecoderContract } from '../src';
+import { artifacts, LibTransactionDecoderContract } from '../../exchange-libs/src';
 
 chaiSetup.configure();
 const expect = chai.expect;

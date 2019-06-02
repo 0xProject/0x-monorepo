@@ -27,7 +27,6 @@
         "src/LibFillResults.sol",
         "src/LibMath.sol",
         "src/LibOrder.sol",
-        "src/LibTransactionDecoder.sol",
         "src/LibZeroExTransaction.sol",
         "test/TestLibs.sol"
     ]

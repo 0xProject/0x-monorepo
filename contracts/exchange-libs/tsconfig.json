@@ -7,7 +7,6 @@
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
         "generated-artifacts/LibOrder.json",
-        "generated-artifacts/LibTransactionDecoder.json",
         "generated-artifacts/LibZeroExTransaction.json",
         "generated-artifacts/TestLibs.json"
     ],

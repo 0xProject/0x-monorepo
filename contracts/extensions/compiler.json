@@ -28,6 +28,7 @@
         "@0x/contracts-exchange/contracts/src/Exchange.sol",
         "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
         "src/DevUtils/DevUtils.sol",
+        "src/DevUtils/LibTransactionDecoder.sol",
         "src/DutchAuction/DutchAuction.sol",
         "src/OrderMatcher/OrderMatcher.sol"
     ]

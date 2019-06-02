@@ -8,6 +8,7 @@
         "generated-artifacts/DutchAuction.json",
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",
+        "generated-artifacts/LibTransactionDecoder.json",
         "generated-artifacts/OrderMatcher.json",
         "generated-artifacts/WETH9.json"
     ],

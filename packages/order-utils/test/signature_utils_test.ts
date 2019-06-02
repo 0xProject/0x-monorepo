@@ -21,6 +21,10 @@ describe('Signature utils', () => {
     let makerAddress: string;
     const fakeExchangeContractAddress = '0x1dc4c1cefef38a777b15aa20260a54e584b16c48';
     const fakeChainId = 1337;
+    const domain = {
+        verifyingContractAddress: fakeExchangeContractAddress,
+        chainId: fakeChainId,
+    };
     let order: Order;
     let transaction: ZeroExTransaction;
     before(async () => {
@@ -41,16 +45,14 @@ describe('Signature utils', () => {
             makerAssetAmount: new BigNumber(0),
             takerAssetAmount: new BigNumber(0),
             expirationTimeSeconds: new BigNumber(0),
-            domain: {
-                verifyingContractAddress: fakeExchangeContractAddress,
-                chainId: fakeChainId,
-            },
+            domain,
         };
         transaction = {
-            verifyingContractAddress: fakeExchangeContractAddress,
+            domain,
             salt: generatePseudoRandomSalt(),
             signerAddress: makerAddress,
             data: '0x6927e990021d23b1eb7b8789f6a6feaf98fe104bb0cf8259421b79f9a34222b0',
+            expirationTimeSeconds: new BigNumber(0),
         };
     });
     describe('#isValidSignatureAsync', () => {
