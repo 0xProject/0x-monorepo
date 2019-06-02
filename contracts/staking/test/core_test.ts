@@ -224,7 +224,7 @@ describe('Staking Core', () => {
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it.only('pools', async() => {
+        it('pool management', async() => {
             // create first pool
             const operatorAddress = stakers[0];
             const operatorShare = 39;
@@ -245,16 +245,31 @@ describe('Staking Core', () => {
             const makerAddressesForPool = await stakingWrapper.getMakerAddressesForPool(poolId);
             expect(makerAddressesForPool).to.be.deep.equal([makerAddress]);
             // try to add the same maker address again
-            //await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerSignature, operatorAddress);
+            await expectTransactionFailedAsync(
+                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerSignature, operatorAddress),
+                RevertReason.MakerAddressAlreadyRegistered
+            );
             // try to add a new maker address from an address other than the pool operator
-
+            const notOperatorAddress = owner;
+            const anotherMakerAddress = makers[1];
+            const anotherMakerSignature = "0x";
+            await expectTransactionFailedAsync(
+                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, anotherMakerSignature, notOperatorAddress),
+                RevertReason.OnlyCallableByPoolOperator
+            );
             // try to remove the maker address from an address other than the operator
-
+            await expectTransactionFailedAsync(
+                stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, notOperatorAddress),
+                RevertReason.OnlyCallableByPoolOperator
+            );
             // remove maker from pool
-            
-            // check that maker was removed
-
-            // try to add 
+            await stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, operatorAddress);
+            // check the pool id of the maker
+            const poolIdOfMakerAfterRemoving = await stakingWrapper.getMakerPoolId(makerAddress);
+            expect(poolIdOfMakerAfterRemoving).to.be.equal(stakingConstants.NIL_POOL_ID);
+            // check the list of makers for the pool
+            const makerAddressesForPoolAfterRemoving = await stakingWrapper.getMakerAddressesForPool(poolId);
+            expect(makerAddressesForPoolAfterRemoving).to.be.deep.equal([]);
         });
     });
 });

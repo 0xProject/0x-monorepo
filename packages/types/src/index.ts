@@ -314,6 +314,9 @@ export enum RevertReason {
     TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
     TransferRejected = 'TRANSFER_REJECTED',
     Uint256Underflow = 'UINT256_UNDERFLOW',
+    // Staking
+    OnlyCallableByPoolOperator = 'ONLY_CALLABLE_BY_POOL_OPERATOR',
+    MakerAddressAlreadyRegistered = 'MAKER_ADDRESS_ALREADY_REGISTERED',
 }
 
 export enum StatusCodes {

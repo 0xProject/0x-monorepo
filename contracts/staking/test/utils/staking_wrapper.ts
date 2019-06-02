@@ -146,15 +146,16 @@ export class StakingWrapper {
         const poolId = (createPoolLog as any).args.poolId;
         return poolId;
     }
-    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string, operatorAddress: string): Promise<void> {
+    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
-        await this._executeTransactionAsync(calldata, operatorAddress);
+        const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
+        return txReceipt;
     }
-    /*
-    public async removeMakerFromPoolAsync(poolId: string, makerAddress: string): Promise<void> {
-
+    public async removeMakerFromPoolAsync(poolId: string, makerAddress: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().removeMakerFromPool.getABIEncodedTransactionData(poolId, makerAddress);
+        const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
+        return txReceipt;
     }
-    */
     public async getMakerPoolId(makerAddress: string): Promise<string> {
         const calldata = this.getStakingContract().getMakerPoolId.getABIEncodedTransactionData(makerAddress);
         const poolId = await this._callAsync(calldata);
