@@ -1,4 +1,4 @@
-import { colors, constants as sharedConstants, utils as sharedUtils } from '@0x/react-shared';
+import { colors, constants as sharedConstants } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
@@ -9,32 +9,13 @@ import { Container } from 'ts/components/ui/container';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
-import { BrowserType, OperatingSystemType, ScreenWidths } from 'ts/types';
+import { ScreenWidths } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
 
 const THROTTLE_TIMEOUT = 100;
 const TOP_BAR_HEIGHT = 80;
-const browserType = utils.getBrowserType();
-let SCROLLBAR_WIDTH;
-switch (browserType) {
-    case BrowserType.Firefox:
-        // HACK: Firefox doesn't allow styling of their scrollbar's.
-        // Source: https://stackoverflow.com/questions/6165472/custom-css-scrollbar-for-firefox
-        const os = utils.getOperatingSystem();
-        SCROLLBAR_WIDTH = os === OperatingSystemType.Windows ? 17 : 15;
-        break;
-
-    case BrowserType.Edge:
-        // Edge's scrollbar is placed outside of the div content and doesn't
-        // need to be accounted for
-        SCROLLBAR_WIDTH = 0;
-        break;
-
-    default:
-        SCROLLBAR_WIDTH = 4;
-}
 const SIDEBAR_PADDING = 22;
 
 export interface DevelopersPageProps {
@@ -50,8 +31,6 @@ export interface DevelopersPageState {
     isSidebarScrolling: boolean;
 }
 
-const isUserOnMobile = sharedUtils.isUserOnMobile();
-
 const scrollableContainerStyles = `
     position: absolute;
     top: ${TOP_BAR_HEIGHT}px;
@@ -61,8 +40,6 @@ const scrollableContainerStyles = `
     overflow-x: hidden;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
-    /* Required for hide/show onHover of scrollbar on Microsoft Edge */
-    -ms-overflow-style: -ms-autohiding-scrollbar;
 `;
 
 interface SidebarContainerProps {
@@ -74,11 +51,6 @@ const SidebarContainer = styled.div<SidebarContainerProps>`
     padding-top: 27px;
     padding-left: ${SIDEBAR_PADDING}px;
     padding-right: ${SIDEBAR_PADDING}px;
-    overflow: hidden;
-    &:hover {
-        overflow: auto;
-        padding-right: ${SIDEBAR_PADDING - SCROLLBAR_WIDTH}px;
-    }
 `;
 
 interface MainContentContainerProps {
@@ -90,18 +62,9 @@ const MainContentContainer = styled.div<MainContentContainerProps>`
     padding-top: 0px;
     padding-left: 50px;
     padding-right: 50px;
-    overflow: ${isUserOnMobile ? 'auto' : 'hidden'};
-    &:hover {
-        padding-right: ${50 - SCROLLBAR_WIDTH}px;
-        overflow: auto;
-    }
     ${media.small`
         padding-left: 20px;
         padding-right: 20px;
-        &:hover {
-            padding-right: ${20 - SCROLLBAR_WIDTH}px;
-            overflow: auto;
-        }
     `}
 `;
 
