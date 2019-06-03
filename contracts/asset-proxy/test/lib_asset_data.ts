@@ -6,10 +6,9 @@ import {
     artifacts as erc1155Artifacts,
     ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
-    IERC1155MintableContract,
 } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract, IERC20TokenContract } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts, DummyERC721TokenContract, IERC721TokenContract } from '@0x/contracts-erc721';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AssetProxyId } from '@0x/types';
@@ -59,14 +58,15 @@ describe('LibAssetData', () => {
     let approvedSpenderAddress: string;
     let anotherApprovedSpenderAddress: string;
 
-    let erc20TokenAddress: string;
+    let erc20Token: DummyERC20TokenContract;
+    let erc721Token: DummyERC721TokenContract;
+    let erc1155Token: ERC1155MintableContract;
+
     const erc20TokenTotalSupply = new BigNumber(1);
 
-    let erc721TokenAddress: string;
     const firstERC721TokenId = new BigNumber(1);
     const numberOfERC721Tokens = 10;
 
-    let erc1155MintableAddress: string;
     let erc1155TokenId: BigNumber;
 
     before(async () => {
@@ -84,7 +84,7 @@ describe('LibAssetData', () => {
             anotherApprovedSpenderAddress,
         ] = await web3Wrapper.getAvailableAddressesAsync();
 
-        erc20TokenAddress = (await DummyERC20TokenContract.deployFrom0xArtifactAsync(
+        erc20Token = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
             erc20Artifacts.DummyERC20Token,
             provider,
             txDefaults,
@@ -92,76 +92,46 @@ describe('LibAssetData', () => {
             'DUM',
             new BigNumber(1),
             erc20TokenTotalSupply,
-        )).address;
+        );
 
-        const erc721TokenContract = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
+        erc721Token = await DummyERC721TokenContract.deployFrom0xArtifactAsync(
             erc721Artifacts.DummyERC721Token,
             provider,
             txDefaults,
             'Dummy',
             'DUM',
         );
-        erc721TokenAddress = erc721TokenContract.address;
         // mint `numberOfERC721Tokens` tokens
         const transactionMinedPromises = [];
         for (let i = 0; i < numberOfERC721Tokens; i++) {
             transactionMinedPromises.push(
-                web3Wrapper.awaitTransactionSuccessAsync(
-                    await erc721TokenContract.mint.sendTransactionAsync(
-                        tokenOwnerAddress,
-                        firstERC721TokenId.plus(i - 1),
-                    ),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                ),
+                erc721Token.mint.awaitTransactionSuccessAsync(tokenOwnerAddress, firstERC721TokenId.plus(i - 1)),
             );
         }
         await Promise.all(transactionMinedPromises);
 
-        const erc1155MintableContract = await ERC1155MintableContract.deployFrom0xArtifactAsync(
+        erc1155Token = await ERC1155MintableContract.deployFrom0xArtifactAsync(
             erc1155Artifacts.ERC1155Mintable,
             provider,
             txDefaults,
         );
-        erc1155MintableAddress = erc1155MintableContract.address;
         // Somewhat re-inventing the wheel here, but the prior art currently
         // exists only as an unexported test util in the erc1155 package
         // (Erc1155Wrapper.mintFungibleTokensAsync() in erc1155/test/utils/).
         // This is concise enough to justify duplication, but it sure is ugly.
         // tslint:disable-next-line no-unnecessary-type-assertion
-        erc1155TokenId = ((await new LogDecoder(web3Wrapper, erc1155Artifacts).getTxWithDecodedLogsAsync(
-            await erc1155MintableContract.create.sendTransactionAsync('uri:Dummy', /*isNonFungible:*/ false),
-        )).logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>).args.id;
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155MintableContract.mintFungible.sendTransactionAsync(
-                erc1155TokenId,
-                [tokenOwnerAddress],
-                [new BigNumber(1)],
-            ),
-            constants.AWAIT_TRANSACTION_MINED_MS,
+        const logDecoder = new LogDecoder(web3Wrapper, erc1155Artifacts);
+        const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
+            await erc1155Token.create.sendTransactionAsync('uri:Dummy', /*isNonFungible:*/ false),
+        );
+
+        erc1155TokenId = (transactionReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>).args.id;
+        await erc1155Token.mintFungible.awaitTransactionSuccessAsync(
+            erc1155TokenId,
+            [tokenOwnerAddress],
+            [new BigNumber(1)],
         );
     });
-
-    async function setERC20AllowanceAsync(): Promise<any> {
-        return web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC20TokenContract(
-                erc20Artifacts.IERC20Token.compilerOutput.abi,
-                erc20TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }
-
-    async function setERC721AllowanceAsync(): Promise<any> {
-        return web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC721TokenContract(
-                erc721Artifacts.IERC721Token.compilerOutput.abi,
-                erc721TokenAddress,
-                provider,
-            ).approve.sendTransactionAsync(approvedSpenderAddress, new BigNumber(1), { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-    }
 
     after(async () => {
         await blockchainLifecycle.revertAsync();
@@ -243,7 +213,7 @@ describe('LibAssetData', () => {
         expect(
             await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
             ),
         ).to.bignumber.equal(erc20TokenTotalSupply);
     });
@@ -252,7 +222,7 @@ describe('LibAssetData', () => {
         expect(
             await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
             ),
         ).to.bignumber.equal(1);
     });
@@ -262,7 +232,7 @@ describe('LibAssetData', () => {
             await libAssetData.getBalance.callAsync(
                 tokenOwnerAddress,
                 await libAssetData.encodeERC1155AssetData.callAsync(
-                    erc1155MintableAddress,
+                    erc1155Token.address,
                     [erc1155TokenId],
                     [new BigNumber(1)], // token values
                     '0x', // callback data
@@ -278,8 +248,8 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeMultiAssetData.callAsync(
                     [new BigNumber(1), new BigNumber(1)],
                     [
-                        await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-                        await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                        await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
+                        await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
                     ],
                 ),
             ),
@@ -287,62 +257,55 @@ describe('LibAssetData', () => {
     });
 
     it('should query ERC20 allowances by asset data', async () => {
-        await setERC20AllowanceAsync();
+        const allowance = new BigNumber(1);
+        await erc20Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, allowance, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
             ),
-        ).to.bignumber.equal(1);
+        ).to.bignumber.equal(allowance);
     });
 
     it('should query ERC721 approval by asset data', async () => {
-        await setERC721AllowanceAsync();
+        await erc721Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, firstERC721TokenId, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
             ),
         ).to.bignumber.equal(1);
     });
 
     it('should query ERC721 approvalForAll by assetData', async () => {
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC721TokenContract(
-                erc721Artifacts.IERC721Token.compilerOutput.abi,
-                erc721TokenAddress,
-                provider,
-            ).setApprovalForAll.sendTransactionAsync(anotherApprovedSpenderAddress, true, {
-                from: tokenOwnerAddress,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc721Token.setApprovalForAll.awaitTransactionSuccessAsync(anotherApprovedSpenderAddress, true, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 anotherApprovedSpenderAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
             ),
         ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
     });
 
     it('should query ERC1155 allowances by asset data', async () => {
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await new IERC1155MintableContract(
-                erc1155Artifacts.IERC1155Mintable.compilerOutput.abi,
-                erc1155MintableAddress,
-                provider,
-            ).setApprovalForAll.sendTransactionAsync(approvedSpenderAddress, true, { from: tokenOwnerAddress }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc1155Token.setApprovalForAll.awaitTransactionSuccessAsync(approvedSpenderAddress, true, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
                 await libAssetData.encodeERC1155AssetData.callAsync(
-                    erc1155MintableAddress,
+                    erc1155Token.address,
                     [erc1155TokenId],
                     [new BigNumber(1)],
                     '0x',
@@ -352,8 +315,13 @@ describe('LibAssetData', () => {
     });
 
     it('should query multi-asset allowances by asset data', async () => {
-        await setERC20AllowanceAsync();
-        await setERC721AllowanceAsync();
+        const allowance = new BigNumber(1);
+        await erc20Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, allowance, {
+            from: tokenOwnerAddress,
+        });
+        await erc721Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, firstERC721TokenId, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getAllowance.callAsync(
                 tokenOwnerAddress,
@@ -361,8 +329,8 @@ describe('LibAssetData', () => {
                 await libAssetData.encodeMultiAssetData.callAsync(
                     [new BigNumber(1), new BigNumber(1)],
                     [
-                        await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-                        await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                        await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
+                        await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
                     ],
                 ),
             ),
@@ -373,22 +341,27 @@ describe('LibAssetData', () => {
     it('should query balances for a batch of asset data strings', async () => {
         expect(
             await libAssetData.getBatchBalances.callAsync(tokenOwnerAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-                await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
+                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
             ]),
         ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
     });
 
     it('should query allowances for a batch of asset data strings', async () => {
-        await setERC20AllowanceAsync();
-        await setERC721AllowanceAsync();
+        const allowance = new BigNumber(1);
+        await erc20Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, allowance, {
+            from: tokenOwnerAddress,
+        });
+        await erc721Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, firstERC721TokenId, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getBatchAllowances.callAsync(
                 tokenOwnerAddress,
                 [approvedSpenderAddress, approvedSpenderAddress],
                 [
-                    await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
-                    await libAssetData.encodeERC721AssetData.callAsync(erc721TokenAddress, firstERC721TokenId),
+                    await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
+                    await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
                 ],
             ),
         ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
@@ -398,35 +371,41 @@ describe('LibAssetData', () => {
         it('should return the null address when tokenId is not owned', async () => {
             const nonexistentTokenId = new BigNumber(1234567890);
             expect(
-                await libAssetData.getERC721TokenOwner.callAsync(erc721TokenAddress, nonexistentTokenId),
+                await libAssetData.getERC721TokenOwner.callAsync(erc721Token.address, nonexistentTokenId),
             ).to.be.equal(constants.NULL_ADDRESS);
         });
         it('should return the owner address when tokenId is owned', async () => {
             expect(
-                await libAssetData.getERC721TokenOwner.callAsync(erc721TokenAddress, firstERC721TokenId),
+                await libAssetData.getERC721TokenOwner.callAsync(erc721Token.address, firstERC721TokenId),
             ).to.be.equal(tokenOwnerAddress);
         });
     });
 
     it('should query balance and allowance together, from asset data', async () => {
-        await setERC20AllowanceAsync();
+        const allowance = new BigNumber(1);
+        await erc20Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, allowance, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getBalanceAndAllowance.callAsync(
                 tokenOwnerAddress,
                 approvedSpenderAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress),
+                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
             ),
-        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
+        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), allowance]);
     });
 
     it('should query balances and allowances together, from an asset data array', async () => {
-        await setERC20AllowanceAsync();
+        const allowance = new BigNumber(1);
+        await erc20Token.approve.awaitTransactionSuccessAsync(approvedSpenderAddress, allowance, {
+            from: tokenOwnerAddress,
+        });
         expect(
             await libAssetData.getBatchBalancesAndAllowances.callAsync(
                 tokenOwnerAddress,
                 [approvedSpenderAddress, approvedSpenderAddress],
-                [await libAssetData.encodeERC20AssetData.callAsync(erc20TokenAddress)],
+                [await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address)],
             ),
-        ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [new BigNumber(1)]]);
+        ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [allowance]]);
     });
 });
