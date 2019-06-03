@@ -71,4 +71,4 @@ istanbul report html
 open coverage/index.html
 ```
 
-Use [Geth](https://github.com/ethereum/go-ethereum) as a backing node. We recommend using our [Devnet Docker container](https://hub.docker.com/r/0xorg/devnet) which sets up a Geth node for testing purposes. Ganache support is a [work in progress](https://github.com/0xProject/0x-monorepo/issues/1520).
+Use [Ganache](https://github.com/trufflesuite/ganache-cli) as a backing node.
