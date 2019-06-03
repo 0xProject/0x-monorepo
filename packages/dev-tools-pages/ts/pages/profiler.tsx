@@ -68,17 +68,10 @@ const Profiler: React.StatelessComponent<{}> = () => (
                 <List>
                     <ListItem>
                         Use{' '}
-                        <a href="https://github.com/ethereum/go-ethereum" target="_blank">
-                            Geth
+                        <a href="https://github.com/trufflesuite/ganache-cli" target="_blank">
+                            Ganache
                         </a>{' '}
-                        as a backing node. We recommend using our{' '}
-                        <a href="https://hub.docker.com/r/0xorg/devnet" target="_blank">
-                            Devnet Docker container
-                        </a>{' '}
-                        which sets up a Geth node for testing purposes.{' '}
-                        <a href="https://github.com/0xProject/0x-monorepo/issues/1520" target="_blank">
-                            Ganache support is a work in progress.
-                        </a>
+                        as a backing node.
                     </ListItem>
                     <ListItem>
                         Understand and use{' '}
