@@ -21,25 +21,16 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-asset-proxy/contracts/src/libs/LibAssetData.sol";
 
 
 contract OrderValidationUtils is
-    LibAssetData
+    LibAssetData,
+    LibMath
 {
     using LibBytes for bytes;
-
-    struct TraderInfo {
-        uint256 makerBalance;       // Maker's balance of makerAsset
-        uint256 makerAllowance;     // Maker's allowance to corresponding AssetProxy
-        uint256 takerBalance;       // Taker's balance of takerAsset
-        uint256 takerAllowance;     // Taker's allowance to corresponding AssetProxy
-        uint256 makerZrxBalance;    // Maker's balance of ZRX
-        uint256 makerZrxAllowance;  // Maker's allowance of ZRX to ERC20Proxy
-        uint256 takerZrxBalance;    // Taker's balance of ZRX
-        uint256 takerZrxAllowance;  // Taker's allowance of ZRX to ERC20Proxy
-    }
 
     // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
@@ -58,116 +49,142 @@ contract OrderValidationUtils is
     /// @dev Fetches information for order and maker/taker of order.
     /// @param order The order structure.
     /// @param signature Proof that order has been created by maker.
-    /// @param takerAddress Address that will be filling the order.
-    /// @return OrderInfo, TraderInfo, and validity of signature for given order.
-    function getOrderAndTraderInfo(
-        LibOrder.Order memory order,
-        bytes memory signature,
-        address takerAddress
-    )
+    /// @return OrderInfo, the remaining amount fillable by the taker, and validity of signature for given order.
+    function getOrderRelevantState(LibOrder.Order memory order, bytes memory signature)
         public
         view
         returns (
             LibOrder.OrderInfo memory orderInfo,
-            TraderInfo memory traderInfo,
+            uint256 fillableTakerAssetAmount,
             bool isValidSignature
         )
     {
+        // Get info specific to order
         orderInfo = EXCHANGE.getOrderInfo(order);
+
+        // Validate the maker's signature
+        // If the signature does not need to be validated, `0x01` can be supplied for the signature to always return `false`.
+        address makerAddress = order.makerAddress;
         isValidSignature = EXCHANGE.isValidSignature(
             orderInfo.orderHash,
-            order.makerAddress,
+            makerAddress,
             signature
         );
-        traderInfo = getTraderInfo(order, takerAddress);
-        return (orderInfo, traderInfo, isValidSignature);
+
+        // Get the transferable amount of the `makerAsset`
+        uint256 transferableMakerAssetAmount = getTransferableAssetAmount(order.makerAssetData, makerAddress);
+
+        // Assign to stack variables to reduce redundant mloads
+        uint256 takerAssetAmount = order.takerAssetAmount;
+        uint256 makerFee = order.makerFee;
+    
+        // Get the amount of `takerAsset` that is purchasable given the transferability of `makerAsset` and `makerFeeAsset`
+        uint256 purchasableTakerAssetAmount;
+        if (order.makerAssetData.equals(ZRX_ASSET_DATA)) {
+            // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
+            // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
+            purchasableTakerAssetAmount = getPartialAmountFloor(
+                transferableMakerAssetAmount,
+                safeAdd(order.makerAssetAmount, makerFee),
+                takerAssetAmount
+            );
+        } else {
+            // Get the transferable amount of the `makerFeeAsset`
+            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(ZRX_ASSET_DATA, makerAddress);
+
+            // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
+            // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
+            // If `makerFee` is 0, we default to using `transferableMakerAssetAmount`
+            purchasableTakerAssetAmount = makerFee == 0
+                ? getPartialAmountFloor(
+                    transferableMakerAssetAmount,
+                    order.makerAssetAmount,
+                    takerAssetAmount
+                )
+                : min256(
+                    getPartialAmountFloor(
+                        transferableMakerAssetAmount,
+                        order.makerAssetAmount,
+                        takerAssetAmount
+                    ),
+                    getPartialAmountFloor(
+                        transferableMakerFeeAssetAmount,
+                        makerFee,
+                        takerAssetAmount
+                    )
+                );
+        }
+    
+        // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `purchasableTakerAssetAmount`
+        fillableTakerAssetAmount = min256(
+            safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
+            purchasableTakerAssetAmount
+        );
+
+        return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
     /// @dev Fetches information for all passed in orders and the makers/takers of each order.
     /// @param orders Array of order specifications.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param takerAddresses Array of taker addresses corresponding to each order.
-    /// @return Arrays of OrderInfo, TraderInfo, and validity of signatures that correspond to each order.
-    function getOrdersAndTradersInfo(
-        LibOrder.Order[] memory orders,
-        bytes[] memory signatures,
-        address[] memory takerAddresses
-    )
+    /// @return Arrays of OrderInfo, fillable takerAssetAmounts, and validity of signatures that correspond to each order.
+    function getOrderRelevantStates(LibOrder.Order[] memory orders, bytes[] memory signatures)
         public
         view
         returns (
             LibOrder.OrderInfo[] memory ordersInfo,
-            TraderInfo[] memory tradersInfo,
+            uint256[] memory fillableTakerAssetAmounts,
             bool[] memory isValidSignature
         )
     {
-        ordersInfo = EXCHANGE.getOrdersInfo(orders);
-        tradersInfo = getTradersInfo(orders, takerAddresses);
-
         uint256 length = orders.length;
+        ordersInfo = new LibOrder.OrderInfo[](length);
+        fillableTakerAssetAmounts = new uint256[](length);
         isValidSignature = new bool[](length);
+
         for (uint256 i = 0; i != length; i++) {
-            isValidSignature[i] = EXCHANGE.isValidSignature(
-                ordersInfo[i].orderHash,
-                orders[i].makerAddress,
+            (ordersInfo[i], fillableTakerAssetAmounts[i], isValidSignature[i]) = getOrderRelevantState(
+                orders[i],
                 signatures[i]
             );
         }
 
-        return (ordersInfo, tradersInfo, isValidSignature);
+        return (ordersInfo, fillableTakerAssetAmounts, isValidSignature);
     }
 
-    /// @dev Fetches balance and allowances for maker and taker of order.
-    /// @param order The order structure.
-    /// @param takerAddress Address that will be filling the order.
-    /// @return Balances and allowances of maker and taker of order.
-    function getTraderInfo(LibOrder.Order memory order, address takerAddress)
+    /// @dev Gets the address of the AssetProxy that corresponds to the given assetData.
+    /// @param assetData Description of tokens, per the AssetProxy contract specification.
+    /// @return Address of the AssetProxy contract.
+    function getAssetProxyAddress(bytes memory assetData)
         public
         view
-        returns (TraderInfo memory traderInfo)
+        returns (address assetProxyAddress)
     {
-        bytes4 makerAssetProxyId = order.makerAssetData.readBytes4(0);
-        bytes4 takerAssetProxyId = order.takerAssetData.readBytes4(0);
-
-        (traderInfo.makerBalance, traderInfo.makerAllowance) = getBalanceAndAllowance(
-            order.makerAddress,
-            EXCHANGE.getAssetProxy(makerAssetProxyId),
-            order.makerAssetData
-        );
-        (traderInfo.takerBalance, traderInfo.takerAllowance) = getBalanceAndAllowance(
-            takerAddress,
-            EXCHANGE.getAssetProxy(takerAssetProxyId),
-            order.takerAssetData
-        );
-        bytes memory zrxAssetData = ZRX_ASSET_DATA;
-        address erc20ProxyAddress = ERC20_PROXY_ADDRESS;
-        (traderInfo.makerZrxBalance, traderInfo.makerZrxAllowance) = getBalanceAndAllowance(
-            order.makerAddress,
-            erc20ProxyAddress,
-            zrxAssetData
-        );
-        (traderInfo.takerZrxBalance, traderInfo.takerZrxAllowance) = getBalanceAndAllowance(
-            takerAddress,
-            erc20ProxyAddress,
-            zrxAssetData
-        );
-        return traderInfo;
-    }
-
-    /// @dev Fetches balances and allowances of maker and taker for each provided order.
-    /// @param orders Array of order specifications.
-    /// @param takerAddresses Array of taker addresses corresponding to each order.
-    /// @return Array of balances and allowances for maker and taker of each order.
-    function getTradersInfo(LibOrder.Order[] memory orders, address[] memory takerAddresses)
-        public
-        view
-        returns (TraderInfo[] memory)
-    {
-        uint256 ordersLength = orders.length;
-        TraderInfo[] memory tradersInfo = new TraderInfo[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            tradersInfo[i] = getTraderInfo(orders[i], takerAddresses[i]);
+        if (assetData.equals(ZRX_ASSET_DATA)) {
+            return ERC20_PROXY_ADDRESS;
         }
-        return tradersInfo;
+        bytes4 assetProxyId = assetData.readBytes4(0);
+        assetProxyAddress = EXCHANGE.getAssetProxy(assetProxyId);
+        return assetProxyAddress;
+    }
+
+    /// @dev Gets the amount of an asset transferable by the owner.
+    /// @param assetData Description of tokens, per the AssetProxy contract specification.
+    /// @param ownerAddress Address of the owner of the asset.
+    /// @return The amount of the asset tranferable by the owner.
+    function getTransferableAssetAmount(bytes memory assetData, address ownerAddress)
+        public
+        view
+        returns (uint256 transferableAssetAmount)
+    {
+        uint256 assetBalance = getBalance(ownerAddress, assetData);
+        address assetProxyAddress = getAssetProxyAddress(assetData);
+        uint256 assetAllowance = getAllowance(
+            ownerAddress,
+            assetProxyAddress,
+            assetData
+        );
+        transferableAssetAmount = min256(assetBalance, assetAllowance);
+        return transferableAssetAmount;
     }
 }
