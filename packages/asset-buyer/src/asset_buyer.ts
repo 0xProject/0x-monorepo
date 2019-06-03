@@ -405,9 +405,9 @@ export class AssetBuyer {
      * Get the assetData that represents the WETH token.
      * Will throw if WETH does not exist for the current network.
      */
-    private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
-    }
+    // private _getEtherTokenAssetDataOrThrow(): string {
+    //     return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
+    // }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
