@@ -10,6 +10,7 @@ import { WebsitePaths } from 'ts/types';
 const announcement = {
     headline: 'StarkDEX: Bringing STARKs to Ethereum',
     href: 'https://www.starkdex.io',
+    shouldOpenInNewTab: true,
 };
 
 export const SectionLandingHero = () => (

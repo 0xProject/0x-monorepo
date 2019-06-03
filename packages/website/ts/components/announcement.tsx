@@ -8,6 +8,7 @@ import { Button } from './button';
 export interface AnnouncementProps {
     headline: string;
     href: string;
+    shouldOpenInNewTab?: boolean;
 }
 
 const BrandColorSpan = styled.span`
@@ -31,7 +32,12 @@ const AnnouncementLink = styled(Button)`
 export const Announcement: React.StatelessComponent<AnnouncementProps> = (props: AnnouncementProps) => {
     return (
         <Wrap>
-            <AnnouncementLink isWithArrow={true} isAccentColor={true} href={props.href}>
+            <AnnouncementLink
+                isWithArrow={true}
+                isAccentColor={true}
+                href={props.href}
+                target={props.shouldOpenInNewTab ? '_blank' : ''}
+            >
                 <BrandColorSpan>{'New!'}</BrandColorSpan>
                 {props.headline}
             </AnnouncementLink>
