@@ -66,15 +66,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                'A Typescript starter project that will walk you through the basics of how to interact with 0x Protocol and trade of an SRA relayer',
-            link: {
-                title: '0x starter project',
-                to: 'https://github.com/0xProject/0x-starter-project',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
                 'Launch a 0x relayer API backend in under a minute with Launch Kit. `0x-launch-kit-backend` is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
             link: {
                 title: '0x launch kit',
@@ -88,6 +79,15 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 title: '0x smart contracts',
                 to: WebsitePaths.SmartContracts,
+            },
+        },
+        {
+            description:
+                'A Typescript starter project that will walk you through the basics of how to interact with 0x Protocol and trade of an SRA relayer',
+            link: {
+                title: '0x starter project',
+                to: 'https://github.com/0xProject/0x-starter-project',
+                shouldOpenInNewTab: true,
             },
         },
         {
@@ -227,128 +227,20 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
     [Categories.Ethereum]: [
         {
             description:
-                "This package allows you to generate TypeScript contract wrappers from ABI files. It's heavily inspired by Geth abigen but takes a different approach. You can write your custom handlebars templates which will allow you to seamlessly integrate the generated code into your existing codebase with existing conventions.",
-            link: {
-                title: 'abi-gen',
-                to: 'https://github.com/0xProject/0x-monorepo/tree/development/packages/abi-gen',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
-                'A collection of Typescript types that are useful when working on an Ethereum-based project (e.g RawLog, Transaction, TxData, SolidityTypes, etc...).',
-            link: {
-                title: 'ethereum-types',
-                to: WebsitePaths.EthereumTypes,
-            },
-        },
-        {
-            description:
-                'A wrapper around [solc-js](https://github.com/ethereum/solc-js) that adds smart re-compilation, ability to compile an entire project, Solidity version specific compilation, standard input description support and much more.',
-            link: {
-                title: '@0x/sol-compiler',
-                to: WebsitePaths.SolCompiler,
-            },
-        },
-        {
-            description:
-                'A Solidity code coverage tool. Sol-coverage uses transaction traces to figure out which lines of your code has been covered by your tests.',
-            link: {
-                title: '@0x/sol-coverage',
-                to: WebsitePaths.SolCoverage,
-            },
-        },
-        {
-            description:
-                'A Solidity profiler. Sol-profiler uses transaction traces to figure out line-by-line gas consumption.',
-            link: {
-                title: '@0x/sol-profiler',
-                to: WebsitePaths.SolProfiler,
-            },
-        },
-        {
-            description:
-                'A Solidity revert trace tool. Sol-trace prints human-readable revert trace whenever the revert happens.',
-            link: {
-                title: '@0x/sol-trace',
-                to: WebsitePaths.SolTrace,
-            },
-        },
-        {
-            description:
                 'A collection of subproviders to use with [web3-provider-engine](https://www.npmjs.com/package/web3-provider-engine) (e.g subproviders for interfacing with Ledger hardware wallet, Mnemonic wallet, private key wallet, etc...)',
             link: {
                 title: '@0x/subproviders',
                 to: WebsitePaths.Subproviders,
             },
         },
-        {
-            description:
-                'A raw Ethereum JSON RPC client to simplify interfacing with Ethereum nodes. Also includes some convenience functions for awaiting transactions to be mined, converting between token units, etc...',
-            link: {
-                title: '@0x/web3-wrapper',
-                to: WebsitePaths.Web3Wrapper,
-            },
-        },
     ],
     [Categories.CommunityMaintained]: [
         {
             description:
-                'Node.js worker originally built for 0x Tracker which extracts 0x fill events from the Ethereum blockchain and persists them to MongoDB. Support for both V1 and V2 of the 0x protocol is included with events tagged against the protocol version they belong to.',
+                'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
             link: {
-                title: '0x Event Extractor',
-                to: 'https://github.com/0xTracker/0x-event-extractor',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
-                'Node.js worker built for 0x Tracker which performs various ETL tasks related to the 0x protocol trading data and other information used on 0x Tracker.',
-            link: {
-                title: '0x Tracker Worker',
-                to: 'https://github.com/0xTracker/0x-tracker-worker',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
-                "ERCdEX's Javascript SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            link: {
-                title: 'Aquaduct',
-                to: 'https://www.npmjs.com/package/aqueduct',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
-                'SDKs for automation using Aqueduct & ERC dEX. Aqueduct Server is a lightweight, portable and secure server that runs locally on any workstation. The server exposes a small number of foundational endpoints that enable working with the decentralized Aqueduct liquidity pool from any context or programming language.',
-            link: {
-                title: 'Aquaduct Server SDK',
-                to: 'https://github.com/ERCdEX/aqueduct-server-sdk',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description: "The ERCdEX Trade Widget let's any website provide token liquidity to it's users",
-            link: {
-                to: 'https://github.com/ERCdEX/widget',
-                title: 'ERCdEX Widget',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description: "ERCdEX's Java SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            link: {
-                to: 'https://github.com/ERCdEX/java',
-                title: 'ERCdEX Java SDK',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description: "ERCdEX's Python SDK for trading on their relayer, as well as other Aquaduct partner relayers",
-            link: {
-                to: 'https://github.com/ERCdEX/python',
-                title: 'ERCdEX Python SDK',
+                title: 'Radar SDK',
+                to: 'https://github.com/RadarRelay/sdk',
                 shouldOpenInNewTab: true,
             },
         },
@@ -379,24 +271,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             },
         },
         {
-            description:
-                'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
-            link: {
-                title: 'Radar SDK',
-                to: 'https://github.com/RadarRelay/sdk',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
-            description:
-                'The Ocean provides a simple REST API, WebSockets API, and JavaScript library to help you integrate decentralized trading into your existing trading strategy.',
-            link: {
-                title: 'The Ocean Javascript SDK',
-                to: 'https://github.com/TheOceanTrade/theoceanx-javascript',
-                shouldOpenInNewTab: true,
-            },
-        },
-        {
             description: "Tokenlon SDK provides APIs for developers to trade of imToken's relayer",
             link: {
                 to: 'https://www.npmjs.com/package/tokenlon-sdk',
@@ -409,6 +283,15 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             link: {
                 to: 'https://github.com/wildnothing/asset-data-decoder',
                 title: 'AssetData decoder library in Java',
+                shouldOpenInNewTab: true,
+            },
+        },
+        {
+            description:
+                'Node.js worker originally built for 0x Tracker which extracts 0x fill events from the Ethereum blockchain and persists them to MongoDB. Support for both V1 and V2 of the 0x protocol is included with events tagged against the protocol version they belong to.',
+            link: {
+                title: '0x Event Extractor',
+                to: 'https://github.com/0xTracker/0x-event-extractor',
                 shouldOpenInNewTab: true,
             },
         },
