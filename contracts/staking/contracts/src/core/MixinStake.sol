@@ -22,12 +22,14 @@ import "../interfaces/IVault.sol";
 import "../libs/LibZrxToken.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinStorage.sol";
+import "./MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinStake is
     SafeMath,
     IStakingEvents,
+    MixinConstants,
     MixinStorage
 {
     using LibZrxToken for uint256;
@@ -87,24 +89,43 @@ contract MixinStake is
         internal
         returns (uint256)
     {
-        uint256 amountOfStakeToDelegate = amount._roundDownToNearestWholeToken();
+        require(
+            _getUndelegatedStake(msg.sender) >= amount,
+            "INSUFFICIENT_STAKE_BALANCE"
+        );
+
+        // change from undelegated to delegated
+        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeSub(delegatedStake[msg.sender][NIL_MAKER_ID], amount);
+        delegatedStake[msg.sender][makerId] = _safeAdd(delegatedStake[msg.sender][makerId], amount);
+
+        // Update total stake delegated to `makerId`
+        totalDelegatedStake[makerId] = _safeAdd(totalDelegatedStake[makerId], amount);
     }
 
-    // returns 
     function _undelegateStake(bytes32 makerId, uint256 amount)
         internal
         returns (uint256)
     {
+        require(
+            _getStakeDelegatedByOwner(msg.sender, makerId) >= amount,
+            "INSUFFICIENT_DELEGATED_STAKE_BALANCE"
+        );
 
+        // change from delegated to undelegated
+        delegatedStake[msg.sender][makerId] = _safeSub(delegatedStake[msg.sender][makerId], amount);
+        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeAdd(delegatedStake[msg.sender][NIL_MAKER_ID], amount);
+
+        // Update total stake delegated to `makerId`
+        totalDelegatedStake[makerId] = _safeAdd(totalDelegatedStake[makerId], amount);
     }
 
-    function _undelegateStake(bytes32 makerId)
+    function _undelegateAllStake(bytes32 makerId)
         internal
         returns (uint256)
     {
         address owner = msg.sender;
         uint256 delegatedStakeBalance = _getStakeDelegatedByOwner(owner, makerId);
-        _undelegateStake(makerId, delegatedStakeBalance);
+        return _undelegateStake(makerId, delegatedStakeBalance);
     }
 
     function _stakeAndDelegate(bytes32 makerId, uint256 amount)
@@ -117,6 +138,13 @@ contract MixinStake is
         // delegate stake to maker
         amountOfStakeDelegated = _delegateStake(makerId, amountOfStakeMinted);
         return amountOfStakeDelegated;
+    }
+
+    function _getUndelegatedStake(address owner)
+        internal
+        returns (uint256)
+    {
+        return delegatedStake[owner][NIL_MAKER_ID];
     }
 
     function _getStakeDelegatedByOwner(address owner, bytes32 makerId)
