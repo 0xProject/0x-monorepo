@@ -1,7 +1,7 @@
 import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
+import { artifacts as exchangeArtifacts, ExchangeContract, ExchangeWrapper } from '@0x/contracts-exchange';
 import {
     chaiSetup,
     constants,
@@ -73,7 +73,7 @@ describe('DevUtils', () => {
 
         zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.Exchange,
+            exchangeArtifacts.Exchange,
             provider,
             txDefaults,
             zrxAssetData,
