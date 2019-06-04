@@ -2,7 +2,7 @@
 
 <!--- Before submitting please check to see if this issue was already reported -->
 
-<!--- Provide a general summary of the issue in the Title above -->
+<!--- Prefix your issue title with the package name it relates to (e.g., `0x.js: ` or `general:`) -->
 
 ## Expected Behavior
 
