@@ -16,7 +16,6 @@ import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import * as _ from 'lodash';
 
 import { artifacts, DevUtilsContract } from '../src';
 
@@ -24,7 +23,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('DevUtils', () => {
+describe('OrderValidationUtils', () => {
     let makerAddress: string;
     let takerAddress: string;
     let owner: string;
@@ -56,7 +55,7 @@ describe('DevUtils', () => {
 
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const usedAddresses = ([owner, makerAddress, takerAddress] = _.slice(accounts, 0, 3));
+        const usedAddresses = ([owner, makerAddress, takerAddress] = accounts.slice(0, 3));
 
         const erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);

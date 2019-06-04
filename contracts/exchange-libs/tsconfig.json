@@ -10,7 +10,6 @@
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
         "generated-artifacts/LibOrder.json",
-        "generated-artifacts/LibTransactionDecoder.json",
         "generated-artifacts/TestLibs.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

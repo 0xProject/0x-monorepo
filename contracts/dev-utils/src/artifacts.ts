@@ -6,4 +6,8 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as DevUtils from '../generated-artifacts/DevUtils.json';
-export const artifacts = { DevUtils: DevUtils as ContractArtifact };
+import * as LibTransactionDecoder from '../generated-artifacts/LibTransactionDecoder.json';
+export const artifacts = {
+    DevUtils: DevUtils as ContractArtifact,
+    LibTransactionDecoder: LibTransactionDecoder as ContractArtifact,
+};

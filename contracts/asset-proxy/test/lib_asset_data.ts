@@ -115,16 +115,13 @@ describe('LibAssetData', () => {
             provider,
             txDefaults,
         );
-        // Somewhat re-inventing the wheel here, but the prior art currently
-        // exists only as an unexported test util in the erc1155 package
-        // (Erc1155Wrapper.mintFungibleTokensAsync() in erc1155/test/utils/).
-        // This is concise enough to justify duplication, but it sure is ugly.
-        // tslint:disable-next-line no-unnecessary-type-assertion
+
         const logDecoder = new LogDecoder(web3Wrapper, erc1155Artifacts);
         const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
             await erc1155Token.create.sendTransactionAsync('uri:Dummy', /*isNonFungible:*/ false),
         );
 
+        // tslint:disable-next-line no-unnecessary-type-assertion
         erc1155TokenId = (transactionReceipt.logs[0] as LogWithDecodedArgs<ERC1155TransferSingleEventArgs>).args.id;
         await erc1155Token.mintFungible.awaitTransactionSuccessAsync(
             erc1155TokenId,

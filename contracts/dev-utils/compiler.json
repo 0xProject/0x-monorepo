@@ -22,5 +22,5 @@
             }
         }
     },
-    "contracts": ["src/DevUtils.sol"]
+    "contracts": ["src/DevUtils.sol", "src/LibTransactionDecoder.sol"]
 }

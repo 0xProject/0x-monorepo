@@ -20,7 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./OrderValidationUtils.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibTransactionDecoder.sol";
+import "./LibTransactionDecoder.sol";
 
 
 // solhint-disable no-empty-blocks
