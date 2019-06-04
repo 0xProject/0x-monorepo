@@ -17,7 +17,7 @@
 */
 
 // solhint-disable
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 
 /// This contract is intended to serve as a reference, but is not actually used for efficiency reasons.
