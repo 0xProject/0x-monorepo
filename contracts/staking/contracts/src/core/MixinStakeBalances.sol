@@ -25,12 +25,12 @@ import "./MixinStorage.sol";
 import "./MixinConstants.sol";
 
 
-contract MixinStake is
+contract MixinStakeBalances is
     SafeMath,
     MixinConstants,
-    MixinStorage,
+    MixinStorage
 {
-    
+
     function _getTotalStake(address owner)
         internal
         view
@@ -39,7 +39,7 @@ contract MixinStake is
         return stakeByOwner[owner];
     }
 
-    function getActivatedStake(address owner)
+    function _getActivatedStake(address owner)
         internal
         view
         returns (uint256)
@@ -47,17 +47,25 @@ contract MixinStake is
         return activeStakeByOwner[owner];
     }
 
-    function getDeactivatedStake(address owner)
+    function _getDeactivatedStake(address owner)
         internal
         view
         returns (uint256)
     {
-        return _safeSub(_getTotalStake(owner), getActivatedStake(owner));
+        return _safeSub(_getTotalStake(owner), _getActivatedStake(owner));
     }
 
-    function getStakeAvailableForActivation()
+    /*
+    function _getStakeAvailableForActivation()
+    internal
+        view
+        returns (uint256)
+    {
 
-    function getWithdrawableStake(address owner)
+    }
+    */
+
+    function _getWithdrawableStake(address owner)
         internal
         view
         returns (uint256)
@@ -65,7 +73,7 @@ contract MixinStake is
         
     }
 
-    function getTimelockedStake(address owner)
+    function _getTimelockedStake(address owner)
         internal
         view
         returns (uint256)
@@ -73,7 +81,7 @@ contract MixinStake is
         return timelockedStakeByOwner[owner].total;
     }
 
-    function getStakeDelegatedByOwner(address owner)
+    function _getStakeDelegatedByOwner(address owner)
         internal
         view
         returns (uint256)
@@ -81,7 +89,7 @@ contract MixinStake is
         return delegatedStakeByOwner[owner];
     }
 
-    function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
+    function _getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
         internal
         view
         returns (uint256)
@@ -89,7 +97,7 @@ contract MixinStake is
         return delegatedStakeToPoolByOwner[owner][poolId];
     }
 
-    function getStakeDelegatedToPool(bytes32 poolId)
+    function _getStakeDelegatedToPool(bytes32 poolId)
         internal
         view
         returns (uint256)

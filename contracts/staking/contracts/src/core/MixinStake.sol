@@ -24,7 +24,8 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinStorage.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
-import "./StakingBalances.sol";
+import "./MixinStakeBalances.sol";
+import "./MixinEpoch.sol";
 
 
 contract MixinStake is
@@ -32,7 +33,8 @@ contract MixinStake is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinEpoch
 {
     using LibZrxToken for uint256;
 
@@ -59,12 +61,12 @@ contract MixinStake is
     function _activateStake(address owner, uint256 amount)
         internal
     {
-        _syncTimelockedStake();
+        _syncTimelockedStake(owner);
         require(
             _getDeactivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
-        _activateStake(owner, amount);
+        activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
     }
 
     function _activateAndDelegateStake(
@@ -81,12 +83,12 @@ contract MixinStake is
     function _deactivateAndTimelockStake(address owner, uint256 amount)
         internal
     {
-        _syncTimelockedStake();
+        _syncTimelockedStake(owner);
         require(
             _getActivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
-        _activateStake(owner, amount);
+        activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
     }
 
     function _deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
@@ -99,7 +101,7 @@ contract MixinStake is
     function _withdraw(address owner, uint256 amount)
         internal
     {
-         _syncTimelockedStake();
+         _syncTimelockedStake(owner);
         require(
             _getDeactivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
@@ -141,18 +143,6 @@ contract MixinStake is
         );
     }
 
-    function _activateStake(address owner, uint256 amount)
-        private
-    {
-        activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
-    }
-
-    function _deactivateStake(address owner, uint256 amount)
-        private
-    {
-        activeStakeByOwner[owner] = _safesub(activeStakeByOwner[owner], amount);
-    }
-
     function _delegateStake(address owner, bytes32 poolId, uint256 amount)
         private
     {
@@ -179,7 +169,7 @@ contract MixinStake is
         delegatedStakeByPoolId[poolId] = _safeSub(delegatedStakeByPoolId[poolId], amount);
     }
 
-    // Epoch | lockedAt  | pending | locked |  | timelock() | withdraw() | available()
+    // Epoch | lockedAt  | total | pending |  | timelock() | withdraw() | available()
     // 0     | 0         | 0     | 0       | 0       |            |            | 0
     // 1     | 1         | 5     | 0       | 0       | +5         |            | 0
     // 2     | 1         | 5     | 0       | 0       |            |            | 0
@@ -196,35 +186,40 @@ contract MixinStake is
     function _timelockStake(address owner, uint256 amount)
         private
     {
-        Timelock memory ownerTimelock = _getSynchronizedTimelock(owner, amount);
-        ownerTimelock.pending = _safeAdd(ownerTimelock.pending, amount);
-        timelocksByOwner[owner] = ownerTimelock;
+        (Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
+        ownerTimelock.total = _safeAdd(ownerTimelock.total, amount);
+        timelockedStakeByOwner[owner] = ownerTimelock;
     }
 
-    function _syncTimelockedStake(address owner, uint256 amount)
+    function _syncTimelockedStake(address owner)
         private
     {
-        (Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner, amount);
+        (Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner);
         if (!isOutOfSync) {
             return;
         }
-        timelocksByOwner[owner] = ownerTimelock;
+        timelockedStakeByOwner[owner] = ownerTimelock;
     }
 
-    function _getSynchronizedTimelock(address owner, uint256 amount)
+    function _getSynchronizedTimelock(address owner)
         private
         returns (
             Timelock memory ownerTimelock,
             bool isOutOfSync
         )
     {
-        uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
-        ownerTimelock = timelocksByOwner[owner];
+        uint64 currentTimelockPeriod = _getCurrentTimelockPeriod();
+        ownerTimelock = timelockedStakeByOwner[owner];
         isOutOfSync = false;
-        if (currentTimelockPeriod > ownerTimelock.lockedAt) {
+        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
             // shift n periods
-            ownerTimelock.locked = ownerTimelock.pending;
+            ownerTimelock.pending = ownerTimelock.total;
             isOutOfSync = true;
+        } else if(currentTimelockPeriod > ownerTimelock.lockedAt) {
+            // Timelock has expired - zero out
+            ownerTimelock.lockedAt = 0;
+            ownerTimelock.total = 0;
+            ownerTimelock.pending = 0;
         }
         return (ownerTimelock, isOutOfSync);
     }
