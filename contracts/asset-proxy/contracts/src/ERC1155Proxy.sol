@@ -163,6 +163,10 @@ contract ERC1155Proxy is
                 // Load length in bytes of `assetData`
                 let assetDataLength := calldataload(assetDataOffset)
 
+                // End of asset data in calldata
+                // +32 for length field
+                let assetDataEnd := add(assetDataOffset, add(assetDataLength, 32))
+
                 // Load offset to parameters section in asset data
                 let paramsInAssetDataOffset := add(assetDataOffset, 36)
 
@@ -181,6 +185,16 @@ contract ERC1155Proxy is
                 let idsOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 68)))
                 let idsLength := calldataload(idsOffset)
                 let idsLengthInBytes := mul(idsLength, 32)
+                let idsBegin := add(idsOffset, 32)
+                let idsEnd := add(idsBegin, idsLengthInBytes)
+                if gt(idsEnd, assetDataEnd) {
+                    // Revert with `Error("INVALID_IDS_OFFSET")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000012494e56414c49445f4944535f4f464653455400000000000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
                 calldatacopy(
                     dataAreaEndOffset,
                     idsOffset,
@@ -196,14 +210,22 @@ contract ERC1155Proxy is
                 let valuesOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 100)))
                 let valuesLength := calldataload(valuesOffset)
                 let valuesLengthInBytes := mul(valuesLength, 32)
+                let valuesBegin := add(valuesOffset, 32)
+                let valuesEnd := add(valuesBegin, valuesLengthInBytes)
+                if gt(valuesEnd, assetDataEnd) {
+                    // Revert with `Error("INVALID_VALUES_OFFSET")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000015494e56414c49445f56414c5545535f4f464653455400000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
 
                 // Store length of `values`
                 mstore(dataAreaEndOffset, valuesLength)
                 dataAreaEndOffset := add(dataAreaEndOffset, 32)
 
                 // Scale and store elements of `values`
-                let valuesBegin := add(valuesOffset, 32)
-                let valuesEnd := add(valuesBegin, valuesLengthInBytes)
                 for { let currentValueOffset := valuesBegin }
                     lt(currentValueOffset, valuesEnd)
                     { currentValueOffset := add(currentValueOffset, 32) }
@@ -237,13 +259,25 @@ contract ERC1155Proxy is
                 // Copy `data` from `assetData` (Table #2) to memory (Table #3)
                 let dataOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 132)))
                 let dataLengthInBytes := calldataload(dataOffset)
-                let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
-                let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
+                let dataBegin := add(dataOffset, 32)
+                let dataEnd := add(dataBegin, dataLengthInBytes)
+                if gt(dataEnd, assetDataEnd) {
+                    // Revert with `Error("INVALID_DATA_OFFSET")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000013494e56414c49445f444154415f4f4646534554000000000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
                 calldatacopy(
                     dataAreaEndOffset,
                     dataOffset,
-                    add(dataLengthInBytesWordAligned, 32)
+                    add(dataLengthInBytes, 32)
                 )
+
+                // Update the end of data offset to be word-aligned
+                let dataLengthInWords := div(add(dataLengthInBytes, 31), 32)
+                let dataLengthInBytesWordAligned := mul(dataLengthInWords, 32)
                 dataAreaEndOffset := add(dataAreaEndOffset, add(dataLengthInBytesWordAligned, 32))
 
                 ////////// STEP 3/3 - Execute Transfer //////////
