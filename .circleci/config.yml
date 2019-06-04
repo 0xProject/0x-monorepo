@@ -100,20 +100,6 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn test:generate_docs:circleci
-    test-pipeline:
-        docker:
-            - image: circleci/node:9
-            - image: postgres:11-alpine
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: ZEROEX_DATA_PIPELINE_TEST_DB_URL='postgresql://postgres@localhost/postgres' yarn wsrun test:circleci @0x/pipeline
-            - save_cache:
-                  key: coverage-pipeline-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/pipeline/coverage/lcov.info
     test-rest:
         docker:
             - image: circleci/node:9-browsers
@@ -412,9 +398,6 @@ workflows:
             # - test-contracts-geth:
             #       requires:
             #           - build
-            - test-pipeline:
-                  requires:
-                      - build
             - test-rest:
                   requires:
                       - build
