@@ -18,12 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-
-
-contract LibMath is
-    SafeMath
-{
+contract LibMath {
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
     /// @param numerator Numerator.
@@ -53,10 +48,7 @@ contract LibMath is
             "ROUNDING_ERROR"
         );
         
-        partialAmount = _safeDiv(
-            _safeMul(numerator, target),
-            denominator
-        );
+        partialAmount = (numerator * target) / denominator;
         return partialAmount;
     }
 
@@ -92,13 +84,7 @@ contract LibMath is
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
-        partialAmount = _safeDiv(
-            _safeAdd(
-                _safeMul(numerator, target),
-                _safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = ((numerator * target) + (denominator - 1)) / denominator;
         return partialAmount;
     }
 
@@ -121,10 +107,7 @@ contract LibMath is
             "DIVISION_BY_ZERO"
         );
 
-        partialAmount = _safeDiv(
-            _safeMul(numerator, target),
-            denominator
-        );
+        partialAmount = (numerator * target) / denominator;
         return partialAmount;
     }
     
@@ -150,13 +133,7 @@ contract LibMath is
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
-        partialAmount = _safeDiv(
-            _safeAdd(
-                _safeMul(numerator, target),
-                _safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = ((numerator * target) + (denominator - 1)) / denominator;
         return partialAmount;
     }
     
@@ -210,7 +187,7 @@ contract LibMath is
             numerator,
             denominator
         );
-        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
+        isError = 1000 * remainder >= numerator * target;
         return isError;
     }
     
@@ -246,8 +223,8 @@ contract LibMath is
             numerator,
             denominator
         );
-        remainder = _safeSub(denominator, remainder) % denominator;
-        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
+        remainder = (denominator - remainder) % denominator;
+        isError = 1000 * remainder >= numerator * target;
         return isError;
     }
 }

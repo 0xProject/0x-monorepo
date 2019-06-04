@@ -18,12 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-
-
-contract LibFillResults is
-    SafeMath
-{
+contract LibFillResults {
     struct FillResults {
         uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.
         uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.
@@ -45,9 +40,9 @@ contract LibFillResults is
         internal
         pure
     {
-        totalFillResults.makerAssetFilledAmount = _safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
-        totalFillResults.takerAssetFilledAmount = _safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
-        totalFillResults.makerFeePaid = _safeAdd(totalFillResults.makerFeePaid, singleFillResults.makerFeePaid);
+        totalFillResults.makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount + singleFillResults.makerAssetFilledAmount;
+        totalFillResults.takerAssetFilledAmount = totalFillResults.takerAssetFilledAmount + singleFillResults.takerAssetFilledAmount;
+        totalFillResults.makerFeePaid = totalFillResults.makerFeePaid + singleFillResults.makerFeePaid;
         totalFillResults.takerFeePaid = _safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
     }
 }

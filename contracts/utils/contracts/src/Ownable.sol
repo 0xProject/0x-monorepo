@@ -1,10 +1,11 @@
 pragma solidity ^0.5.5;
 
 import "./interfaces/IOwnable.sol";
-
+import "./MixinOwnableRichErrors.sol";
 
 contract Ownable is
-    IOwnable
+    IOwnable,
+    MixinOwnableRichErrors
 {
     address public owner;
 
@@ -15,10 +16,12 @@ contract Ownable is
     }
 
     modifier onlyOwner() {
-        require(
-            msg.sender == owner,
-            "ONLY_CONTRACT_OWNER"
-        );
+        if (msg.sender != owner) {
+          _rrevert(OnlyOwnerError(
+              msg.sender,
+              owner
+          ));
+        }
         _;
     }
 
