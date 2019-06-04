@@ -31,88 +31,120 @@ contract Staking is
     MixinPools
 {
 
-    ///// STAKING /////
+    ///// STAKE /////
 
-    function stake(uint256 amount)
+    function deposit(address owner, uint256 amount)
         external
-        returns (uint256 amountOfStakeMinted)
     {
-        amountOfStakeMinted = _stake(amount);
-        return amountOfStakeMinted;
+        _deposit(msg.sender, amount);
     }
 
-    function unstake(uint256 amount)
+    function depositAndStake(address owner, uint256 amount)
         external
-        returns (uint256 amountOfStakeBurned)
     {
-        amountOfStakeBurned = _unstake(amount);
-        return amountOfStakeBurned;
+        _depositAndStake(msg.sender, amount);
     }
 
-    function getStakeBalance(address owner)
+    function depositAndDelegate(address owner, bytes32 poolId, uint256 amount)
         external
-        view
-        returns (uint256 balance)
     {
-        balance = _getStakeBalance(owner);
-        return balance;
+        _depositAndDelegate(owner, poolId, amount);
     }
 
-    function delegateStake(bytes32 makerId, uint256 amount)
+    function activateStake(address owner, uint256 amount)
         external
-        returns (uint256 amountOfStakeDelegated)
     {
-        amountOfStakeDelegated = _delegateStake(makerId, amount);
-        return amountOfStakeDelegated;
+        _activateStake(msg.sender, amount);
     }
 
-    function undelegateStake(bytes32 makerId, uint256 amount)
+    function activateAndDelegateStake(address owner, uint256 amount)
         external
-        returns (uint256 amountOfStakeUndelegated)
     {
-        amountOfStakeUndelegated = _undelegateStake(makerId, amount);
-        return amountOfStakeUndelegated;
+        _activateAndDelegateStake(msg.sender, amount);
     }
 
-    function stakeAndDelegate(bytes32 makerId, uint256 amount)
+    function deactivateAndTimelockStake(address owner, uint256 amount)
         external
-        returns (uint256 amountOfStakeMintedAndDelegated)
     {
-        amountOfStakeMintedAndDelegated = _stakeAndDelegate(makerId, amount);
-        return amountOfStakeMintedAndDelegated;
+        _deactivateAndTimelockStake(msg.sender, amount);
     }
 
-    function undelegateAndUnstake(bytes32 makerId, uint256 amount)
+    function deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
         external
-        returns (uint256 amountOfStakeUndelegatedAndUnstaked)
     {
-        
+        _deactivateAndTimelockDelegatedStake(msg.sender, poolId, amount);
+    }
+
+    function withdraw(address owner, uint256 amount)
+        external
+    {
+        _withdraw(msg.sender, amount);
     }
 
     ///// STAKE BALANCES /////
 
-    function getStakeDelegatedByOwner(address owner, bytes32 makerId)
+    function getTotalStake(address owner)
         external
-        returns (uint256 balance)
+        view
+        returns (uint256)
     {
-        balance = _getStakeDelegatedByOwner(owner, makerId);
-        return balance;
+        return _getTotalStake(owner);
     }
 
-    function getTotalStakeDelegatedByOwner(address owner)
+    function getActivatedStake(address owner)
         external
-        returns (uint256 balance)
+        view
+        returns (uint256)
     {
-        balance = _getTotalStakeDelegatedByOwner(owner);
-        return balance;
+        return _getActivatedStake(owner);
     }
 
-    function getTotalStakeDelegatedToMaker(bytes32 makerId)
+    function getDeactivatedStake(address owner)
         external
-        returns (uint256 balance)
+        view
+        returns (uint256)
     {
-        balance = _getTotalStakeDelegatedToMaker(makerId);
-        return balance;
+        return _getDeactivatedStake(owner);
+    }
+
+    function getWithdrawableStake(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return getWithdrawableStake(owner);
+    }
+
+    function getTimelockedStake(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _getTimelockedStake(owner);
+    }
+
+    function getStakeDelegatedByOwner(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _getStakeDelegatedByOwner(owner);
+    }
+
+    function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
+        internal
+        view
+        returns (uint256)
+    {
+        return _getStakeDelegatedToPoolByOwner(owner, poolId);
+    }
+
+    function getStakeDelegatedToPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return _getStakeDelegatedToPool(poolId);
     }
 
     ///// POOLS /////
