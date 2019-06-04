@@ -115,6 +115,8 @@ export class StakingWrapper {
         const returnValue = await this._web3Wrapper.callAsync(txData);
         return returnValue;
     }
+
+    /*
     public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
         const calldata = this.getStakingContract().stake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, holder);
@@ -129,11 +131,13 @@ export class StakingWrapper {
         const stakeBurned = (stakeBurnedLog as any).args.amount;
         return stakeBurned;
     }
+
     public async getStakeBalance(holder: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getStakeBalance.getABIEncodedTransactionData(holder); 
         const balance = await this._callAsync(calldata, holder);
         return balance;
     }
+    */
     public async getNextPoolIdAsync(): Promise<string> {
         const calldata = this.getStakingContract().getNextPoolId.getABIEncodedTransactionData();
         const nextPoolId = await this._callAsync(calldata);
