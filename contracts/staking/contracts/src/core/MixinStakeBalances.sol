@@ -70,7 +70,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        
+        return _getDeactivatedStake(owner);
     }
 
     function _getTimelockedStake(address owner)
