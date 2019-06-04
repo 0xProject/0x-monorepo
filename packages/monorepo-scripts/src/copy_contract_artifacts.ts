@@ -1,41 +1,50 @@
-const pkgNames = process.argv.slice(2);
 import * as artifacts from '@0x/contract-artifacts';
-import * as fs from 'fs';
-import * as path from 'path';
-/*
- * @param dir        the directory name under 0x-monorepo/contracts, e.g. 'exchange', 'extensions'
- * @param artifact   the artifact name without extension, e.g. DutchAuction, Exchange
- */
-function shouldSkip(dir: string, artifact: string): boolean {
-    return (dir === 'extensions' && artifact === 'Exchange') || (dir === 'extensions' && artifact === 'WETH9');
-}
 const artifactsToPublish = Object.keys(artifacts);
 
-const contractsPath = path.join(__dirname, '../../../contracts');
-const contractsDirs = pkgNames.map(pkg => pkg.split('/contracts-')[1]);
+import * as fs from 'fs';
+import * as path from 'path';
 
-const compiledArtifactPaths = contractsDirs.reduce(
-    (acc, dir) => {
+import { utils } from './utils/utils';
+
+const pkgNames = process.argv.slice(2);
+const contractsDirs = [];
+for (const pkgName of pkgNames) {
+    if (pkgName.indexOf('/contracts-') === -1) {
+        throw new Error(`Invalid package name: [${pkgName}]. Contracts packages must be prefixed with 'contracts-'`);
+    }
+    contractsDirs.push(pkgName.split('/contracts-')[1]);
+}
+
+const contractsPath = path.join(__dirname, '../../../contracts');
+const allArtifactPaths = [];
+for (const dir of contractsDirs ) {
         const artifactsDir = path.join(contractsPath, dir, 'generated-artifacts');
         if (!fs.existsSync(artifactsDir)) {
-            return acc;
+            continue;
         }
-        const compiledArtifacts: string[] = fs
+        const artifactPaths: string[] = fs
             .readdirSync(artifactsDir)
             .filter(artifact => {
                 const artifactWithoutExt = artifact.split('.')[0];
                 return artifactsToPublish.includes(artifactWithoutExt) && !shouldSkip(dir, artifactWithoutExt);
             })
             .map(artifact => path.join(artifactsDir, artifact));
-        return acc.concat(compiledArtifacts);
-    },
-    [] as string[],
-);
+        allArtifactPaths.push(...artifactPaths);
+    }
 
-for (const _path of compiledArtifactPaths) {
+for (const _path of allArtifactPaths) {
     const fileName = _path.split('/').slice(-1)[0];
     const targetPath = path.join(__dirname, '../../contract-artifacts/artifacts', fileName);
     fs.copyFileSync(_path, targetPath);
-    console.log(`Copied from ${_path} to ${targetPath}`); // tslint:disable-line:no-console
-    console.log(`Finished copying contract-artifacts. Run 'cd packages/contract-artifacts && yarn lint`); // tslint:disable-line:no-console
+    utils.log(`Copied from ${_path} to ${targetPath}`);
+}
+utils.log(`Finished copying contract-artifacts. Run 'cd packages/contract-artifacts && yarn lint`);
+
+/*
+ * @param dir        the directory name under 0x-monorepo/contracts, e.g. 'exchange', 'extensions'
+ * @param artifact   the artifact name without extension, e.g. DutchAuction, Exchange
+ */
+function shouldSkip(dir: string, artifact: string): boolean {
+    return (dir === 'extensions' && artifact === 'Exchange') || // duplicate artifact generated
+    (dir === 'extensions' && artifact === 'WETH9'); // duplicate artifact generated
 }
