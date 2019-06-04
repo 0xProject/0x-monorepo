@@ -33,49 +33,49 @@ contract Staking is
 
     ///// STAKE /////
 
-    function deposit(address owner, uint256 amount)
+    function deposit(uint256 amount)
         external
     {
         _deposit(msg.sender, amount);
     }
 
-    function depositAndStake(address owner, uint256 amount)
+    function depositAndStake(uint256 amount)
         external
     {
         _depositAndStake(msg.sender, amount);
     }
 
-    function depositAndDelegate(address owner, bytes32 poolId, uint256 amount)
+    function depositAndDelegate(bytes32 poolId, uint256 amount)
         external
     {
-        _depositAndDelegate(owner, poolId, amount);
+        _depositAndDelegate(msg.sender, poolId, amount);
     }
 
-    function activateStake(address owner, uint256 amount)
+    function activateStake(uint256 amount)
         external
     {
         _activateStake(msg.sender, amount);
     }
 
-    function activateAndDelegateStake(address owner, bytes32 poolId, uint256 amount)
+    function activateAndDelegateStake(bytes32 poolId, uint256 amount)
         external
     {
         _activateAndDelegateStake(msg.sender, poolId, amount);
     }
 
-    function deactivateAndTimelockStake(address owner, uint256 amount)
+    function deactivateAndTimelockStake(uint256 amount)
         external
     {
         _deactivateAndTimelockStake(msg.sender, amount);
     }
 
-    function deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
+    function deactivateAndTimelockDelegatedStake(bytes32 poolId, uint256 amount)
         external
     {
         _deactivateAndTimelockDelegatedStake(msg.sender, poolId, amount);
     }
 
-    function withdraw(address owner, uint256 amount)
+    function withdraw(uint256 amount)
         external
     {
         _withdraw(msg.sender, amount);
@@ -132,7 +132,7 @@ contract Staking is
     }
 
     function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
-        internal
+        external
         view
         returns (uint256)
     {
