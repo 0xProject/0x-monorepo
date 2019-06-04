@@ -1,7 +1,8 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-// tslint:disable:no-unbound-method
 import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
     BlockParamLiteral,
@@ -18,6 +19,7 @@ import {
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
@@ -41,79 +43,76 @@ export class CoordinatorRegistryContract extends BaseContract {
     public setCoordinatorEndpoint = {
         async sendTransactionAsync(
             coordinatorEndpoint: string,
-            txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setCoordinatorEndpoint.estimateGasAsync.bind(
-                    self,
-                    coordinatorEndpoint
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.setCoordinatorEndpoint.estimateGasAsync.bind(
+                self,
+                coordinatorEndpoint
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
-            txData?: Partial<TxData> | number,
+            txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-            if (typeof(txData) === 'number') {
-                pollingIntervalMs = txData;
-                timeoutMs = pollingIntervalMs;
-                txData = {};
-            }
-            //
-            const self = this as any as CoordinatorRegistryContract;
-            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             coordinatorEndpoint: string,
-            txData: Partial<TxData> = {},
+            txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             coordinatorEndpoint: string,
         ): string {
-            const self = this as any as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             coordinatorEndpoint: string,
@@ -121,6 +120,15 @@ export class CoordinatorRegistryContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
+            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
         ]);
@@ -149,6 +157,15 @@ export class CoordinatorRegistryContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.isString('coordinatorOperator', coordinatorOperator);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [coordinatorOperator
         ]);
@@ -175,6 +192,11 @@ export class CoordinatorRegistryContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<CoordinatorRegistryContract> {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
@@ -189,6 +211,12 @@ export class CoordinatorRegistryContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
     ): Promise<CoordinatorRegistryContract> {
+        assert.isHexString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
         [] = BaseContract._formatABIDataItemList(
@@ -218,4 +246,5 @@ export class CoordinatorRegistryContract extends BaseContract {
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
-// tslint:enable:no-unbound-method
+// tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
+// tslint:enable:trailing-comma whitespace no-trailing-whitespace

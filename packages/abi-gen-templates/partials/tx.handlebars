@@ -1,89 +1,84 @@
 public {{this.tsName}} = {
     async sendTransactionAsync(
     {{> typed_params inputs=inputs}}
-    {{#this.payable}}
-        txData: Partial<TxDataPayable> = {},
-    {{/this.payable}}
-    {{^this.payable}}
-        txData: Partial<TxData> = {},
-    {{/this.payable}}
+    txData?: Partial<TxData> | undefined,
     ): Promise<string> {
-        const self = this as any as {{contractName}}Contract;
-        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.{{this.tsName}}.estimateGasAsync.bind(
-                self,
-                {{> params inputs=inputs}}
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+        {
+            to: self.address,
+            ...txData,
+            data: encodedData,
+        },
+        self._web3Wrapper.getContractDefaults(),
+        self.{{this.tsName}}.estimateGasAsync.bind(
+            self,
+            {{> params inputs=inputs}}
+        ),
+    );
+    const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+    return txHash;
     },
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
-    {{#this.payable}}
-        txData?: Partial<TxDataPayable> | number,
-    {{/this.payable}}
-    {{^this.payable}}
-        txData?: Partial<TxData> | number,
-    {{/this.payable}}
+        txData?: Partial<TxData>,
         pollingIntervalMs?: number,
         timeoutMs?: number,
     ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-        // `txData` may be omitted on its own, so it might be set to `pollingIntervalMs`.
-        if (typeof(txData) === 'number') {
-            pollingIntervalMs = txData;
-            timeoutMs = pollingIntervalMs;
-            txData = {};
-        }
-        //
-        const self = this as any as {{contractName}}Contract;
-        {{#if inputs}}
-        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
-        {{else}}
-        const txHashPromise = self.{{this.tsName}}.sendTransactionAsync(txData);
-        {{/if}}
-        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-            txHashPromise,
-            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                // When the transaction hash resolves, wait for it to be mined.
-                return self._web3Wrapper.awaitTransactionSuccessAsync(
-                    await txHashPromise,
-                    pollingIntervalMs,
-                    timeoutMs,
-                );
-            })(),
-        );
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    {{#if inputs}}
+    const txHashPromise = self.{{this.tsName}}.sendTransactionAsync({{> params input=inputs}}, txData);
+    {{else}}
+    const txHashPromise = self.{{this.tsName}}.sendTransactionAsync(txData);
+    {{/if}}
+    return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+        txHashPromise,
+        (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+            // When the transaction hash resolves, wait for it to be mined.
+            return self._web3Wrapper.awaitTransactionSuccessAsync(
+                await txHashPromise,
+                pollingIntervalMs,
+                timeoutMs,
+            );
+        })(),
+    );
     },
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
-        txData: Partial<TxData> = {},
+        txData?: Partial<TxData> | undefined,
     ): Promise<number> {
-        const self = this as any as {{contractName}}Contract;
-        const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+        {
+            to: self.address,
+            ...txData,
+            data: encodedData,
+        },
+        self._web3Wrapper.getContractDefaults(),
+    );
+    const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+    return gas;
     },
     getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {
-        const self = this as any as {{contractName}}Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        return abiEncodedTransactionData;
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    return abiEncodedTransactionData;
     },
     {{> callAsync}}
 };

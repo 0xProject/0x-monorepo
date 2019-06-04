@@ -453,9 +453,11 @@ describe('DevUtils', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
+            const txData = undefined;
             await erc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerBalance,
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await erc20Token.approve.awaitTransactionSuccessAsync(
@@ -469,6 +471,7 @@ describe('DevUtils', () => {
             await zrxToken.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerZrxBalance,
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await zrxToken.approve.awaitTransactionSuccessAsync(
@@ -482,6 +485,9 @@ describe('DevUtils', () => {
             await erc721Token.mint.awaitTransactionSuccessAsync(
                 takerAddress,
                 tokenId,
+                {
+                    from: takerAddress,
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const isApproved = true;
@@ -562,9 +568,11 @@ describe('DevUtils', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
+            const txData = undefined;
             await erc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerBalance,
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await erc20Token.approve.awaitTransactionSuccessAsync(
@@ -578,6 +586,7 @@ describe('DevUtils', () => {
             await zrxToken.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerZrxBalance,
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await zrxToken.approve.awaitTransactionSuccessAsync(
@@ -600,6 +609,9 @@ describe('DevUtils', () => {
             await erc721Token.mint.awaitTransactionSuccessAsync(
                 takerAddress,
                 tokenId2,
+                {
+                    from: takerAddress,
+                },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const orders = [signedOrder, signedOrder2];

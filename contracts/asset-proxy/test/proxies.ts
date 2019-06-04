@@ -199,6 +199,9 @@ describe('Asset Transfer Proxies', () => {
         await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
             fromAddress,
             constants.INITIAL_ERC20_BALANCE,
+            {
+                from: owner,
+            },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
@@ -210,6 +213,9 @@ describe('Asset Transfer Proxies', () => {
         await multipleReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
             fromAddress,
             constants.INITIAL_ERC20_BALANCE,
+            {
+                from: owner,
+            },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await multipleReturnErc20Token.approve.awaitTransactionSuccessAsync(

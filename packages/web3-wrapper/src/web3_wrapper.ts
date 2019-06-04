@@ -55,7 +55,7 @@ export class Web3Wrapper {
     private _provider: ZeroExProvider;
     // Raw provider passed in. Do not use. Only here to return the unmodified provider passed in via `getProvider()`
     private readonly _supportedProvider: SupportedProvider;
-    private readonly _txDefaults: Partial<TxData>;
+    private readonly _callAndTxnDefaults: Partial<CallData> | undefined;
     private _jsonRpcRequestId: number;
     /**
      * Check if an address is a valid Ethereum address
@@ -147,22 +147,22 @@ export class Web3Wrapper {
      * Instantiates a new Web3Wrapper.
      * @param   provider    The Web3 provider instance you would like the Web3Wrapper to use for interacting with
      *                      the backing Ethereum node.
-     * @param   txDefaults  Override TxData defaults sent with RPC requests to the backing Ethereum node.
+     * @param   callAndTxnDefaults  Override Call and Txn Data defaults sent with RPC requests to the backing Ethereum node.
      * @return  An instance of the Web3Wrapper class.
      */
-    constructor(supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+    constructor(supportedProvider: SupportedProvider, callAndTxnDefaults: Partial<CallData> = {}) {
         this.abiDecoder = new AbiDecoder([]);
         this._supportedProvider = supportedProvider;
         this._provider = providerUtils.standardizeOrThrow(supportedProvider);
-        this._txDefaults = txDefaults || {};
+        this._callAndTxnDefaults = callAndTxnDefaults;
         this._jsonRpcRequestId = 1;
     }
     /**
      * Get the contract defaults set to the Web3Wrapper instance
-     * @return  TxData defaults (e.g gas, gasPrice, nonce, etc...)
+     * @return  CallAndTxnData defaults (e.g gas, gasPrice, nonce, etc...)
      */
-    public getContractDefaults(): Partial<TxData> {
-        return this._txDefaults;
+    public getContractDefaults(): Partial<CallData> | undefined {
+        return this._callAndTxnDefaults;
     }
     /**
      * Retrieve the Web3 provider
