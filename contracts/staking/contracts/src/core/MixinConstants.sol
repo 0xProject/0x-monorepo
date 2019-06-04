@@ -21,6 +21,8 @@ pragma solidity ^0.5.5;
 
 contract MixinConstants {
 
+    uint64 constant MAX_UINT_64 = 2**64 - 1;
+
     uint256 constant TOKEN_MULTIPLIER = 10**18;
 
     bytes32 constant INITIAL_POOL_ID = 0x0000000000000000000000000000000100000000000000000000000000000000;
@@ -29,5 +31,11 @@ contract MixinConstants {
 
     address constant public NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
-    
+    uint64 constant public INITIAL_EPOCH = 1;
+
+    uint64 constant public INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
+
+    uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1; // @TODO SET FOR DEPLOYMENT
+
+    uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 2; // @TODO SET FOR DEPLOYMENT
 }
