@@ -23,9 +23,8 @@ interface IStructs {
 
     struct Timelock {
         uint64 lockedAt;
-        uint96 totalBalance;
-        uint96 pendingBalance;
-        uint96 availableBalance;
+        uint96 total;
+        uint96 pending;
     }
 
     struct Pool {
