@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 
 import "./UnlimitedAllowanceERC20Token.sol";
 
+
 contract MintableERC20Token is 
     UnlimitedAllowanceERC20Token
 {

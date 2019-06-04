@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 
 import "./ERC721Token.sol";
 
+
 contract MintableERC721Token is
     ERC721Token
 {
