@@ -187,7 +187,12 @@ contract MixinStake is
         private
     {
         (Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
-        ownerTimelock.total = _safeAdd(ownerTimelock.total, amount);
+        require(
+            amount <= 2**96 - 1,
+            "AMOUNT_TOO_LARGE"
+        );
+        uint96 downcastAmount = uint96(amount);
+        ownerTimelock.total += downcastAmount;
         timelockedStakeByOwner[owner] = ownerTimelock;
     }
 
