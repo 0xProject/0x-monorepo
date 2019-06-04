@@ -69,6 +69,7 @@ describe('Staking Core', () => {
     });
     describe('end-to-end tests', () => {
         it('staking/unstaking', async () => {
+            /*
             ///// 1/3 SETUP TEST PARAMETERS /////
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);
             const amountToUnstake = stakingWrapper.toBaseUnitAmount(5);
@@ -111,6 +112,7 @@ describe('Staking Core', () => {
                 const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(stakers[0]);
                 expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToStake).plus(amountToUnstake));
             }
+            */
         });
 
         it('nth root', async () => {
