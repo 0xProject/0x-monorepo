@@ -40,14 +40,14 @@ contract MixinStorage is
     // mapping from Owner to Amount Timelocked
     mapping (address => Timelock) timelockedStakeByOwner;
 
-    // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) delegatedStakeByPoolId;
-
     // mapping from Owner to Amount Delegated
     mapping (address => uint256) delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
     mapping (address => mapping (bytes32 => uint256)) delegatedStakeToPoolByOwner;
+
+    // mapping from Pool Id to Amount Delegated
+    mapping (bytes32 => uint256) delegatedStakeByPoolId;
 
     // tracking Pool Id
     bytes32 nextPoolId = INITIAL_POOL_ID;
