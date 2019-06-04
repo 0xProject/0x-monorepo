@@ -62,6 +62,18 @@ contract MixinStorage is
     // mapping from Pool Id to Addresses
     mapping (bytes32 => address[]) makerAddressesByPoolId;
 
+    // current epoch
+    uint64 currentEpoch = INITIAL_EPOCH;
+
+    // current epoch start time
+    uint64 currentEpochStartTimeInSeconds;
+
+    // current withdrawal period
+    uint64 currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
+
+    // current epoch start time
+    uint64 currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
+
     // ZRX vault
     IVault zrxVault;
 

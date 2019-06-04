@@ -18,15 +18,19 @@
 
 pragma solidity ^0.5.9;
 
+import "./core/MixinConstants.sol";
 import "./core/MixinStorage.sol";
 import "./core/MixinStake.sol";
 import "./core/MixinPools.sol";
+import "./core/MixinEpoch.sol";
 
 
 contract Staking is
     //IStaking,
     //IStakingEvents,
+    MixinConstants,
     MixinStorage,
+    MixinEpoch,
     MixinStake,
     MixinPools
 {
@@ -216,6 +220,79 @@ contract Staking is
     {
         makerAddresses = _getMakerAddressesForPool(makerId);
         return makerAddresses;
+    }
+
+    ///// EPOCHS /////
+
+    // @TODO - MixinAuthorizable
+    function goToNextEpoch()
+        external
+    {
+        _goToNextEpoch();
+    }
+
+    function getEpochPeriodInSeconds()
+        external
+        view
+        returns (uint64)
+    {
+        return _getEpochPeriodInSeconds();
+    }
+
+    function getTimelockPeriodInEpochs()
+        external
+        view
+        returns (uint64)
+    {
+        return _getTimelockPeriodInEpochs();
+    }
+
+    function getCurrentEpochStartTimeInSeconds()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentEpochStartTimeInSeconds();
+    }
+
+    function getCurrentTimelockPeriodStartEpoch()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentTimelockPeriodStartEpoch();
+    }
+
+    function getCurrentEpochEndTimeInSeconds()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentEpochEndTimeInSeconds();
+    }
+
+    function getCurrentTimelockPeriodEndEpoch()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentTimelockPeriodEndEpoch();
+    }
+
+    function getCurrentEpoch()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentEpoch();
+    }
+
+    function getCurrentTimelockPeriod()
+        external
+        view
+        returns (uint64)
+    {
+        return _getCurrentTimelockPeriod();
     }
 
     ///// SETTERS /////
