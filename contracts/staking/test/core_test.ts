@@ -68,6 +68,41 @@ describe('Staking Core', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('end-to-end tests', () => {
+        it('epochs & timelock periods (timelock period = 2 epochs)', async () => {
+            ///// 0/3 Validate Assumptions /////
+            expect(await stakingWrapper.getEpochPeriodInSecondsAsync()).to.be.bignumber.equal(stakingConstants.EPOCH_PERIOD_IN_SECONDS);
+            expect(await stakingWrapper.getTimelockPeriodInEpochsAsync()).to.be.bignumber.equal(stakingConstants.TIMELOCK_PERIOD_IN_EPOCHS);
+            expect(stakingConstants.TIMELOCK_PERIOD_IN_EPOCHS).to.be.bignumber.equal(2);
+            ///// 1/3 Validate Initial Epoch & Timelock Period /////
+            {
+                // epoch
+                const currentEpoch = await stakingWrapper.getCurrentEpochAsync();
+                expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH);
+                // timelock period
+                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
+                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD);
+            }
+            ///// 2/3 Increment Epoch (Timelock Should Not Increment) /////
+            await stakingWrapper.skipToNextEpochAsync();
+            {
+                // epoch
+                const currentEpoch = await stakingWrapper.getCurrentEpochAsync();
+                expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH.plus(1));
+                // timelock period
+                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
+                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD);
+            }
+            ///// 3/3 Increment Epoch (Timelock Should Increment) /////
+            await stakingWrapper.skipToNextEpochAsync();
+            {
+                // epoch
+                const currentEpoch = await stakingWrapper.getCurrentEpochAsync();
+                expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH.plus(2));
+                // timelock period
+                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
+                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD.plus(1));
+            }
+        });
         it.skip('staking/unstaking', async () => {
             ///// 1/3 SETUP TEST PARAMETERS /////
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);

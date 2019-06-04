@@ -31,7 +31,7 @@ contract MixinConstants {
 
     address constant public NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
-    uint64 constant public INITIAL_EPOCH = 1;
+    uint64 constant public INITIAL_EPOCH = 0;
 
     uint64 constant public INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
