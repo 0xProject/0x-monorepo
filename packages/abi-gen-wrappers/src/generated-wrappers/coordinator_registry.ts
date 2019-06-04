@@ -45,24 +45,24 @@ export class CoordinatorRegistryContract extends BaseContract {
             coordinatorEndpoint: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setCoordinatorEndpoint.estimateGasAsync.bind(
-                    self,
-                    coordinatorEndpoint
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.setCoordinatorEndpoint.estimateGasAsync.bind(
+                self,
+                coordinatorEndpoint
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
@@ -70,49 +70,49 @@ export class CoordinatorRegistryContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = this as any as CoordinatorRegistryContract;
-            const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const txHashPromise = self.setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = this as any as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             coordinatorEndpoint: string,
         ): string {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-            const self = this as any as CoordinatorRegistryContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+        const self = this as any as CoordinatorRegistryContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             coordinatorEndpoint: string,

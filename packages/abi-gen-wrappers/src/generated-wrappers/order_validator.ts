@@ -36,6 +36,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
+
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -75,7 +76,8 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[BigNumber, BigNumber]
         > {
-            assert.isString('target', target);assert.isString('assetData', assetData);
+            assert.isString('target', target);
+            assert.isString('assetData', assetData);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -114,7 +116,8 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
         > {
-            assert.isArray('orders', orders);assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -153,7 +156,8 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
         > {
-            assert.isArray('orders', orders);assert.isArray('takerAddresses', takerAddresses);
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -192,7 +196,8 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
-            assert.isString('token', token);assert.isBigNumber('tokenId', tokenId);
+            assert.isString('token', token);
+            assert.isBigNumber('tokenId', tokenId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -231,7 +236,8 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[BigNumber[], BigNumber[]]
         > {
-            assert.isString('target', target);assert.isArray('assetData', assetData);
+            assert.isString('target', target);
+            assert.isArray('assetData', assetData);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -270,6 +276,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
+
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,

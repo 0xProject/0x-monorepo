@@ -37,7 +37,9 @@ export class IValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('hash', hash);assert.isString('signerAddress', signerAddress);assert.isString('signature', signature);
+            assert.isString('hash', hash);
+            assert.isString('signerAddress', signerAddress);
+            assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,

@@ -36,7 +36,8 @@ export class IWalletContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('hash', hash);assert.isString('signature', signature);
+            assert.isString('hash', hash);
+            assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,

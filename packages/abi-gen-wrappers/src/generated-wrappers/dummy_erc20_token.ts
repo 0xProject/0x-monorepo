@@ -55,7 +55,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -90,26 +89,27 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_spender', _spender);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+        assert.isString('_spender', _spender);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(
-                    self,
-                    _spender,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.approve.estimateGasAsync.bind(
+                self,
+                _spender,
+                _value
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _spender: string,
@@ -118,54 +118,57 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_spender', _spender);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_spender,
+        assert.isString('_spender', _spender);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.approve.sendTransactionAsync(_spender,
     _value
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _spender: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_spender', _spender);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+        assert.isString('_spender', _spender);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _spender: string,
             _value: BigNumber,
         ): string {
-            assert.isString('_spender', _spender);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+        assert.isString('_spender', _spender);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
     _value
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _spender: string,
@@ -174,7 +177,8 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('_spender', _spender);assert.isBigNumber('_value', _value);
+            assert.isString('_spender', _spender);
+            assert.isBigNumber('_value', _value);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -211,7 +215,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -247,28 +250,30 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_from', _from);assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        assert.isString('_from', _from);
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(
-                    self,
-                    _from,
-                    _to,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.transferFrom.estimateGasAsync.bind(
+                self,
+                _from,
+                _to,
+                _value
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _from: string,
@@ -278,23 +283,25 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_from', _from);assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(_from,
+        assert.isString('_from', _from);
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.transferFrom.sendTransactionAsync(_from,
     _to,
     _value
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _from: string,
@@ -302,35 +309,39 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_from', _from);assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        assert.isString('_from', _from);
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _from: string,
             _to: string,
             _value: BigNumber,
         ): string {
-            assert.isString('_from', _from);assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        assert.isString('_from', _from);
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _value
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _from: string,
@@ -340,7 +351,9 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('_from', _from);assert.isString('_to', _to);assert.isBigNumber('_value', _value);
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -378,7 +391,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -450,7 +462,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -485,7 +496,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -519,24 +529,24 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('mint(uint256)', [_value
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('mint(uint256)', [_value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.mint.estimateGasAsync.bind(
-                    self,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.mint.estimateGasAsync.bind(
+                self,
+                _value
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _value: BigNumber,
@@ -544,49 +554,49 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.mint.sendTransactionAsync(_value
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.mint.sendTransactionAsync(_value
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('mint(uint256)', [_value
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('mint(uint256)', [_value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _value: BigNumber,
         ): string {
-            assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _value: BigNumber,
@@ -630,26 +640,27 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(
-                    self,
-                    _to,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.transfer.estimateGasAsync.bind(
+                self,
+                _to,
+                _value
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _to: string,
@@ -658,54 +669,57 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.transfer.sendTransactionAsync(_to,
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.transfer.sendTransactionAsync(_to,
     _value
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _to: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _to: string,
             _value: BigNumber,
         ): string {
-            assert.isString('_to', _to);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+        assert.isString('_to', _to);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
     _value
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _to: string,
@@ -714,7 +728,8 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isString('_to', _to);assert.isBigNumber('_value', _value);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -753,7 +768,8 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            assert.isString('_owner', _owner);assert.isString('_spender', _spender);
+            assert.isString('_owner', _owner);
+            assert.isString('_spender', _spender);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -790,26 +806,27 @@ export class DummyERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_target', _target);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
+        assert.isString('_target', _target);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setBalance.estimateGasAsync.bind(
-                    self,
-                    _target,
-                    _value
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.setBalance.estimateGasAsync.bind(
+                self,
+                _target,
+                _value
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _target: string,
@@ -818,54 +835,57 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('_target', _target);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.setBalance.sendTransactionAsync(_target,
+        assert.isString('_target', _target);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.setBalance.sendTransactionAsync(_target,
     _value
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _target: string,
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_target', _target);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
+        assert.isString('_target', _target);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
     _value
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _target: string,
             _value: BigNumber,
         ): string {
-            assert.isString('_target', _target);assert.isBigNumber('_value', _value);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
+        assert.isString('_target', _target);
+        assert.isBigNumber('_value', _value);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
     _value
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _target: string,
@@ -874,7 +894,8 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('_target', _target);assert.isBigNumber('_value', _value);
+            assert.isString('_target', _target);
+            assert.isBigNumber('_value', _value);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -910,24 +931,24 @@ export class DummyERC20TokenContract extends BaseContract {
             newOwner: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('newOwner', newOwner);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        assert.isString('newOwner', newOwner);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(
-                    self,
-                    newOwner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.transferOwnership.estimateGasAsync.bind(
+                self,
+                newOwner
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -935,49 +956,49 @@ export class DummyERC20TokenContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('newOwner', newOwner);
-            const self = this as any as DummyERC20TokenContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
+        assert.isString('newOwner', newOwner);
+        const self = this as any as DummyERC20TokenContract;
+        const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             newOwner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('newOwner', newOwner);
-            const self = this as any as DummyERC20TokenContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        assert.isString('newOwner', newOwner);
+        const self = this as any as DummyERC20TokenContract;
+        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             newOwner: string,
         ): string {
-            assert.isString('newOwner', newOwner);
-            const self = this as any as DummyERC20TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        assert.isString('newOwner', newOwner);
+        const self = this as any as DummyERC20TokenContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             newOwner: string,
@@ -1021,7 +1042,6 @@ export class DummyERC20TokenContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,

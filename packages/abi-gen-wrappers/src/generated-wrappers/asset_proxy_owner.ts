@@ -152,24 +152,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             owner: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(
-                    self,
-                    owner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.removeOwner.estimateGasAsync.bind(
+                self,
+                owner
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -177,49 +177,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.removeOwner.sendTransactionAsync(owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.removeOwner.sendTransactionAsync(owner
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             owner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             owner: string,
         ): string {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [owner
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             owner: string,
@@ -262,24 +262,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.revokeConfirmation.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.revokeConfirmation.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -287,49 +287,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.revokeConfirmation.sendTransactionAsync(transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.revokeConfirmation.sendTransactionAsync(transactionId
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             transactionId: BigNumber,
@@ -412,7 +412,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<boolean
         > {
-            assert.isBigNumber('index_0', index_0);assert.isString('index_1', index_1);
+            assert.isBigNumber('index_0', index_0);
+            assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -448,24 +449,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -473,49 +474,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(transactionId
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             transactionId: BigNumber,
@@ -559,7 +560,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -596,7 +596,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            assert.isBoolean('pending', pending);assert.isBoolean('executed', executed);
+            assert.isBoolean('pending', pending);
+            assert.isBoolean('executed', executed);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -633,26 +634,27 @@ export class AssetProxyOwnerContract extends BaseContract {
             isRegistered: boolean,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('assetProxyContract', assetProxyContract);assert.isBoolean('isRegistered', isRegistered);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
     isRegistered
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(
-                    self,
-                    assetProxyContract,
-                    isRegistered
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.registerAssetProxy.estimateGasAsync.bind(
+                self,
+                assetProxyContract,
+                isRegistered
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             assetProxyContract: string,
@@ -661,54 +663,57 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('assetProxyContract', assetProxyContract);assert.isBoolean('isRegistered', isRegistered);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxyContract,
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxyContract,
     isRegistered
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             assetProxyContract: string,
             isRegistered: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('assetProxyContract', assetProxyContract);assert.isBoolean('isRegistered', isRegistered);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
     isRegistered
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             assetProxyContract: string,
             isRegistered: boolean,
         ): string {
-            assert.isString('assetProxyContract', assetProxyContract);assert.isBoolean('isRegistered', isRegistered);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract,
     isRegistered
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             assetProxyContract: string,
@@ -717,7 +722,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('assetProxyContract', assetProxyContract);assert.isBoolean('isRegistered', isRegistered);
+            assert.isString('assetProxyContract', assetProxyContract);
+            assert.isBoolean('isRegistered', isRegistered);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -753,24 +759,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             owner: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(
-                    self,
-                    owner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.addOwner.estimateGasAsync.bind(
+                self,
+                owner
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -778,49 +784,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.addOwner.sendTransactionAsync(owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.addOwner.sendTransactionAsync(owner
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             owner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('addOwner(address)', [owner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             owner: string,
         ): string {
-            assert.isString('owner', owner);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             owner: string,
@@ -900,24 +906,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             _secondsTimeLocked: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeTimeLock.estimateGasAsync.bind(
-                    self,
-                    _secondsTimeLocked
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.changeTimeLock.estimateGasAsync.bind(
+                self,
+                _secondsTimeLocked
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
@@ -925,49 +931,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _secondsTimeLocked: BigNumber,
         ): string {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _secondsTimeLocked: BigNumber,
@@ -1122,7 +1128,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string[]
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1161,7 +1166,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber[]
         > {
-            assert.isBigNumber('from', from);assert.isBigNumber('to', to);assert.isBoolean('pending', pending);assert.isBoolean('executed', executed);
+            assert.isBigNumber('from', from);
+            assert.isBigNumber('to', to);
+            assert.isBoolean('pending', pending);
+            assert.isBoolean('executed', executed);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1237,7 +1245,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1271,24 +1278,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             _required: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('_required', _required);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeRequirement.estimateGasAsync.bind(
-                    self,
-                    _required
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.changeRequirement.estimateGasAsync.bind(
+                self,
+                _required
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _required: BigNumber,
@@ -1296,49 +1303,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('_required', _required);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.changeRequirement.sendTransactionAsync(_required
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.changeRequirement.sendTransactionAsync(_required
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             _required: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('_required', _required);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             _required: BigNumber,
         ): string {
-            assert.isBigNumber('_required', _required);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             _required: BigNumber,
@@ -1381,24 +1388,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.confirmTransaction.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.confirmTransaction.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -1406,49 +1413,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.confirmTransaction.sendTransactionAsync(transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.confirmTransaction.sendTransactionAsync(transactionId
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             transactionId: BigNumber,
@@ -1493,28 +1500,30 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('destination', destination);assert.isBigNumber('value', value);assert.isString('data', data);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
     value,
     data
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(
-                    self,
-                    destination,
-                    value,
-                    data
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.submitTransaction.estimateGasAsync.bind(
+                self,
+                destination,
+                value,
+                data
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             destination: string,
@@ -1524,23 +1533,25 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('destination', destination);assert.isBigNumber('value', value);assert.isString('data', data);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.submitTransaction.sendTransactionAsync(destination,
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.submitTransaction.sendTransactionAsync(destination,
     value,
     data
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             destination: string,
@@ -1548,35 +1559,39 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('destination', destination);assert.isBigNumber('value', value);assert.isString('data', data);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
     value,
     data
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             destination: string,
             value: BigNumber,
             data: string,
         ): string {
-            assert.isString('destination', destination);assert.isBigNumber('value', value);assert.isString('data', data);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination,
     value,
     data
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             destination: string,
@@ -1586,7 +1601,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-            assert.isString('destination', destination);assert.isBigNumber('value', value);assert.isString('data', data);
+            assert.isString('destination', destination);
+            assert.isBigNumber('value', value);
+            assert.isString('data', data);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1661,7 +1678,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1696,7 +1712,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<BigNumber
         > {
-
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1731,26 +1746,27 @@ export class AssetProxyOwnerContract extends BaseContract {
             newOwner: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('owner', owner);assert.isString('newOwner', newOwner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
     newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(
-                    self,
-                    owner,
-                    newOwner
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.replaceOwner.estimateGasAsync.bind(
+                self,
+                owner,
+                newOwner
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -1759,54 +1775,57 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);assert.isString('newOwner', newOwner);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.replaceOwner.sendTransactionAsync(owner,
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.replaceOwner.sendTransactionAsync(owner,
     newOwner
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             owner: string,
             newOwner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('owner', owner);assert.isString('newOwner', newOwner);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
     newOwner
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             owner: string,
             newOwner: string,
         ): string {
-            assert.isString('owner', owner);assert.isString('newOwner', newOwner);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [owner,
     newOwner
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             owner: string,
@@ -1815,7 +1834,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-            assert.isString('owner', owner);assert.isString('newOwner', newOwner);
+            assert.isString('owner', owner);
+            assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1851,24 +1871,24 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(
-                    self,
-                    transactionId
-                ),
-            );
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.executeTransaction.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -1876,49 +1896,49 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const txHashPromise = self.executeTransaction.sendTransactionAsync(transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.executeTransaction.sendTransactionAsync(transactionId
     , txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
     ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         getABIEncodedTransactionData(
             transactionId: BigNumber,
         ): string {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = this as any as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
     ]);
-            return abiEncodedTransactionData;
+        return abiEncodedTransactionData;
         },
         async callAsync(
             transactionId: BigNumber,
