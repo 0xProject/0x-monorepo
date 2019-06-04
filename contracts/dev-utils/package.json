@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Smart contract extensions of 0x protocol",
+    "description": "0x protocol specific utility contracts",
     "main": "lib/src/index.js",
     "directories": {
         "test": "test"
@@ -45,7 +45,7 @@
     "bugs": {
         "url": "https://github.com/0xProject/0x-monorepo/issues"
     },
-    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/extensions/README.md",
+    "homepage": "https://github.com/0xProject/0x-monorepo/contracts/dev-utils/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^2.0.10",
         "@0x/contract-wrappers": "^9.1.4",
