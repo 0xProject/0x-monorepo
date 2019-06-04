@@ -43,6 +43,6 @@ contract LibFillResults {
         totalFillResults.makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount + singleFillResults.makerAssetFilledAmount;
         totalFillResults.takerAssetFilledAmount = totalFillResults.takerAssetFilledAmount + singleFillResults.takerAssetFilledAmount;
         totalFillResults.makerFeePaid = totalFillResults.makerFeePaid + singleFillResults.makerFeePaid;
-        totalFillResults.takerFeePaid = _safeAdd(totalFillResults.takerFeePaid, singleFillResults.takerFeePaid);
+        totalFillResults.takerFeePaid = totalFillResults.takerFeePaid + singleFillResults.takerFeePaid;
     }
 }

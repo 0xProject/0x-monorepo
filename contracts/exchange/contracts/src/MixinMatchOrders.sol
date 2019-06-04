@@ -156,8 +156,7 @@ contract MixinMatchOrders is
         // AND
         // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
         // These equations can be combined to get the following:
-        if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
-            _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+        if (leftOrder.makerAssetAmount * rightOrder.makerAssetAmount < leftOrder.takerAssetAmount * rightOrder.takerAssetAmount) {
             _rrevert(NegativeSpreadError(
                 getOrderHash(leftOrder),
                 getOrderHash(rightOrder)
@@ -185,13 +184,13 @@ contract MixinMatchOrders is
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
-        uint256 leftTakerAssetAmountRemaining = _safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
+        uint256 leftTakerAssetAmountRemaining = leftOrder.takerAssetAmount - leftOrderTakerAssetFilledAmount;
         uint256 leftMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
             leftTakerAssetAmountRemaining
         );
-        uint256 rightTakerAssetAmountRemaining = _safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
+        uint256 rightTakerAssetAmountRemaining = rightOrder.takerAssetAmount - rightOrderTakerAssetFilledAmount;
         uint256 rightMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
             rightOrder.makerAssetAmount,
             rightOrder.takerAssetAmount,
@@ -234,10 +233,8 @@ contract MixinMatchOrders is
         }
 
         // Calculate amount given to taker
-        matchedFillResults.leftMakerAssetSpreadAmount = _safeSub(
-            matchedFillResults.left.makerAssetFilledAmount,
-            matchedFillResults.right.takerAssetFilledAmount
-        );
+        matchedFillResults.leftMakerAssetSpreadAmount = matchedFillResults.left.makerAssetFilledAmount 
+            - matchedFillResults.right.takerAssetFilledAmount;
 
         // Compute fees for left order
         matchedFillResults.left.makerFeePaid = _safeGetPartialAmountFloor(
@@ -346,10 +343,7 @@ contract MixinMatchOrders is
                     leftOrder.takerFeeAssetData,
                     takerAddress,
                     leftFeeRecipientAddress,
-                    _safeAdd(
-                        matchedFillResults.left.takerFeePaid,
-                        matchedFillResults.right.takerFeePaid
-                    )
+                    matchedFillResults.left.takerFeePaid + matchedFillResults.right.takerFeePaid
                 );
             }
         } else {

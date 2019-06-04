@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "@0x/contracts-utils/contracts/src/LibAddress.sol";
 import "./interfaces/IERC1155.sol";
 import "./interfaces/IERC1155Receiver.sol";
@@ -26,7 +25,6 @@ import "./MixinNonFungibleToken.sol";
 
 
 contract ERC1155 is
-    SafeMath,
     IERC1155,
     MixinNonFungibleToken
 {
@@ -91,8 +89,8 @@ contract ERC1155 is
             // balances[baseType][_from] = balances[baseType][_from]._safeSub(_value);
             // balances[baseType][_to]   = balances[baseType][_to]._safeAdd(_value);
         } else {
-            balances[id][from] = _safeSub(balances[id][from], value);
-            balances[id][to] = _safeAdd(balances[id][to], value);
+            balances[id][from] = balances[id][from] - value;
+            balances[id][to] = balances[id][to] - value;
         }
         emit TransferSingle(msg.sender, from, to, id, value);
 
@@ -170,8 +168,8 @@ contract ERC1155 is
                 );
                 nfOwners[id] = to;
             } else {
-                balances[id][from] = _safeSub(balances[id][from], value);
-                balances[id][to] = _safeAdd(balances[id][to], value);
+                balances[id][from] = balances[id][from] - value;
+                balances[id][to] = balances[id][to] + value;
             }
         }
         emit TransferBatch(msg.sender, from, to, ids, values);

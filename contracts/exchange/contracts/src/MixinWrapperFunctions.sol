@@ -204,7 +204,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount - fillResults.takerAssetFilledAmount;
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = _fillOrder(
@@ -248,7 +248,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount - fillResults.takerAssetFilledAmount;
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
@@ -293,7 +293,7 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = makerAssetFillAmount - fillResults.makerAssetFilledAmount;
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
@@ -345,7 +345,7 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = makerAssetFillAmount - fillResults.makerAssetFilledAmount;
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order

@@ -20,7 +20,6 @@ pragma solidity ^0.5.5;
 
 import "./ERC721Token.sol";
 
-
 contract MintableERC721Token is
     ERC721Token
 {
@@ -43,7 +42,7 @@ contract MintableERC721Token is
         );
 
         owners[_tokenId] = _to;
-        balances[_to] = _safeAdd(balances[_to], 1);
+        balances[_to] = balances[_to] + 1;
 
         emit Transfer(
             address(0),
@@ -71,7 +70,7 @@ contract MintableERC721Token is
         );
 
         owners[_tokenId] = address(0);
-        balances[_owner] = _safeSub(balances[_owner], 1);
+        balances[_owner] = balances[_owner] - 1;
 
         emit Transfer(
             _owner,

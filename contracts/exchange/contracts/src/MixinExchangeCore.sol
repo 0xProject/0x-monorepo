@@ -207,8 +207,9 @@ contract MixinExchangeCore is
         );
 
         // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = _safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        uint256 remainingTakerAssetAmount = order.takerAssetAmount - orderInfo.orderTakerAssetFilledAmount;
+        uint256 takerAssetFilledAmount = takerAssetFillAmount < remainingTakerAssetAmount ? 
+          takerAssetFillAmount : remainingTakerAssetAmount;
 
         // Validate context
         _assertValidFill(
@@ -274,7 +275,7 @@ contract MixinExchangeCore is
         internal
     {
         // Update state
-        filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
+        filled[orderHash] = orderTakerAssetFilledAmount + fillResults.takerAssetFilledAmount;
 
         // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
         // All this logic is equivalent to:
@@ -406,7 +407,7 @@ contract MixinExchangeCore is
         // Make sure order is not overfilled
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
+        if (orderInfo.orderTakerAssetFilledAmount + takerAssetFilledAmount
             > order.takerAssetAmount) {
             _rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
         }
@@ -428,8 +429,8 @@ contract MixinExchangeCore is
         //     order.makerAssetAmount * takerAssetFilledAmount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
-        if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
-            > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
+        if (makerAssetFilledAmount * order.takerAssetAmount 
+            > order.makerAssetAmount * takerAssetFilledAmount) {
             _rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
         }
     }

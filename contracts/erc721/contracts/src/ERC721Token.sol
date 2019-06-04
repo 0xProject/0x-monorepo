@@ -20,12 +20,9 @@ pragma solidity ^0.5.5;
 
 import "./interfaces/IERC721Token.sol";
 import "./interfaces/IERC721Receiver.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-
 
 contract ERC721Token is
-    IERC721Token,
-    SafeMath
+    IERC721Token
 {
     // Function selector for ERC721Receiver.onERC721Received
     // 0x150b7a02
@@ -223,8 +220,8 @@ contract ERC721Token is
         }
 
         owners[_tokenId] = _to;
-        balances[_from] = _safeSub(balances[_from], 1);
-        balances[_to] = _safeAdd(balances[_to], 1);
+        balances[_from] = balances[_from] - 1;
+        balances[_to] = balances[_to] + 1;
     
         emit Transfer(
             _from,

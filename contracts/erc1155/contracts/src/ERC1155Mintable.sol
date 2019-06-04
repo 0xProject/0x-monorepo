@@ -1,6 +1,5 @@
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./ERC1155.sol";
 import "./interfaces/IERC1155Mintable.sol";
 
@@ -88,7 +87,7 @@ contract ERC1155Mintable is
             uint256 quantity = quantities[i];
 
             // Grant the items to the caller
-            balances[id][dst] = _safeAdd(quantity, balances[id][dst]);
+            balances[id][dst] = quantity + balances[id][dst];
 
             // Emit the Transfer/Mint event.
             // the 0x0 source address implies a mint
@@ -168,6 +167,6 @@ contract ERC1155Mintable is
 
         // record the `maxIndex` of this nft type
         // this allows us to mint more nft's of this type in a subsequent call.
-        maxIndex[type_] = _safeAdd(to.length, maxIndex[type_]);
+        maxIndex[type_] = to.length + maxIndex[type_];
     }
 }
