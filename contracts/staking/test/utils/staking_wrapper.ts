@@ -115,29 +115,89 @@ export class StakingWrapper {
         const returnValue = await this._web3Wrapper.callAsync(txData);
         return returnValue;
     }
-
-    /*
-    public async stake(holder: string, amount: BigNumber): Promise<BigNumber> {
-        const calldata = this.getStakingContract().stake.getABIEncodedTransactionData(amount);
-        const txReceipt = await this._executeTransactionAsync(calldata, holder);
-        const stakeMintedLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[1]);
-        const stakeMinted = (stakeMintedLog as any).args.amount;
-        return stakeMinted;
+    ///// STAKE /////
+    public async depositAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().deposit.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
     }
-    public async unstake(holder: string, amount: BigNumber): Promise<BigNumber> {
-        const calldata = this.getStakingContract().unstake.getABIEncodedTransactionData(amount);
-        const txReceipt = await this._executeTransactionAsync(calldata, holder);
-        const stakeBurnedLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[1]);
-        const stakeBurned = (stakeBurnedLog as any).args.amount;
-        return stakeBurned;
+    public async depositAndStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().depositAndStake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
     }
-
-    public async getStakeBalance(holder: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getStakeBalance.getABIEncodedTransactionData(holder); 
-        const balance = await this._callAsync(calldata, holder);
-        return balance;
+    public async depositAndDelegateAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
     }
-    */
+    public async activateStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().activateStake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
+    }
+    public async activateAndDelegateStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().activateAndDelegateStake.getABIEncodedTransactionData(poolId, amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
+    }
+    public async deactivateAndTimelockStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().deactivateAndTimelockStake.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
+    }
+    public async deactivateAndTimelockDelegatedStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(poolId, amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
+    }
+    public async withdraw(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().withdraw.getABIEncodedTransactionData(amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        return txReceipt;
+    }
+    ///// STAKE BALANCES /////
+    public async getTotalStakeAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getTotalStake.getABIEncodedTransactionData(owner);
+        const totalStake = await this._callAsync(calldata);
+        return totalStake;
+    }
+    public async getActivatedStakeAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getActivatedStake.getABIEncodedTransactionData(owner);
+        const activatedStake = await this._callAsync(calldata);
+        return activatedStake;
+    }
+    public async getDeactivatedStakeAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getDeactivatedStake.getABIEncodedTransactionData(owner);
+        const deactivatedStake = await this._callAsync(calldata);
+        return deactivatedStake;
+    }
+    public async getWithdrawableStakeAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getWithdrawableStake.getABIEncodedTransactionData(owner);
+        const withdrawableStake = await this._callAsync(calldata);
+        return withdrawableStake;
+    }
+    public async getTimelockedStakeAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getTimelockedStake.getABIEncodedTransactionData(owner);
+        const timelockedStake = await this._callAsync(calldata);
+        return timelockedStake;
+    }
+    public async getStakeDelegatedByOwnerAsync(owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getTimelockedStake.getABIEncodedTransactionData(owner);
+        const stakeDelegatedByOwner = await this._callAsync(calldata);
+        return stakeDelegatedByOwner;
+    }
+    public async getStakeDelegatedToPoolByOwnerAsync(poolId: string, owner: string): Promise<string> {
+        const calldata = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIEncodedTransactionData(owner, poolId);
+        const stakeDelegatedToPoolByOwner = await this._callAsync(calldata);
+        return stakeDelegatedToPoolByOwner;
+    }
+    public async getStakeDelegatedToPoolAsync(poolId: string): Promise<string> {
+        const calldata = this.getStakingContract().getStakeDelegatedToPool.getABIEncodedTransactionData(poolId);
+        const stakeDelegatedToPool = await this._callAsync(calldata);
+        return stakeDelegatedToPool;
+    }
+    ///// POOLS /////
     public async getNextPoolIdAsync(): Promise<string> {
         const calldata = this.getStakingContract().getNextPoolId.getABIEncodedTransactionData();
         const nextPoolId = await this._callAsync(calldata);
