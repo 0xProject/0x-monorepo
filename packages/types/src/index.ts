@@ -315,6 +315,7 @@ export enum RevertReason {
     InvalidIdsOffset = 'INVALID_IDS_OFFSET',
     InvalidValuesOffset = 'INVALID_VALUES_OFFSET',
     InvalidDataOffset = 'INVALID_DATA_OFFSET',
+    InvalidAssetDataLength = 'INVALID_ASSET_DATA_LENGTH',
 }
 
 export enum StatusCodes {

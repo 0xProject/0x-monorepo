@@ -163,6 +163,18 @@ contract ERC1155Proxy is
                 // Load length in bytes of `assetData`
                 let assetDataLength := calldataload(assetDataOffset)
 
+                // Assert that the length of asset data:
+                // 1. Must be at least 132 bytes (Table #2)
+                // 2. Must be a multiple of 32 (excluding the 4-byte selector)
+                if or(lt(assetDataLength, 100), mod(sub(assetDataLength, 4), 32)) {
+                    // Revert with `Error("INVALID_ASSET_DATA_LENGTH")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000019494e56414c49445f41535345545f444154415f4c454e475448000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
+
                 // End of asset data in calldata
                 // +32 for length field
                 let assetDataEnd := add(assetDataOffset, add(assetDataLength, 32))

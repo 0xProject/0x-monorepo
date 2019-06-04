@@ -643,7 +643,7 @@ describe('ERC1155Proxy', () => {
                 valuesToTransfer,
                 receiverCallbackData,
             );
-            const extraData = '0102030405060708';
+            const extraData = '0102030405060708091001020304050607080910010203040506070809100102';
             const assetDataWithExtraData = `${assetData}${extraData}`;
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
@@ -1350,6 +1350,36 @@ describe('ERC1155Proxy', () => {
                     assetDataWithBadTokenData,
                 ),
                 RevertReason.InvalidDataOffset,
+            );
+        });
+        it('should revert if length of assetData, excluding the selector, is not a multiple of 32', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            const extraData = '01';
+            const assetDataWithExtraData = `${assetData}${extraData}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromWithLogsAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                    assetDataWithExtraData,
+                ),
+                RevertReason.InvalidAssetDataLength
             );
         });
         it('should transfer nothing if value is zero', async () => {
