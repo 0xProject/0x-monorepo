@@ -453,12 +453,11 @@ describe('DevUtils', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
+            const txData = undefined;
             await erc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerBalance,
-                {
-                    from: makerAddress,
-                },
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await erc20Token.approve.awaitTransactionSuccessAsync(
@@ -472,9 +471,7 @@ describe('DevUtils', () => {
             await zrxToken.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerZrxBalance,
-                {
-                    from: makerAddress,
-                },
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await zrxToken.approve.awaitTransactionSuccessAsync(
@@ -571,12 +568,11 @@ describe('DevUtils', () => {
             const makerAllowance = new BigNumber(456);
             const makerZrxBalance = new BigNumber(789);
             const takerZrxAllowance = new BigNumber(987);
+            const txData = undefined;
             await erc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerBalance,
-                {
-                    from: makerAddress,
-                },
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await erc20Token.approve.awaitTransactionSuccessAsync(
@@ -590,9 +586,7 @@ describe('DevUtils', () => {
             await zrxToken.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 makerZrxBalance,
-                {
-                    from: makerAddress,
-                },
+                txData,
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             await zrxToken.approve.awaitTransactionSuccessAsync(
