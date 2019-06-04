@@ -232,8 +232,51 @@ export class StakingWrapper {
         return makerAddresses;
     }
     ///// EPOCHS /////
-    //public async goToNextEpoch()
-
+    public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().goToNextEpoch.getABIEncodedTransactionData();
+        const txReceipt = await this._executeTransactionAsync(calldata);
+        return txReceipt;
+    }
+    public async getEpochPeriodInSecondsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getEpochPeriodInSeconds.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getTimelockPeriodInEpochsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimelockPeriodInEpochs.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentEpochStartTimeInSecondsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentEpochStartTimeInSeconds.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentTimelockPeriodStartEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimelockPeriodStartEpoch.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentEpochEndTimeInSecondsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentEpochEndTimeInSeconds.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentTimelockPeriodEndEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimelockPeriodEndEpoch.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentEpoch.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
+    public async getCurrentTimelockPeriodAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentTimelockPeriod.getABIEncodedTransactionData();
+        const value = await this._callAsync(calldata);
+        return value;
+    }
     ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
