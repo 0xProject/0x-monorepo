@@ -279,10 +279,14 @@ contract OrderScenarioUtil is
         for (uint256 i = 0; i != numScenarios; i++) {
             OrderTraits memory singleOrderTraits = orderTraits[i];
             TraderBalancesAndAllowances[] memory singleTakerBalances = takerBalances[i];
-            (address makerAddress, address takerAddresses) = _createScenarioWallets(
+            (address makerAddress, address singleTakerAddresses) = _createScenarioWallets(
                 singleOrderTraits,
                 singleTakerBalances
             );
+            LibOrder.Order memory order = _createOrder(orderTraits[i], makerAddress);
+            orders.push(order);
+            makerAddress.push(makerAddress);
+            takerAddresses.push(singleTakerAddresses);
         }
         // TODO
     }
