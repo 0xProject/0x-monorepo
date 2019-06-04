@@ -229,7 +229,7 @@ contract OrderScenarioUtil is
             for (uint256 j = 0; j != numOwnerAssetTypes; j++) {
                 AssetType assetType = ownerAssetTypes[j];
                 AssetBalanceAndAllowance memory assetBalance = ownerBalances[j];
-                _createAssetsForOwner(
+                _fundAssetsForOwner(
                     ownerAddress,
                     assetType,
                     assetBalance.balance,
@@ -268,6 +268,22 @@ contract OrderScenarioUtil is
             address[][] memory takerAddresses
         )
     {
+        uint256 numScenarios = orderTraits.length;
+        require(
+            numScenarios == makerBalances.length &&
+            numScenarios == takerBalances.length &&
+            numScenarios == cancelOrders.length &&
+            numScenarios == initialTakerAssetFillAmounts.length
+            "LENGTHS_DO_NOT_MATCH",
+        );
+        for (uint256 i = 0; i != numScenarios; i++) {
+            OrderTraits memory singleOrderTraits = orderTraits[i];
+            TraderBalancesAndAllowances[] memory singleTakerBalances = takerBalances[i];
+            (address makerAddress, address takerAddresses) = _createScenarioWallets(
+                singleOrderTraits,
+                singleTakerBalances
+            );
+        }
         // TODO
     }
 
@@ -278,7 +294,7 @@ contract OrderScenarioUtil is
     /// @param balance Amount of `assetType` to mint to owner.
     /// @param allowance Allowance to grant the asset proxy for `assetType`.
     /// @param assetDataAmount Amount of `assetType` to encode in the asset data.
-    function _createAssetsForOwner(
+    function _fundAssetsForOwner(
         address ownerAddress,
         AssetType assetType,
         uint256 balance,
@@ -289,103 +305,64 @@ contract OrderScenarioUtil is
         returns (bytes memory assetData)
     {
         if (assetType == AssetType.ERC20_ZRX) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
-            _zrxToken.setBalance(ownerAddress, balance);
-            _zrxToken.approve(assetProxyAddress, allowance);
-            assetData = LibAssetData.encodeERC20AssetData(address(_zrxToken));
+            assetData = _creatERC20AssetForOwner(
+                _zrxToken,
+                ownerAddress,
+                balance,
+                allowance,
+                assetData
+            );
         } else if (assetType == AssetType.ERC20_18) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
-            _erc20EighteenToken.setBalance(ownerAddress, balance);
-            _erc20EighteenToken.approve(assetProxyAddress, allowance);
-            assetData = LibAssetData.encodeERC20AssetData(address(_erc20EighteenToken));
+            assetData = _creatERC20AssetForOwner(
+                _erc20EighteenToken,
+                ownerAddress,
+                balance,
+                allowance,
+                assetData
+            );
         } else if (assetType == AssetType.ERC20_5) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
-            _erc20FiveToken.setBalance(ownerAddress, balance);
-            _erc20FiveToken.approve(assetProxyAddress, allowance);
-            assetData = LibAssetData.encodeERC20AssetData(address(_erc20FiveToken));
+            assetData = _creatERC20AssetForOwner(
+                _erc20FiveToken,
+                ownerAddress,
+                balance,
+                allowance,
+                assetData
+            );
         } else if (assetType == AssetType.ERC721) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC721_ASSET_PROXY_ID);
-            // Mint an NFT.
-            bytes32 tokenId = uint256(_generateNextHash());
-            if (balance != 0) {
-                _erc721Token.mint(ownerAddress, tokenId);
-            } else {
-                // If the balance is zero, we mint the NFT to the burn address instead.
-                _erc721Token.mint(BURN_ADDRESS, tokenId);
-            }
-            // Set the proxy allowance.
-            if (allowance == 0) {
-                _erc721Token.setApprovalForAll(assetProxyAddress, false);
-                _erc721Token.approve(address(0), tokenId);
-            } else if (allowance == 1) {
-                _erc721Token.setApprovalForAll(assetProxyAddress, false);
-                _erc721Token.approve(assetProxyAddress, tokenId);
-            } else {
-                _erc721Token.setApprovalForAll(assetProxyAddress, true);
-            }
-            assetData = LibAssetData.encodeERC721AssetData(
-                address(_erc721Token),
-                tokenId
+            // If the balance is zero, we mint the NFT to the burn address instead.
+            address mintToAddress = balance == 0 ? BURN_ADDRESS : ownerAddress;
+            assetData = _creatERC721AssetForOwner(
+                mintToAddress,
+                allowance,
+                assetData
             );
         } else if (assetType == AssetType.ERC1155_Fungible) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC1155_ASSET_PROXY_ID);
-            if (balance != 0) {
-                _erc1155Token.mintFungible(
-                    _erc1155FungibleTokenTypeId,
-                    _toSingularArray(ownerAddress),
-                    _toSingularArray(balance)
-                );
-            }
-            if (allowance == 0) {
-                _erc1155Token.setApprovalForAll(assetProxyAddress, false);
-            } else {
-                _erc1155Token.setApprovalForAll(assetProxyAddress, true);
-            }
-            assetData = LibAssetData.encodeERC1155AssetData(
-                address(_erc1155Token),
-                _toSingularArray(_erc1155FungibleTokenTypeId),
-                _toSingularArray(assetDataAmount),
-                new bytes[](0)
+            assetData = _creatERC1155FungibleAssetForOwner(
+                ownerAddress,
+                balance,
+                allowance,
+                assetData
             );
         } else if (assetType == AssetType.ERC1155_NonFungible) {
-            address assetProxyAddress = _exchange.getAssetProxy(ERC1155_ASSET_PROXY_ID);
-            // Mint an NFT.
-            uint256 tokenId;
-            if (balance != 0) {
-                tokenId = _erc1155Token.mintNonFungible(
-                    _erc1155NonFungibleTokenTypeId,
-                    _toSingularArray(ownerAddress)
-                );
-            } else {
-                // If the balance is zero, we mint the NFT to the burn address instead.
-                tokenId = _erc1155Token.mintNonFungible(
-                    _erc1155NonFungibleTokenTypeId,
-                    _toSingularArray(BURN_ADDRESS)
-                );
-            }
-            // Set the proxy allowance.
-            if (allowance == 0) {
-                _erc1155Token.setApprovalForAll(assetProxyAddress, false);
-            } else {
-                _erc1155Token.setApprovalForAll(assetProxyAddress, true);
-            }
-            assetData = LibAssetData.encodeERC1155AssetData(
-                address(_erc1155Token),
-                _toSingularArray(tokenId),
-                _toSingularArray(assetDataAmount),
-                new bytes[](0)
+            // If the balance is zero, we mint the NFT to the burn address instead.
+            address mintToAddress = balance == 0 ? BURN_ADDRESS : ownerAddress;
+            assetData = _creatERC1155FungibleAssetForOwner(
+                mintToAddress,
+                balance,
+                allowance,
+                assetData
             );
         } else if (assetType == AssetType.MultiAsset_Fungibles) {
             // Nest an ERC20_18 and ERC1155_Fungible
             assetData = LibAssetData.encodeMultiAssetData(
-                _createAssetsForOwner(
+                _fundAssetsForOwner(
                     ownerAddress,
                     AssetType.ERC20_18,
                     safeMul(balance, MULTI_ASSET_FUNGIBLES_ERC20_UNITS),
                     safeMul(allowance, MULTI_ASSET_FUNGIBLES_ERC20_UNITS),
                     safeMul(assetDataAmount, MULTI_ASSET_FUNGIBLES_ERC20_UNITS)
                 ),
-                _createAssetsForOwner(
+                _fundAssetsForOwner(
                     ownerAddress,
                     AssetType.ERC1155_Fungible,
                     safeMul(balance, MULTI_ASSET_FUNGIBLES_ERC1155_UNITS),
@@ -396,14 +373,14 @@ contract OrderScenarioUtil is
         } else if (assetType == AssetType.MultiAsset_NonFungibles) {
             // Nest an ERC721 and ERC1155_NonFungible
             assetData = LibAssetData.encodeMultiAssetData(
-                _createAssetsForOwner(
+                _fundAssetsForOwner(
                     ownerAddress,
                     AssetType.ERC721,
                     balance,
                     allowance,
                     assetDataAmount
                 ),
-                _createAssetsForOwner(
+                _fundAssetsForOwner(
                     ownerAddress,
                     AssetType.ERC1155_NonFungible,
                     balance,
@@ -414,6 +391,155 @@ contract OrderScenarioUtil is
         } else {
             revert("UNKNOWN_ASSET_TYPE");
         }
+    }
+
+    /// @dev Fund an address with an ERC20 asset, set asset proxy allowance,
+    ///      and return the encoded asset data.
+    /// @param token Instance of DummyERC20Token.
+    /// @param ownerAddress The owner of the ERC20.
+    /// @param balance Amount of ERC20 to mint to `ownerAddress`.
+    /// @param allowance ERC20 allowance to grant the asset proxy.
+    /// @param assetDataAmount Amount of tokens to encode in the asset data.
+    function _creatERC20AssetForOwner(
+        DummyERC20Token token,
+        address ownerAddress,
+        uint256 balance,
+        uint256 allowance,
+        uint256 assetDataAmount
+    )
+        internal
+        returns (bytes memory assetData)
+    {
+        address assetProxyAddress = _exchange.getAssetProxy(ERC20_ASSET_PROXY_ID);
+        address tokenAddress = address(token);
+        token.setBalance(ownerAddress, balance);
+        token.approve(assetProxyAddress, allowance);
+        assetData = LibAssetData.encodeERC20AssetData(tokenAddress);
+        emit FundERC20(
+            tokenAddress,
+            ownerAddress,
+            balance,
+            allowance,
+            assetData
+        );
+    }
+
+    /// @dev Fund an address with an ERC721 NFT, set asset proxy allowance,
+    ///      and return the encoded asset data.
+    /// @param ownerAddress The owner of the ERC721 NFT.
+    /// @param allowance ERC721 allowance to grant the asset proxy.
+    /// @param assetDataAmount Amount of tokens to encode in the asset data.
+    function _creatERC721AssetForOwner(
+        address ownerAddress,
+        uint256 allowance,
+        uint256 assetDataAmount
+    )
+        internal
+        returns (bytes memory assetData)
+    {
+        address assetProxyAddress = _exchange.getAssetProxy(ERC721_ASSET_PROXY_ID);
+        address tokenAddress = address(_erc721Token);
+        bytes32 tokenId = uint256(_generateNextHash());
+        _erc721Token.mint(ownerAddress, tokenId);
+        // Set the proxy allowance.
+        if (allowance == 1) {
+            // Approve for just this NFT.
+            _erc721Token.approve(assetProxyAddress, tokenId);
+        } else if (allowance > 1) {
+            // Approve for all NFTs.
+            _erc721Token.setApprovalForAll(assetProxyAddress, true);
+        } // else allowance == 0, no approval granted (the default)
+        assetData = LibAssetData.encodeERC721AssetData(
+            tokenAddress,
+            tokenId
+        );
+        emit FundERC721(
+            tokenAddress,
+            ownerAddress,
+            tokenId,
+            allowance,
+            assetData
+        );
+    }
+
+    /// @dev Fund an address with fungible ERC1155 tokens, set asset proxy allowance,
+    ///      and return the encoded asset data.
+    /// @param ownerAddress The owner of the tokens.
+    /// @param balance Amount of tokens to mint to `ownerAddress`.
+    /// @param allowance token allowance to grant the asset proxy.
+    /// @param assetDataAmount Amount of tokens to encode in the asset data.
+    function _creatERC1155FungibleAssetForOwner(
+        address ownerAddress,
+        uint256 balance,
+        uint256 allowance,
+        uint256 assetDataAmount
+    )
+        internal
+        returns (bytes memory assetData)
+    {
+        address assetProxyAddress = _exchange.getAssetProxy(ERC1155_ASSET_PROXY_ID);
+        address tokenAddress = address(_erc1155Token);
+        if (balance != 0) {
+            _erc1155Token.mintFungible(
+                _erc1155FungibleTokenTypeId,
+                _toSingularArray(ownerAddress),
+                _toSingularArray(balance)
+            );
+        }
+        if (allowance != 0) {
+            _erc1155Token.setApprovalForAll(assetProxyAddress, true);
+        }
+        assetData = LibAssetData.encodeERC1155AssetData(
+            tokenAddress,
+            _toSingularArray(_erc1155FungibleTokenTypeId),
+            _toSingularArray(assetDataAmount),
+            new bytes[](0)
+        );
+        emit FundERC1155Fungible(
+            tokenAddress,
+            ownerAddress,
+            balance,
+            allowance,
+            assetData
+        );
+    }
+
+    /// @dev Fund an address with an ERC1155 NFT, set asset proxy allowance,
+    ///      and return the encoded asset data.
+    /// @param ownerAddress The owner of the ERC1155 NFT.
+    /// @param allowance ERC1155 allowance to grant the asset proxy.
+    /// @param assetDataAmount Amount of tokens to encode in the asset data.
+    function _creatERC1155AssetForOwner(
+        address ownerAddress,
+        uint256 allowance,
+        uint256 assetDataAmount
+    )
+        internal
+        returns (bytes memory assetData)
+    {
+        address assetProxyAddress = _exchange.getAssetProxy(ERC1155_ASSET_PROXY_ID);
+        uint256 tokenId;
+        tokenId = _erc1155Token.mintNonFungible(
+            _erc1155NonFungibleTokenTypeId,
+            _toSingularArray(ownerAddress)
+        );
+        // Set the proxy allowance.
+        if (allowance != 0) {
+            _erc1155Token.setApprovalForAll(assetProxyAddress, true);
+        }
+        assetData = LibAssetData.encodeERC1155AssetData(
+            address(_erc1155Token),
+            _toSingularArray(tokenId),
+            _toSingularArray(assetDataAmount),
+            new bytes[](0)
+        );
+        emit FundERC1155NonFungible(
+            tokenAddress,
+            ownerAddress,
+            tokenId,
+            allowance,
+            assetData
+        );
     }
 
     function _generateNextHash() internal returns (bytes32 hash) {
