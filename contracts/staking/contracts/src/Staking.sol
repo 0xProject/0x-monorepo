@@ -57,10 +57,10 @@ contract Staking is
         _activateStake(msg.sender, amount);
     }
 
-    function activateAndDelegateStake(address owner, uint256 amount)
+    function activateAndDelegateStake(address owner, bytes32 poolId, uint256 amount)
         external
     {
-        _activateAndDelegateStake(msg.sender, amount);
+        _activateAndDelegateStake(msg.sender, poolId, amount);
     }
 
     function deactivateAndTimelockStake(address owner, uint256 amount)
@@ -112,7 +112,7 @@ contract Staking is
         view
         returns (uint256)
     {
-        return getWithdrawableStake(owner);
+        return _getWithdrawableStake(owner);
     }
 
     function getTimelockedStake(address owner)
