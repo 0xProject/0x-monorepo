@@ -60,19 +60,18 @@ contract MixinStake is
         internal
     {
         _syncTimelockedStake();
-
-        Timelock memory ownerTimelock = timelocksByOwner[owner];
         require(
-           ownerTimelock.availableBalance >= amount,
-           "INSUFFICIENT_BALANCE"
+            _getDeactivatedStake(owner) >= amount,
+            "INSUFFICIENT_BALANCE"
         );
-        ownerTimelock.sub(amount);
-        timelocksByOwner[owner] = ownerTimelock;
-
         _activateStake(owner, amount);
     }
 
-    function _activateAndDelegateStake(address owner, bytes32 poolId, uint256 amount)
+    function _activateAndDelegateStake(
+        address owner,
+        bytes32 poolId,
+        uint256 amount
+    )
         internal
     {
         _activateStake(owner, amount);
@@ -82,32 +81,29 @@ contract MixinStake is
     function _deactivateAndTimelockStake(address owner, uint256 amount)
         internal
     {
-        Timelock memory ownerTimelock = timelocksByOwner[owner];
-        ownerTimelock.add(amount);
-        timelocksByOwner[owner] = ownerTimelock;
-
-        activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
+        _syncTimelockedStake();
+        require(
+            _getActivatedStake(owner) >= amount,
+            "INSUFFICIENT_BALANCE"
+        );
+        _activateStake(owner, amount);
     }
 
     function _deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
         internal
     {
-        _deactivateStake(owner, amount);
+        _deactivateAndTimelockStake(owner, amount);
         _undelegateStake(owner, poolId, amount);
     }
 
     function _withdraw(address owner, uint256 amount)
         internal
     {
-        Timelock memory ownerTimelock = timelocksByOwner[owner];
+         _syncTimelockedStake();
         require(
-           ownerTimelock.availableBalance >= amount,
-           "INSUFFICIENT_BALANCE"
+            _getDeactivatedStake(owner) >= amount,
+            "INSUFFICIENT_BALANCE"
         );
-        ownerTimelock.sub(amount);
-        timelocksByOwner[owner] = ownerTimelock;
-
-        // burn stake
         _burnStake(owner, amount);
     }
 
@@ -151,6 +147,12 @@ contract MixinStake is
         activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
     }
 
+    function _deactivateStake(address owner, uint256 amount)
+        private
+    {
+        activeStakeByOwner[owner] = _safesub(activeStakeByOwner[owner], amount);
+    }
+
     function _delegateStake(address owner, bytes32 poolId, uint256 amount)
         private
     {
@@ -177,7 +179,7 @@ contract MixinStake is
         delegatedStakeByPoolId[poolId] = _safeSub(delegatedStakeByPoolId[poolId], amount);
     }
 
-    // Epoch | lockedAt  | total | pending | current | timelock() | withdraw() | available()
+    // Epoch | lockedAt  | pending | locked |  | timelock() | withdraw() | available()
     // 0     | 0         | 0     | 0       | 0       |            |            | 0
     // 1     | 1         | 5     | 0       | 0       | +5         |            | 0
     // 2     | 1         | 5     | 0       | 0       |            |            | 0
@@ -195,33 +197,35 @@ contract MixinStake is
         private
     {
         Timelock memory ownerTimelock = _getSynchronizedTimelock(owner, amount);
-        ownerTimelock.total = _safeAdd(ownerTimelock.total, amount);
-         timelocksByOwner[owner] = ownerTimelock;
+        ownerTimelock.pending = _safeAdd(ownerTimelock.pending, amount);
+        timelocksByOwner[owner] = ownerTimelock;
     }
 
     function _syncTimelockedStake(address owner, uint256 amount)
         private
     {
-        timelocksByOwner[owner] = _getSynchronizedTimelock(owner, amount);
+        (Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner, amount);
+        if (!isOutOfSync) {
+            return;
+        }
+        timelocksByOwner[owner] = ownerTimelock;
     }
 
     function _getSynchronizedTimelock(address owner, uint256 amount)
         private
-        returns (Timelock memory ownerTimelock)
+        returns (
+            Timelock memory ownerTimelock,
+            bool isOutOfSync
+        )
     {
-        Timelock memory ownerTimelock = timelocksByOwner[owner];
         uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
-        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
-            // shift one period
-            ownerTimelock.current = ownerTimelock.pending;
-            ownerTimelock.pending = ownerTimelock.total;
-        } else if (currentTimelockPeriod > ownerTimelock.lockedAt) {
+        ownerTimelock = timelocksByOwner[owner];
+        isOutOfSync = false;
+        if (currentTimelockPeriod > ownerTimelock.lockedAt) {
             // shift n periods
-            ownerTimelock.current = ownerTimelock.total;
-            ownerTimelock.pending = ownerTimelock.total;
-        } else {
-            // do nothing
+            ownerTimelock.locked = ownerTimelock.pending;
+            isOutOfSync = true;
         }
-        return ownerTimelock;
+        return (ownerTimelock, isOutOfSync);
     }
 }
