@@ -231,6 +231,10 @@ export class StakingWrapper {
         const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
         return makerAddresses;
     }
+    ///// EPOCHS /////
+    //public async goToNextEpoch()
+
+    ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
