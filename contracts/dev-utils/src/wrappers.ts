@@ -4,3 +4,4 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/dev_utils';
+export * from '../generated-wrappers/lib_transaction_decoder';
