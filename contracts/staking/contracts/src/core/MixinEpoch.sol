@@ -34,25 +34,24 @@ contract MixinEpoch is
         // get current timestamp
         require(
             block.timestamp <= MAX_UINT_64,
-            "INVALID_BLOCK_TIMESTAMP"
+            "BLOCK_TIMESTAMP_NOT_UINT_64"
         );
         uint64 currentBlockTimestamp = uint64(block.timestamp);
 
-        // get current epoch
-        uint64 _currentEpoch = currentEpoch;
+        // validate that we can increment the current epoch
         require(
-            _currentEpoch + _getEpochPeriodInSeconds() >= currentBlockTimestamp,
-            "INVALID_BLOCK_TIMESTAMP"
+            _getCurrentEpochEndTimeInSeconds() <= currentBlockTimestamp,
+            "BLOCK_TIMESTAMP_TOO_LOW"
         );
 
         // incremment epoch
-        currentEpoch = _currentEpoch + 1;
+        uint64 nextEpoch = currentEpoch + 1;
+        currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
 
         // increment timelock period, if needed
-        uint64 _currentTimelockPeriod = currentTimelockPeriod;
-        if (_currentEpoch >= _currentTimelockPeriod + _getTimelockPeriodInEpochs()) {
-            currentTimelockPeriod = _currentTimelockPeriod + 1;
+        if (_getCurrentTimelockPeriodEndEpoch() == nextEpoch) {
+            currentTimelockPeriod += 1;
             currentTimelockPeriodStartEpoch = currentEpoch;
         }
     }
