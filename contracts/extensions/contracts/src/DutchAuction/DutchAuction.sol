@@ -24,7 +24,9 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
+
 contract DutchAuction {
+
     using LibBytes for bytes;
 
     // solhint-disable var-name-mixedcase
@@ -187,7 +189,7 @@ contract DutchAuction {
             auctionDetails.currentAmount = minAmount;
         } else {
             auctionDetails.currentAmount = minAmount 
-              + ((remainingDurationSeconds * amountDelta) / auctionDurationSeconds);
+                + ((remainingDurationSeconds * amountDelta) / auctionDurationSeconds);
         }
         return auctionDetails;
     }

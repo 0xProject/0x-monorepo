@@ -208,8 +208,7 @@ contract MixinExchangeCore is
 
         // Get amount of takerAsset to fill
         uint256 remainingTakerAssetAmount = order.takerAssetAmount - orderInfo.orderTakerAssetFilledAmount;
-        uint256 takerAssetFilledAmount = takerAssetFillAmount < remainingTakerAssetAmount ? 
-          takerAssetFillAmount : remainingTakerAssetAmount;
+        uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate context
         _assertValidFill(

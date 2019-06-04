@@ -18,7 +18,9 @@
 
 pragma solidity ^0.5.5;
 
+
 contract LibMath {
+
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
     /// @param numerator Numerator.
@@ -226,5 +228,14 @@ contract LibMath {
         remainder = (denominator - remainder) % denominator;
         isError = 1000 * remainder >= numerator * target;
         return isError;
+    }
+
+    /// @dev Returns the minimum of two provided uint256 values
+    function _min256(uint256 a, uint256 b)
+        internal
+        pure
+        returns (uint256)
+    {
+        return a < b ? a : b;
     }
 }

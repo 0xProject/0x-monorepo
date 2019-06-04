@@ -90,7 +90,7 @@ contract ERC1155 is
             // balances[baseType][_to]   = balances[baseType][_to]._safeAdd(_value);
         } else {
             balances[id][from] = balances[id][from] - value;
-            balances[id][to] = balances[id][to] - value;
+            balances[id][to] = balances[id][to] + value;
         }
         emit TransferSingle(msg.sender, from, to, id, value);
 
