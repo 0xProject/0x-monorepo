@@ -24,158 +24,204 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinStorage.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
+import "./StakingBalances.sol";
 
 
 contract MixinStake is
     SafeMath,
     IStakingEvents,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinStakeBalances
 {
     using LibZrxToken for uint256;
 
-    // default maker id that stake is delegated to
-    bytes32 constant internal NIL_MAKER_ID = 0x0;
-
-    function _stake(uint256 amount)
+    function _deposit(address owner, uint256 amount)
         internal
-        returns (uint256)
     {
-        // sanitize input - can only stake whole tokens
-        uint256 amountOfStakeToMint = amount._roundDownToNearestWholeToken();
-
-        // deposit equivalent amount of ZRX into vault
-        zrxVault.depositFrom(msg.sender, amountOfStakeToMint);
-
-        // mint stake
-        totalStake[msg.sender] = _safeAdd(totalStake[msg.sender], amountOfStakeToMint);
-        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeAdd(delegatedStake[msg.sender][NIL_MAKER_ID], amountOfStakeToMint);
-
-        // emit stake event
-        emit StakeMinted(
-            msg.sender,
-            amountOfStakeToMint
-        );
-
-        // return amount of stake minted
-        return amountOfStakeToMint;
+        _mintStake(owner, amount);
     }
 
-    function _unstake(uint256 amount)
+    function _depositAndStake(address owner, uint256 amount)
         internal
-        returns (uint256)
     {
-        // sanitize input - can only stake whole tokens
-        uint256 amountOfStakeToBurn = amount._roundDownToNearestWholeToken();
+        _mintStake(owner, amount);
+        _activateStake(owner, amount);
+    }
+
+    function _depositAndDelegate(address owner, bytes32 poolId, uint256 amount)
+        internal
+    {
+        _depositAndStake(owner, amount);
+        _delegateStake(owner, poolId, amount);
+    }
+
+    function _activateStake(address owner, uint256 amount)
+        internal
+    {
+        _syncTimelockedStake();
+
+        Timelock memory ownerTimelock = timelocksByOwner[owner];
+        require(
+           ownerTimelock.availableBalance >= amount,
+           "INSUFFICIENT_BALANCE"
+        );
+        ownerTimelock.sub(amount);
+        timelocksByOwner[owner] = ownerTimelock;
+
+        _activateStake(owner, amount);
+    }
+
+    function _activateAndDelegateStake(address owner, bytes32 poolId, uint256 amount)
+        internal
+    {
+        _activateStake(owner, amount);
+        _delegateStake(owner, poolId, amount);
+    }
+
+    function _deactivateAndTimelockStake(address owner, uint256 amount)
+        internal
+    {
+        Timelock memory ownerTimelock = timelocksByOwner[owner];
+        ownerTimelock.add(amount);
+        timelocksByOwner[owner] = ownerTimelock;
+
+        activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
+    }
+
+    function _deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
+        internal
+    {
+        _deactivateStake(owner, amount);
+        _undelegateStake(owner, poolId, amount);
+    }
+
+    function _withdraw(address owner, uint256 amount)
+        internal
+    {
+        Timelock memory ownerTimelock = timelocksByOwner[owner];
+        require(
+           ownerTimelock.availableBalance >= amount,
+           "INSUFFICIENT_BALANCE"
+        );
+        ownerTimelock.sub(amount);
+        timelocksByOwner[owner] = ownerTimelock;
 
         // burn stake
-        totalStake[msg.sender] = _safeSub(totalStake[msg.sender], amountOfStakeToBurn);
-        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeSub(delegatedStake[msg.sender][NIL_MAKER_ID], amountOfStakeToBurn);
+        _burnStake(owner, amount);
+    }
 
-        // withdraw equivalent amount of ZRX from vault
-        zrxVault.withdrawFrom(msg.sender, amountOfStakeToBurn);
+    ///// PRIVATE HELPERS /////
+
+    function _mintStake(address owner, uint256 amount)
+        private
+    {
+        // deposit equivalent amount of ZRX into vault
+        zrxVault.depositFrom(owner, amount);
+
+        // mint stake
+        stakeByOwner[owner] = _safeAdd(stakeByOwner[owner], amount);
 
         // emit stake event
         emit StakeMinted(
-            msg.sender,
-            amountOfStakeToBurn
-        );
-
-        // return amount of stake minted
-        return amountOfStakeToBurn;
-    }
-
-    function _delegateStake(bytes32 makerId, uint256 amount)
-        internal
-        returns (uint256)
-    {
-        require(
-            _getUndelegatedStake(msg.sender) >= amount,
-            "INSUFFICIENT_STAKE_BALANCE"
-        );
-
-        // change from undelegated to delegated
-        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeSub(delegatedStake[msg.sender][NIL_MAKER_ID], amount);
-        delegatedStake[msg.sender][makerId] = _safeAdd(delegatedStake[msg.sender][makerId], amount);
-
-        // Update total stake delegated to `makerId`
-        totalDelegatedStake[makerId] = _safeAdd(totalDelegatedStake[makerId], amount);
-    }
-
-    function _undelegateStake(bytes32 makerId, uint256 amount)
-        internal
-        returns (uint256)
-    {
-        require(
-            _getStakeDelegatedByOwner(msg.sender, makerId) >= amount,
-            "INSUFFICIENT_DELEGATED_STAKE_BALANCE"
-        );
-
-        // change from delegated to undelegated
-        delegatedStake[msg.sender][makerId] = _safeSub(delegatedStake[msg.sender][makerId], amount);
-        delegatedStake[msg.sender][NIL_MAKER_ID] = _safeAdd(delegatedStake[msg.sender][NIL_MAKER_ID], amount);
-
-        // Update total stake delegated to `makerId`
-        totalDelegatedStake[makerId] = _safeAdd(totalDelegatedStake[makerId], amount);
-    }
-
-    function _undelegateAllStake(bytes32 makerId)
-        internal
-        returns (uint256)
-    {
-        address owner = msg.sender;
-        uint256 delegatedStakeBalance = _getStakeDelegatedByOwner(owner, makerId);
-        return _undelegateStake(makerId, delegatedStakeBalance);
-    }
-
-    function _stakeAndDelegate(bytes32 makerId, uint256 amount)
-        internal
-        returns (uint256 amountOfStakeDelegated)
-    {
-        // mint stake
-        uint256 amountOfStakeMinted = _stake(amount);
-
-        // delegate stake to maker
-        amountOfStakeDelegated = _delegateStake(makerId, amountOfStakeMinted);
-        return amountOfStakeDelegated;
-    }
-
-    function _getUndelegatedStake(address owner)
-        internal
-        returns (uint256)
-    {
-        return delegatedStake[owner][NIL_MAKER_ID];
-    }
-
-    function _getStakeDelegatedByOwner(address owner, bytes32 makerId)
-        internal
-        returns (uint256)
-    {
-        return delegatedStake[owner][makerId];
-    }
-
-    function _getTotalStakeDelegatedByOwner(address owner)
-        internal
-        returns (uint256)
-    {
-        return _safeSub(
-            totalStake[owner],
-            delegatedStake[owner][NIL_MAKER_ID]
+            owner,
+            amount
         );
     }
 
-    function _getTotalStakeDelegatedToMaker(bytes32 makerId)
-        internal
-        returns (uint256)
+    function _burnStake(address owner, uint256 amount)
+        private
     {
-        return totalDelegatedStake[makerId];
+        // burn stake
+        stakeByOwner[owner] = _safeSub(stakeByOwner[owner], amount);
+
+        // withdraw equivalent amount of ZRX from vault
+        zrxVault.withdrawFrom(owner, amount);
+
+        // emit stake event
+        emit StakeBurned(
+            owner,
+            amount
+        );
     }
 
-    function _getStakeBalance(address owner)
-        internal
-        view
-        returns (uint256)
+    function _activateStake(address owner, uint256 amount)
+        private
     {
-        return totalStake[owner];
+        activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
+    }
+
+    function _delegateStake(address owner, bytes32 poolId, uint256 amount)
+        private
+    {
+        // increment how much stake the owner has delegated
+        delegatedStakeByOwner[owner] = _safeAdd(stakeByOwner[owner], amount);
+
+        // increment how much stake the owner has delegated to the input pool
+        delegatedStakeToPoolByOwner[owner][poolId] = _safeAdd(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // increment how much stake has been delegated to pool
+        delegatedStakeByPoolId[poolId] = _safeAdd(delegatedStakeByPoolId[poolId], amount);
+    }
+
+    function _undelegateStake(address owner, bytes32 poolId, uint256 amount)
+        private
+    {
+        // decrement how much stake the owner has delegated
+        delegatedStakeByOwner[owner] = _safeSub(stakeByOwner[owner], amount);
+
+        // decrement how much stake the owner has delegated to the input pool
+        delegatedStakeToPoolByOwner[owner][poolId] = _safeSub(delegatedStakeToPoolByOwner[owner][poolId], amount);
+
+        // decrement how much stake has been delegated to pool
+        delegatedStakeByPoolId[poolId] = _safeSub(delegatedStakeByPoolId[poolId], amount);
+    }
+
+    // Epoch | lockedAt  | total | pending | current | timelock() | withdraw() | available()
+    // 0     | 0         | 0     | 0       | 0       |            |            | 0
+    // 1     | 1         | 5     | 0       | 0       | +5         |            | 0
+    // 2     | 1         | 5     | 0       | 0       |            |            | 0
+    // 2     | 2         | 15    | 5       | 0       | +10        |            | 0
+    // 3     | 2         | 15    | 5       | 0       |            |            | 5
+    // 3     | 3         | 30    | 15      | 5       | +15        |            | 5
+    // 4     | 3         | 30    | 15      | 5       |            |            | 15
+    // 5     | 3         | 30    | 15      | 5       |            |            | 30
+    // 5     | 5         | 30    | 30      | 30      | +0 *       |            | 30
+    // 6     | 6         | 50    | 30      | 30      | +20        |            | 30
+    // 6     | 6         | 20    | 0       | 0       |            | -30        | 0
+    // 7     | 6         | 20    | 0       | 0       |            |            | 0
+    // 8     | 6         | 20    | 0       | 0       |            |            | 20
+    function _timelockStake(address owner, uint256 amount)
+        private
+    {
+        Timelock memory ownerTimelock = _getSynchronizedTimelock(owner, amount);
+        ownerTimelock.total = _safeAdd(ownerTimelock.total, amount);
+         timelocksByOwner[owner] = ownerTimelock;
+    }
+
+    function _syncTimelockedStake(address owner, uint256 amount)
+        private
+    {
+        timelocksByOwner[owner] = _getSynchronizedTimelock(owner, amount);
+    }
+
+    function _getSynchronizedTimelock(address owner, uint256 amount)
+        private
+        returns (Timelock memory ownerTimelock)
+    {
+        Timelock memory ownerTimelock = timelocksByOwner[owner];
+        uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
+        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
+            // shift one period
+            ownerTimelock.current = ownerTimelock.pending;
+            ownerTimelock.pending = ownerTimelock.total;
+        } else if (currentTimelockPeriod > ownerTimelock.lockedAt) {
+            // shift n periods
+            ownerTimelock.current = ownerTimelock.total;
+            ownerTimelock.pending = ownerTimelock.total;
+        } else {
+            // do nothing
+        }
+        return ownerTimelock;
     }
 }

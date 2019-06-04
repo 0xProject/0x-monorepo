@@ -20,31 +20,39 @@ pragma solidity ^0.5.5;
 
 import "../interfaces/IVault.sol";
 import "./MixinConstants.sol";
+import "../interfaces/IStructs.sol";
 
 
 contract MixinStorage is
-  MixinConstants
+    IStructs,
+    MixinConstants
 {
 
     // address of staking contract
     address stakingContract;
 
-    // mapping from Staker to Maker Id to Amount Staked
-    mapping (address => mapping (bytes32 => uint256)) delegatedStake;
+    // mapping from Owner to Amount Staked
+    mapping (address => uint256) stakeByOwner;
 
-    // mapping from Staker to Maker Id to Amount Staked
-    mapping (address => uint256) totalStake;
+    // mapping from Owner to Amount of Instactive Stake
+    mapping (address => uint256) activeStakeByOwner;
 
-    // mapping from Maker Id to Amount of Delegated Staked
-    mapping (bytes32 => uint256) totalDelegatedStake;
+    // mapping from Owner to Amount Timelocked
+    mapping (address => Timelock) timelockedStakeByOwner;
 
-    // tracking Maker Id
+    // mapping from Pool Id to Amount Delegated
+    mapping (bytes32 => uint256) delegatedStakeByPoolId;
+
+    // mapping from Owner to Amount Delegated
+    mapping (address => uint256) delegatedStakeByOwner;
+
+    // mapping from Owner to Pool Id to Amount Delegated
+    mapping (address => mapping (bytes32 => uint256)) delegatedStakeToPoolByOwner;
+
+    // tracking Pool Id
     bytes32 nextPoolId = INITIAL_POOL_ID;
 
-    struct Pool {
-        address operatorAddress;
-        uint8 operatorShare;
-    }
+    // mapping from Pool Id to Pool
     mapping (bytes32 => Pool) poolById;
 
     // mapping from Maker Address to Pool Id
