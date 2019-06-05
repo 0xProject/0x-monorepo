@@ -402,7 +402,7 @@ describe('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -446,7 +446,7 @@ describe('ERC1155Proxy', () => {
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
             const nullReceiverCallbackData = '0x';
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -494,7 +494,7 @@ describe('ERC1155Proxy', () => {
             const oneWordInBytes = 32;
             expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.equal(oneWordInBytes);
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -545,7 +545,7 @@ describe('ERC1155Proxy', () => {
             const oneWordInBytes = 32;
             expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.equal(oneWordInBytes * scalar);
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -597,7 +597,7 @@ describe('ERC1155Proxy', () => {
             expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.greaterThan(oneWordInBytes * scalar);
             expect(customReceiverCallbackDataAsBuffer.byteLength).to.be.lessThan(oneWordInBytes * (scalar + 1));
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -649,7 +649,7 @@ describe('ERC1155Proxy', () => {
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverContractInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -880,7 +880,7 @@ describe('ERC1155Proxy', () => {
             const assetData = `${assetDataSelectorAndContractAddress}${assetDataParameters}`;
             ///// Step 4/5 /////
             // Transfer tokens
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -1009,7 +1009,7 @@ describe('ERC1155Proxy', () => {
             const assetData = `${assetDataSelectorAndContractAddress}${assetDataParameters}`;
             ///// Step 4/5 /////
             // Transfer tokens
-            const txReceipt = await erc1155ProxyWrapper.transferFromWithLogsAsync(
+            const txReceipt = await erc1155ProxyWrapper.transferFromAsync(
                 spender,
                 receiverContract,
                 erc1155Contract.address,
@@ -1352,6 +1352,80 @@ describe('ERC1155Proxy', () => {
                 RevertReason.InvalidDataOffset,
             );
         });
+        it('should revert if asset data lies outside the bounds of calldata', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            const txData = erc1155ProxyWrapper.getTransferFromAbiEncodedTxData(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+                assetData,
+            );
+            const offsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000080";
+            const invalidOffsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000180";
+            const badTxData = txData.replace(offsetToAssetData, invalidOffsetToAssetData);
+
+            console.log(JSON.stringify(RevertReason.InvalidAssetData));
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromRawAsync(
+                    badTxData,
+                    authorized,
+                ),
+                RevertReason.InvalidAssetDataLength,
+            );
+        });
+        it('should revert if asset data lies outside the bounds of calldata', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            const txData = erc1155ProxyWrapper.getTransferFromAbiEncodedTxData(
+                spender,
+                receiverContract,
+                erc1155Contract.address,
+                tokensToTransfer,
+                valuesToTransfer,
+                valueMultiplier,
+                receiverCallbackData,
+                authorized,
+                assetData,
+            );
+            // append asset data to end of tx data with a length of 0x300 bytes, which will extend past actual calldata.
+            const offsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000080";
+            const invalidOffsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000200";
+            const newAssetData = "0000000000000000000000000000000000000000000000000000000000000304"; 
+            const badTxData = `${txData.replace(offsetToAssetData, invalidOffsetToAssetData)}${newAssetData}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromRawAsync(
+                    badTxData,
+                    authorized,
+                ),
+                RevertReason.InvalidAssetData,
+            );
+        });
         it('should revert if length of assetData, excluding the selector, is not a multiple of 32', async () => {
             // setup test parameters
             const tokensToTransfer = fungibleTokens.slice(0, 1);
@@ -1368,7 +1442,7 @@ describe('ERC1155Proxy', () => {
             const assetDataWithExtraData = `${assetData}${extraData}`;
             // execute transfer
             await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromWithLogsAsync(
+                erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
                     erc1155Contract.address,
@@ -1396,7 +1470,7 @@ describe('ERC1155Proxy', () => {
             const assetData131Bytes = `${AssetProxyId.ERC1155}${zeros96Bytes}`;
             // execute transfer
             await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromWithLogsAsync(
+                erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
                     erc1155Contract.address,

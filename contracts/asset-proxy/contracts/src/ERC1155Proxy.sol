@@ -178,6 +178,14 @@ contract ERC1155Proxy is
                 // End of asset data in calldata
                 // +32 for length field
                 let assetDataEnd := add(assetDataOffset, add(assetDataLength, 32))
+                if gt(assetDataEnd, calldatasize()) {
+                    // Revert with `Error("INVALID_ASSET_DATA")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000012494e56414c49445f41535345545f4441544100000000000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
 
                 // Load offset to parameters section in asset data
                 let paramsInAssetDataOffset := add(assetDataOffset, 36)
