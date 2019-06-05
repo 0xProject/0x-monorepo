@@ -22,14 +22,12 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "../src/MixinSignatureValidator.sol";
 import "../src/MixinTransactions.sol";
-import "../src/MixinExchangeRichErrors.sol";
 
 
 contract TestSignatureValidator is
     LibEIP712ExchangeDomain,
     MixinSignatureValidator,
-    MixinTransactions,
-    MixinExchangeRichErrors
+    MixinTransactions
 {
 
     // solhint-disable no-empty-blocks

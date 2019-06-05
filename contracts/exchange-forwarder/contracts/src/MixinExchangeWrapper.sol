@@ -20,7 +20,6 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "./libs/LibConstants.sol";
-import "./mixins/MExchangeWrapper.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -31,8 +30,7 @@ contract MixinExchangeWrapper is
     LibFillResults,
     LibMath,
     LibConstants,
-    LibExchangeSelectors,
-    MExchangeWrapper
+    LibExchangeSelectors
 {
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
