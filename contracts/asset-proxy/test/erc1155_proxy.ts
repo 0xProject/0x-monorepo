@@ -1382,6 +1382,34 @@ describe('ERC1155Proxy', () => {
                 RevertReason.InvalidAssetDataLength
             );
         });
+        it('should revert if length of assetData is less than 132 bytes', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            // we'll construct asset data that has a 4 byte selector plus 
+            // 96 byte payload. This results in asset data that is 100 bytes
+            // long and will trigger the `invalid length` error.
+            // we must be sure to use a # of bytes that is still %32
+            // so that we know the error is not triggered by another check in the code.
+            const zeros96Bytes = "0".repeat(188);
+            const assetData131Bytes = `${AssetProxyId.ERC1155}${zeros96Bytes}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromWithLogsAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                    assetData131Bytes,
+                ),
+                RevertReason.InvalidAssetDataLength
+            );
+        });
         it('should transfer nothing if value is zero', async () => {
             // setup test parameters
             const tokenHolders = [spender, receiver];

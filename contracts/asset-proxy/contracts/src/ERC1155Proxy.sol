@@ -166,7 +166,7 @@ contract ERC1155Proxy is
                 // Assert that the length of asset data:
                 // 1. Must be at least 132 bytes (Table #2)
                 // 2. Must be a multiple of 32 (excluding the 4-byte selector)
-                if or(lt(assetDataLength, 100), mod(sub(assetDataLength, 4), 32)) {
+                if or(lt(assetDataLength, 132), mod(sub(assetDataLength, 4), 32)) {
                     // Revert with `Error("INVALID_ASSET_DATA_LENGTH")`
                     mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
                     mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
