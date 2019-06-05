@@ -23,7 +23,7 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
-import "./LibAssetProxyIds.sol";
+import "@0x/contracts-asset-proxy/contracts/src/libs/LibAssetProxyIds.sol";
 
 
 contract LibAssetData is
