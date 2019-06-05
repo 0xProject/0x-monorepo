@@ -23,7 +23,7 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-asset-proxy/contracts/src/libs/LibAssetData.sol";
+import "./LibAssetData.sol";
 
 
 contract OrderValidationUtils is
@@ -33,23 +33,26 @@ contract OrderValidationUtils is
     using LibBytes for bytes;
 
     // solhint-disable var-name-mixedcase
-    IExchange internal EXCHANGE;
-    bytes internal ZRX_ASSET_DATA;
-    address internal ERC20_PROXY_ADDRESS;
+    bytes internal _ZRX_ASSET_DATA;
     // solhint-enable var-name-mixedcase
 
     constructor (address _exchange, bytes memory _zrxAssetData)
         public
+        LibAssetData(_exchange)
     {
-        EXCHANGE = IExchange(_exchange);
-        ZRX_ASSET_DATA = _zrxAssetData;
-        ERC20_PROXY_ADDRESS = EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
+        _ZRX_ASSET_DATA = _zrxAssetData;
     }
 
-    /// @dev Fetches information for order and maker/taker of order.
+    /// @dev Fetches all order-relevant information needed to validate if the supplied order is fillable.
     /// @param order The order structure.
-    /// @param signature Proof that order has been created by maker.
-    /// @return OrderInfo, the remaining amount fillable by the taker, and validity of signature for given order.
+    /// @param signature Signature provided by maker that proves the order's authenticity.
+    /// `0x01` can always be provided if the signature does not need to be validated.
+    /// @return orderInfo The hash, status, and `takerAssetAmount` already filled for the given order.
+    /// @return fillableTakerAssetAmount The amount of the order's `takerAssetAmount` that is fillable given all on-chain state.
+    /// If the `takerAssetData` encodes data for multiple assets, `fillableTakerAssetAmount` will represent a "scaled"
+    /// amount, meaning it must be multiplied by all the individual asset amounts within the `takerAssetData` to get the final
+    /// amount of each asset that can be filled.
+    /// @return isValidSignature The validity of the provided signature.
     function getOrderRelevantState(LibOrder.Order memory order, bytes memory signature)
         public
         view
@@ -60,74 +63,80 @@ contract OrderValidationUtils is
         )
     {
         // Get info specific to order
-        orderInfo = EXCHANGE.getOrderInfo(order);
+        orderInfo = _EXCHANGE.getOrderInfo(order);
 
         // Validate the maker's signature
-        // If the signature does not need to be validated, `0x01` can be supplied for the signature to always return `false`.
         address makerAddress = order.makerAddress;
-        isValidSignature = EXCHANGE.isValidSignature(
+        isValidSignature = _EXCHANGE.isValidSignature(
             orderInfo.orderHash,
             makerAddress,
             signature
         );
 
         // Get the transferable amount of the `makerAsset`
-        uint256 transferableMakerAssetAmount = getTransferableAssetAmount(order.makerAssetData, makerAddress);
+        uint256 transferableMakerAssetAmount = getTransferableAssetAmount(makerAddress, order.makerAssetData);
 
-        // Assign to stack variables to reduce redundant mloads
+        // Assign to stack variables to reduce redundant mloads/sloads
         uint256 takerAssetAmount = order.takerAssetAmount;
         uint256 makerFee = order.makerFee;
+        bytes memory zrxAssetData = _ZRX_ASSET_DATA;
     
-        // Get the amount of `takerAsset` that is purchasable given the transferability of `makerAsset` and `makerFeeAsset`
-        uint256 purchasableTakerAssetAmount;
-        if (order.makerAssetData.equals(ZRX_ASSET_DATA)) {
+        // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset` and `makerFeeAsset`
+        // and the total amounts specified in the order
+        uint256 transferableTakerAssetAmount;
+        if (order.makerAssetData.equals(zrxAssetData)) {
             // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
             // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
-            purchasableTakerAssetAmount = getPartialAmountFloor(
+            transferableTakerAssetAmount = getPartialAmountFloor(
                 transferableMakerAssetAmount,
                 safeAdd(order.makerAssetAmount, makerFee),
                 takerAssetAmount
             );
         } else {
             // Get the transferable amount of the `makerFeeAsset`
-            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(ZRX_ASSET_DATA, makerAddress);
+            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, zrxAssetData);
 
-            // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
-            // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
-            // If `makerFee` is 0, we default to using `transferableMakerAssetAmount`
-            purchasableTakerAssetAmount = makerFee == 0
-                ? getPartialAmountFloor(
+            // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
+            if (makerFee == 0) {
+                transferableTakerAssetAmount = getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
-                )
-                : min256(
-                    getPartialAmountFloor(
-                        transferableMakerAssetAmount,
-                        order.makerAssetAmount,
-                        takerAssetAmount
-                    ),
-                    getPartialAmountFloor(
-                        transferableMakerFeeAssetAmount,
-                        makerFee,
-                        takerAssetAmount
-                    )
                 );
+
+            // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
+            // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
+            } else {
+                uint256 transferableMakerToTakerAmount = getPartialAmountFloor(
+                    transferableMakerAssetAmount,
+                    order.makerAssetAmount,
+                    takerAssetAmount
+                );
+                uint256 transferableMakerFeeToTakerAmount = getPartialAmountFloor(
+                    transferableMakerFeeAssetAmount,
+                    makerFee,
+                    takerAssetAmount
+                );
+                transferableTakerAssetAmount = min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
+            }
         }
-    
-        // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `purchasableTakerAssetAmount`
+
+        // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
         fillableTakerAssetAmount = min256(
             safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
-            purchasableTakerAssetAmount
+            transferableTakerAssetAmount
         );
 
         return (orderInfo, fillableTakerAssetAmount, isValidSignature);
     }
 
-    /// @dev Fetches information for all passed in orders and the makers/takers of each order.
-    /// @param orders Array of order specifications.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return Arrays of OrderInfo, fillable takerAssetAmounts, and validity of signatures that correspond to each order.
+    /// @dev Fetches all order-relevant information needed to validate if the supplied orders are fillable.
+    /// @param orders Array of order structures.
+    /// @param signatures Array of signatures provided by makers that prove the authenticity of the orders.
+    /// `0x01` can always be provided if a signature does not need to be validated.
+    /// @return ordersInfo Array of the hash, status, and `takerAssetAmount` already filled for each order.
+    /// @return fillableTakerAssetAmounts Array of amounts for each order's `takerAssetAmount` that is fillable given all on-chain state.
+    /// @return isValidSignature Array containing the validity of each provided signature.
     function getOrderRelevantStates(LibOrder.Order[] memory orders, bytes[] memory signatures)
         public
         view
@@ -152,39 +161,17 @@ contract OrderValidationUtils is
         return (ordersInfo, fillableTakerAssetAmounts, isValidSignature);
     }
 
-    /// @dev Gets the address of the AssetProxy that corresponds to the given assetData.
-    /// @param assetData Description of tokens, per the AssetProxy contract specification.
-    /// @return Address of the AssetProxy contract.
-    function getAssetProxyAddress(bytes memory assetData)
-        public
-        view
-        returns (address assetProxyAddress)
-    {
-        if (assetData.equals(ZRX_ASSET_DATA)) {
-            return ERC20_PROXY_ADDRESS;
-        }
-        bytes4 assetProxyId = assetData.readBytes4(0);
-        assetProxyAddress = EXCHANGE.getAssetProxy(assetProxyId);
-        return assetProxyAddress;
-    }
-
     /// @dev Gets the amount of an asset transferable by the owner.
-    /// @param assetData Description of tokens, per the AssetProxy contract specification.
     /// @param ownerAddress Address of the owner of the asset.
+    /// @param assetData Description of tokens, per the AssetProxy contract specification.
     /// @return The amount of the asset tranferable by the owner.
-    function getTransferableAssetAmount(bytes memory assetData, address ownerAddress)
+    function getTransferableAssetAmount(address ownerAddress, bytes memory assetData)
         public
         view
         returns (uint256 transferableAssetAmount)
     {
-        uint256 assetBalance = getBalance(ownerAddress, assetData);
-        address assetProxyAddress = getAssetProxyAddress(assetData);
-        uint256 assetAllowance = getAllowance(
-            ownerAddress,
-            assetProxyAddress,
-            assetData
-        );
-        transferableAssetAmount = min256(assetBalance, assetAllowance);
+        (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
+        transferableAssetAmount = min256(balance, allowance);
         return transferableAssetAmount;
     }
 }
