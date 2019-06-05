@@ -55,22 +55,20 @@ contract MixinStakeBalances is
         return _safeSub(_getTotalStake(owner), _getActivatedStake(owner));
     }
 
-    /*
-    function _getStakeAvailableForActivation()
-    internal
+    function _getActivatableStake(address owner)
+        internal
         view
         returns (uint256)
     {
-
+        return _safeSub(_getDeactivatedStake(owner), _getTimelockedStake(owner));
     }
-    */
 
     function _getWithdrawableStake(address owner)
         internal
         view
         returns (uint256)
     {
-        return _getDeactivatedStake(owner);
+        return _getActivatableStake(owner);
     }
 
     function _getTimelockedStake(address owner)
