@@ -20,23 +20,24 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MWrapperFunctions.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IExchangeCore.sol";
+import "./interfaces/IWrapperFunctions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinWrapperFunctions is
+    MixinExchangeRichErrors,
     ReentrancyGuard,
     LibExchangeSelectors,
     LibMath,
     LibFillResults,
-    MExchangeCore,
-    MWrapperFunctions,
-    MExchangeRichErrors
+    IExchangeCore,
+    IWrapperFunctions
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
@@ -451,4 +452,17 @@ contract MixinWrapperFunctions is
         }
         return fillResults;
     }
+
+    function _fillOrder(
+        LibOrder.Order memory order,
+        uint256 takerAssetFillAmount,
+        bytes memory signature
+    )
+        internal
+        returns (FillResults memory fillResults);
+
+    /// @dev After calling, the order can not be filled anymore.
+    /// @param order Order struct containing order specifications.
+    function _cancelOrder(LibOrder.Order memory order)
+        internal;
 }

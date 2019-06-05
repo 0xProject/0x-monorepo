@@ -19,12 +19,10 @@
 pragma solidity ^0.5.5;
 
 import "../src/MixinAssetProxyDispatcher.sol";
-import "../src/MixinExchangeRichErrors.sol";
 
 
 contract TestAssetProxyDispatcher is
-    MixinAssetProxyDispatcher,
-    MixinExchangeRichErrors
+    MixinAssetProxyDispatcher
 {
     function dispatchTransferFrom(
         bytes32 orderHash,
