@@ -63,7 +63,7 @@ contract ERC1155Proxy is
         // |          |             |         | values:                             |
         // |          | 164 + a     | 32      |   1. values Length                  |
         // |          | 196 + a     | b       |   2. values Contents                |
-        // |          |             |         | data                                |
+        // |          |             |         | data:                               |
         // |          | 196 + a + b | 32      |   1. data Length                    |
         // |          | 228 + a + b | c       |   2. data Contents                  |
         //
@@ -198,10 +198,10 @@ contract ERC1155Proxy is
                 let amount := calldataload(100)
 
                 // Store pointer to `ids` (Table #3)
-                // Subtract 4 for `safeBatchTrasferFrom` selector
+                // Subtract 4 for `safeBatchTransferFrom` selector
                 mstore(68, sub(dataAreaEndOffset, 4))
 
-                // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
+                // Ensure length of `ids` does not overflow
                 let idsOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 68)))
                 let idsLength := calldataload(idsOffset)
                 let idsLengthInBytes := mul(idsLength, 32)
@@ -213,6 +213,8 @@ contract ERC1155Proxy is
                     mstore(96, 0)
                     revert(0, 100)
                 }
+
+                // Ensure `ids` does not resolve to outside of `assetData`
                 let idsBegin := add(idsOffset, 32)
                 let idsEnd := add(idsBegin, idsLengthInBytes)
                 if gt(idsEnd, assetDataEnd) {
@@ -223,6 +225,8 @@ contract ERC1155Proxy is
                     mstore(96, 0)
                     revert(0, 100)
                 }
+
+                // Copy `ids` from `assetData` (Table #2) to memory (Table #3)
                 calldatacopy(
                     dataAreaEndOffset,
                     idsOffset,
@@ -234,7 +238,7 @@ contract ERC1155Proxy is
                 // Subtract 4 for `safeBatchTrasferFrom` selector
                 mstore(100, sub(dataAreaEndOffset, 4))
 
-                // Copy `values` from `assetData` (Table #2) to memory (Table #3)
+                // Ensure length of `values` does not overflow
                 let valuesOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 100)))
                 let valuesLength := calldataload(valuesOffset)
                 let valuesLengthInBytes := mul(valuesLength, 32)
@@ -246,6 +250,8 @@ contract ERC1155Proxy is
                     mstore(96, 0)
                     revert(0, 100)
                 }
+
+                // Ensure `values` does not resolve to outside of `assetData`
                 let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
                 if gt(valuesEnd, assetDataEnd) {
@@ -292,7 +298,7 @@ contract ERC1155Proxy is
                 // Subtract 4 for `safeBatchTrasferFrom` selector
                 mstore(132, sub(dataAreaEndOffset, 4))
 
-                // Copy `data` from `assetData` (Table #2) to memory (Table #3)
+                // Ensure `data` does not resolve to outside of `assetData`
                 let dataOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 132)))
                 let dataLengthInBytes := calldataload(dataOffset)
                 let dataBegin := add(dataOffset, 32)
@@ -305,6 +311,8 @@ contract ERC1155Proxy is
                     mstore(96, 0)
                     revert(0, 100)
                 }
+
+                // Copy `data` from `assetData` (Table #2) to memory (Table #3)
                 calldatacopy(
                     dataAreaEndOffset,
                     dataOffset,
