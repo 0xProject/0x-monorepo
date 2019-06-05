@@ -85,6 +85,12 @@ contract Staking is
         _withdraw(msg.sender, amount);
     }
 
+    function forceTimelockSync(address owner)
+        external
+    {
+        _forceTimelockSync(owner);
+    }
+
     ///// STAKE BALANCES /////
 
     function getTotalStake(address owner)
@@ -109,6 +115,14 @@ contract Staking is
         returns (uint256)
     {
         return _getDeactivatedStake(owner);
+    }
+
+    function getActivatableStake(address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _getActivatableStake(owner);
     }
 
     function getWithdrawableStake(address owner)
