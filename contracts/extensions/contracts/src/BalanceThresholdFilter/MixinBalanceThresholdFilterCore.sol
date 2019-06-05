@@ -21,12 +21,12 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "./mixins/MBalanceThresholdFilterCore.sol";
 import "./MixinExchangeCalldata.sol";
+import "./interfaces/IBalanceThresholdFilterCore.sol";
 
 
 contract MixinBalanceThresholdFilterCore is
-    MBalanceThresholdFilterCore,
+    IBalanceThresholdFilterCore,
     MixinExchangeCalldata,
     LibExchangeSelectors
 {

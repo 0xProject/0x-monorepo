@@ -19,13 +19,25 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
-import "./mixins/MAuthorizable.sol";
+import "./interfaces/IAuthorizable.sol";
 
 
 contract MixinAuthorizable is
     Ownable,
-    MAuthorizable
+    IAuthorizable
 {
+    // Event logged when a new address is authorized.
+    event AuthorizedAddressAdded(
+        address indexed target,
+        address indexed caller
+    );
+
+    // Event logged when a currently authorized address is unauthorized.
+    event AuthorizedAddressRemoved(
+        address indexed target,
+        address indexed caller
+    );
+
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
         require(

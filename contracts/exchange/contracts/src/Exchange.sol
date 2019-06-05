@@ -30,13 +30,12 @@ import "./MixinExchangeRichErrors.sol";
 
 // solhint-disable no-empty-blocks
 contract Exchange is
-    MixinExchangeCore,
     MixinMatchOrders,
-    MixinSignatureValidator,
-    MixinTransactions,
-    MixinAssetProxyDispatcher,
     MixinWrapperFunctions,
-    MixinExchangeRichErrors
+    MixinExchangeCore,
+    MixinSignatureValidator,
+    MixinAssetProxyDispatcher,
+    MixinTransactions
 {
     string constant public VERSION = "3.0.0";
 

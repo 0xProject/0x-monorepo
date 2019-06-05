@@ -15,26 +15,27 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MMatchOrders.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MAssetProxyDispatcher.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IAssetProxyDispatcher.sol";
+import "./interfaces/IExchangeCore.sol";
+import "./interfaces/IMatchOrders.sol";
+import "./interfaces/ITransactions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinMatchOrders is
+    MixinExchangeRichErrors,
     ReentrancyGuard,
     LibMath,
     LibOrder,
-    MAssetProxyDispatcher,
-    MExchangeCore,
-    MMatchOrders,
-    MTransactions,
-    MExchangeRichErrors
+    IAssetProxyDispatcher,
+    IExchangeCore,
+    IMatchOrders,
+    ITransactions
 {
     using LibBytes for bytes;
 
@@ -266,6 +267,48 @@ contract MixinMatchOrders is
         // Return fill results
         return matchedFillResults;
     }
+
+    function _dispatchTransferFrom(
+        bytes32 orderHash,
+        bytes memory assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal;
+
+    function _getCurrentContextAddress()
+        internal
+        view
+        returns (address);
+
+    function _assertFillableOrder(
+        Order memory order,
+        OrderInfo memory orderInfo,
+        address takerAddress,
+        bytes memory signature
+    )
+        internal
+        view;
+
+    function _updateFilledState(
+        Order memory order,
+        address takerAddress,
+        bytes32 orderHash,
+        uint256 orderTakerAssetFilledAmount,
+        LibFillResults.FillResults memory fillResults
+    )
+        internal;
+
+    function _assertValidFill(
+        Order memory order,
+        OrderInfo memory orderInfo,
+        uint256 takerAssetFillAmount,  // TODO: use FillResults
+        uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount
+    )
+        internal
+        view;
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
     /// @param leftOrderHash First matched order hash.
