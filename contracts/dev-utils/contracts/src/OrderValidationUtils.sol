@@ -81,7 +81,7 @@ contract OrderValidationUtils is
         uint256 makerFee = order.makerFee;
         bytes memory zrxAssetData = _ZRX_ASSET_DATA;
     
-        // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset` and `makerFeeAsset`
+        // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
         uint256 transferableTakerAssetAmount;
         if (order.makerAssetData.equals(zrxAssetData)) {
