@@ -22,12 +22,12 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
-import "./mixins/MAssets.sol";
 import "./libs/LibConstants.sol";
+import "./interfaces/IAssets.sol";
 
 
 contract MixinAssets is
-    MAssets,
+    IAssets,
     Ownable,
     LibConstants
 {

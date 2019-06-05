@@ -25,26 +25,62 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MAssetProxyDispatcher.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IAssetProxyDispatcher.sol";
+import "./interfaces/IExchangeCore.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/ITransactions.sol";
+import "./MixinAssetProxyDispatcher.sol";
+import "./MixinExchangeRichErrors.sol";
+import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
+    MixinExchangeRichErrors,
     ReentrancyGuard,
     LibExchangeSelectors,
     LibMath,
     LibOrder,
     LibFillResults,
-    MAssetProxyDispatcher,
-    MExchangeCore,
-    MSignatureValidator,
-    MTransactions,
-    MExchangeRichErrors
+    IAssetProxyDispatcher,
+    IExchangeCore,
+    ISignatureValidator,
+    ITransactions
 {
     using LibBytes for bytes;
+
+    // Fill event is emitted whenever an order is filled.
+    event Fill(
+        address indexed makerAddress,         // Address that created the order.
+        address indexed feeRecipientAddress,  // Address that received fees.
+        bytes makerAssetData,                 // Encoded data specific to makerAsset.
+        bytes takerAssetData,                 // Encoded data specific to takerAsset.
+        bytes makerFeeAssetData,              // Encoded data specific to makerFeeAsset.
+        bytes takerFeeAssetData,               // Encoded data specific to takerFeeAsset.
+        uint256 makerAssetFilledAmount,       // Amount of makerAsset sold by maker and bought by taker.
+        uint256 takerAssetFilledAmount,       // Amount of takerAsset sold by taker and bought by maker.
+        uint256 makerFeePaid,                 // Amount of makerFeeAssetData paid to feeRecipient by maker.
+        uint256 takerFeePaid,                 // Amount of takerFeeAssetData paid to feeRecipient by taker.
+        address takerAddress,                 // Address that filled the order.
+        address senderAddress,                // Address that called the Exchange contract (msg.sender).
+        bytes32 indexed orderHash            // EIP712 hash of order (see LibOrder.getOrderHash).
+    );
+
+    // Cancel event is emitted whenever an individual order is cancelled.
+    event Cancel(
+        address indexed makerAddress,         // Address that created the order.
+        address indexed feeRecipientAddress,  // Address that would have recieved fees if order was filled.
+        address senderAddress,                // Address that called the Exchange contract (msg.sender).
+        bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getOrderHash).
+        bytes makerAssetData,                 // Encoded data specific to makerAsset.
+        bytes takerAssetData                  // Encoded data specific to takerAsset.
+    );
+
+    // CancelUpTo event is emitted whenever `cancelOrdersUpTo` is executed succesfully.
+    event CancelUpTo(
+        address indexed makerAddress,         // Orders cancelled must have been created by this address.
+        address indexed orderSenderAddress,   // Orders cancelled must have a `senderAddress` equal to this address.
+        uint256 orderEpoch                    // Orders with specified makerAddress and senderAddress with a salt less than this value are considered cancelled.
+    );
 
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
@@ -393,14 +429,14 @@ contract MixinExchangeCore is
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1
         if (takerAssetFillAmount == 0) {
-            _rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
+            _rrevert(FillError(MixinExchangeRichErrors.FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
         }
 
         // Make sure taker does not pay more than desired amount
         // NOTE: This assertion should never fail, it is here
         //       as an extra defence against potential bugs.
         if (takerAssetFilledAmount > takerAssetFillAmount) {
-            _rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
+            _rrevert(FillError(MixinExchangeRichErrors.FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
         }
 
         // Make sure order is not overfilled
@@ -408,7 +444,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
             > order.takerAssetAmount) {
-            _rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
+            _rrevert(FillError(MixinExchangeRichErrors.FillErrorCodes.OVERFILL, orderInfo.orderHash));
         }
 
         // Make sure order is filled at acceptable price.
@@ -430,7 +466,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
             > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
-            _rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
+            _rrevert(FillError(MixinExchangeRichErrors.FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
         }
     }
 
@@ -499,6 +535,30 @@ contract MixinExchangeCore is
 
         return fillResults;
     }
+
+    function _isValidOrderWithHashSignature(
+        Order memory order,
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid);
+
+    function _getCurrentContextAddress()
+        internal
+        view
+        returns (address);
+
+    function _dispatchTransferFrom(
+        bytes32 orderHash,
+        bytes memory assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal;
 
     /// @dev Settles an order by transferring assets between counterparties.
     /// @param orderHash The order hash.

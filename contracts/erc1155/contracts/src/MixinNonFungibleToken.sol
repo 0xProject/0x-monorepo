@@ -18,12 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "./mixins/MNonFungibleToken.sol";
 
-
-contract MixinNonFungibleToken is
-    MNonFungibleToken
-{
+contract MixinNonFungibleToken {
     /// Use a split bit implementation.
     /// Store the type in the upper 128 bits..
     uint256 constant internal TYPE_MASK = uint256(uint128(~0)) << 128;

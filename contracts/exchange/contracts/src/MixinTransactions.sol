@@ -20,17 +20,19 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/ITransactions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
+    MixinExchangeRichErrors,
     LibZeroExTransaction,
-    MSignatureValidator,
-    MTransactions,
-    MExchangeRichErrors
+    ISignatureValidator,
+    ITransactions
 {
+    // TransactionExecution event is emitted when a ZeroExTransaction is executed.
+    event TransactionExecution(bytes32 indexed transactionHash);
 
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
