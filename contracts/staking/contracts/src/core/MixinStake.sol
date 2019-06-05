@@ -89,6 +89,7 @@ contract MixinStake is
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
+        _timelockStake(owner, amount);
     }
 
     function _deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
@@ -107,6 +108,12 @@ contract MixinStake is
             "INSUFFICIENT_BALANCE"
         );
         _burnStake(owner, amount);
+    }
+
+    function _forceTimelockSync(address owner)
+        internal
+    {
+        _syncTimelockedStake(owner);
     }
 
     ///// PRIVATE HELPERS /////

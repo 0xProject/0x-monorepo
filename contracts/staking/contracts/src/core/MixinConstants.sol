@@ -35,7 +35,7 @@ contract MixinConstants {
 
     uint64 constant public INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
-    uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1; // @TODO SET FOR DEPLOYMENT
+    uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1000; // @TODO SET FOR DEPLOYMENT
 
-    uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 2; // @TODO SET FOR DEPLOYMENT
+    uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 3; // @TODO SET FOR DEPLOYMENT
 }
