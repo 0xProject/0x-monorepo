@@ -50,7 +50,7 @@ contract MixinEpoch is
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
 
         // increment timelock period, if needed
-        if (_getCurrentTimelockPeriodEndEpoch() == nextEpoch) {
+        if (_getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
             currentTimelockPeriod += 1;
             currentTimelockPeriodStartEpoch = currentEpoch;
         }
