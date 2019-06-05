@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.8",
+        "changes": [
+            {
+                "note": "Fixed false positives in `expectTransactionFailedAsync` and `expectContractCallFailedAsync`",
+                "pr": 1852
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "3.1.7",
         "changes": [
