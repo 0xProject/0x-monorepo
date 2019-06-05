@@ -1152,6 +1152,163 @@ describe('ERC1155Proxy', () => {
                 RevertReason.InvalidIdsOffset,
             );
         });
+        it('should revert token ids length overflows', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            // The asset data we just generated will look like this:
+            // a7cb5fb7
+            // 0x         0000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082
+            // 0x20       0000000000000000000000000000000000000000000000000000000000000080 // offset to token ids
+            // 0x40       00000000000000000000000000000000000000000000000000000000000000c0
+            // 0x60       0000000000000000000000000000000000000000000000000000000000000100
+            // 0x80       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xA0       0000000000000000000000000000000100000000000000000000000000000000
+            // 0xC0       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xE0       0000000000000000000000000000000000000000000000878678326eac900000
+            // 0x100      0000000000000000000000000000000000000000000000000000000000000004
+            // 0x120      0102030400000000000000000000000000000000000000000000000000000000
+            //
+            // We want to chan ge the offset to token ids to point to the end of calldata
+            const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000080';
+            const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
+            const assetDataWithBadTokenIdsOffset = assetData.replace(
+                encodedOffsetToTokenIds,
+                badEncodedOffsetToTokenIds,
+            );
+            // We want a length that will overflow when converted to bytes - ie, multiplied by 32.
+            const encodedIdsLengthOverflow = '0800000000000000000000000000000000000000000000000000000000000001';
+            const buffer = '0'.repeat(64 * 10);
+            const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                    assetDataWithOverflow,
+                ),
+                RevertReason.Uint256Overflow,
+            );
+        });
+        it('should revert token values length overflows', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            // The asset data we just generated will look like this:
+            // a7cb5fb7
+            // 0x         0000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082
+            // 0x20       0000000000000000000000000000000000000000000000000000000000000080
+            // 0x40       00000000000000000000000000000000000000000000000000000000000000c0 // offset to token values
+            // 0x60       0000000000000000000000000000000000000000000000000000000000000100
+            // 0x80       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xA0       0000000000000000000000000000000100000000000000000000000000000000
+            // 0xC0       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xE0       0000000000000000000000000000000000000000000000878678326eac900000
+            // 0x100      0000000000000000000000000000000000000000000000000000000000000004
+            // 0x120      0102030400000000000000000000000000000000000000000000000000000000
+            //
+            // We want to chan ge the offset to token values to point to the end of calldata
+            const encodedOffsetToTokenIds = '00000000000000000000000000000000000000000000000000000000000000c0';
+            const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
+            const assetDataWithBadTokenIdsOffset = assetData.replace(
+                encodedOffsetToTokenIds,
+                badEncodedOffsetToTokenIds,
+            );
+            // We want a length that will overflow when converted to bytes - ie, multiplied by 32.
+            const encodedIdsLengthOverflow = '0800000000000000000000000000000000000000000000000000000000000001';
+            const buffer = '0'.repeat(64 * 10);
+            const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                    assetDataWithOverflow,
+                ),
+                RevertReason.Uint256Overflow,
+            );
+        });
+        it('should revert token data length overflows', async () => {
+            // setup test parameters
+            const tokensToTransfer = fungibleTokens.slice(0, 1);
+            const valuesToTransfer = [fungibleValueToTransferLarge];
+            const valueMultiplier = valueMultiplierSmall;
+            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155ContractAddress,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+            );
+            // The asset data we just generated will look like this:
+            // a7cb5fb7
+            // 0x         0000000000000000000000000b1ba0af832d7c05fd64161e0db78e85978e8082
+            // 0x20       0000000000000000000000000000000000000000000000000000000000000080
+            // 0x40       00000000000000000000000000000000000000000000000000000000000000c0
+            // 0x60       0000000000000000000000000000000000000000000000000000000000000100 // offset to token data
+            // 0x80       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xA0       0000000000000000000000000000000100000000000000000000000000000000
+            // 0xC0       0000000000000000000000000000000000000000000000000000000000000001
+            // 0xE0       0000000000000000000000000000000000000000000000878678326eac900000
+            // 0x100      0000000000000000000000000000000000000000000000000000000000000004
+            // 0x120      0102030400000000000000000000000000000000000000000000000000000000
+            //
+            // We want to chan ge the offset to token ids to point to the end of calldata,
+            // which we'll extend with a bad length.
+            const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000100';
+            const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
+            const assetDataWithBadTokenIdsOffset = assetData.replace(
+                encodedOffsetToTokenIds,
+                badEncodedOffsetToTokenIds,
+            );
+            // We want a length that will overflow when converted to bytes - ie, multiplied by 32.
+            const encodedIdsLengthOverflow = '0800000000000000000000000000000000000000000000000000000000000001';
+            const buffer = '0'.repeat(64 * 10);
+            const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
+            // execute transfer
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiverContract,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                    assetDataWithOverflow,
+                ),
+                RevertReason.InvalidDataOffset,
+            );
+        });
         it('should revert if token values resolves to outside the bounds of calldata', async () => {
             // setup test parameters
             const tokensToTransfer = fungibleTokens.slice(0, 1);

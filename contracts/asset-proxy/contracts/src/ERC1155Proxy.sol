@@ -205,6 +205,14 @@ contract ERC1155Proxy is
                 let idsOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 68)))
                 let idsLength := calldataload(idsOffset)
                 let idsLengthInBytes := mul(idsLength, 32)
+                if sub(div(idsLengthInBytes, 32), idsLength) {
+                    // Revert with `Error("UINT256_OVERFLOW")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x0000001055494e543235365f4f564552464c4f57000000000000000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
                 let idsBegin := add(idsOffset, 32)
                 let idsEnd := add(idsBegin, idsLengthInBytes)
                 if gt(idsEnd, assetDataEnd) {
@@ -230,6 +238,14 @@ contract ERC1155Proxy is
                 let valuesOffset := add(paramsInAssetDataOffset, calldataload(add(assetDataOffset, 100)))
                 let valuesLength := calldataload(valuesOffset)
                 let valuesLengthInBytes := mul(valuesLength, 32)
+                if sub(div(valuesLengthInBytes, 32), valuesLength) {
+                    // Revert with `Error("UINT256_OVERFLOW")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x0000001055494e543235365f4f564552464c4f57000000000000000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
                 let valuesBegin := add(valuesOffset, 32)
                 let valuesEnd := add(valuesBegin, valuesLengthInBytes)
                 if gt(valuesEnd, assetDataEnd) {
