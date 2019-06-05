@@ -14,4 +14,4 @@
 
 #### Development
 
-Building solidity files will update the contract artifact in `{package-name}/generated-artifacts/{contract}.json`, but does not automatically update `abi-gen-wrappers`, which are generated from the artifact JSON. To ensure consistency, clean and rebuild `abi-gen-wrappers` after any changes to the artifact JSON.
+Building solidity files will update the contract artifact in `{package-name}/generated-artifacts/{contract}.json`, but does not automatically update the `abi-gen-wrappers` package, which are generated from the artifact JSON. To ensure consistency, clean and rebuild `abi-gen-wrappers` after any changes to the artifact JSON.
