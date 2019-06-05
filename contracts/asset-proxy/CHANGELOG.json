@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Updated ERC1155 Asset Proxy. Less optimization. More explicit handling of edge cases.",
+                "pr": 1852
+            }
+        ]
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {

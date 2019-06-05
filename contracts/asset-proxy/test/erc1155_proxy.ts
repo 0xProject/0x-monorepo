@@ -1532,17 +1532,12 @@ describe('ERC1155Proxy', () => {
                 authorized,
                 assetData,
             );
-            const offsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000080";
-            const invalidOffsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000180";
+            const offsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000080';
+            const invalidOffsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000180';
             const badTxData = txData.replace(offsetToAssetData, invalidOffsetToAssetData);
-
-            console.log(JSON.stringify(RevertReason.InvalidAssetData));
             // execute transfer
             await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromRawAsync(
-                    badTxData,
-                    authorized,
-                ),
+                erc1155ProxyWrapper.transferFromRawAsync(badTxData, authorized),
                 RevertReason.InvalidAssetDataLength,
             );
         });
@@ -1570,16 +1565,13 @@ describe('ERC1155Proxy', () => {
                 assetData,
             );
             // append asset data to end of tx data with a length of 0x300 bytes, which will extend past actual calldata.
-            const offsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000080";
-            const invalidOffsetToAssetData = "0000000000000000000000000000000000000000000000000000000000000200";
-            const newAssetData = "0000000000000000000000000000000000000000000000000000000000000304"; 
+            const offsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000080';
+            const invalidOffsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000200';
+            const newAssetData = '0000000000000000000000000000000000000000000000000000000000000304';
             const badTxData = `${txData.replace(offsetToAssetData, invalidOffsetToAssetData)}${newAssetData}`;
             // execute transfer
             await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromRawAsync(
-                    badTxData,
-                    authorized,
-                ),
+                erc1155ProxyWrapper.transferFromRawAsync(badTxData, authorized),
                 RevertReason.InvalidAssetData,
             );
         });
@@ -1610,7 +1602,7 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithExtraData,
                 ),
-                RevertReason.InvalidAssetDataLength
+                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should revert if length of assetData is less than 132 bytes', async () => {
@@ -1618,12 +1610,12 @@ describe('ERC1155Proxy', () => {
             const tokensToTransfer = fungibleTokens.slice(0, 1);
             const valuesToTransfer = [fungibleValueToTransferLarge];
             const valueMultiplier = valueMultiplierSmall;
-            // we'll construct asset data that has a 4 byte selector plus 
+            // we'll construct asset data that has a 4 byte selector plus
             // 96 byte payload. This results in asset data that is 100 bytes
             // long and will trigger the `invalid length` error.
             // we must be sure to use a # of bytes that is still %32
             // so that we know the error is not triggered by another check in the code.
-            const zeros96Bytes = "0".repeat(188);
+            const zeros96Bytes = '0'.repeat(188);
             const assetData131Bytes = `${AssetProxyId.ERC1155}${zeros96Bytes}`;
             // execute transfer
             await expectTransactionFailedAsync(
@@ -1638,7 +1630,7 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetData131Bytes,
                 ),
-                RevertReason.InvalidAssetDataLength
+                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should transfer nothing if value is zero', async () => {
