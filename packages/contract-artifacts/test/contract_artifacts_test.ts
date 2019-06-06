@@ -4,7 +4,7 @@ import 'mocha';
 
 import * as artifacts from '../src/index';
 
-import { ForbiddenProperties, RequiredProperties } from '../src/lint_properties';
+import { ForbiddenProperties, RequiredProperties } from '../../monorepo-scripts/lib/contract_artifacts_lint';
 
 const expect = chai.expect;
 
