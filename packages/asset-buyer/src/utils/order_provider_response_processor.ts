@@ -7,7 +7,7 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    AssetBuyerError,
+    AssetSwapQuoterError,
     OrderProviderRequest,
     OrderProviderResponse,
     OrdersAndFillableAmounts,
@@ -19,7 +19,7 @@ export const orderProviderResponseProcessor = {
         const { makerAssetData, takerAssetData } = request;
         _.forEach(response.orders, order => {
             if (order.makerAssetData !== makerAssetData || order.takerAssetData !== takerAssetData) {
-                throw new Error(AssetBuyerError.InvalidOrderProviderResponse);
+                throw new Error(AssetSwapQuoterError.InvalidOrderProviderResponse);
             }
         });
     },

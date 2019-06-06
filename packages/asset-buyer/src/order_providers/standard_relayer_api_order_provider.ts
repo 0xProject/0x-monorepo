@@ -5,7 +5,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
-    AssetBuyerError,
+    AssetSwapQuoterError,
     OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,
@@ -73,7 +73,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         try {
             orderbook = await this._sraClient.getOrderbookAsync(orderbookRequest, requestOpts);
         } catch (err) {
-            throw new Error(AssetBuyerError.StandardRelayerApiError);
+            throw new Error(AssetSwapQuoterError.StandardRelayerApiError);
         }
         const apiOrders = orderbook.asks.records;
         const orders = StandardRelayerAPIOrderProvider._getSignedOrderWithRemainingFillableMakerAssetAmountFromApi(
@@ -101,7 +101,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         try {
             response = await this._sraClient.getAssetPairsAsync(fullRequest);
         } catch (err) {
-            throw new Error(AssetBuyerError.StandardRelayerApiError);
+            throw new Error(AssetSwapQuoterError.StandardRelayerApiError);
         }
         return _.map(response.records, item => {
             if (item.assetDataA.assetData === takerAssetData) {
@@ -129,7 +129,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         try {
             response = await this._sraClient.getAssetPairsAsync(fullRequest);
         } catch (err) {
-            throw new Error(AssetBuyerError.StandardRelayerApiError);
+            throw new Error(AssetSwapQuoterError.StandardRelayerApiError);
         }
         return _.map(response.records, item => {
             if (item.assetDataA.assetData === makerAssetData) {

@@ -11,29 +11,28 @@ import { constants } from './constants';
 import { BasicOrderProvider } from './order_providers/basic_order_provider';
 import { StandardRelayerAPIOrderProvider } from './order_providers/standard_relayer_api_order_provider';
 import {
-    AssetBuyerError,
-    AssetBuyerOpts,
-    BuyQuote,
-    BuyQuoteExecutionOpts,
-    BuyQuoteRequestOpts,
+    AssetSwapQuoterError,
+    AssetSwapQuoterOpts,
     LiquidityForAssetData,
     LiquidityRequestOpts,
     OrderProvider,
     OrdersAndFillableAmounts,
+    SwapQuote,
+    SwapQuoteRequestOpts,
 } from './types';
 
 import { assert } from './utils/assert';
 import { assetDataUtils } from './utils/asset_data_utils';
-import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
+import { swapQuoteCalculator } from './utils/swap_quote_calculator';
 
 interface OrdersEntry {
     ordersAndFillableAmounts: OrdersAndFillableAmounts;
     lastRefreshTime: number;
 }
 
-export class AssetBuyer {
+export class AssetSwapQuoter {
     public readonly provider: ZeroExProvider;
     public readonly orderProvider: OrderProvider;
     public readonly networkId: number;
@@ -44,7 +43,7 @@ export class AssetBuyer {
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
     /**
      * Instantiates a new AssetBuyer instance given existing liquidity in the form of orders and feeOrders.
-     * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
+     * @param   supportedProvider       The Provider instance you would like to use for ikknteracting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData (WETH).
      * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData (WETH). Defaults to an empty array.
      * @param   options                 Initialization options for the AssetBuyer. See type definition for details.
@@ -54,12 +53,12 @@ export class AssetBuyer {
     public static getAssetBuyerForProvidedOrders(
         supportedProvider: SupportedProvider,
         orders: SignedOrder[],
-        options: Partial<AssetBuyerOpts> = {},
-    ): AssetBuyer {
+        options: Partial<AssetSwapQuoterOpts> = {},
+    ): AssetSwapQuoter {
         assert.doesConformToSchema('orders', orders, schemas.signedOrdersSchema);
         assert.assert(orders.length !== 0, `Expected orders to contain at least one order`);
         const orderProvider = new BasicOrderProvider(orders);
-        const assetBuyer = new AssetBuyer(supportedProvider, orderProvider, options);
+        const assetBuyer = new AssetSwapQuoter(supportedProvider, orderProvider, options);
         return assetBuyer;
     }
     /**
@@ -73,13 +72,13 @@ export class AssetBuyer {
     public static getAssetBuyerForStandardRelayerAPIUrl(
         supportedProvider: SupportedProvider,
         sraApiUrl: string,
-        options: Partial<AssetBuyerOpts> = {},
-    ): AssetBuyer {
+        options: Partial<AssetSwapQuoterOpts> = {},
+    ): AssetSwapQuoter {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isWebUri('sraApiUrl', sraApiUrl);
-        const networkId = options.networkId || constants.DEFAULT_ASSET_BUYER_OPTS.networkId;
+        const networkId = options.networkId || constants.DEFAULT_ASSET_SWAP_QUOTER_OPTS.networkId;
         const orderProvider = new StandardRelayerAPIOrderProvider(sraApiUrl, networkId);
-        const assetBuyer = new AssetBuyer(provider, orderProvider, options);
+        const assetBuyer = new AssetSwapQuoter(provider, orderProvider, options);
         return assetBuyer;
     }
     /**
@@ -93,11 +92,11 @@ export class AssetBuyer {
     constructor(
         supportedProvider: SupportedProvider,
         orderProvider: OrderProvider,
-        options: Partial<AssetBuyerOpts> = {},
+        options: Partial<AssetSwapQuoter> = {},
     ) {
         const { networkId, orderRefreshIntervalMs, expiryBufferSeconds } = _.merge(
             {},
-            constants.DEFAULT_ASSET_BUYER_OPTS,
+            constants.DEFAULT_ASSET_SWAP_QUOTER_OPTS,
             options,
         );
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -115,23 +114,23 @@ export class AssetBuyer {
         });
     }
     /**
-     * Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired assetData.
-     * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
+     * Get a `SwapQuote` containing all information relevant to fulfilling a buy given a desired assetData.
+     * You can then pass the `SwapQuote` to `executeSwapQuoteAsync` to execute the buy.
      * @param   assetData           The assetData of the desired asset to buy (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   assetBuyAmount      The amount of asset to buy.
      * @param   options             Options for the request. See type definition for more information.
      *
-     * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
+     * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getBuyQuoteAsync(
+    public async getSwapQuoteAsync(
         makerAssetData: string,
         takerAssetData: string,
         makerAssetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts> = {},
-    ): Promise<BuyQuote> {
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<SwapQuote> {
         const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
             {},
-            constants.DEFAULT_BUY_QUOTE_REQUEST_OPTS,
+            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
         );
         assert.isString('makerAssetData', makerAssetData);
@@ -151,39 +150,39 @@ export class AssetBuyer {
             shouldForceOrderRefresh,
         ]);
         if (ordersAndFillableAmounts.orders.length === 0) {
-            throw new Error(`${AssetBuyerError.AssetUnavailable}: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`);
+            throw new Error(`${AssetSwapQuoterError.AssetUnavailable}: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`);
         }
-        const buyQuote = buyQuoteCalculator.calculate(
+        const swapQuote = swapQuoteCalculator.calculate(
             ordersAndFillableAmounts,
             feeOrdersAndFillableAmounts,
             makerAssetBuyAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
         );
-        return buyQuote;
+        return swapQuote;
     }
     /**
-     * Get a `BuyQuote` containing all information relevant to fulfilling a buy given a desired ERC20 token address.
-     * You can then pass the `BuyQuote` to `executeBuyQuoteAsync` to execute the buy.
+     * Get a `SwapQuote` containing all information relevant to fulfilling a buy given a desired ERC20 token address.
+     * You can then pass the `SwapQuote` to `executeSwapQuoteAsync` to execute the buy.
      * @param   tokenAddress        The ERC20 token address.
      * @param   assetBuyAmount      The amount of asset to buy.
      * @param   options             Options for the request. See type definition for more information.
      *
-     * @return  An object that conforms to BuyQuote that satisfies the request. See type definition for more information.
+     * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getBuyQuoteForERC20TokenAddressAsync(
+    public async getSwapQuoteForERC20TokenAddressAsync(
         makerTokenAddress: string,
         takerTokenAddress: string,
         makerAssetBuyAmount: BigNumber,
-        options: Partial<BuyQuoteRequestOpts> = {},
-    ): Promise<BuyQuote> {
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<SwapQuote> {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const buyQuote = this.getBuyQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, options);
-        return buyQuote;
+        const swapQuote = this.getSwapQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, options);
+        return swapQuote;
     }
     /**
      * Returns information about available liquidity for an asset
@@ -224,13 +223,13 @@ export class AssetBuyer {
     }
 
     // /**
-    //  * Given a BuyQuote and desired rate, attempt to execute the buy.
-    //  * @param   buyQuote        An object that conforms to BuyQuote. See type definition for more information.
-    //  * @param   options         Options for the execution of the BuyQuote. See type definition for more information.
+    //  * Given a SwapQuote and desired rate, attempt to execute the buy.
+    //  * @param   SwapQuote        An object that conforms to SwapQuote. See type definition for more information.
+    //  * @param   options         Options for the execution of the SwapQuote. See type definition for more information.
     //  *
     //  * @return  A promise of the txHash.
     //  */
-    // public async executeBuyQuoteAsync(
+    // public async executeSwapQuoteAsync(
     //     buyQuote: BuyQuote,
     //     options: Partial<BuyQuoteExecutionOpts> = {},
     // ): Promise<string> {
@@ -401,13 +400,6 @@ export class AssetBuyer {
         return `${makerAssetData}_${takerAssetData}`;
     }
 
-    /**
-     * Get the assetData that represents the WETH token.
-     * Will throw if WETH does not exist for the current network.
-     */
-    // private _getEtherTokenAssetDataOrThrow(): string {
-    //     return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
-    // }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
