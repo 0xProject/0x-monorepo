@@ -101,9 +101,16 @@ export class Compiler {
         const passedOpts = opts || {};
         assert.doesConformToSchema('opts', passedOpts, compilerOptionsSchema);
         // TODO: Look for config file in parent directories if not found in current directory
-        const config: CompilerOptions = fs.existsSync(CONFIG_FILE)
-            ? JSON.parse(fs.readFileSync(CONFIG_FILE).toString())
-            : {};
+        const config: CompilerOptions = (() => {
+            if (fs.existsSync(CONFIG_FILE)) {
+                try {
+                    return JSON.parse(fs.readFileSync(CONFIG_FILE).toString());
+                } catch (error) {
+                    throw new Error(`Error parsing compiler options file "${CONFIG_FILE}": ${error.toString()}`);
+                }
+            }
+            return {};
+        })();
         assert.doesConformToSchema('compiler.json', config, compilerOptionsSchema);
         this._contractsDir = path.resolve(passedOpts.contractsDir || config.contractsDir || DEFAULT_CONTRACTS_DIR);
         this._solcVersionIfExists = passedOpts.solcVersion || config.solcVersion;
