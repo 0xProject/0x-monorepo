@@ -72,7 +72,7 @@
                 "type": "function"
             }
         ],
-        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
+        "evm": { "bytecode": { "object": "0x" } }
     },
     "networks": {}
 }
