@@ -12,7 +12,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -51,7 +51,10 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = new Error(RevertReason.Uint256Overflow);
+const overflowErrorForCall = (
+    a?: BigNumber | string | number, 
+    b?: BigNumber | string | number,
+) => new SafeMathRevertErrors.Uint256OverflowError(a, b);
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
@@ -105,10 +108,10 @@ describe('Exchange core internal functions', () => {
         const remainderTimes1000 = remainder.multipliedBy('1000');
         const isError = remainderTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall;
+            throw overflowErrorForCall(numerator, target);
         }
         if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall;
+            throw overflowErrorForCall(remainder, '1000');
         }
         return isError;
     }
@@ -133,10 +136,10 @@ describe('Exchange core internal functions', () => {
         const errorTimes1000 = error.multipliedBy('1000');
         const isError = errorTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall;
+            throw overflowErrorForCall(numerator, target);
         }
         if (errorTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall;
+            throw overflowErrorForCall(error, '1000');
         }
         return isError;
     }
@@ -155,7 +158,7 @@ describe('Exchange core internal functions', () => {
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall;
+            throw overflowErrorForCall(numerator, target);
         }
         return product.dividedToIntegerBy(denominator);
     }
@@ -189,7 +192,7 @@ describe('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.plus(singleVal);
                     if (newTotal.isGreaterThan(MAX_UINT256)) {
-                        throw overflowErrorForCall;
+                        throw overflowErrorForCall(totalVal, singleVal);
                     }
                     return newTotal;
                 },
@@ -283,7 +286,7 @@ describe('Exchange core internal functions', () => {
             }
             const product = numerator.multipliedBy(target);
             if (product.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw overflowErrorForCall(numerator, target);
             }
             return product.dividedToIntegerBy(denominator);
         }
@@ -314,7 +317,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw overflowErrorForCall(product, denominator.minus(1));
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
@@ -371,7 +374,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall;
+                throw overflowErrorForCall(product, denominator.minus(1));
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
