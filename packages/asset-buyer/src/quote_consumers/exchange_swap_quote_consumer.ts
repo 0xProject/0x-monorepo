@@ -56,5 +56,5 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer {
 
     public executeSwapQuoteOrThrowAsync = async (quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> => {
 
-    }
+    };
 }
