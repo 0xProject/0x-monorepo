@@ -17,7 +17,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId, RevertReason } from '@0x/types';
-import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
@@ -1789,20 +1789,21 @@ describe('ERC1155Proxy', () => {
                 nftNotOwnerBalance,
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            const expectedError = new SafeMathRevertErrors.Uint256OverflowError(maxUintValue, valueMultiplier);
             // execute transfer
             // note - this will overflow because we are trying to transfer `maxUintValue * 2` of the 2nd token
-            const tx = erc1155ProxyWrapper.transferFromAsync(
-                spender,
-                receiver,
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                valueMultiplier,
-                receiverCallbackData,
-                authorized,
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                ),
+                RevertReason.Uint256Overflow,
             );
-            expect(tx).to.revertWith(expectedError);
         });
         it('should revert if transferring > 1 instances of a non-fungible token (valueMultiplier field >1)', async () => {
             // setup test parameters
@@ -1872,22 +1873,20 @@ describe('ERC1155Proxy', () => {
             // check balances before transfer
             const expectedInitialBalances = [spenderInitialFungibleBalance, receiverInitialFungibleBalance];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
-                spenderInitialFungibleBalance,
-                valueGreaterThanSpenderBalance,
-            );
             // execute transfer
-            const tx = erc1155ProxyWrapper.transferFromAsync(
-                spender,
-                receiver,
-                erc1155Contract.address,
-                tokensToTransfer,
-                valuesToTransfer,
-                valueMultiplier,
-                receiverCallbackData,
-                authorized,
+            await expectTransactionFailedAsync(
+                erc1155ProxyWrapper.transferFromAsync(
+                    spender,
+                    receiver,
+                    erc1155Contract.address,
+                    tokensToTransfer,
+                    valuesToTransfer,
+                    valueMultiplier,
+                    receiverCallbackData,
+                    authorized,
+                ),
+                RevertReason.Uint256Underflow,
             );
-            expect(tx).to.revertWith(expectedError);
         });
         it('should revert if sender allowance is insufficient', async () => {
             // dremove allowance for ERC1155 proxy

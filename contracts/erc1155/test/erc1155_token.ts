@@ -346,6 +346,7 @@ describe('ERC1155Token', () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
+
             // create the expected error (a uint256 underflow)
             const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
                 spenderInitialFungibleBalance, 
