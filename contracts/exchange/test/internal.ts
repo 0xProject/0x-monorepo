@@ -51,10 +51,7 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = (
-    a?: BigNumber | string | number, 
-    b?: BigNumber | string | number,
-) => new SafeMathRevertErrors.Uint256OverflowError();
+const overflowErrorForCall = new SafeMathRevertErrors.Uint256OverflowError;
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
@@ -80,9 +77,7 @@ describe('Exchange core internal functions', () => {
             txDefaults,
             new BigNumber(chainId),
         );
-        overflowErrorForSendTransaction = new Error(
-            await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
-        );
+        overflowErrorForSendTransaction = new SafeMathRevertErrors.Uint256OverflowError();
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
     });
@@ -108,10 +103,10 @@ describe('Exchange core internal functions', () => {
         const remainderTimes1000 = remainder.multipliedBy('1000');
         const isError = remainderTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall(numerator, target);
+            throw overflowErrorForCall();
         }
         if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall(remainder, '1000');
+            throw overflowErrorForCall();
         }
         return isError;
     }
@@ -136,10 +131,10 @@ describe('Exchange core internal functions', () => {
         const errorTimes1000 = error.multipliedBy('1000');
         const isError = errorTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall(numerator, target);
+            throw overflowErrorForCall();
         }
         if (errorTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall(error, '1000');
+            throw overflowErrorForCall();
         }
         return isError;
     }
@@ -158,7 +153,7 @@ describe('Exchange core internal functions', () => {
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall(numerator, target);
+            throw overflowErrorForCall();
         }
         return product.dividedToIntegerBy(denominator);
     }
@@ -192,7 +187,7 @@ describe('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.plus(singleVal);
                     if (newTotal.isGreaterThan(MAX_UINT256)) {
-                        throw overflowErrorForCall(totalVal, singleVal);
+                        throw overflowErrorForCall();
                     }
                     return newTotal;
                 },
@@ -286,7 +281,7 @@ describe('Exchange core internal functions', () => {
             }
             const product = numerator.multipliedBy(target);
             if (product.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall(numerator, target);
+                throw overflowErrorForCall();
             }
             return product.dividedToIntegerBy(denominator);
         }
@@ -317,7 +312,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall(product, denominator.minus(1));
+                throw overflowErrorForCall();
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
@@ -374,7 +369,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall(product, denominator.minus(1));
+                throw overflowErrorForCall();
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
