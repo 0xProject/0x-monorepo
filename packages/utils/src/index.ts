@@ -1,3 +1,6 @@
+import * as OwnableRevertErrors from './ownable_revert_errors';
+import * as SafeMathRevertErrors from './safe_math_revert_errors';
+
 export { promisify } from './promisify';
 export { addressUtils } from './address_utils';
 export { classUtils } from './class_utils';
@@ -23,3 +26,5 @@ export {
     StringRevertError,
     AnyRevertError,
 } from './revert_error';
+
+export { OwnableRevertErrors, SafeMathRevertErrors };
