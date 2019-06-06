@@ -101,16 +101,18 @@ describe('Staking Core', () => {
             }
         });
         it.only('staking/unstaking', async () => {
-            ///// 1/3 SETUP TEST PARAMETERS /////
+            ///// 1 SETUP TEST PARAMETERS /////
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);
-            const amountToUnstake = stakingWrapper.toBaseUnitAmount(4);
+            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
+            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
+            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
             const owner = stakers[0];
             // check zrx token balances before minting stake
             const zrxTokenBalanceOfVaultBeforeStaking = await stakingWrapper.getZrxTokenBalanceOfZrxVault();
             expect(zrxTokenBalanceOfVaultBeforeStaking).to.be.bignumber.equal(new BigNumber(0));
             const zrxTokenBalanceOfStakerBeforeStaking = await stakingWrapper.getZrxTokenBalance(owner);
             expect(zrxTokenBalanceOfStakerBeforeStaking).to.be.bignumber.gte(amountToStake);
-            ///// 2/3 STAKE ZRX /////
+            ///// 2 STAKE ZRX /////
             // mint stake
             await stakingWrapper.depositAndStakeAsync(owner, amountToStake);
             {
@@ -126,22 +128,22 @@ describe('Staking Core', () => {
                 const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(owner);
                 expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToStake));
             }
-            ///// 3/3 DEACTIVATE AND TIMELOCK STAKE /////
+            ///// 3 DEACTIVATE AND TIMELOCK STAKE /////
             // unstake
-            await stakingWrapper.deactivateAndTimelockStakeAsync(owner, amountToUnstake);
+            await stakingWrapper.deactivateAndTimelockStakeAsync(owner, amountToDeactivate);
            {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToStake); 
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
-                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake)); 
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate)); 
                 // check that timelocked stake is deactivated
                 const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
-                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToUnstake); 
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate); 
                 // check amount that is timelocked
                 const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
-                expect(timelockedStakeBalance).to.be.bignumber.equal(amountToUnstake);
+                expect(timelockedStakeBalance).to.be.bignumber.equal(amountToDeactivate);
                 // check that timelocked stake cannot be withdrawn
                 const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
                 expect(withdrawableStakeBalance).to.be.bignumber.equal(0);
@@ -157,13 +159,13 @@ describe('Staking Core', () => {
                 expect(totalStake).to.be.bignumber.equal(amountToStake); 
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
-                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake)); 
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate)); 
                 // check that timelocked stake is deactivated
                 const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
-                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToUnstake); 
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate); 
                 // check amount that is timelocked
                 const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
-                expect(timelockedStakeBalance).to.be.bignumber.equal(amountToUnstake);
+                expect(timelockedStakeBalance).to.be.bignumber.equal(amountToDeactivate);
                 // check that timelocked stake cannot be withdrawn
                 const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
                 expect(withdrawableStakeBalance).to.be.bignumber.equal(0);
@@ -179,47 +181,94 @@ describe('Staking Core', () => {
                 expect(totalStake).to.be.bignumber.equal(amountToStake); 
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
-                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake)); 
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate)); 
                 // check that timelocked stake is deactivated
                 const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
-                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToUnstake); 
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate); 
                 // check amount that is timelocked
                 const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
                 expect(timelockedStakeBalance).to.be.bignumber.equal(0);
                 // check that timelocked stake cannot be withdrawn
                 const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
-                expect(withdrawableStakeBalance).to.be.bignumber.equal(amountToUnstake);
+                expect(withdrawableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
                 // check that timelocked stake cannot be reactivated
                 const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
-                expect(activatableStakeBalance).to.be.bignumber.equal(amountToUnstake);
+                expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
             }
-
-            ///// Stake a 0 amount to force an update //////
-
-
-            ///// 5 Reactivate Stake /////
-
-            ///// 6 Deactivate and Timelock Stake /////
-
-            ///// 6 Fastforward Blockchain /////
-
-            ///// Withdraw Stake /////
-
+            ///// 6 FORCE A SYNC - BALANCES SHOULD NOT CHANGE
+            await stakingWrapper.forceTimelockSyncAsync(owner);
             {
+                // check total stake balance didn't change
+                const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
+                expect(totalStake).to.be.bignumber.equal(amountToStake); 
+                // check timelocked stake is no longer activated
+                const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate)); 
+                // check that timelocked stake is deactivated
+                const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate); 
+                // check amount that is timelocked
+                const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
+                expect(timelockedStakeBalance).to.be.bignumber.equal(0);
+                // check that timelocked stake cannot be withdrawn
+                const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
+                expect(withdrawableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
+                // check that timelocked stake cannot be reactivated
+                const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
+                expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
+            }
+            ///// 7 REACTIVATE SOME STAKE /////
+            await stakingWrapper.activateStakeAsync(owner, amountToReactivate);
+            {
+                // check total stake balance didn't change
+                const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
+                expect(totalStake).to.be.bignumber.equal(amountToStake); 
+                // check timelocked stake is no longer activated
+                const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate).plus(amountToReactivate)); 
+                // check that timelocked stake is deactivated
+                const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate)); 
+                // check amount that is timelocked
+                const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
+                expect(timelockedStakeBalance).to.be.bignumber.equal(0);
+                // check that timelocked stake cannot be withdrawn
+                const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
+                expect(withdrawableStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate));
+                // check that timelocked stake cannot be reactivated
+                const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
+                expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate));
+            }
+            ///// 8 WITHDRAW SOME STAKE /////
+            await stakingWrapper.withdrawAsync(owner, amountToWithdraw);
+            {
+                // check total stake balance didn't change
+                const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
+                expect(totalStake).to.be.bignumber.equal(amountToStake.minus(amountToWithdraw)); 
+                // check timelocked stake is no longer activated
+                const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
+                expect(activatedStakeBalance).to.be.bignumber.equal(amountToStake.minus(amountToDeactivate).plus(amountToReactivate)); 
+                // check that timelocked stake is deactivated
+                const deactivatedStakeBalance = await stakingWrapper.getDeactivatedStakeAsync(owner);
+                expect(deactivatedStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate).minus(amountToWithdraw)); 
+                // check amount that is timelocked
+                const timelockedStakeBalance = await stakingWrapper.getTimelockedStakeAsync(owner);
+                expect(timelockedStakeBalance).to.be.bignumber.equal(0);
+                // check that timelocked stake cannot be withdrawn
+                const withdrawableStakeBalance = await stakingWrapper.getWithdrawableStakeAsync(owner);
+                expect(withdrawableStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate).minus(amountToWithdraw));
+                // check that timelocked stake cannot be reactivated
+                const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
+                expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate.minus(amountToReactivate).minus(amountToWithdraw));
                 // check zrx vault balance
-                /*
                 const vaultBalance = await stakingWrapper.getZrxVaultBalance(owner);
-                expect(vaultBalance).to.be.bignumber.equal(amountToStake.minus(amountToUnstake));
-                
+                expect(vaultBalance).to.be.bignumber.equal(amountToStake.minus(amountToWithdraw));
                 // check zrx token balances
                 const zrxTokenBalanceOfVaultAfterStaking = await stakingWrapper.getZrxTokenBalanceOfZrxVault();
-                expect(zrxTokenBalanceOfVaultAfterStaking).to.be.bignumber.equal(amountToStake.minus(amountToUnstake));
+                expect(zrxTokenBalanceOfVaultAfterStaking).to.be.bignumber.equal(amountToStake.minus(amountToWithdraw));
                 const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(owner);
-                expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToStake).plus(amountToUnstake));
-                */
+                expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToStake).plus(amountToWithdraw));
             }
-
-
         });
 
         it('nth root', async () => {
