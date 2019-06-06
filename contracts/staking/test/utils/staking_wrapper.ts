@@ -151,7 +151,7 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async withdraw(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    public async withdrawAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().withdraw.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
