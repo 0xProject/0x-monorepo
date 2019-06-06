@@ -30,26 +30,27 @@ library LibMath {
             ///// See https://en.wikipedia.org/wiki/Nth_root#nth_root_algorithm
 
             // 1. Find greatest power-of-2 <= `value`
-            let nearestPowerOf2 := 0x80000000000000000000000000000000
+            let nearestPowerOf2 := 0x100000000000000000000000000000000
             let m := 128
             for {let p := 64}
                 gt(p, 0)
                 { p := div(p, 2) }
             {
+
                 switch gt(nearestPowerOf2, base)
+                case 1 {
+                    nearestPowerOf2 := shr(p, nearestPowerOf2)
+                    m := sub(m, p)
+                }
                 case 0 {
                     switch lt(nearestPowerOf2, base)
-                    case 0 {
-                        p := 0
-                    }
                     case 1 {
                         nearestPowerOf2 := shl(p, nearestPowerOf2)
                         m := add(m, p)
                     }
-                }
-                case 1 {
-                    nearestPowerOf2 := shr(p, nearestPowerOf2)
-                    m := sub(m, p)
+                    case 0 {
+                        p := 0
+                    }
                 }
             }
             if gt(nearestPowerOf2, base) {
@@ -57,21 +58,32 @@ library LibMath {
                 m := sub(m, 1)
             }
 
+
             // 2. Find greatest power-of-2 that, when raised to the power of `n`,
             //    is <= `value`
             let x := exp(2, div(m, n))
 
-            // 3. Find y such that `x` + `y` = `value`
-            let y := xor(base, exp(2, mul(div(m, n), n)))
+            // 3. Find y such that `x` + `y` = `base`
+            let y := sub(base, exp2(x, n))
 
             // 4. Run Newton's Approximation to approximate the root
-            root := add(x, div(y, mul(n, exp(2, mul(div(m, n), sub(n, 1))))))
+            let denominator := mul(n, exp2(x, sub(n, 1)))
 
+            // -- playing with turning root into fixed point to retain decimals --
+            //let numerator := y
+            //let fixedPointScaleFactor := exp2(10, 18)
+            //let fixedPointNumerator := mul(y, fixedPointScaleFactor)
+            //let fixedPointX := mul(x, fixedPointScaleFactor)
+            //let fixedPointRoot := add(fixedPointX, div(fixedPointNumerator, denominator))
+           
+            root := add(x, div(y, denominator))
+
+                
             // 5. Run Newton's nth Root Algorithm
             let delta := 1 // run at least once
-            for {let i := 0}
-                and(lt(i, 20), gt(delta, 0))
-                {i := add(i,1)}
+            for {}
+                gt(delta, 0)
+                {}
             {
                 // compute lhs
                 let lhsDenominator := exp2(root, sub(n, 1))

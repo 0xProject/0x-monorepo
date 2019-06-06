@@ -330,6 +330,7 @@ export class StakingWrapper {
         return balance;
     }
     public async nthRoot(value: BigNumber, n: BigNumber): Promise<BigNumber> {
+        //const txReceipt = await this.getLibMathTestContract().nthRoot.await(value, n);
         const output = await this.getLibMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
@@ -365,6 +366,15 @@ export class StakingWrapper {
         totalStake: BigNumber,
         alphaDenominator: BigNumber
     ) {
+        const txReceipt = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+            totalRewards,
+            ownerFees,
+            totalFees,
+            ownerStake,
+            totalStake,
+            alphaDenominator
+        );
+        console.log(`Gas Used: ${txReceipt.gasUsed}`);
         const output = await this.getLibMathTestContract().cobbDouglasSimplified.callAsync(
             totalRewards,
             ownerFees,
