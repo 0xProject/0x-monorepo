@@ -7,7 +7,7 @@
                 "pr": 1848
             },
             {
-                "note": "Add `LibssetData` and `LibTransactionDecoder` contracts",
+                "note": "Add `LibAssetData` and `LibTransactionDecoder` contracts",
                 "pr": 1848
             },
             {

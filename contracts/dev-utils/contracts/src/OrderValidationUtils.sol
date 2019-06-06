@@ -47,12 +47,12 @@ contract OrderValidationUtils is
     /// @param order The order structure.
     /// @param signature Signature provided by maker that proves the order's authenticity.
     /// `0x01` can always be provided if the signature does not need to be validated.
-    /// @return orderInfo The hash, status, and `takerAssetAmount` already filled for the given order.
-    /// @return fillableTakerAssetAmount The amount of the order's `takerAssetAmount` that is fillable given all on-chain state.
-    /// If the `takerAssetData` encodes data for multiple assets, `fillableTakerAssetAmount` will represent a "scaled"
+    /// @return The orderInfo (hash, status, and `takerAssetAmount` already filled for the given order),
+    /// fillableTakerAssetAmount (amount of the order's `takerAssetAmount` that is fillable given all on-chain state),
+    /// and isValidSignature (validity of the provided signature).
+    /// NOTE: If the `takerAssetData` encodes data for multiple assets, `fillableTakerAssetAmount` will represent a "scaled"
     /// amount, meaning it must be multiplied by all the individual asset amounts within the `takerAssetData` to get the final
     /// amount of each asset that can be filled.
-    /// @return isValidSignature The validity of the provided signature.
     function getOrderRelevantState(LibOrder.Order memory order, bytes memory signature)
         public
         view
@@ -134,9 +134,12 @@ contract OrderValidationUtils is
     /// @param orders Array of order structures.
     /// @param signatures Array of signatures provided by makers that prove the authenticity of the orders.
     /// `0x01` can always be provided if a signature does not need to be validated.
-    /// @return ordersInfo Array of the hash, status, and `takerAssetAmount` already filled for each order.
-    /// @return fillableTakerAssetAmounts Array of amounts for each order's `takerAssetAmount` that is fillable given all on-chain state.
-    /// @return isValidSignature Array containing the validity of each provided signature.
+    /// @return The ordersInfo (array of the hash, status, and `takerAssetAmount` already filled for each order),
+    /// fillableTakerAssetAmounts (array of amounts for each order's `takerAssetAmount` that is fillable given all on-chain state),
+    /// and isValidSignature (array containing the validity of each provided signature).
+    /// NOTE: If the `takerAssetData` encodes data for multiple assets, each element of `fillableTakerAssetAmounts`
+    /// will represent a "scaled" amount, meaning it must be multiplied by all the individual asset amounts within
+    /// the `takerAssetData` to get the final amount of each asset that can be filled.
     function getOrderRelevantStates(LibOrder.Order[] memory orders, bytes[] memory signatures)
         public
         view
@@ -165,6 +168,10 @@ contract OrderValidationUtils is
     /// @param ownerAddress Address of the owner of the asset.
     /// @param assetData Description of tokens, per the AssetProxy contract specification.
     /// @return The amount of the asset tranferable by the owner.
+    /// NOTE: If the `assetData` encodes data for multiple assets, the `transferableAssetAmount`
+    /// will represent the amount of times the entire `assetData` can be transferred. To calculate
+    /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by 
+    /// the individual asset amounts located within the `assetData`.
     function getTransferableAssetAmount(address ownerAddress, bytes memory assetData)
         public
         view
