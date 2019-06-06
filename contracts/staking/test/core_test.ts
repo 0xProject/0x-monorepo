@@ -100,7 +100,7 @@ describe('Staking Core', () => {
                 expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD.plus(1));
             }
         });
-        it.only('staking/unstaking', async () => {
+        it('staking/unstaking', async () => {
             ///// 1 SETUP TEST PARAMETERS /////
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);
             const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
