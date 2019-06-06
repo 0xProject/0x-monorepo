@@ -54,7 +54,7 @@ const emptySignedOrder: SignedOrder = {
 const overflowErrorForCall = (
     a?: BigNumber | string | number, 
     b?: BigNumber | string | number,
-) => new SafeMathRevertErrors.Uint256OverflowError(a, b);
+) => new SafeMathRevertErrors.Uint256OverflowError();
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
