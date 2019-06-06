@@ -20,9 +20,6 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "@0x/contracts-erc1155/contracts/src/interfaces/IERC1155.sol";
-import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
-import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "@0x/contracts-asset-proxy/contracts/src/libs/LibAssetProxyIds.sol";
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 
@@ -30,7 +27,21 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 contract LibAssetData is
     LibAssetProxyIds
 {
+    // 2^256 - 1
     uint256 constant internal _MAX_UINT256 = uint256(-1);
+
+    // ERC20 selectors
+    bytes4 constant internal _ERC20_BALANCE_OF_SELECTOR = 0x70a08231;
+    bytes4 constant internal _ERC20_ALLOWANCE_SELECTOR = 0xdd62ed3e;
+
+    // ERC721 selectors
+    bytes4 constant internal _ERC721_OWNER_OF_SELECTOR = 0x6352211e;
+    bytes4 constant internal _ERC721_IS_APPROVED_FOR_ALL_SELECTOR = 0xe985e9c5;
+    bytes4 constant internal _ERC721_GET_APPROVED_SELECTOR = 0x081812fc;
+
+    // ERC1155 selectors
+    bytes4 constant internal _ERC1155_BALANCE_OF_SELECTOR = 0x00fdd58e;
+    bytes4 constant internal _ERC1155_IS_APPROVED_FOR_ALL_SELECTOR = 0xe985e9c5;
 
     using LibBytes for bytes;
 
@@ -62,29 +73,58 @@ contract LibAssetData is
         view
         returns (uint256 balance)
     {
+        // Get id of AssetProxy contract
         bytes4 assetProxyId = assetData.readBytes4(0);
 
         if (assetProxyId == ERC20_PROXY_ID) {
+            // Get ERC20 token address
             address tokenAddress = assetData.readAddress(16);
-            balance = IERC20Token(tokenAddress).balanceOf(ownerAddress);
+
+            // Encode data for `balanceOf(ownerAddress)`
+            bytes memory balanceOfData = abi.encodeWithSelector(_ERC20_BALANCE_OF_SELECTOR, ownerAddress);
+
+            // Query balance
+            (bool success, bytes memory returnData) = tokenAddress.staticcall(balanceOfData);
+            balance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
         } else if (assetProxyId == ERC721_PROXY_ID) {
+            // Get ERC721 token address and id
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
+
+            // Check if id is owned by ownerAddress
             balance = getERC721TokenOwner(tokenAddress, tokenId) == ownerAddress ? 1 : 0;
         } else if (assetProxyId == ERC1155_PROXY_ID) {
+            // Get ERC1155 token address, array of ids, and array of values
             (, address tokenAddress, uint256[] memory tokenIds, uint256[] memory tokenValues,) = decodeERC1155AssetData(assetData);
+
             uint256 length = tokenIds.length;
             for (uint256 i = 0; i != length; i++) {
-                uint256 totalBalance = IERC1155(tokenAddress).balanceOf(ownerAddress, tokenIds[i]);
+                // Encode data for `balanceOf(ownerAddress, tokenIds[i])
+                bytes memory balanceOfData = abi.encodeWithSelector(
+                    _ERC1155_BALANCE_OF_SELECTOR,
+                    ownerAddress,
+                    tokenIds[i]
+                );
+
+                // Query balance
+                (bool success, bytes memory returnData) = tokenAddress.staticcall(balanceOfData);
+                uint256 totalBalance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
+
+                // Scale total balance down by corresponding value in assetData
                 uint256 scaledBalance = totalBalance / tokenValues[i];
                 if (scaledBalance < balance || balance == 0) {
                     balance = scaledBalance;
                 }
             }
         } else if (assetProxyId == MULTI_ASSET_PROXY_ID) {
+            // Get array of values and array of assetDatas
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+
             uint256 length = nestedAssetData.length;
             for (uint256 i = 0; i != length; i++) {
+                // Query balance of individual assetData
                 uint256 totalBalance = getBalance(ownerAddress, nestedAssetData[i]);
+
+                // Scale total balance down by corresponding value in assetData
                 uint256 scaledBalance = totalBalance / assetAmounts[i];
                 if (scaledBalance < balance || balance == 0) {
                     balance = scaledBalance;
@@ -127,35 +167,80 @@ contract LibAssetData is
         view
         returns (uint256 allowance)
     {
+        // Get id of AssetProxy contract
         bytes4 assetProxyId = assetData.readBytes4(0);
 
         if (assetProxyId == MULTI_ASSET_PROXY_ID) {
+            // Get array of values and array of assetDatas
             (, uint256[] memory amounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
+
             uint256 length = nestedAssetData.length;
             for (uint256 i = 0; i != length; i++) {
+                // Query allowance of individual assetData
                 uint256 totalAllowance = getAssetProxyAllowance(ownerAddress, nestedAssetData[i]);
+
+                // Scale total allowance down by corresponding value in assetData
                 uint256 scaledAllowance = totalAllowance / amounts[i];
                 if (scaledAllowance < allowance || allowance == 0) {
                     allowance = scaledAllowance;
                 }
             }
+            return allowance;
         }
 
         if (assetProxyId == ERC20_PROXY_ID) {
+            // Get ERC20 token address
             address tokenAddress = assetData.readAddress(16);
-            allowance = IERC20Token(tokenAddress).allowance(ownerAddress, _ERC20_PROXY_ADDRESS);
+
+            // Encode data for `allowance(ownerAddress, _ERC20_PROXY_ADDRESS)`
+            bytes memory allowanceData = abi.encodeWithSelector(
+                _ERC20_ALLOWANCE_SELECTOR,
+                ownerAddress,
+                _ERC20_PROXY_ADDRESS
+            );
+
+            // Query allowance
+            (bool success, bytes memory returnData) = tokenAddress.staticcall(allowanceData);
+            allowance = success && returnData.length == 32 ? returnData.readUint256(0) : 0;
         } else if (assetProxyId == ERC721_PROXY_ID) {
+            // Get ERC721 token address and id
             (, address tokenAddress, uint256 tokenId) = decodeERC721AssetData(assetData);
-            IERC721Token token = IERC721Token(tokenAddress);
-            address assetProxyAddress = _ERC721_PROXY_ADDRESS;
-            if (token.isApprovedForAll(ownerAddress, assetProxyAddress)) {
+
+            // Encode data for `isApprovedForAll(ownerAddress, _ERC721_PROXY_ADDRESS)`
+            bytes memory isApprovedForAllData = abi.encodeWithSelector(
+                _ERC721_IS_APPROVED_FOR_ALL_SELECTOR,
+                ownerAddress,
+                _ERC721_PROXY_ADDRESS
+            );
+
+            (bool success, bytes memory returnData) = tokenAddress.staticcall(isApprovedForAllData);
+
+            // If not approved for all, call `getApproved(tokenId)`
+            if (!success || returnData.length != 32 || returnData.readUint256(0) != 1) {
+                // Encode data for `getApproved(tokenId)`
+                bytes memory getApprovedData = abi.encodeWithSelector(_ERC721_GET_APPROVED_SELECTOR, tokenId);
+                (success, returnData) = tokenAddress.staticcall(getApprovedData);
+
+                // Allowance is 1 if successful and the approved address is the ERC721Proxy
+                allowance = success && returnData.length == 32 && returnData.readAddress(12) == _ERC721_PROXY_ADDRESS ? 1 : 0;
+            } else {
+                // Allowance is 2^256 - 1 if `isApprovedForAll` returned true
                 allowance = _MAX_UINT256;
-            } else if (token.getApproved(tokenId) == assetProxyAddress) {
-                allowance = 1;
             }
         } else if (assetProxyId == ERC1155_PROXY_ID) {
+            // Get ERC1155 token address
             (, address tokenAddress, , , ) = decodeERC1155AssetData(assetData);
-            allowance = IERC1155(tokenAddress).isApprovedForAll(ownerAddress, _ERC1155_PROXY_ADDRESS) ? _MAX_UINT256 : 0;
+
+            // Encode data for `isApprovedForAll(ownerAddress, _ERC1155_PROXY_ADDRESS)`
+            bytes memory isApprovedForAllData = abi.encodeWithSelector(
+                _ERC1155_IS_APPROVED_FOR_ALL_SELECTOR,
+                ownerAddress,
+                _ERC1155_PROXY_ADDRESS
+            );
+
+            // Query allowance
+            (bool success, bytes memory returnData) = tokenAddress.staticcall(isApprovedForAllData);
+            allowance = success && returnData.length == 32 && returnData.readUint256(0) == 1 ? _MAX_UINT256 : 0;
         }
 
         // Allowance will be 0 if the assetProxyId is unknown
@@ -421,7 +506,7 @@ contract LibAssetData is
         returns (address ownerAddress)
     {
         bytes memory ownerOfCalldata = abi.encodeWithSelector(
-            0x6352211e,
+            _ERC721_OWNER_OF_SELECTOR,
             tokenId
         );
 
