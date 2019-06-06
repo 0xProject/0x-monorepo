@@ -12,7 +12,7 @@
         "version": "2.2.0",
         "changes": [
             {
-                "note": "Add `LibAssetProxyIds` and `LibAssetData` contracts",
+                "note": "Add `LibAssetProxyIds` contract",
                 "pr": 1835
             }
         ]

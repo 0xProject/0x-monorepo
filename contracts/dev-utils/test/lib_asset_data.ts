@@ -13,7 +13,7 @@ import {
     ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
 } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract, ERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
