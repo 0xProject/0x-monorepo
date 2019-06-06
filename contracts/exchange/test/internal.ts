@@ -51,12 +51,18 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = new SafeMathRevertErrors.Uint256OverflowError;
+const overflowErrorForCall = (
+    a?: BigNumber | number | string,
+    b?: BigNumber | number | string,
+) => new SafeMathRevertErrors.Uint256OverflowError(a, b);
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
     let testExchange: TestExchangeInternalsContract;
-    let overflowErrorForSendTransaction: Error | undefined;
+    let overflowErrorForSendTransaction: (
+      a?: BigNumber | number | string,
+      b?: BigNumber | number | string,
+    ) => Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
     let roundingErrorForCall: Error | undefined;
 
@@ -77,7 +83,7 @@ describe('Exchange core internal functions', () => {
             txDefaults,
             new BigNumber(chainId),
         );
-        overflowErrorForSendTransaction = new SafeMathRevertErrors.Uint256OverflowError();
+        overflowErrorForSendTransaction = overflowErrorForCall;
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
     });
@@ -103,10 +109,10 @@ describe('Exchange core internal functions', () => {
         const remainderTimes1000 = remainder.multipliedBy('1000');
         const isError = remainderTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall();
+            throw overflowErrorForCall(numerator, target);
         }
         if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall();
+            throw overflowErrorForCall(remainder, '1000');
         }
         return isError;
     }
@@ -131,10 +137,10 @@ describe('Exchange core internal functions', () => {
         const errorTimes1000 = error.multipliedBy('1000');
         const isError = errorTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall();
+            throw overflowErrorForCall(numerator, target);
         }
         if (errorTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall();
+            throw overflowErrorForCall(error, '1000');
         }
         return isError;
     }
@@ -153,7 +159,7 @@ describe('Exchange core internal functions', () => {
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw overflowErrorForCall();
+            throw overflowErrorForCall(numerator, target);
         }
         return product.dividedToIntegerBy(denominator);
     }
@@ -187,7 +193,7 @@ describe('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.plus(singleVal);
                     if (newTotal.isGreaterThan(MAX_UINT256)) {
-                        throw overflowErrorForCall();
+                        throw overflowErrorForCall(totalVal, singleVal);
                     }
                     return newTotal;
                 },
@@ -281,7 +287,7 @@ describe('Exchange core internal functions', () => {
             }
             const product = numerator.multipliedBy(target);
             if (product.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall();
+                throw overflowErrorForCall(numerator, target);
             }
             return product.dividedToIntegerBy(denominator);
         }
@@ -312,7 +318,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall();
+                throw overflowErrorForCall(product, denominator.minus(1));
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
@@ -369,7 +375,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForCall();
+                throw overflowErrorForCall(product, denominator.minus(1));
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
@@ -443,7 +449,7 @@ describe('Exchange core internal functions', () => {
         ): Promise<BigNumber> {
             const totalFilledAmount = takerAssetFilledAmount.plus(orderTakerAssetFilledAmount);
             if (totalFilledAmount.isGreaterThan(MAX_UINT256)) {
-                throw overflowErrorForSendTransaction;
+                throw overflowErrorForSendTransaction(takerAssetFilledAmount, orderTakerAssetFilledAmount);
             }
             return totalFilledAmount;
         }
