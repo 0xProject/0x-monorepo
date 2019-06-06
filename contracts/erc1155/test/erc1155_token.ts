@@ -172,12 +172,12 @@ describe('ERC1155Token', () => {
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
             // create the expected error (a uint256 underflow)
-            let expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+            const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
                 spenderInitialFungibleBalance, 
-                valueToTransfer
+                valueToTransfer,
             );
             // execute transfer
-            let tx = erc1155Contract.safeTransferFrom.sendTransactionAsync(
+            const tx = erc1155Contract.safeTransferFrom.sendTransactionAsync(
                 spender,
                 receiver,
                 tokenToTransfer,
@@ -347,12 +347,12 @@ describe('ERC1155Token', () => {
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
             // create the expected error (a uint256 underflow)
-            let expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+            const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
                 spenderInitialFungibleBalance, 
-                valuesToTransfer
+                valuesToTransfer[0],
             );
             // execute transfer
-            let tx = erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
+            const tx = erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
                 spender,
                 receiver,
                 tokensToTransfer,
