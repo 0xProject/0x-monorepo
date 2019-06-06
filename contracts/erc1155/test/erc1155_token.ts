@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -171,18 +171,21 @@ describe('ERC1155Token', () => {
             // setup test parameters
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155Contract.safeTransferFrom.sendTransactionAsync(
-                    spender,
-                    receiver,
-                    tokenToTransfer,
-                    valueToTransfer,
-                    receiverCallbackData,
-                    { from: spender },
-                ),
-                RevertReason.Uint256Underflow,
+            // create the expected error (a uint256 underflow)
+            let expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+                spenderInitialFungibleBalance, 
+                valueToTransfer
             );
+            // execute transfer
+            let tx = erc1155Contract.safeTransferFrom.sendTransactionAsync(
+                spender,
+                receiver,
+                tokenToTransfer,
+                valueToTransfer,
+                receiverCallbackData,
+                { from: spender },
+            );
+            expect(tx).to.revertWith(expectedError);
         });
         it('should throw if callback reverts', async () => {
             // setup test parameters
@@ -343,18 +346,21 @@ describe('ERC1155Token', () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
-                    spender,
-                    receiver,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    receiverCallbackData,
-                    { from: spender },
-                ),
-                RevertReason.Uint256Underflow,
+            // create the expected error (a uint256 underflow)
+            let expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+                spenderInitialFungibleBalance, 
+                valuesToTransfer
             );
+            // execute transfer
+            let tx = erc1155Contract.safeBatchTransferFrom.sendTransactionAsync(
+                spender,
+                receiver,
+                tokensToTransfer,
+                valuesToTransfer,
+                receiverCallbackData,
+                { from: spender },
+            );
+            expect(tx).to.revertWith(expectedError);
         });
         it('should throw if callback reverts', async () => {
             // setup test parameters
