@@ -148,6 +148,7 @@ export enum AssetSwapQuoterError {
     AssetUnavailable = 'ASSET_UNAVAILABLE',
     SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
+    InvalidForwarderSwapQuote = 'INVALID_FORWARDER_SWAP_QUOTE',
 }
 
 /**
