@@ -23,12 +23,14 @@ import "../libs/LibZrxToken.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinStorage.sol";
 import "./MixinConstants.sol";
+import "./MixinEpoch.sol";
 
 
 contract MixinStakeBalances is
     SafeMath,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinEpoch
 {
 
     function _getTotalStake(address owner)
@@ -71,14 +73,6 @@ contract MixinStakeBalances is
         return _getActivatableStake(owner);
     }
 
-    function _getTimelockedStake(address owner)
-        internal
-        view
-        returns (uint256)
-    {
-        return timelockedStakeByOwner[owner].total;
-    }
-
     function _getStakeDelegatedByOwner(address owner)
         internal
         view
@@ -101,5 +95,38 @@ contract MixinStakeBalances is
         returns (uint256)
     {
         return delegatedStakeByPoolId[poolId];
+    }
+
+    function _getTimelockedStake(address owner)
+        internal
+        view
+        returns (uint256)
+    {
+        (Timelock memory timelock,) = _getSynchronizedTimelock(owner);
+        return timelock.total;
+    }
+
+    function _getSynchronizedTimelock(address owner)
+        internal
+        view
+        returns (
+            Timelock memory ownerTimelock,
+            bool isOutOfSync
+        )
+    {
+        uint64 currentTimelockPeriod = _getCurrentTimelockPeriod();
+        ownerTimelock = timelockedStakeByOwner[owner];
+        isOutOfSync = false;
+        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
+            // shift n periods
+            ownerTimelock.pending = ownerTimelock.total;
+            isOutOfSync = true;
+        } else if(currentTimelockPeriod > ownerTimelock.lockedAt) {
+            // Timelock has expired - zero out
+            ownerTimelock.lockedAt = 0;
+            ownerTimelock.total = 0;
+            ownerTimelock.pending = 0;
+        }
+        return (ownerTimelock, isOutOfSync);
     }
 }
