@@ -5,7 +5,6 @@ export const RequiredProperties: string[] = [
     'schemaVersion',
     'contractName',
     'compilerOutput.evm.bytecode.object',
-    'compilerOutput.evm.deployedBytecode.object',
     'compilerOutput.abi',
 ];
 
