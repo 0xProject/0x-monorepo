@@ -33,8 +33,8 @@ contract MixinStake is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
-    MixinStakeBalances,
-    MixinEpoch
+    MixinEpoch,
+    MixinStakeBalances
 {
     using LibZrxToken for uint256;
 
@@ -211,28 +211,5 @@ contract MixinStake is
             return;
         }
         timelockedStakeByOwner[owner] = ownerTimelock;
-    }
-
-    function _getSynchronizedTimelock(address owner)
-        private
-        returns (
-            Timelock memory ownerTimelock,
-            bool isOutOfSync
-        )
-    {
-        uint64 currentTimelockPeriod = _getCurrentTimelockPeriod();
-        ownerTimelock = timelockedStakeByOwner[owner];
-        isOutOfSync = false;
-        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
-            // shift n periods
-            ownerTimelock.pending = ownerTimelock.total;
-            isOutOfSync = true;
-        } else if(currentTimelockPeriod > ownerTimelock.lockedAt) {
-            // Timelock has expired - zero out
-            ownerTimelock.lockedAt = 0;
-            ownerTimelock.total = 0;
-            ownerTimelock.pending = 0;
-        }
-        return (ownerTimelock, isOutOfSync);
     }
 }
