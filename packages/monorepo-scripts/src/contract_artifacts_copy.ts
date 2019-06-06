@@ -38,7 +38,7 @@ for (const _path of allArtifactPaths) {
     fs.copyFileSync(_path, targetPath);
     utils.log(`Copied from ${_path} to ${targetPath}`);
 }
-utils.log(`Finished copying contract-artifacts. Run 'cd packages/contract-artifacts && yarn lint`);
+utils.log(`Finished copying contract-artifacts. Remember to lint artifacts before using abi-gen.`);
 
 /*
  * @param dir        the directory name under 0x-monorepo/contracts, e.g. 'exchange', 'extensions'

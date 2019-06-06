@@ -13,10 +13,7 @@
                 "type": "function"
             }
         ],
-        "evm": {
-            "bytecode": { "linkReferences": {}, "object": "0x" },
-            "deployedBytecode": { "linkReferences": {}, "object": "0x" }
-        }
+        "evm": { "bytecode": { "object": "0x" }, "deployedBytecode": { "object": "0x" } }
     },
     "networks": {}
 }

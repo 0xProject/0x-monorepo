@@ -1,9 +1,9 @@
+import { logUtils } from '@0x/utils';
 import * as fs from 'fs';
-import * as path from 'path';
-
-import * as artifacts from './index';
 
 export const RequiredProperties: string[] = [
+    'schemaVersion',
+    'contractName',
     'compilerOutput.evm.bytecode.object',
     'compilerOutput.evm.deployedBytecode.object',
     'compilerOutput.abi',
@@ -12,25 +12,29 @@ export const RequiredProperties: string[] = [
 export const ForbiddenProperties: string[] = [
     'compilerOutput.evm.bytecode.sourceMap',
     'compilerOutput.evm.bytecode.opcodes',
+    'compilerOutput.evm.bytecode.linkReferences',
     'compilerOutput.evm.deployedBytecode.sourceMap',
     'compilerOutput.evm.deployedBytecode.opcodes',
+    'compilerOutput.evm.deployedBytecode.linkReferences',
     'compilerOutput.evm.assembly',
     'compilerOutput.evm.legacyAssembly',
+    'compilerOutput.evm.gasEstimates',
+    'compilerOutput.evm.methodIdentifiers',
+    'compilerOutput.metadata',
+    'compilerOutput.userdoc',
     'sourceCodes',
     'sources',
     'sourceTreeHashHex',
     'compiler',
 ];
 
-function removeForbiddenProperties(): void {
-    for (const [artifactName, artifact] of Object.entries(artifacts)) {
+function removeForbiddenProperties(filePaths: string[]): void {
+    for (const filePath of filePaths) {
+        const artifact = JSON.parse(fs.readFileSync(filePath).toString()) as { [name: string]: any };
         for (const property of ForbiddenProperties) {
-            const _artifact = artifact as { [name: string]: any };
-            deleteNestedProperty(_artifact, property);
-
-            const filePath = path.join(__dirname, `../../artifacts/${artifactName}.json`);
-            fs.writeFileSync(filePath, JSON.stringify(_artifact));
+            deleteNestedProperty(artifact, property);
         }
+        fs.writeFileSync(filePath, JSON.stringify(artifact));
     }
 }
 
@@ -56,6 +60,10 @@ function deleteNestedProperty(obj: any, propPath: string): void {
 }
 
 if (require.main === module) {
-    console.log(`Deleting forbidden properties from contract-artifacts. May need to run 'yarn prettier' after.`); // tslint:disable-line:no-console
-    removeForbiddenProperties();
+    const artifactsPath = process.argv[2];
+    logUtils.log(`Deleting forbidden properties from artifacts in ${artifactsPath}.`);
+    const artifactFiles = fs.readdirSync(artifactsPath)
+        .filter(filename => filename.indexOf('.json') !== -1)
+        .map(filename => `./${artifactsPath}/${filename}`);
+    removeForbiddenProperties(artifactFiles);
 }
