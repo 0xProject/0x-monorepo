@@ -4,17 +4,17 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
-import { AssetBuyerError, BuyQuote, BuyQuoteInfo, OrdersAndFillableAmounts } from '../types';
+import { AssetSwapQuoterError, OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo } from '../types';
 
-// Calculates a buy quote for orders that have WETH as the takerAsset
-export const buyQuoteCalculator = {
+// Calculates a swap quote for orders
+export const swapQuoteCalculator = {
     calculate(
         ordersAndFillableAmounts: OrdersAndFillableAmounts,
         feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
         makerAssetBuyAmount: BigNumber,
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
-    ): BuyQuote {
+    ): SwapQuote {
         const orders = ordersAndFillableAmounts.orders;
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const feeOrders = feeOrdersAndFillableAmounts.orders;
@@ -64,7 +64,7 @@ export const buyQuoteCalculator = {
             );
             // if we do not have enough feeOrders to cover the fees, throw
             if (feeOrdersAndRemainingFeeAmount.remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
-                throw new Error(AssetBuyerError.InsufficientZrxLiquidity);
+                throw new Error(AssetSwapQuoterError.InsufficientZrxLiquidity);
             }
             resultFeeOrders = feeOrdersAndRemainingFeeAmount.resultFeeOrders;
             feeOrdersRemainingFillableMakerAssetAmounts =
@@ -106,9 +106,6 @@ export const buyQuoteCalculator = {
             feeOrders: resultFeeOrders,
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
-            // TODO(dave4506): coordinator metadata for buy quote
-            toAddress: constants.NULL_ADDRESS,
-            isUsingCoordinator: false,
         };
     },
 };
@@ -118,7 +115,7 @@ function calculateQuoteInfo(
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
     makserAssetBuyAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
-): BuyQuoteInfo {
+): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     let takerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
@@ -132,7 +129,9 @@ function calculateQuoteInfo(
         // find eth amount needed to buy zrx
         zrxTakerTokenAmount = findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
+
     const feeTakerTokenAmount = zrxTakerTokenAmount;
+
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
     const totalTakerTokenAmount = takerTokenAmount.plus(feeTakerTokenAmount);
     return {

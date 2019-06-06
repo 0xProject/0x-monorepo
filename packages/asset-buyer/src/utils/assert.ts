@@ -1,29 +1,27 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
 
-import { BuyQuote, BuyQuoteInfo, OrderProvider, OrderProviderRequest } from '../types';
+import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
 
 export const assert = {
     ...sharedAssert,
-    isValidBuyQuote(variableName: string, buyQuote: BuyQuote): void {
-        sharedAssert.isHexString(`${variableName}.takerAssetData`, buyQuote.takerAssetData);
-        sharedAssert.isHexString(`${variableName}.makerAssetData`, buyQuote.makerAssetData);
-        sharedAssert.doesConformToSchema(`${variableName}.orders`, buyQuote.orders, schemas.signedOrdersSchema);
-        sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, buyQuote.feeOrders, schemas.signedOrdersSchema);
-        assert.isValidBuyQuoteInfo(`${variableName}.bestCaseQuoteInfo`, buyQuote.bestCaseQuoteInfo);
-        assert.isValidBuyQuoteInfo(`${variableName}.worstCaseQuoteInfo`, buyQuote.worstCaseQuoteInfo);
-        sharedAssert.isBigNumber(`${variableName}.makerAssetBuyAmount`, buyQuote.makerAssetBuyAmount);
-        assert.isETHAddressHex(`${variableName}.toAddress`, buyQuote.toAddress);
-        assert.isBoolean(`${variableName}.isUsingCoordinator`, buyQuote.isUsingCoordinator);
+    isValidSwapQuote(variableName: string, swapQuote: SwapQuote): void {
+        sharedAssert.isHexString(`${variableName}.takerAssetData`, swapQuote.takerAssetData);
+        sharedAssert.isHexString(`${variableName}.makerAssetData`, swapQuote.makerAssetData);
+        sharedAssert.doesConformToSchema(`${variableName}.orders`, swapQuote.orders, schemas.signedOrdersSchema);
+        sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
+        assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
+        assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
+        sharedAssert.isBigNumber(`${variableName}.makerAssetBuyAmount`, swapQuote.makerAssetBuyAmount);
         // TODO(dave4506) Remove once forwarder features are reimplemented
         // if (buyQuote.feePercentage !== undefined) {
         //     sharedAssert.isNumber(`${variableName}.feePercentage`, buyQuote.feePercentage);
         // }
     },
-    isValidBuyQuoteInfo(variableName: string, buyQuoteInfo: BuyQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, buyQuoteInfo.takerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, buyQuoteInfo.feeTakerTokenAmount);
-        sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, buyQuoteInfo.totalTakerTokenAmount);
+    isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
+        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, swapQuoteInfo.feeTakerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, swapQuoteInfo.totalTakerTokenAmount);
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
