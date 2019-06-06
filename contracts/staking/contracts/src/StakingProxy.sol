@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "./core/MixinStorage.sol";
+import "./immutable/MixinStorage.sol";
 import "./interfaces/IStakingProxy.sol";
 
 

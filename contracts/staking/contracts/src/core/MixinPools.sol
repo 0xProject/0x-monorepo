@@ -18,9 +18,9 @@
 
 pragma solidity ^0.5.5;
 
-import "./MixinStorage.sol";
+import "../immutable/MixinStorage.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "./MixinConstants.sol";
+import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 
 contract MixinPools is
