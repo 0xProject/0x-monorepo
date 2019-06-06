@@ -63,6 +63,32 @@ contract ERC1155Mintable is
         }
     }
 
+    /// @dev creates a new token
+    /// @param type_ of token
+    /// @param uri URI of token
+    function createWithType(
+        uint256 type_,
+        string calldata uri
+    )
+        external
+    {
+        // This will allow restricted access to creators.
+        creators[type_] = msg.sender;
+
+        // emit a Transfer event with Create semantic to help with discovery.
+        emit TransferSingle(
+            msg.sender,
+            address(0x0),
+            address(0x0),
+            type_,
+            0
+        );
+
+        if (bytes(uri).length > 0) {
+            emit URI(uri, type_);
+        }
+    }
+
     /// @dev mints fungible tokens
     /// @param id token type
     /// @param to beneficiaries of minted tokens
