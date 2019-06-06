@@ -42,16 +42,6 @@ export interface CalldataInformation {
     value: BigNumber;
 }
 
-export interface Web3TransactionParams {
-    from: string;
-    to?: string;
-    value?: string;
-    gas?: string;
-    gasPrice?: string;
-    data?: string;
-    nonce?: string;
-}
-
 export interface SmartContractParams {
     params: { [name: string]: any };
     to: string;
@@ -59,9 +49,8 @@ export interface SmartContractParams {
 }
 
 export interface SwapQuoteConsumer {
-    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteConsumerOpts>): Promise<CalldataInformation>;
-    getWeb3TransactionParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteConsumerOpts>): Promise<Web3TransactionParams>;
-    getSmartContractParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteConsumerOpts>): Promise<SmartContractParams>;
+    getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInformation;
+    getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParams;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
@@ -77,7 +66,7 @@ export interface SwapQuoteGetOutputOpts {}
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
  */
-export interface SwapQuoteExecutionOpts extends SwapQuoteConsumerOpts {
+export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
     ethAmount?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
