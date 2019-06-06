@@ -176,7 +176,7 @@ contract MixinStake is
         delegatedStakeByPoolId[poolId] = _safeSub(delegatedStakeByPoolId[poolId], amount);
     }
 
-    // Epoch | lockedAt  | total | pending |  | timelock() | withdraw() | available()
+    // Epoch | lockedAt  | total | pending | deactivated | timelock() | withdraw() | available()
     // 0     | 0         | 0     | 0       | 0       |            |            | 0
     // 1     | 1         | 5     | 0       | 0       | +5         |            | 0
     // 2     | 1         | 5     | 0       | 0       |            |            | 0
