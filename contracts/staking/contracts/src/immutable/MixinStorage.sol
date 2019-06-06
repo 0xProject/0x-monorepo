@@ -74,6 +74,12 @@ contract MixinStorage is
     // current epoch start time
     uint64 currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
 
+    // fees collected this epoch
+    mapping (bytes32 => uint256) feesCollectedThisEpochByPoolId;
+
+    // 
+    bytes32[] activePoolIdsThisEpoch;
+
     // ZRX vault
     IVault zrxVault;
 
