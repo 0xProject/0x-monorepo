@@ -55,7 +55,7 @@ const DEFAULT_COMPILER_SETTINGS: solc.CompilerSettings = {
     },
     outputSelection: {
         [ALL_FILES_IDENTIFIER]: {
-            [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object', 'evm.deployedBytecode.object'], // deployedBytecode indexes are saved and then deployedBytecode.object is removed by linting to minimise bundle size
+            [ALL_CONTRACTS_IDENTIFIER]: ['abi', 'evm.bytecode.object'],
         },
     },
 };
