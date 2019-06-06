@@ -154,7 +154,7 @@ contract MixinStake is
         private
     {
         // increment how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeAdd(stakeByOwner[owner], amount);
+        delegatedStakeByOwner[owner] = _safeAdd(delegatedStakeByOwner[owner], amount);
 
         // increment how much stake the owner has delegated to the input pool
         delegatedStakeToPoolByOwner[owner][poolId] = _safeAdd(delegatedStakeToPoolByOwner[owner][poolId], amount);
@@ -167,7 +167,7 @@ contract MixinStake is
         private
     {
         // decrement how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeSub(stakeByOwner[owner], amount);
+        delegatedStakeByOwner[owner] = _safeSub(delegatedStakeByOwner[owner], amount);
 
         // decrement how much stake the owner has delegated to the input pool
         delegatedStakeToPoolByOwner[owner][poolId] = _safeSub(delegatedStakeToPoolByOwner[owner][poolId], amount);
