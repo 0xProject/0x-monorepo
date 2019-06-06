@@ -271,7 +271,7 @@ describe('Staking Core', () => {
             }
         });
 
-        it.only('delegating/undelegating', async () => {
+        it('delegating/undelegating', async () => {
             ///// 1 SETUP TEST PARAMETERS /////
             const amountToDelegate = stakingWrapper.toBaseUnitAmount(10);
             const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
@@ -326,14 +326,22 @@ describe('Staking Core', () => {
                 const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
                 expect(activatableStakeBalance).to.be.bignumber.equal(0);
             }
-            /*
-            ///// 3 DEACTIVATE AND TIMELOCK STAKE /////
+            ///// 3 DEACTIVATE AND TIMELOCK DELEGATED STAKE /////
             // unstake
-            await stakingWrapper.deactivateAndTimelockStakeAsync(owner, amountToDeactivate);
+            await stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(owner, poolId, amountToDeactivate);
            {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate)); 
@@ -356,6 +364,15 @@ describe('Staking Core', () => {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate)); 
@@ -378,6 +395,15 @@ describe('Staking Core', () => {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate)); 
@@ -400,6 +426,15 @@ describe('Staking Core', () => {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate)); 
@@ -417,11 +452,20 @@ describe('Staking Core', () => {
                 expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
             }
             ///// 7 REACTIVATE SOME STAKE /////
-            await stakingWrapper.activateStakeAsync(owner, amountToReactivate);
+            await stakingWrapper.activateAndDelegateStakeAsync(owner, poolId, amountToReactivate);
             {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate)); 
@@ -444,6 +488,15 @@ describe('Staking Core', () => {
                 // check total stake balance didn't change
                 const totalStake = await stakingWrapper.getTotalStakeAsync(owner);
                 expect(totalStake).to.be.bignumber.equal(amountToDelegate.minus(amountToWithdraw)); 
+                // check delegated stake balance for owner
+                const stakeDelegatedByOwner = await stakingWrapper.getStakeDelegatedByOwnerAsync(owner);
+                expect(stakeDelegatedByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
+                // check delegated balance to pool by owner
+                const stakeDelegatedToPoolByOwner = await stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, owner);
+                expect(stakeDelegatedToPoolByOwner).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
+                // checktotal amount delegated to pool
+                const stakeDelegatedToPool = await stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+                expect(stakeDelegatedToPool).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate));
                 // check timelocked stake is no longer activated
                 const activatedStakeBalance = await stakingWrapper.getActivatedStakeAsync(owner);
                 expect(activatedStakeBalance).to.be.bignumber.equal(amountToDelegate.minus(amountToDeactivate).plus(amountToReactivate)); 
@@ -468,7 +521,6 @@ describe('Staking Core', () => {
                 const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(owner);
                 expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToDelegate).plus(amountToWithdraw));
             }
-            */
         });
 
         it('nth root', async () => {
