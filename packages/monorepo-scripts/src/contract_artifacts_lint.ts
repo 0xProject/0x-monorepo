@@ -1,6 +1,7 @@
 import { logUtils } from '@0x/utils';
 import * as fs from 'fs';
 
+// xianny: hack, copied from contract-artifacts to avoid changing contract-artifacts exports
 export const RequiredProperties: string[] = [
     'schemaVersion',
     'contractName',
