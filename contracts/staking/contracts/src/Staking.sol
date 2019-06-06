@@ -18,8 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "./core/MixinConstants.sol";
-import "./core/MixinStorage.sol";
+import "./immutable/MixinConstants.sol";
+import "./immutable/MixinStorage.sol";
 import "./core/MixinStake.sol";
 import "./core/MixinPools.sol";
 import "./core/MixinEpoch.sol";

@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "./MixinStorage.sol";
+import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
 
 contract MixinEpoch is
