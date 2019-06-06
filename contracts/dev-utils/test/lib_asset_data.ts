@@ -13,11 +13,12 @@ import {
     ERC1155MintableContract,
     ERC1155TransferSingleEventArgs,
 } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract, ERC20TokenContract } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts, DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts, ExchangeContract } from '@0x/contracts-exchange';
 import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
@@ -185,221 +186,229 @@ describe('LibAssetData', () => {
         expect(libAssetData.address.slice(0, 2)).to.equal('0x');
     });
 
-    it('should encode ERC20 asset data', async () => {
-        expect(await libAssetData.encodeERC20AssetData.callAsync(KNOWN_ERC20_ENCODING.address)).to.equal(
-            KNOWN_ERC20_ENCODING.assetData,
-        );
-    });
+    describe('encoding and decoding', () => {
+        it('should encode ERC20 asset data', async () => {
+            expect(await libAssetData.encodeERC20AssetData.callAsync(KNOWN_ERC20_ENCODING.address)).to.equal(
+                KNOWN_ERC20_ENCODING.assetData,
+            );
+        });
 
-    it('should decode ERC20 asset data', async () => {
-        expect(await libAssetData.decodeERC20AssetData.callAsync(KNOWN_ERC20_ENCODING.assetData)).to.deep.equal([
-            AssetProxyId.ERC20,
-            KNOWN_ERC20_ENCODING.address,
-        ]);
-    });
+        it('should decode ERC20 asset data', async () => {
+            expect(await libAssetData.decodeERC20AssetData.callAsync(KNOWN_ERC20_ENCODING.assetData)).to.deep.equal([
+                AssetProxyId.ERC20,
+                KNOWN_ERC20_ENCODING.address,
+            ]);
+        });
 
-    it('should encode ERC721 asset data', async () => {
-        expect(
-            await libAssetData.encodeERC721AssetData.callAsync(
+        it('should encode ERC721 asset data', async () => {
+            expect(
+                await libAssetData.encodeERC721AssetData.callAsync(
+                    KNOWN_ERC721_ENCODING.address,
+                    KNOWN_ERC721_ENCODING.tokenId,
+                ),
+            ).to.equal(KNOWN_ERC721_ENCODING.assetData);
+        });
+
+        it('should decode ERC721 asset data', async () => {
+            expect(await libAssetData.decodeERC721AssetData.callAsync(KNOWN_ERC721_ENCODING.assetData)).to.deep.equal([
+                AssetProxyId.ERC721,
                 KNOWN_ERC721_ENCODING.address,
                 KNOWN_ERC721_ENCODING.tokenId,
-            ),
-        ).to.equal(KNOWN_ERC721_ENCODING.assetData);
-    });
+            ]);
+        });
 
-    it('should decode ERC721 asset data', async () => {
-        expect(await libAssetData.decodeERC721AssetData.callAsync(KNOWN_ERC721_ENCODING.assetData)).to.deep.equal([
-            AssetProxyId.ERC721,
-            KNOWN_ERC721_ENCODING.address,
-            KNOWN_ERC721_ENCODING.tokenId,
-        ]);
-    });
+        it('should encode ERC1155 asset data', async () => {
+            expect(
+                await libAssetData.encodeERC1155AssetData.callAsync(
+                    KNOWN_ERC1155_ENCODING.tokenAddress,
+                    KNOWN_ERC1155_ENCODING.tokenIds,
+                    KNOWN_ERC1155_ENCODING.tokenValues,
+                    KNOWN_ERC1155_ENCODING.callbackData,
+                ),
+            ).to.equal(KNOWN_ERC1155_ENCODING.assetData);
+        });
 
-    it('should encode ERC1155 asset data', async () => {
-        expect(
-            await libAssetData.encodeERC1155AssetData.callAsync(
-                KNOWN_ERC1155_ENCODING.tokenAddress,
-                KNOWN_ERC1155_ENCODING.tokenIds,
-                KNOWN_ERC1155_ENCODING.tokenValues,
-                KNOWN_ERC1155_ENCODING.callbackData,
-            ),
-        ).to.equal(KNOWN_ERC1155_ENCODING.assetData);
-    });
+        it('should decode ERC1155 asset data', async () => {
+            expect(await libAssetData.decodeERC1155AssetData.callAsync(KNOWN_ERC1155_ENCODING.assetData)).to.deep.equal(
+                [
+                    AssetProxyId.ERC1155,
+                    KNOWN_ERC1155_ENCODING.tokenAddress,
+                    KNOWN_ERC1155_ENCODING.tokenIds,
+                    KNOWN_ERC1155_ENCODING.tokenValues,
+                    KNOWN_ERC1155_ENCODING.callbackData,
+                ],
+            );
+        });
 
-    it('should decode ERC1155 asset data', async () => {
-        expect(await libAssetData.decodeERC1155AssetData.callAsync(KNOWN_ERC1155_ENCODING.assetData)).to.deep.equal([
-            AssetProxyId.ERC1155,
-            KNOWN_ERC1155_ENCODING.tokenAddress,
-            KNOWN_ERC1155_ENCODING.tokenIds,
-            KNOWN_ERC1155_ENCODING.tokenValues,
-            KNOWN_ERC1155_ENCODING.callbackData,
-        ]);
-    });
+        it('should encode multiasset data', async () => {
+            expect(
+                await libAssetData.encodeMultiAssetData.callAsync(
+                    KNOWN_MULTI_ASSET_ENCODING.amounts,
+                    KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
+                ),
+            ).to.equal(KNOWN_MULTI_ASSET_ENCODING.assetData);
+        });
 
-    it('should encode multiasset data', async () => {
-        expect(
-            await libAssetData.encodeMultiAssetData.callAsync(
+        it('should decode multiasset data', async () => {
+            expect(
+                await libAssetData.decodeMultiAssetData.callAsync(KNOWN_MULTI_ASSET_ENCODING.assetData),
+            ).to.deep.equal([
+                AssetProxyId.MultiAsset,
                 KNOWN_MULTI_ASSET_ENCODING.amounts,
                 KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
-            ),
-        ).to.equal(KNOWN_MULTI_ASSET_ENCODING.assetData);
-    });
-
-    it('should decode multiasset data', async () => {
-        expect(await libAssetData.decodeMultiAssetData.callAsync(KNOWN_MULTI_ASSET_ENCODING.assetData)).to.deep.equal([
-            AssetProxyId.MultiAsset,
-            KNOWN_MULTI_ASSET_ENCODING.amounts,
-            KNOWN_MULTI_ASSET_ENCODING.nestedAssetData,
-        ]);
-    });
-
-    it('should query ERC20 balance by asset data', async () => {
-        expect(
-            await libAssetData.getBalance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-            ),
-        ).to.bignumber.equal(erc20TokenTotalSupply);
-    });
-
-    it('should query ERC721 balance by asset data', async () => {
-        expect(
-            await libAssetData.getBalance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-            ),
-        ).to.bignumber.equal(1);
-    });
-
-    it('should query ERC1155 balances by asset data', async () => {
-        expect(
-            await libAssetData.getBalance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC1155AssetData.callAsync(
-                    erc1155Token.address,
-                    [erc1155TokenId],
-                    [new BigNumber(1)], // token values
-                    '0x', // callback data
-                ),
-            ),
-        ).to.bignumber.equal(1);
-    });
-
-    it('should query multi-asset batch balance by asset data', async () => {
-        expect(
-            await libAssetData.getBalance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeMultiAssetData.callAsync(
-                    [new BigNumber(1), new BigNumber(1)],
-                    [
-                        await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-                        await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-                    ],
-                ),
-            ),
-        ).to.bignumber.equal(Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens));
-    });
-
-    it('should query ERC20 allowances by asset data', async () => {
-        const allowance = new BigNumber(1);
-        await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
-            from: tokenOwnerAddress,
+            ]);
         });
-        expect(
-            await libAssetData.getAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-            ),
-        ).to.bignumber.equal(allowance);
     });
 
-    it('should query ERC721 approval by asset data', async () => {
-        await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
-            from: tokenOwnerAddress,
+    describe('getBalance', () => {
+        it('should query ERC20 balance by asset data', async () => {
+            const assetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            expect(await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData)).to.bignumber.equal(
+                erc20TokenTotalSupply,
+            );
         });
-        expect(
-            await libAssetData.getAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-            ),
-        ).to.bignumber.equal(1);
+
+        it('should return 0 if ERC20 token does not exist', async () => {
+            const assetData = assetDataUtils.encodeERC20AssetData(constants.NULL_ADDRESS);
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData);
+            expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+
+        it('should query ERC721 balance by asset data', async () => {
+            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId);
+            expect(await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData)).to.bignumber.equal(1);
+        });
+
+        it('should return 0 if ERC721 token does not exist', async () => {
+            const assetData = assetDataUtils.encodeERC721AssetData(constants.NULL_ADDRESS, firstERC721TokenId);
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData);
+            expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+
+        it('should query ERC1155 balances by asset data', async () => {
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Token.address,
+                [erc1155TokenId],
+                [new BigNumber(1)],
+                constants.NULL_BYTES,
+            );
+            expect(await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData)).to.bignumber.equal(1);
+        });
+
+        it('should return 0 if ERC1155 token does not exist', async () => {
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                constants.NULL_ADDRESS,
+                [erc1155TokenId],
+                [new BigNumber(1)],
+                constants.NULL_BYTES,
+            );
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData);
+            expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+
+        it('should query multi-asset batch balance by asset data', async () => {
+            const assetData = assetDataUtils.encodeMultiAssetData(
+                [new BigNumber(1), new BigNumber(1)],
+                [
+                    assetDataUtils.encodeERC20AssetData(erc20Token.address),
+                    assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId),
+                ],
+            );
+            expect(await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData)).to.bignumber.equal(
+                Math.min(erc20TokenTotalSupply.toNumber(), numberOfERC721Tokens),
+            );
+        });
+
+        it('should return a balance of 0 if the assetData does not correspond to an AssetProxy contract', async () => {
+            const fakeAssetData = '0x01020304';
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, fakeAssetData);
+            expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
     });
 
-    it('should query ERC721 approvalForAll by assetData', async () => {
-        await erc721Token.setApprovalForAll.awaitTransactionSuccessAsync(erc721Proxy.address, true, {
-            from: tokenOwnerAddress,
+    describe('getAssetProxyAllowance', () => {
+        it('should query ERC20 allowances by asset data', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            expect(
+                await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.bignumber.equal(allowance);
         });
-        expect(
-            await libAssetData.getAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-            ),
-        ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+
+        it('should query ERC721 approval by asset data', async () => {
+            await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId);
+            expect(
+                await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.bignumber.equal(1);
+        });
+
+        it('should query ERC721 approvalForAll by assetData', async () => {
+            await erc721Token.setApprovalForAll.awaitTransactionSuccessAsync(erc721Proxy.address, true, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId);
+            expect(
+                await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+
+        it('should query ERC1155 allowances by asset data', async () => {
+            await erc1155Token.setApprovalForAll.awaitTransactionSuccessAsync(erc1155Proxy.address, true, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC1155AssetData(
+                erc1155Token.address,
+                [erc1155TokenId],
+                [new BigNumber(1)],
+                constants.NULL_BYTES,
+            );
+            expect(
+                await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+
+        it('should query multi-asset allowances by asset data', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                from: tokenOwnerAddress,
+            });
+            await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeMultiAssetData(
+                [new BigNumber(1), new BigNumber(1)],
+                [
+                    assetDataUtils.encodeERC20AssetData(erc20Token.address),
+                    assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId),
+                ],
+            );
+            expect(
+                await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.bignumber.equal(1);
+            return;
+        });
+
+        it('should return an allowance of 0 if the assetData does not correspond to an AssetProxy contract', async () => {
+            const fakeAssetData = '0x01020304';
+            const allowance = await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, fakeAssetData);
+            expect(allowance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
     });
 
-    it('should query ERC1155 allowances by asset data', async () => {
-        await erc1155Token.setApprovalForAll.awaitTransactionSuccessAsync(erc1155Proxy.address, true, {
-            from: tokenOwnerAddress,
+    describe('getBatchBalances', () => {
+        it('should query balances for a batch of asset data strings', async () => {
+            const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId);
+            expect(
+                await libAssetData.getBatchBalances.callAsync(tokenOwnerAddress, [erc20AssetData, erc721AssetData]),
+            ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
         });
-        expect(
-            await libAssetData.getAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC1155AssetData.callAsync(
-                    erc1155Token.address,
-                    [erc1155TokenId],
-                    [new BigNumber(1)],
-                    '0x',
-                ),
-            ),
-        ).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
-    });
-
-    it('should query multi-asset allowances by asset data', async () => {
-        const allowance = new BigNumber(1);
-        await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
-            from: tokenOwnerAddress,
-        });
-        await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
-            from: tokenOwnerAddress,
-        });
-        expect(
-            await libAssetData.getAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeMultiAssetData.callAsync(
-                    [new BigNumber(1), new BigNumber(1)],
-                    [
-                        await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-                        await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-                    ],
-                ),
-            ),
-        ).to.bignumber.equal(1);
-        return;
-    });
-
-    it('should query balances for a batch of asset data strings', async () => {
-        expect(
-            await libAssetData.getBatchBalances.callAsync(tokenOwnerAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-            ]),
-        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), new BigNumber(1)]);
-    });
-
-    it('should query allowances for a batch of asset data strings', async () => {
-        const allowance = new BigNumber(1);
-        await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
-            from: tokenOwnerAddress,
-        });
-        await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
-            from: tokenOwnerAddress,
-        });
-        expect(
-            await libAssetData.getBatchAssetProxyAllowances.callAsync(tokenOwnerAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-                await libAssetData.encodeERC721AssetData.callAsync(erc721Token.address, firstERC721TokenId),
-            ]),
-        ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
     });
 
     describe('getERC721TokenOwner', async () => {
@@ -416,28 +425,48 @@ describe('LibAssetData', () => {
         });
     });
 
-    it('should query balance and allowance together, from asset data', async () => {
-        const allowance = new BigNumber(1);
-        await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
-            from: tokenOwnerAddress,
+    describe('getBalanceAndAllowance', () => {
+        it('should query balance and allowance together, from asset data', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            expect(
+                await libAssetData.getBalanceAndAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData),
+            ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), allowance]);
         });
-        expect(
-            await libAssetData.getBalanceAndAssetProxyAllowance.callAsync(
-                tokenOwnerAddress,
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-            ),
-        ).to.deep.equal([new BigNumber(erc20TokenTotalSupply), allowance]);
+    });
+    describe('getBatchBalancesAndAllowances', () => {
+        it('should query balances and allowances together, from an asset data array', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                from: tokenOwnerAddress,
+            });
+            const assetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            expect(
+                await libAssetData.getBatchBalancesAndAssetProxyAllowances.callAsync(tokenOwnerAddress, [assetData]),
+            ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [allowance]]);
+        });
     });
 
-    it('should query balances and allowances together, from an asset data array', async () => {
-        const allowance = new BigNumber(1);
-        await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
-            from: tokenOwnerAddress,
+    describe('getBatchAssetProxyAllowances', () => {
+        it('should query allowances for a batch of asset data strings', async () => {
+            const allowance = new BigNumber(1);
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, allowance, {
+                from: tokenOwnerAddress,
+            });
+            await erc721Token.approve.awaitTransactionSuccessAsync(erc721Proxy.address, firstERC721TokenId, {
+                from: tokenOwnerAddress,
+            });
+            const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
+            const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, firstERC721TokenId);
+            expect(
+                await libAssetData.getBatchAssetProxyAllowances.callAsync(tokenOwnerAddress, [
+                    erc20AssetData,
+                    erc721AssetData,
+                ]),
+            ).to.deep.equal([new BigNumber(1), new BigNumber(1)]);
         });
-        expect(
-            await libAssetData.getBatchBalancesAndAssetProxyAllowances.callAsync(tokenOwnerAddress, [
-                await libAssetData.encodeERC20AssetData.callAsync(erc20Token.address),
-            ]),
-        ).to.deep.equal([[new BigNumber(erc20TokenTotalSupply)], [allowance]]);
     });
 });
