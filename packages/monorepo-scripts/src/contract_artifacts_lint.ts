@@ -23,7 +23,6 @@ export const ForbiddenProperties: string[] = [
     'sourceCodes',
     'sources',
     'sourceTreeHashHex',
-    'compiler',
 ];
 
 function removeForbiddenProperties(filePaths: string[]): void {

@@ -19,5 +19,4 @@ export const ForbiddenProperties: string[] = [
     'sourceCodes',
     'sources',
     'sourceTreeHashHex',
-    'compiler',
 ];
