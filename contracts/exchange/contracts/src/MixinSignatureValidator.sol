@@ -27,17 +27,18 @@ import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 import "./interfaces/IOrderValidator.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./interfaces/ITransactions.sol";
+import "./MixinTransactions.sol";
 import "./MixinExchangeRichErrors.sol";
 
 
-contract MixinSignatureValidator is
-    MixinExchangeRichErrors,
-    ReentrancyGuard,
-    LibOrder,
-    ISignatureValidator,
-    ITransactions
-{
+contract MixinSignatureValidator is 
+    MixinExchangeRichErrors, 
+    ReentrancyGuard, 
+    LibOrder, 
+    ISignatureValidator, 
+    MixinTransactions 
+{ 
+
     using LibBytes for bytes;
 
     // Mapping of hash => signer => signed
@@ -210,11 +211,6 @@ contract MixinSignatureValidator is
             signature
         );
     }
-
-    function _getCurrentContextAddress()
-        internal
-        view
-        returns (address);
 
     /// Reads the `SignatureType` from the end of a signature and validates it.
     function _readValidSignatureType(

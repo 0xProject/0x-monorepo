@@ -26,8 +26,7 @@ import "../src/MixinTransactions.sol";
 
 contract TestSignatureValidator is
     LibEIP712ExchangeDomain,
-    MixinSignatureValidator,
-    MixinTransactions
+    MixinSignatureValidator
 {
 
     // solhint-disable no-empty-blocks
