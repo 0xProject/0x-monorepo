@@ -31,8 +31,6 @@ contract MixinTransactions is
     ISignatureValidator,
     ITransactions
 {
-    // TransactionExecution event is emitted when a ZeroExTransaction is executed.
-    event TransactionExecution(bytes32 indexed transactionHash);
 
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
