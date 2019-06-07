@@ -173,7 +173,7 @@ describe('ERC1155Token', () => {
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
             // create the expected error (a uint256 underflow)
             const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
-                spenderInitialFungibleBalance, 
+                spenderInitialFungibleBalance,
                 valueToTransfer,
             );
             // execute transfer
@@ -185,7 +185,7 @@ describe('ERC1155Token', () => {
                 receiverCallbackData,
                 { from: spender },
             );
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should throw if callback reverts', async () => {
             // setup test parameters
@@ -349,7 +349,7 @@ describe('ERC1155Token', () => {
 
             // create the expected error (a uint256 underflow)
             const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
-                spenderInitialFungibleBalance, 
+                spenderInitialFungibleBalance,
                 valuesToTransfer[0],
             );
             // execute transfer
@@ -361,7 +361,7 @@ describe('ERC1155Token', () => {
                 receiverCallbackData,
                 { from: spender },
             );
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should throw if callback reverts', async () => {
             // setup test parameters
