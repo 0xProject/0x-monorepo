@@ -23,28 +23,74 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinVaultCore.sol";
 
 
-contract ZrxVault is
+contract RebateVault is
     IVault,
     SafeMath,
     MixinVaultCore
 {
 
-    // mapping from Owner to ZRX balance
-    mapping (address => uint256) internal balances;
+    // designed in such a way that it contains minimal logic (it is not upgradeable)
+    // but has all the necessary information to compute withdrawals in the event of
+    // a catastrophic failure
+
+    // mapping from Pool to Rebate Balance in ETH
+    mapping (bytes32 => uint256) internal balancesByPoolId;
+
+    // mapping from 
+    mapping (bytes32 => address) internal ownerByPoolId;
 
     constructor()
         public
     {}
 
+    ///// 
+
+    function depositFor(bytes32 poolId)
+        external
+        payable
+        onlyStakingContract
+    {
+        balancesByPoolId[poolId] = _safeAdd(balancesByPoolId[poolId], msg.value);
+    }
+
+    function balanceOf(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return balancesByPoolId[poolId];
+    }
+
+
+    /**
+    // Deposits shadow ETH
     function depositFrom(address owner, uint256 amount)
         external
         onlyStakingContract
-    {}
+    {
+        
+    }
 
-    function withdrawFrom(address owner, uint256 amount)
+    function withdrawFrom(address owner, bytes32 poolId, uint256 amount)
         external
         onlyStakingContract
-    {}
+    {
+        // check if owner is operator
+
+
+    }
+
+    function _withdrawFromOperator(address owner, uint256 amount)
+        private
+    {
+
+    }
+
+    function _withdrawFromNotOperator(address owner, uint256 amount)
+        private
+    {
+        
+    }
 
     function withdrawAllFrom(address owner)
         external
@@ -58,5 +104,5 @@ contract ZrxVault is
         returns (uint256)
     {
         return uint256(132 * 10**18);
-    }
+    } */
 }
