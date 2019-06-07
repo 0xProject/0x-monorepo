@@ -46,7 +46,7 @@ utils.log(`Finished copying contract-artifacts. Remember to lint artifacts befor
  */
 function shouldSkip(dir: string, artifact: string): boolean {
     return (
-        (dir === 'extensions' && artifact === 'Exchange') || // duplicate artifact generated
-        (dir === 'extensions' && artifact === 'WETH9')
-    ); // duplicate artifact generated
+        (dir === 'extensions' && artifact === 'Exchange') || // duplicate artifact
+        (dir === 'extensions' && artifact === 'WETH9')  // duplicate artifact
+    );
 }
