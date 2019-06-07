@@ -32,10 +32,7 @@ import "./MixinExchangeRichErrors.sol";
 contract Exchange is
     MixinMatchOrders,
     MixinWrapperFunctions,
-    MixinExchangeCore,
-    MixinSignatureValidator,
-    MixinAssetProxyDispatcher,
-    MixinTransactions
+    MixinSignatureValidator
 {
     string constant public VERSION = "3.0.0";
 

@@ -35,14 +35,14 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            IExchangeRichErrors.SignatureErrorCodes errorCode,
+            SignatureErrorCodes errorCode,
             bytes32 hash,
             address signerAddress,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ERROR_SELECTOR);
-        errorCode = IExchangeRichErrors.SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
         signerAddress = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
@@ -215,12 +215,12 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            IExchangeRichErrors.FillErrorCodes errorCode,
+            FillErrorCodes errorCode,
             bytes32 orderHash
         )
     {
         _assertSelectorBytes(encoded, FILL_ERROR_SELECTOR);
-        errorCode = IExchangeRichErrors.FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 
@@ -265,13 +265,13 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            IExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
+            AssetProxyDispatchErrorCodes errorCode,
             bytes32 orderHash,
             bytes memory assetData
         )
     {
         _assertSelectorBytes(encoded, ASSET_PROXY_DISPATCH_ERROR_SELECTOR);
-        errorCode = IExchangeRichErrors.AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
         assetData = _readErrorParameterAsBytes(encoded, 2);
     }
@@ -321,12 +321,12 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            IExchangeRichErrors.TransactionErrorCodes errorCode,
+            TransactionErrorCodes errorCode,
             bytes32 transactionHash
         )
     {
         _assertSelectorBytes(encoded, TRANSACTION_ERROR_SELECTOR);
-        errorCode = IExchangeRichErrors.TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         transactionHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 
