@@ -4,7 +4,6 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/BalanceThresholdFilter.json",
-        "generated-artifacts/DevUtils.json",
         "generated-artifacts/DutchAuction.json",
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",

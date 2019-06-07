@@ -6,7 +6,6 @@
 import { ContractArtifact } from 'ethereum-types';
 
 import * as BalanceThresholdFilter from '../generated-artifacts/BalanceThresholdFilter.json';
-import * as DevUtils from '../generated-artifacts/DevUtils.json';
 import * as DutchAuction from '../generated-artifacts/DutchAuction.json';
 import * as Exchange from '../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
@@ -19,5 +18,4 @@ export const artifacts = {
     BalanceThresholdFilter: BalanceThresholdFilter as ContractArtifact,
     DutchAuction: DutchAuction as ContractArtifact,
     OrderMatcher: OrderMatcher as ContractArtifact,
-    DevUtils: DevUtils as ContractArtifact,
 };

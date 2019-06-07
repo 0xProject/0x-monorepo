@@ -10,5 +10,4 @@ export * from '../generated-wrappers/lib_e_i_p712';
 export * from '../generated-wrappers/lib_fill_results';
 export * from '../generated-wrappers/lib_math';
 export * from '../generated-wrappers/lib_order';
-export * from '../generated-wrappers/lib_transaction_decoder';
 export * from '../generated-wrappers/test_libs';

@@ -1,0 +1,27 @@
+[
+    {
+        "version": "0.0.1",
+        "changes": [
+            {
+                "note": "Create dev-utils package",
+                "pr": 1848
+            },
+            {
+                "note": "Add `LibAssetData` and `LibTransactionDecoder` contracts",
+                "pr": 1848
+            },
+            {
+                "note": "Refactor `LibAssetData` to only check 0x-specific allowances",
+                "pr": 1848
+            },
+            {
+                "note": "Refactor `LibAssetData` balance/allowance checks to never revert",
+                "pr": 1848
+            },
+            {
+                "note": "Refactor `OrderValidationUtils` to calculate `fillableTakerAssetAmount`",
+                "pr": 1848
+            }
+        ]
+    }
+]
