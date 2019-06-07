@@ -95,13 +95,8 @@ export class ZRXTokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_spender', _spender);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
-                _spender.toLowerCase(),
-                _value,
-            ]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender, _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -109,12 +104,18 @@ export class ZRXTokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, _spender.toLowerCase(), _value),
+                self.approve.estimateGasAsync.bind(self, _spender, _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -146,13 +147,8 @@ export class ZRXTokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_spender', _spender);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
-                _spender.toLowerCase(),
-                _value,
-            ]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender, _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -164,7 +160,13 @@ export class ZRXTokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -275,13 +277,10 @@ export class ZRXTokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
+                _from,
+                _to,
                 _value,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -291,12 +290,18 @@ export class ZRXTokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _value),
+                self.transferFrom.estimateGasAsync.bind(self, _from, _to, _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -336,13 +341,10 @@ export class ZRXTokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('_from', _from);
-            assert.isString('_to', _to);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from.toLowerCase(),
-                _to.toLowerCase(),
+                _from,
+                _to,
                 _value,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -356,7 +358,13 @@ export class ZRXTokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -563,10 +571,8 @@ export class ZRXTokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('_to', _to);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to.toLowerCase(), _value]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to, _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -574,12 +580,18 @@ export class ZRXTokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(self, _to.toLowerCase(), _value),
+                self.transfer.estimateGasAsync.bind(self, _to, _value),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -607,10 +619,8 @@ export class ZRXTokenContract extends BaseContract {
             );
         },
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('_to', _to);
-            assert.isBigNumber('_value', _value);
             const self = (this as any) as ZRXTokenContract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to.toLowerCase(), _value]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to, _value]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -622,7 +632,13 @@ export class ZRXTokenContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },

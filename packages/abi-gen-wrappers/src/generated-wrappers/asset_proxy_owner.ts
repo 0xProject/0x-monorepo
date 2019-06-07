@@ -160,9 +160,8 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public removeOwner = {
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -170,12 +169,18 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
+                self.removeOwner.estimateGasAsync.bind(self, owner),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -201,9 +206,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -215,7 +219,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -267,7 +277,6 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public revokeConfirmation = {
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -282,7 +291,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -308,7 +323,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -322,7 +336,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -485,7 +505,6 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public executeRemoveAuthorizedAddressAtIndex = {
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
                 transactionId,
@@ -502,7 +521,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -531,7 +556,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
                 transactionId,
@@ -547,7 +571,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -708,11 +738,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             isRegistered: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
+                assetProxyContract,
                 isRegistered,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -722,12 +750,18 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract.toLowerCase(), isRegistered),
+                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract, isRegistered),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -763,11 +797,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             isRegistered: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
+                assetProxyContract,
                 isRegistered,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -781,7 +813,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -844,9 +882,8 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public addOwner = {
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -854,12 +891,18 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
+                self.addOwner.estimateGasAsync.bind(self, owner),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -885,9 +928,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -899,7 +941,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1001,7 +1049,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1016,7 +1063,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1042,7 +1095,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(_secondsTimeLocked: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1056,7 +1108,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1464,7 +1522,6 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public changeRequirement = {
         async sendTransactionAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1479,7 +1536,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1505,7 +1568,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1519,7 +1581,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1573,7 +1641,6 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public confirmTransaction = {
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1588,7 +1655,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1614,7 +1687,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -1628,7 +1700,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1689,12 +1767,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('destination', destination);
-            assert.isBigNumber('value', value);
-            assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination.toLowerCase(),
+                destination,
                 value,
                 data,
             ]);
@@ -1705,12 +1780,18 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(self, destination.toLowerCase(), value, data),
+                self.submitTransaction.estimateGasAsync.bind(self, destination, value, data),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1750,12 +1831,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('destination', destination);
-            assert.isBigNumber('value', value);
-            assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination.toLowerCase(),
+                destination,
                 value,
                 data,
             ]);
@@ -1770,7 +1848,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1977,13 +2061,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             newOwner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('owner', owner);
-            assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner, newOwner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1991,12 +2070,18 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(self, owner.toLowerCase(), newOwner.toLowerCase()),
+                self.replaceOwner.estimateGasAsync.bind(self, owner, newOwner),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2028,13 +2113,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(owner: string, newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
-            assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner, newOwner]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2046,7 +2126,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -2109,7 +2195,6 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public executeTransaction = {
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2124,7 +2209,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2150,7 +2241,6 @@ export class AssetProxyOwnerContract extends BaseContract {
             );
         },
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2164,7 +2254,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },

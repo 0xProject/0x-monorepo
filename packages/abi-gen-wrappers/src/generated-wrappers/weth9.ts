@@ -107,10 +107,8 @@ export class WETH9Contract extends BaseContract {
     };
     public approve = {
         async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -118,12 +116,18 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, guy.toLowerCase(), wad),
+                self.approve.estimateGasAsync.bind(self, guy, wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -151,10 +155,8 @@ export class WETH9Contract extends BaseContract {
             );
         },
         async estimateGasAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('guy', guy);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -166,7 +168,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -274,15 +282,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src, dst, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -290,12 +291,18 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, src.toLowerCase(), dst.toLowerCase(), wad),
+                self.transferFrom.estimateGasAsync.bind(self, src, dst, wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -335,15 +342,8 @@ export class WETH9Contract extends BaseContract {
             wad: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('src', src);
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src.toLowerCase(),
-                dst.toLowerCase(),
-                wad,
-            ]);
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src, dst, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -355,7 +355,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -423,7 +429,6 @@ export class WETH9Contract extends BaseContract {
     };
     public withdraw = {
         async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -438,7 +443,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -464,7 +475,6 @@ export class WETH9Contract extends BaseContract {
             );
         },
         async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -478,7 +488,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -665,10 +681,8 @@ export class WETH9Contract extends BaseContract {
     };
     public transfer = {
         async sendTransactionAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -676,12 +690,18 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(self, dst.toLowerCase(), wad),
+                self.transfer.estimateGasAsync.bind(self, dst, wad),
             );
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -709,10 +729,8 @@ export class WETH9Contract extends BaseContract {
             );
         },
         async estimateGasAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('dst', dst);
-            assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -724,7 +742,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -798,7 +822,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -835,7 +865,13 @@ export class WETH9Contract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },

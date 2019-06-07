@@ -206,20 +206,10 @@ export class CoordinatorContract extends BaseContract {
             approvalSignatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ],
+                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -231,7 +221,7 @@ export class CoordinatorContract extends BaseContract {
                 self.executeTransaction.estimateGasAsync.bind(
                     self,
                     transaction,
-                    txOrigin.toLowerCase(),
+                    txOrigin,
                     transactionSignature,
                     approvalExpirationTimeSeconds,
                     approvalSignatures,
@@ -240,7 +230,13 @@ export class CoordinatorContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -287,20 +283,10 @@ export class CoordinatorContract extends BaseContract {
             approvalSignatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('txOrigin', txOrigin);
-            assert.isString('transactionSignature', transactionSignature);
-            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-            assert.isArray('approvalSignatures', approvalSignatures);
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [
-                    transaction,
-                    txOrigin.toLowerCase(),
-                    transactionSignature,
-                    approvalExpirationTimeSeconds,
-                    approvalSignatures,
-                ],
+                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -313,7 +299,13 @@ export class CoordinatorContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },

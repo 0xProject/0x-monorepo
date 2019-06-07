@@ -12,7 +12,7 @@ public {{languageSpecificName}} = {
                 data: encodedData,
             },
             self._web3Wrapper.getContractDefaults(),
-            self.{{this.tsName}}.estimateGasAsync.bind(
+            self.{{languageSpecificName}}.estimateGasAsync.bind(
                 self,
                 {{> params inputs=inputs}}
             ),

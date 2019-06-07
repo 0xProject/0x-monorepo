@@ -40,7 +40,6 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 export class CoordinatorRegistryContract extends BaseContract {
     public setCoordinatorEndpoint = {
         async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -55,7 +54,13 @@ export class CoordinatorRegistryContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -81,7 +86,6 @@ export class CoordinatorRegistryContract extends BaseContract {
             );
         },
         async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
             const encodedData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -95,7 +99,13 @@ export class CoordinatorRegistryContract extends BaseContract {
             if (txDataWithDefaults.from !== undefined) {
                 txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
             }
-
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
