@@ -1846,7 +1846,7 @@ describe('ERC1155Proxy', () => {
                 receiverCallbackData,
                 authorized,
             );
-            expect(tx).to.revertWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should revert if sender allowance is insufficient', async () => {
             // dremove allowance for ERC1155 proxy
