@@ -22,7 +22,7 @@ import { chaiSetup, constants, LogDecoder, provider, txDefaults, web3Wrapper } f
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '../src';
@@ -87,12 +87,12 @@ describe('LibAssetData', () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
-
+        const chainId = await providerUtils.getChainIdAsync(provider);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
-            constants.NULL_BYTES,
+            new BigNumber(chainId),
         );
 
         erc20Proxy = await ERC20ProxyContract.deployFrom0xArtifactAsync(

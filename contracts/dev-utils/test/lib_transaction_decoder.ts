@@ -23,6 +23,8 @@ const order = {
     salt: new BigNumber('66097384406870180066678463045003379626790660770396923976862707230261946348951'),
     makerAssetData: '0xf47261b000000000000000000000000034d402f14d58e001d8efbe6585051bf9706aa064',
     takerAssetData: '0xf47261b000000000000000000000000025b8fe1de9daf8ba351890744ff28cf7dfa8f5e3',
+    makerFeeAssetData: '0xf47261b000000000000000000000000034d402f14d58e001d8efbe6585051bf9706aa064',
+    takerFeeAssetData: '0xf47261b000000000000000000000000025b8fe1de9daf8ba351890744ff28cf7dfa8f5e3',
 };
 const takerAssetFillAmount = new BigNumber('100000000000000000000');
 const signature =
@@ -122,6 +124,8 @@ describe('LibTransactionDecoder', () => {
             takerAssetAmount: order.makerAssetAmount,
             makerFee: order.takerFee,
             takerFee: order.makerFee,
+            makerFeeAssetData: order.takerFeeAssetData,
+            takerFeeAssetData: order.makerFeeAssetData,
         };
         const input = exchangeInterface.matchOrders.getABIEncodedTransactionData(
             order,

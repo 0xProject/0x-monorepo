@@ -21,7 +21,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 
 import { artifacts, DevUtilsContract } from '../src';
@@ -37,11 +37,11 @@ describe('OrderValidationUtils', () => {
     let erc20AssetData: string;
     let erc20AssetData2: string;
     let erc721AssetData: string;
-    let zrxAssetData: string;
+    let feeAssetData: string;
 
     let erc20Token: DummyERC20TokenContract;
     let erc20Token2: DummyERC20TokenContract;
-    let zrxToken: DummyERC20TokenContract;
+    let feeErc20Token: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let exchange: ExchangeContract;
     let devUtils: DevUtilsContract;
@@ -64,12 +64,13 @@ describe('OrderValidationUtils', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress] = accounts.slice(0, 3));
+        const chainId = await providerUtils.getChainIdAsync(provider);
 
         const erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
         const erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 3;
-        [erc20Token, zrxToken, erc20Token2] = await erc20Wrapper.deployDummyTokensAsync(
+        [erc20Token, erc20Token2, feeErc20Token] = await erc20Wrapper.deployDummyTokensAsync(
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
@@ -78,12 +79,12 @@ describe('OrderValidationUtils', () => {
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc721Proxy = await erc721Wrapper.deployProxyAsync();
 
-        zrxAssetData = assetDataUtils.encodeERC20AssetData(zrxToken.address);
+        feeAssetData = assetDataUtils.encodeERC20AssetData(feeErc20Token.address);
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
-            zrxAssetData,
+            new BigNumber(chainId),
         );
 
         multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
@@ -103,7 +104,6 @@ describe('OrderValidationUtils', () => {
             provider,
             txDefaults,
             exchange.address,
-            zrxAssetData,
         );
 
         erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20Token.address);
@@ -111,11 +111,16 @@ describe('OrderValidationUtils', () => {
         erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, tokenId);
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
-            exchangeAddress: exchange.address,
             makerAddress,
             feeRecipientAddress: constants.NULL_ADDRESS,
             makerAssetData: erc20AssetData,
             takerAssetData: erc20AssetData2,
+            makerFeeAssetData: feeAssetData,
+            takerFeeAssetData: feeAssetData,
+            domain: {
+                verifyingContractAddress: exchange.address,
+                chainId,
+            },
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
@@ -242,11 +247,11 @@ describe('OrderValidationUtils', () => {
                 from: makerAddress,
             });
             const divisor = 4;
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 signedOrder.makerFee.dividedToIntegerBy(divisor),
             );
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
@@ -266,8 +271,8 @@ describe('OrderValidationUtils', () => {
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
@@ -288,8 +293,8 @@ describe('OrderValidationUtils', () => {
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const divisor = 4;
@@ -313,8 +318,8 @@ describe('OrderValidationUtils', () => {
             );
         });
         it('should return a fillableTakerAssetAmount of 0 when non-fee balances/allowances are insufficient', async () => {
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
@@ -328,8 +333,8 @@ describe('OrderValidationUtils', () => {
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const [, fillableTakerAssetAmount] = await devUtils.getOrderRelevantState.callAsync(
@@ -340,14 +345,14 @@ describe('OrderValidationUtils', () => {
         });
         it('should return the correct fillableTakerAssetAmount when balances/allowances are partially sufficient and makerAsset=makerFeeAsset', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetData: zrxAssetData,
+                makerAssetData: feeAssetData,
                 makerAssetAmount: new BigNumber(10),
                 takerAssetAmount: new BigNumber(20),
                 makerFee: new BigNumber(40),
             });
             const transferableMakerAssetAmount = new BigNumber(10);
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, transferableMakerAssetAmount);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, transferableMakerAssetAmount, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, transferableMakerAssetAmount);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, transferableMakerAssetAmount, {
                 from: makerAddress,
             });
             const expectedFillableTakerAssetAmount = transferableMakerAssetAmount
@@ -376,17 +381,17 @@ describe('OrderValidationUtils', () => {
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount);
             await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
                 from: takerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee);
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee);
 
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
                 from: takerAddress,
             });
             const takerAssetFillAmount = signedOrder.takerAssetAmount.dividedToIntegerBy(4);
@@ -411,8 +416,8 @@ describe('OrderValidationUtils', () => {
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
             });
-            await zrxToken.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
-            await zrxToken.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee);
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
                 from: makerAddress,
             });
             const signedOrder2 = await orderFactory.newSignedOrderAsync({ makerAssetData: erc721AssetData });
