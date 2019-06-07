@@ -94,6 +94,9 @@ contract MixinStorage is
     // shadow balances by
     mapping (address => mapping (bytes32 => uint256)) shadowRewardsInPoolByOwner;
 
+    // registrered 0x exchanges
+    mapping (address => bool) validExchanges;
+
 
     /*
     // mapping from Owner to Pool Id to Amount Delegated

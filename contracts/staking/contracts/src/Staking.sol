@@ -25,6 +25,7 @@ import "./core/MixinPools.sol";
 import "./core/MixinEpoch.sol";
 import "./core/MixinRewards.sol";
 import "./core/MixinFees.sol";
+import "./core/MixinExchange.sol";
 
 
 contract Staking is
@@ -32,6 +33,7 @@ contract Staking is
     //IStakingEvents,
     MixinConstants,
     MixinStorage,
+    MixinExchange,
     MixinEpoch,
     MixinRewards,
     MixinStake,
@@ -350,9 +352,17 @@ contract Staking is
     }
 
     ///// FEES /////
+    modifier onlyExchange() {
+        require(
+            _isValidExchangeAddress(msg.sender),
+            "ONLY_CALLABLE_BY_EXCHANGE"
+        );
+        _;
+    }
     function payProtocolFee(address makerAddress)
         external
         payable
+        onlyExchange
     {
         _payProtocolFee(makerAddress, msg.value);
     }
@@ -371,6 +381,29 @@ contract Staking is
         returns (uint256)
     {
         return _getTotalProtocolFeesThisEpoch();
+    }
+
+    ///// EXCHANGES /////
+    // @TODO - Only by 0x multi-sig
+
+    function isValidExchangeAddress(address addr)
+        external
+        view
+        returns (bool)
+    {
+        return _isValidExchangeAddress(addr);
+    }
+
+    function addExchangeAddress(address addr)
+        external
+    {
+        _addExchangeAddress(addr);
+    }
+
+    function removeExchangeAddress(address addr)
+        external
+    {
+        _removeExchangeAddress(addr);
     }
 
     ///// SETTERS /////
