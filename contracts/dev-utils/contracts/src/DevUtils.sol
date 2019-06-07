@@ -30,8 +30,8 @@ contract DevUtils is
     LibTransactionDecoder,
     EthBalanceChecker
 {
-    constructor (address _exchange, bytes memory _zrxAssetData)
+    constructor (address _exchange)
         public
-        OrderValidationUtils(_exchange, _zrxAssetData)
+        OrderValidationUtils(_exchange)
     {}
 }

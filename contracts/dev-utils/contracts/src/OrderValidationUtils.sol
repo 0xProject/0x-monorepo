@@ -32,16 +32,10 @@ contract OrderValidationUtils is
 {
     using LibBytes for bytes;
 
-    // solhint-disable var-name-mixedcase
-    bytes internal _ZRX_ASSET_DATA;
-    // solhint-enable var-name-mixedcase
-
-    constructor (address _exchange, bytes memory _zrxAssetData)
+    constructor (address _exchange)
         public
         LibAssetData(_exchange)
-    {
-        _ZRX_ASSET_DATA = _zrxAssetData;
-    }
+    {}
 
     /// @dev Fetches all order-relevant information needed to validate if the supplied order is fillable.
     /// @param order The order structure.
@@ -79,12 +73,11 @@ contract OrderValidationUtils is
         // Assign to stack variables to reduce redundant mloads/sloads
         uint256 takerAssetAmount = order.takerAssetAmount;
         uint256 makerFee = order.makerFee;
-        bytes memory zrxAssetData = _ZRX_ASSET_DATA;
-    
+
         // Get the amount of `takerAsset` that is transferable to maker given the transferability of `makerAsset`, `makerFeeAsset`,
         // and the total amounts specified in the order
         uint256 transferableTakerAssetAmount;
-        if (order.makerAssetData.equals(zrxAssetData)) {
+        if (order.makerAssetData.equals(order.makerFeeAssetData)) {
             // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
             // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
             transferableTakerAssetAmount = _getPartialAmountFloor(
@@ -94,7 +87,7 @@ contract OrderValidationUtils is
             );
         } else {
             // Get the transferable amount of the `makerFeeAsset`
-            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, zrxAssetData);
+            uint256 transferableMakerFeeAssetAmount = getTransferableAssetAmount(makerAddress, order.makerFeeAssetData);
 
             // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
             if (makerFee == 0) {
