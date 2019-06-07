@@ -32,12 +32,8 @@ import "./MixinExchangeCore.sol";
 
 
 contract MixinWrapperFunctions is
-    MixinExchangeRichErrors,
-    ReentrancyGuard,
-    LibExchangeSelectors,
-    LibMath,
-    LibFillResults,
     IWrapperFunctions,
+    MixinExchangeRichErrors,
     MixinExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.

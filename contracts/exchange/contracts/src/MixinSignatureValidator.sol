@@ -35,10 +35,9 @@ contract MixinSignatureValidator is
     MixinExchangeRichErrors, 
     ReentrancyGuard, 
     LibOrder, 
-    ISignatureValidator, 
-    MixinTransactions 
+    ISignatureValidator,
+    MixinTransactions
 { 
-
     using LibBytes for bytes;
 
     // Mapping of hash => signer => signed

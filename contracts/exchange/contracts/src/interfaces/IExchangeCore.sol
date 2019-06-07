@@ -92,14 +92,4 @@ contract IExchangeCore {
         public
         view
         returns (LibOrder.OrderInfo memory orderInfo);
-
-    function _isValidOrderWithHashSignature(
-        LibOrder.Order memory order,
-        bytes32 orderHash,
-        address signerAddress,
-        bytes memory signature
-    )
-        internal
-        view
-        returns (bool isValid);
 }
