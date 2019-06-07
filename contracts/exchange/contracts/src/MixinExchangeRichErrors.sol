@@ -27,7 +27,6 @@ contract MixinExchangeRichErrors is
     RichErrors,
     IExchangeRichErrors
 {
-
     // solhint-disable func-name-mixedcase
     function SignatureError(
         SignatureErrorCodes errorCode,

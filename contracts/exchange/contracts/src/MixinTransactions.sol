@@ -31,7 +31,6 @@ contract MixinTransactions is
     ISignatureValidator,
     ITransactions
 {
-
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactions;

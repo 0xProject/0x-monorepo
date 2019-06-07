@@ -36,19 +36,13 @@ import "./MixinTransactions.sol";
 
 
 contract MixinExchangeCore is
-    MixinExchangeRichErrors,
-    ReentrancyGuard,
+    IExchangeCore,
     LibExchangeSelectors,
     LibMath,
-    LibOrder,
     LibFillResults,
-    IAssetProxyDispatcher,
-    IExchangeCore,
-    ISignatureValidator,
     MixinAssetProxyDispatcher,
-    MixinTransactions
+    MixinSignatureValidator
 {
-
     using LibBytes for bytes;
 
     // Mapping of orderHash => amount of takerAsset already bought by maker
