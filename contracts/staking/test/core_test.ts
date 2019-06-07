@@ -525,7 +525,7 @@ describe('Staking Core', () => {
             }
         });
 
-        it.only('Exchange Tracking', async () => {
+        it('Exchange Tracking', async () => {
             // 1 try querying an invalid addresses
             const invalidAddress = "0x0000000000000000000000000000000000000001";
             const isInvalidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(invalidAddress);
@@ -550,7 +550,9 @@ describe('Staking Core', () => {
             );
         });
 
-        it.skip('Protocol Fees', async () => {
+        it.only('Protocol Fees', async () => {
+            ///// 0 DEPLOY EXCHANGE /////
+            await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////
             const poolOperators = stakers.slice(0, 3);
             const operatorShares = [39, 59, 43];
@@ -584,7 +586,6 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
-            console.log(makersByPoolId);
             await Promise.all([
                 // pool 0
                 stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
@@ -599,14 +600,14 @@ describe('Staking Core', () => {
             ///// 2 PAY FEES /////
             await Promise.all([
                 // pool 0 - split into two payments
-                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2)),
-                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2)),
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2), exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2), exchange),
                 // pool 1 - pay full amounts
-                stakingWrapper.payProtocolFeeAsync(makers[1], protocolFeesByMaker[1]),
-                stakingWrapper.payProtocolFeeAsync(makers[2], protocolFeesByMaker[2]),
+                stakingWrapper.payProtocolFeeAsync(makers[1], protocolFeesByMaker[1], exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[2], protocolFeesByMaker[2], exchange),
                 // pool 2 -- pay full amounts
-                stakingWrapper.payProtocolFeeAsync(makers[3], protocolFeesByMaker[3]),
-                stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4]),
+                stakingWrapper.payProtocolFeeAsync(makers[3], protocolFeesByMaker[3], exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4], exchange),
                 // maker 5 doesn't pay anything
             ]);
             ///// 3 VALIDATE FEES RECORDED FOR EACH POOL /////
@@ -623,6 +624,11 @@ describe('Staking Core', () => {
             const totalProtocolFeesAsNumber = _.sumBy(protocolFeesByMaker, (value: BigNumber) => {return value.toNumber()});
             const totalProtocolFees = new BigNumber(totalProtocolFeesAsNumber);
             expect(recordedTotalProtocolFees).to.be.bignumber.equal(totalProtocolFees);
+            ///// 5 TRY TO RECORD FEE FROM ADDRESS OTHER THAN 0x EXCHANGE /////
+            await expectTransactionFailedAsync(
+                stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4], owner),
+                RevertReason.OnlyCallableByExchange
+            );
         });
 
         it('nth root', async () => {
