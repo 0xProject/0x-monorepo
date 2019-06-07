@@ -3,7 +3,6 @@ import {
     chaiSetup,
     constants,
     FillResults,
-    getRevertReasonOrErrorMessageForSendTransactionAsync,
     provider,
     testCombinatoriallyWithReferenceFuncAsync,
     txDefaults,
@@ -12,7 +11,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber, SafeMathRevertErrors, providerUtils } from '@0x/utils';
+import { BigNumber, providerUtils, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
