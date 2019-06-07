@@ -343,6 +343,9 @@ export enum RevertReason {
     // Staking
     OnlyCallableByPoolOperator = 'ONLY_CALLABLE_BY_POOL_OPERATOR',
     MakerAddressAlreadyRegistered = 'MAKER_ADDRESS_ALREADY_REGISTERED',
+    OnlyCallableByExchange = 'ONLY_CALLABLE_BY_EXCHANGE',
+    ExchangeAddressAlreadyRegistered = 'EXCHANGE_ADDRESS_ALREADY_REGISTERED',
+    ExchangeAddressNotRegistered = 'EXCHANGE_ADDRESS_NOT_REGISTERED',
 }
 
 export enum StatusCodes {
