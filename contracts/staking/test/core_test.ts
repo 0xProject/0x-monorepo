@@ -30,6 +30,7 @@ describe('Staking Core', () => {
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
     let owner: string;
+    let exchange: string;
     let stakers: string[];
     let makers: string[];
     let delegators: string[];
@@ -49,8 +50,9 @@ describe('Staking Core', () => {
         // create accounts
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
-        stakers = accounts.slice(1, 5);
-        makers = accounts.slice(6, 10);
+        exchange = accounts[1];
+        stakers = accounts.slice(2, 5);
+        makers = accounts.slice(4, 10);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, stakers, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -521,6 +523,81 @@ describe('Staking Core', () => {
                 const zrxTokenBalanceOfStakerAfterStaking = await stakingWrapper.getZrxTokenBalance(owner);
                 expect(zrxTokenBalanceOfStakerAfterStaking).to.be.bignumber.equal(zrxTokenBalanceOfStakerBeforeStaking.minus(amountToDelegate).plus(amountToWithdraw));
             }
+        });
+
+        it.only('Protocol Fees', async () => {
+            ///// 1 SETUP POOLS /////
+            const poolOperators = stakers.slice(0, 3);
+            const operatorShares = [39, 59, 43];
+            const poolIds = await Promise.all([
+                stakingWrapper.createPoolAsync(poolOperators[0], operatorShares[0]),
+                stakingWrapper.createPoolAsync(poolOperators[1], operatorShares[1]),
+                stakingWrapper.createPoolAsync(poolOperators[2], operatorShares[2]),
+            ]);
+            const makersByPoolId = [
+                [
+                    makers[0],
+                ],
+                [
+                    makers[1],
+                    makers[2]
+                ],
+                [
+                    makers[3],
+                    makers[4],
+                    makers[5]
+                ],
+            ];
+            const protocolFeesByMaker = [
+                // pool 1 - adds up to protocolFeesByPoolId[0]
+                stakingWrapper.toBaseUnitAmount(0.304958),
+                // pool 2 - adds up to protocolFeesByPoolId[1]
+                stakingWrapper.toBaseUnitAmount(3.2),
+                stakingWrapper.toBaseUnitAmount(12.123258),
+                // pool 3 - adds up to protocolFeesByPoolId[2]
+                stakingWrapper.toBaseUnitAmount(23.577),
+                stakingWrapper.toBaseUnitAmount(4.54522236),
+                stakingWrapper.toBaseUnitAmount(0)
+            ];
+            console.log(makersByPoolId);
+            await Promise.all([
+                // pool 0
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                // pool 1
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                // pool 2
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+            ]);
+            ///// 2 PAY FEES /////
+            await Promise.all([
+                // pool 0 - split into two payments
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2)),
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2)),
+                // pool 1 - pay full amounts
+                stakingWrapper.payProtocolFeeAsync(makers[1], protocolFeesByMaker[1]),
+                stakingWrapper.payProtocolFeeAsync(makers[2], protocolFeesByMaker[2]),
+                // pool 2 -- pay full amounts
+                stakingWrapper.payProtocolFeeAsync(makers[3], protocolFeesByMaker[3]),
+                stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4]),
+                // maker 5 doesn't pay anything
+            ]);
+            ///// 3 VALIDATE FEES RECORDED FOR EACH POOL /////
+            const recordedProtocolFeesByPool = await Promise.all([
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[0]),
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[1]),
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[2]),
+            ]);
+            expect(recordedProtocolFeesByPool[0]).to.be.bignumber.equal(protocolFeesByMaker[0]);
+            expect(recordedProtocolFeesByPool[1]).to.be.bignumber.equal(protocolFeesByMaker[1].plus(protocolFeesByMaker[2]));
+            expect(recordedProtocolFeesByPool[2]).to.be.bignumber.equal(protocolFeesByMaker[3].plus(protocolFeesByMaker[4]));
+            ///// 4 VALIDATE TOTAL FEES /////
+            const recordedTotalProtocolFees = await stakingWrapper.getTotalProtocolFeesThisEpochAsync();
+            const totalProtocolFeesAsNumber = _.sumBy(protocolFeesByMaker, (value: BigNumber) => {return value.toNumber()});
+            const totalProtocolFees = new BigNumber(totalProtocolFeesAsNumber);
+            expect(recordedTotalProtocolFees).to.be.bignumber.equal(totalProtocolFees);
         });
 
         it('nth root', async () => {

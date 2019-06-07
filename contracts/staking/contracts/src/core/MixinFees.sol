@@ -39,19 +39,38 @@ contract MixinFees is
     MixinPools
 {
 
-    function _payFee(address makerAddress, uint256 amount)
+    function _payProtocolFee(address makerAddress, uint256 amount)
         internal
     {
         bytes32 poolId = _getMakerPoolId(makerAddress);
-        uint256 _feesCollectedThisEpoch = feesCollectedThisEpochByPoolId[poolId];
-        feesCollectedThisEpochByPoolId[poolId] = _safeAdd(_feesCollectedThisEpoch, amount);
+        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
+        protocolFeesThisEpochByPool[poolId] = _safeAdd(_feesCollectedThisEpoch, amount);
         if (_feesCollectedThisEpoch == 0) {
-            activePoolIdsThisEpoch.append(poolId);
+            activePoolIdsThisEpoch.push(poolId);
         }
     }
 
+    function _getProtocolFeesThisEpochByPool(bytes32 poolId)
+        internal
+        view
+        returns (uint256)
+    {
+        return protocolFeesThisEpochByPool[poolId];
+    }
+
+
+    function _getTotalProtocolFeesThisEpoch()
+        internal
+        view
+        returns (uint256)
+    {
+        return address(this).balance;
+    }
+
+    /*
     function _payRebates()
     {
         
     }
+    */
 }

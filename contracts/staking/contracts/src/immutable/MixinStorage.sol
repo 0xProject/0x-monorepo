@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "../interfaces/IVault.sol";
+import "../interfaces/IRebateVault.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IStructs.sol";
 
@@ -28,11 +29,18 @@ contract MixinStorage is
     MixinConstants
 {
 
+    // @TODO Make these internal
+    // @TODO Add notes about which Mixin manages which state
+
     // address of staking contract
     address stakingContract;
 
     // mapping from Owner to Amount Staked
     mapping (address => uint256) stakeByOwner;
+
+    // @TODO Think about merging these different states
+    // It would be nice if the sum of the different states had to equal `stakeByOwner`
+    // and it were all in a single variable (stakeByOwner in its own)
 
     // mapping from Owner to Amount of Instactive Stake
     mapping (address => uint256) activeStakeByOwner;
@@ -75,14 +83,29 @@ contract MixinStorage is
     uint64 currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
 
     // fees collected this epoch
-    mapping (bytes32 => uint256) feesCollectedThisEpochByPoolId;
+    mapping (bytes32 => uint256) protocolFeesThisEpochByPool;
 
     // 
     bytes32[] activePoolIdsThisEpoch;
+
+    // mapping from POol Id to Shadow Rewards
+    mapping (bytes32 => uint256) shadowRewardsByPoolId;
+
+    // shadow balances by
+    mapping (address => mapping (bytes32 => uint256)) shadowRewardsInPoolByOwner;
+
+
+    /*
+    // mapping from Owner to Pool Id to Amount Delegated
+    mapping (address => mapping (bytes32 => uint256)) shadowDelegatedStakeToPoolByOwner;
+
+    // mapping from Pool Id to Amount Delegated
+    mapping (bytes32 => uint256) shadowDelegatedStakeByPoolId;
+    */
 
     // ZRX vault
     IVault zrxVault;
 
     // Rebate Vault
-    IVault rebateVault;
+    IRebateVault rebateVault;
 }
