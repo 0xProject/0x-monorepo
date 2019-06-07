@@ -19,10 +19,12 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "./MixinLibMathRichErrors.sol";
 
 
 contract LibMath is
-    SafeMath
+    SafeMath,
+    MixinLibMathRichErrors
 {
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
@@ -39,19 +41,21 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
 
-        require(
-            !_isRoundingErrorFloor(
+        if (_isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
-            ),
-            "ROUNDING_ERROR"
-        );
+        )) {
+            _rrevert(RoundingError(
+                numerator,
+                denominator,
+                target
+            ));
+        }
         
         partialAmount = _safeDiv(
             _safeMul(numerator, target),
@@ -75,19 +79,21 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
 
-        require(
-            !_isRoundingErrorCeil(
+        if (_isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
-            ),
-            "ROUNDING_ERROR"
-        );
+        )) {
+            _rrevert(RoundingError(
+                numerator,
+                denominator,
+                target
+            ));
+        }
         
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
@@ -116,10 +122,9 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
 
         partialAmount = _safeDiv(
             _safeMul(numerator, target),
@@ -142,10 +147,9 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
 
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
@@ -174,10 +178,9 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
         
         // The absolute rounding error is the difference between the rounded
         // value and the ideal value. The relative rounding error is the
@@ -228,10 +231,9 @@ contract LibMath is
         pure
         returns (bool isError)
     {
-        require(
-            denominator > 0,
-            "DIVISION_BY_ZERO"
-        );
+        if (denominator == 0) {
+            _rrevert(DivisionByZeroError());
+        }
         
         // See the comments in `isRoundingError`.
         if (target == 0 || numerator == 0) {
