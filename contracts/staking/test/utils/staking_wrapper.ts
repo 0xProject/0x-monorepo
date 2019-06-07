@@ -317,25 +317,40 @@ export class StakingWrapper {
         const value = this.getStakingContract().getCurrentTimelockPeriod.getABIDecodedReturnData(returnData);
         return value;
     }
-    ///// FEES /////
+    ///// PROTOCOL FEES /////
     public async payProtocolFeeAsync(makerAddress: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(makerAddress);
         const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres, amount);
         return txReceipt;
     }
-
     public async getProtocolFeesThisEpochByPoolAsync(poolId: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getProtocolFeesThisEpochByPool.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getProtocolFeesThisEpochByPool.getABIDecodedReturnData(returnData);
         return value;
     }
-
     public async getTotalProtocolFeesThisEpochAsync(): Promise<BigNumber> {
         const calldata = this.getStakingContract().getTotalProtocolFeesThisEpoch.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getTotalProtocolFeesThisEpoch.getABIDecodedReturnData(returnData);
         return value;
+    }
+    ///// EXCHANGES /////
+    public async isValidExchangeAddressAsync(exchangeAddress: string): Promise<Boolean> {
+        const calldata = this.getStakingContract().isValidExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().isValidExchangeAddress.getABIDecodedReturnData(returnData);
+        return value;
+    }
+    public async addExchangeAddressAsync(exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().addExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
+        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres);
+        return txReceipt;
+    }
+    public async removeExchangeAddressAsync(exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().removeExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
+        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres);
+        return txReceipt;
     }
 
     /*
