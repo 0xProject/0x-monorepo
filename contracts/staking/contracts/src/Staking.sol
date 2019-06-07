@@ -23,6 +23,8 @@ import "./immutable/MixinStorage.sol";
 import "./core/MixinStake.sol";
 import "./core/MixinPools.sol";
 import "./core/MixinEpoch.sol";
+import "./core/MixinRewards.sol";
+import "./core/MixinFees.sol";
 
 
 contract Staking is
@@ -31,8 +33,10 @@ contract Staking is
     MixinConstants,
     MixinStorage,
     MixinEpoch,
+    MixinRewards,
     MixinStake,
-    MixinPools
+    MixinPools,
+    MixinFees
 {
 
     ///// STAKE /////
@@ -307,6 +311,66 @@ contract Staking is
         returns (uint64)
     {
         return _getCurrentTimelockPeriod();
+    }
+
+    ///// REWARDS /////
+
+    function computeOperatorReward(address operator, bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+
+    }
+
+    function computeDelegatorReward(address owner, bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+
+    }
+
+    ///// SHADOW BALANCES /////
+
+    function getShadowBalanceByPoolId(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return _getShadowBalanceByPoolId(poolId);
+    }
+
+    function getShadowBalanceInPoolByOwner(address owner, bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return _getShadowBalanceInPoolByOwner(owner, poolId);
+    }
+
+    ///// FEES /////
+    function payProtocolFee(address makerAddress)
+        external
+        payable
+    {
+        _payProtocolFee(makerAddress, msg.value);
+    }
+
+    function getProtocolFeesThisEpochByPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return _getProtocolFeesThisEpochByPool(poolId);
+    }
+
+    function getTotalProtocolFeesThisEpoch()
+        external
+        view
+        returns (uint256)
+    {
+        return _getTotalProtocolFeesThisEpoch();
     }
 
     ///// SETTERS /////

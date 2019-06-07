@@ -93,12 +93,13 @@ export class StakingWrapper {
             txDefaults,
         );
     }
-    private async _executeTransactionAsync(calldata: string, from?: string): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(calldata: string, from?: string, value?: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
             from: (from ? from : this._ownerAddres),
             to: this.getStakingProxyContract().address,
             data: calldata,
-            gas: 3000000
+            gas: 3000000,
+            value
         }
         const txReceipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._web3Wrapper.sendTransactionAsync(txData)
@@ -316,6 +317,63 @@ export class StakingWrapper {
         const value = this.getStakingContract().getCurrentTimelockPeriod.getABIDecodedReturnData(returnData);
         return value;
     }
+    ///// FEES /////
+    public async payProtocolFeeAsync(makerAddress: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(makerAddress);
+        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres, amount);
+        return txReceipt;
+    }
+
+    public async getProtocolFeesThisEpochByPoolAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getProtocolFeesThisEpochByPool.getABIEncodedTransactionData(poolId);
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getProtocolFeesThisEpochByPool.getABIDecodedReturnData(returnData);
+        return value;
+    }
+
+    public async getTotalProtocolFeesThisEpochAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTotalProtocolFeesThisEpoch.getABIEncodedTransactionData();
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getTotalProtocolFeesThisEpoch.getABIDecodedReturnData(returnData);
+        return value;
+    }
+
+    /*
+    ///// REWARDS /////
+    public async computeOperatorRewardAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().computeOperatorReward.getABIEncodedTransactionData();
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().computeOperatorReward.getABIDecodedReturnData(returnData);
+        return value;
+    }
+    public async computeDelegatorRewardAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().computeDelegatorReward.getABIEncodedTransactionData();
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().computeDelegatorReward.getABIDecodedReturnData(returnData);
+        return value;
+    }
+
+    ///// SHADOW BALANCES /////
+    public async getShadowBalanceByPoolIdAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getShadowBalanceByPoolId.getABIEncodedTransactionData();
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getShadowBalanceByPoolId.getABIDecodedReturnData(returnData);
+        return value;
+    }
+    public async getShadowBalanceInPoolByOwnerAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIEncodedTransactionData();
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIDecodedReturnData(returnData);
+        return value;
+    }
+    */
+
+    ///// BUY-INS & PAYOUTS /////
+
+
+
+
+
     ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
