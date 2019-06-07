@@ -25,13 +25,18 @@ export const ForbiddenProperties: string[] = [
     'sourceTreeHashHex',
 ];
 
-function removeForbiddenProperties(filePaths: string[]): void {
+function removeForbiddenProperties(inputDir: string, outputDir: string): void {
+    const filePaths = fs
+        .readdirSync(inputDir)
+        .filter(filename => filename.indexOf('.json') !== -1)
+        .map(filename => `./${inputDir}/${filename}`);
+
     for (const filePath of filePaths) {
         const artifact = JSON.parse(fs.readFileSync(filePath).toString()) as { [name: string]: any };
         for (const property of ForbiddenProperties) {
             deleteNestedProperty(artifact, property);
         }
-        fs.writeFileSync(filePath, JSON.stringify(artifact));
+        fs.writeFileSync(filePath.replace(inputDir, outputDir), JSON.stringify(artifact));
     }
 }
 
@@ -57,10 +62,11 @@ function deleteNestedProperty(obj: any, propPath: string): void {
 }
 
 if (require.main === module) {
-    const artifactsPath = process.argv[2];
-    logUtils.log(`Deleting forbidden properties from artifacts in ${artifactsPath}.`);
-    const artifactFiles = fs.readdirSync(artifactsPath)
-        .filter(filename => filename.indexOf('.json') !== -1)
-        .map(filename => `./${artifactsPath}/${filename}`);
-    removeForbiddenProperties(artifactFiles);
+    const inputDir = process.argv[2];
+    const outputDir = process.argv[3] !== undefined ? process.argv[3] : inputDir;
+    logUtils.log(`Deleting forbidden properties from artifacts in ${inputDir}. Output to ${outputDir}`);
+    if (!fs.existsSync(`./${outputDir}`)) {
+        fs.mkdirSync(`./${outputDir}`);
+    }
+    removeForbiddenProperties(inputDir, outputDir);
 }

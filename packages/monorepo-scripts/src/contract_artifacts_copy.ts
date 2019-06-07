@@ -17,20 +17,20 @@ for (const pkgName of pkgNames) {
 
 const contractsPath = path.join(__dirname, '../../../contracts');
 const allArtifactPaths = [];
-for (const dir of contractsDirs ) {
-        const artifactsDir = path.join(contractsPath, dir, 'generated-artifacts');
-        if (!fs.existsSync(artifactsDir)) {
-            continue;
-        }
-        const artifactPaths: string[] = fs
-            .readdirSync(artifactsDir)
-            .filter(artifact => {
-                const artifactWithoutExt = artifact.split('.')[0];
-                return artifactsToPublish.includes(artifactWithoutExt) && !shouldSkip(dir, artifactWithoutExt);
-            })
-            .map(artifact => path.join(artifactsDir, artifact));
-        allArtifactPaths.push(...artifactPaths);
+for (const dir of contractsDirs) {
+    const artifactsDir = path.join(contractsPath, dir, 'generated-artifacts');
+    if (!fs.existsSync(artifactsDir)) {
+        continue;
     }
+    const artifactPaths: string[] = fs
+        .readdirSync(artifactsDir)
+        .filter(artifact => {
+            const artifactWithoutExt = artifact.split('.')[0];
+            return artifactsToPublish.includes(artifactWithoutExt) && !shouldSkip(dir, artifactWithoutExt);
+        })
+        .map(artifact => path.join(artifactsDir, artifact));
+    allArtifactPaths.push(...artifactPaths);
+}
 
 for (const _path of allArtifactPaths) {
     const fileName = _path.split('/').slice(-1)[0];
@@ -45,6 +45,8 @@ utils.log(`Finished copying contract-artifacts. Remember to lint artifacts befor
  * @param artifact   the artifact name without extension, e.g. DutchAuction, Exchange
  */
 function shouldSkip(dir: string, artifact: string): boolean {
-    return (dir === 'extensions' && artifact === 'Exchange') || // duplicate artifact generated
-    (dir === 'extensions' && artifact === 'WETH9'); // duplicate artifact generated
+    return (
+        (dir === 'extensions' && artifact === 'Exchange') || // duplicate artifact generated
+        (dir === 'extensions' && artifact === 'WETH9')
+    ); // duplicate artifact generated
 }
