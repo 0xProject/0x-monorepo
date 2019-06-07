@@ -50,17 +50,15 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = (
-    a?: BigNumber | number | string,
-    b?: BigNumber | number | string,
-) => new SafeMathRevertErrors.Uint256OverflowError(a, b);
+const overflowErrorForCall = (a?: BigNumber | number | string, b?: BigNumber | number | string) =>
+    new SafeMathRevertErrors.Uint256OverflowError(a, b);
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForSendTransaction: (
-      a?: BigNumber | number | string,
-      b?: BigNumber | number | string,
+        a?: BigNumber | number | string,
+        b?: BigNumber | number | string,
     ) => Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
     let roundingErrorForCall: Error | undefined;

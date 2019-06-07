@@ -1,4 +1,3 @@
-import { BigNumber } from './configured_bignumber';
 import { RevertError } from './revert_error';
 
 export class OnlyOwnerError extends RevertError {
