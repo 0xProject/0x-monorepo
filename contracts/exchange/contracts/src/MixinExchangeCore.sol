@@ -28,12 +28,11 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./interfaces/ITransactions.sol";
-import "./interfaces/IGetContext.sol";
-import "./interfaces/IDispatcher.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinExchangeRichErrors.sol";
 import "./MixinSignatureValidator.sol";
+import "./MixinAssetProxyDispatcher.sol";
+import "./MixinTransactions.sol";
 
 
 contract MixinExchangeCore is
@@ -46,10 +45,10 @@ contract MixinExchangeCore is
     IAssetProxyDispatcher,
     IExchangeCore,
     ISignatureValidator,
-    ITransactions,
-    IDispatcher,
-    IGetContext
+    MixinAssetProxyDispatcher,
+    MixinTransactions
 {
+
     using LibBytes for bytes;
 
     // Mapping of orderHash => amount of takerAsset already bought by maker
@@ -394,7 +393,7 @@ contract MixinExchangeCore is
         uint256 makerAssetFilledAmount
     )
         internal
-        view
+        pure
     {
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1

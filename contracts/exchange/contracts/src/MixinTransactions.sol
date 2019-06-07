@@ -54,20 +54,20 @@ contract MixinTransactions is
     }
 
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
-    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param zeroxTransactions Array of 0x transactions containing salt, signerAddress, and data.
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
     /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
-        ZeroExTransaction[] memory transactions,
+        ZeroExTransaction[] memory zeroxTransactions,
         bytes[] memory signatures
     )
         public
         returns (bytes[] memory)
     {
-        uint256 length = transactions.length;
+        uint256 length = zeroxTransactions.length;
         bytes[] memory returnData = new bytes[](length);
         for (uint256 i = 0; i != length; i++) {
-            returnData[i] = _executeTransaction(transactions[i], signatures[i]);
+            returnData[i] = _executeTransaction(zeroxTransactions[i], signatures[i]);
         }
         return returnData;
     }

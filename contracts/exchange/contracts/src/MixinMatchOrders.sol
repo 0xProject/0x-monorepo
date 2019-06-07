@@ -21,12 +21,9 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
-import "./interfaces/IExchangeCore.sol";
+import "./MixinExchangeCore.sol";
 import "./interfaces/IMatchOrders.sol";
 import "./interfaces/ITransactions.sol";
-import "./interfaces/IFillAssertions.sol";
-import "./interfaces/IGetContext.sol";
-import "./interfaces/IDispatcher.sol";
 import "./MixinExchangeRichErrors.sol";
 
 
@@ -36,13 +33,11 @@ contract MixinMatchOrders is
     LibMath,
     LibOrder,
     IAssetProxyDispatcher,
-    IExchangeCore,
     IMatchOrders,
     ITransactions,
-    IFillAssertions,
-    IDispatcher,
-    IGetContext
+    MixinExchangeCore
 {
+
     using LibBytes for bytes;
 
     /// @dev Match two complementary orders that have a profitable spread.

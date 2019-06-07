@@ -28,6 +28,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./interfaces/IWrapperFunctions.sol";
 import "./MixinExchangeRichErrors.sol";
+import "./MixinExchangeCore.sol";
 
 
 contract MixinWrapperFunctions is
@@ -36,8 +37,8 @@ contract MixinWrapperFunctions is
     LibExchangeSelectors,
     LibMath,
     LibFillResults,
-    IExchangeCore,
-    IWrapperFunctions
+    IWrapperFunctions,
+    MixinExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
@@ -452,17 +453,4 @@ contract MixinWrapperFunctions is
         }
         return fillResults;
     }
-
-    function _fillOrder(
-        LibOrder.Order memory order,
-        uint256 takerAssetFillAmount,
-        bytes memory signature
-    )
-        internal
-        returns (FillResults memory fillResults);
-
-    /// @dev After calling, the order can not be filled anymore.
-    /// @param order Order struct containing order specifications.
-    function _cancelOrder(LibOrder.Order memory order)
-        internal;
 }
