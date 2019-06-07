@@ -19,20 +19,16 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinExchangeCore.sol";
-import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";
-import "./MixinAssetProxyDispatcher.sol";
-import "./MixinTransactions.sol";
 import "./MixinMatchOrders.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./MixinSignatureValidator.sol";
 
 
 // solhint-disable no-empty-blocks
 contract Exchange is
+    MixinSignatureValidator,
     MixinMatchOrders,
-    MixinWrapperFunctions,
-    MixinSignatureValidator
+    MixinWrapperFunctions
 {
     string constant public VERSION = "3.0.0";
 

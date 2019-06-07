@@ -29,15 +29,9 @@ import "./MixinExchangeRichErrors.sol";
 
 contract MixinMatchOrders is
     MixinExchangeRichErrors,
-    ReentrancyGuard,
-    LibMath,
-    LibOrder,
-    IAssetProxyDispatcher,
-    IMatchOrders,
-    ITransactions,
-    MixinExchangeCore
+    MixinExchangeCore,
+    IMatchOrders
 {
-
     using LibBytes for bytes;
 
     /// @dev Match two complementary orders that have a profitable spread.
