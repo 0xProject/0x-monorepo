@@ -525,7 +525,32 @@ describe('Staking Core', () => {
             }
         });
 
-        it.only('Protocol Fees', async () => {
+        it.only('Exchange Tracking', async () => {
+            // 1 try querying an invalid addresses
+            const invalidAddress = "0x0000000000000000000000000000000000000001";
+            const isInvalidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(invalidAddress);
+            expect(isInvalidAddressValid).to.be.false();
+            // 2 add valid address
+            await stakingWrapper.addExchangeAddressAsync(exchange);
+            const isValidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
+            expect(isValidAddressValid).to.be.true();
+            // 3 try adding valid address again
+            await expectTransactionFailedAsync(
+                stakingWrapper.addExchangeAddressAsync(exchange),
+                RevertReason.ExchangeAddressAlreadyRegistered
+            );
+            // 4 remove valid address
+            await stakingWrapper.removeExchangeAddressAsync(exchange);
+            const isValidAddressStillValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
+            expect(isValidAddressStillValid).to.be.false();
+            // 5 try removing valid address again
+            await expectTransactionFailedAsync(
+                stakingWrapper.removeExchangeAddressAsync(exchange),
+                RevertReason.ExchangeAddressNotRegistered
+            );
+        });
+
+        it.skip('Protocol Fees', async () => {
             ///// 1 SETUP POOLS /////
             const poolOperators = stakers.slice(0, 3);
             const operatorShares = [39, 59, 43];

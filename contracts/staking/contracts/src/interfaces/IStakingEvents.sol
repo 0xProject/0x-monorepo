@@ -17,4 +17,12 @@ interface IStakingEvents {
         address operatorAddress,
         uint8 operatorShare
     );
+
+    event ExchangeAdded(
+        address exchangeAddress
+    );
+
+    event ExchangeRemoved(
+        address exchangeAddress
+    );
 }
