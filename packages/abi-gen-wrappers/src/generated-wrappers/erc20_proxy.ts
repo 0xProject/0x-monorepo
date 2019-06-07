@@ -52,24 +52,30 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.addAuthorizedAddress.estimateGasAsync.bind(
-                self,
-                target
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.addAuthorizedAddress.estimateGasAsync.bind(
+                    self,
+                    target
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             target: string,
@@ -97,20 +103,26 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         async callAsync(
             target: string,
@@ -220,24 +232,30 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.removeAuthorizedAddress.estimateGasAsync.bind(
-                self,
-                target
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.removeAuthorizedAddress.estimateGasAsync.bind(
+                    self,
+                    target
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             target: string,
@@ -265,20 +283,26 @@ export class ERC20ProxyContract extends BaseContract {
             target: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         async callAsync(
             target: string,
@@ -383,27 +407,32 @@ export class ERC20ProxyContract extends BaseContract {
             index: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('target', target);
-        assert.isBigNumber('index', index);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(
-                self,
-                target,
-                index
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(
+                    self,
+                    target,
+                    index
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             target: string,
@@ -435,22 +464,27 @@ export class ERC20ProxyContract extends BaseContract {
             index: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('target', target);
-        assert.isBigNumber('index', index);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
     index
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         async callAsync(
             target: string,
@@ -658,24 +692,30 @@ export class ERC20ProxyContract extends BaseContract {
             newOwner: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.transferOwnership.estimateGasAsync.bind(
-                self,
-                newOwner
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.transferOwnership.estimateGasAsync.bind(
+                    self,
+                    newOwner
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -703,20 +743,26 @@ export class ERC20ProxyContract extends BaseContract {
             newOwner: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as ERC20ProxyContract;
-        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+            const self = this as any as ERC20ProxyContract;
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         async callAsync(
             newOwner: string,

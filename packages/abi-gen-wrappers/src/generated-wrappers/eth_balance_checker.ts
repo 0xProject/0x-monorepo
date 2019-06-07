@@ -55,14 +55,29 @@ export class EthBalanceCheckerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            let rawCallResult;
+            try {
+                rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            } catch (err) {
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            BaseContract._throwIfCallResultIsRevertError(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
             // tslint:disable boolean-naming
             const result = abiEncoder.strictDecodeReturnValue<BigNumber[]
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                addresses: string[],
+            ): string {
+            assert.isArray('addresses', addresses);
+            const self = this as any as EthBalanceCheckerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(
