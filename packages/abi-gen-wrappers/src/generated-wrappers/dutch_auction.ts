@@ -33,24 +33,30 @@ export class DutchAuctionContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-        const self = this as any as DutchAuctionContract;
-        const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const self = this as any as DutchAuctionContract;
+            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.getAuctionDetails.estimateGasAsync.bind(
-                self,
-                order
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.getAuctionDetails.estimateGasAsync.bind(
+                    self,
+                    order
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -58,7 +64,7 @@ export class DutchAuctionContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         const self = this as any as DutchAuctionContract;
         const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order
     , txData);
@@ -78,25 +84,31 @@ export class DutchAuctionContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-        const self = this as any as DutchAuctionContract;
-        const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+            const self = this as any as DutchAuctionContract;
+            const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         ): string {
-
+        
         const self = this as any as DutchAuctionContract;
         const abiEncodedTransactionData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
@@ -108,7 +120,7 @@ export class DutchAuctionContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
         > {
-
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -152,33 +164,36 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-
-        assert.isString('buySignature', buySignature);
-        assert.isString('sellSignature', sellSignature);
-        const self = this as any as DutchAuctionContract;
-        const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const self = this as any as DutchAuctionContract;
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.matchOrders.estimateGasAsync.bind(
-                self,
-                buyOrder,
-                sellOrder,
-                buySignature,
-                sellSignature
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.matchOrders.estimateGasAsync.bind(
+                    self,
+                    buyOrder,
+                    sellOrder,
+                    buySignature,
+                    sellSignature
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -189,8 +204,8 @@ export class DutchAuctionContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-
+        
+        
         assert.isString('buySignature', buySignature);
         assert.isString('sellSignature', sellSignature);
         const self = this as any as DutchAuctionContract;
@@ -218,26 +233,29 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-
-        assert.isString('buySignature', buySignature);
-        assert.isString('sellSignature', sellSignature);
-        const self = this as any as DutchAuctionContract;
-        const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+            const self = this as any as DutchAuctionContract;
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
     sellOrder,
     buySignature,
     sellSignature
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -245,8 +263,8 @@ export class DutchAuctionContract extends BaseContract {
             buySignature: string,
             sellSignature: string,
         ): string {
-
-
+        
+        
         assert.isString('buySignature', buySignature);
         assert.isString('sellSignature', sellSignature);
         const self = this as any as DutchAuctionContract;
@@ -266,8 +284,8 @@ export class DutchAuctionContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
-
-
+            
+            
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [

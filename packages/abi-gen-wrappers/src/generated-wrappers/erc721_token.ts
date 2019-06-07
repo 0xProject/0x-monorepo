@@ -106,27 +106,32 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_approved', _approved);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.approve.estimateGasAsync.bind(
-                self,
-                _approved,
-                _tokenId
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.approve.estimateGasAsync.bind(
+                    self,
+                    _approved,
+                    _tokenId
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _approved: string,
@@ -158,22 +163,27 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_approved', _approved);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _approved: string,
@@ -239,30 +249,34 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.transferFrom.estimateGasAsync.bind(
-                self,
-                _from,
-                _to,
-                _tokenId
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.transferFrom.estimateGasAsync.bind(
+                    self,
+                    _from,
+                    _to,
+                    _tokenId
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _from: string,
@@ -298,24 +312,28 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _from: string,
@@ -387,30 +405,34 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.safeTransferFrom1.estimateGasAsync.bind(
-                self,
-                _from,
-                _to,
-                _tokenId
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.safeTransferFrom1.estimateGasAsync.bind(
+                    self,
+                    _from,
+                    _to,
+                    _tokenId
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _from: string,
@@ -446,24 +468,28 @@ export class ERC721TokenContract extends BaseContract {
             _tokenId: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
     _to,
     _tokenId
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _from: string,
@@ -620,27 +646,32 @@ export class ERC721TokenContract extends BaseContract {
             _approved: boolean,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_operator', _operator);
-        assert.isBoolean('_approved', _approved);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.setApprovalForAll.estimateGasAsync.bind(
-                self,
-                _operator,
-                _approved
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.setApprovalForAll.estimateGasAsync.bind(
+                    self,
+                    _operator,
+                    _approved
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _operator: string,
@@ -672,22 +703,27 @@ export class ERC721TokenContract extends BaseContract {
             _approved: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_operator', _operator);
-        assert.isBoolean('_approved', _approved);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
     _approved
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _operator: string,
@@ -754,33 +790,36 @@ export class ERC721TokenContract extends BaseContract {
             _data: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        assert.isString('_data', _data);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.safeTransferFrom2.estimateGasAsync.bind(
-                self,
-                _from,
-                _to,
-                _tokenId,
-                _data
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.safeTransferFrom2.estimateGasAsync.bind(
+                    self,
+                    _from,
+                    _to,
+                    _tokenId,
+                    _data
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _from: string,
@@ -820,26 +859,29 @@ export class ERC721TokenContract extends BaseContract {
             _data: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        assert.isString('_data', _data);
-        const self = this as any as ERC721TokenContract;
-        const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
+            const self = this as any as ERC721TokenContract;
+            const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
     _to,
     _tokenId,
     _data
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _from: string,

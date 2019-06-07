@@ -55,27 +55,32 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_spender', _spender);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.approve.estimateGasAsync.bind(
-                self,
-                _spender,
-                _value
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.approve.estimateGasAsync.bind(
+                    self,
+                    _spender,
+                    _value
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _spender: string,
@@ -107,22 +112,27 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_spender', _spender);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _spender: string,
@@ -228,30 +238,34 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.transferFrom.estimateGasAsync.bind(
-                self,
-                _from,
-                _to,
-                _value
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.transferFrom.estimateGasAsync.bind(
+                    self,
+                    _from,
+                    _to,
+                    _value
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _from: string,
@@ -287,24 +301,28 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
     _to,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _from: string,
@@ -418,27 +436,32 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-            self.transfer.estimateGasAsync.bind(
-                self,
-                _to,
-                _value
-            ),
-        );
-        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-        return txHash;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.transfer.estimateGasAsync.bind(
+                    self,
+                    _to,
+                    _value
+                ),
+            );
+            try {
+                return await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
         },
         awaitTransactionSuccessAsync(
             _to: string,
@@ -470,22 +493,27 @@ export class ERC20TokenContract extends BaseContract {
             _value: BigNumber,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ERC20TokenContract;
-        const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+            const self = this as any as ERC20TokenContract;
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
     _value
     ]);
-        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {
-                to: self.address,
-                ...txData,
-                data: encodedData,
-            },
-            self._web3Wrapper.getContractDefaults(),
-        );
-        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-        return gas;
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            try {
+                return await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            } catch (err) {
+                // Try to decode ganache transaction revert Errors.
+                BaseContract._throwIfThrownErrorIsRevertError(err);
+                throw err;
+            }
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
         },
         getABIEncodedTransactionData(
             _to: string,

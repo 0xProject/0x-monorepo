@@ -36,7 +36,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
-
+            
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -312,7 +312,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
-
+            
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
