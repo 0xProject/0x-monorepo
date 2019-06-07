@@ -20,89 +20,12 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../MixinAssetProxyDispatcher.sol";
-import "../MixinExchangeRichErrors.sol";
-import "../MixinSignatureValidator.sol";
-import "../MixinTransactions.sol";
+import "../interfaces/IExchangeRichErrors.sol";
 
 
-contract LibExchangeRichErrorDecoder {
-    // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
-    bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
-        0x7e5a2318;
-
-    // bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        0x169fad8c;
-
-    // bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
-        0x1b8388f7;
-
-    // bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
-        0xfabf4577;
-
-    // bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
-        0xa85f3360;
-
-    // bytes4(keccak256("OrderStatusError(bytes32,uint8)"))
-    bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =
-        0xfdb6ca8d;
-
-    // bytes4(keccak256("InvalidSenderError(bytes32,address)"))
-    bytes4 internal constant INVALID_SENDER_ERROR_SELECTOR =
-        0x95b59997;
-
-    // bytes4(keccak256("InvalidMakerError(bytes32,address)"))
-    bytes4 internal constant INVALID_MAKER_ERROR_SELECTOR =
-        0x26bf55d9;
-
-    // bytes4(keccak256("FillError(uint8,bytes32)"))
-    bytes4 internal constant FILL_ERROR_SELECTOR =
-        0xe94a7ed0;
-
-    // bytes4(keccak256("InvalidTakerError(bytes32,address)"))
-    bytes4 internal constant INVALID_TAKER_ERROR_SELECTOR =
-        0xfdb328be;
-
-    // bytes4(keccak256("OrderEpochError(address,address,uint256)"))
-    bytes4 internal constant ORDER_EPOCH_ERROR_SELECTOR =
-        0x4ad31275;
-
-    // bytes4(keccak256("AssetProxyExistsError(address)"))
-    bytes4 internal constant ASSET_PROXY_EXISTS_ERROR_SELECTOR =
-        0xcc8b3b53;
-
-    // bytes4(keccak256("AssetProxyDispatchError(uint8,bytes32,bytes)"))
-    bytes4 internal constant ASSET_PROXY_DISPATCH_ERROR_SELECTOR =
-        0x488219a6;
-
-    // bytes4(keccak256("AssetProxyTransferError(bytes32,bytes,bytes)"))
-    bytes4 internal constant ASSET_PROXY_TRANSFER_ERROR_SELECTOR =
-        0x4678472b;
-
-    // bytes4(keccak256("NegativeSpreadError(bytes32,bytes32)"))
-    bytes4 internal constant NEGATIVE_SPREAD_ERROR_SELECTOR =
-        0xb6555d6f;
-
-    // bytes4(keccak256("TransactionError(uint8,bytes32)"))
-    bytes4 internal constant TRANSACTION_ERROR_SELECTOR =
-        0xf5985184;
-
-    // bytes4(keccak256("TransactionSignatureError(bytes32,address,bytes)"))
-    bytes4 internal constant TRANSACTION_SIGNATURE_ERROR_SELECTOR =
-        0xbfd56ef6;
-
-    // bytes4(keccak256("TransactionExecutionError(bytes32,bytes)"))
-    bytes4 internal constant TRANSACTION_EXECUTION_ERROR_SELECTOR =
-        0x20d11f61;
-
-    // bytes4(keccak256("IncompleteFillError(bytes32)"))
-    bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
-        0x152aa60e;
-
+contract LibExchangeRichErrorDecoder is 
+    IExchangeRichErrors
+{
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
@@ -112,14 +35,14 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            MixinExchangeRichErrors.SignatureErrorCodes errorCode,
+            IExchangeRichErrors.SignatureErrorCodes errorCode,
             bytes32 hash,
             address signerAddress,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_ERROR_SELECTOR);
-        errorCode = MixinExchangeRichErrors.SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = IExchangeRichErrors.SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
         signerAddress = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
@@ -292,12 +215,12 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            MixinExchangeRichErrors.FillErrorCodes errorCode,
+            IExchangeRichErrors.FillErrorCodes errorCode,
             bytes32 orderHash
         )
     {
         _assertSelectorBytes(encoded, FILL_ERROR_SELECTOR);
-        errorCode = MixinExchangeRichErrors.FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = IExchangeRichErrors.FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 
@@ -342,13 +265,13 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            MixinExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
+            IExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
             bytes32 orderHash,
             bytes memory assetData
         )
     {
         _assertSelectorBytes(encoded, ASSET_PROXY_DISPATCH_ERROR_SELECTOR);
-        errorCode = MixinExchangeRichErrors.AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = IExchangeRichErrors.AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
         assetData = _readErrorParameterAsBytes(encoded, 2);
     }
@@ -398,12 +321,12 @@ contract LibExchangeRichErrorDecoder {
         public
         pure
         returns (
-            MixinExchangeRichErrors.TransactionErrorCodes errorCode,
+            IExchangeRichErrors.TransactionErrorCodes errorCode,
             bytes32 transactionHash
         )
     {
         _assertSelectorBytes(encoded, TRANSACTION_ERROR_SELECTOR);
-        errorCode = MixinExchangeRichErrors.TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = IExchangeRichErrors.TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         transactionHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 

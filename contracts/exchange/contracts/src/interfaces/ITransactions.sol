@@ -24,6 +24,9 @@ import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 contract ITransactions {
 
+    // TransactionExecution event is emitted when a ZeroExTransaction is executed.
+    event TransactionExecution(bytes32 indexed transactionHash);
+
     /// @dev Executes an Exchange method call in the context of signer.
     /// @param transaction 0x transaction containing salt, signerAddress, and data.
     /// @param signature Proof that transaction has been signed by signer.
