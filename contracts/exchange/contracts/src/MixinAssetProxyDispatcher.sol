@@ -30,11 +30,6 @@ contract MixinAssetProxyDispatcher is
     Ownable,
     IAssetProxyDispatcher
 {
-    // Logs registration of new asset proxy
-    event AssetProxyRegistered(
-        bytes4 id,              // Id of new registered AssetProxy.
-        address assetProxy      // Address of new registered AssetProxy.
-    );
 
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => address) public assetProxies;
