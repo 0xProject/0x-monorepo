@@ -67,8 +67,8 @@ contract OrderValidationUtils is
 
         // Validate the maker's signature
         address makerAddress = order.makerAddress;
-        isValidSignature = _EXCHANGE.isValidSignature(
-            orderInfo.orderHash,
+        isValidSignature = _EXCHANGE.isValidOrderSignature(
+            order,
             makerAddress,
             signature
         );
@@ -87,9 +87,9 @@ contract OrderValidationUtils is
         if (order.makerAssetData.equals(zrxAssetData)) {
             // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
             // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
-            transferableTakerAssetAmount = getPartialAmountFloor(
+            transferableTakerAssetAmount = _getPartialAmountFloor(
                 transferableMakerAssetAmount,
-                safeAdd(order.makerAssetAmount, makerFee),
+                _safeAdd(order.makerAssetAmount, makerFee),
                 takerAssetAmount
             );
         } else {
@@ -98,7 +98,7 @@ contract OrderValidationUtils is
 
             // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
             if (makerFee == 0) {
-                transferableTakerAssetAmount = getPartialAmountFloor(
+                transferableTakerAssetAmount = _getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
@@ -107,23 +107,23 @@ contract OrderValidationUtils is
             // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
             // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
             } else {
-                uint256 transferableMakerToTakerAmount = getPartialAmountFloor(
+                uint256 transferableMakerToTakerAmount = _getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
                 );
-                uint256 transferableMakerFeeToTakerAmount = getPartialAmountFloor(
+                uint256 transferableMakerFeeToTakerAmount = _getPartialAmountFloor(
                     transferableMakerFeeAssetAmount,
                     makerFee,
                     takerAssetAmount
                 );
-                transferableTakerAssetAmount = min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
+                transferableTakerAssetAmount = _min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
             }
         }
 
         // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
-        fillableTakerAssetAmount = min256(
-            safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
+        fillableTakerAssetAmount = _min256(
+            _safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
             transferableTakerAssetAmount
         );
 
@@ -178,7 +178,7 @@ contract OrderValidationUtils is
         returns (uint256 transferableAssetAmount)
     {
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
-        transferableAssetAmount = min256(balance, allowance);
+        transferableAssetAmount = _min256(balance, allowance);
         return transferableAssetAmount;
     }
 }
