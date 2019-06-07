@@ -318,9 +318,9 @@ export class StakingWrapper {
         return value;
     }
     ///// PROTOCOL FEES /////
-    public async payProtocolFeeAsync(makerAddress: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    public async payProtocolFeeAsync(makerAddress: string, amount: BigNumber, exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(makerAddress);
-        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres, amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, exchangeAddress, amount);
         return txReceipt;
     }
     public async getProtocolFeesThisEpochByPoolAsync(poolId: string): Promise<BigNumber> {
