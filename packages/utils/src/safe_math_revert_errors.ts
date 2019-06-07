@@ -1,6 +1,5 @@
 import { BigNumber } from './configured_bignumber';
 import { RevertError } from './revert_error';
-import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
 
@@ -22,10 +21,7 @@ export class Uint256UnderflowError extends RevertError {
     }
 }
 
-const types = [
-    Uint256OverflowError,
-    Uint256UnderflowError,
-];
+const types = [Uint256OverflowError, Uint256UnderflowError];
 
 // Register the types we've defined.
 for (const type of types) {
