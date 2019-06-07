@@ -46,6 +46,7 @@
         "test:generate_docs:circleci": "for i in ${npm_package_config_packagesWithDocPages}; do yarn generate_doc --package $i --shouldUpload false --isStaging true || break -1; done;",
         "bundlewatch": "bundlewatch",
         "lint": "wsrun lint $PKG --fast-exit --parallel --exclude-missing",
+        "lint:stages": "wsrun lint $PKG --fast-exit --stages --exclude-missing",
         "lint:contracts": "wsrun lint -p ${npm_package_config_contractsPackages} -c --fast-exit --stages --exclude-missing"
     },
     "config": {
