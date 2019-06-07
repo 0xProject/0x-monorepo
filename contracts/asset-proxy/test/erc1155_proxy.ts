@@ -1875,7 +1875,7 @@ describe('ERC1155Proxy', () => {
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
                 spenderInitialFungibleBalance,
-                valuesToTransfer[0],
+                valuesToTransfer[0].times(valueMultiplier),
             );
             // execute transfer
             const tx = erc1155ProxyWrapper.transferFromAsync(
