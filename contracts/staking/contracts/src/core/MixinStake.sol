@@ -26,10 +26,12 @@ import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinEpoch.sol";
+import "../libs/LibRewards.sol";
 
 
 contract MixinStake is
     SafeMath,
+    LibRewards,
     IStakingEvents,
     MixinConstants,
     MixinStorage,
@@ -153,28 +155,87 @@ contract MixinStake is
     function _delegateStake(address owner, bytes32 poolId, uint256 amount)
         private
     {
+        // take snapshot of parameters before any computation
+        uint256 _delegatedStakeByOwner = delegatedStakeByOwner[owner];
+        uint256 _delegatedStakeToPoolByOwner = delegatedStakeToPoolByOwner[owner][poolId];
+        uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
+
         // increment how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeAdd(delegatedStakeByOwner[owner], amount);
+        delegatedStakeByOwner[owner] = _safeAdd(_delegatedStakeByOwner, amount);
 
         // increment how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _safeAdd(delegatedStakeToPoolByOwner[owner][poolId], amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _safeAdd(_delegatedStakeToPoolByOwner, amount);
 
         // increment how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _safeAdd(delegatedStakeByPoolId[poolId], amount);
+        delegatedStakeByPoolId[poolId] = _safeAdd(_delegatedStakeByPoolId, amount);
+
+        /*
+        // update delegator's share of reward pool
+        // note that this uses the snapshot parameters
+        uint256 poolBalance = rebateVault.balanceOf(poolId);
+        uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
+            amount,
+            _delegatedStakeByPoolId,
+            shadowRewardsByPoolId[poolId],
+            poolBalance
+        );
+        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
+        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
+        */
     }
 
+    // question - should we then return the amount withdrawn?
     function _undelegateStake(address owner, bytes32 poolId, uint256 amount)
         private
     {
+        // take snapshot of parameters before any computation
+        uint256 _delegatedStakeByOwner = delegatedStakeByOwner[owner];
+        uint256 _delegatedStakeToPoolByOwner = delegatedStakeToPoolByOwner[owner][poolId];
+        uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
+
         // decrement how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeSub(delegatedStakeByOwner[owner], amount);
+        delegatedStakeByOwner[owner] = _safeSub(_delegatedStakeByOwner, amount);
 
         // decrement how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _safeSub(delegatedStakeToPoolByOwner[owner][poolId], amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _safeSub(_delegatedStakeToPoolByOwner, amount);
 
         // decrement how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _safeSub(delegatedStakeByPoolId[poolId], amount);
+        delegatedStakeByPoolId[poolId] = _safeSub(_delegatedStakeByPoolId, amount);
+
+        /* 
+        // get payout
+        uint256 poolBalance = rebateVault.balanceOf(poolId);
+        uint256 payoutInRealAsset;
+        uint256 payoutInShadowAsset;
+        if (_delegatedStakeToPoolByOwner == amount) {
+            // full payout
+            payoutInShadowAsset = shadowRewardsInPoolByOwner[owner][poolId];
+            payoutInRealAsset = _computePayoutDenominatedInRealAsset(
+                amount,
+                _delegatedStakeByPoolId,
+                payoutInShadowAsset,
+                shadowRewardsByPoolId[poolId],
+                poolBalance
+            );
+        } else {
+            // partial payout
+            (payoutInRealAsset, payoutInShadowAsset) = _computePartialPayout(
+                 amount,
+                _delegatedStakeByOwner,
+                _delegatedStakeByPoolId,
+                shadowRewardsInPoolByOwner[owner][poolId],
+                shadowRewardsByPoolId[poolId],
+                poolBalance
+            );
+        }
+        shadowRewardsInPoolByOwner[owner][poolId] = _safeSub(shadowRewardsInPoolByOwner[owner][poolId], payoutInShadowAsset);
+        shadowRewardsByPoolId[poolId] = _safeSub(shadowRewardsByPoolId[poolId], payoutInShadowAsset);
+        */
+
+        //_withdrawRewardForDelegator();
     }
+
+    
 
     // Epoch | lockedAt  | total | pending | deactivated | timelock() | withdraw() | available()
     // 0     | 0         | 0     | 0       | 0       |            |            | 0
