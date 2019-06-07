@@ -13,10 +13,11 @@
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project .",
+        "lint_contracts": "node ../monorepo-scripts/lib/contract_artifacts_lint.js ../contract-artifacts/artifacts && prettier --write ../contract-artifacts/artifacts/*.json",
         "fix": "tslint --fix --format stylish --project .",
         "pre_build": "yarn generate_contract_wrappers",
         "clean": "shx rm -rf lib wrappers",
-        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
+        "generate_contract_wrappers": "yarn lint_contracts && abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
     },
     "config": {
         "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry).json"

@@ -10,12 +10,18 @@
         "test": "test"
     },
     "scripts": {
+        "artifacts_copy": "node ../monorepo-scripts/lib/contract_artifacts_copy.js ${npm_package_config_contractsPackages}",
+        "artifacts_lint": "node ../monorepo-scripts/lib/contract_artifacts_lint.js ./artifacts && prettier --write ./artifacts/*.json",
+        "artifacts_update": "yarn artifacts_copy && yarn artifacts_lint",
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
         "test": "yarn run_mocha",
         "test:circleci": "yarn test",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "clean": "shx rm -rf lib"
+    },
+    "config": {
+        "contractsPackages": "@0x/contracts-asset-proxy @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-exchange-libs @0x/contracts-extensions @0x/contracts-multisig @0x/contracts-test-utils @0x/contracts-utils @0x/contracts-coordinator"
     },
     "repository": {
         "type": "git",

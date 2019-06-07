@@ -48,6 +48,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
+        "@0x/contract-artifacts": "^1.5.1",
         "@0x/types": "^2.2.2",
         "@0x/utils": "^4.3.3",
         "@lerna/batch-packages": "^3.0.0-beta.18",
