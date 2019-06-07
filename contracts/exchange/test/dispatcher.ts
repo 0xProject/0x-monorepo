@@ -143,10 +143,7 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should throw if requesting address is not owner', async () => {
-            const expectedError = new OwnableRevertErrors.OnlyOwnerError(
-                notOwner,
-                owner,
-            );
+            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
                 from: notOwner,
             });

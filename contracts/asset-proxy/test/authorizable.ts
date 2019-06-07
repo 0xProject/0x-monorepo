@@ -48,9 +48,7 @@ describe('Authorizable', () => {
     describe('addAuthorizedAddress', () => {
         it('should throw if not called by owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
-            const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(
-                notOwner, { from: notOwner }
-            );
+            const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner });
             expect(tx).to.revertWith(expectedError);
         });
         it('should allow owner to add an authorized address', async () => {
@@ -83,9 +81,7 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
-            const tx = authorizable.removeAuthorizedAddress.sendTransactionAsync(
-                address, { from: notOwner, }
-            );
+            const tx = authorizable.removeAuthorizedAddress.sendTransactionAsync(address, { from: notOwner });
             expect(tx).to.revertWith(expectedError);
         });
 
@@ -123,9 +119,9 @@ describe('Authorizable', () => {
             );
             const index = new BigNumber(0);
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
-            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(
-                address, index, { from: notOwner, }
-            );
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                from: notOwner,
+            });
             expect(tx).to.revertWith(expectedError);
         });
         it('should throw if index is >= authorities.length', async () => {
