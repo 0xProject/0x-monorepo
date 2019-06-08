@@ -24,6 +24,18 @@ import "@0x/contracts-utils/contracts/src/interfaces/IOwnable.sol";
 contract IAuthorizable is
     IOwnable
 {
+    // Event logged when a new address is authorized.
+    event AuthorizedAddressAdded(
+        address indexed target,
+        address indexed caller
+    );
+
+    // Event logged when a currently authorized address is unauthorized.
+    event AuthorizedAddressRemoved(
+        address indexed target,
+        address indexed caller
+    );
+
     /// @dev Authorizes an address.
     /// @param target Address to authorize.
     function addAuthorizedAddress(address target)

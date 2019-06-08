@@ -26,18 +26,6 @@ contract MixinAuthorizable is
     Ownable,
     IAuthorizable
 {
-    // Event logged when a new address is authorized.
-    event AuthorizedAddressAdded(
-        address indexed target,
-        address indexed caller
-    );
-
-    // Event logged when a currently authorized address is unauthorized.
-    event AuthorizedAddressRemoved(
-        address indexed target,
-        address indexed caller
-    );
-
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
         require(
