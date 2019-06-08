@@ -54,6 +54,35 @@ const MULTI_ASSET_METHOD_ABI: MethodAbi = {
     type: 'function',
 };
 
+const ERC1155_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        { name: 'tokenAddress', type: 'address' },
+        { name: 'tokenIds', type: 'uint256[]' },
+        { name: 'tokenValues', type: 'uint256[]' },
+        { name: 'callbackData', type: 'bytes' },
+    ],
+    name: 'ERC1155Assets',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
+const STATIC_CALL_METHOD_ABI: MethodAbi = {
+    constant: false,
+    inputs: [
+        { name: 'callTarget', type: 'address' },
+        { name: 'staticCallData', type: 'bytes' },
+        { name: 'callResultHash', type: 'bytes32' },
+    ],
+    name: 'StaticCall',
+    outputs: [],
+    payable: false,
+    stateMutability: 'nonpayable',
+    type: 'function',
+};
+
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     NULL_BYTES: '0x',
@@ -117,4 +146,6 @@ export const constants = {
     ERC20_METHOD_ABI,
     ERC721_METHOD_ABI,
     MULTI_ASSET_METHOD_ABI,
+    ERC1155_METHOD_ABI,
+    STATIC_CALL_METHOD_ABI,
 };

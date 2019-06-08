@@ -164,6 +164,7 @@ export enum AssetProxyId {
     ERC721 = '0x02571792',
     MultiAsset = '0x94cfcdd7',
     ERC1155 = '0xa7cb5fb7',
+    StaticCall = '0xc339d10a',
 }
 
 export interface ERC20AssetData {
@@ -185,6 +186,13 @@ export interface ERC1155AssetData {
     callbackData: string;
 }
 
+export interface StaticCallAssetData {
+    assetProxyId: string;
+    callTarget: string;
+    staticCallData: string;
+    callResultHash: string;
+}
+
 export interface ERC1155AssetDataNoProxyId {
     tokenAddress: string;
     tokenValues: BigNumber[];
@@ -192,14 +200,7 @@ export interface ERC1155AssetDataNoProxyId {
     callbackData: string;
 }
 
-export const ERC1155AssetDataAbi = [
-    { name: 'tokenAddress', type: 'address' },
-    { name: 'tokenIds', type: 'uint256[]' },
-    { name: 'tokenValues', type: 'uint256[]' },
-    { name: 'callbackData', type: 'bytes' },
-];
-
-export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;
+export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData | StaticCallAssetData;
 
 export interface MultiAssetData {
     assetProxyId: string;
