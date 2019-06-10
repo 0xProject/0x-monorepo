@@ -49,6 +49,7 @@ export {
     ERC721AssetData,
     ERC1155AssetData,
     MultiAssetData,
+    StaticCallAssetData,
     MultiAssetDataWithRecursiveDecoding,
     AssetProxyId,
     SignatureType,

@@ -97,6 +97,7 @@ export {
     ERC1155AssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
+    StaticCallAssetData,
     SignatureType,
     ObjectMap,
     OrderRelevantState,

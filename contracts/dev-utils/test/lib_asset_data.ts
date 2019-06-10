@@ -524,3 +524,4 @@ describe('LibAssetData', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count
