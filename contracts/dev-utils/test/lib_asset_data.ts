@@ -7,6 +7,8 @@ import {
     ERC20ProxyContract,
     ERC721ProxyContract,
     MultiAssetProxyContract,
+    StaticCallProxyContract,
+    TestStaticCallTargetContract,
 } from '@0x/contracts-asset-proxy';
 import {
     artifacts as erc1155Artifacts,
@@ -21,6 +23,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { AssetProxyId } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, LibAssetDataContract } from '../src';
 
@@ -65,6 +68,8 @@ describe('LibAssetData', () => {
     let erc721Proxy: ERC721ProxyContract;
     let erc1155Proxy: ERC1155ProxyContract;
     let multiAssetProxy: MultiAssetProxyContract;
+    let staticCallProxy: StaticCallProxyContract;
+    let staticCallTarget: TestStaticCallTargetContract;
     let libAssetData: LibAssetDataContract;
 
     let tokenOwnerAddress: string;
@@ -110,17 +115,29 @@ describe('LibAssetData', () => {
             provider,
             txDefaults,
         );
+        staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
+            proxyArtifacts.StaticCallProxy,
+            provider,
+            txDefaults,
+        );
 
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address);
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address);
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc1155Proxy.address);
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(multiAssetProxy.address);
+        await exchange.registerAssetProxy.awaitTransactionSuccessAsync(staticCallProxy.address);
 
         libAssetData = await LibAssetDataContract.deployFrom0xArtifactAsync(
             artifacts.LibAssetData,
             provider,
             txDefaults,
             exchange.address,
+        );
+
+        staticCallTarget = await TestStaticCallTargetContract.deployFrom0xArtifactAsync(
+            proxyArtifacts.TestStaticCallTarget,
+            provider,
+            txDefaults,
         );
 
         [tokenOwnerAddress] = await web3Wrapper.getAvailableAddressesAsync();
@@ -324,6 +341,32 @@ describe('LibAssetData', () => {
             const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, fakeAssetData);
             expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
+
+        it('should return a balance of MAX_UINT256 if the the StaticCallProxy assetData contains data for a successful staticcall', async () => {
+            const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(1));
+            const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
+            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const assetData = assetDataUtils.encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                expectedResultHash,
+            );
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData);
+            expect(balance).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
+        });
+
+        it('should return a balance of 0 if the the StaticCallProxy assetData contains data for an unsuccessful staticcall', async () => {
+            const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(0));
+            const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
+            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const assetData = assetDataUtils.encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                expectedResultHash,
+            );
+            const balance = await libAssetData.getBalance.callAsync(tokenOwnerAddress, assetData);
+            expect(balance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
     });
 
     describe('getAssetProxyAllowance', () => {
@@ -398,6 +441,17 @@ describe('LibAssetData', () => {
             const fakeAssetData = '0x01020304';
             const allowance = await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, fakeAssetData);
             expect(allowance).to.bignumber.equal(constants.ZERO_AMOUNT);
+        });
+
+        it('should return an allowance of MAX_UINT256 for any staticCallAssetData', async () => {
+            const staticCallData = AssetProxyId.StaticCall;
+            const assetData = assetDataUtils.encodeStaticCallAssetData(
+                staticCallTarget.address,
+                staticCallData,
+                constants.KECCAK256_NULL,
+            );
+            const allowance = await libAssetData.getAssetProxyAllowance.callAsync(tokenOwnerAddress, assetData);
+            expect(allowance).to.bignumber.equal(constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS);
         });
     });
 
