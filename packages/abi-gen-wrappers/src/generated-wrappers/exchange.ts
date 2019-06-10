@@ -119,6 +119,15 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('filled(bytes32)', [index_0
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public batchFillOrders = {
         async sendTransactionAsync(
@@ -205,21 +214,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
-    takerAssetFillAmounts,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -261,6 +255,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public cancelled = {
         async callAsync(
@@ -297,6 +306,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelled(bytes32)', [index_0
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public preSign = {
@@ -384,21 +402,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            hash: string,
-            signerAddress: string,
-            signature: string,
-        ): string {
-        assert.isString('hash', hash);
-        assert.isString('signerAddress', signerAddress);
-        assert.isString('signature', signature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
-    signerAddress,
-    signature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -440,6 +443,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isString('signerAddress', signerAddress);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
+        signerAddress,
+        signature
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public matchOrders = {
         async sendTransactionAsync(
@@ -449,8 +467,8 @@ export class ExchangeContract extends BaseContract {
             rightSignature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-
+        
+        
         assert.isString('leftSignature', leftSignature);
         assert.isString('rightSignature', rightSignature);
         const self = this as any as ExchangeContract;
@@ -486,8 +504,8 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-
+        
+        
         assert.isString('leftSignature', leftSignature);
         assert.isString('rightSignature', rightSignature);
         const self = this as any as ExchangeContract;
@@ -515,8 +533,8 @@ export class ExchangeContract extends BaseContract {
             rightSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-
+        
+        
         assert.isString('leftSignature', leftSignature);
         assert.isString('rightSignature', rightSignature);
         const self = this as any as ExchangeContract;
@@ -536,24 +554,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            leftSignature: string,
-            rightSignature: string,
-        ): string {
-
-
-        assert.isString('leftSignature', leftSignature);
-        assert.isString('rightSignature', rightSignature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
-    rightOrder,
-    leftSignature,
-    rightSignature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -563,8 +563,8 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
-
-
+            
+            
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -598,6 +598,24 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                leftSignature: string,
+                rightSignature: string,
+            ): string {
+            
+            
+            assert.isString('leftSignature', leftSignature);
+            assert.isString('rightSignature', rightSignature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
+        rightOrder,
+        leftSignature,
+        rightSignature
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public fillOrderNoThrow = {
         async sendTransactionAsync(
@@ -606,7 +624,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -639,7 +657,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -665,7 +683,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -684,21 +702,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
-
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isString('signature', signature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
-    takerAssetFillAmount,
-    signature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -707,7 +710,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -739,6 +742,21 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public assetProxies = {
@@ -776,6 +794,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public batchCancelOrders = {
@@ -843,15 +870,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-        ): string {
-        assert.isArray('orders', orders);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             callData: Partial<CallData> = {},
@@ -886,6 +904,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            ): string {
+            assert.isArray('orders', orders);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public batchFillOrKillOrders = {
@@ -973,21 +1000,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
-    takerAssetFillAmounts,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -1028,6 +1040,21 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public cancelOrdersUpTo = {
@@ -1095,15 +1122,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            targetOrderEpoch: BigNumber,
-        ): string {
-        assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             targetOrderEpoch: BigNumber,
             callData: Partial<CallData> = {},
@@ -1138,6 +1156,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                targetOrderEpoch: BigNumber,
+            ): string {
+            assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public batchFillOrdersNoThrow = {
@@ -1225,21 +1252,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
-    takerAssetFillAmounts,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
@@ -1281,6 +1293,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getAssetProxy = {
         async callAsync(
@@ -1317,6 +1344,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                assetProxyId: string,
+            ): string {
+            assert.isString('assetProxyId', assetProxyId);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transactions = {
@@ -1355,6 +1391,15 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transactions(bytes32)', [index_0
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public fillOrKillOrder = {
         async sendTransactionAsync(
@@ -1363,7 +1408,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -1396,7 +1441,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -1422,7 +1467,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -1441,21 +1486,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
-
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isString('signature', signature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
-    takerAssetFillAmount,
-    signature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -1464,7 +1494,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1496,6 +1526,21 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public setSignatureValidatorApproval = {
@@ -1573,18 +1618,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            validatorAddress: string,
-            approval: boolean,
-        ): string {
-        assert.isString('validatorAddress', validatorAddress);
-        assert.isBoolean('approval', approval);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
-    approval
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             validatorAddress: string,
             approval: boolean,
@@ -1622,6 +1655,18 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                validatorAddress: string,
+                approval: boolean,
+            ): string {
+            assert.isString('validatorAddress', validatorAddress);
+            assert.isBoolean('approval', approval);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress,
+        approval
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public allowedValidators = {
@@ -1662,6 +1707,18 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('allowedValidators(address,address)', [index_0,
+        index_1
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public marketSellOrders = {
@@ -1749,21 +1806,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
-    takerAssetFillAmount,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
@@ -1805,6 +1847,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getOrdersInfo = {
         async callAsync(
@@ -1841,6 +1898,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            ): string {
+            assert.isArray('orders', orders);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public preSigned = {
@@ -1882,6 +1948,18 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('preSigned(bytes32,address)', [index_0,
+        index_1
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public owner = {
         async callAsync(
@@ -1915,6 +1993,12 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
+            return abiEncodedTransactionData;
         },
     };
     public isValidSignature = {
@@ -1958,6 +2042,21 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isString('signerAddress', signerAddress);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+        signerAddress,
+        signature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public marketBuyOrdersNoThrow = {
@@ -2045,21 +2144,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
-    makerAssetFillAmount,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -2101,6 +2185,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                makerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public fillOrder = {
         async sendTransactionAsync(
@@ -2109,7 +2208,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -2142,7 +2241,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -2168,7 +2267,7 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
+        
         assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
         assert.isString('signature', signature);
         const self = this as any as ExchangeContract;
@@ -2187,21 +2286,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
-
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isString('signature', signature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
-    takerAssetFillAmount,
-    signature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
@@ -2210,7 +2294,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
         > {
-
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2242,6 +2326,21 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public executeTransaction = {
@@ -2339,24 +2438,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            salt: BigNumber,
-            signerAddress: string,
-            data: string,
-            signature: string,
-        ): string {
-        assert.isBigNumber('salt', salt);
-        assert.isString('signerAddress', signerAddress);
-        assert.isString('data', data);
-        assert.isString('signature', signature);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
-    signerAddress,
-    data,
-    signature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -2400,6 +2481,24 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                salt: BigNumber,
+                signerAddress: string,
+                data: string,
+                signature: string,
+            ): string {
+            assert.isBigNumber('salt', salt);
+            assert.isString('signerAddress', signerAddress);
+            assert.isString('data', data);
+            assert.isString('signature', signature);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
+        signerAddress,
+        data,
+        signature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public registerAssetProxy = {
@@ -2467,15 +2566,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            assetProxy: string,
-        ): string {
-        assert.isString('assetProxy', assetProxy);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             assetProxy: string,
             callData: Partial<CallData> = {},
@@ -2511,6 +2601,15 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                assetProxy: string,
+            ): string {
+            assert.isString('assetProxy', assetProxy);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getOrderInfo = {
         async callAsync(
@@ -2519,7 +2618,7 @@ export class ExchangeContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}
         > {
-
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2548,13 +2647,22 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            ): string {
+            
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public cancelOrder = {
         async sendTransactionAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
+        
         const self = this as any as ExchangeContract;
         const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
@@ -2579,7 +2687,7 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         const self = this as any as ExchangeContract;
         const txHashPromise = self.cancelOrder.sendTransactionAsync(order
     , txData);
@@ -2599,7 +2707,7 @@ export class ExchangeContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
+        
         const self = this as any as ExchangeContract;
         const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
@@ -2614,22 +2722,13 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-        ): string {
-
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<void
         > {
-
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2657,6 +2756,15 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            ): string {
+            
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public orderEpoch = {
@@ -2698,6 +2806,18 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('orderEpoch(address,address)', [index_0,
+        index_1
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public ZRX_ASSET_DATA = {
         async callAsync(
@@ -2731,6 +2851,12 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('ZRX_ASSET_DATA()', []);
+            return abiEncodedTransactionData;
         },
     };
     public marketSellOrdersNoThrow = {
@@ -2818,21 +2944,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
-    takerAssetFillAmount,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
@@ -2874,6 +2985,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public EIP712_DOMAIN_HASH = {
         async callAsync(
@@ -2907,6 +3033,12 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
+            return abiEncodedTransactionData;
         },
     };
     public marketBuyOrders = {
@@ -2994,21 +3126,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        assert.isArray('signatures', signatures);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
-    makerAssetFillAmount,
-    signatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -3050,6 +3167,21 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                makerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+            assert.isArray('signatures', signatures);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public currentContextAddress = {
         async callAsync(
@@ -3083,6 +3215,12 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('currentContextAddress()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
@@ -3150,15 +3288,6 @@ export class ExchangeContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            newOwner: string,
-        ): string {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as ExchangeContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -3194,6 +3323,15 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
+            assert.isString('newOwner', newOwner);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public VERSION = {
         async callAsync(
@@ -3227,6 +3365,12 @@ export class ExchangeContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('VERSION()', []);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

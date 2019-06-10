@@ -33,7 +33,7 @@ export class DutchAuctionContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
+        
         const self = this as any as DutchAuctionContract;
         const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
@@ -58,7 +58,7 @@ export class DutchAuctionContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
+        
         const self = this as any as DutchAuctionContract;
         const txHashPromise = self.getAuctionDetails.sendTransactionAsync(order
     , txData);
@@ -78,7 +78,7 @@ export class DutchAuctionContract extends BaseContract {
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
+        
         const self = this as any as DutchAuctionContract;
         const encodedData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
     ]);
@@ -93,22 +93,13 @@ export class DutchAuctionContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-        ): string {
-
-        const self = this as any as DutchAuctionContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
         ): Promise<{beginTimeSeconds: BigNumber;endTimeSeconds: BigNumber;beginAmount: BigNumber;endAmount: BigNumber;currentAmount: BigNumber;currentTimeSeconds: BigNumber}
         > {
-
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -137,6 +128,15 @@ export class DutchAuctionContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            ): string {
+            
+            const self = this as any as DutchAuctionContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public matchOrders = {
         async sendTransactionAsync(
@@ -146,8 +146,8 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
         txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-
-
+        
+        
         assert.isString('buySignature', buySignature);
         assert.isString('sellSignature', sellSignature);
         const self = this as any as DutchAuctionContract;
@@ -183,8 +183,8 @@ export class DutchAuctionContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-
-
+        
+        
         assert.isString('buySignature', buySignature);
         assert.isString('sellSignature', sellSignature);
         const self = this as any as DutchAuctionContract;
@@ -212,8 +212,8 @@ export class DutchAuctionContract extends BaseContract {
             sellSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-
-
+        
+        
         assert.isString('buySignature', buySignature);
         assert.isString('sellSignature', sellSignature);
         const self = this as any as DutchAuctionContract;
@@ -233,24 +233,6 @@ export class DutchAuctionContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            sellOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
-            buySignature: string,
-            sellSignature: string,
-        ): string {
-
-
-        assert.isString('buySignature', buySignature);
-        assert.isString('sellSignature', sellSignature);
-        const self = this as any as DutchAuctionContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
-    sellOrder,
-    buySignature,
-    sellSignature
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             sellOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
@@ -260,8 +242,8 @@ export class DutchAuctionContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
         > {
-
-
+            
+            
             assert.isString('buySignature', buySignature);
             assert.isString('sellSignature', sellSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -294,6 +276,24 @@ export class DutchAuctionContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                buyOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                sellOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                buySignature: string,
+                sellSignature: string,
+            ): string {
+            
+            
+            assert.isString('buySignature', buySignature);
+            assert.isString('sellSignature', sellSignature);
+            const self = this as any as DutchAuctionContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [buyOrder,
+        sellOrder,
+        buySignature,
+        sellSignature
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

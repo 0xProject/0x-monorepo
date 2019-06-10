@@ -67,6 +67,18 @@ export class IWalletContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                hash: string,
+                signature: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isString('signature', signature);
+            const self = this as any as IWalletContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [hash,
+        signature
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

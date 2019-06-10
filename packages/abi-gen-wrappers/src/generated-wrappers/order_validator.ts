@@ -36,7 +36,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
-
+            
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -66,6 +66,18 @@ export class OrderValidatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAddress: string,
+            ): string {
+            
+            assert.isString('takerAddress', takerAddress);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
+        takerAddress
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public getBalanceAndAllowance = {
@@ -107,6 +119,18 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                target: string,
+                assetData: string,
+            ): string {
+            assert.isString('target', target);
+            assert.isString('assetData', assetData);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getBalanceAndAllowance(address,bytes)', [target,
+        assetData
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getOrdersAndTradersInfo = {
         async callAsync(
@@ -146,6 +170,18 @@ export class OrderValidatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAddresses: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
+        takerAddresses
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public getTradersInfo = {
@@ -187,6 +223,18 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAddresses: string[],
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
+        takerAddresses
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getERC721TokenOwner = {
         async callAsync(
@@ -226,6 +274,18 @@ export class OrderValidatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                token: string,
+                tokenId: BigNumber,
+            ): string {
+            assert.isString('token', token);
+            assert.isBigNumber('tokenId', tokenId);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [token,
+        tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public getBalancesAndAllowances = {
@@ -267,6 +327,18 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                target: string,
+                assetData: string[],
+            ): string {
+            assert.isString('target', target);
+            assert.isArray('assetData', assetData);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getBalancesAndAllowances(address,bytes[])', [target,
+        assetData
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getTraderInfo = {
         async callAsync(
@@ -276,7 +348,7 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
-
+            
             assert.isString('takerAddress', takerAddress);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -306,6 +378,18 @@ export class OrderValidatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAddress: string,
+            ): string {
+            
+            assert.isString('takerAddress', takerAddress);
+            const self = this as any as OrderValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
+        takerAddress
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

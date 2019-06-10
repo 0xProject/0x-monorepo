@@ -279,6 +279,7 @@ export enum RevertReason {
     WalletError = 'WALLET_ERROR',
     ValidatorError = 'VALIDATOR_ERROR',
     InvalidFunctionSelector = 'INVALID_FUNCTION_SELECTOR',
+    InvalidAssetData = 'InvalidAssetData',
     InvalidAssetProxy = 'INVALID_ASSET_PROXY',
     UnregisteredAssetProxy = 'UNREGISTERED_ASSET_PROXY',
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
