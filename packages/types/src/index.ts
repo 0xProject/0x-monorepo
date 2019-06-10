@@ -291,7 +291,7 @@ export enum RevertReason {
     AuctionExpired = 'AUCTION_EXPIRED',
     AuctionNotStarted = 'AUCTION_NOT_STARTED',
     AuctionInvalidBeginTime = 'INVALID_BEGIN_TIME',
-    InvalidAssetData = 'INVALID_ASSET_DATA',
+    InvalidAssetDataEnd = 'INVALID_ASSET_DATA_END',
     // Balance Threshold Filter
     InvalidOrBlockedExchangeSelector = 'INVALID_OR_BLOCKED_EXCHANGE_SELECTOR',
     BalanceQueryFailed = 'BALANCE_QUERY_FAILED',
@@ -317,6 +317,10 @@ export enum RevertReason {
     InvalidValuesOffset = 'INVALID_VALUES_OFFSET',
     InvalidDataOffset = 'INVALID_DATA_OFFSET',
     InvalidAssetDataLength = 'INVALID_ASSET_DATA_LENGTH',
+    // StaticCall
+    InvalidStaticCallDataOffset = 'INVALID_STATIC_CALL_DATA_OFFSET',
+    TargetNotEven = 'TARGET_NOT_EVEN',
+    UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
 }
 
 export enum StatusCodes {
