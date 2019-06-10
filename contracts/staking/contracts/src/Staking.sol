@@ -322,7 +322,7 @@ contract Staking is
         view
         returns (uint256)
     {
-
+        
     }
 
     function computeDelegatorReward(address owner, bytes32 poolId)

@@ -21,11 +21,14 @@ pragma solidity ^0.5.5;
 import "../interfaces/IVault.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "./MixinVaultCore.sol";
+import "../interfaces/IRewardVault.sol";
+import "../immutable/MixinConstants.sol";
 
 
-contract RebateVault is
-    IVault,
+contract RewardVault is
+    IRewardVault,
     SafeMath,
+    MixinConstants,
     MixinVaultCore
 {
 
@@ -36,14 +39,12 @@ contract RebateVault is
     // mapping from Pool to Rebate Balance in ETH
     mapping (bytes32 => uint256) internal balancesByPoolId;
 
-    // mapping from 
-    mapping (bytes32 => address) internal ownerByPoolId;
+    // mapping from owner to pool id
+    mapping (bytes32 => address payable) internal ownerByPoolId;
 
     constructor()
         public
     {}
-
-    ///// 
 
     function depositFor(bytes32 poolId)
         external
@@ -53,6 +54,38 @@ contract RebateVault is
         balancesByPoolId[poolId] = _safeAdd(balancesByPoolId[poolId], msg.value);
     }
 
+    function withdrawFor(bytes32 poolId, uint256 amount)
+        external
+        onlyStakingContract
+    {
+        require(
+            amount <= balancesByPoolId[poolId],
+            "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
+        );
+        balancesByPoolId[poolId] = _safeSub(balancesByPoolId[poolId], amount);
+        stakingContractAddress.transfer(amount);
+    }
+
+    function withdrawAllFrom(bytes32 poolId)
+        external
+        onlyInCatostrophicFailure
+        returns (uint256)
+    {
+        address payable owner = ownerByPoolId[poolId];
+        require(
+            owner != NIL_ADDRESS,
+            "INVALID_OWNER"
+        );
+        uint256 balanceInPool = balancesByPoolId[poolId];
+        require(
+            balanceInPool > 0,
+            "POOL_BALANCE_IS_ZERO"
+        );
+
+        balancesByPoolId[poolId] = 0;
+        owner.transfer(balancesByPoolId[poolId]);
+    }
+
     function balanceOf(bytes32 poolId)
         external
         view
@@ -60,49 +93,4 @@ contract RebateVault is
     {
         return balancesByPoolId[poolId];
     }
-
-
-    /**
-    // Deposits shadow ETH
-    function depositFrom(address owner, uint256 amount)
-        external
-        onlyStakingContract
-    {
-        
-    }
-
-    function withdrawFrom(address owner, bytes32 poolId, uint256 amount)
-        external
-        onlyStakingContract
-    {
-        // check if owner is operator
-
-
-    }
-
-    function _withdrawFromOperator(address owner, uint256 amount)
-        private
-    {
-
-    }
-
-    function _withdrawFromNotOperator(address owner, uint256 amount)
-        private
-    {
-        
-    }
-
-    function withdrawAllFrom(address owner)
-        external
-        onlyInCatostrophicFailure
-        returns (uint256)
-    {}
-
-    function balanceOf(address owner)
-        external
-        view
-        returns (uint256)
-    {
-        return uint256(132 * 10**18);
-    } */
 }
