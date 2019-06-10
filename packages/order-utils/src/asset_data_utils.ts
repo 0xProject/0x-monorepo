@@ -387,6 +387,9 @@ export const assetDataUtils = {
             case AssetProxyId.MultiAsset:
                 assetDataUtils.assertIsMultiAssetData(assetData);
                 break;
+            case AssetProxyId.StaticCall:
+                assetDataUtils.assertIsStaticCallAssetData(assetData);
+                break;
             default:
                 throw new Error(`Unrecognized asset proxy id: ${assetProxyId}`);
         }
