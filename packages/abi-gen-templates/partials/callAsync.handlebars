@@ -32,3 +32,13 @@ async callAsync(
     // tslint:enable boolean-naming
     return result;
 },
+getABIEncodedTransactionData(
+    {{> typed_params inputs=inputs}}
+    ): string {
+    {{#each inputs}}
+    {{#assertionType name type}}{{/assertionType}}
+    {{/each}}
+    const self = this as any as {{contractName}}Contract;
+    const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    return abiEncodedTransactionData;
+},
