@@ -35,7 +35,9 @@ for (const dir of contractsDirs) {
 for (const _path of allArtifactPaths) {
     const fileName = _path.split('/').slice(-1)[0];
     const targetPath = path.join(__dirname, '../../contract-artifacts/artifacts', fileName);
+    const targetPathPython = path.join(__dirname, '../../../python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts', fileName)
     fs.copyFileSync(_path, targetPath);
+    fs.copyFileSync(_path, targetPathPython);
     utils.log(`Copied from ${_path} to ${targetPath}`);
 }
 utils.log(`Finished copying contract-artifacts. Remember to lint artifacts before using abi-gen.`);

@@ -11,7 +11,7 @@
     },
     "scripts": {
         "artifacts_copy": "node ../monorepo-scripts/lib/contract_artifacts_copy.js ${npm_package_config_contractsPackages}",
-        "artifacts_lint": "node ../monorepo-scripts/lib/contract_artifacts_lint.js ./artifacts && prettier --write ./artifacts/*.json",
+        "artifacts_lint": "node ../monorepo-scripts/lib/contract_artifacts_lint.js ./artifacts && prettier --write ./artifacts/*.json &&  cp -r ./artifacts/ ../../python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/",
         "artifacts_update": "yarn artifacts_copy && yarn artifacts_lint",
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
