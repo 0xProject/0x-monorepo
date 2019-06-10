@@ -5,6 +5,10 @@
             {
                 "note": "Update wrappers to include parameter assertions",
                 "pr": 1823
+            },
+            {
+                "note": "Update wrappers to include `getABIEncodedTransactionData` for view and pure functions",
+                "pr": 1863
             }
         ]
     },
