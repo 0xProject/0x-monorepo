@@ -6,10 +6,8 @@ public {{this.tsName}} = {
     ): Promise<{{> return_type outputs=outputs}}> {
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-        const encodedDataBytes = Uint8Array.from(Buffer.from(encodedData.substr(2), 'hex'));
-        const bytecode = await self._lookupDeployedBytecodeAsync();
-        const bytecodeBytes = Uint8Array.from(Buffer.from(bytecode.substr(2), 'hex'));
-        const rawCallResultBytes = await BaseContract._evmExecAsync(bytecodeBytes, encodedDataBytes);
+        const encodedDataBytes = Buffer.from(encodedData.substr(2), 'hex');
+        const rawCallResultBytes = await self.evmExecAsync(encodedDataBytes);
         const rawCallResultHex = `0x${Buffer.from(rawCallResultBytes).toString('hex')}`;
         BaseContract._throwIfRevertWithReasonCallResult(rawCallResultHex);
         const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');

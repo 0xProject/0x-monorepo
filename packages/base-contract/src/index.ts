@@ -54,7 +54,7 @@ const REVERT_ERROR_SELECTOR_END = REVERT_ERROR_SELECTOR_OFFSET + REVERT_ERROR_SE
 export class BaseContract {
     protected _abiEncoderByFunctionSignature: AbiEncoderByFunctionSignature;
     protected _web3Wrapper: Web3Wrapper;
-    public bytecode: string;
+    public deployedBytecode: string = '';
     public abi: ContractAbi;
     public address: string;
     public contractName: string;
@@ -149,12 +149,13 @@ export class BaseContract {
         return rawEncoded;
     }
 
-    protected async _evmExecAsync(input: Buffer): Promise<Buffer> {
+    public async evmExecAsync(input: Buffer): Promise<Buffer> {
+        const deployedBytecode = await this._lookupDeployedBytecodeAsync();
         return new Promise<Buffer>((resolve: any, reject: any) => {
             const vm = new VM();
             vm.runCode(
                 {
-                    code: Buffer.from(this.bytecode.substr(2), 'hex'),
+                    code: Buffer.from(this.deployedBytecode.substr(2), 'hex'),
                     data: input,
                     gasLimit: Buffer.from('ffffffff', 'hex'),
                 },
@@ -165,6 +166,12 @@ export class BaseContract {
                 },
             );
         });
+    }
+    protected async _lookupDeployedBytecodeAsync(): Promise<string> {
+        if (this.deployedBytecode === '') {
+            this.deployedBytecode = await this._web3Wrapper.getContractCodeAsync(this.address);
+        }
+        return this.deployedBytecode;
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
@@ -199,7 +206,6 @@ export class BaseContract {
     constructor(
         contractName: string,
         abi: ContractAbi,
-        bytecode: string,
         address: string,
         supportedProvider: SupportedProvider,
         callAndTxnDefaults?: Partial<CallData>,
@@ -217,7 +223,6 @@ export class BaseContract {
         this.contractName = contractName;
         this._web3Wrapper = new Web3Wrapper(provider, callAndTxnDefaults);
         this.abi = abi;
-        this.bytecode = bytecode;
         this.address = address;
         const methodAbis = this.abi.filter(
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Function,

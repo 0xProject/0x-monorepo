@@ -10,7 +10,6 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
-    EvmOutput,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -18,7 +17,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, SimpleEvmOutput } from '@0x/types';
+import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -29,49 +28,49 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IValidatorContract extends BaseContract {
-    public isValidSignature = {
-        async callAsync(
-            hash: string,
-            signerAddress: string,
-            signature: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<boolean
-        > {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
+        public isValidSignature = {
+            async callAsync(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+                callData: Partial<CallData> = {},
+                defaultBlock?: BlockParam,
+            ): Promise<boolean
+            > {
+                assert.isString('hash', hash);
+                assert.isString('signerAddress', signerAddress);
+                assert.isString('signature', signature);
+                assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                    schemas.addressSchema,
+                    schemas.numberSchema,
+                    schemas.jsNumber,
+                ]);
+                if (defaultBlock !== undefined) {
+                    assert.isBlockParam('defaultBlock', defaultBlock);
+                }
+                const self = this as any as IValidatorContract;
+                const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+            signerAddress,
+            signature
             ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = this as any as IValidatorContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
-        signerAddress,
-        signature
-        ]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean
-        >(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-    };
+                const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                    {
+                        to: self.address,
+                        ...callData,
+                        data: encodedData,
+                    },
+                    self._web3Wrapper.getContractDefaults(),
+                );
+                const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+                BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+                const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+                // tslint:disable boolean-naming
+                const result = abiEncoder.strictDecodeReturnValue<boolean
+            >(rawCallResult);
+                // tslint:enable boolean-naming
+                return result;
+            },
+        };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -86,12 +85,13 @@ export class IValidatorContract extends BaseContract {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const evm = artifact.compilerOutput.evm;
+        const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return IValidatorContract.deployAsync(evm, abi, provider, txDefaults, );
+
+        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, );
     }
     public static async deployAsync(
-        evm: EvmOutput | SimpleEvmOutput,
+        bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -111,7 +111,7 @@ export class IValidatorContract extends BaseContract {
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(evm.bytecode.object, []);
+        const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
@@ -122,12 +122,13 @@ export class IValidatorContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`IValidator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IValidatorContract(abi, evm.deployedBytecode.object, txReceipt.contractAddress as string, provider, txDefaults);
+        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
+        const contractInstance = new IValidatorContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('IValidator', abi, bytecode, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('IValidator', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

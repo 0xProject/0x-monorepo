@@ -10,7 +10,6 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
-    EvmOutput,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -18,7 +17,7 @@ import {
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
-import { SimpleContractArtifact, SimpleEvmOutput } from '@0x/types';
+import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
@@ -73,12 +72,13 @@ export class {{contractName}}Contract extends BaseContract {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
-        const evm = artifact.compilerOutput.evm;
+        const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return {{contractName}}Contract.deployAsync(evm, abi, provider, txDefaults, {{> params inputs=ctor.inputs}});
+
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, {{> params inputs=ctor.inputs}});
     }
     public static async deployAsync(
-        evm: EvmOutput | SimpleEvmOutput,
+        bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -99,7 +99,7 @@ export class {{contractName}}Contract extends BaseContract {
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(evm.bytecode.object, [{{> params inputs=ctor.inputs}}]);
+        const txData = deployInfo.encode(bytecode, [{{> params inputs=ctor.inputs}}]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
             {data: txData},
@@ -110,12 +110,12 @@ export class {{contractName}}Contract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new {{contractName}}Contract(abi, evm.deployedBytecode.object, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, bytecode: string, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('{{contractName}}', abi, bytecode, address, supportedProvider, txDefaults);
+    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('{{contractName}}', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count

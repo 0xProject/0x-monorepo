@@ -111,7 +111,6 @@ describe(ContractName.DutchAuction, () => {
         );
         dutchAuctionContract = new DutchAuctionContract(
             dutchAuctionInstance.abi,
-            dutchAuctionInstance.bytecode,
             dutchAuctionInstance.address,
             provider,
         );
