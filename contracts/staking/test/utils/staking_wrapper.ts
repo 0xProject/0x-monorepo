@@ -8,7 +8,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, LibMathTestContract } from '../../src';
+import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
 
 const expect = chai.expect;
 
@@ -22,6 +22,7 @@ export class StakingWrapper {
     private _stakingContractIfExists?: StakingContract;
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
+    private _rewardVaultContractIfExists?: RewardVaultContract;
     private _libMathTestContractIfExists?: LibMathTestContract;
 
     constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract) {
@@ -43,6 +44,10 @@ export class StakingWrapper {
     public getZrxVaultContract(): ZrxVaultContract {
         this._validateDeployedOrThrow();
         return this._zrxVaultContractIfExists as ZrxVaultContract;
+    }
+    public getRewardVaultContract(): RewardVaultContract {
+        this._validateDeployedOrThrow();
+        return this._rewardVaultContractIfExists as RewardVaultContract;
     }
     public getLibMathTestContract(): LibMathTestContract {
         this._validateDeployedOrThrow();
@@ -86,6 +91,18 @@ export class StakingWrapper {
         await this._web3Wrapper.awaitTransactionSuccessAsync(
              await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
         );
+        // set reward vault in staking contract
+        /*
+        const setZrxVaultCalldata = await (this._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData((this._zrxVaultContractIfExists as ZrxVaultContract).address);
+        const setZrxVaultTxData = {
+            from: this._ownerAddres,
+            to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            data: setZrxVaultCalldata
+        }
+        await this._web3Wrapper.awaitTransactionSuccessAsync(
+             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
+        );
+        */
         // deploy libmath test
         this._libMathTestContractIfExists = await LibMathTestContract.deployFrom0xArtifactAsync(
             artifacts.LibMathTest,
@@ -387,21 +404,41 @@ export class StakingWrapper {
 
 
 
-
-
+    ///// REWARD VAULT /////
+    public async depositRewardForAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async withdrawRewardForAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async withdrawAllRewardForAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async getRewardBalanceInEthAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async getEthBalanceOfRewardVaultAsync(): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);
+        return balance;
+    }
     ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
     }
     public async getZrxTokenBalance(holder: string): Promise<BigNumber> {
-        const balance = await this._zrxTokenContract.balanceOf.callAsync(holder);
+        const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
     }
     public async getZrxTokenBalanceOfZrxVault(): Promise<BigNumber> {
-        const balance = await this._zrxTokenContract.balanceOf.callAsync(this.getZrxVaultContract().address);
+        const balance = await this.getZrxVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);
         return balance;
     }
+    ///// MATH /////
     public async nthRoot(value: BigNumber, n: BigNumber): Promise<BigNumber> {
         //const txReceipt = await this.getLibMathTestContract().nthRoot.await(value, n);
         const output = await this.getLibMathTestContract().nthRoot.callAsync(value, n);
