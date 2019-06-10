@@ -550,7 +550,12 @@ describe('Staking Core', () => {
             );
         });
 
-        it.only('Protocol Fees', async () => {
+        it.only('Reward Vault', async () => {
+            // 
+            //await stakingWrapper.depositForAsync()            
+        });
+
+        it('Protocol Fees', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////

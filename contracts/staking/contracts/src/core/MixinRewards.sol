@@ -39,7 +39,7 @@ contract MixinRewards is
         view
         returns (uint256)
     {
-        
+    
     }
 
     function _computeDelegatorReward(address owner, bytes32 poolId)

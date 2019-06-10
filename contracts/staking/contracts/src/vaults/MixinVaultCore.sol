@@ -25,7 +25,7 @@ contract MixinVaultCore is
     Authorizable
 {
 
-    address internal stakingContractAddress;
+    address payable internal stakingContractAddress;
 
     bool internal isInCatostrophicFailure;
 
@@ -50,7 +50,7 @@ contract MixinVaultCore is
         _;
     }
 
-    function setStakingContractAddrsess(address _stakingContractAddress)
+    function setStakingContractAddrsess(address payable _stakingContractAddress)
         external
         onlyOwner
     {
