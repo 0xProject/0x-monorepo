@@ -6,7 +6,7 @@
         "generated-artifacts/LibMathTest.json",
         "generated-artifacts/LibZrxToken.json",
         "generated-artifacts/MixinStake.json",
-        "generated-artifacts/MixinVaultCore.json",
+        "generated-artifacts/RewardVault.json",
         "generated-artifacts/Staking.json",
         "generated-artifacts/StakingProxy.json",
         "generated-artifacts/ZrxVault.json"

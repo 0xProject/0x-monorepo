@@ -27,7 +27,7 @@
         "src/StakingProxy.sol",
         "src/core/MixinStake.sol",
         "src/libs/LibZrxToken.sol",
-        "src/vaults/MixinVaultCore.sol",
+        "src/vaults/RewardVault.sol",
         "src/vaults/ZrxVault.sol",
         "test/LibMathTest.sol"
     ]
