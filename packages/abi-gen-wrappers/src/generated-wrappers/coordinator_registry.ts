@@ -238,7 +238,6 @@ export class CoordinatorRegistryContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`CoordinatorRegistry successfully deployed at ${txReceipt.contractAddress}`);
-        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
         const contractInstance = new CoordinatorRegistryContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;

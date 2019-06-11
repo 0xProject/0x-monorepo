@@ -12,7 +12,6 @@ import * as LibEIP712 from '../generated-artifacts/LibEIP712.json';
 import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
 import * as LibMath from '../generated-artifacts/LibMath.json';
 import * as LibOrder from '../generated-artifacts/LibOrder.json';
-import * as LibTransactionDecoder from '../generated-artifacts/LibTransactionDecoder.json';
 import * as TestLibs from '../generated-artifacts/TestLibs.json';
 export const artifacts = {
     LibAbiEncoder: LibAbiEncoder as ContractArtifact,
@@ -22,6 +21,5 @@ export const artifacts = {
     LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
     LibOrder: LibOrder as ContractArtifact,
-    LibTransactionDecoder: LibTransactionDecoder as ContractArtifact,
     TestLibs: TestLibs as ContractArtifact,
 };

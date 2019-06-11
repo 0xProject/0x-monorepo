@@ -605,7 +605,6 @@ export class ERC20TokenContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ERC20Token successfully deployed at ${txReceipt.contractAddress}`);
-        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
         const contractInstance = new ERC20TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;

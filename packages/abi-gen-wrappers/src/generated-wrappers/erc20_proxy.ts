@@ -716,7 +716,6 @@ export class ERC20ProxyContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ERC20Proxy successfully deployed at ${txReceipt.contractAddress}`);
-        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
         const contractInstance = new ERC20ProxyContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;

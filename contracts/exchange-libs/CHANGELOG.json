@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
+                "pr": 1848
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "2.1.6",
         "changes": [

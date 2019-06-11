@@ -22,6 +22,8 @@ lib
 /contracts/extensions/generated-artifacts
 /contracts/exchange-forwarder/generated-wrappers
 /contracts/exchange-forwarder/generated-artifacts
+/contracts/dev-utils/generated-wrappers
+/contracts/dev-utils/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts

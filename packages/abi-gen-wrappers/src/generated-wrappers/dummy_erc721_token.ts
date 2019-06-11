@@ -1429,7 +1429,6 @@ _symbol
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyERC721Token successfully deployed at ${txReceipt.contractAddress}`);
-        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
         const contractInstance = new DummyERC721TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_name,
 _symbol

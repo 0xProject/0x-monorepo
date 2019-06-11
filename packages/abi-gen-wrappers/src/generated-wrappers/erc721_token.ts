@@ -953,7 +953,6 @@ export class ERC721TokenContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ERC721Token successfully deployed at ${txReceipt.contractAddress}`);
-        const deployedBytecode = await web3Wrapper.getContractCodeAsync(txReceipt.contractAddress as string);
         const contractInstance = new ERC721TokenContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;

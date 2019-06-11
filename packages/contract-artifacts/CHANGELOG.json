@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Remove evm.bytecode.linkReferences from all artifacts. Remove evm.deployedBytecode and sourceTreeHashHex from Coordinator artifact.",
+                "pr": 1842
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "1.5.1",
         "changes": [

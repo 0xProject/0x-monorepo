@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.4.0",
+        "changes": [
+            {
+                "note": "Add function deleteNestedProperty",
+                "pr": 1842
+            }
+        ]
+    },
+    {
         "version": "4.3.3",
         "changes": [
             {

@@ -13,7 +13,6 @@
         "build": "yarn pre_build && tsc -b",
         "build:ci": "yarn build",
         "lint": "tslint --format stylish --project .",
-        "lint_contracts": "node ../monorepo-scripts/lib/contract_artifacts_lint.js ../contract-artifacts/artifacts && prettier --write ../contract-artifacts/artifacts/*.json",
         "fix": "tslint --fix --format stylish --project .",
         "pre_build": "yarn lint_contracts && yarn generate_contract_wrappers",
         "clean": "shx rm -rf lib wrappers",
@@ -46,7 +45,8 @@
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.1.0"
+        "@0x/base-contract": "^5.1.0",
+        "@0x/contract-artifacts": "^1.5.1"
     },
     "publishConfig": {
         "access": "public"
