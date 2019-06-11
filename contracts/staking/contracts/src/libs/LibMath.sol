@@ -143,7 +143,8 @@ library LibMath {
         pure
         returns (uint256 root)
     {
-        root = (TOKEN_MULTIPLIER * _nthRoot(base, COBB_DOUGLAS_ALPHA_DENOMINATOR)) / NTH_ROOT_OF_TOKEN_MULTIPLIER;
+        uint256 numerator = _nthRoot(base, COBB_DOUGLAS_ALPHA_DENOMINATOR);
+        root = (TOKEN_MULTIPLIER * numerator) / NTH_ROOT_OF_TOKEN_MULTIPLIER;
         return root;
     }
 
