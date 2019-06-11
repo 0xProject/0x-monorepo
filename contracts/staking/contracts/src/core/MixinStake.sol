@@ -172,7 +172,7 @@ contract MixinStake is
         /*
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
-        uint256 poolBalance = rebateVault.balanceOf(poolId);
+        uint256 poolBalance = rewardVault.balanceOf(poolId);
         uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
@@ -204,7 +204,7 @@ contract MixinStake is
 
         /* 
         // get payout
-        uint256 poolBalance = rebateVault.balanceOf(poolId);
+        uint256 poolBalance = rewardVault.balanceOf(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
         if (_delegatedStakeToPoolByOwner == amount) {
