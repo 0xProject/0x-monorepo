@@ -36,7 +36,7 @@ contract RewardVault is
     // but has all the necessary information to compute withdrawals in the event of
     // a catastrophic failure
 
-    uint256 constant NIL_BALANCE = 
+    // uint256 constant NIL_BALANCE = 
 
     // mapping from Pool to Rebate Balance in ETH
     mapping (bytes32 => uint256) internal balanceByPoolId;

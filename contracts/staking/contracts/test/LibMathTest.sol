@@ -31,14 +31,13 @@ contract LibMathTest {
 
     function nthRootFixedPoint(
         uint256 base,
-        uint256 n,
-        uint256 decimals
+        uint256 n
     )
         public
         pure
         returns (uint256 root)
     {
-        return LibMath._nthRootFixedPoint(base, n, decimals);
+        return LibMath._nthRootFixedPoint(base, n);
     }
 
     function cobbDouglas(

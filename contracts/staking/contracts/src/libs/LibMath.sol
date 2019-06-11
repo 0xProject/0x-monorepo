@@ -75,9 +75,8 @@ library LibMath {
             //let fixedPointNumerator := mul(y, fixedPointScaleFactor)
             //let fixedPointX := mul(x, fixedPointScaleFactor)
             //let fixedPointRoot := add(fixedPointX, div(fixedPointNumerator, denominator))
-           
+ 
             root := add(x, div(y, denominator))
-
                 
             // 5. Run Newton's nth Root Algorithm
             let delta := 1 // run at least once
@@ -118,14 +117,13 @@ library LibMath {
 
     function _nthRootFixedPoint(
         uint256 base,
-        uint256 n,
-        uint256 decimals
+        uint256 n
     )
         internal
         pure
         returns (uint256 root)
     {
-        uint256 scalar = 10**decimals;
+        uint256 scalar = 10**18;
         uint256 numerator = _nthRoot(base, n);
         uint256 denominator = _nthRoot(scalar, n);
         root = (scalar * numerator) / denominator;
@@ -164,9 +162,9 @@ library LibMath {
         pure
         returns (uint256)
     {
-        return _exp(_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18),
+        return _exp(_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator),
                     ((totalRewards * ownerStake) / totalStake),
-                    _nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18),
+                    _nthRootFixedPoint(totalFees * ownerStake, alphaDenominator),
                     alphaNumerator
                 );
     }
@@ -184,8 +182,8 @@ library LibMath {
         pure
         returns (uint256)
     {
-        return  (_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator, 18) * totalRewards * ownerStake) /
-                (_nthRootFixedPoint(totalFees * ownerStake, alphaDenominator, 18) * totalStake);
+        return  (_nthRootFixedPoint(ownerFees * totalStake, alphaDenominator) * totalRewards * ownerStake) /
+                (_nthRootFixedPoint(totalFees * ownerStake, alphaDenominator) * totalStake);
     }
 
     // (1 - alpha) = 1/x
@@ -201,7 +199,7 @@ library LibMath {
         pure
         returns (uint256)
     {
-        return  (_nthRootFixedPoint(ownerStake * totalFees, alphaDenominator, 18) * totalRewards * ownerFees) /
-                (_nthRootFixedPoint(totalStake * ownerFees, alphaDenominator, 18) * totalFees);
+        return  (_nthRootFixedPoint(ownerStake * totalFees, alphaDenominator) * totalRewards * ownerFees) /
+                (_nthRootFixedPoint(totalStake * ownerFees, alphaDenominator) * totalFees);
     }
 }
