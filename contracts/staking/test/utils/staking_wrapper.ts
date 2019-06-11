@@ -97,6 +97,8 @@ export class StakingWrapper {
         await this._web3Wrapper.awaitTransactionSuccessAsync(
              await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
         );
+        // set staking proxy contract in reward vault
+        await (this._rewardVaultContractIfExists as RewardVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingProxyContractIfExists as StakingProxyContract).address);
         // set reward vault in staking contract
         const setRewardVaultCalldata = await (this._stakingContractIfExists as StakingContract).setRewardVault.getABIEncodedTransactionData((this._rewardVaultContractIfExists as RewardVaultContract).address);
         const setRewardVaultTxData = {
@@ -448,11 +450,11 @@ export class StakingWrapper {
         return balance;
     }
     public async getZrxTokenBalance(holder: string): Promise<BigNumber> {
-        const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
+        const balance = await this._zrxTokenContract.balanceOf.callAsync(holder);
         return balance;
     }
     public async getZrxTokenBalanceOfZrxVault(): Promise<BigNumber> {
-        const balance = await this.getZrxVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);
+        const balance = await this._zrxTokenContract.balanceOf.callAsync(this.getZrxVaultContract().address);
         return balance;
     }
     ///// MATH /////
@@ -461,8 +463,8 @@ export class StakingWrapper {
         const output = await this.getLibMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
-    public async nthRootFixedPoint(value: BigNumber, n: BigNumber, decimals: BigNumber): Promise<BigNumber> {
-        const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n, decimals);
+    public async nthRootFixedPoint(value: BigNumber, n: BigNumber): Promise<BigNumber> {
+        const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n);
         return output;
     }
     public async cobbDouglas(

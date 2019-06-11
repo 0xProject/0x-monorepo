@@ -68,6 +68,7 @@ contract MixinFees is
     }
 
     function _payRebates()
+        internal
     {
         
     }
