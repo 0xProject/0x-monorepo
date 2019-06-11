@@ -70,6 +70,13 @@ contract MixinFees is
         return address(this).balance;
     }
 
+    event E(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake
+    );
     function _payRebates()
         internal
     {
@@ -82,10 +89,19 @@ contract MixinFees is
             activePoolIds[i].feesCollected = protocolFeesThisEpochByPool[activePoolIds[i].poolId];
             totalFees = _safeAdd(totalFees, activePoolIds[i].feesCollected);
         }
-
-        // Step 2 - payout
         uint256 totalRewards = address(this).balance;
         uint256 totalStake = _getActivatedStakeAcrossAllOwners();
+
+        // no rebates available
+        // note that there is a case in cobb-douglas where if we weigh either fees or stake at 100%,
+        // then the other value doesn't matter. However, it's cheaper on gas to assume that there is some
+        // non-zero split.
+        if (totalRewards == 0 || totalFees == 0 || totalStake == 0) {
+            revert("We don't want to hit this case in testing");
+            return;
+        }
+
+        // Step 2 - payout
         uint256 totalRewardsRecordedInVault = 0;
         for (uint i = 0; i != numberOfActivePoolIds; i++) {
             uint256 stakeDelegatedToPool = _getStakeDelegatedToPool(activePoolIds[i].poolId);
@@ -100,6 +116,13 @@ contract MixinFees is
                     100
                 )
             );
+            /*emit E(
+                totalRewards,
+                activePoolIds[i].feesCollected,
+                totalFees,
+                scaledStake,
+                totalStake
+            );*/
             uint256 reward = LibMath._cobbDouglasSuperSimplified(
                 totalRewards,
                 activePoolIds[i].feesCollected,
@@ -112,7 +135,7 @@ contract MixinFees is
             rewardVault.recordDepositFor(activePoolIds[i].poolId, reward);
             totalRewardsRecordedInVault = _safeAdd(totalRewardsRecordedInVault, reward);
 
-            // clear state
+            // clear state for refunds
             protocolFeesThisEpochByPool[activePoolIds[i].poolId] = 0;
             activePoolIdsThisEpoch[i] = 0;
         }
