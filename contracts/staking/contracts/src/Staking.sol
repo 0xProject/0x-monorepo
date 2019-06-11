@@ -420,4 +420,7 @@ contract Staking is
     {
         rewardVault = IRewardVault(_rewardVault);
     }
+
+    ///// CAN RECEIVE FUNDS /////
+    function () external payable {}
 }

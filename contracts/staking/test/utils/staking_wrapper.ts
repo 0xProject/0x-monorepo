@@ -122,12 +122,10 @@ export class StakingWrapper {
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000,
+            gasPrice: 0,
             value
         }
         const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
-        if (includeLogs) {
-
-        }
         const txReceipt = await (includeLogs ? this._logDecoder.getTxWithDecodedLogsAsync(txHash) : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
         return txReceipt;
     }
@@ -140,6 +138,10 @@ export class StakingWrapper {
         }
         const returnValue = await this._web3Wrapper.callAsync(txData);
         return returnValue;
+    }
+    public async getEthBalanceAsync(owner: string): Promise<BigNumber> {
+        const balance = this._web3Wrapper.getBalanceInWeiAsync(owner);
+        return balance;
     }
     ///// STAKE /////
     public async depositAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
@@ -154,7 +156,8 @@ export class StakingWrapper {
     }
     public async depositAndDelegateAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
-        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner);//, new BigNumber(0), true);
+        //console.log(JSON.stringify(txReceipt, null, 4));
         return txReceipt;
     }
     public async activateStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
@@ -174,7 +177,8 @@ export class StakingWrapper {
     }
     public async deactivateAndTimelockDelegatedStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(poolId, amount);
-        const txReceipt = await this._executeTransactionAsync(calldata, owner);
+        const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
+        console.log(JSON.stringify(txReceipt, null, 4));
         return txReceipt;
     }
     public async withdrawAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {

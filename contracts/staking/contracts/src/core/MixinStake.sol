@@ -174,15 +174,26 @@ contract MixinStake is
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
         uint256 poolBalance = rewardVault.balanceOf(poolId);
-        /*uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
+        uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
             shadowRewardsByPoolId[poolId],
             poolBalance
-        );*/
-        //shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
-        //shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
+        );
+        if (buyIn > 0) {
+            shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
+            shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
+        }
     }
+
+    event K(
+        uint256 amountDelegatedByOwner,
+        uint256 totalAmountDelegated,
+        uint256 amountOfShadowAssetHeldByOwner,
+        uint256 totalAmountOfShadowAsset,
+        uint256 totalAmountOfRealAsset,
+        uint256 payoutInRealAsset
+    );
 
     // question - should we then return the amount withdrawn?
     function _undelegateStake(address payable owner, bytes32 poolId, uint256 amount)
@@ -203,6 +214,7 @@ contract MixinStake is
         delegatedStakeByPoolId[poolId] = _safeSub(_delegatedStakeByPoolId, amount);
 
         // get payout
+        // TODO -- not full balance, just balance that belongs to delegators.
         uint256 poolBalance = rewardVault.balanceOf(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
@@ -216,8 +228,17 @@ contract MixinStake is
                 shadowRewardsByPoolId[poolId],
                 poolBalance
             );
+            emit K(
+                amount,
+                _delegatedStakeByPoolId,
+                payoutInShadowAsset,
+                shadowRewardsByPoolId[poolId],
+                poolBalance,
+                payoutInRealAsset
+            );
         } else {
             // partial payout
+            revert('no partial');
             (payoutInRealAsset, payoutInShadowAsset) = _computePartialPayout(
                  amount,
                 _delegatedStakeByOwner,
@@ -231,8 +252,10 @@ contract MixinStake is
         shadowRewardsByPoolId[poolId] = _safeSub(shadowRewardsByPoolId[poolId], payoutInShadowAsset);
 
         // withdraw payout for delegator
-        rewardVault.withdrawFor(poolId, payoutInRealAsset);
-        owner.transfer(payoutInRealAsset);
+        if (payoutInRealAsset > 0) {
+            rewardVault.withdrawFor(poolId, payoutInRealAsset);
+            owner.transfer(payoutInRealAsset);
+        }
     }
 
     // Epoch | lockedAt  | total | pending | deactivated | timelock() | withdraw() | available()
