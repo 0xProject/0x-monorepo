@@ -2,6 +2,7 @@ pragma solidity ^0.5.9;
 
 
 contract IExchangeRichErrors {
+
     enum AssetProxyDispatchErrorCodes {
         INVALID_ASSET_DATA_LENGTH,
         UNKNOWN_ASSET_PROXY
