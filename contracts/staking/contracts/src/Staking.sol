@@ -248,8 +248,8 @@ contract Staking is
     function goToNextEpoch()
         external
     {
-        _goToNextEpoch();
         _payRebates();
+        _goToNextEpoch();
     }
 
     function getEpochPeriodInSeconds()
