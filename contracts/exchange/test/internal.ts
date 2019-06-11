@@ -50,8 +50,7 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const overflowErrorForCall = () =>
-    new SafeMathRevertErrors.Uint256OverflowError();
+const overflowErrorForCall = () => new SafeMathRevertErrors.Uint256OverflowError();
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
