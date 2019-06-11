@@ -1,4 +1,8 @@
-// WARNING: mutates the object!
+/* Deletes deeply nested properties from an object. MUTATES the object
+ * @param obj the object to be operated on
+ * @param propPath the full dot-separated path to the property to delete, e.g. 'animals.mammals.dog.name'
+ * returns void
+ */
 export function deleteNestedProperty(obj: any, propPath: string): void {
     if (!obj || !propPath) {
         return;
