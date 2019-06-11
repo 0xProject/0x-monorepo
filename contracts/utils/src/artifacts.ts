@@ -19,11 +19,11 @@ import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
 export const artifacts = {
     LibAddress: LibAddress as ContractArtifact,
     LibBytes: LibBytes as ContractArtifact,
+    LibEIP712: LibEIP712 as ContractArtifact,
     Ownable: Ownable as ContractArtifact,
     ReentrancyGuard: ReentrancyGuard as ContractArtifact,
-    SafeMath: SafeMath as ContractArtifact,
-    LibEIP712: LibEIP712 as ContractArtifact,
     RichErrors: RichErrors as ContractArtifact,
+    SafeMath: SafeMath as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
     TestConstants: TestConstants as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,

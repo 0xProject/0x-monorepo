@@ -10,6 +10,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { LibMathRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
@@ -50,12 +51,12 @@ const emptySignedOrder: SignedOrder = {
     signature: '',
 };
 
-const safeMathErrorForCall = () => new SafeMathRevertErrors.SafeMathError();
+const safeMathErrorForCall = new SafeMathRevertErrors.SafeMathError();
 
 describe('Exchange core internal functions', () => {
     let chainId: number;
     let testExchange: TestExchangeInternalsContract;
-    let safeMathErrorForSendTransaction: () => Error | undefined;
+    let safeMathErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
     let roundingErrorForCall: Error | undefined;
 
@@ -76,9 +77,11 @@ describe('Exchange core internal functions', () => {
             txDefaults,
             new BigNumber(chainId),
         );
-        safeMathErrorForSendTransaction = safeMathErrorForCall;
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
+        safeMathErrorForSendTransaction = safeMathErrorForCall;
+        divisionByZeroErrorForCall = new LibMathRevertErrors.DivisionByZeroError();
+        roundingErrorForCall = new LibMathRevertErrors.RoundingError();
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -102,10 +105,10 @@ describe('Exchange core internal functions', () => {
         const remainderTimes1000 = remainder.multipliedBy('1000');
         const isError = remainderTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw safeMathErrorForCall();
+            throw safeMathErrorForCall;
         }
         if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw safeMathErrorForCall();
+            throw safeMathErrorForCall;
         }
         return isError;
     }
@@ -130,10 +133,10 @@ describe('Exchange core internal functions', () => {
         const errorTimes1000 = error.multipliedBy('1000');
         const isError = errorTimes1000.gte(product);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw safeMathErrorForCall();
+            throw safeMathErrorForCall;
         }
         if (errorTimes1000.isGreaterThan(MAX_UINT256)) {
-            throw safeMathErrorForCall();
+            throw safeMathErrorForCall;
         }
         return isError;
     }
@@ -148,11 +151,11 @@ describe('Exchange core internal functions', () => {
         }
         const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
         if (isRoundingError) {
-            throw roundingErrorForCall;
+            throw roundingErrorForCall();
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
-            throw safeMathErrorForCall();
+            throw safeMathErrorForCall;
         }
         return product.dividedToIntegerBy(denominator);
     }
@@ -186,7 +189,7 @@ describe('Exchange core internal functions', () => {
                 (totalVal: BigNumber, singleVal: BigNumber) => {
                     const newTotal = totalVal.plus(singleVal);
                     if (newTotal.isGreaterThan(MAX_UINT256)) {
-                        throw safeMathErrorForCall();
+                        throw safeMathErrorForCall;
                     }
                     return newTotal;
                 },
@@ -280,7 +283,7 @@ describe('Exchange core internal functions', () => {
             }
             const product = numerator.multipliedBy(target);
             if (product.isGreaterThan(MAX_UINT256)) {
-                throw safeMathErrorForCall();
+                throw safeMathErrorForCall;
             }
             return product.dividedToIntegerBy(denominator);
         }
@@ -311,7 +314,7 @@ describe('Exchange core internal functions', () => {
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw safeMathErrorForCall();
+                throw safeMathErrorForCall;
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {
@@ -363,12 +366,12 @@ describe('Exchange core internal functions', () => {
             }
             const isRoundingError = await referenceIsRoundingErrorCeilAsync(numerator, denominator, target);
             if (isRoundingError) {
-                throw roundingErrorForCall;
+                throw roundingErrorForCall();
             }
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
             if (offset.isGreaterThan(MAX_UINT256)) {
-                throw safeMathErrorForCall();
+                throw safeMathErrorForCall;
             }
             const result = offset.dividedToIntegerBy(denominator);
             if (product.mod(denominator).eq(0)) {

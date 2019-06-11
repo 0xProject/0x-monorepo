@@ -30,7 +30,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, ExchangeRevertErrors, LibMathRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -598,10 +598,15 @@ describe('Exchange core', () => {
             });
 
             const fillTakerAssetAmount2 = new BigNumber(1);
+            const expectedError = new LibMathRevertErrors.RoundingError(
+                fillTakerAssetAmount2,
+                new BigNumber(3),
+                new BigNumber(1001),
+            );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount: fillTakerAssetAmount2,
             });
-            return expect(tx).to.revertWith(RevertReason.RoundingError);
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -817,8 +822,13 @@ describe('Exchange core', () => {
             });
             // Call Exchange
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
+            const expectedError = new LibMathRevertErrors.RoundingError(
+                takerAssetFillAmount,
+                signedOrder.takerAssetAmount,
+                signedOrder.makerAssetAmount,
+            );
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
-            return expect(tx).to.revertWith(RevertReason.RoundingError);
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
