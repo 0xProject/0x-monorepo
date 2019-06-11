@@ -8,7 +8,7 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
+import { artifacts, StakingEEventArgs, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
 
 const expect = chai.expect;
 
@@ -124,7 +124,7 @@ export class StakingWrapper {
             gas: 3000000,
             value
         }
-        const txReceipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
+        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
             await this._web3Wrapper.sendTransactionAsync(txData)
         );
         return txReceipt;
@@ -269,6 +269,10 @@ export class StakingWrapper {
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().goToNextEpoch.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata);
+        //console.log(JSON.stringify(txReceipt, null , 4));
+        const l = txReceipt.logs[0] as LogWithDecodedArgs<StakingEEventArgs>;
+        console.log(l.args);
+        console.log(`finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`);
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
