@@ -37,7 +37,7 @@ contract MixinPools is
         return nextPoolId;
     }
 
-    function _createPool(address operatorAddress, uint8 operatorShare)
+    function _createPool(address payable operatorAddress, uint8 operatorShare)
         internal
         returns (bytes32 poolId)
     {
