@@ -22,5 +22,10 @@
             }
         }
     },
-    "contracts": ["src/DevUtils.sol", "src/LibAssetData.sol", "src/LibTransactionDecoder.sol"]
+    "contracts": [
+        "src/DevUtils.sol",
+        "src/LibAssetData.sol",
+        "src/LibTransactionDecoder.sol",
+        "src/EthBalanceChecker.sol"
+    ]
 }
