@@ -3,7 +3,7 @@
  * @param propPath the full dot-separated path to the property to delete, e.g. 'animals.mammals.dog.name'
  * returns void
  */
-export function deleteNestedProperty(obj: any, propPath: string): void {
+export const deleteNestedProperty = (obj: any, propPath: string): void => {
     if (!obj || !propPath) {
         return;
     }
@@ -22,4 +22,4 @@ export function deleteNestedProperty(obj: any, propPath: string): void {
     while (propPathParts.length > 0) {
         delete _obj[propPathParts.pop() as string];
     }
-}
+};
