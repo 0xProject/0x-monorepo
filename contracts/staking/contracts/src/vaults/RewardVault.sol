@@ -36,8 +36,10 @@ contract RewardVault is
     // but has all the necessary information to compute withdrawals in the event of
     // a catastrophic failure
 
+    uint256 constant NIL_BALANCE = 
+
     // mapping from Pool to Rebate Balance in ETH
-    mapping (bytes32 => uint256) internal balancesByPoolId;
+    mapping (bytes32 => uint256) internal balanceByPoolId;
 
     // mapping from owner to pool id
     mapping (bytes32 => address payable) internal ownerByPoolId;
@@ -51,7 +53,7 @@ contract RewardVault is
         payable
         onlyStakingContract
     {
-        balancesByPoolId[poolId] = _safeAdd(balancesByPoolId[poolId], msg.value);
+        balanceByPoolId[poolId] = _safeAdd(balanceByPoolId[poolId], msg.value);
     }
 
     function withdrawFor(bytes32 poolId, uint256 amount)
@@ -59,10 +61,10 @@ contract RewardVault is
         onlyStakingContract
     {
         require(
-            amount <= balancesByPoolId[poolId],
+            amount <= balanceByPoolId[poolId],
             "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
         );
-        balancesByPoolId[poolId] = _safeSub(balancesByPoolId[poolId], amount);
+        balanceByPoolId[poolId] = _safeSub(balanceByPoolId[poolId], amount);
         stakingContractAddress.transfer(amount);
     }
 
@@ -76,14 +78,14 @@ contract RewardVault is
             owner != NIL_ADDRESS,
             "INVALID_OWNER"
         );
-        uint256 balanceInPool = balancesByPoolId[poolId];
+        uint256 balanceInPool = balanceByPoolId[poolId];
         require(
             balanceInPool > 0,
             "POOL_BALANCE_IS_ZERO"
         );
 
-        balancesByPoolId[poolId] = 0;
-        owner.transfer(balancesByPoolId[poolId]);
+        balanceByPoolId[poolId] = 0;
+        owner.transfer(balanceByPoolId[poolId]);
     }
 
     function balanceOf(bytes32 poolId)
@@ -91,6 +93,29 @@ contract RewardVault is
         view
         returns (uint256)
     {
-        return balancesByPoolId[poolId];
+        return balanceByPoolId[poolId];
+    }
+
+    // It costs 1 wei to create a pool, but we don't enforce it here.
+    // it's enforced in the staking contract
+    function createPool(bytes32 poolId, address payable poolOwner)
+        external
+        payable
+        onlyStakingContract
+    {
+        require(
+            ownerByPoolId[poolId] == NIL_ADDRESS,
+            "POOL_ALREADY_EXISTS"
+        );
+        balanceByPoolId[poolId] = msg.value;
+        ownerByPoolId[poolId] = poolOwner;
+    }
+
+    function getPoolOwner(bytes32 poolId)
+        external
+        view
+        returns (address)
+    {
+        return ownerByPoolId[poolId];
     }
 }

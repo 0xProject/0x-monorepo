@@ -346,6 +346,11 @@ export enum RevertReason {
     OnlyCallableByExchange = 'ONLY_CALLABLE_BY_EXCHANGE',
     ExchangeAddressAlreadyRegistered = 'EXCHANGE_ADDRESS_ALREADY_REGISTERED',
     ExchangeAddressNotRegistered = 'EXCHANGE_ADDRESS_NOT_REGISTERED',
+    PoolAlreadyExists = 'POOL_ALREADY_EXISTS',
+    PoolBalanceIsZero = 'POOL_BALANCE_IS_ZERO',
+    InvalidOwner = 'INVALID_OWNER',
+    AmountExceedsBalanceOfPool = 'AMOUNT_EXCEEDS_BALANCE_OF_POOL',
+    OnlyCallableByStakingContract = 'ONLY_CALLABLE_BY_STAKING_CONTRACT',
 }
 
 export enum StatusCodes {
