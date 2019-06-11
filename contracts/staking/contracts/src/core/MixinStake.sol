@@ -96,7 +96,7 @@ contract MixinStake is
         _timelockStake(owner, amount);
     }
 
-    function _deactivateAndTimelockDelegatedStake(address owner, bytes32 poolId, uint256 amount)
+    function _deactivateAndTimelockDelegatedStake(address payable owner, bytes32 poolId, uint256 amount)
         internal
     {
         _deactivateAndTimelockStake(owner, amount);
@@ -171,23 +171,21 @@ contract MixinStake is
         // increment how much stake has been delegated to pool
         delegatedStakeByPoolId[poolId] = _safeAdd(_delegatedStakeByPoolId, amount);
 
-        /*
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
         uint256 poolBalance = rewardVault.balanceOf(poolId);
-        uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
+        /*uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
             shadowRewardsByPoolId[poolId],
             poolBalance
-        );
-        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
-        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
-        */
+        );*/
+        //shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
+        //shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
     }
 
     // question - should we then return the amount withdrawn?
-    function _undelegateStake(address owner, bytes32 poolId, uint256 amount)
+    function _undelegateStake(address payable owner, bytes32 poolId, uint256 amount)
         private
     {
         // take snapshot of parameters before any computation
@@ -204,7 +202,6 @@ contract MixinStake is
         // decrement how much stake has been delegated to pool
         delegatedStakeByPoolId[poolId] = _safeSub(_delegatedStakeByPoolId, amount);
 
-        /* 
         // get payout
         uint256 poolBalance = rewardVault.balanceOf(poolId);
         uint256 payoutInRealAsset;
@@ -232,12 +229,11 @@ contract MixinStake is
         }
         shadowRewardsInPoolByOwner[owner][poolId] = _safeSub(shadowRewardsInPoolByOwner[owner][poolId], payoutInShadowAsset);
         shadowRewardsByPoolId[poolId] = _safeSub(shadowRewardsByPoolId[poolId], payoutInShadowAsset);
-        */
 
-        //_withdrawRewardForDelegator();
+        // withdraw payout for delegator
+        rewardVault.withdrawFor(poolId, payoutInRealAsset);
+        owner.transfer(payoutInRealAsset);
     }
-
-    
 
     // Epoch | lockedAt  | total | pending | deactivated | timelock() | withdraw() | available()
     // 0     | 0         | 0     | 0       | 0       |            |            | 0
