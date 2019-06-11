@@ -550,7 +550,7 @@ describe('Staking Core', () => {
             );
         });
 
-        it.only('Reward Vault', async () => {
+        it.skip('Reward Vault', async () => {
             /*
             // 1 setup test parameters
             const poolOperator = stakers[1];
@@ -574,12 +574,6 @@ describe('Staking Core', () => {
                 RevertReason.OnlyCallableByStakingContract
             );
             */
-        });
-
-        it.only('Staking Contract / Reward Vault Integration', async () => {
-            //
-            //const poolId = await stakingWrapper.createPoolAsync();
-            //await stakingWrapper.depositForAsync()            
         });
 
         it('Protocol Fees', async () => {
@@ -678,13 +672,12 @@ describe('Staking Core', () => {
         });
 
         it('nth root #3 with fixed point', async () => {
-            const decimals = 6;
+            const decimals = 18;
             const base = stakingWrapper.toFixedPoint(4.234, decimals);
             const n = new BigNumber(2);
-            const decimalsAsBn = new BigNumber(decimals);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n, decimalsAsBn);
+            const root = await stakingWrapper.nthRootFixedPoint(base, n);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
-            const expectedResult = new BigNumber(2.057);
+            const expectedResult = new BigNumber(2.057668584);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
 
@@ -693,8 +686,7 @@ describe('Staking Core', () => {
             const base = stakingWrapper.toFixedPoint(5429503678976, decimals);
             console.log(base);
             const n = new BigNumber(9);
-            const decimalsAsBn = new BigNumber(decimals);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n, decimalsAsBn);
+            const root = await stakingWrapper.nthRootFixedPoint(base, n);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
             const expectedResult = new BigNumber(26);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
@@ -705,8 +697,7 @@ describe('Staking Core', () => {
             const base = stakingWrapper.toFixedPoint(new BigNumber('5429503678976.295036789761543678', 10), decimals);
             console.log(base);
             const n = new BigNumber(9);
-            const decimalsAsBn = new BigNumber(decimals);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n, decimalsAsBn);
+            const root = await stakingWrapper.nthRootFixedPoint(base, n);
             console.log(`root - ${root}`);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
             const expectedResult = new BigNumber(26);
