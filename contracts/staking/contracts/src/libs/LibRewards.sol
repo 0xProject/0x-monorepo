@@ -31,6 +31,7 @@ contract LibRewards is SafeMath {
         uint256 totalAmountOfRealAsset
     )
         internal
+        pure
         returns (uint256)
     {
         return _safeSub(
@@ -54,6 +55,7 @@ contract LibRewards is SafeMath {
         uint256 totalAmountOfRealAsset
     )
         internal
+        pure
         returns (
             uint256 payoutInRealAsset,
             uint256 payoutInShadowAsset
@@ -77,6 +79,7 @@ contract LibRewards is SafeMath {
         uint256 totalAmountOfRealAsset
     )
         internal
+        pure
         returns (uint256)
     {
         if (totalAmountDelegated == 0) {
