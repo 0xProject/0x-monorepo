@@ -33,7 +33,7 @@ contract MixinTransactions is
 {
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
-    mapping (bytes32 => bool) public transactions;
+    mapping (bytes32 => bool) public transactionsExecuted;
 
     // Address of current transaction signer
     address public currentContextAddress;
@@ -53,20 +53,20 @@ contract MixinTransactions is
     }
 
     /// @dev Executes a batch of Exchange method calls in the context of signer(s).
-    /// @param zeroxTransactions Array of 0x transactions containing salt, signerAddress, and data.
+    /// @param transactions Array of 0x transactions containing salt, signerAddress, and data.
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
     /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
-        ZeroExTransaction[] memory zeroxTransactions,
+        ZeroExTransaction[] memory transactions,
         bytes[] memory signatures
     )
         public
         returns (bytes[] memory)
     {
-        uint256 length = zeroxTransactions.length;
+        uint256 length = transactions.length;
         bytes[] memory returnData = new bytes[](length);
         for (uint256 i = 0; i != length; i++) {
-            returnData[i] = _executeTransaction(zeroxTransactions[i], signatures[i]);
+            returnData[i] = _executeTransaction(transactions[i], signatures[i]);
         }
         return returnData;
     }
@@ -102,7 +102,7 @@ contract MixinTransactions is
         }
 
         // Validate transaction has not been executed
-        if (transactions[transactionHash]) {
+        if (transactionsExecuted[transactionHash]) {
             _rrevert(TransactionError(
                 TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
@@ -129,7 +129,7 @@ contract MixinTransactions is
         }
 
         // Execute transaction
-        transactions[transactionHash] = true;
+        transactionsExecuted[transactionHash] = true;
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
             _rrevert(TransactionExecutionError(
