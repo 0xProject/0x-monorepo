@@ -33,6 +33,14 @@ contract MixinStakeBalances is
     MixinEpoch
 {
 
+    function _getActivatedStakeAcrossAllOwners()
+        internal
+        view
+        returns (uint256)
+    {
+        return totalActivatedStake;
+    }
+
     function _getTotalStake(address owner)
         internal
         view
@@ -55,6 +63,15 @@ contract MixinStakeBalances is
         returns (uint256)
     {
         return _safeSub(_getTotalStake(owner), _getActivatedStake(owner));
+    }
+
+
+    function _getActivatedAndUndelegatedStake(address owner)
+        internal
+        view
+        returns (uint256)
+    {
+        return _safeSub(activeStakeByOwner[owner], _getStakeDelegatedByOwner(owner));
     }
 
     function _getActivatableStake(address owner)

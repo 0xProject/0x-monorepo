@@ -57,6 +57,9 @@ contract MixinStorage is
     // mapping from Pool Id to Amount Delegated
     mapping (bytes32 => uint256) delegatedStakeByPoolId;
 
+    // total activated stake in the system
+    uint256 totalActivatedStake;
+
     // tracking Pool Id
     bytes32 nextPoolId = INITIAL_POOL_ID;
 

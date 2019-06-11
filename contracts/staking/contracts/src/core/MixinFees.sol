@@ -27,11 +27,14 @@ import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinEpoch.sol";
 import "./MixinPools.sol";
+import "../interfaces/IStructs.sol";
+import "../libs/LibMath.sol";
 
 
 contract MixinFees is
     SafeMath,
     IStakingEvents,
+    IStructs,
     MixinConstants,
     MixinStorage,
     MixinEpoch,
@@ -70,6 +73,59 @@ contract MixinFees is
     function _payRebates()
         internal
     {
-        
+        // Step 1 - compute total fees this epoch
+        uint256 numberOfActivePoolIds = activePoolIdsThisEpoch.length;
+        ActivePool[] memory activePoolIds = new ActivePool[](activePoolIdsThisEpoch.length);
+        uint256 totalFees = 0;
+        for (uint i = 0; i != numberOfActivePoolIds; i++) {
+            activePoolIds[i].poolId = activePoolIdsThisEpoch[i];
+            activePoolIds[i].feesCollected = protocolFeesThisEpochByPool[activePoolIds[i].poolId];
+            totalFees = _safeAdd(totalFees, activePoolIds[i].feesCollected);
+        }
+
+        // Step 2 - payout
+        uint256 totalRewards = address(this).balance;
+        uint256 totalStake = _getActivatedStakeAcrossAllOwners();
+        uint256 totalRewardsRecordedInVault = 0;
+        for (uint i = 0; i != numberOfActivePoolIds; i++) {
+            uint256 stakeDelegatedToPool = _getStakeDelegatedToPool(activePoolIds[i].poolId);
+            uint256 stakeHeldByPoolOperator = _getActivatedAndUndelegatedStake(_getPoolOperator(activePoolIds[i].poolId));
+            uint256 scaledStake = _safeAdd(
+                stakeHeldByPoolOperator,
+                _safeDiv(
+                    _safeMul(
+                        stakeDelegatedToPool,
+                        REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE
+                    ),
+                    100
+                )
+            );
+            uint256 reward = LibMath._cobbDouglasSuperSimplified(
+                totalRewards,
+                activePoolIds[i].feesCollected,
+                totalFees,
+                scaledStake,
+                totalStake
+            );
+
+            // record reward in vault
+            rewardVault.recordDepositFor(activePoolIds[i].poolId, reward);
+            totalRewardsRecordedInVault = _safeAdd(totalRewardsRecordedInVault, reward);
+
+            // clear state
+            protocolFeesThisEpochByPool[activePoolIds[i].poolId] = 0;
+            activePoolIdsThisEpoch[i] = 0;
+        }
+        activePoolIdsThisEpoch.length = 0;
+
+        // Step 3 send total payout to vault
+        require(
+            totalRewardsRecordedInVault <= totalRewards,
+            "MISCALCULATED_REWARDS"
+        );
+        if (totalRewardsRecordedInVault > 0) {
+            address payable rewardVaultAddress = address(uint160(address(rewardVault)));
+            rewardVaultAddress.transfer(totalRewardsRecordedInVault);
+        }
     }
 }
