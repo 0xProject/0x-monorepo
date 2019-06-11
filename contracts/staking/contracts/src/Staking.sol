@@ -413,4 +413,10 @@ contract Staking is
     {
         zrxVault = IVault(_zrxVault);
     }
+
+    function setRewardVault(address _rewardVault)
+        external
+    {
+        rewardVault = IRewardVault(_rewardVault);
+    }
 }

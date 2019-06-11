@@ -64,6 +64,12 @@ export class StakingWrapper {
             this._zrxTokenContract.address,
             zrxAssetData
         );
+        // deploy reward vault
+        this._rewardVaultContractIfExists = await RewardVaultContract.deployFrom0xArtifactAsync(
+            artifacts.RewardVault,
+            this._provider,
+            txDefaults,
+        );
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync((this._zrxVaultContractIfExists as ZrxVaultContract).address);
         // deploy staking contract
@@ -92,17 +98,15 @@ export class StakingWrapper {
              await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
         );
         // set reward vault in staking contract
-        /*
-        const setZrxVaultCalldata = await (this._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData((this._zrxVaultContractIfExists as ZrxVaultContract).address);
-        const setZrxVaultTxData = {
+        const setRewardVaultCalldata = await (this._stakingContractIfExists as StakingContract).setRewardVault.getABIEncodedTransactionData((this._rewardVaultContractIfExists as RewardVaultContract).address);
+        const setRewardVaultTxData = {
             from: this._ownerAddres,
             to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
-            data: setZrxVaultCalldata
+            data: setRewardVaultCalldata
         }
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
+             await this._web3Wrapper.sendTransactionAsync(setRewardVaultTxData)
         );
-        */
         // deploy libmath test
         this._libMathTestContractIfExists = await LibMathTestContract.deployFrom0xArtifactAsync(
             artifacts.LibMathTest,
@@ -405,21 +409,34 @@ export class StakingWrapper {
 
 
     ///// REWARD VAULT /////
-    public async depositRewardForAsync(poolId: string): Promise<BigNumber> {
+    public async rewardVaultDepositForAsync(poolId: string, amount: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().depositFor.getABIEncodedTransactionData(poolId);
+        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, amount);
+        return txReceipt;
+    }
+    public async rewardVaultWithdrawFor(poolId: string, amount: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().withdrawFor.getABIEncodedTransactionData(poolId, amount);
+        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
+        return txReceipt;
+    }
+    public async rewardVaultWithdrawAllForAsync(poolId: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().withdrawAllFrom.getABIEncodedTransactionData(poolId);
+        const txReceipt = await this._executeTransactionAsync(calldata);
+        return txReceipt;
+    }
+    public async rewardVaultEnterCatastrophicFailureModeAsync(zeroExMultisigAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
+        const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
+        return txReceipt;
+    }
+    public async rewardVaultGetBalanceAsync(poolId: string): Promise<BigNumber> {
         const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
         return balance;
     }
-    public async withdrawRewardForAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
-        return balance;
-    }
-    public async withdrawAllRewardForAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
-        return balance;
-    }
-    public async getRewardBalanceInEthAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
-        return balance;
+    public async rewardVaultCreatePoolAsync(poolId: string, poolOwner: string, initialDeposit: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOwner);
+        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, initialDeposit);
+        return txReceipt;
     }
     public async getEthBalanceOfRewardVaultAsync(): Promise<BigNumber> {
         const balance = await this.getRewardVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);

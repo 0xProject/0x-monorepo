@@ -110,5 +110,5 @@ contract MixinStorage is
     IVault zrxVault;
 
     // Rebate Vault
-    IRewardVault rebateVault;
+    IRewardVault rewardVault;
 }

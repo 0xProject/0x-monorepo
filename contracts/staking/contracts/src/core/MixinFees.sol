@@ -67,10 +67,8 @@ contract MixinFees is
         return address(this).balance;
     }
 
-    /*
     function _payRebates()
     {
         
     }
-    */
 }
