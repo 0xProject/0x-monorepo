@@ -83,7 +83,7 @@ contract LibMath is
             _rrevert(DivisionByZeroError());
         }
 
-        if (_isRoundingErrorFloor(
+        if (_isRoundingErrorCeil(
                 numerator,
                 denominator,
                 target

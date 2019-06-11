@@ -11,6 +11,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
+import { LibMathRevertErrors } from '@0x/order-utils';
 import { Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
@@ -58,7 +59,7 @@ describe('Exchange core internal functions', () => {
     let testExchange: TestExchangeInternalsContract;
     let overflowErrorForSendTransaction: Error | undefined;
     let divisionByZeroErrorForCall: Error | undefined;
-    let roundingErrorForCall: Error | undefined;
+    let roundingErrorForCall: () => Error | undefined;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -80,8 +81,8 @@ describe('Exchange core internal functions', () => {
         overflowErrorForSendTransaction = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
         );
-        divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
-        roundingErrorForCall = new Error(RevertReason.RoundingError);
+        divisionByZeroErrorForCall = new LibMathRevertErrors.DivisionByZeroError();
+        roundingErrorForCall = () => new LibMathRevertErrors.RoundingError();
     });
     // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
     // the blockchain state for any tests which modify it!
@@ -151,7 +152,7 @@ describe('Exchange core internal functions', () => {
         }
         const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
         if (isRoundingError) {
-            throw roundingErrorForCall;
+            throw roundingErrorForCall();
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
@@ -366,7 +367,7 @@ describe('Exchange core internal functions', () => {
             }
             const isRoundingError = await referenceIsRoundingErrorCeilAsync(numerator, denominator, target);
             if (isRoundingError) {
-                throw roundingErrorForCall;
+                throw roundingErrorForCall();
             }
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
