@@ -116,7 +116,7 @@ export class StakingWrapper {
             txDefaults,
         );
     }
-    private async _executeTransactionAsync(calldata: string, from?: string, value?: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(calldata: string, from?: string, value?: BigNumber, includeLogs?: boolean): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
             from: (from ? from : this._ownerAddres),
             to: this.getStakingProxyContract().address,
@@ -124,9 +124,11 @@ export class StakingWrapper {
             gas: 3000000,
             value
         }
-        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this._web3Wrapper.sendTransactionAsync(txData)
-        );
+        const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
+        if (includeLogs) {
+
+        }
+        const txReceipt = await (includeLogs ? this._logDecoder.getTxWithDecodedLogsAsync(txHash) : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
         return txReceipt;
     }
     private async _callAsync(calldata: string, from?: string): Promise<any> {
@@ -268,11 +270,13 @@ export class StakingWrapper {
     ///// EPOCHS /////
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().goToNextEpoch.getABIEncodedTransactionData();
-        const txReceipt = await this._executeTransactionAsync(calldata);
-        //console.log(JSON.stringify(txReceipt, null , 4));
-        const l = txReceipt.logs[0] as LogWithDecodedArgs<StakingEEventArgs>;
-        console.log(l.args);
-        console.log(`finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`);
+        const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
+        console.log(JSON.stringify(txReceipt, null , 4));
+        //console.log((txReceipt.logs[0] as LogWithDecodedArgs<StakingEEventArgs>).args);
+        //console.log((txReceipt.logs[1] as LogWithDecodedArgs<StakingEEventArgs>).args);
+        //console.log((txReceipt.logs[2] as LogWithDecodedArgs<StakingEEventArgs>).args);
+       
+       console.log(`finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`);
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
