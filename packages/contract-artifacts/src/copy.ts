@@ -2,11 +2,9 @@ import { logUtils } from '@0x/utils';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import * as config from '../../../package.json';
-
 import * as artifacts from './index';
 
-const pkgNames = config.config.contractsPackages;
+const pkgNames = process.argv.slice(2);
 const artifactsToPublish = Object.keys(artifacts);
 
 const contractsDirs = [];

@@ -2,12 +2,11 @@
     "extends": "../../tsconfig",
     "compilerOptions": {
         "outDir": "lib",
-        "rootDir": "../..",
+        "rootDir": ".",
         "resolveJsonModule": true
     },
     "include": ["./src/**/*", "./test/**/*"],
     "files": [
-        "../../package.json",
         "./artifacts/AssetProxyOwner.json",
         "./artifacts/DutchAuction.json",
         "./artifacts/DummyERC20Token.json",
