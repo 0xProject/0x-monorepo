@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 
 
 contract RichErrors {
+
     // bytes4(keccak256("Error(string)"))
     bytes4 internal constant STANDARD_ERROR_SELECTOR =
         0x08c379a0;
