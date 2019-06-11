@@ -920,7 +920,26 @@ describe('Staking Core', () => {
             await stakingWrapper.skipToNextEpochAsync();
 
             ///// 7 CHECK PROFITS /////
-            
+            // the expected payouts were computed by hand
+            // @TODO - get computations more accurate
+            const expectedPayoutByPoolOperator = [
+                new BigNumber('4.75677'),  // 4.756772362932728793619590327361600155564384201215274334070
+                new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
+            ];
+            const payoutByPoolOperator = await Promise.all([
+                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[0]),
+                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[1]),
+                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[2]),
+            ]);
+            const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[0], 18), 5),
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[1], 18), 5),
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[2], 18), 5),
+            ]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[0]).to.be.bignumber.equal(expectedPayoutByPoolOperator[0]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[1]).to.be.bignumber.equal(expectedPayoutByPoolOperator[1]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[2]).to.be.bignumber.equal(expectedPayoutByPoolOperator[2]);
         });
     });
 });
