@@ -249,6 +249,7 @@ contract Staking is
         external
     {
         _goToNextEpoch();
+        _payRebates();
     }
 
     function getEpochPeriodInSeconds()

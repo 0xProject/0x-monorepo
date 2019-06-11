@@ -69,6 +69,7 @@ contract MixinStake is
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
+        totalActivatedStake = _safeAdd(totalActivatedStake, amount);
     }
 
     function _activateAndDelegateStake(
@@ -91,6 +92,7 @@ contract MixinStake is
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
+        totalActivatedStake = _safeSub(totalActivatedStake, amount);
         _timelockStake(owner, amount);
     }
 

@@ -31,4 +31,9 @@ interface IStructs {
         address operatorAddress;
         uint8 operatorShare;
     }
+
+    struct ActivePool {
+        bytes32 poolId;
+        uint256 feesCollected;
+    }
 }

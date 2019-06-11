@@ -29,6 +29,9 @@ interface IRewardVault {
         external
         payable;
 
+    function recordDepositFor(bytes32 poolId, uint256 amount)
+        external;
+
     function withdrawFor(bytes32 poolId, uint256 amount)
         external;
 
