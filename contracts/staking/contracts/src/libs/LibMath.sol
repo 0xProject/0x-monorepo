@@ -129,6 +129,25 @@ library LibMath {
         root = (scalar * numerator) / denominator;
     }
 
+    // N is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
+    // Currently set to 6. 
+    // @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
+    // @TODO Update this value for deployment
+    uint256 constant COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
+    uint256 constant TOKEN_MULTIPLIER = 1000000000000000000;
+    uint256 constant NTH_ROOT_OF_TOKEN_MULTIPLIER = 1000;
+    function _nthRootFixedPointFixedN(
+        uint256 base
+    )
+        internal
+        pure
+        returns (uint256 root)
+    {
+        root = (TOKEN_MULTIPLIER * _nthRoot(base, COBB_DOUGLAS_ALPHA_DENOMINATOR)) / NTH_ROOT_OF_TOKEN_MULTIPLIER;
+        return root;
+    }
+
+
     // scalar gets multiplied by once at the beginning
     function _exp(uint256 numerator, uint256 scalar, uint256 denominator, uint256 power)
         internal
@@ -202,4 +221,42 @@ library LibMath {
         return  (_nthRootFixedPoint(ownerStake * totalFees, alphaDenominator) * totalRewards * ownerFees) /
                 (_nthRootFixedPoint(totalStake * ownerFees, alphaDenominator) * totalFees);
     }
+
+    // alpha = 1/x, where x is known
+    // x is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
+    // Currently set to 6. 
+    function _cobbDouglasSuperSimplified(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        return  (_nthRootFixedPointFixedN(ownerFees * totalStake) * totalRewards * ownerStake) /
+                (_nthRootFixedPointFixedN(totalFees * ownerStake) * totalStake);
+    }
+
+    // (1 - alpha) = 1/x, where x is known
+    // x is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
+    // Currently set to 6. 
+    function _cobbDouglasSuperSimplifiedInverse(
+        uint256 totalRewards,
+        uint256 ownerFees,
+        uint256 totalFees,
+        uint256 ownerStake,
+        uint256 totalStake
+    )
+        internal
+        pure
+        returns (uint256)
+    {
+        return  (_nthRootFixedPointFixedN(ownerStake * totalFees) * totalRewards * ownerFees) /
+                (_nthRootFixedPointFixedN(totalStake * ownerFees) * totalFees);
+    }
+
+
 }

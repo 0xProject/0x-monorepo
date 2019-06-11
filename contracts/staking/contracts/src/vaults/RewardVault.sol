@@ -56,6 +56,25 @@ contract RewardVault is
         balanceByPoolId[poolId] = _safeAdd(balanceByPoolId[poolId], msg.value);
     }
 
+    function recordDepositFor(bytes32 poolId, uint256 amount)
+        external
+        onlyStakingContract
+    {
+        balanceByPoolId[poolId] = _safeAdd(balanceByPoolId[poolId], amount);
+    }
+
+    function deposit()
+        external
+        payable
+        onlyStakingContract
+    {}
+
+    function ()
+        external
+        payable
+        onlyStakingContract
+    {}
+
     function withdrawFor(bytes32 poolId, uint256 amount)
         external
         onlyStakingContract

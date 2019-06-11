@@ -32,6 +32,8 @@ contract MixinRewards is
     // Pinciple - design any Mixin such that internal members are callable without messing up internal state
     //            any function that could mess up internal state should be private.
 
+    // @TODO -- add a MixinZrxVault and a MixinRewardVault that interact with the vaults.
+
 
 
     function _computeOperatorReward(address operator, bytes32 poolId)

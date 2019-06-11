@@ -23,7 +23,7 @@ contract MixinConstants {
 
     uint64 constant MAX_UINT_64 = 2**64 - 1;
 
-    uint256 constant TOKEN_MULTIPLIER = 10**18;
+    uint256 constant TOKEN_MULTIPLIER = 1000000000000000000; // 10**18
 
     bytes32 constant INITIAL_POOL_ID = 0x0000000000000000000000000000000100000000000000000000000000000000;
 
@@ -38,4 +38,8 @@ contract MixinConstants {
     uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1000; // @TODO SET FOR DEPLOYMENT
 
     uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 3; // @TODO SET FOR DEPLOYMENT
+
+    uint256 constant public COBB_DOUGLAS_ALPHA_DENOMINATOR = 6; // @TODO SET FOR DEPLOYMENT
+    
+    uint256 constant public REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 90; // @TODO SET FOR DEPLOYMENT
 }
