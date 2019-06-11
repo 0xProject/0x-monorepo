@@ -22,5 +22,4 @@ export const artifacts = {
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
-    LibAssetData: LibAssetData as ContractArtifact,
 };
