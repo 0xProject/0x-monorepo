@@ -1090,7 +1090,42 @@ describe('Staking Core', () => {
             ///// 8 CHECK PROFITS VIA STAKING CONTRACT /////
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
 
-            ///// 
+            ///// 10 CHECK DELEGATOR BY UNDELEGATING /////
+            const ethBalancesByDelegatorInit = await Promise.all([
+                stakingWrapper.getEthBalanceAsync(delegators[0]),
+                stakingWrapper.getEthBalanceAsync(delegators[1]),
+                stakingWrapper.getEthBalanceAsync(delegators[2]),
+            ]);
+            await Promise.all([
+                stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[0], poolIds[2], stakeByDelegator[0]),
+                stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[1], poolIds[2], stakeByDelegator[1]),
+                stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[2], poolIds[2], stakeByDelegator[2]),
+            ]);
+            const ethBalancesByDelegatorFinal = await Promise.all([
+                stakingWrapper.getEthBalanceAsync(delegators[0]),
+                stakingWrapper.getEthBalanceAsync(delegators[1]),
+                stakingWrapper.getEthBalanceAsync(delegators[2]),
+            ]);
+            const rewardByDelegator = [
+                ethBalancesByDelegatorFinal[0].minus(ethBalancesByDelegatorInit[0]),
+                ethBalancesByDelegatorFinal[1].minus(ethBalancesByDelegatorInit[1]),
+                ethBalancesByDelegatorFinal[2].minus(ethBalancesByDelegatorInit[2]),
+            ];
+
+            // note that these may be slightly off due to rounding down on each entry
+            // there is a carry over between calls, which we account for here.
+            // if the last person to leave rounded down, then there is some trace amount left in the pool.
+            // carry-over here is 00000000000000000002 
+            const expectedRewardByDelegator = [
+                payoutByPoolOperator[2].times(stakeByDelegator[0]).dividedToIntegerBy(totalStakeByDelegators),
+                payoutByPoolOperator[2].times(stakeByDelegator[1]).dividedToIntegerBy(totalStakeByDelegators),
+                new BigNumber('13927564703644768540'), // computed by hand to account for carry-over
+            ];
+            expect(rewardByDelegator[0]).to.be.bignumber.equal(expectedRewardByDelegator[0]);
+            expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
+            expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);            
+
+            ///// 10 CHECK DELEGATOR BUY-IN ON A SUBSEQUENT EPOCH, WHEN AMOUNT IS NON-ZERO /////
         });
     });
 });
