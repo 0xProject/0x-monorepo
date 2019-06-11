@@ -79,6 +79,9 @@ contract LibRewards is SafeMath {
         internal
         returns (uint256)
     {
+        if (totalAmountDelegated == 0) {
+            return 0;
+        }
         return _safeDiv(
             _safeMul(
                 amountToDelegateByOwner,
