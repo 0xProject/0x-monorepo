@@ -11,11 +11,9 @@ import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as IAssetData from '../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
 import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
-import * as LibAssetData from '../generated-artifacts/LibAssetData.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 export const artifacts = {
-    LibAssetData: LibAssetData as ContractArtifact,
     ERC1155Proxy: ERC1155Proxy as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,

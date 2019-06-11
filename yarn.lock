@@ -5660,7 +5660,12 @@ deep-extend@^0.6.0:
 
 deep-extend@~0.4.0:
   version "0.4.2"
+<<<<<<< HEAD
   resolved "https://registry.yarnpkg.com/deep-extend/-/deep-extend-0.4.2.tgz#48b699c27e334bf89f10892be432f6e4c7d34a7f"
+=======
+  resolved "https://registry.npmjs.org/deep-extend/-/deep-extend-0.4.2.tgz#48b699c27e334bf89f10892be432f6e4c7d34a7f"
+  integrity sha1-SLaZwn4zS/ifEIkr5DL25MfTSn8=
+>>>>>>> development
 
 deep-is@~0.1.3:
   version "0.1.3"
