@@ -13,6 +13,7 @@ export * from './generated-wrappers/i_validator';
 export * from './generated-wrappers/i_wallet';
 export * from './generated-wrappers/multi_asset_proxy';
 export * from './generated-wrappers/order_validator';
+export * from './generated-wrappers/order_validation_utils';
 export * from './generated-wrappers/weth9';
 export * from './generated-wrappers/zrx_token';
 export * from './generated-wrappers/coordinator';

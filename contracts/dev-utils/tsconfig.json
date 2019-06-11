@@ -6,6 +6,7 @@
         "generated-artifacts/DevUtils.json",
         "generated-artifacts/LibAssetData.json",
         "generated-artifacts/LibTransactionDecoder.json",
+        "generated-artifacts/OrderValidationUtils.json",
         "generated-artifacts/EthBalanceChecker.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

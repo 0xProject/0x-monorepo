@@ -15,6 +15,7 @@ import * as IAssetProxy from '../artifacts/IAssetProxy.json';
 import * as IValidator from '../artifacts/IValidator.json';
 import * as IWallet from '../artifacts/IWallet.json';
 import * as MultiAssetProxy from '../artifacts/MultiAssetProxy.json';
+import * as OrderValidationUtils from '../artifacts/OrderValidationUtils.json';
 import * as OrderValidator from '../artifacts/OrderValidator.json';
 import * as WETH9 from '../artifacts/WETH9.json';
 import * as ZRXToken from '../artifacts/ZRXToken.json';
@@ -35,6 +36,7 @@ export {
     IWallet,
     MultiAssetProxy,
     OrderValidator,
+    OrderValidationUtils,
     WETH9,
     ZRXToken,
     Coordinator,

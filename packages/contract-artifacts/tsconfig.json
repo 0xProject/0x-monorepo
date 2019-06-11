@@ -22,6 +22,7 @@
         "./artifacts/IWallet.json",
         "./artifacts/MultiAssetProxy.json",
         "./artifacts/OrderValidator.json",
+        "./artifacts/OrderValidationUtils.json",
         "./artifacts/WETH9.json",
         "./artifacts/ZRXToken.json",
         "./artifacts/CoordinatorRegistry.json",
