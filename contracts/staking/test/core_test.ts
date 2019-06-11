@@ -692,17 +692,6 @@ describe('Staking Core', () => {
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
 
-        it('nth root #3 with fixed point (integer nth root would fail here)', async () => {
-            const decimals = 18;
-            const base = stakingWrapper.toFixedPoint(10, decimals);
-            console.log(base);
-            const n = new BigNumber(9);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
-            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
-            const expectedResult = new BigNumber(26);
-            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-        });
-
         it.skip('nth root #4 with fixed point (integer nth root would fail here) (max number of decimals - currently does not retain)', async () => {
             const decimals = 18;
             const base = stakingWrapper.toFixedPoint(new BigNumber('5429503678976.295036789761543678', 10), decimals);
