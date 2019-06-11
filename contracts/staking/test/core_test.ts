@@ -551,7 +551,34 @@ describe('Staking Core', () => {
         });
 
         it.only('Reward Vault', async () => {
-            // 
+            /*
+            // 1 setup test parameters
+            const poolOperator = stakers[1];
+            const operatorShare = 39;
+            const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);
+            const stakingContractAddress = stakingWrapper.getStakingContract().address;
+            const notStakingContractAddress = poolOperator;
+            const initialPoolDeposit = stakingWrapper.toBaseUnitAmount(19);
+            // create pool in vault
+            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, stakingContractAddress);
+            */
+            /*
+            // should fail to create pool if it already exists
+            await expectTransactionFailedAsync(
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, stakingContractAddress),
+                RevertReason.PoolAlreadyExists
+            );
+            // should fail to create a pool from an address other than the staking contract
+            await expectTransactionFailedAsync(
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, notStakingContractAddress),
+                RevertReason.OnlyCallableByStakingContract
+            );
+            */
+        });
+
+        it.only('Staking Contract / Reward Vault Integration', async () => {
+            //
+            //const poolId = await stakingWrapper.createPoolAsync();
             //await stakingWrapper.depositForAsync()            
         });
 

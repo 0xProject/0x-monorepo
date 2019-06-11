@@ -57,6 +57,12 @@ contract MixinPools is
             operatorShare: operatorShare
         });
         poolById[poolId] = pool;
+
+        // create pool in reward vault
+        rewardVault.createPool(
+            poolId,
+            operatorAddress
+        );
         
         // 
         emit PoolCreated(poolId, operatorAddress, operatorShare);
