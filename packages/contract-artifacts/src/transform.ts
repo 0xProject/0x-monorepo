@@ -1,15 +1,14 @@
-import { logUtils } from '@0x/utils';
+import { deleteNestedProperty, logUtils } from '@0x/utils';
 import * as fs from 'fs';
 
-// xianny: hack, copied from contract-artifacts to avoid changing contract-artifacts exports
-export const RequiredProperties: string[] = [
+export const REQUIRE_PROPERTIES: string[] = [
     'schemaVersion',
     'contractName',
     'compilerOutput.evm.bytecode.object',
     'compilerOutput.abi',
 ];
 
-export const ForbiddenProperties: string[] = [
+export const FORBIDDEN_PROPERTIES: string[] = [
     'compilerOutput.evm.bytecode.sourceMap',
     'compilerOutput.evm.bytecode.opcodes',
     'compilerOutput.evm.bytecode.linkReferences',
@@ -33,31 +32,10 @@ function removeForbiddenProperties(inputDir: string, outputDir: string): void {
 
     for (const filePath of filePaths) {
         const artifact = JSON.parse(fs.readFileSync(filePath).toString()) as { [name: string]: any };
-        for (const property of ForbiddenProperties) {
+        for (const property of FORBIDDEN_PROPERTIES) {
             deleteNestedProperty(artifact, property);
         }
         fs.writeFileSync(filePath.replace(inputDir, outputDir), JSON.stringify(artifact));
-    }
-}
-
-function deleteNestedProperty(obj: any, propPath: string): void {
-    if (!obj || !propPath) {
-        return;
-    }
-
-    const propPathParts = propPath.split('.');
-
-    let _obj = obj;
-    for (let i = 0; i < propPathParts.length - 1; i++) {
-        _obj = _obj[propPathParts[i]];
-
-        if (typeof _obj === 'undefined') {
-            return;
-        }
-    }
-
-    while (propPathParts.length > 0) {
-        delete _obj[propPathParts.pop() as string];
     }
 }
 
