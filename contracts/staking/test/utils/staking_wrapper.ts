@@ -475,7 +475,7 @@ export class StakingWrapper {
         const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n);
         return output;
     }
-    public async cobbDouglas(
+    public async cobbDouglasAsync(
         totalRewards: BigNumber,
         ownerFees: BigNumber,
         totalFees: BigNumber,
@@ -495,7 +495,7 @@ export class StakingWrapper {
         );
         return output;
     }
-    public async cobbDouglasSimplified(
+    public async cobbDouglasSimplifiedAsync(
         totalRewards: BigNumber,
         ownerFees: BigNumber,
         totalFees: BigNumber,
@@ -522,7 +522,7 @@ export class StakingWrapper {
         );
         return output;
     }
-    public async cobbDouglasSimplifiedInverse(
+    public async cobbDouglasSimplifiedInverseAsync(
         totalRewards: BigNumber,
         ownerFees: BigNumber,
         totalFees: BigNumber,

@@ -116,13 +116,13 @@ contract MixinFees is
                     100
                 )
             );
-            /*emit E(
+            emit E(
                 totalRewards,
                 activePoolIds[i].feesCollected,
                 totalFees,
                 scaledStake,
                 totalStake
-            );*/
+            );
             uint256 reward = LibMath._cobbDouglasSuperSimplified(
                 totalRewards,
                 activePoolIds[i].feesCollected,
