@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.6.0",
+        "changes": [
+            {
+                "note": "Remove unneeded fields",
+                "pr": 1842
+            }
+        ]
+    },
+    {
         "timestamp": 1557507213,
         "version": "1.5.1",
         "changes": [

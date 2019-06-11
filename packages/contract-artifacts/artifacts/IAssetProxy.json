@@ -5,12 +5,7 @@
         "abi": [
             {
                 "constant": false,
-                "inputs": [
-                    {
-                        "name": "target",
-                        "type": "address"
-                    }
-                ],
+                "inputs": [{ "name": "target", "type": "address" }],
                 "name": "addAuthorizedAddress",
                 "outputs": [],
                 "payable": false,
@@ -19,12 +14,7 @@
             },
             {
                 "constant": false,
-                "inputs": [
-                    {
-                        "name": "target",
-                        "type": "address"
-                    }
-                ],
+                "inputs": [{ "name": "target", "type": "address" }],
                 "name": "removeAuthorizedAddress",
                 "outputs": [],
                 "payable": false,
@@ -33,16 +23,7 @@
             },
             {
                 "constant": false,
-                "inputs": [
-                    {
-                        "name": "target",
-                        "type": "address"
-                    },
-                    {
-                        "name": "index",
-                        "type": "uint256"
-                    }
-                ],
+                "inputs": [{ "name": "target", "type": "address" }, { "name": "index", "type": "uint256" }],
                 "name": "removeAuthorizedAddressAtIndex",
                 "outputs": [],
                 "payable": false,
@@ -52,22 +33,10 @@
             {
                 "constant": false,
                 "inputs": [
-                    {
-                        "name": "assetData",
-                        "type": "bytes"
-                    },
-                    {
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "name": "to",
-                        "type": "address"
-                    },
-                    {
-                        "name": "amount",
-                        "type": "uint256"
-                    }
+                    { "name": "assetData", "type": "bytes" },
+                    { "name": "from", "type": "address" },
+                    { "name": "to", "type": "address" },
+                    { "name": "amount", "type": "uint256" }
                 ],
                 "name": "transferFrom",
                 "outputs": [],
@@ -79,12 +48,7 @@
                 "constant": true,
                 "inputs": [],
                 "name": "getProxyId",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "bytes4"
-                    }
-                ],
+                "outputs": [{ "name": "", "type": "bytes4" }],
                 "payable": false,
                 "stateMutability": "pure",
                 "type": "function"
@@ -93,24 +57,14 @@
                 "constant": true,
                 "inputs": [],
                 "name": "getAuthorizedAddresses",
-                "outputs": [
-                    {
-                        "name": "",
-                        "type": "address[]"
-                    }
-                ],
+                "outputs": [{ "name": "", "type": "address[]" }],
                 "payable": false,
                 "stateMutability": "view",
                 "type": "function"
             },
             {
                 "constant": false,
-                "inputs": [
-                    {
-                        "name": "newOwner",
-                        "type": "address"
-                    }
-                ],
+                "inputs": [{ "name": "newOwner", "type": "address" }],
                 "name": "transferOwnership",
                 "outputs": [],
                 "payable": false,
@@ -118,12 +72,7 @@
                 "type": "function"
             }
         ],
-        "evm": {
-            "bytecode": {
-                "linkReferences": {},
-                "object": "0x"
-            }
-        }
+        "evm": { "bytecode": { "object": "0x" } }
     },
     "networks": {}
 }
