@@ -5,6 +5,34 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.5 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v2.2.4 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v2.2.3 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v2.2.1 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _April 11, 2019_
+
+    * Added UntransferrableDummyERC20Token (#1714)
+
+## v2.1.0 - _March 21, 2019_
+
+    * Run Web3ProviderEngine without excess block polling (#1695)
+
+## v2.0.0 - _March 20, 2019_
+
+    * Upgrade contracts to Solidity 0.5.5 (#1682)
+
 ## v1.0.9 - _March 1, 2019_
 
     * Dependencies updated

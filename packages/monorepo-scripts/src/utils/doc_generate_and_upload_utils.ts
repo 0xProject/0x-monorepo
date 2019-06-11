@@ -59,7 +59,7 @@ export class DocGenerateAndUploadUtils {
         const SUB_TYPE_PROPERTY_NAMES = ['inheritedFrom', 'overwrites', 'extendedTypes', 'implementationOf'];
         const TS_MAPPED_TYPES = ['Partial', 'Promise', 'Readonly', 'Pick', 'Record'];
         if (
-            !_.isUndefined(node.type) &&
+            node.type !== undefined &&
             _.isString(node.type) &&
             node.type === 'reference' &&
             !_.includes(TS_MAPPED_TYPES, node.name) &&
@@ -96,7 +96,7 @@ export class DocGenerateAndUploadUtils {
         );
         const exportPathToExportedItems: ExportPathToExportedItems = {};
         const exportPathOrder: string[] = [];
-        const exportsToOmit = _.isUndefined(omitExports) ? [] : omitExports;
+        const exportsToOmit = omitExports === undefined ? [] : omitExports;
 
         processNode(sourceFile);
 
@@ -104,19 +104,20 @@ export class DocGenerateAndUploadUtils {
             switch (node.kind) {
                 case ts.SyntaxKind.ExportDeclaration: {
                     const exportClause = (node as any).exportClause;
-                    if (_.isUndefined(exportClause)) {
+                    if (exportClause === undefined) {
                         return;
                     }
                     const exportPath = exportClause.parent.moduleSpecifier.text;
                     _.each(exportClause.elements, element => {
                         const exportItem = element.name.escapedText;
                         if (!_.includes(exportsToOmit, exportItem)) {
-                            exportPathToExportedItems[exportPath] = _.isUndefined(exportPathToExportedItems[exportPath])
-                                ? [exportItem]
-                                : [...exportPathToExportedItems[exportPath], exportItem];
+                            exportPathToExportedItems[exportPath] =
+                                exportPathToExportedItems[exportPath] === undefined
+                                    ? [exportItem]
+                                    : [...exportPathToExportedItems[exportPath], exportItem];
                         }
                     });
-                    if (!_.isUndefined(exportPathToExportedItems[exportPath])) {
+                    if (exportPathToExportedItems[exportPath] !== undefined) {
                         exportPathOrder.push(exportPath);
                     }
                     break;
@@ -127,21 +128,21 @@ export class DocGenerateAndUploadUtils {
                     let exportPath = './index';
                     if (foundNode.parent && foundNode.parent.name) {
                         const exportItem = foundNode.parent.name.escapedText;
-                        const isExportImportRequireStatement = !_.isUndefined(
-                            _.get(foundNode, 'parent.moduleReference.expression.text'),
-                        );
+                        const isExportImportRequireStatement =
+                            _.get(foundNode, 'parent.moduleReference.expression.text') !== undefined;
                         if (isExportImportRequireStatement) {
                             exportPath = foundNode.parent.moduleReference.expression.text;
                         }
                         if (!_.includes(exportsToOmit, exportItem)) {
-                            exportPathToExportedItems[exportPath] = _.isUndefined(exportPathToExportedItems[exportPath])
-                                ? [exportItem]
-                                : [...exportPathToExportedItems[exportPath], exportItem];
+                            exportPathToExportedItems[exportPath] =
+                                exportPathToExportedItems[exportPath] === undefined
+                                    ? [exportItem]
+                                    : [...exportPathToExportedItems[exportPath], exportItem];
                         }
                     }
                     if (
                         !_.includes(exportPathOrder, exportPath) &&
-                        !_.isUndefined(exportPathToExportedItems[exportPath])
+                        exportPathToExportedItems[exportPath] !== undefined
                     ) {
                         exportPathOrder.push(exportPath);
                     }
@@ -173,7 +174,7 @@ export class DocGenerateAndUploadUtils {
         const pkg = _.find(monorepoPackages, monorepoPackage => {
             return _.includes(monorepoPackage.packageJson.name, packageName);
         });
-        if (_.isUndefined(pkg)) {
+        if (pkg === undefined) {
             throw new Error(`Couldn't find a package.json for ${packageName}`);
         }
         this._packageJson = pkg.packageJson;
@@ -232,7 +233,7 @@ export class DocGenerateAndUploadUtils {
         const externalExports: string[] = this._getAllExternalExports();
         _.each(externalExports, externalExport => {
             const linkIfExists = docGenConfigs.EXTERNAL_EXPORT_TO_LINK[externalExport];
-            if (_.isUndefined(linkIfExists)) {
+            if (linkIfExists === undefined) {
                 externalExportsWithoutLinks.push(externalExport);
                 return;
             }
@@ -251,9 +252,10 @@ export class DocGenerateAndUploadUtils {
         const exportPathToTypedocNames: ExportNameToTypedocNames = {};
         _.each(modifiedTypedocOutput.children, file => {
             const exportPath = this._findExportPathGivenTypedocName(file.name);
-            exportPathToTypedocNames[exportPath] = _.isUndefined(exportPathToTypedocNames[exportPath])
-                ? [file.name]
-                : [...exportPathToTypedocNames[exportPath], file.name];
+            exportPathToTypedocNames[exportPath] =
+                exportPathToTypedocNames[exportPath] === undefined
+                    ? [file.name]
+                    : [...exportPathToTypedocNames[exportPath], file.name];
         });
 
         // Since we need additional metadata included in the doc JSON, we nest the TypeDoc JSON
@@ -305,7 +307,7 @@ export class DocGenerateAndUploadUtils {
         _.each(referenceNames, referenceName => {
             if (
                 !_.includes(allExportedItems, referenceName) &&
-                _.isUndefined(docGenConfigs.EXTERNAL_TYPE_TO_LINK[referenceName])
+                docGenConfigs.EXTERNAL_TYPE_TO_LINK[referenceName] === undefined
             ) {
                 missingReferences.push(referenceName);
             }
@@ -421,7 +423,7 @@ export class DocGenerateAndUploadUtils {
         const matchingSanitizedExportPathIfExists = _.find(sanitizedExportPathsSortedByLength, p => {
             return _.startsWith(typeDocNameWithoutQuotes, p);
         });
-        if (_.isUndefined(matchingSanitizedExportPathIfExists)) {
+        if (matchingSanitizedExportPathIfExists === undefined) {
             throw new Error(`Didn't find an exportPath for ${typeDocNameWithoutQuotes}`);
         }
         const matchingExportPath = sanitizedExportPathToExportPath[matchingSanitizedExportPathIfExists];
@@ -431,7 +433,7 @@ export class DocGenerateAndUploadUtils {
         const externalExports: string[] = [];
         _.each(this._exportPathToExportedItems, (exportedItems, exportPath) => {
             const pathIfExists = this._monoRepoPkgNameToPath[exportPath];
-            if (_.isUndefined(pathIfExists) && !_.startsWith(exportPath, './')) {
+            if (pathIfExists === undefined && !_.startsWith(exportPath, './')) {
                 _.each(exportedItems, exportedItem => {
                     externalExports.push(exportedItem);
                 });
@@ -451,7 +453,7 @@ export class DocGenerateAndUploadUtils {
             }
 
             const pathIfExists = this._monoRepoPkgNameToPath[exportPath];
-            if (_.isUndefined(pathIfExists)) {
+            if (pathIfExists === undefined) {
                 return; // It's an external package
             }
 

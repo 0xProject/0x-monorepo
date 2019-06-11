@@ -24,9 +24,8 @@ export class PointerCalldataBlock extends CalldataBlock {
     }
 
     public toBuffer(): Buffer {
-        const destinationOffset = !_.isUndefined(this._aliasFor)
-            ? this._aliasFor.getOffsetInBytes()
-            : this._dependency.getOffsetInBytes();
+        const destinationOffset =
+            this._aliasFor !== undefined ? this._aliasFor.getOffsetInBytes() : this._dependency.getOffsetInBytes();
         const parentOffset = this._parent.getOffsetInBytes();
         const parentHeaderSize = this._parent.getHeaderSizeInBytes();
         const pointer: number = destinationOffset - (parentOffset + parentHeaderSize);

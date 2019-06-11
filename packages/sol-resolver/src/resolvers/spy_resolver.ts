@@ -1,5 +1,3 @@
-import * as _ from 'lodash';
-
 import { ContractSource } from '../types';
 
 import { Resolver } from './resolver';
@@ -17,7 +15,7 @@ export class SpyResolver extends Resolver {
     }
     public resolveIfExists(importPath: string): ContractSource | undefined {
         const contractSourceIfExists = this._resolver.resolveIfExists(importPath);
-        if (!_.isUndefined(contractSourceIfExists)) {
+        if (contractSourceIfExists !== undefined) {
             this.resolvedContractSources.push(contractSourceIfExists);
         }
         return contractSourceIfExists;

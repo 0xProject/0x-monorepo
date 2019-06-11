@@ -1,5 +1,5 @@
 import { DoneCallback } from '@0x/types';
-import { promisify } from '@0x/utils';
+import { promisify, providerUtils } from '@0x/utils';
 import Eth from '@ledgerhq/hw-app-eth';
 // HACK: This dependency is optional and tslint skips optional dependencies
 // tslint:disable-next-line:no-implicit-dependencies
@@ -86,11 +86,11 @@ describe('LedgerSubprovider', () => {
             ledgerProvider.addProvider(ledgerSubprovider);
             const httpProvider = new RPCSubprovider('http://localhost:8545');
             ledgerProvider.addProvider(httpProvider);
-            ledgerProvider.start();
+            providerUtils.startProviderEngine(ledgerProvider);
 
             defaultProvider = new Web3ProviderEngine();
             defaultProvider.addProvider(httpProvider);
-            defaultProvider.start();
+            providerUtils.startProviderEngine(defaultProvider);
         });
         it('returns a list of accounts', (done: DoneCallback) => {
             const payload = {

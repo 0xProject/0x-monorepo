@@ -5,6 +5,38 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.11 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v4.0.10 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v4.0.9 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v4.0.7 - _May 10, 2019_
+
+    * Fix race-condition bug due to async callback modifying shared state (#1789)
+    * Fix bug where WETH deposit/withdrawal events would not trigger an order state update (#1809)
+
+## v4.0.6 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.0.5 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v4.0.4 - _March 20, 2019_
+
+    * Update websocket from ^1.0.25 to ^1.0.26 (#1685)
+    * Fix issue where ERC721 Approval events could cause a lookup on undefined object (#1692)
+    * Fix race-condition bugs due to async event callbacks modifying shared state (#1718)
+    * Run Web3ProviderEngine without excess block polling (#1695)
+
 ## v4.0.3 - _March 1, 2019_
 
     * Dependencies updated

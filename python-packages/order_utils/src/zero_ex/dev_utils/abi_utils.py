@@ -10,8 +10,8 @@ from typing import Any, List
 
 from mypy_extensions import TypedDict
 
-from web3 import Web3
 from eth_abi import encode_abi
+from web3 import Web3
 
 from .type_assertions import assert_is_string, assert_is_list
 

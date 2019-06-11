@@ -47,7 +47,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         PrivateKeyWalletSubprovider._validateTxParams(txParams);
-        if (!_.isUndefined(txParams.from) && txParams.from !== this._address) {
+        if (txParams.from !== undefined && txParams.from !== this._address) {
             throw new Error(
                 `Requested to sign transaction with address: ${txParams.from}, instantiated with address: ${
                     this._address
@@ -70,7 +70,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signPersonalMessageAsync(data: string, address: string): Promise<string> {
-        if (_.isUndefined(data)) {
+        if (data === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignPersonalMessage);
         }
         assert.isHexString('data', data);
@@ -97,7 +97,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      * @return Signature hex string (order: rsv)
      */
     public async signTypedDataAsync(address: string, typedData: EIP712TypedData): Promise<string> {
-        if (_.isUndefined(typedData)) {
+        if (typedData === undefined) {
             throw new Error(WalletSubproviderErrors.DataMissingForSignTypedData);
         }
         assert.isETHAddressHex('address', address);

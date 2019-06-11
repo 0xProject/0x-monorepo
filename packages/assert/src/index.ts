@@ -56,6 +56,16 @@ export const assert = {
     isNumber(variableName: string, value: number): void {
         assert.assert(_.isFinite(value), assert.typeAssertionMessage(variableName, 'number', value));
     },
+    isNumberOrBigNumber(variableName: string, value: any): void {
+        if (_.isFinite(value)) {
+            return;
+        } else {
+            assert.assert(
+                BigNumber.isBigNumber(value),
+                assert.typeAssertionMessage(variableName, 'number or BigNumber', value),
+            );
+        }
+    },
     isBoolean(variableName: string, value: boolean): void {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
@@ -65,11 +75,11 @@ export const assert = {
         assert.assert(isWeb3Provider, assert.typeAssertionMessage(variableName, 'Provider', value));
     },
     doesConformToSchema(variableName: string, value: any, schema: Schema, subSchemas?: Schema[]): void {
-        if (_.isUndefined(value)) {
+        if (value === undefined) {
             throw new Error(`${variableName} can't be undefined`);
         }
         const schemaValidator = new SchemaValidator();
-        if (!_.isUndefined(subSchemas)) {
+        if (subSchemas !== undefined) {
             _.map(subSchemas, schemaValidator.addSchema.bind(schemaValidator));
         }
         const validationResult = schemaValidator.validate(value, schema);
@@ -80,12 +90,26 @@ Validation errors: ${validationResult.errors.join(', ')}`;
         assert.assert(!hasValidationErrors, msg);
     },
     isWebUri(variableName: string, value: any): void {
-        const isValidUrl = !_.isUndefined(validUrl.isWebUri(value));
+        const isValidUrl = validUrl.isWebUri(value) !== undefined;
         assert.assert(isValidUrl, assert.typeAssertionMessage(variableName, 'web uri', value));
     },
     isUri(variableName: string, value: any): void {
-        const isValidUri = !_.isUndefined(validUrl.isUri(value));
+        const isValidUri = validUrl.isUri(value) !== undefined;
         assert.assert(isValidUri, assert.typeAssertionMessage(variableName, 'uri', value));
+    },
+    isBlockParam(variableName: string, value: any): void {
+        if (Number.isInteger(value) && value >= 0) {
+            return;
+        }
+        if (value === 'earliest' || value === 'latest' || value === 'pending') {
+            return;
+        }
+        throw new Error(assert.typeAssertionMessage(variableName, 'BlockParam', value));
+    },
+    isArray(variableName: string, value: any): void {
+        if (!Array.isArray(value)) {
+            throw new Error(assert.typeAssertionMessage(variableName, 'Array', value));
+        }
     },
     assert(condition: boolean, message: string): void {
         if (!condition) {

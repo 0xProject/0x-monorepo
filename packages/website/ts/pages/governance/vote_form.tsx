@@ -1,5 +1,5 @@
-import { signatureUtils } from '0x.js';
 import { ContractWrappers } from '@0x/contract-wrappers';
+import { signatureUtils } from '@0x/order-utils';
 import { LedgerSubprovider } from '@0x/subproviders';
 import { ECSignature, SignatureType } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
@@ -164,7 +164,7 @@ export class VoteForm extends React.Component<Props> {
                         errors={errors}
                     />
                 </InputRow>
-                {!_.isUndefined(errors.signError) && (
+                {errors.signError !== undefined && (
                     <Paragraph isMuted={true} color={colors.red}>
                         {errors.signError}
                     </Paragraph>
@@ -256,7 +256,7 @@ export class VoteForm extends React.Component<Props> {
                 }
             } else {
                 const responseBody = await response.json();
-                const errorMessage = !_.isUndefined(responseBody.reason) ? responseBody.reason : 'Unknown Error';
+                const errorMessage = responseBody.reason !== undefined ? responseBody.reason : 'Unknown Error';
                 this._handleError(errorMessage);
             }
         } catch (err) {

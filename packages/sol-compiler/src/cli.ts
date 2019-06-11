@@ -30,11 +30,12 @@ const SEPARATOR = ',';
             default: false,
         })
         .help().argv;
-    const contracts = _.isUndefined(argv.contracts)
-        ? undefined
-        : argv.contracts === DEFAULT_CONTRACTS_LIST
-        ? DEFAULT_CONTRACTS_LIST
-        : argv.contracts.split(SEPARATOR);
+    const contracts =
+        argv.contracts === undefined
+            ? undefined
+            : argv.contracts === DEFAULT_CONTRACTS_LIST
+            ? DEFAULT_CONTRACTS_LIST
+            : argv.contracts.split(SEPARATOR);
     const opts = {
         contractsDir: argv.contractsDir,
         artifactsDir: argv.artifactsDir,

@@ -26,6 +26,7 @@ export {
 } from '@0x/abi-gen-wrappers';
 
 export { ContractWrappers } from './contract_wrappers';
+export { CoordinatorWrapper } from './contract_wrappers/coordinator_wrapper';
 export { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
 export { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
 export { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
@@ -58,12 +59,15 @@ export {
     TraderInfo,
     ValidateOrderFillableOpts,
     DutchAuctionData,
+    CoordinatorServerCancellationResponse,
+    CoordinatorServerError,
 } from './types';
 
 export {
     AssetData,
     ERC20AssetData,
     ERC721AssetData,
+    ERC1155AssetData,
     SingleAssetData,
     MultiAssetData,
     MultiAssetDataWithRecursiveDecoding,
@@ -71,6 +75,8 @@ export {
     Order,
     SignedOrder,
     AssetProxyId,
+    SignedZeroExTransaction,
+    ZeroExTransaction,
 } from '@0x/types';
 
 export {

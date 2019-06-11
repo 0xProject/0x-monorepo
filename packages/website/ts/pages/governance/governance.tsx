@@ -119,7 +119,7 @@ export class Governance extends React.Component<Props> {
                         <Paragraph>{proposalData.summary}</Paragraph>
                         <Button
                             href={proposalData.url}
-                            target={!_.isUndefined(proposalData.url) ? '_blank' : undefined}
+                            target={proposalData.url !== undefined ? '_blank' : undefined}
                             isWithArrow={true}
                             isAccentColor={true}
                         >
@@ -143,7 +143,7 @@ export class Governance extends React.Component<Props> {
                                 {_.map(proposalData.benefit.links, (link, index) => (
                                     <MoreLink
                                         href={link.url}
-                                        target={!_.isUndefined(link.url) ? '_blank' : undefined}
+                                        target={link.url !== undefined ? '_blank' : undefined}
                                         isWithArrow={true}
                                         isAccentColor={true}
                                         key={`benefitlink-${index}`}
@@ -169,7 +169,7 @@ export class Governance extends React.Component<Props> {
                                 {_.map(proposalData.risks.links, (link, index) => (
                                     <MoreLink
                                         href={link.url}
-                                        target={!_.isUndefined(link.url) ? '_blank' : undefined}
+                                        target={link.url !== undefined ? '_blank' : undefined}
                                         isWithArrow={true}
                                         isAccentColor={true}
                                         key={`risklink-${index}`}

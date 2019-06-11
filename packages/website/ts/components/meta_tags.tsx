@@ -15,6 +15,7 @@ export const MetaTags: React.StatelessComponent<MetaTagsProps> = ({ title, descr
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content={imgSrc} />
+        <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:site" content="@0xproject" />
         <meta name="twitter:image" content={imgSrc} />
     </Helmet>

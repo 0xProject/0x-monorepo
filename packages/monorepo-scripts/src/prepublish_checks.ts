@@ -18,7 +18,7 @@ async function prepublishChecksAsync(): Promise<void> {
     await checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(updatedPublicPackages);
     await checkChangelogFormatAsync(updatedPublicPackages);
     await checkGitTagsForNextVersionAndDeleteIfExistAsync(updatedPublicPackages);
-    await checkPublishRequiredSetupAsync();
+    await checkPublishRequiredSetupAsync(updatedPublicPackages);
     await checkDockerHubSetupAsync();
 }
 
@@ -64,7 +64,7 @@ async function checkCurrentVersionMatchesLatestPublishedNPMPackageAsync(
         const packageName = pkg.packageJson.name;
         const packageVersion = pkg.packageJson.version;
         const packageRegistryJsonIfExists = await npmUtils.getPackageRegistryJsonIfExistsAsync(packageName);
-        if (_.isUndefined(packageRegistryJsonIfExists)) {
+        if (packageRegistryJsonIfExists === undefined) {
             continue; // noop for packages not yet published to NPM
         }
         const allVersionsIncludingUnpublished = npmUtils.getPreviouslyPublishedVersions(packageRegistryJsonIfExists);
@@ -101,7 +101,7 @@ async function checkChangelogFormatAsync(updatedPublicPackages: Package[]): Prom
         const currentVersion = pkg.packageJson.version;
         if (!_.isEmpty(changelog)) {
             const lastEntry = changelog[0];
-            const doesLastEntryHaveTimestamp = !_.isUndefined(lastEntry.timestamp);
+            const doesLastEntryHaveTimestamp = lastEntry.timestamp !== undefined;
             if (semver.lt(lastEntry.version, currentVersion)) {
                 changeLogInconsistencies.push({
                     packageJsonVersion: currentVersion,
@@ -130,7 +130,7 @@ async function checkChangelogFormatAsync(updatedPublicPackages: Package[]): Prom
     }
 }
 
-async function checkPublishRequiredSetupAsync(): Promise<void> {
+async function checkPublishRequiredSetupAsync(updatedPublicPackages: Package[]): Promise<void> {
     // check to see if logged into npm before publishing
     try {
         // HACK: for some reason on some setups, the `npm whoami` will not recognize a logged-in user
@@ -141,15 +141,31 @@ async function checkPublishRequiredSetupAsync(): Promise<void> {
         throw new Error('You must be logged into npm in the commandline to publish. Run `npm login` and try again.');
     }
 
+    // check to see that all required write permissions exist
+    utils.log(`Checking that all necessary npm write permissions exist...`);
+    const pkgPermissionsResult = await execAsync(`sudo npm access ls-packages`);
+    const pkgPermissions = JSON.parse(pkgPermissionsResult.stdout);
+    const writePermissions = Object.keys(pkgPermissions).filter(pkgName => {
+        return pkgPermissions[pkgName] === 'read-write';
+    });
+    const unwriteablePkgs = updatedPublicPackages.filter(pkg => !writePermissions.includes(pkg.packageJson.name));
+    if (unwriteablePkgs.length > 0) {
+        utils.log(`Missing write permissions for the following packages:`);
+        unwriteablePkgs.forEach(pkg => {
+            utils.log(pkg.packageJson.name);
+        });
+        throw new Error(`Obtain necessary write permissions to continue.`);
+    }
+
     // Check to see if Git personal token setup
-    if (_.isUndefined(constants.githubPersonalAccessToken)) {
+    if (constants.githubPersonalAccessToken === undefined) {
         throw new Error(
             'You must have a Github personal access token set to an envVar named `GITHUB_PERSONAL_ACCESS_TOKEN_0X_JS`. Add it then try again.',
         );
     }
 
     // Check to see if discord URL is set up
-    if (_.isUndefined(constants.discordAlertWebhookUrl)) {
+    if (constants.discordAlertWebhookUrl === undefined) {
         throw new Error(
             'You must have a discord webhook URL set to an envVar named `DISCORD_GITHUB_RELEASE_WEBHOOK_URL`. Add it then try again.',
         );

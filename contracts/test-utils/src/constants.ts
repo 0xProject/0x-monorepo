@@ -38,11 +38,16 @@ export const constants = {
     NUM_DUMMY_ERC20_TO_DEPLOY: 3,
     NUM_DUMMY_ERC721_TO_DEPLOY: 2,
     NUM_ERC721_TOKENS_TO_MINT: 2,
+    NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY: 2,
+    NUM_ERC1155_FUNGIBLE_TOKENS_MINT: 3,
+    NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT: 3,
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
     INITIAL_ERC20_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
     INITIAL_ERC20_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC1155_FUNGIBLE_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
+    INITIAL_ERC1155_FUNGIBLE_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
     STATIC_ORDER_PARAMS: {
         makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
         takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
@@ -65,14 +70,4 @@ export const constants = {
         'CANCEL_ORDERS_UP_TO',
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
     ],
-    COORDINATOR_DOMAIN_NAME: '0x Protocol Trade Execution Coordinator',
-    COORDINATOR_DOMAIN_VERSION: '1.0.0',
-    COORDINATOR_APPROVAL_SCHEMA: {
-        name: 'COORDINATORApproval',
-        parameters: [
-            { name: 'transactionHash', type: 'bytes32' },
-            { name: 'transactionSignature', type: 'bytes' },
-            { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
-        ],
-    },
 };

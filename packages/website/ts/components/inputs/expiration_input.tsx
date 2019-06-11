@@ -93,7 +93,7 @@ export class ExpirationInput extends React.Component<ExpirationInputProps, Expir
         this.setState({
             timeMoment,
         });
-        const dateMoment = _.isUndefined(this.state.dateMoment) ? moment() : this.state.dateMoment;
+        const dateMoment = this.state.dateMoment === undefined ? moment() : this.state.dateMoment;
         const timestamp = utils.convertToUnixTimestampSeconds(dateMoment, timeMoment);
         this.props.updateOrderExpiry(timestamp);
     }

@@ -1,5 +1,52 @@
 [
     {
+        "version": "4.3.3",
+        "changes": [
+            {
+                "note": "Fixed spelling error in ABI Encoder error message",
+                "pr": 1808
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
+        "version": "4.3.2",
+        "changes": [
+            {
+                "note": "Support for ABI encoding multibyte strings (fixes issue #1723)",
+                "pr": 1806
+            }
+        ]
+    },
+    {
+        "version": "4.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "4.3.0",
+        "changes": [
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "timestamp": 1553091633,
+        "version": "4.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "4.2.2",
         "changes": [
             {

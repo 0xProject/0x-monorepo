@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.6 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v4.1.5 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v4.1.4 - _May 14, 2019_
+
+    * Add --pk flag to accept private key when migrating (#1811)
+
+## v4.1.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v4.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.1.0 - _March 21, 2019_
+
+    * Add deployment of `Coordinator` and `CoordinatorRegistry` contracts to migration script (#1689)
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v4.0.4 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v4.0.3 - _March 1, 2019_
 
     * Dependencies updated

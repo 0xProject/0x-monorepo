@@ -1,16 +1,77 @@
 [
     {
-        "version": "2.0.0",
+        "version": "3.0.0",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
+                "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
+                "pr": 1848
+            }
+        ]
+    },
+    {
+        "timestamp": 1558712885,
+        "version": "2.1.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557961111,
+        "version": "2.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "2.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
             {
                 "note": "Upgrade contracts to Solidity 0.5.5",
                 "pr": 1682
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

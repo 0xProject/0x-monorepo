@@ -5,6 +5,26 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.3 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v2.2.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v2.2.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _March 21, 2019_
+
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v2.1.4 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v2.1.3 - _March 1, 2019_
 
     * Dependencies updated

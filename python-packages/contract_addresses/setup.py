@@ -10,6 +10,7 @@ from sys import argv
 from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
+from setuptools.command.test import test as TestCommand
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -30,8 +31,6 @@ class LintCommand(distutils.command.build_py.build_py):
             "mypy src setup.py".split(),
             # security issue checker:
             "bandit -r src ./setup.py".split(),
-            # run doctests:
-            "pytest --doctest-modules".split(),
             # general linter:
             "pylint src setup.py".split(),
             # pylint takes relatively long to run, so it runs last, to enable
@@ -103,13 +102,23 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
         subprocess.check_call("discharge deploy".split())  # nosec
 
 
+class TestCommandExtension(TestCommand):
+    """Run pytest tests."""
+
+    def run_tests(self):
+        """Invoke pytest."""
+        import pytest
+
+        exit(pytest.main(["--doctest-modules"]))
+
+
 with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
 
 setup(
     name="0x-contract-addresses",
-    version="2.0.0",
+    version="2.1.0",
     description="Addresses at which the 0x smart contracts have been deployed",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -122,6 +131,7 @@ setup(
     cmdclass={
         "clean": CleanCommandExtension,
         "lint": LintCommand,
+        "test": TestCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "publish_docs": PublishDocsCommand,

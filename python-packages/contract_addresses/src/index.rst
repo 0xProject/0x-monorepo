@@ -7,15 +7,20 @@ Python zero_ex.contract_addresses
    :maxdepth: 2
    :caption: Contents:
 
-.. autoclass:: zero_ex.contract_addresses.NetworkId
+.. automodule:: zero_ex.contract_addresses
+   :no-members:
 
-   See source for enum members.
+.. autoclass:: zero_ex.contract_addresses.NetworkId
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. autoclass:: zero_ex.contract_addresses.ContractAddresses
    :members:
+   :show-inheritance:
 
 .. autodata:: zero_ex.contract_addresses.NETWORK_TO_ADDRESSES
-   :annotation:
+   :annotation: : Dict[NetworkId, ContractAddresses]
 
 Indices and tables
 ==================

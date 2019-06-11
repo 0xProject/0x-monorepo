@@ -56,6 +56,12 @@
                 >
                     Buy GNO
                 </button>
+                <button
+                    class="button is-success"
+                    onClick="renderWithAssetData('0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849')"
+                >
+                    Buy Axie
+                </button>
             </div>
         </div>
         <div id="zeroExInstantContainer"></div>
@@ -74,6 +80,17 @@
                 EXPONENTIAL_AT: 1000,
                 DECIMAL_PLACES: 78,
             });
+
+            const additionalAssetMetaDataMap = {
+                '0x02571792000000000000000000000000f5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d0000000000000000000000000000000000000000000000000000000000008849': {
+                    assetProxyId: '0x02571792',
+                    name: 'Axie #34889',
+                    imageUrl:
+                        'https://storage.opensea.io/0xf5b0a3efb8e8e4c201e2a935f110eaaf3ffecb8d/34889-1549990035.png',
+                    primaryColor: '#b5d868',
+                },
+            };
+
             const providedOrders = [
                 // Order selling REP
                 {
@@ -176,6 +193,7 @@
                     affiliateInfo: affiliateInfoOverride,
                     shouldDisablePushToHistory: !!queryParams.getQueryParamValue('shouldDisablePushToHistory'),
                     walletDisplayName: queryParams.getQueryParamValue('walletDisplayName') || undefined,
+                    additionalAssetMetaDataMap,
                 };
                 return renderOptionsOverrides;
             };
@@ -185,6 +203,9 @@
                     onClose: () => {
                         console.log('0x Instant Closed');
                     },
+                    onSuccess: (txHash) => {
+                        console.log(`Success! Transaction hash is: ${txHash}`)
+                    }
                 };
                 const renderOptions = Object.assign({}, renderOptionsDefaults, removeUndefined(renderOptionsOverrides));
                 zeroExInstant.render(renderOptions);

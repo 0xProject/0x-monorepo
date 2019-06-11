@@ -3,7 +3,7 @@ import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { OrderError, TradeSide, TransferType } from './types';
+import { TradeSide, TransferType, TypedDataError } from './types';
 
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
 import { constants } from './constants';
@@ -168,7 +168,7 @@ export class OrderValidationUtils {
             throw new Error('EXPIRED');
         }
         let fillTakerAssetAmount = signedOrder.takerAssetAmount.minus(filledTakerTokenAmount);
-        if (!_.isUndefined(expectedFillTakerTokenAmount)) {
+        if (expectedFillTakerTokenAmount !== undefined) {
             fillTakerAssetAmount = expectedFillTakerTokenAmount;
         }
         await OrderValidationUtils.validateFillOrderBalancesAllowancesThrowIfInvalidAsync(
@@ -211,7 +211,7 @@ export class OrderValidationUtils {
             signedOrder.makerAddress,
         );
         if (!isValid) {
-            throw new Error(OrderError.InvalidSignature);
+            throw new Error(TypedDataError.InvalidSignature);
         }
         const filledTakerTokenAmount = await this._orderFilledCancelledFetcher.getFilledTakerAmountAsync(orderHash);
         if (signedOrder.takerAssetAmount.eq(filledTakerTokenAmount)) {

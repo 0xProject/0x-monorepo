@@ -1,20 +1,50 @@
-"""Addresses at which the 0x smart contracts have been deployed."""
+"""Addresses at which the 0x smart contracts have been deployed.
+
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-contract-addresses
+
+"""
 
 from enum import Enum
 from typing import Dict, NamedTuple
 
 
-class ContractAddresses(NamedTuple):  # noqa
+class ContractAddresses(NamedTuple):
     """An abstract record listing all the contracts that have addresses."""
 
     erc20_proxy: str
+    """Address of the ERC20Proxy contract."""
+
     erc721_proxy: str
+    """Address of the ERC20Proxy contract."""
+
     zrx_token: str
+    """Address of the ZRX token contract."""
+
     ether_token: str
+    """Address of the WETH token contract."""
+
     exchange: str
+    """Address of the Exchange contract."""
+
     asset_proxy_owner: str
+    """Address of the AssetProxyOwner contract."""
+
     forwarder: str
+    """Address of the Forwarder contract."""
+
     order_validator: str
+    """Address of the OrderValidator contract."""
+
+    coordinator_registry: str
+    """Address of the CoordinatorRegistry contract."""
+
+    coordinator: str
+    """Address of the Coordinator contract."""
 
 
 class NetworkId(Enum):
@@ -22,6 +52,9 @@ class NetworkId(Enum):
 
     >>> NetworkId.MAINNET
     <NetworkId.MAINNET: 1>
+
+    >>> NetworkId.MAINNET.value
+    1
     """
 
     MAINNET = 1
@@ -32,7 +65,7 @@ class NetworkId(Enum):
 
 
 NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
-    NetworkId.MAINNET: ContractAddresses(
+    NetworkId.MAINNET: ContractAddresses(  # nosec
         erc20_proxy="0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
         erc721_proxy="0x208e41fb445f1bb1b6780d58356e81405f3e6127",
         zrx_token="0xe41d2489571d322189246dafa5ebde1f4699f498",
@@ -41,8 +74,10 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
         forwarder="0x5468a1dc173652ee28d249c271fa9933144746b1",
         order_validator="0x9463e518dea6810309563c81d5266c1b1d149138",
+        coordinator_registry="0x45797531b873fd5e519477a070a955764c1a5b07",
+        coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.ROPSTEN: ContractAddresses(
+    NetworkId.ROPSTEN: ContractAddresses(  # nosec
         erc20_proxy="0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
         erc721_proxy="0xe654aac058bfbf9f83fcaee7793311dd82f6ddb4",
         zrx_token="0xff67881f8d12f372d91baae9752eb3631ff0ed00",
@@ -51,8 +86,10 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0xf5fa5b5fed2727a0e44ac67f6772e97977aa358b",
         forwarder="0x2240dab907db71e64d3e0dba4800c83b5c502d4e",
         order_validator="0x90431a90516ab49af23a0530e04e8c7836e7122f",
+        coordinator_registry="0x403cc23e88c17c4652fb904784d1af640a6722d9",
+        coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.RINKEBY: ContractAddresses(
+    NetworkId.RINKEBY: ContractAddresses(  # nosec
         exchange="0xbce0b5f6eb618c565c3e5f5cd69652bbc279f44e",
         erc20_proxy="0x2f5ae4f6106e89b4147651688a92256885c5f410",
         erc721_proxy="0x7656d773e11ff7383a14dcf09a9c50990481cd10",
@@ -61,8 +98,10 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0xe1703da878afcebff5b7624a826902af475b9c03",
         forwarder="0x2d40589abbdee84961f3a7656b9af7adb0ee5ab4",
         order_validator="0x0c5173a51e26b29d6126c686756fb9fbef71f762",
+        coordinator_registry="0x1084b6a398e47907bae43fec3ff4b677db6e4fee",
+        coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.KOVAN: ContractAddresses(
+    NetworkId.KOVAN: ContractAddresses(  # nosec
         erc20_proxy="0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
         erc721_proxy="0x2a9127c745688a165106c11cd4d647d2220af821",
         zrx_token="0x2002d3812f58e35f0ea1ffbf80a75a38c32175fa",
@@ -71,8 +110,10 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x2c824d2882baa668e0d5202b1e7f2922278703f8",
         forwarder="0x17992e4ffb22730138e4b62aaa6367fa9d3699a6",
         order_validator="0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d",
+        coordinator_registry="0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5",
+        coordinator="0x25aae5b981ce6683cc5aeea1855d927e0b59066f",
     ),
-    NetworkId.GANACHE: ContractAddresses(
+    NetworkId.GANACHE: ContractAddresses(  # nosec
         exchange="0x48bacb9266a570d521063ef5dd96e61686dbe788",
         erc20_proxy="0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
         erc721_proxy="0x1d7022f5b17d2f8b695918fb48fa1089c9f85401",
@@ -81,12 +122,14 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         asset_proxy_owner="0x34d402f14d58e001d8efbe6585051bf9706aa064",
         forwarder="0x6000eca38b8b5bba64986182fe2a69c57f6b5414",
         order_validator="0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15",
+        coordinator_registry="0xaa86dda78e9434aca114b6676fc742a18d15a1cc",
+        coordinator="0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29",
     ),
 }
 """A mapping from instances of NetworkId to instances of ContractAddresses.
 
 Addresses under NetworkId.Ganache are from our Ganache snapshot generated from
-migrations.
+npm package @0x/migrations.
 
 >>> NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange
 0x4f833a24e1f95d70f028921e27040ca56e09ab0b

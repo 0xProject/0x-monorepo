@@ -267,7 +267,7 @@ export class AssetPicker extends React.Component<AssetPickerProps, AssetPickerSt
         });
         const tokenAddress = this.state.chosenTrackTokenAddress;
         const token = this.props.tokenByAddress[tokenAddress];
-        if (_.isUndefined(tokenAddress)) {
+        if (tokenAddress === undefined) {
             this.setState(resetState);
             return;
         }

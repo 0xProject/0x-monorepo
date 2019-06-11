@@ -1,8 +1,7 @@
+import { orderCalculationUtils } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 
 import { LiquidityForAssetData, OrdersAndFillableAmounts } from '../types';
-
-import { orderUtils } from './order_utils';
 
 export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAmounts): LiquidityForAssetData => {
     const { orders, remainingFillableMakerAssetAmounts } = ordersAndFillableAmounts;
@@ -14,7 +13,10 @@ export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAm
             }
 
             const tokensAvailableForCurrentOrder = availableMakerAssetAmount;
-            const ethValueAvailableForCurrentOrder = orderUtils.getTakerFillAmount(order, availableMakerAssetAmount);
+            const ethValueAvailableForCurrentOrder = orderCalculationUtils.getTakerFillAmount(
+                order,
+                availableMakerAssetAmount,
+            );
             return {
                 tokensAvailableInBaseUnits: acc.tokensAvailableInBaseUnits.plus(tokensAvailableForCurrentOrder),
                 ethValueAvailableInWei: acc.ethValueAvailableInWei.plus(ethValueAvailableForCurrentOrder),

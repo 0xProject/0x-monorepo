@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.3.0 - _May 10, 2019_
+
+    * Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods (#1797)
+
+## v4.2.0 - _April 11, 2019_
+
+    * Added IAssetProxy wrapper (#1714)
+
+## v4.1.0 - _March 21, 2019_
+
+    * Add Coordinator and CoordinatorRegistry contract wrappers (#1689)
+
+## v4.0.3 - _March 20, 2019_
+
+    * Dependencies updated
+
 ## v4.0.2 - _March 1, 2019_
 
     * Dependencies updated

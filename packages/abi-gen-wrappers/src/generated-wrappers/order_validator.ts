@@ -1,13 +1,26 @@
-// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma whitespace class-name
+// tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
+// tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-// tslint:disable:no-unbound-method
-import { BaseContract } from '@0x/base-contract';
-import { BlockParam, BlockParamLiteral, CallData, ContractAbi, ContractArtifact, DecodedLogArgs, MethodAbi, TxData, TxDataPayable, SupportedProvider } from 'ethereum-types';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { schemas } from '@0x/json-schemas';
+import {
+    BlockParam,
+    BlockParamLiteral,
+    CallData,
+    ContractAbi,
+    ContractArtifact,
+    DecodedLogArgs,
+    MethodAbi,
+    TransactionReceiptWithDecodedLogs,
+    TxData,
+    TxDataPayable,
+    SupportedProvider,
+} from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
 import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
+import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 
@@ -23,6 +36,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
         > {
+
+            assert.isString('takerAddress', takerAddress);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
         takerAddress
@@ -53,6 +76,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[BigNumber, BigNumber]
         > {
+            assert.isString('target', target);
+            assert.isString('assetData', assetData);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getBalanceAndAllowance(address,bytes)', [target,
         assetData
@@ -83,6 +116,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
         > {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
         takerAddresses
@@ -113,6 +156,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
         > {
+            assert.isArray('orders', orders);
+            assert.isArray('takerAddresses', takerAddresses);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])', [orders,
         takerAddresses
@@ -143,6 +196,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<string
         > {
+            assert.isString('token', token);
+            assert.isBigNumber('tokenId', tokenId);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [token,
         tokenId
@@ -173,6 +236,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<[BigNumber[], BigNumber[]]
         > {
+            assert.isString('target', target);
+            assert.isArray('assetData', assetData);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getBalancesAndAllowances(address,bytes[])', [target,
         assetData
@@ -203,6 +276,16 @@ export class OrderValidatorContract extends BaseContract {
             defaultBlock?: BlockParam,
         ): Promise<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
         > {
+
+            assert.isString('takerAddress', takerAddress);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
             const self = this as any as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)', [order,
         takerAddress
@@ -232,7 +315,12 @@ export class OrderValidatorContract extends BaseContract {
             _exchange: string,
             _zrxAssetData: string,
     ): Promise<OrderValidatorContract> {
-        if (_.isUndefined(artifact.compilerOutput)) {
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
+        if (artifact.compilerOutput === undefined) {
             throw new Error('Compiler output not found in the artifact file');
         }
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -250,6 +338,12 @@ _zrxAssetData
             _exchange: string,
             _zrxAssetData: string,
     ): Promise<OrderValidatorContract> {
+        assert.isHexString('bytecode', bytecode);
+        assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
+            schemas.addressSchema,
+            schemas.numberSchema,
+            schemas.jsNumber,
+        ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
         [_exchange,
@@ -283,8 +377,9 @@ _zrxAssetData
         return contractInstance;
     }
     constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('OrderValidator', abi, address, providerUtils.standardizeOrThrow(supportedProvider), txDefaults);
+        super('OrderValidator', abi, address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
     }
 } // tslint:disable:max-file-line-count
-// tslint:enable:no-unbound-method
+// tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
+// tslint:enable:trailing-comma whitespace no-trailing-whitespace

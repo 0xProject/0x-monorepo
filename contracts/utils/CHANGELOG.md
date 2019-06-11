@@ -5,6 +5,38 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.6 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v3.1.5 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v3.1.4 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v3.1.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v3.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v3.1.0 - _March 21, 2019_
+
+    * Added `startProviderEngine` to `providerUtils`. Preventing excess block polling (#1695)
+
+## v3.0.0 - _March 20, 2019_
+
+    * Optimize loops in LibAddressArray (#1668)
+    * Upgrade contracts to Solidity 0.5.5 (#1682)
+    * Added Address.sol with test for whether or not an address is a contract (#1657)
+    * Add unit tests for `LibAddressArray` (#1712)
+    * Fix `LibAddressArray.indexOf` returning incorrect index. (#1712)
+
 ## v2.0.8 - _March 1, 2019_
 
     * Dependencies updated

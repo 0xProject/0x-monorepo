@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.5 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v3.1.4 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v3.1.3 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v3.1.2 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v3.1.1 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v3.1.0 - _March 21, 2019_
+
+    * Run Web3ProviderEngine without excess block polling (#1695)
+
+## v3.0.0 - _March 20, 2019_
+
+    * Do not reexport external dependencies (#1682)
+    * Upgrade contracts to Solidity 0.5.5 (#1682)
+
 ## v2.0.8 - _March 1, 2019_
 
     * Dependencies updated

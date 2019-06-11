@@ -60,7 +60,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
     }
     private async _printStackTraceAsync(evmCallStack: EvmCallStack): Promise<void> {
         const sourceSnippets: SourceSnippet[] = [];
-        if (_.isUndefined(this._contractsData)) {
+        if (this._contractsData === undefined) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
         for (const evmCallStackEntry of evmCallStack) {
@@ -71,7 +71,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             }
             const bytecode = await this._web3Wrapper.getContractCodeAsync(evmCallStackEntry.address);
             const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
-            if (_.isUndefined(contractData)) {
+            if (contractData === undefined) {
                 const shortenHex = (hex: string) => {
                     /**
                      * Length choosen so that both error messages are of the same length
@@ -106,11 +106,11 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
             // actually happens in assembly). In that case, we want to keep
             // searching backwards by decrementing the pc until we find a
             // mapped source range.
-            while (_.isUndefined(sourceRange) && pc > 0) {
+            while (sourceRange === undefined && pc > 0) {
                 sourceRange = pcToSourceRange[pc];
                 pc -= 1;
             }
-            if (_.isUndefined(sourceRange)) {
+            if (sourceRange === undefined) {
                 this._logger.warn(
                     `could not find matching sourceRange for structLog: ${JSON.stringify(
                         _.omit(evmCallStackEntry.structLog, 'stack'),

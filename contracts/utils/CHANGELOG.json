@@ -1,11 +1,62 @@
 [
     {
-        "version": "3.0.0",
+        "timestamp": 1558712885,
+        "version": "3.1.6",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557961111,
+        "version": "3.1.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.1.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "3.1.0",
+        "changes": [
+            {
+                "note": "Added `startProviderEngine` to `providerUtils`. Preventing excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
             {
                 "note": "Optimize loops in LibAddressArray",
                 "pr": 1668
@@ -17,8 +68,17 @@
             {
                 "note": "Added Address.sol with test for whether or not an address is a contract",
                 "pr": 1657
+            },
+            {
+                "note": "Add unit tests for `LibAddressArray`",
+                "pr": 1712
+            },
+            {
+                "note": "Fix `LibAddressArray.indexOf` returning incorrect index.",
+                "pr": 1712
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

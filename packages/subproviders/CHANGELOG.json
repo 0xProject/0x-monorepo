@@ -1,5 +1,56 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Improve performance of Trezor subprovider via caching",
+                "pr": 1830
+            },
+            {
+                "note": "Add Trezor handware wallet subprovider",
+                "pr": 1431
+            }
+        ],
+        "timestamp": 1558712885
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "4.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "timestamp": 1553183790,
+        "version": "4.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "4.0.3",
+        "changes": [
+            {
+                "note": "Update ganache-core to 2.5.3",
+                "pr": 1707
+            }
+        ],
+        "timestamp": 1553091633
+    },
+    {
         "timestamp": 1551479279,
         "version": "4.0.2",
         "changes": [

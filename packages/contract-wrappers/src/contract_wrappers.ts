@@ -1,4 +1,5 @@
 import {
+    Coordinator,
     DutchAuction,
     ERC20Proxy,
     ERC20Token,
@@ -14,6 +15,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
+import { CoordinatorWrapper } from './contract_wrappers/coordinator_wrapper';
 import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
 import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
 import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
@@ -73,6 +75,11 @@ export class ContractWrappers {
      */
     public dutchAuction: DutchAuctionWrapper;
 
+    /**
+     * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
+     */
+    public coordinator: CoordinatorWrapper;
+
     private readonly _web3Wrapper: Web3Wrapper;
     /**
      * Instantiates a new ContractWrappers instance.
@@ -88,6 +95,7 @@ export class ContractWrappers {
         };
         this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
         const artifactsArray = [
+            Coordinator,
             DutchAuction,
             ERC20Proxy,
             ERC20Token,
@@ -101,12 +109,14 @@ export class ContractWrappers {
         _.forEach(artifactsArray, artifact => {
             this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
-        const blockPollingIntervalMs = _.isUndefined(config.blockPollingIntervalMs)
-            ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
-            : config.blockPollingIntervalMs;
-        const contractAddresses = _.isUndefined(config.contractAddresses)
-            ? _getDefaultContractAddresses(config.networkId)
-            : config.contractAddresses;
+        const blockPollingIntervalMs =
+            config.blockPollingIntervalMs === undefined
+                ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
+                : config.blockPollingIntervalMs;
+        const contractAddresses =
+            config.contractAddresses === undefined
+                ? _getDefaultContractAddresses(config.networkId)
+                : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
         this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
         this.erc20Token = new ERC20TokenWrapper(
@@ -152,6 +162,13 @@ export class ContractWrappers {
             this._web3Wrapper,
             config.networkId,
             contractAddresses.dutchAuction,
+        );
+        this.coordinator = new CoordinatorWrapper(
+            this._web3Wrapper,
+            config.networkId,
+            contractAddresses.coordinator,
+            contractAddresses.exchange,
+            contractAddresses.coordinatorRegistry,
         );
     }
     /**

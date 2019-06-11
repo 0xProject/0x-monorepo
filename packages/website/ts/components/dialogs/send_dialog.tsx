@@ -132,6 +132,6 @@ export class SendDialog extends React.Component<SendDialogProps, SendDialogState
         this.props.onCancelled();
     }
     private _hasErrors(): boolean {
-        return _.isUndefined(this.state.recipient) || _.isUndefined(this.state.value) || !this.state.isAmountValid;
+        return this.state.recipient === undefined || this.state.value === undefined || !this.state.isAmountValid;
     }
 }

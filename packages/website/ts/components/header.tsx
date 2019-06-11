@@ -9,13 +9,13 @@ import Headroom from 'react-headroom';
 import { Button } from 'ts/components/button';
 import { DropdownDevelopers } from 'ts/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
+import { DropdownResources } from 'ts/components/dropdowns/dropdown_resources';
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
 interface HeaderProps {
     location?: Location;
@@ -30,7 +30,6 @@ interface NavItemProps {
     text?: string;
     dropdownWidth?: number;
     dropdownComponent?: React.FunctionComponent<any>;
-    shouldOpenInNewTab?: boolean;
 }
 
 interface DropdownWrapInterface {
@@ -56,15 +55,15 @@ const navItems: NavItemProps[] = [
         dropdownWidth: 480,
     },
     {
+        id: 'resources',
+        text: 'Resources',
+        dropdownComponent: DropdownResources,
+        dropdownWidth: 270,
+    },
+    {
         id: 'about',
         url: WebsitePaths.AboutMission,
         text: 'About',
-    },
-    {
-        id: 'blog',
-        url: constants.URL_BLOG,
-        shouldOpenInNewTab: true,
-        text: 'Blog',
     },
 ];
 
@@ -79,7 +78,12 @@ class HeaderBase extends React.Component<HeaderProps> {
         const { isNavToggled, toggleMobileNav, theme } = this.props;
 
         return (
-            <Headroom onUnpin={this.onUnpin} downTolerance={4} upTolerance={10}>
+            <Headroom
+                onUnpin={this.onUnpin}
+                downTolerance={4}
+                upTolerance={10}
+                wrapperStyle={{ position: 'relative', zIndex: 2 }}
+            >
                 <StyledHeader isNavToggled={isNavToggled}>
                     <HeaderWrap>
                         <Link to={WebsitePaths.Home}>
@@ -93,7 +97,7 @@ class HeaderBase extends React.Component<HeaderProps> {
                         </NavLinks>
 
                         <MediaQuery minWidth={990}>
-                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" href="/portal">
+                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" to="/explore">
                                 Trade on 0x
                             </TradeButton>
                         </MediaQuery>
@@ -112,13 +116,12 @@ export const Header = withTheme(HeaderBase);
 const NavItem = (props: { link: NavItemProps; key: string }) => {
     const { link } = props;
     const Subnav = link.dropdownComponent;
-    const linkElement = _.isUndefined(link.url) ? (
-        <StyledAnchor href="#">{link.text}</StyledAnchor>
-    ) : (
-        <StyledNavLink to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
-            {link.text}
-        </StyledNavLink>
-    );
+    const linkElement =
+        link.url === undefined ? (
+            <StyledAnchor href="#">{link.text}</StyledAnchor>
+        ) : (
+            <StyledNavLink to={link.url}>{link.text}</StyledNavLink>
+        );
     return (
         <LinkWrap>
             {linkElement}

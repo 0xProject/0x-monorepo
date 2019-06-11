@@ -1,10 +1,83 @@
 [
     {
-        "version": "0.0.1",
+        "timestamp": 1558712885,
+        "version": "2.0.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557961111,
+        "version": "2.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557799313,
+        "version": "2.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "2.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "Make `decodeOrdersFromFillData`, `getCoordinatorApprovalHash`, and `getTransactionHash` public",
+                "pr": 1729
+            },
+            {
+                "note": "Make `assertValidTransactionOrdersApproval` internal",
+                "pr": 1729
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "1.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "1.0.0",
         "changes": [
             {
                 "note": "Created Coordinator package"
+            },
+            {
+                "note": "Use separate EIP712 domains for transactions and approvals",
+                "pr": 1705
+            },
+            {
+                "note": "Add `SignatureType.Invalid`",
+                "pr": 1705
+            },
+            {
+                "note": "Set `evmVersion` to `constantinople`",
+                "pr": 1707
             }
-        ]
+        ],
+        "timestamp": 1553091633
     }
 ]

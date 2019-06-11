@@ -22,7 +22,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
     private static _decodeWidthFromType(type: string): number {
         const matches = StaticBytesDataType._MATCHER.exec(type);
         const width =
-            !_.isNull(matches) && matches.length === 3 && !_.isUndefined(matches[2])
+            matches !== null && matches.length === 3 && matches[2] !== undefined
                 ? parseInt(matches[2], constants.DEC_BASE)
                 : StaticBytesDataType._DEFAULT_WIDTH;
         return width;
@@ -68,7 +68,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
     private _sanityCheckValue(value: string | Buffer): void {
         if (typeof value === 'string') {
             if (!_.startsWith(value, '0x')) {
-                throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
+                throw new Error(`Tried to encode non-hex value. Value must include '0x' prefix.`);
             } else if (value.length % 2 !== 0) {
                 throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
             }

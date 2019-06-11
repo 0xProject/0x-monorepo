@@ -37,7 +37,7 @@ export class MultiSelect extends React.Component<MultiSelectProps> {
                         renderItemContent={item.renderItemContent}
                         backgroundColor={backgroundColor}
                         onClick={item.onClick}
-                        isSelected={_.isUndefined(selectedValues) || _.includes(selectedValues, item.value)}
+                        isSelected={selectedValues === undefined || _.includes(selectedValues, item.value)}
                     />
                 ))}
             </Container>

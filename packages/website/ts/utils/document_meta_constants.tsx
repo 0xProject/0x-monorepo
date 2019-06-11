@@ -11,6 +11,11 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
             '0x is an open protocol that enables the peer-to-peer exchange of assets on the Ethereum blockchain.',
         keywords: '',
     },
+    EXPLORE: {
+        title: '0x Explore: Trade on 0x Relayers',
+        description: 'Check out the wide range of projects and businesses building in the 0x ecosystem!',
+        keywords: '',
+    },
     WHY: {
         title: '0x: Features and Benefits',
         description:
@@ -23,8 +28,9 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         keywords: '',
     },
     LAUNCH_KIT: {
-        title: '0x Launch Kit: Launch a relayer in under a minute',
-        description: 'Launch Kit includes a set of tools and documentation to build a relayer on 0x.',
+        title: '0x Launch Kit: Launch your own exchange or marketplace in minutes',
+        description:
+            'Launch Kit includes a set of tools, UI and documentation to build an exchange or marketplace in minutes on 0x.',
         keywords: '',
     },
     ABOUT: {

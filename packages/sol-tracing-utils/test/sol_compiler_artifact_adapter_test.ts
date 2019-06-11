@@ -16,6 +16,7 @@ describe('SolCompilerArtifactAdapter', () => {
             const contractsData = await zeroExArtifactsAdapter.collectContractsDataAsync();
             _.forEach(contractsData, contractData => {
                 expect(contractData).to.have.keys([
+                    'name',
                     'sourceCodes',
                     'sources',
                     'sourceMap',

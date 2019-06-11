@@ -36,7 +36,7 @@ export class DocsInfo {
         this.contractsByVersionByNetworkId = config.contractsByVersionByNetworkId;
     }
     public getTypeDefinitionsByName(docAgnosticFormat: DocAgnosticFormat): ObjectMap<TypeDefinitionByName> {
-        if (_.isUndefined(docAgnosticFormat[this.typeSectionName])) {
+        if (docAgnosticFormat[this.typeSectionName] === undefined) {
             return {};
         }
 
@@ -58,14 +58,14 @@ export class DocsInfo {
             });
         });
 
-        if (_.isUndefined(docAgnosticFormat)) {
+        if (docAgnosticFormat === undefined) {
             return sectionNameToLinks;
         }
 
         const docSections = _.keys(this.sections);
         _.each(docSections, sectionName => {
             const docSection = docAgnosticFormat[sectionName];
-            if (_.isUndefined(docSection) || sectionName === constants.EXTERNAL_EXPORTS_SECTION_NAME) {
+            if (docSection === undefined || sectionName === constants.EXTERNAL_EXPORTS_SECTION_NAME) {
                 return; // no-op
             }
 
@@ -91,7 +91,7 @@ export class DocsInfo {
                 // Noop so that we don't have the method listed underneath itself.
             } else {
                 let eventNames: string[] = [];
-                if (!_.isUndefined(docSection.events)) {
+                if (docSection.events !== undefined) {
                     const sortedEventNames = _.sortBy(docSection.events, 'name');
                     eventNames = _.map(sortedEventNames, m => m.name);
                 }

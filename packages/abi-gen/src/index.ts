@@ -68,6 +68,7 @@ function registerPartials(partialsGlob: string): void {
 }
 
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
+Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 if (args.partials) {
     registerPartials(args.partials);
@@ -92,12 +93,12 @@ for (const abiFileName of abiFileNames) {
     let ABI;
     if (_.isArray(parsedContent)) {
         ABI = parsedContent; // ABI file
-    } else if (!_.isUndefined(parsedContent.abi)) {
+    } else if (parsedContent.abi !== undefined) {
         ABI = parsedContent.abi; // Truffle artifact
-    } else if (!_.isUndefined(parsedContent.compilerOutput.abi)) {
+    } else if (parsedContent.compilerOutput.abi !== undefined) {
         ABI = parsedContent.compilerOutput.abi; // 0x artifact
     }
-    if (_.isUndefined(ABI)) {
+    if (ABI === undefined) {
         logUtils.log(`${chalk.red(`ABI not found in ${abiFileName}.`)}`);
         logUtils.log(
             `Please make sure your ABI file is either an array with ABI entries or a truffle artifact or 0x sol-compiler artifact`,
@@ -114,7 +115,7 @@ for (const abiFileName of abiFileNames) {
     }
 
     let ctor = ABI.find((abi: AbiDefinition) => abi.type === ABI_TYPE_CONSTRUCTOR) as ConstructorAbi;
-    if (_.isUndefined(ctor)) {
+    if (ctor === undefined) {
         ctor = utils.getEmptyConstructor(); // The constructor exists, but it's implicit in JSON's ABI definition
     }
 

@@ -5,5 +5,3 @@
  */
 export * from '../generated-wrappers/coordinator';
 export * from '../generated-wrappers/coordinator_registry';
-export * from '../generated-wrappers/test_libs';
-export * from '../generated-wrappers/test_mixins';

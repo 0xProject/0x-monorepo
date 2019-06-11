@@ -41,7 +41,6 @@ describe('Metacoin', () => {
             const amount = INITIAL_BALANCE.div(2);
             const oldBalance = await metacoin.balances.callAsync(ZERO_ADDRESS);
             expect(oldBalance).to.be.bignumber.equal(0);
-            // profiler.start();
             const txHash = await metacoin.transfer1.sendTransactionAsync(
                 {
                     to: ZERO_ADDRESS,

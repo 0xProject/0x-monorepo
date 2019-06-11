@@ -8,7 +8,6 @@
         "generated-artifacts/Exchange.json",
         "generated-artifacts/ExchangeWrapper.json",
         "generated-artifacts/OrderMatcher.json",
-        "generated-artifacts/OrderValidator.json",
         "generated-artifacts/WETH9.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

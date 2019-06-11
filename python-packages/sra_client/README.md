@@ -2,6 +2,8 @@
 
 A Python client for interacting with servers conforming to [the Standard Relayer API specification](https://github.com/0xProject/0x-monorepo/tree/development/packages/sra-spec).
 
+Read the [documentation](http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/)
+
 # Schemas
 
 The [JSON schemas](http://json-schema.org/) for the API payloads and responses can be found in [@0xproject/json-schemas](https://github.com/0xProject/0x-monorepo/tree/development/packages/json-schemas). Examples of each payload and response can be found in the 0x.js library's [test suite](https://github.com/0xProject/0x-monorepo/blob/development/packages/json-schemas/test/schema_test.ts#L1).
@@ -293,6 +295,40 @@ try:
 except ApiException as e:
     print("Exception when calling DefaultApi->get_asset_pairs: %s\n" % e)
 ```
+
+## Contributing
+
+We welcome improvements and fixes from the wider community! To report bugs within this package, please create an issue in this repository.
+
+Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
+
+### Install Code and Dependencies
+
+Ensure that you have installed Python >=3.6, Docker, and docker-compose. Then:
+
+```bash
+pip install -e .[dev]
+```
+
+### Test
+
+Tests depend on a running instance of 0x-launch-kit-backend, backed by a Ganache node with the 0x contracts deployed in it. For convenience, a docker-compose file is provided that creates this environment. And a shortcut is provided to interface with that file: `./setup.py start_test_relayer` will start those services. With them running, the tests can be run with `./setup.py test`. When you're done with testing, you can `./setup.py stop_test_relayer`.
+
+### Clean
+
+`./setup.py clean --all`
+
+### Lint
+
+`./setup.py lint`
+
+### Build Documentation
+
+`./setup.py build_sphinx`
+
+### More
+
+See `./setup.py --help-commands` for more info.
 
 ## Documentation for API Endpoints
 

@@ -1,16 +1,69 @@
 [
     {
-        "version": "2.0.0",
+        "timestamp": 1558712885,
+        "version": "2.2.5",
         "changes": [
             {
-                "note": "Set evmVersion to byzantium",
-                "pr": 1678
-            },
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557961111,
+        "version": "2.2.4",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "timestamp": 1557507213,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Added UntransferrableDummyERC20Token",
+                "pr": 1714
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Run Web3ProviderEngine without excess block polling",
+                "pr": 1695
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
+        "version": "2.0.0",
+        "changes": [
             {
                 "note": "Upgrade contracts to Solidity 0.5.5",
                 "pr": 1682
             }
-        ]
+        ],
+        "timestamp": 1553091633
     },
     {
         "timestamp": 1551479279,

@@ -1,6 +1,6 @@
 import { BigNumber } from '@0x/utils';
 
-export enum OrderError {
+export enum TypedDataError {
     InvalidSignature = 'INVALID_SIGNATURE',
     InvalidMetamaskSigner = "MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0x/subproviders' package) in order to work with this method.",
 }

@@ -1,10 +1,9 @@
-import { AssetProxyId } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 import { Dispatch } from 'redux';
 
 import { BIG_NUMBER_ZERO } from '../constants';
-import { AccountState, BaseCurrency, ERC20Asset, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
+import { AccountState, BaseCurrency, OrderProcessState, ProviderState, QuoteFetchOrigin } from '../types';
 import { analytics } from '../util/analytics';
 import { assetUtils } from '../util/asset';
 import { buyQuoteUpdater } from '../util/buy_quote_updater';
@@ -59,7 +58,7 @@ export const asyncData = {
         let availableAddresses: string[];
         try {
             // TODO(bmillman): Add support at the web3Wrapper level for calling `eth_requestAccounts` instead of calling enable here
-            const isPrivacyModeEnabled = !_.isUndefined((provider as any).enable);
+            const isPrivacyModeEnabled = (provider as any).enable !== undefined;
             availableAddresses =
                 isPrivacyModeEnabled && shouldAttemptUnlock
                     ? await (provider as any).enable()
@@ -97,16 +96,15 @@ export const asyncData = {
         const { buyOrderState, providerState, selectedAsset, selectedAssetUnitAmount, affiliateInfo } = state;
         const assetBuyer = providerState.assetBuyer;
         if (
-            !_.isUndefined(selectedAssetUnitAmount) &&
-            !_.isUndefined(selectedAsset) &&
+            selectedAssetUnitAmount !== undefined &&
+            selectedAsset !== undefined &&
             selectedAssetUnitAmount.isGreaterThan(BIG_NUMBER_ZERO) &&
-            buyOrderState.processState === OrderProcessState.None &&
-            selectedAsset.metaData.assetProxyId === AssetProxyId.ERC20
+            buyOrderState.processState === OrderProcessState.None
         ) {
             await buyQuoteUpdater.updateBuyQuoteAsync(
                 assetBuyer,
                 dispatch,
-                selectedAsset as ERC20Asset,
+                selectedAsset,
                 selectedAssetUnitAmount,
                 fetchOrigin,
                 {

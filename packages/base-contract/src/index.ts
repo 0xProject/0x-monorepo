@@ -1,8 +1,11 @@
-import { AbiEncoder, abiUtils, BigNumber } from '@0x/utils';
+import { assert } from '@0x/assert';
+import { schemas } from '@0x/json-schemas';
+import { AbiEncoder, abiUtils, BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import {
     AbiDefinition,
     AbiType,
+    CallData,
     ConstructorAbi,
     ContractAbi,
     DataItem,
@@ -18,6 +21,28 @@ import { formatABIDataItem } from './utils';
 
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
+}
+
+// tslint:disable: max-classes-per-file
+/**
+ * @dev A promise-compatible type that exposes a `txHash` field.
+ *      Not used by BaseContract, but generated contracts will return it in
+ *      `awaitTransactionSuccessAsync()`.
+ *      Maybe there's a better place for this.
+ */
+export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
+    public readonly txHashPromise: Promise<string>;
+    private readonly _promise: Promise<T>;
+    constructor(txHashPromise: Promise<string>, promise: Promise<T>) {
+        this.txHashPromise = txHashPromise;
+        this._promise = promise;
+    }
+    public then<TResult>(
+        onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,
+        onRejected?: (reason: any) => PromiseLike<never>,
+    ): PromiseLike<TResult> {
+        return this._promise.then<TResult>(onFulfilled, onRejected);
+    }
 }
 
 const REVERT_ERROR_SELECTOR = '08c379a0';
@@ -51,7 +76,7 @@ export class BaseContract {
             (abiDefinition: AbiDefinition) => abiDefinition.type === AbiType.Constructor,
             // tslint:disable-next-line:no-unnecessary-type-assertion
         ) as ConstructorAbi | undefined;
-        if (!_.isUndefined(constructorAbiIfExists)) {
+        if (constructorAbiIfExists !== undefined) {
             return constructorAbiIfExists;
         } else {
             // If the constructor is not explicitly defined, it won't be included in the ABI. It is
@@ -67,7 +92,7 @@ export class BaseContract {
     }
     protected static async _applyDefaultsToTxDataAsync<T extends Partial<TxData | TxDataPayable>>(
         txData: T,
-        txDefaults: Partial<TxData>,
+        txDefaults: Partial<TxData> | undefined,
         estimateGasAsync?: (txData: T) => Promise<number>,
     ): Promise<TxData> {
         // Gas amount sourced with the following priorities:
@@ -75,11 +100,12 @@ export class BaseContract {
         // 2. Global config passed in at library instantiation
         // 3. Gas estimate calculation + safety margin
         const removeUndefinedProperties = _.pickBy.bind(_);
+        const finalTxDefaults: Partial<TxData> = txDefaults || {};
         const txDataWithDefaults = {
-            ...removeUndefinedProperties(txDefaults),
+            ...removeUndefinedProperties(finalTxDefaults),
             ...removeUndefinedProperties(txData),
         };
-        if (_.isUndefined(txDataWithDefaults.gas) && !_.isUndefined(estimateGasAsync)) {
+        if (txDataWithDefaults.gas === undefined && estimateGasAsync !== undefined) {
             txDataWithDefaults.gas = await estimateGasAsync(txDataWithDefaults);
         }
         return txDataWithDefaults;
@@ -122,7 +148,7 @@ export class BaseContract {
     }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
-        if (_.isUndefined(abiEncoder)) {
+        if (abiEncoder === undefined) {
             throw new Error(`Failed to lookup method with function signature '${functionSignature}'`);
         }
         return abiEncoder;
@@ -155,10 +181,20 @@ export class BaseContract {
         abi: ContractAbi,
         address: string,
         supportedProvider: SupportedProvider,
-        txDefaults?: Partial<TxData>,
+        callAndTxnDefaults?: Partial<CallData>,
     ) {
+        assert.isString('contractName', contractName);
+        assert.isETHAddressHex('address', address);
+        const provider = providerUtils.standardizeOrThrow(supportedProvider);
+        if (callAndTxnDefaults !== undefined) {
+            assert.doesConformToSchema('callAndTxnDefaults', callAndTxnDefaults, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+        }
         this.contractName = contractName;
-        this._web3Wrapper = new Web3Wrapper(supportedProvider, txDefaults);
+        this._web3Wrapper = new Web3Wrapper(provider, callAndTxnDefaults);
         this.abi = abi;
         this.address = address;
         const methodAbis = this.abi.filter(

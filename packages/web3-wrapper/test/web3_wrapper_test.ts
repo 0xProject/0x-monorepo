@@ -35,7 +35,7 @@ describe('Web3Wrapper tests', () => {
     describe('#getNodeVersionAsync', () => {
         it('gets the node version', async () => {
             const nodeVersion = await web3Wrapper.getNodeVersionAsync();
-            const NODE_VERSION = 'EthereumJS TestRPC/v2.3.3/ethereum-js';
+            const NODE_VERSION = 'EthereumJS TestRPC/v2.5.3/ethereum-js';
             expect(nodeVersion).to.be.equal(NODE_VERSION);
         });
     });
@@ -114,7 +114,7 @@ describe('Web3Wrapper tests', () => {
         it('gets block when supplied a valid BlockParamLiteral value', async () => {
             const blockParamLiteral = BlockParamLiteral.Earliest;
             const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
-            if (_.isUndefined(blockIfExists)) {
+            if (blockIfExists === undefined) {
                 throw new Error('Expected block to exist');
             }
             expect(blockIfExists.number).to.be.equal(0);
@@ -124,7 +124,7 @@ describe('Web3Wrapper tests', () => {
         it('gets block when supplied a block number', async () => {
             const blockParamLiteral = 0;
             const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
-            if (_.isUndefined(blockIfExists)) {
+            if (blockIfExists === undefined) {
                 throw new Error('Expected block to exist');
             }
             expect(blockIfExists.number).to.be.equal(0);
@@ -132,11 +132,11 @@ describe('Web3Wrapper tests', () => {
         it('gets block when supplied a block hash', async () => {
             const blockParamLiteral = 0;
             const blockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockParamLiteral);
-            if (_.isUndefined(blockIfExists)) {
+            if (blockIfExists === undefined) {
                 throw new Error('Expected block to exist');
             }
             const sameBlockIfExists = await web3Wrapper.getBlockIfExistsAsync(blockIfExists.hash as string);
-            if (_.isUndefined(sameBlockIfExists)) {
+            if (sameBlockIfExists === undefined) {
                 throw new Error('Expected block to exist');
             }
             expect(sameBlockIfExists.number).to.be.equal(0);

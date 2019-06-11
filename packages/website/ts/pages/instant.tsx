@@ -146,7 +146,7 @@ export class Next0xInstant extends React.Component<Props> {
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
 
-                <Section maxWidth="1170px" isPadded={false} padding="60px 0">
+                <Section maxWidth="1170px" isPadded={true} padding="60px 0">
                     <Paragraph size="small" isMuted={0.5}>
                         Disclaimer: The laws and regulations applicable to the use and exchange of digital assets and
                         blockchain-native tokens, including through any software developed using the licensed work

@@ -1,5 +1,38 @@
 [
     {
+        "version": "2.3.3",
+        "changes": [
+            {
+                "note": "Redeploy Coordinator contract",
+                "pr": 1812
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
+        "version": "2.3.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1554997931
+    },
+    {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add addresses for coordinator extension contract and coordinator registry",
+                "pr": 1689
+            },
+            {
+                "note": "Added Dutch Auction mainnet address",
+                "pr": 1715
+            }
+        ],
+        "timestamp": 1553183790
+    },
+    {
         "version": "2.2.2",
         "changes": [
             {

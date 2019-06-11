@@ -79,8 +79,8 @@ export interface IconProps {
 }
 const PlainIcon: React.StatelessComponent<IconProps> = props => {
     const iconInfo = ICONS[props.icon];
-    const colorValue = _.isUndefined(props.color) ? undefined : props.theme[props.color];
-    const strokeValue = _.isUndefined(props.stroke) ? undefined : props.theme[props.stroke];
+    const colorValue = props.color === undefined ? undefined : props.theme[props.color];
+    const strokeValue = props.stroke === undefined ? undefined : props.theme[props.stroke];
     return (
         <div onClick={props.onClick} className={props.className}>
             <svg
@@ -109,10 +109,10 @@ const PlainIcon: React.StatelessComponent<IconProps> = props => {
 export const Icon = withTheme(styled(PlainIcon)`
     && {
         display: inline-block;
-        ${props => (!_.isUndefined(props.onClick) ? 'cursor: pointer' : '')};
+        ${props => (props.onClick !== undefined ? 'cursor: pointer' : '')};
         transition: opacity 0.5s ease;
         padding: ${props => props.padding};
-        opacity: ${props => (!_.isUndefined(props.onClick) ? 0.7 : 1)};
+        opacity: ${props => (props.onClick !== undefined ? 0.7 : 1)};
         &:hover {
             opacity: 1;
         }

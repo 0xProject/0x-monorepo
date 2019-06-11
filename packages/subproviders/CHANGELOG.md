@@ -5,6 +5,27 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.0 - _May 24, 2019_
+
+    * Improve performance of Trezor subprovider via caching (#1830)
+    * Add Trezor handware wallet subprovider (#1431)
+
+## v4.0.6 - _May 10, 2019_
+
+    * Dependencies updated
+
+## v4.0.5 - _April 11, 2019_
+
+    * Dependencies updated
+
+## v4.0.4 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v4.0.3 - _March 20, 2019_
+
+    * Update ganache-core to 2.5.3 (#1707)
+
 ## v4.0.2 - _March 1, 2019_
 
     * Dependencies updated

@@ -163,6 +163,7 @@ export enum AssetProxyId {
     ERC20 = '0xf47261b0',
     ERC721 = '0x02571792',
     MultiAsset = '0x94cfcdd7',
+    ERC1155 = '0xa7cb5fb7',
 }
 
 export interface ERC20AssetData {
@@ -176,7 +177,29 @@ export interface ERC721AssetData {
     tokenId: BigNumber;
 }
 
-export type SingleAssetData = ERC20AssetData | ERC721AssetData;
+export interface ERC1155AssetData {
+    assetProxyId: string;
+    tokenAddress: string;
+    tokenIds: BigNumber[];
+    tokenValues: BigNumber[];
+    callbackData: string;
+}
+
+export interface ERC1155AssetDataNoProxyId {
+    tokenAddress: string;
+    tokenValues: BigNumber[];
+    tokenIds: BigNumber[];
+    callbackData: string;
+}
+
+export const ERC1155AssetDataAbi = [
+    { name: 'tokenAddress', type: 'address' },
+    { name: 'tokenIds', type: 'uint256[]' },
+    { name: 'tokenValues', type: 'uint256[]' },
+    { name: 'callbackData', type: 'bytes' },
+];
+
+export type SingleAssetData = ERC20AssetData | ERC721AssetData | ERC1155AssetData;
 
 export interface MultiAssetData {
     assetProxyId: string;
@@ -204,6 +227,7 @@ export enum RevertReason {
     RoundingError = 'ROUNDING_ERROR',
     InvalidSignature = 'INVALID_SIGNATURE',
     SignatureIllegal = 'SIGNATURE_ILLEGAL',
+    SignatureInvalid = 'SIGNATURE_INVALID',
     SignatureUnsupported = 'SIGNATURE_UNSUPPORTED',
     TakerOverpay = 'TAKER_OVERPAY',
     OrderOverfill = 'ORDER_OVERFILL',
@@ -259,6 +283,8 @@ export enum RevertReason {
     TxFullyConfirmed = 'TX_FULLY_CONFIRMED',
     TxNotFullyConfirmed = 'TX_NOT_FULLY_CONFIRMED',
     TimeLockIncomplete = 'TIME_LOCK_INCOMPLETE',
+    // LibAddressArray
+    InvalidFreeMemoryPtr = 'INVALID_FREE_MEMORY_PTR',
     // DutchAuction
     AuctionInvalidAmount = 'INVALID_AMOUNT',
     AuctionExpired = 'AUCTION_EXPIRED',
@@ -286,6 +312,10 @@ export enum RevertReason {
     TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
     TransferRejected = 'TRANSFER_REJECTED',
     Uint256Underflow = 'UINT256_UNDERFLOW',
+    InvalidIdsOffset = 'INVALID_IDS_OFFSET',
+    InvalidValuesOffset = 'INVALID_VALUES_OFFSET',
+    InvalidDataOffset = 'INVALID_DATA_OFFSET',
+    InvalidAssetDataLength = 'INVALID_ASSET_DATA_LENGTH',
 }
 
 export enum StatusCodes {

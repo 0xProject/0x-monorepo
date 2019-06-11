@@ -25,7 +25,7 @@ export const assetUtils = {
         network: Network,
     ): Asset | undefined => {
         const metaData = assetUtils.getMetaDataIfExists(assetData, assetMetaDataMap, network);
-        if (_.isUndefined(metaData)) {
+        if (metaData === undefined) {
             return;
         }
         return {
@@ -45,7 +45,7 @@ export const assetUtils = {
     },
     getMetaDataOrThrow: (assetData: string, metaDataMap: ObjectMap<AssetMetaData>, network: Network): AssetMetaData => {
         const metaDataIfExists = assetUtils.getMetaDataIfExists(assetData, metaDataMap, network);
-        if (_.isUndefined(metaDataIfExists)) {
+        if (metaDataIfExists === undefined) {
             throw new Error(ZeroExInstantError.AssetMetaDataNotAvailable);
         }
         return metaDataIfExists;
@@ -65,17 +65,17 @@ export const assetUtils = {
             // but pass in a valid mainnet assetData.
             mainnetAssetData = mainnetAssetDataIfExists || assetData;
         }
-        if (_.isUndefined(mainnetAssetData)) {
+        if (mainnetAssetData === undefined) {
             return;
         }
         const metaData = metaDataMap[mainnetAssetData.toLowerCase()];
-        if (_.isUndefined(metaData)) {
+        if (metaData === undefined) {
             return;
         }
         return metaData;
     },
     bestNameForAsset: (asset?: Asset, defaultName: string = DEFAULT_UNKOWN_ASSET_NAME): string => {
-        if (_.isUndefined(asset)) {
+        if (asset === undefined) {
             return defaultName;
         }
         const metaData = asset.metaData;
@@ -87,7 +87,7 @@ export const assetUtils = {
         }
     },
     formattedSymbolForAsset: (asset?: ERC20Asset, defaultName: string = '???'): string => {
-        if (_.isUndefined(asset)) {
+        if (asset === undefined) {
             return defaultName;
         }
         const symbol = asset.metaData.symbol;
@@ -98,7 +98,7 @@ export const assetUtils = {
     },
     getAssociatedAssetDataIfExists: (assetData: string, network: Network): string | undefined => {
         const assetDataGroupIfExists = _.find(assetDataNetworkMapping, value => value[network] === assetData);
-        if (_.isUndefined(assetDataGroupIfExists)) {
+        if (assetDataGroupIfExists === undefined) {
             return;
         }
         return assetDataGroupIfExists[Network.Mainnet];
@@ -109,17 +109,17 @@ export const assetUtils = {
         );
         return _.compact(erc20sOrUndefined);
     },
-    assetBuyerErrorMessage: (asset: ERC20Asset, error: Error): string | undefined => {
+    assetBuyerErrorMessage: (asset: Asset, error: Error): string | undefined => {
         if (error.message === AssetBuyerError.InsufficientAssetLiquidity) {
             const assetName = assetUtils.bestNameForAsset(asset, 'of this asset');
             if (
                 error instanceof InsufficientAssetLiquidityError &&
                 error.amountAvailableToFill.isGreaterThan(BIG_NUMBER_ZERO)
             ) {
-                const unitAmountAvailableToFill = Web3Wrapper.toUnitAmount(
-                    error.amountAvailableToFill,
-                    asset.metaData.decimals,
-                );
+                const unitAmountAvailableToFill =
+                    asset.metaData.assetProxyId === AssetProxyId.ERC20
+                        ? Web3Wrapper.toUnitAmount(error.amountAvailableToFill, asset.metaData.decimals)
+                        : error.amountAvailableToFill;
                 const roundedUnitAmountAvailableToFill = unitAmountAvailableToFill.decimalPlaces(
                     2,
                     BigNumber.ROUND_DOWN,

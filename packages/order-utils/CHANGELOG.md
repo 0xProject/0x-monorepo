@@ -5,6 +5,35 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.1.1 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v8.1.0 - _May 15, 2019_
+
+    * Add `ecSignTransactionAsync` (#1817)
+
+## v8.0.2 - _May 14, 2019_
+
+    * Dependencies updated
+
+## v8.0.0 - _May 10, 2019_
+
+    * Renamed `OrderError` to `TypedDataError` (#1792)
+
+## v7.2.0 - _April 11, 2019_
+
+    * Added `orderCalculationUtils` (#1714)
+
+## v7.1.1 - _March 21, 2019_
+
+    * Dependencies updated
+
+## v7.1.0 - _March 20, 2019_
+
+    * Add Coordinator EIP712 constants (#1705)
+    * Added encoding/decoding for ERC1155 asset data (#1661)
+
 ## v7.0.2 - _March 1, 2019_
 
     * Dependencies updated

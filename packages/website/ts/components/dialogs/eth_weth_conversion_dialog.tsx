@@ -58,7 +58,7 @@ export class EthWethConversionDialog extends React.Component<
             <FlatButton key="convert" label="Convert" primary={true} onClick={this._onConvertClick.bind(this)} />,
         ];
         const title = this.props.direction === Side.Deposit ? 'Wrap ETH' : 'Unwrap WETH';
-        return !_.isUndefined(this.props.etherBalanceInWei) ? (
+        return this.props.etherBalanceInWei !== undefined ? (
             <Dialog
                 title={title}
                 titleStyle={{ fontWeight: 100 }}

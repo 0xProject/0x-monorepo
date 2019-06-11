@@ -26,7 +26,7 @@ export class TupleDataType extends AbstractSetDataType {
         }
         const name = this.getDataItem().name;
         const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
-        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const isScopedName = lastIndexOfScopeDelimiter !== undefined && lastIndexOfScopeDelimiter > 0;
         const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
         const detailedSignature = `${shortName} ${this._computeSignatureOfMembers(isDetailed)}`;
         return detailedSignature;

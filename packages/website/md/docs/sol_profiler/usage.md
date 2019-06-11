@@ -8,10 +8,10 @@ In order to use `ProfilerSubprovider` with your favorite framework you need to p
 
 ### Sol-compiler
 
-If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactsAdapter` we've implemented for you.
+If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactAdapter` we've implemented for you.
 
 ```typescript
-import { SolCompilerArtifactsAdapter } from '@0x/sol-profiler';
+import { SolCompilerArtifactAdapter } from '@0x/sol-profiler';
 // Both artifactsDir and contractsDir are optional and will be fetched from compiler.json if not passed in
 const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);
 ```
@@ -71,4 +71,4 @@ istanbul report html
 open coverage/index.html
 ```
 
-Use [Geth](https://github.com/ethereum/go-ethereum) as a backing node. We recommend using our [Devnet Docker container](https://hub.docker.com/r/0xorg/devnet) which sets up a Geth node for testing purposes. Ganache support is a [work in progress](https://github.com/0xProject/0x-monorepo/issues/1520).
+Use [Ganache](https://github.com/trufflesuite/ganache-cli) as a backing node.

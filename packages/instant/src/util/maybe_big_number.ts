@@ -17,10 +17,10 @@ export const maybeBigNumberUtil = {
         return validBigNumber.isNaN() ? undefined : validBigNumber;
     },
     areMaybeBigNumbersEqual: (val1: Maybe<BigNumber>, val2: Maybe<BigNumber>): boolean => {
-        if (!_.isUndefined(val1) && !_.isUndefined(val2)) {
+        if (val1 !== undefined && val2 !== undefined) {
             return val1.isEqualTo(val2);
         }
-        return _.isUndefined(val1) && _.isUndefined(val2);
+        return val1 === undefined && val2 === undefined;
     },
     // converts a BigNumber or String to the BigNumber used by 0x libraries
     toMaybeBigNumber: (value: any): Maybe<BigNumber> => {

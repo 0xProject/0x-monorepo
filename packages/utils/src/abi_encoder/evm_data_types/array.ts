@@ -15,11 +15,11 @@ export class ArrayDataType extends AbstractSetDataType {
 
     private static _decodeElementTypeAndLengthFromType(type: string): [string, undefined | number] {
         const matches = ArrayDataType._MATCHER.exec(type);
-        if (_.isNull(matches) || matches.length !== 3) {
+        if (matches === null || matches.length !== 3) {
             throw new Error(`Could not parse array: ${type}`);
-        } else if (_.isUndefined(matches[1])) {
+        } else if (matches[1] === undefined) {
             throw new Error(`Could not parse array type: ${type}`);
-        } else if (_.isUndefined(matches[2])) {
+        } else if (matches[2] === undefined) {
             throw new Error(`Could not parse array length: ${type}`);
         }
         const arrayElementType = matches[1];
@@ -46,7 +46,7 @@ export class ArrayDataType extends AbstractSetDataType {
         }
         const name = this.getDataItem().name;
         const lastIndexOfScopeDelimiter = name.lastIndexOf('.');
-        const isScopedName = !_.isUndefined(lastIndexOfScopeDelimiter) && lastIndexOfScopeDelimiter > 0;
+        const isScopedName = lastIndexOfScopeDelimiter !== undefined && lastIndexOfScopeDelimiter > 0;
         const shortName = isScopedName ? name.substr((lastIndexOfScopeDelimiter as number) + 1) : name;
         const detailedSignature = `${shortName} ${this._computeSignature(isDetailed)}`;
         return detailedSignature;
@@ -59,13 +59,13 @@ export class ArrayDataType extends AbstractSetDataType {
             name: '',
         };
         const elementComponents = this.getDataItem().components;
-        if (!_.isUndefined(elementComponents)) {
+        if (elementComponents !== undefined) {
             elementDataItem.components = elementComponents;
         }
         const elementDataType = this.getFactory().create(elementDataItem);
         const elementSignature = elementDataType.getSignature(isDetailed);
         // Construct signature for array of type `element`
-        if (_.isUndefined(this._arrayLength)) {
+        if (this._arrayLength === undefined) {
             return `${elementSignature}[]`;
         } else {
             return `${elementSignature}[${this._arrayLength}]`;

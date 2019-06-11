@@ -35,7 +35,7 @@ export class HttpClient implements Client {
      */
     private static _buildQueryStringFromHttpParams(params?: object): string {
         // if params are undefined or empty, return an empty string
-        if (_.isUndefined(params) || _.isEmpty(params)) {
+        if (params === undefined || _.isEmpty(params)) {
             return '';
         }
         // stringify the formatted object
@@ -59,7 +59,7 @@ export class HttpClient implements Client {
     public async getAssetPairsAsync(
         requestOpts?: RequestOpts & AssetPairsRequestOpts & PagedRequestOpts,
     ): Promise<AssetPairsResponse> {
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.assetPairsRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
@@ -79,7 +79,7 @@ export class HttpClient implements Client {
     public async getOrdersAsync(
         requestOpts?: RequestOpts & OrdersRequestOpts & PagedRequestOpts,
     ): Promise<OrdersResponse> {
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.ordersRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
@@ -97,7 +97,7 @@ export class HttpClient implements Client {
      * @return  The APIOrder that matches the supplied orderHash
      */
     public async getOrderAsync(orderHash: string, requestOpts?: RequestOpts): Promise<APIOrder> {
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         assert.doesConformToSchema('orderHash', orderHash, schemas.orderHashSchema);
@@ -119,7 +119,7 @@ export class HttpClient implements Client {
         requestOpts?: RequestOpts & PagedRequestOpts,
     ): Promise<OrderbookResponse> {
         assert.doesConformToSchema('request', request, schemas.orderBookRequestSchema);
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
@@ -140,7 +140,7 @@ export class HttpClient implements Client {
         request: OrderConfigRequest,
         requestOpts?: RequestOpts,
     ): Promise<OrderConfigResponse> {
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }
         assert.doesConformToSchema('request', request, schemas.orderConfigRequestSchema);
@@ -158,7 +158,7 @@ export class HttpClient implements Client {
      * @return  The resulting FeeRecipientsResponse
      */
     public async getFeeRecipientsAsync(requestOpts?: RequestOpts & PagedRequestOpts): Promise<FeeRecipientsResponse> {
-        if (!_.isUndefined(requestOpts)) {
+        if (requestOpts !== undefined) {
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.pagedRequestOptsSchema);
             assert.doesConformToSchema('requestOpts', requestOpts, schemas.requestOptsSchema);
         }

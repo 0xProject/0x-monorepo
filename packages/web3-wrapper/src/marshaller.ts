@@ -45,7 +45,7 @@ export const marshaller = {
             gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
             size: utils.convertHexToNumber(blockWithHexValues.size),
             timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            number: blockWithHexValues.number === null ? null : utils.convertHexToNumber(blockWithHexValues.number),
             difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
             totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
         };
@@ -63,7 +63,7 @@ export const marshaller = {
             gasUsed: utils.convertHexToNumber(blockWithHexValues.gasUsed),
             size: utils.convertHexToNumber(blockWithHexValues.size),
             timestamp: utils.convertHexToNumber(blockWithHexValues.timestamp),
-            number: _.isNull(blockWithHexValues.number) ? null : utils.convertHexToNumber(blockWithHexValues.number),
+            number: blockWithHexValues.number === null ? null : utils.convertHexToNumber(blockWithHexValues.number),
             difficulty: utils.convertAmountToBigNumber(blockWithHexValues.difficulty),
             totalDifficulty: utils.convertAmountToBigNumber(blockWithHexValues.totalDifficulty),
             transactions: [] as Transaction[],
@@ -82,10 +82,8 @@ export const marshaller = {
     unmarshalTransaction(txRpc: TransactionRPC): Transaction {
         const tx = {
             ...txRpc,
-            blockNumber: !_.isNull(txRpc.blockNumber) ? utils.convertHexToNumber(txRpc.blockNumber) : null,
-            transactionIndex: !_.isNull(txRpc.transactionIndex)
-                ? utils.convertHexToNumber(txRpc.transactionIndex)
-                : null,
+            blockNumber: txRpc.blockNumber !== null ? utils.convertHexToNumber(txRpc.blockNumber) : null,
+            transactionIndex: txRpc.transactionIndex !== null ? utils.convertHexToNumber(txRpc.transactionIndex) : null,
             nonce: utils.convertHexToNumber(txRpc.nonce),
             gas: utils.convertHexToNumber(txRpc.gas),
             gasPrice: utils.convertAmountToBigNumber(txRpc.gasPrice),
@@ -115,17 +113,15 @@ export const marshaller = {
      * @return unmarshalled transaction data
      */
     unmarshalTxData(txDataRpc: TxDataRPC): TxData {
-        if (_.isUndefined(txDataRpc.from)) {
+        if (txDataRpc.from === undefined) {
             throw new Error(`txData must include valid 'from' value.`);
         }
         const txData = {
             ...txDataRpc,
-            value: !_.isUndefined(txDataRpc.value) ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
-            gas: !_.isUndefined(txDataRpc.gas) ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
-            gasPrice: !_.isUndefined(txDataRpc.gasPrice)
-                ? utils.convertAmountToBigNumber(txDataRpc.gasPrice)
-                : undefined,
-            nonce: !_.isUndefined(txDataRpc.nonce) ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
+            value: txDataRpc.value !== undefined ? utils.convertAmountToBigNumber(txDataRpc.value) : undefined,
+            gas: txDataRpc.gas !== undefined ? utils.convertHexToNumber(txDataRpc.gas) : undefined,
+            gasPrice: txDataRpc.gasPrice !== undefined ? utils.convertAmountToBigNumber(txDataRpc.gasPrice) : undefined,
+            nonce: txDataRpc.nonce !== undefined ? utils.convertHexToNumber(txDataRpc.nonce) : undefined,
         };
         return txData;
     },
@@ -135,7 +131,7 @@ export const marshaller = {
      * @return marshalled transaction data
      */
     marshalTxData(txData: Partial<TxData>): Partial<TxDataRPC> {
-        if (_.isUndefined(txData.from)) {
+        if (txData.from === undefined) {
             throw new Error(`txData must include valid 'from' value.`);
         }
         const callTxDataBase = {
@@ -149,7 +145,7 @@ export const marshaller = {
         };
         const prunableIfUndefined = ['gasPrice', 'gas', 'value', 'nonce'];
         _.each(txDataRPC, (value: any, key: string) => {
-            if (_.isUndefined(value) && _.includes(prunableIfUndefined, key)) {
+            if (value === undefined && _.includes(prunableIfUndefined, key)) {
                 delete (txDataRPC as any)[key];
             }
         });
@@ -168,7 +164,7 @@ export const marshaller = {
         const callTxDataBaseRPC = marshaller._marshalCallTxDataBase(callTxDataBase);
         const callDataRPC = {
             ...callTxDataBaseRPC,
-            from: _.isUndefined(callData.from) ? undefined : marshaller.marshalAddress(callData.from),
+            from: callData.from === undefined ? undefined : marshaller.marshalAddress(callData.from),
         };
         return callDataRPC;
     },
@@ -189,7 +185,7 @@ export const marshaller = {
      * @return marshalled block param
      */
     marshalBlockParam(blockParam: BlockParam | string | number | undefined): string | undefined {
-        if (_.isUndefined(blockParam)) {
+        if (blockParam === undefined) {
             return BlockParamLiteral.Latest;
         }
         const encodedBlockParam = _.isNumber(blockParam) ? utils.numberToHex(blockParam) : blockParam;
@@ -212,17 +208,14 @@ export const marshaller = {
     _marshalCallTxDataBase(callTxDataBase: Partial<CallTxDataBase>): Partial<CallTxDataBaseRPC> {
         const callTxDataBaseRPC = {
             ...callTxDataBase,
-            to: _.isUndefined(callTxDataBase.to) ? undefined : marshaller.marshalAddress(callTxDataBase.to),
-            gasPrice: _.isUndefined(callTxDataBase.gasPrice)
-                ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.gasPrice),
-            gas: _.isUndefined(callTxDataBase.gas) ? undefined : utils.encodeAmountAsHexString(callTxDataBase.gas),
-            value: _.isUndefined(callTxDataBase.value)
-                ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.value),
-            nonce: _.isUndefined(callTxDataBase.nonce)
-                ? undefined
-                : utils.encodeAmountAsHexString(callTxDataBase.nonce),
+            to: callTxDataBase.to === undefined ? undefined : marshaller.marshalAddress(callTxDataBase.to),
+            gasPrice:
+                callTxDataBase.gasPrice === undefined
+                    ? undefined
+                    : utils.encodeAmountAsHexString(callTxDataBase.gasPrice),
+            gas: callTxDataBase.gas === undefined ? undefined : utils.encodeAmountAsHexString(callTxDataBase.gas),
+            value: callTxDataBase.value === undefined ? undefined : utils.encodeAmountAsHexString(callTxDataBase.value),
+            nonce: callTxDataBase.nonce === undefined ? undefined : utils.encodeAmountAsHexString(callTxDataBase.nonce),
         };
 
         return callTxDataBaseRPC;

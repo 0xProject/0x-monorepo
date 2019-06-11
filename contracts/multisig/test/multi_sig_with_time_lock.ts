@@ -70,7 +70,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 REQUIRED_APPROVALS,
                 secondsTimeLocked,
             );
-            expect(_.isUndefined((multiSig as any).external_call)).to.be.equal(true);
+            expect((multiSig as any).external_call === undefined).to.be.equal(true);
         });
     });
     describe('confirmTransaction', () => {
@@ -271,7 +271,7 @@ describe('MultiSigWalletWithTimeLock', () => {
 
                 const blockNum = await web3Wrapper.getBlockNumberAsync();
                 const blockInfo = await web3Wrapper.getBlockIfExistsAsync(blockNum);
-                if (_.isUndefined(blockInfo)) {
+                if (blockInfo === undefined) {
                     throw new Error(`Unexpectedly failed to fetch block at #${blockNum}`);
                 }
                 const timestamp = new BigNumber(blockInfo.timestamp);

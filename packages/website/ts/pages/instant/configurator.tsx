@@ -65,14 +65,14 @@ export class Configurator extends React.Component {
         <script>
             zeroExInstant.render({
                 orderSource: '${instantConfig.orderSource}',${
-            !_.isUndefined(instantConfig.affiliateInfo) && instantConfig.affiliateInfo.feeRecipient
+            instantConfig.affiliateInfo !== undefined && instantConfig.affiliateInfo.feeRecipient
                 ? `\n                affiliateInfo: {
                     feeRecipient: '${instantConfig.affiliateInfo.feeRecipient.toLowerCase()}',
                     feePercentage: ${instantConfig.affiliateInfo.feePercentage}
                 },`
                 : ''
         }${
-            !_.isUndefined(instantConfig.availableAssetDatas)
+            instantConfig.availableAssetDatas !== undefined
                 ? `\n                availableAssetDatas: ${this._renderAvailableAssetDatasString(
                       instantConfig.availableAssetDatas,
                   )}`

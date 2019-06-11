@@ -1,10 +1,10 @@
 {
     "artifactsDir": "./generated-artifacts",
     "contractsDir": "./contracts",
-    "useDockerisedSolc": true,
+    "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {
-        "evmVersion": "byzantium",
+        "evmVersion": "constantinople",
         "optimizer": {
             "enabled": true,
             "runs": 1000000,
@@ -32,6 +32,7 @@
         "src/interfaces/IEtherToken.sol",
         "test/DummyERC20Token.sol",
         "test/DummyMultipleReturnERC20Token.sol",
-        "test/DummyNoReturnERC20Token.sol"
+        "test/DummyNoReturnERC20Token.sol",
+        "test/UntransferrableDummyERC20Token.sol"
     ]
 }

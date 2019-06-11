@@ -52,6 +52,7 @@ interface OptionalState {
     latestErrorMessage: string;
     affiliateInfo: AffiliateInfo;
     walletDisplayName: string;
+    onSuccess: (txHash: string) => void;
 }
 
 export type State = DefaultState & PropsDerivedState & Partial<OptionalState>;
@@ -117,7 +118,7 @@ export const createReducer = (initialState: State) => {
             case ActionTypes.UpdateLatestBuyQuote:
                 const newBuyQuoteIfExists = action.data;
                 const shouldUpdate =
-                    _.isUndefined(newBuyQuoteIfExists) || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
+                    newBuyQuoteIfExists === undefined || doesBuyQuoteMatchState(newBuyQuoteIfExists, state);
                 if (shouldUpdate) {
                     return {
                         ...state,
@@ -274,7 +275,7 @@ const doesBuyQuoteMatchState = (buyQuote: BuyQuote, state: State): boolean => {
     const selectedAssetIfExists = state.selectedAsset;
     const selectedAssetUnitAmountIfExists = state.selectedAssetUnitAmount;
     // if no selectedAsset or selectedAssetAmount exists on the current state, return false
-    if (_.isUndefined(selectedAssetIfExists) || _.isUndefined(selectedAssetUnitAmountIfExists)) {
+    if (selectedAssetIfExists === undefined || selectedAssetUnitAmountIfExists === undefined) {
         return false;
     }
     // if buyQuote's assetData does not match that of the current selected asset, return false

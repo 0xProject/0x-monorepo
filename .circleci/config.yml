@@ -12,8 +12,13 @@ jobs:
             - checkout
             - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
             - run:
+                  # HACK(albrow): Without this, yarn commands will sometimes
+                  # fail with a "permission denied" error.
+                  name: Set npm path
+                  command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            - run:
                   name: install-yarn
-                  command: sudo npm install --global yarn@1.9.4
+                  command: npm install --global yarn@1.9.4
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
@@ -53,6 +58,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-exchange
             - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
             - run: yarn wsrun test:circleci @0x/contracts-coordinator
+            - run: yarn wsrun test:circleci @0x/contracts-dev-utils
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -75,6 +81,7 @@ jobs:
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-forwarder
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-coordinator
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-dev-utils
     test-publish:
         resource_class: medium+
         docker:
@@ -95,20 +102,6 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn test:generate_docs:circleci
-    test-pipeline:
-        docker:
-            - image: circleci/node:9
-            - image: postgres:11-alpine
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: ZEROEX_DATA_PIPELINE_TEST_DB_URL='postgresql://postgres@localhost/postgres' yarn wsrun test:circleci @0x/pipeline
-            - save_cache:
-                  key: coverage-pipeline-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/pipeline/coverage/lcov.info
     test-rest:
         docker:
             - image: circleci/node:9-browsers
@@ -119,6 +112,8 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
+            - run: yarn wsrun test:circleci @0x/asset-buyer
+            - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
             - run: yarn wsrun test:circleci @0x/connect
@@ -143,6 +138,10 @@ jobs:
                   key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/assert/coverage/lcov.info
+            - save_cache:
+                  key: coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/asset-buyer/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -201,8 +200,11 @@ jobs:
             - image: circleci/python
             - image: 0xorg/ganache-cli:2.2.2
             - image: 0xorg/launch-kit-ci
-              command: |
-                  yarn start:ts -p 3000:3000
+              environment:
+                  RPC_URL: http://localhost:8545
+                  NETWORK_ID: 50
+                  WHITELIST_ALL_TOKENS: True
+              command: bash -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; forever ts/lib/index.js"
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -320,6 +322,9 @@ jobs:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
@@ -390,12 +395,11 @@ workflows:
             - test-contracts-ganache:
                   requires:
                       - build
-            - test-contracts-geth:
-                  requires:
-                      - build
-            - test-pipeline:
-                  requires:
-                      - build
+            # TODO(albrow): Tests always fail on Geth right now because our fork
+            # is outdated. Uncomment once we have updated our Geth fork.
+            # - test-contracts-geth:
+            #       requires:
+            #           - build
             - test-rest:
                   requires:
                       - build

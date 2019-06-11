@@ -67,11 +67,11 @@ export class TraceCollector {
         bytecode: string,
         isContractCreation: boolean,
     ): Promise<ContractData | undefined> {
-        if (_.isUndefined(this._contractsData)) {
+        if (this._contractsData === undefined) {
             this._contractsData = await this._artifactAdapter.collectContractsDataAsync();
         }
         const contractData = utils.getContractDataIfExists(this._contractsData, bytecode);
-        if (_.isUndefined(contractData)) {
+        if (contractData === undefined) {
             /**
              * Length chooses so that both error messages are of the same length
              * and it's enough data to figure out which artifact has a problem.
@@ -98,7 +98,7 @@ export class TraceCollector {
             bytecode,
             isContractCreation,
         );
-        if (_.isUndefined(contractData)) {
+        if (contractData === undefined) {
             return;
         }
         const bytecodeHex = stripHexPrefix(bytecode);

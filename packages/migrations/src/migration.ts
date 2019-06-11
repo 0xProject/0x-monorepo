@@ -183,6 +183,21 @@ export async function runMigrationsAsync(
         await zrxToken.transfer.sendTransactionAsync(forwarder.address, zrxForwarderAmount, txDefaults),
     );
 
+    // CoordinatorRegistry
+    const coordinatorRegistry = await wrappers.CoordinatorRegistryContract.deployFrom0xArtifactAsync(
+        artifacts.CoordinatorRegistry,
+        provider,
+        txDefaults,
+    );
+
+    // Coordinator
+    const coordinator = await wrappers.CoordinatorContract.deployFrom0xArtifactAsync(
+        artifacts.Coordinator,
+        provider,
+        txDefaults,
+        exchange.address,
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -193,6 +208,8 @@ export async function runMigrationsAsync(
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
         dutchAuction: dutchAuction.address,
+        coordinatorRegistry: coordinatorRegistry.address,
+        coordinator: coordinator.address,
     };
 
     return contractAddresses;
@@ -212,7 +229,7 @@ export async function runMigrationsOnceAsync(
     provider: Web3ProviderEngine,
     txDefaults: TxData,
 ): Promise<ContractAddresses> {
-    if (!_.isUndefined(_cachedContractAddresses)) {
+    if (_cachedContractAddresses !== undefined) {
         return _cachedContractAddresses;
     }
     _cachedContractAddresses = await runMigrationsAsync(provider, txDefaults);

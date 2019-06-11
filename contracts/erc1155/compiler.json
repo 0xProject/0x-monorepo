@@ -1,9 +1,9 @@
 {
     "artifactsDir": "generated-artifacts",
     "contractsDir": "contracts",
-    "useDockerisedSolc": true,
+    "useDockerisedSolc": false,
     "compilerSettings": {
-        "evmVersion": "byzantium",
+        "evmVersion": "constantinople",
         "optimizer": { "enabled": true, "runs": 1000000 },
         "outputSelection": {
             "*": {
