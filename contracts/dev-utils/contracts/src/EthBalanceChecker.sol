@@ -19,8 +19,8 @@
 pragma solidity ^0.5.5;
 
 
-
 contract EthBalanceChecker {
+
     /// @dev Batch fetches ETH balances
     /// @param addresses Array of addresses.
     /// @return Array of ETH balances.
