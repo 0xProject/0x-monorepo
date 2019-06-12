@@ -12,6 +12,7 @@ export interface ContractAddresses {
     dutchAuction: string;
     coordinatorRegistry: string;
     coordinator: string;
+    ethBalanceChecker?: string;
 }
 
 export enum NetworkId {

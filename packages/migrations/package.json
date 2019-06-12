@@ -18,14 +18,15 @@
         "script:migrate:v2": "node ./lib/migrate.js",
         "script:migrate:v2:snapshot": "node ./lib/migrate_snapshot.js",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
-        "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"${npm_package_config_snapshot_name}-${npm_package_version}.zip\" ${npm_package_config_snapshot_name}",
-        "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
-        "publish:snapshot": "aws s3 cp ${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket} && aws s3 cp ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-latest.zip",
+        "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"${npm_package_config_snapshot_name}-${npm_package_config_version}.zip\" ${npm_package_config_snapshot_name}",
+        "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_config_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
+        "publish:snapshot": "aws s3 cp ${npm_package_config_snapshot_name}-${npm_package_config_version}.zip ${npm_package_config_s3_snapshot_bucket} && aws s3 cp ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-${npm_package_config_version}.zip ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-latest.zip",
         "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest"
     },
     "config": {
+        "version": "6.0.0",
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
-        "docker_snapshot_name": "0xorg/ganache-cli",
+        "docker_snapshot_name": "0xorg/mesh-ganache-cli",
         "snapshot_name": "0x_ganache_snapshot",
         "postpublish": {
             "assets": []

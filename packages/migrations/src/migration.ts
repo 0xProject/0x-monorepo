@@ -198,6 +198,51 @@ export async function runMigrationsAsync(
         exchange.address,
     );
 
+    const ethBalanceChecker = await wrappers.EthBalanceCheckerContract.deployFrom0xArtifactAsync(
+        artifacts.EthBalanceChecker,
+        provider,
+        txDefaults,
+    );
+
+    const orderValidationUtils = await wrappers.OrderValidationUtilsContract.deployFrom0xArtifactAsync(
+        artifacts.OrderValidationUtils,
+        provider,
+        txDefaults,
+        exchange.address,
+        zrxAssetData,
+    );
+
+    const makerAddress = '0x5409ed021d9299bf6814279a6a1411a7e866a631'; // ZRX
+    const takerAddress = '0x6ecbe1db9ef729cbe972c83fb886247691fb6beb'; // ETH
+    // Deposit takerAddress ETH into WETH
+    const decimals = 18;
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await etherToken.deposit.sendTransactionAsync({
+            from: takerAddress,
+            value: Web3Wrapper.toBaseUnitAmount(new BigNumber(50), decimals),
+        }),
+    );
+    // Set ZRX allowance for makerAddress
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await zrxToken.approve.sendTransactionAsync(
+            erc20Proxy.address,
+            Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), decimals),
+            {
+                from: makerAddress,
+            },
+        ),
+    );
+    // Set WETH allowance for takerAddress
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await etherToken.approve.sendTransactionAsync(
+            erc20Proxy.address,
+            Web3Wrapper.toBaseUnitAmount(new BigNumber(50), decimals),
+            {
+                from: takerAddress,
+            },
+        ),
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -207,9 +252,11 @@ export async function runMigrationsAsync(
         assetProxyOwner: assetProxyOwner.address,
         forwarder: forwarder.address,
         orderValidator: orderValidator.address,
+        orderValidationUtils: orderValidationUtils.address,
         dutchAuction: dutchAuction.address,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
+        ethBalanceChecker: ethBalanceChecker.address,
     };
 
     return contractAddresses;
