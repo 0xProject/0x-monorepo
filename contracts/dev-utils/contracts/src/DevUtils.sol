@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 import "./OrderValidationUtils.sol";
 import "./LibTransactionDecoder.sol";
+import "./EthBalanceChecker.sol";
 
 
 // solhint-disable no-empty-blocks
