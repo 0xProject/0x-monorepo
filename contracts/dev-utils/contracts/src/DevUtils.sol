@@ -26,7 +26,8 @@ import "./LibTransactionDecoder.sol";
 // solhint-disable no-empty-blocks
 contract DevUtils is
     OrderValidationUtils,
-    LibTransactionDecoder
+    LibTransactionDecoder,
+    EthBalanceChecker
 {
     constructor (address _exchange, bytes memory _zrxAssetData)
         public
