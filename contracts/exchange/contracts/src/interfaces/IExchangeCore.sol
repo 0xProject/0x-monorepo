@@ -21,7 +21,6 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
 contract IExchangeCore {
