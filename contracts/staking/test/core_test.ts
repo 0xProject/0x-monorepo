@@ -551,7 +551,6 @@ describe('Staking Core', () => {
         });
 
         it.skip('Reward Vault', async () => {
-            /*
             // 1 setup test parameters
             const poolOperator = stakers[1];
             const operatorShare = 39;
@@ -560,20 +559,17 @@ describe('Staking Core', () => {
             const notStakingContractAddress = poolOperator;
             const initialPoolDeposit = stakingWrapper.toBaseUnitAmount(19);
             // create pool in vault
-            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, stakingContractAddress);
-            */
-            /*
+            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, operatorShare, stakingContractAddress);
             // should fail to create pool if it already exists
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, stakingContractAddress),
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, operatorShare, stakingContractAddress),
                 RevertReason.PoolAlreadyExists
             );
             // should fail to create a pool from an address other than the staking contract
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, initialPoolDeposit, notStakingContractAddress),
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator,  operatorShare, notStakingContractAddress),
                 RevertReason.OnlyCallableByStakingContract
             );
-            */
         });
 
         it('Protocol Fees', async () => {
@@ -827,7 +823,7 @@ describe('Staking Core', () => {
             expect(makerAddressesForPoolAfterRemoving).to.be.deep.equal([]);
         });
 
-        it.skip('Finalization with Protocol Fees', async () => {
+        it('Finalization with Protocol Fees', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////
@@ -947,7 +943,7 @@ describe('Staking Core', () => {
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
         });
 
-        it.only('Finalization with Protocol Fees and Delegation', async () => {
+        it.skip('Finalization with Protocol Fees and Delegation', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////
@@ -1125,7 +1121,19 @@ describe('Staking Core', () => {
             expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
             expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);            
 
-            ///// 10 CHECK DELEGATOR BUY-IN ON A SUBSEQUENT EPOCH, WHEN AMOUNT IS NON-ZERO /////
+            ///// 11 CHECK DELEGATOR BUY-IN ON A SUBSEQUENT EPOCH, WHEN AMOUNT IS NON-ZERO /////
+
+
+            ///// 12 CHECK PARTIAL PAYOUTS /////
+            /*
+            await stakingWrapper.skipToNextTimelockPeriodAsync();
+            await Promise.all([
+                stakingWrapper.activateAndDelegateStakeAsync(delegators[0], poolIds[2], stakeByDelegator[0]),
+                stakingWrapper.activateAndDelegateStakeAsync(delegators[1], poolIds[2], stakeByDelegator[1]),
+                stakingWrapper.activateAndDelegateStakeAsync(delegators[2], poolIds[2], stakeByDelegator[2]),
+            ]);
+            */
+            
         });
     });
 });
