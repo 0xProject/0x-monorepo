@@ -21,9 +21,8 @@ pragma solidity ^0.5.5;
 
 interface IRewardVault {
 
-    function createPool(bytes32 poolId, address payable poolOwner)
-        external
-        payable;
+    function createPool(bytes32 poolId, address payable poolOperator, uint8 poolOperatorShare)
+        external;
 
     function depositFor(bytes32 poolId)
         external
@@ -35,11 +34,23 @@ interface IRewardVault {
     function withdrawFor(bytes32 poolId, uint256 amount)
         external;
 
+/*
     function withdrawAllFrom(bytes32 poolId)
         external
         returns (uint256);
+*/
 
     function balanceOf(bytes32 poolId)
+        external
+        view
+        returns (uint256);
+
+    function operatorBalanceOf(bytes32 poolId)
+        external
+        view
+        returns (uint256);
+
+    function poolBalanceOf(bytes32 poolId)
         external
         view
         returns (uint256);

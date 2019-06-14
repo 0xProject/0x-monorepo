@@ -61,9 +61,10 @@ contract MixinPools is
         // create pool in reward vault
         rewardVault.createPool(
             poolId,
-            operatorAddress
+            operatorAddress,
+            operatorShare
         );
-        
+
         // 
         emit PoolCreated(poolId, operatorAddress, operatorShare);
         return poolId;
