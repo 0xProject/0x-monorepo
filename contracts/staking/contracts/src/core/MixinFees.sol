@@ -97,7 +97,7 @@ contract MixinFees is
         // then the other value doesn't matter. However, it's cheaper on gas to assume that there is some
         // non-zero split.
         if (totalRewards == 0 || totalFees == 0 || totalStake == 0) {
-            revert("We don't want to hit this case in testing");
+            // revert("We don't want to hit this case in testing");
             return;
         }
 
