@@ -428,16 +428,20 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, amount);
         return txReceipt;
     }
+    /*
     public async rewardVaultWithdrawFor(poolId: string, amount: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().withdrawFor.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
         return txReceipt;
     }
+    */
+    /*
     public async rewardVaultWithdrawAllForAsync(poolId: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().withdrawAllFrom.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata);
         return txReceipt;
     }
+    */
     public async rewardVaultEnterCatastrophicFailureModeAsync(zeroExMultisigAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
@@ -447,15 +451,25 @@ export class StakingWrapper {
         const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultCreatePoolAsync(poolId: string, poolOwner: string, initialDeposit: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOwner);
-        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, initialDeposit);
+    public async rewardVaultOperatorBalanceOfAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().operatorBalanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async rewardVaultPoolBalanceOfAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().poolBalanceOf.callAsync(poolId);
+        return balance;
+    }
+    public async rewardVaultCreatePoolAsync(poolId: string, poolOperator: string, poolOperatorShare: number, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOperator, poolOperatorShare);
+        const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
         return txReceipt;
     }
+    /*
     public async getEthBalanceOfRewardVaultAsync(): Promise<BigNumber> {
         const balance = await this.getRewardVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);
         return balance;
     }
+    */
     ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
