@@ -12,7 +12,7 @@
     "scripts": {
         "artifacts_copy": "node lib/src/copy.js",
         "artifacts_transform": "node lib/src/transform.js ./artifacts && prettier --write ./artifacts/*.json &&  cp -r ./artifacts/ ../../python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/",
-        "artifacts_update": "yarn artifacts_copy && yarn artifacts_transform",
+        "artifacts_update": "yarn artifacts_copy && yarn artifacts_transform && yarn build",
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
         "test": "yarn run_mocha",

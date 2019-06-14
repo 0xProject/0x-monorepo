@@ -49,8 +49,8 @@ for (const _path of allArtifactPaths) {
     const fileName = _path.split('/').slice(-1)[0];
     const targetPath = path.join(__dirname, '../artifacts', fileName);
     const targetPathPython = path.join(
-        __dirname,
-        '../../../../python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts',
+        MONOREPO_ROOT,
+        'python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts',
         fileName,
     );
     fs.copyFileSync(_path, targetPath);
