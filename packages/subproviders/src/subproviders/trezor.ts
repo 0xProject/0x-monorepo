@@ -140,7 +140,7 @@ export class TrezorSubprovider extends BaseWalletSubprovider {
         const response: TrezorConnectResponse = await this._trezorConnectClientApi.ethereumSignMessage({
             path: fullDerivationPath,
             message: data,
-            hex: false,
+            hex: true,
         });
 
         if (response.success) {
