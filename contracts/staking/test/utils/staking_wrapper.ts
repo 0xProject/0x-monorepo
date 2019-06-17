@@ -4,7 +4,7 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { assetDataUtils } from '@0x/order-utils';
 import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
@@ -28,7 +28,8 @@ export class StakingWrapper {
     constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
-        this._logDecoder = new LogDecoder(this._web3Wrapper, artifacts);
+        const decoderArtifacts = _.merge(artifacts, erc20Artifacts);
+        this._logDecoder = new LogDecoder(this._web3Wrapper, decoderArtifacts);
         this._ownerAddres= ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
         this._zrxTokenContract = zrxTokenContract;
@@ -156,8 +157,8 @@ export class StakingWrapper {
     }
     public async depositAndDelegateAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
-        const txReceipt = await this._executeTransactionAsync(calldata, owner);//, new BigNumber(0), true);
-        //console.log(JSON.stringify(txReceipt, null, 4));
+        const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
+        console.log(JSON.stringify(txReceipt, null, 4));
         return txReceipt;
     }
     public async activateStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
