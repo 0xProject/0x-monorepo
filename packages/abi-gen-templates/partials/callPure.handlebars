@@ -1,8 +1,6 @@
 public {{this.tsName}} = {
     async callAsync(
     {{> typed_params inputs=inputs}}
-        callData: Partial<CallData> = {},
-        defaultBlock?: BlockParam,
     ): Promise<{{> return_type outputs=outputs}}> {
         const self = this as any as {{contractName}}Contract;
         const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);

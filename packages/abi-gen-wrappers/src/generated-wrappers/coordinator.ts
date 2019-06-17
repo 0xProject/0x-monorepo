@@ -5,15 +5,12 @@ import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
-    BlockParamLiteral,
     CallData,
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
-    MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
-    TxDataPayable,
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
@@ -32,8 +29,6 @@ export class CoordinatorContract extends BaseContract {
         async callAsync(
             hash: string,
             signature: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
         ): Promise<string
     > {
             const self = this as any as CoordinatorContract;
@@ -386,8 +381,6 @@ export class CoordinatorContract extends BaseContract {
     public decodeOrdersFromFillData = {
         async callAsync(
             data: string,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
         ): Promise<Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>
     > {
             const self = this as any as CoordinatorContract;

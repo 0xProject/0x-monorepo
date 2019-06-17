@@ -5,15 +5,12 @@ import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
-    BlockParamLiteral,
     CallData,
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
-    MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
-    TxDataPayable,
     SupportedProvider,
 } from 'ethereum-types';
 import { BigNumber, classUtils, logUtils, providerUtils } from '@0x/utils';
@@ -466,8 +463,6 @@ export class ERC20ProxyContract extends BaseContract {
         };
     public getProxyId = {
         async callAsync(
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
         ): Promise<string
     > {
             const self = this as any as ERC20ProxyContract;
