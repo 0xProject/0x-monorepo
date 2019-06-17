@@ -238,7 +238,6 @@ contract MixinStake is
             );
         } else {
             // partial payout
-            // revert('no partial');
             (payoutInRealAsset, payoutInShadowAsset) = _computePartialPayout(
                  amount,
                 _delegatedStakeByOwner,
@@ -253,7 +252,7 @@ contract MixinStake is
 
         // withdraw payout for delegator
         if (payoutInRealAsset > 0) {
-            rewardVault.withdrawFor(poolId, payoutInRealAsset);
+            rewardVault.withdrawFromPool(poolId, payoutInRealAsset);
             owner.transfer(payoutInRealAsset);
         }
     }

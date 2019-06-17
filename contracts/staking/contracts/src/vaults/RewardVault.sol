@@ -26,7 +26,7 @@ import "../immutable/MixinConstants.sol";
 
 
 contract RewardVault is
-    //IRewardVault,
+    IRewardVault,
     SafeMath,
     MixinConstants,
     MixinVaultCore
