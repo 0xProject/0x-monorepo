@@ -174,7 +174,7 @@ contract StaticCallProxy {
                 // + 32 (assetData len)
                 // + 4 (proxyId)
                 // + 32 (callTarget)
-                // + 32 (assetDataOffset)
+                // + 32 (staticCallDataOffset)
                 let expectedResultHash := calldataload(add(assetDataOffset, 100))
 
                 if sub(callResultHash, expectedResultHash) {

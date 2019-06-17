@@ -18,8 +18,12 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+
 
 contract TestStaticCallTarget {
+
+    using LibBytes for bytes;
 
     uint256 internal _state;
  
@@ -51,12 +55,17 @@ contract TestStaticCallTarget {
     function noInputFunction()
         external
         pure
-    {}
+    {
+        assert(msg.data.length == 4 && msg.data.readBytes4(0) == bytes4(keccak256("noInputFunction()")));
+    }
 
     function dynamicInputFunction(bytes calldata a)
         external
         pure
-    {}
+    {
+        bytes memory abiEncodedData = abi.encodeWithSignature("dynamicInputFunction(bytes)", a);
+        assert(msg.data.equals(abiEncodedData));
+    }
 
     function returnComplexType(uint256 a, uint256 b)
         external
