@@ -519,16 +519,7 @@ contract MixinExchangeCore is
             order.makerAddress,
             fillResults.takerAssetFilledAmount
         );
-        if (order.makerAddress != order.feeRecipientAddress) {
-            // Transfer maker fee -> feeRecipient
-            _dispatchTransferFrom(
-                orderHash,
-                order.makerFeeAssetData,
-                order.makerAddress,
-                order.feeRecipientAddress,
-                fillResults.makerFeePaid
-            );
-        }
+
         // Transfer maker -> taker
         _dispatchTransferFrom(
             orderHash,
@@ -537,15 +528,23 @@ contract MixinExchangeCore is
             takerAddress,
             fillResults.makerAssetFilledAmount
         );
-        if (takerAddress != order.feeRecipientAddress) {
-            // Transfer taker fee -> feeRecipient
-            _dispatchTransferFrom(
-                orderHash,
-                order.takerFeeAssetData,
-                takerAddress,
-                order.feeRecipientAddress,
-                fillResults.takerFeePaid
-            );
-        }
+
+        // Transfer taker fee -> feeRecipient
+        _dispatchTransferFrom(
+            orderHash,
+            order.takerFeeAssetData,
+            takerAddress,
+            order.feeRecipientAddress,
+            fillResults.takerFeePaid
+        );
+    
+        // Transfer maker fee -> feeRecipient
+        _dispatchTransferFrom(
+            orderHash,
+            order.makerFeeAssetData,
+            order.makerAddress,
+            order.feeRecipientAddress,
+            fillResults.makerFeePaid
+        );
     }
 }
