@@ -12,16 +12,13 @@ import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
-
 import {
-    artifacts,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
     DummyERC1155ReceiverContract,
     ERC1155MintableContract,
+    artifacts,
 } from '../src';
-
 import { Erc1155Wrapper } from './utils/erc1155_wrapper';
-
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -172,7 +169,8 @@ describe('ERC1155Token', () => {
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
             // create the expected error (a uint256 underflow)
-            const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256SubtractionUnderflow,
                 spenderInitialFungibleBalance,
                 valueToTransfer,
             );
@@ -348,7 +346,8 @@ describe('ERC1155Token', () => {
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
 
             // create the expected error (a uint256 underflow)
-            const expectedError = new SafeMathRevertErrors.Uint256UnderflowError(
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256SubtractionUnderflow,
                 spenderInitialFungibleBalance,
                 valuesToTransfer[0],
             );

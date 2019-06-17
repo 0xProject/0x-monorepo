@@ -6,40 +6,28 @@ import "./RichErrors.sol";
 contract MixinSafeMathRichErrors is
     RichErrors
 {
-    // bytes4(keccak256("Uint256OverflowError(uint256,uint256)"))
-    bytes4 internal constant UINT256_OVERFLOW_ERROR =
-        0x55101607;
+    // bytes4(keccak256("SafeMathError(uint8,uint256,uint256)"))
+    bytes4 internal constant SAFE_MATH_ERROR =
+        0x35a51a70;
 
-    // bytes4(keccak256("Uint256UnderflowError(uint256,uint256)"))
-    bytes4 internal constant UINT256_UNDERFLOW_ERROR =
-        0x60ee612f;
-
-    // solhint-disable func-name-mixedcase
-    function Uint256OverflowError(
-        uint256 a,
-        uint256 b
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            UINT256_OVERFLOW_ERROR,
-            a,
-            b
-        );
+    enum SafeMathErrorCodes {
+        UINT256_ADDITION_OVERFLOW,
+        UINT256_MULTIPLICATION_OVERFLOW,
+        UINT256_SUBTRACTION_UNDERFLOW
     }
 
-    function Uint256UnderflowError(
+    // solhint-disable func-name-mixedcase
+    function SafeMathError(
+        SafeMathErrorCodes errorCode,
         uint256 a,
         uint256 b
     )
         internal
-        pure
-        returns (bytes memory)
+        pure returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            UINT256_UNDERFLOW_ERROR,
+            SAFE_MATH_ERROR,
+            errorCode,
             a,
             b
         );
