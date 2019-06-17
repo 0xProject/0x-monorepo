@@ -290,16 +290,7 @@ contract MixinMatchOrders is
             leftOrder.makerAddress,
             matchedFillResults.left.takerAssetFilledAmount
         );
-        if (leftOrder.makerAddress != leftFeeRecipientAddress) {
-            // Left maker fee -> left fee recipient
-            _dispatchTransferFrom(
-                leftOrderHash,
-                leftOrder.makerFeeAssetData,
-                leftOrder.makerAddress,
-                leftFeeRecipientAddress,
-                matchedFillResults.left.makerFeePaid
-            );
-        }
+
         // Left maker asset -> right maker
         _dispatchTransferFrom(
             leftOrderHash,
@@ -308,16 +299,24 @@ contract MixinMatchOrders is
             rightOrder.makerAddress,
             matchedFillResults.right.takerAssetFilledAmount
         );
-        if (rightOrder.makerAddress != rightFeeRecipientAddress) {
-            // Right maker fee -> right fee recipient
-            _dispatchTransferFrom(
-                rightOrderHash,
-                rightOrder.makerFeeAssetData,
-                rightOrder.makerAddress,
-                rightFeeRecipientAddress,
-                matchedFillResults.right.makerFeePaid
-            );
-        }
+
+        // Right maker fee -> right fee recipient
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightOrder.makerFeeAssetData,
+            rightOrder.makerAddress,
+            rightFeeRecipientAddress,
+            matchedFillResults.right.makerFeePaid
+        );
+
+        // Left maker fee -> left fee recipient
+        _dispatchTransferFrom(
+            leftOrderHash,
+            leftOrder.makerFeeAssetData,
+            leftOrder.makerAddress,
+            leftFeeRecipientAddress,
+            matchedFillResults.left.makerFeePaid
+        );
 
         // Settle taker profits.
         _dispatchTransferFrom(
@@ -335,39 +334,34 @@ contract MixinMatchOrders is
         ) {
             // Fee recipients and taker fee assets are identical, so we can
             // transfer them in one go.
-            if (takerAddress != leftFeeRecipientAddress) {
-                _dispatchTransferFrom(
-                    leftOrderHash,
-                    leftOrder.takerFeeAssetData,
-                    takerAddress,
-                    leftFeeRecipientAddress,
-                    _safeAdd(
-                        matchedFillResults.left.takerFeePaid,
-                        matchedFillResults.right.takerFeePaid
-                    )
-                );
-            }
-        } else {
-            if (takerAddress != leftFeeRecipientAddress) {
-                // taker fee -> left fee recipient
-                _dispatchTransferFrom(
-                    leftOrderHash,
-                    leftOrder.takerFeeAssetData,
-                    takerAddress,
-                    leftFeeRecipientAddress,
-                    matchedFillResults.left.takerFeePaid
-                );
-            }
-            if (takerAddress != rightFeeRecipientAddress) {
-                // taker fee -> right fee recipient
-                _dispatchTransferFrom(
-                    rightOrderHash,
-                    rightOrder.takerFeeAssetData,
-                    takerAddress,
-                    rightFeeRecipientAddress,
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                _safeAdd(
+                    matchedFillResults.left.takerFeePaid,
                     matchedFillResults.right.takerFeePaid
-                );
-            }
+                )
+            );
+        } else {
+            // Right taker fee -> right fee recipient
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.takerFeeAssetData,
+                takerAddress,
+                rightFeeRecipientAddress,
+                matchedFillResults.right.takerFeePaid
+            );
+
+            // Left taker fee -> left fee recipient
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                matchedFillResults.left.takerFeePaid
+            );
         }
     }
 }
