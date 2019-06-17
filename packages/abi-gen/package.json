@@ -40,7 +40,6 @@
         "handlebars": "^4.0.11",
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
-        "pure-evm": "^0.1.2",
         "sleep": "^5.1.1",
         "tmp": "^0.0.33",
         "to-snake-case": "^1.0.0",
