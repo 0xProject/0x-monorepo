@@ -25,4 +25,10 @@ interface IStakingEvents {
     event ExchangeRemoved(
         address exchangeAddress
     );
+
+    event EpochFinalized(
+        uint256 totalActivePools,
+        uint256 totalFees,
+        uint256 totalRewards
+    );
 }

@@ -92,12 +92,17 @@ contract MixinFees is
         uint256 totalRewards = address(this).balance;
         uint256 totalStake = _getActivatedStakeAcrossAllOwners();
 
+        emit EpochFinalized(
+            numberOfActivePoolIds,
+            totalRewards,
+            0
+        );
+
         // no rebates available
         // note that there is a case in cobb-douglas where if we weigh either fees or stake at 100%,
         // then the other value doesn't matter. However, it's cheaper on gas to assume that there is some
         // non-zero split.
         if (totalRewards == 0 || totalFees == 0 || totalStake == 0) {
-            // revert("We don't want to hit this case in testing");
             return;
         }
 
@@ -150,5 +155,12 @@ contract MixinFees is
             address payable rewardVaultAddress = address(uint160(address(rewardVault)));
             rewardVaultAddress.transfer(totalRewardsRecordedInVault);
         }
+
+        // Notify finalization
+        emit EpochFinalized(
+            numberOfActivePoolIds,
+            totalRewards,
+            totalRewardsRecordedInVault
+        );
     }
 }

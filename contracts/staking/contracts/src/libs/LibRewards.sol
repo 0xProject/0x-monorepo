@@ -86,12 +86,15 @@ contract LibRewards is SafeMath {
             return 0;
         }
         return _safeDiv(
-            _safeMul(
-                amountToDelegateByOwner,
-                _safeAdd(
-                    totalAmountOfShadowAsset,
-                    totalAmountOfRealAsset
-                )
+            _safeAdd( // we round up when computing shadow asset
+                _safeMul(
+                    amountToDelegateByOwner,
+                    _safeAdd(
+                        totalAmountOfShadowAsset,
+                        totalAmountOfRealAsset
+                    )
+                ),
+                _safeSub(totalAmountDelegated, 1)
             ),
             totalAmountDelegated
         );
