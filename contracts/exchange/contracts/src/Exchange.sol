@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "./MixinMatchOrders.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";
+import "./MixinTransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -31,7 +32,8 @@ import "./MixinWrapperFunctions.sol";
 contract Exchange is
     MixinSignatureValidator,
     MixinMatchOrders,
-    MixinWrapperFunctions
+    MixinWrapperFunctions,
+    MixinTransferSimulator
 {
     string constant public VERSION = "3.0.0";
 
@@ -45,6 +47,8 @@ contract Exchange is
         MixinSignatureValidator()
         MixinTransactions()
         MixinAssetProxyDispatcher()
+        MixinTransferSimulator()
         MixinWrapperFunctions()
+        MixinExchangeRichErrors()
     {}
 }
