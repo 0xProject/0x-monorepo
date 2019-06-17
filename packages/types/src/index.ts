@@ -340,6 +340,7 @@ export enum RevertReason {
     InvalidStaticCallDataOffset = 'INVALID_STATIC_CALL_DATA_OFFSET',
     TargetNotEven = 'TARGET_NOT_EVEN',
     UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
+    TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
 }
 
 export enum StatusCodes {
