@@ -1,7 +1,7 @@
 import { deleteNestedProperty, logUtils } from '@0x/utils';
 import * as fs from 'fs';
 
-export const REQUIRE_PROPERTIES: string[] = [
+export const REQUIRED_PROPERTIES: string[] = [
     'schemaVersion',
     'contractName',
     'compilerOutput.evm.bytecode.object',

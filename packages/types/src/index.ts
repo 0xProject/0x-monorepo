@@ -723,7 +723,6 @@ export interface SimpleStandardContractOutput {
 
 export interface SimpleEvmOutput {
     bytecode: SimpleEvmBytecodeOutput;
-    deployedBytecode: SimpleEvmBytecodeOutput;
 }
 
 export interface SimpleEvmBytecodeOutput {

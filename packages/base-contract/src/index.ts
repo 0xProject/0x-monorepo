@@ -155,7 +155,7 @@ export class BaseContract {
             const vm = new VM();
             vm.runCode(
                 {
-                    code: Buffer.from(this.deployedBytecode.substr(2), 'hex'),
+                    code: Buffer.from(deployedBytecode.substr(2), 'hex'),
                     data: input,
                     gasLimit: Buffer.from('ffffffff', 'hex'),
                 },

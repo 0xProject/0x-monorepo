@@ -5,7 +5,7 @@ import 'mocha';
 import * as artifacts from '../src/index';
 
 import { ObjectMap } from '../../types/lib';
-import { FORBIDDEN_PROPERTIES, REQUIRE_PROPERTIES } from '../src/transform';
+import { FORBIDDEN_PROPERTIES, REQUIRED_PROPERTIES } from '../src/transform';
 
 const expect = chai.expect;
 
@@ -28,7 +28,7 @@ describe('Contract Artifacts', () => {
     it('should include all required attributes', () => {
         const missingRequiredPropertiesByArtifact: ObjectMap<string[]> = {};
         for (const [artifactName, artifact] of Object.entries(artifacts)) {
-            for (const requiredProperty of REQUIRE_PROPERTIES) {
+            for (const requiredProperty of REQUIRED_PROPERTIES) {
                 const requiredValue = get(artifact, requiredProperty);
                 if (requiredValue === undefined || requiredValue === '') {
                     const previousMissing = missingRequiredPropertiesByArtifact[artifactName];
