@@ -37,6 +37,10 @@
             {
                 "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` type",
                 "pr": 1832
+            },
+            {
+                "note": "Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum",
+                "pr": 1868
             }
         ]
     },
