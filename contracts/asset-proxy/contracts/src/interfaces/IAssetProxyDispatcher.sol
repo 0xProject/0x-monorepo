@@ -21,6 +21,12 @@ pragma solidity ^0.5.9;
 
 contract IAssetProxyDispatcher {
 
+    // Logs registration of new asset proxy
+    event AssetProxyRegistered(
+        bytes4 id,              // Id of new registered AssetProxy.
+        address assetProxy      // Address of new registered AssetProxy.
+    );
+
     /// @dev Registers an asset proxy to its asset proxy id.
     ///      Once an asset proxy is registered, it cannot be unregistered.
     /// @param assetProxy Address of new asset proxy to register.

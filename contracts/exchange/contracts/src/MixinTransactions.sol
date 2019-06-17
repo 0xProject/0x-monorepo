@@ -20,21 +20,20 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/ITransactions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
+    MixinExchangeRichErrors,
     LibZeroExTransaction,
-    MSignatureValidator,
-    MTransactions,
-    MExchangeRichErrors
+    ISignatureValidator,
+    ITransactions
 {
-
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
-    mapping (bytes32 => bool) public transactions;
+    mapping (bytes32 => bool) public transactionsExecuted;
 
     // Address of current transaction signer
     address public currentContextAddress;
@@ -103,7 +102,7 @@ contract MixinTransactions is
         }
 
         // Validate transaction has not been executed
-        if (transactions[transactionHash]) {
+        if (transactionsExecuted[transactionHash]) {
             _rrevert(TransactionError(
                 TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
@@ -130,7 +129,7 @@ contract MixinTransactions is
         }
 
         // Execute transaction
-        transactions[transactionHash] = true;
+        transactionsExecuted[transactionHash] = true;
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
             _rrevert(TransactionExecutionError(

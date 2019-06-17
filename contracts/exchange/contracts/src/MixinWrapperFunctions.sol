@@ -20,23 +20,21 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MWrapperFunctions.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IExchangeCore.sol";
+import "./interfaces/IWrapperFunctions.sol";
+import "./MixinExchangeRichErrors.sol";
+import "./MixinExchangeCore.sol";
 
 
 contract MixinWrapperFunctions is
-    ReentrancyGuard,
-    LibExchangeSelectors,
-    LibMath,
-    LibFillResults,
-    MExchangeCore,
-    MWrapperFunctions,
-    MExchangeRichErrors
+    IWrapperFunctions,
+    MixinExchangeRichErrors,
+    MixinExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.

@@ -19,15 +19,16 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
-import "./mixins/MAssetProxyDispatcher.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
+import "./interfaces/IAssetProxyDispatcher.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinAssetProxyDispatcher is
+    MixinExchangeRichErrors,
     Ownable,
-    MAssetProxyDispatcher,
-    MExchangeRichErrors
+    IAssetProxyDispatcher
 {
     // Mapping from Asset Proxy Id's to their respective Asset Proxy
     mapping (bytes4 => address) public assetProxies;

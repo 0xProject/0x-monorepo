@@ -18,12 +18,13 @@
 
 pragma solidity ^0.5.9;
 
-import "./mixins/MRichErrors.sol";
 
+contract RichErrors {
 
-contract RichErrors is
-    MRichErrors
-{
+    // bytes4(keccak256("Error(string)"))
+    bytes4 internal constant STANDARD_ERROR_SELECTOR =
+        0x08c379a0;
+
     // solhint-disable func-name-mixedcase
     /// @dev ABI encode a standard, string revert error payload.
     ///      This is the same payload that would be included by a `revert(string)`

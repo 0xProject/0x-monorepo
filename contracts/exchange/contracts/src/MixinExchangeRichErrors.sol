@@ -20,12 +20,12 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IExchangeRichErrors.sol";
 
 
 contract MixinExchangeRichErrors is
     RichErrors,
-    MExchangeRichErrors
+    IExchangeRichErrors
 {
     // solhint-disable func-name-mixedcase
     function SignatureError(

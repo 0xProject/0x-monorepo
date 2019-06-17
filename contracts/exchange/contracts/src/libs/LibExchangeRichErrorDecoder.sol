@@ -18,12 +18,13 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../mixins/MExchangeRichErrorTypes.sol";
+import "../interfaces/IExchangeRichErrors.sol";
 
 
-contract LibExchangeRichErrorDecoder is
-    MExchangeRichErrorTypes
+contract LibExchangeRichErrorDecoder is 
+    IExchangeRichErrors
 {
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.

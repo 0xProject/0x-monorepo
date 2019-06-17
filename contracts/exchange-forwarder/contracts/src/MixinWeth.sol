@@ -20,13 +20,11 @@ pragma solidity ^0.5.9;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
-import "./mixins/MWeth.sol";
 
 
 contract MixinWeth is
     LibMath,
     LibConstants,
-    MWeth
 {
     /// @dev Default payabale function, this allows us to withdraw WETH
     function ()

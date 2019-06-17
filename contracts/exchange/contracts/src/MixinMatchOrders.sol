@@ -15,26 +15,22 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MMatchOrders.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MAssetProxyDispatcher.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IAssetProxyDispatcher.sol";
+import "./MixinExchangeCore.sol";
+import "./interfaces/IMatchOrders.sol";
+import "./interfaces/ITransactions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
 contract MixinMatchOrders is
-    ReentrancyGuard,
-    LibMath,
-    LibOrder,
-    MAssetProxyDispatcher,
-    MExchangeCore,
-    MMatchOrders,
-    MTransactions,
-    MExchangeRichErrors
+    MixinExchangeRichErrors,
+    MixinExchangeCore,
+    IMatchOrders
 {
     using LibBytes for bytes;
 

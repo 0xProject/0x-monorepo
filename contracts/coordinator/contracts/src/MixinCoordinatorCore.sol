@@ -21,13 +21,13 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "./libs/LibConstants.sol";
-import "./mixins/MCoordinatorApprovalVerifier.sol";
 import "./interfaces/ICoordinatorCore.sol";
+import "./interfaces/ICoordinatorApprovalVerifier.sol";
 
 
 contract MixinCoordinatorCore is
     LibConstants,
-    MCoordinatorApprovalVerifier,
+    ICoordinatorApprovalVerifier,
     ICoordinatorCore
 {
     /// @dev Executes a 0x transaction that has been signed by the feeRecipients that correspond to each order in the transaction's Exchange calldata.

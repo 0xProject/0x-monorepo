@@ -19,24 +19,19 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./MixinExchangeCore.sol";
+import "./MixinMatchOrders.sol";
 import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";
-import "./MixinAssetProxyDispatcher.sol";
-import "./MixinTransactions.sol";
-import "./MixinMatchOrders.sol";
-import "./MixinExchangeRichErrors.sol";
 
 
 // solhint-disable no-empty-blocks
+// MixinAssetProxyDispatcher, MixinExchangeCore, MixinExchangeRichErrors, 
+// and MixinTransactions are all inherited via the other Mixins that are
+// used.
 contract Exchange is
-    MixinExchangeCore,
-    MixinMatchOrders,
     MixinSignatureValidator,
-    MixinTransactions,
-    MixinAssetProxyDispatcher,
-    MixinWrapperFunctions,
-    MixinExchangeRichErrors
+    MixinMatchOrders,
+    MixinWrapperFunctions
 {
     string constant public VERSION = "3.0.0";
 

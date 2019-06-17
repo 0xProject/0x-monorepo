@@ -15,7 +15,6 @@
   limitations under the License.
 
 */
-
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
@@ -25,24 +24,23 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "./mixins/MExchangeCore.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MAssetProxyDispatcher.sol";
-import "./mixins/MExchangeRichErrors.sol";
+import "./interfaces/IAssetProxyDispatcher.sol";
+import "./interfaces/IExchangeCore.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./MixinAssetProxyDispatcher.sol";
+import "./MixinExchangeRichErrors.sol";
+import "./MixinSignatureValidator.sol";
+import "./MixinAssetProxyDispatcher.sol";
+import "./MixinTransactions.sol";
 
 
 contract MixinExchangeCore is
-    ReentrancyGuard,
+    IExchangeCore,
     LibExchangeSelectors,
     LibMath,
-    LibOrder,
     LibFillResults,
-    MAssetProxyDispatcher,
-    MExchangeCore,
-    MSignatureValidator,
-    MTransactions,
-    MExchangeRichErrors
+    MixinAssetProxyDispatcher,
+    MixinSignatureValidator
 {
     using LibBytes for bytes;
 
@@ -388,7 +386,7 @@ contract MixinExchangeCore is
         uint256 makerAssetFilledAmount
     )
         internal
-        view
+        pure
     {
         // Revert if fill amount is invalid
         // TODO: reconsider necessity for v2.1

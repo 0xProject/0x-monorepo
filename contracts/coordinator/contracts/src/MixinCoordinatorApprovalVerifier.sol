@@ -25,8 +25,8 @@ import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
 import "./libs/LibCoordinatorApproval.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MCoordinatorApprovalVerifier.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./interfaces/ICoordinatorApprovalVerifier.sol";
 
 
 // solhint-disable avoid-tx-origin
@@ -34,8 +34,8 @@ contract MixinCoordinatorApprovalVerifier is
     LibExchangeSelectors,
     LibCoordinatorApproval,
     LibZeroExTransaction,
-    MSignatureValidator,
-    MCoordinatorApprovalVerifier
+    ISignatureValidator,
+    ICoordinatorApprovalVerifier
 {
     using LibBytes for bytes;
     using LibAddressArray for address[];

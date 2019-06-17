@@ -11,6 +11,7 @@
         "generated-artifacts/IEtherToken.json",
         "generated-artifacts/MintableERC20Token.json",
         "generated-artifacts/UnlimitedAllowanceERC20Token.json",
+        "generated-artifacts/UntransferrableDummyERC20Token.json",
         "generated-artifacts/WETH9.json",
         "generated-artifacts/ZRXToken.json"
     ],

@@ -21,22 +21,23 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "./mixins/MSignatureValidator.sol";
-import "./mixins/MTransactions.sol";
-import "./mixins/MExchangeRichErrors.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IValidator.sol";
 import "./interfaces/IOrderValidator.sol";
+import "./interfaces/ISignatureValidator.sol";
+import "./MixinTransactions.sol";
+import "./MixinExchangeRichErrors.sol";
 
 
-contract MixinSignatureValidator is
-    ReentrancyGuard,
-    LibOrder,
-    MSignatureValidator,
-    MTransactions,
-    MExchangeRichErrors
-{
+contract MixinSignatureValidator is 
+    MixinExchangeRichErrors, 
+    ReentrancyGuard, 
+    LibOrder, 
+    ISignatureValidator,
+    MixinTransactions
+{ 
     using LibBytes for bytes;
 
     // Mapping of hash => signer => signed
