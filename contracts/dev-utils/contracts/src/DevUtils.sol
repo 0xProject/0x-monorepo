@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./OrderValidationUtils.sol";
+import "./OrderTransferSimulationUtils.sol";
 import "./LibTransactionDecoder.sol";
 import "./EthBalanceChecker.sol";
 
@@ -28,10 +29,12 @@ import "./EthBalanceChecker.sol";
 contract DevUtils is
     OrderValidationUtils,
     LibTransactionDecoder,
-    EthBalanceChecker
+    EthBalanceChecker,
+    OrderTransferSimulationUtils
 {
     constructor (address _exchange)
         public
         OrderValidationUtils(_exchange)
+        OrderTransferSimulationUtils(_exchange)
     {}
 }
