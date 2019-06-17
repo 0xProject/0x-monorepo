@@ -17,7 +17,8 @@ contract SafeMath is
         }
         uint256 c = a * b;
         if (c / a != b) {
-            _rrevert(Uint256OverflowError(
+            _rrevert(SafeMathError(
+                SafeMathErrorCodes.UINT256_MULTIPLICATION_OVERFLOW,
                 a,
                 b
             ));
@@ -40,7 +41,8 @@ contract SafeMath is
         returns (uint256)
     {
         if (b > a) {
-            _rrevert(Uint256UnderflowError(
+            _rrevert(SafeMathError(
+                SafeMathErrorCodes.UINT256_SUBTRACTION_UNDERFLOW,
                 a,
                 b
             ));
@@ -55,7 +57,8 @@ contract SafeMath is
     {
         uint256 c = a + b;
         if (c < a) {
-            _rrevert(Uint256OverflowError(
+            _rrevert(SafeMathError(
+                SafeMathErrorCodes.UINT256_ADDITION_OVERFLOW,
                 a,
                 b
             ));
