@@ -3,27 +3,20 @@ import { RevertError } from './revert_error';
 
 // tslint:disable:max-classes-per-file
 
-export class Uint256OverflowError extends RevertError {
-    constructor(a?: BigNumber | number | string, b?: BigNumber | number | string) {
-        super('Uint256OverflowError', 'Uint256OverflowError(uint256 a, uint256 b)', {
+export enum SafeMathErrorCodes {
+    Uint256AdditionOverflow,
+    Uint256MultiplicationOverflow,
+    Uint256SubtractionUnderflow,
+}
+
+export class SafeMathError extends RevertError {
+    constructor(error?: SafeMathErrorCodes, a?: BigNumber | number | string, b?: BigNumber | number | string) {
+        super('SafeMathError', 'SafeMathError(uint8 error, uint256 a, uint256 b)', {
+            error,
             a,
             b,
         });
     }
 }
 
-export class Uint256UnderflowError extends RevertError {
-    constructor(a?: BigNumber | number | string, b?: BigNumber | number | string) {
-        super('Uint256UnderflowError', 'Uint256UnderflowError(uint256 a, uint256 b)', {
-            a,
-            b,
-        });
-    }
-}
-
-const types = [Uint256OverflowError, Uint256UnderflowError];
-
-// Register the types we've defined.
-for (const type of types) {
-    RevertError.registerType(type);
-}
+RevertError.registerType(SafeMathError);
