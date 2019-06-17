@@ -943,7 +943,7 @@ describe('Staking Core', () => {
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
         });
 
-        it.skip('Finalization with Protocol Fees and Delegation', async () => {
+        it('Finalization with Protocol Fees and Delegation', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////
@@ -1031,7 +1031,7 @@ describe('Staking Core', () => {
                 stakingWrapper.depositAndStakeAsync(poolOperators[1], stakeByPoolOperator[1]),
                 // pool 2
                 stakingWrapper.depositAndStakeAsync(poolOperators[2], stakeByPoolOperator[2]),
-            ]);
+            ])
 
             ///// 6 Add some delegators to pool 2 /////
             const delegators = stakers.slice(0, 3);
@@ -1069,11 +1069,13 @@ describe('Staking Core', () => {
                 new BigNumber('9.90218'),   // 9.9021783083174087034787071054543342142019746753770943 
                 new BigNumber('28.16463'),  // 28.164631904035798614670299155719067954180760345463798
             ];
+
             const payoutByPoolOperator = await Promise.all([
                 stakingWrapper.rewardVaultGetBalanceAsync(poolIds[0]),
                 stakingWrapper.rewardVaultGetBalanceAsync(poolIds[1]),
                 stakingWrapper.rewardVaultGetBalanceAsync(poolIds[2]),
             ]);
+
             const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
                 stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[0], 18), 5),
                 stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[1], 18), 5),
@@ -1087,6 +1089,11 @@ describe('Staking Core', () => {
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
 
             ///// 10 CHECK DELEGATOR BY UNDELEGATING /////
+            const poolPayoutById = await Promise.all([
+                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[0]),
+                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[1]),
+                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[2]),
+            ]);
             const ethBalancesByDelegatorInit = await Promise.all([
                 stakingWrapper.getEthBalanceAsync(delegators[0]),
                 stakingWrapper.getEthBalanceAsync(delegators[1]),
@@ -1113,13 +1120,13 @@ describe('Staking Core', () => {
             // if the last person to leave rounded down, then there is some trace amount left in the pool.
             // carry-over here is 00000000000000000002 
             const expectedRewardByDelegator = [
-                payoutByPoolOperator[2].times(stakeByDelegator[0]).dividedToIntegerBy(totalStakeByDelegators),
-                payoutByPoolOperator[2].times(stakeByDelegator[1]).dividedToIntegerBy(totalStakeByDelegators),
-                new BigNumber('13927564703644768540'), // computed by hand to account for carry-over
+                poolPayoutById[2].times(stakeByDelegator[0]).dividedToIntegerBy(totalStakeByDelegators),
+                poolPayoutById[2].times(stakeByDelegator[1]).dividedToIntegerBy(totalStakeByDelegators),
+                new BigNumber('7938711881077518068'), // computed by hand to account for carry-over
             ];
             expect(rewardByDelegator[0]).to.be.bignumber.equal(expectedRewardByDelegator[0]);
             expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
-            expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);            
+            expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);        
 
             ///// 11 CHECK DELEGATOR BUY-IN ON A SUBSEQUENT EPOCH, WHEN AMOUNT IS NON-ZERO /////
 
