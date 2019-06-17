@@ -96,11 +96,15 @@ contract RewardVault is
         onlyStakingContract
     {}
 
+    event EKF(uint256 amt);
+
     function ()
         external
         payable
         onlyStakingContract
-    {}
+    {
+        emit EKF(msg.value);
+    }
 
     function withdrawFromOperator(bytes32 poolId, uint256 amount)
         external
