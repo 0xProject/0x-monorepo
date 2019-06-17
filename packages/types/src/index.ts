@@ -803,3 +803,11 @@ export enum OrderStatus {
     FullyFilled,
     Cancelled,
 }
+
+export enum OrderTransferResults {
+    TakerAssetDataFailed,
+    MakerAssetDataFailed,
+    TakerFeeAssetDataFailed,
+    MakerFeeAssetDataFailed,
+    TransfersSuccessful,
+}

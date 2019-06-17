@@ -27,6 +27,7 @@
         "src/DevUtils.sol",
         "src/LibAssetData.sol",
         "src/LibTransactionDecoder.sol",
-        "src/EthBalanceChecker.sol"
+        "src/EthBalanceChecker.sol",
+        "src/OrderTransferSimulationUtils.sol"
     ]
 }

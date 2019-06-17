@@ -20,7 +20,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { SignedOrder } from '@0x/types';
+import { OrderTransferResults, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 
@@ -30,7 +30,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('OrderValidationUtils', () => {
+describe('OrderValidationUtils/OrderTransferSimulatorUtils', () => {
     let makerAddress: string;
     let takerAddress: string;
     let owner: string;
@@ -412,6 +412,7 @@ describe('OrderValidationUtils', () => {
     });
     describe('getOrderRelevantStates', async () => {
         it('should return the correct information for multiple orders', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync();
             await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount);
             await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
                 from: makerAddress,
@@ -441,6 +442,150 @@ describe('OrderValidationUtils', () => {
             expect(fillableTakerAssetAmounts[1]).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(isValidSignature[0]).to.equal(true);
             expect(isValidSignature[1]).to.equal(false);
+        });
+    });
+    describe('getSimulatedOrderTransferResults', () => {
+        beforeEach(async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync();
+        });
+        it('should return TakerAssetDataFailed if the takerAsset transfer fails', async () => {
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount,
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.TakerAssetDataFailed);
+        });
+        it('should return MakerAssetDataFailed if the makerAsset transfer fails', async () => {
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount,
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.MakerAssetDataFailed);
+        });
+        it('should return TakerFeeAssetDataFailed if the takerFeeAsset transfer fails', async () => {
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount,
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.TakerFeeAssetDataFailed);
+        });
+        it('should return MakerFeeAssetDataFailed if the makerFeeAsset transfer fails', async () => {
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+                from: takerAddress,
+            });
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount,
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.MakerFeeAssetDataFailed);
+        });
+        it('should return TransfersSuccessful if all transfers succeed', async () => {
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+                from: takerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+                from: makerAddress,
+            });
+            const orderTransferResults = await devUtils.getSimulatedOrderTransferResults.callAsync(
+                signedOrder,
+                takerAddress,
+                signedOrder.takerAssetAmount,
+            );
+            expect(orderTransferResults).to.equal(OrderTransferResults.TransfersSuccessful);
+        });
+    });
+    describe('getSimulatedOrdersTransferResults', async () => {
+        it('should simulate the transfers of each order independently from one another', async () => {
+            // Set balances and allowances to exactly enough to fill a single order
+            await erc20Token2.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token2.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerAssetAmount, {
+                from: takerAddress,
+            });
+            await erc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerAssetAmount, {
+                from: owner,
+            });
+            await erc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerAssetAmount, {
+                from: makerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(takerAddress, signedOrder.takerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.takerFee, {
+                from: takerAddress,
+            });
+            await feeErc20Token.setBalance.awaitTransactionSuccessAsync(makerAddress, signedOrder.makerFee, {
+                from: owner,
+            });
+            await feeErc20Token.approve.awaitTransactionSuccessAsync(erc20Proxy.address, signedOrder.makerFee, {
+                from: makerAddress,
+            });
+            const [
+                orderTransferResults1,
+                orderTransferResults2,
+            ] = await devUtils.getSimulatedOrdersTransferResults.callAsync(
+                [signedOrder, signedOrder],
+                [takerAddress, takerAddress],
+                [signedOrder.takerAssetAmount, signedOrder.takerAssetAmount],
+            );
+            expect(orderTransferResults1).to.equal(OrderTransferResults.TransfersSuccessful);
+            expect(orderTransferResults2).to.equal(OrderTransferResults.TransfersSuccessful);
         });
     });
 });
