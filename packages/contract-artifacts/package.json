@@ -10,6 +10,9 @@
         "test": "test"
     },
     "scripts": {
+        "artifacts_copy": "node lib/src/copy.js",
+        "artifacts_transform": "node lib/src/transform.js ./artifacts && prettier --write ./artifacts/*.json &&  cp -r ./artifacts/ ../../python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/",
+        "artifacts_update": "yarn artifacts_copy && yarn artifacts_transform && yarn build",
         "build": "yarn tsc -b",
         "build:ci": "yarn build",
         "test": "yarn run_mocha",
@@ -27,6 +30,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contract-artifacts/README.md",
     "devDependencies": {
+        "@0x/utils": "^4.3.3",
         "chai": "^4.0.1",
         "lodash": "^4.17.11",
         "mocha": "^4.1.0",
