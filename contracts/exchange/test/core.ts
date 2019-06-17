@@ -243,7 +243,7 @@ describe('Exchange core', () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId);
+                    await reentrantErc20Token.setReentrantFunction.awaitTransactionSuccessAsync(functionId);
                     const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
                     return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
@@ -375,6 +375,167 @@ describe('Exchange core', () => {
         });
     });
 
+    describe('Fill transfer ordering', () => {
+        it('should allow the maker to exchange assets received by the taker', async () => {
+            // Set maker/taker assetData to the same asset
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+            const takerAssetAmount = new BigNumber(1);
+            const makerAssetData = assetDataUtils.encodeMultiAssetData([takerAssetAmount], [takerAssetData]);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount: takerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
+            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(2);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+        });
+        it('should allow the taker to pay fees with an asset that received by the maker', async () => {
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                takerFeeAssetData: makerAssetData,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: new BigNumber(1),
+            });
+            // Set taker balance to 0 so that the asset must be received by the maker in order for the fill to succeed
+            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(takerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(3);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerFee);
+        });
+        it('should allow the maker to pay fees with an asset that received by the taker', async () => {
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenB.address);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFeeAssetData: takerAssetData,
+                makerFee: new BigNumber(1),
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
+            await erc20TokenB.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(3);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerFee);
+        });
+    });
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
             noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
