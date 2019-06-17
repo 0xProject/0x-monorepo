@@ -45,7 +45,8 @@
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.1.0"
+        "@0x/base-contract": "^5.1.0",
+        "@0x/contract-artifacts": "^1.5.1"
     },
     "publishConfig": {
         "access": "public"
