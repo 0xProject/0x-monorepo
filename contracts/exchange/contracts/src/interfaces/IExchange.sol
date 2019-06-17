@@ -25,6 +25,7 @@ import "./ISignatureValidator.sol";
 import "./ITransactions.sol";
 import "./IAssetProxyDispatcher.sol";
 import "./IWrapperFunctions.sol";
+import "./ITransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
@@ -34,5 +35,6 @@ contract IExchange is
     ISignatureValidator,
     ITransactions,
     IAssetProxyDispatcher,
+    ITransferSimulator,
     IWrapperFunctions
 {}
