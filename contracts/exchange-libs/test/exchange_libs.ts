@@ -74,7 +74,6 @@ describe('Exchange libs', () => {
             domain,
         };
     });
-
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });

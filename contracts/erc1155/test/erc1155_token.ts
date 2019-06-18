@@ -12,12 +12,14 @@ import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
+
 import {
+    artifacts,
     DummyERC1155ReceiverBatchTokenReceivedEventArgs,
     DummyERC1155ReceiverContract,
     ERC1155MintableContract,
-    artifacts,
 } from '../src';
+
 import { Erc1155Wrapper } from './utils/erc1155_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
@@ -344,7 +346,6 @@ describe('ERC1155Token', () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
-
             // create the expected error (a uint256 underflow)
             const expectedError = new SafeMathRevertErrors.SafeMathError(
                 SafeMathRevertErrors.SafeMathErrorCodes.Uint256SubtractionUnderflow,
@@ -495,4 +496,5 @@ describe('ERC1155Token', () => {
         });
     });
 });
+// tslint:disable:max-file-line-count
 // tslint:enable:no-unnecessary-type-assertion
