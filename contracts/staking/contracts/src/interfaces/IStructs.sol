@@ -28,7 +28,7 @@ interface IStructs {
     }
 
     struct Pool {
-        address operatorAddress;
+        address payable operatorAddress;
         uint8 operatorShare;
     }
 
