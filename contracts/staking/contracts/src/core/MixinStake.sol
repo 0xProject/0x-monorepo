@@ -228,19 +228,11 @@ contract MixinStake is
                 shadowRewardsByPoolId[poolId],
                 poolBalance
             );
-            emit K(
-                amount,
-                _delegatedStakeByPoolId,
-                payoutInShadowAsset,
-                shadowRewardsByPoolId[poolId],
-                poolBalance,
-                payoutInRealAsset
-            );
         } else {
             // partial payout
             (payoutInRealAsset, payoutInShadowAsset) = _computePartialPayout(
                  amount,
-                _delegatedStakeByOwner,
+                _delegatedStakeToPoolByOwner,
                 _delegatedStakeByPoolId,
                 shadowRewardsInPoolByOwner[owner][poolId],
                 shadowRewardsByPoolId[poolId],
