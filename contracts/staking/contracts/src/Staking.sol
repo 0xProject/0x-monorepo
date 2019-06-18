@@ -318,23 +318,37 @@ contract Staking is
 
     ///// REWARDS /////
 
-    function computeOperatorRewardBalance(address operator, bytes32 poolId)
+    function getRewardBalance(bytes32 poolId)
         external
         view
         returns (uint256)
     {
-        
+        return _getRewardBalance(poolId);
     }
 
-    function computeDelegatorRewardBalance(address owner, bytes32 poolId)
+    function getRewardBalanceOfOperator(bytes32 poolId)
         external
         view
         returns (uint256)
     {
-
+        return _getRewardBalanceOfOperator(poolId);
     }
 
-    ///// SHADOW BALANCES /////
+    function getRewardBalanceOfPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return _getRewardBalanceOfPool(poolId);
+    }
+
+     function computeRewardBalance(bytes32 poolId, address owner)
+        external
+        view
+        returns (uint256)
+    {
+        return _computeRewardBalance(poolId, owner);
+    }
 
     function getShadowBalanceByPoolId(bytes32 poolId)
         external
@@ -350,6 +364,34 @@ contract Staking is
         returns (uint256)
     {
         return _getShadowBalanceInPoolByOwner(owner, poolId);
+    }
+
+    function withdrawOperatorReward(bytes32 poolId, uint256 amount)
+        external
+        onlyPoolOperator(poolId)
+    {
+        _withdrawOperatorReward(poolId, amount);
+    }
+
+    function withdrawReward(bytes32 poolId, uint256 amount)
+        external
+    {
+        _withdrawReward(poolId, msg.sender, amount);
+    }
+
+    function withdrawTotalOperatorReward(bytes32 poolId)
+        external
+        onlyPoolOperator(poolId)
+        returns (uint256)
+    {
+        return _withdrawTotalOperatorReward(poolId);
+    }
+
+    function withdrawTotalReward(bytes32 poolId)
+        external
+        returns (uint256)
+    {
+        return _withdrawTotalReward(poolId, msg.sender);
     }
 
     ///// FEES /////
