@@ -822,12 +822,12 @@ describe('Staking Core', () => {
             expect(makerAddressesForPoolAfterRemoving).to.be.deep.equal([]);
         });
 
-        it('Finalization with Protocol Fees', async () => {
+        it.only('Finalization with Protocol Fees (no delegators)', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
             ///// 1 SETUP POOLS /////
             const poolOperators = stakers.slice(0, 3);
-            const operatorShares = [39, 59, 43];
+            const operatorShares = [100, 100, 100];
             const poolIds = await Promise.all([
                 stakingWrapper.createPoolAsync(poolOperators[0], operatorShares[0]),
                 stakingWrapper.createPoolAsync(poolOperators[1], operatorShares[1]),
@@ -935,11 +935,39 @@ describe('Staking Core', () => {
             expect(payoutAcurateToFiveDecimalsByPoolOperator[0]).to.be.bignumber.equal(expectedPayoutByPoolOperator[0]);
             expect(payoutAcurateToFiveDecimalsByPoolOperator[1]).to.be.bignumber.equal(expectedPayoutByPoolOperator[1]);
             expect(payoutAcurateToFiveDecimalsByPoolOperator[2]).to.be.bignumber.equal(expectedPayoutByPoolOperator[2]);
-
             ///// 8 CHECK PROFITS VIA STAKING CONTRACT /////
-
-
+            const payoutByPoolOperatorFromStakingContract = await Promise.all([
+                stakingWrapper.getRewardBalanceAsync(poolIds[0]),
+                stakingWrapper.getRewardBalanceAsync(poolIds[1]),
+                stakingWrapper.getRewardBalanceAsync(poolIds[2]),
+            ]);
+            expect(payoutByPoolOperatorFromStakingContract[0]).to.be.bignumber.equal(payoutByPoolOperator[0]);
+            expect(payoutByPoolOperatorFromStakingContract[1]).to.be.bignumber.equal(payoutByPoolOperator[1]);
+            expect(payoutByPoolOperatorFromStakingContract[2]).to.be.bignumber.equal(payoutByPoolOperator[2]);
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
+            const initOperatorBalances = await Promise.all([
+                stakingWrapper.getEthBalanceAsync(poolOperators[0]),
+                stakingWrapper.getEthBalanceAsync(poolOperators[1]),
+                stakingWrapper.getEthBalanceAsync(poolOperators[2]),
+            ]);
+            await Promise.all([
+                stakingWrapper.withdrawTotalOperatorRewardAsync(poolIds[0], poolOperators[0]),
+                stakingWrapper.withdrawTotalOperatorRewardAsync(poolIds[1], poolOperators[1]),
+                stakingWrapper.withdrawTotalOperatorRewardAsync(poolIds[2], poolOperators[2]),
+            ]);
+            const finalOperatorBalances = await Promise.all([
+                stakingWrapper.getEthBalanceAsync(poolOperators[0]),
+                stakingWrapper.getEthBalanceAsync(poolOperators[1]),
+                stakingWrapper.getEthBalanceAsync(poolOperators[2]),
+            ]);
+            const payoutBalancesByOperator = [
+                finalOperatorBalances[0].minus(initOperatorBalances[0]),
+                finalOperatorBalances[1].minus(initOperatorBalances[1]),
+                finalOperatorBalances[2].minus(initOperatorBalances[2]),
+            ];
+            expect(payoutBalancesByOperator[0]).to.be.bignumber.equal(payoutByPoolOperator[0]);
+            expect(payoutBalancesByOperator[1]).to.be.bignumber.equal(payoutByPoolOperator[1]);
+            expect(payoutBalancesByOperator[2]).to.be.bignumber.equal(payoutByPoolOperator[2]);
         });
 
         it('Finalization with Protocol Fees and Delegation', async () => {
@@ -1085,6 +1113,8 @@ describe('Staking Core', () => {
             expect(payoutAcurateToFiveDecimalsByPoolOperator[2]).to.be.bignumber.equal(expectedPayoutByPoolOperator[2]);
 
             ///// 8 CHECK PROFITS VIA STAKING CONTRACT /////
+
+
             ///// 9 WITHDRAW PROFITS VIA STAKING CONTRACT /////
 
             ///// 10 CHECK DELEGATOR BY UNDELEGATING /////
