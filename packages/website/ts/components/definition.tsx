@@ -17,7 +17,7 @@ interface Props {
     isInlineIcon?: boolean;
     isCentered?: boolean;
     isWithMargin?: boolean;
-    icon: string;
+    icon?: string;
     iconSize?: 'medium' | 'large' | number;
     fontSize?: 'default' | 'medium' | number;
     title: string;
@@ -28,7 +28,7 @@ interface Props {
 
 export const Definition = (props: Props) => (
     <Wrap {...props}>
-        <Icon name={props.icon} size={props.iconSize || 'medium'} margin={[0, 0, 'default', 0]} />
+        {!!props.icon && <Icon name={props.icon} size={props.iconSize || 'medium'} margin={[0, 0, 'default', 0]} />}
 
         <TextWrap {...props}>
             <Heading

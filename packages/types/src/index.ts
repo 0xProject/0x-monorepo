@@ -312,6 +312,10 @@ export enum RevertReason {
     TriedToMintNonFungibleForFungibleToken = 'TRIED_TO_MINT_NON_FUNGIBLE_FOR_FUNGIBLE_TOKEN',
     TransferRejected = 'TRANSFER_REJECTED',
     Uint256Underflow = 'UINT256_UNDERFLOW',
+    InvalidIdsOffset = 'INVALID_IDS_OFFSET',
+    InvalidValuesOffset = 'INVALID_VALUES_OFFSET',
+    InvalidDataOffset = 'INVALID_DATA_OFFSET',
+    InvalidAssetDataLength = 'INVALID_ASSET_DATA_LENGTH',
 }
 
 export enum StatusCodes {

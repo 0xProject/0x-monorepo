@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.5.1 - _May 10, 2019_
+
+    * Dependencies updated
+
 ## v1.5.0 - _April 11, 2019_
 
     * Added artifact for  `IAssetProxy` (#1714)

@@ -5,6 +5,22 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v6.1.5 - _May 24, 2019_
+
+    * Dependencies updated
+
+## v6.1.4 - _May 15, 2019_
+
+    * Dependencies updated
+
+## v6.1.3 - _May 14, 2019_
+
+    * Convert `metaData.remainingTakerAssetAmount` to BigNumber if present in APIOrder (#1810)
+
+## v6.1.1 - _May 10, 2019_
+
+    * Dependencies updated
+
 ## v6.1.0 - _April 11, 2019_
 
     * Moved order_utils into `@0x/order-utils` package as `orderCalculationUtils` (#1714)

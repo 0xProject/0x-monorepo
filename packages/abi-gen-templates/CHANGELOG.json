@@ -1,5 +1,24 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "add parameter assertions to methods",
+                "pr": 1823
+            }
+        ]
+    },
+    {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "add `awaitTransactionSuccessAsync()` to `tx.handlebars`",
+                "pr": 1797
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
         "version": "2.0.2",
         "changes": [
             {

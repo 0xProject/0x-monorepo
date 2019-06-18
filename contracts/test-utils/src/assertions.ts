@@ -104,7 +104,8 @@ export async function expectTransactionFailedAsync(p: sendTransactionResult, rea
     }
     switch (nodeType) {
         case NodeType.Ganache:
-            return expect(p).to.be.rejectedWith(reason);
+            const rejectionMessageRegex = new RegExp(`^VM Exception while processing transaction: revert ${reason}$`);
+            return expect(p).to.be.rejectedWith(rejectionMessageRegex);
         case NodeType.Geth:
             logUtils.warn(
                 'WARNING: Geth does not support revert reasons for sendTransaction. This test will pass if the transaction fails for any reason.',
@@ -160,7 +161,8 @@ export async function expectTransactionFailedWithoutReasonAsync(p: sendTransacti
  * otherwise resolve with no value.
  */
 export async function expectContractCallFailedAsync<T>(p: Promise<T>, reason: RevertReason): Promise<void> {
-    return expect(p).to.be.rejectedWith(reason);
+    const rejectionMessageRegex = new RegExp(`^VM Exception while processing transaction: revert ${reason}$`);
+    return expect(p).to.be.rejectedWith(rejectionMessageRegex);
 }
 
 /**

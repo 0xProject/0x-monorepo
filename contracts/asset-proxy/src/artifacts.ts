@@ -14,9 +14,9 @@ import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
 import * as MixinAuthorizable from '../generated-artifacts/MixinAuthorizable.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 export const artifacts = {
+    ERC1155Proxy: ERC1155Proxy as ContractArtifact,
     ERC20Proxy: ERC20Proxy as ContractArtifact,
     ERC721Proxy: ERC721Proxy as ContractArtifact,
-    ERC1155Proxy: ERC1155Proxy as ContractArtifact,
     MixinAuthorizable: MixinAuthorizable as ContractArtifact,
     MultiAssetProxy: MultiAssetProxy as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,

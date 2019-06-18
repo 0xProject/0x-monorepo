@@ -12,9 +12,8 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         keywords: '',
     },
     EXPLORE: {
-        title: 'Explore the 0x Ecosystem',
-        description:
-            '0x Protocol is free, open-source infrastructure that developers and businesses utilize to build products that enable the purchasing and trading of crypto tokens.',
+        title: '0x Explore: Trade on 0x Relayers',
+        description: 'Check out the wide range of projects and businesses building in the 0x ecosystem!',
         keywords: '',
     },
     WHY: {
@@ -29,8 +28,9 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         keywords: '',
     },
     LAUNCH_KIT: {
-        title: '0x Launch Kit: Launch a relayer in under a minute',
-        description: 'Launch Kit includes a set of tools and documentation to build a relayer on 0x.',
+        title: '0x Launch Kit: Launch your own exchange or marketplace in minutes',
+        description:
+            'Launch Kit includes a set of tools, UI and documentation to build an exchange or marketplace in minutes on 0x.',
         keywords: '',
     },
     ABOUT: {

@@ -12,7 +12,7 @@ from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
 
 NAME = "0x-sra-client"
-VERSION = "1.0.1"
+VERSION = "2.0.0"
 # To install the library, run the following
 #
 # python setup.py install
@@ -54,7 +54,7 @@ class TestPublishCommand(distutils.command.build_py.build_py):
 
 
 class StartTestRelayerCommand(distutils.command.build_py.build_py):
-    """Custom command to boot up a local 0x-launch-kit in docker."""
+    """Custom command to boot up a local 0x-launch-kit-backend in docker."""
 
     description = "Run launch-kit daemon to support tests."
 
@@ -79,7 +79,7 @@ class StartTestRelayerCommand(distutils.command.build_py.build_py):
 
 
 class StopTestRelayerCommand(distutils.command.build_py.build_py):
-    """Custom command to tear down the local 0x-launch-kit test relayer."""
+    """Custom command to tear down the 0x-launch-kit-backend test relayer."""
 
     description = "Tear down launch-kit daemon."
 
@@ -97,17 +97,20 @@ class LintCommand(distutils.command.build_py.build_py):
 
     def run(self):
         """Run linter shell commands."""
+        lint_targets = "test src/zero_ex/sra_client/__init__.py setup.py"
         lint_commands = [
             # formatter:
-            "black --line-length 79 --check --diff test sra_client/__init__.py setup.py".split(),  # noqa: E501 (line too long)
+            (
+                f"black --line-length 79 --check --diff test {lint_targets}"
+            ).split(),
             # style guide checker (formerly pep8):
-            "pycodestyle test sra_client/__init__.py setup.py".split(),
+            f"pycodestyle {lint_targets}".split(),
             # docstring style checker:
-            "pydocstyle src test sra_client/__init__.py setup.py".split(),
+            f"pydocstyle {lint_targets}".split(),
             # static type checker:
-            "bandit -r test sra_client/__init__.py setup.py".split(),
+            f"bandit -r {lint_targets}".split(),
             # general linter:
-            "pylint test sra_client/__init__.py setup.py".split(),
+            f"pylint {lint_targets}".split(),
             # pylint takes relatively long to run, so it runs last, to enable
             # fast failures.
         ]
@@ -134,7 +137,7 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 
     description = (
         "Publish docs to "
-        + "http://0x-sra-demos-py.s3-website-us-east-1.amazonaws.com/"
+        + "http://0x-sra-client-py.s3-website-us-east-1.amazonaws.com/"
     )
 
     def run(self):
@@ -145,12 +148,17 @@ class PublishDocsCommand(distutils.command.build_py.build_py):
 setup(
     name=NAME,
     version=VERSION,
-    description="Standard Relayer REST API",
+    description="Standard Relayer REST API Client",
     author_email="",
-    url="https://github.com/0xproject/0x-monorepo/python-packages/sra_client",
+    url=(
+        "https://github.com/0xproject/0x-monorepo/tree/development"
+        "/python-packages/sra_client"
+    ),
     keywords=["OpenAPI", "OpenAPI-Generator", "Standard Relayer REST API"],
     install_requires=REQUIRES,
-    packages=find_packages(),
+    namespace_packages=["zero_ex"],
+    packages=find_packages("src"),
+    package_dir={"": "src"},
     include_package_data=True,
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -183,7 +191,7 @@ setup(
     },
     command_options={
         "build_sphinx": {
-            "source_dir": ("setup.py", "."),
+            "source_dir": ("setup.py", "src"),
             "build_dir": ("setup.py", "build/docs"),
         }
     },

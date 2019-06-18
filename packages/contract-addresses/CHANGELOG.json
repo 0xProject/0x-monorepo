@@ -1,5 +1,15 @@
 [
     {
+        "version": "2.3.3",
+        "changes": [
+            {
+                "note": "Redeploy Coordinator contract",
+                "pr": 1812
+            }
+        ],
+        "timestamp": 1557799313
+    },
+    {
         "version": "2.3.1",
         "changes": [
             {

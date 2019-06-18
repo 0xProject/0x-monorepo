@@ -1,7 +1,7 @@
 """Fixtures for pytest."""
 
 import pytest
-from eth_utils import remove_0x_prefix, to_checksum_address
+from eth_utils import to_checksum_address
 from web3 import Web3
 
 from zero_ex.order_utils import asset_data_utils
@@ -48,11 +48,7 @@ def weth_address():
 @pytest.fixture(scope="module")
 def weth_asset_data(weth_address):  # pylint: disable=redefined-outer-name
     """Get 0x asset data for Wrapped Ether (WETH) token."""
-    return bytes.fromhex(
-        remove_0x_prefix(
-            asset_data_utils.encode_erc20_asset_data(weth_address)
-        )
-    )
+    return asset_data_utils.encode_erc20(weth_address)
 
 
 @pytest.fixture(scope="module")
@@ -74,6 +70,4 @@ def zrx_address():
 @pytest.fixture(scope="module")
 def zrx_asset_data(zrx_address):  # pylint: disable=redefined-outer-name
     """Get 0x asset data for ZRX token."""
-    return bytes.fromhex(
-        remove_0x_prefix(asset_data_utils.encode_erc20_asset_data(zrx_address))
-    )
+    return asset_data_utils.encode_erc20(zrx_address)

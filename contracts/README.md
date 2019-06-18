@@ -10,3 +10,7 @@
 | Forwarder       | [`@0x/contracts-exchange-forwarder`](/contracts/exchange-forwarder) | [v1.0.1](https://www.npmjs.com/package/@0x/contracts-exchange-forwarder/v/1.0.1) | [@0x/contracts-exchange-forwarder@1.0.1](https://github.com/0xProject/0x-monorepo/releases/tag/@0x/contracts-exchange-forwarder@1.0.1) |
 | MultiAssetProxy | [`@0x/contracts-asset-proxy`](/contracts/asset-proxy)               | [v1.0.1](https://www.npmjs.com/package/@0x/contracts-asset-proxy/v/1.0.1)        | [@0x/contracts-asset-proxy@1.0.1](https://github.com/0xProject/0x-monorepo/releases/tag/@0x/contracts-asset-proxy@1.0.1)               |
 | ZRXToken        | [`@0x/contracts-erc20`](/contracts/erc20)                           | [v1.0.1](https://www.npmjs.com/package/@0x/contracts-erc20/v/1.0.1)              | [@0x/contracts-erc20@1.0.1](https://github.com/0xProject/0x-monorepo/releases/tag/@0x/contracts-erc20@1.0.1)                           |
+
+#### Development
+
+Building solidity files will update the contract artifact in `{package-name}/generated-artifacts/{contract}.json`, but does not automatically update the `abi-gen-wrappers` package, which are generated from the artifact JSON. To ensure consistency, clean and rebuild `abi-gen-wrappers` after any changes to the artifact JSON.

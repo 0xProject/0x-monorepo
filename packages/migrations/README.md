@@ -98,3 +98,7 @@ In the event you need a specific version of the published Ganache snapshot run t
 ```bash
 docker run -e VERSION=2.2.2 -p 8545:8545 -ti 0xorg/ganache-cli:latest
 ```
+
+#### Production
+
+If deploying contract changes to mainnet, `@0x/contract-artifacts` should also be updated and published. The artifacts must be copied from each `contracts/{package-name}/generated-artifacts/{contract}.json`.

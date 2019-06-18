@@ -58,6 +58,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-exchange
             - run: yarn wsrun test:circleci @0x/contracts-exchange-forwarder
             - run: yarn wsrun test:circleci @0x/contracts-coordinator
+            - run: yarn wsrun test:circleci @0x/contracts-dev-utils
     test-contracts-geth:
         docker:
             - image: circleci/node:9-browsers
@@ -80,6 +81,7 @@ jobs:
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-exchange-forwarder
             - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-coordinator
+            - run: TEST_PROVIDER=geth yarn wsrun test:circleci @0x/contracts-dev-utils
     test-publish:
         resource_class: medium+
         docker:
@@ -100,20 +102,6 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn test:generate_docs:circleci
-    test-pipeline:
-        docker:
-            - image: circleci/node:9
-            - image: postgres:11-alpine
-        working_directory: ~/repo
-        steps:
-            - restore_cache:
-                  keys:
-                      - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: ZEROEX_DATA_PIPELINE_TEST_DB_URL='postgresql://postgres@localhost/postgres' yarn wsrun test:circleci @0x/pipeline
-            - save_cache:
-                  key: coverage-pipeline-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/pipeline/coverage/lcov.info
     test-rest:
         docker:
             - image: circleci/node:9-browsers
@@ -124,6 +112,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
             - run: yarn wsrun test:circleci @0x/abi-gen
+            - run: yarn wsrun test:circleci @0x/asset-buyer
             - run: yarn wsrun test:circleci @0x/contract-artifacts
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
@@ -149,6 +138,10 @@ jobs:
                   key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/assert/coverage/lcov.info
+            - save_cache:
+                  key: coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/asset-buyer/coverage/lcov.info
             - save_cache:
                   key: coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -329,6 +322,9 @@ jobs:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
+                      - coverage-asset-buyer-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  keys:
                       - coverage-base-contract-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
@@ -404,9 +400,6 @@ workflows:
             # - test-contracts-geth:
             #       requires:
             #           - build
-            - test-pipeline:
-                  requires:
-                      - build
             - test-rest:
                   requires:
                       - build

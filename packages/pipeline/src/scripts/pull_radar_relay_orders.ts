@@ -32,7 +32,7 @@ async function getOrderbookAsync(): Promise<void> {
     // Parse the sra orders, then add source url to each.
     const orders = R.pipe(
         parseSraOrders,
-        R.map(setSourceUrl(RADAR_RELAY_URL)),
+        R.map(o => R.set(sourceUrlProp, RADAR_RELAY_URL, o)),
     )(rawOrders);
     // Save all the orders and update the observed time stamps in a single
     // transaction.
@@ -50,13 +50,3 @@ async function getOrderbookAsync(): Promise<void> {
 }
 
 const sourceUrlProp = R.lensProp('sourceUrl');
-
-/**
- * Sets the source url for a single order. Returns a new order instead of
- * mutating the given one.
- */
-const setSourceUrl = R.curry(
-    (sourceURL: string, order: SraOrder): SraOrder => {
-        return R.set(sourceUrlProp, sourceURL, order);
-    },
-);

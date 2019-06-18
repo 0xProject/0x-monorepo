@@ -1,5 +1,12 @@
 """Order utilities for 0x applications.
 
+Setup
+-----
+
+Install the package with pip::
+
+    pip install 0x-order-utils
+
 Some methods require the caller to pass in a `Web3.BaseProvider`:code: object.
 For local testing one may construct such a provider pointing at an instance of
 `ganache-cli <https://www.npmjs.com/package/ganache-cli>`_ which has the 0x
@@ -7,52 +14,51 @@ contracts deployed on it.  For convenience, a docker container is provided for
 just this purpose.  To start it:
 `docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2`:code:.
 
-Creating a 0x Order
---------------------
+Constructing an order
+---------------------
 
 Here is a short demonstration on how to create a 0x order.
 
->>> import pprint
->>> from zero_ex.contract_addresses import (
-...     NETWORK_TO_ADDRESSES, NetworkId)
+>>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 >>> from zero_ex.order_utils import asset_data_utils, Order
->>> NULL_ADDRESS = "0x0000000000000000000000000000000000000000"
+>>> from datetime import datetime, timedelta
+>>> import random
 >>> my_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
->>> exchange_address = NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange
->>> weth_address = NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
->>> zrx_address = NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
->>> maker_asset_data = (
-...     asset_data_utils.encode_erc20_asset_data(weth_address))
->>> taker_asset_data = (
-...     asset_data_utils.encode_erc20_asset_data(zrx_address))
->>> example_order: Order = {
-...     "makerAddress": my_address,
-...     "takerAddress": NULL_ADDRESS,
-...     "exchangeAddress": exchange_address,
-...     "senderAddress": NULL_ADDRESS,
-...     "feeRecipientAddress": NULL_ADDRESS,
-...     "makerAssetData": maker_asset_data,
-...     "takerAssetData": taker_asset_data,
-...     "salt": 123456789,
-...     "makerFee": 0,
-...     "takerFee": 0,
-...     "makerAssetAmount": 1 * 10 ** 18,  # Converting token amount to base unit with 18 decimals
-...     "takerAssetAmount": 500 * 10 ** 18,  # Converting token amount to base unit with 18 decimals
-...     "expirationTimeSeconds": 1553553429,
-... }
+>>> example_order = Order(
+...     makerAddress=my_address,
+...     takerAddress="0x0000000000000000000000000000000000000000",
+...     exchangeAddress=NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange,
+...     senderAddress="0x0000000000000000000000000000000000000000",
+...     feeRecipientAddress="0x0000000000000000000000000000000000000000",
+...     makerAssetData=asset_data_utils.encode_erc20(
+...        NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
+...     ),
+...     takerAssetData=asset_data_utils.encode_erc20(
+...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
+...     ),
+...     salt=random.randint(1, 100000000000000000),
+...     makerFee=0,
+...     takerFee=0,
+...     makerAssetAmount=1 * 10 ** 18,  # Convert token amount to base unit with 18 decimals
+...     takerAssetAmount=500 * 10 ** 18,  # Convert token amount to base unit with 18 decimals
+...     expirationTimeSeconds=round(
+...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+...     )
+... )
+>>> import pprint
 >>> pprint.pprint(example_order)
-{'exchangeAddress': '0x4f833a24e1f95d70f028921e27040ca56e09ab0b',
- 'expirationTimeSeconds': 1553553429,
+{'exchangeAddress': '0x...',
+ 'expirationTimeSeconds': ...,
  'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
- 'makerAddress': '0x5409ed021d9299bf6814279a6a1411a7e866a631',
+ 'makerAddress': '0x...',
  'makerAssetAmount': 1000000000000000000,
- 'makerAssetData': '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+ 'makerAssetData': b...,
  'makerFee': 0,
- 'salt': 123456789,
+ 'salt': ...,
  'senderAddress': '0x0000000000000000000000000000000000000000',
  'takerAddress': '0x0000000000000000000000000000000000000000',
  'takerAssetAmount': 500000000000000000000,
- 'takerAssetData': '0xf47261b0000000000000000000000000e41d2489571d322189246dafa5ebde1f4699f498',
+ 'takerAssetData': b...,
  'takerFee': 0}
 """  # noqa E501
 
@@ -128,7 +134,29 @@ class _Constants:
 
 
 class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
-    """A Web3-compatible representation of the Exchange.Order struct."""
+    """A Web3-compatible representation of the Exchange.Order struct.
+
+    >>> from zero_ex.order_utils import asset_data_utils
+    >>> from eth_utils import remove_0x_prefix
+    >>> from datetime import datetime, timedelta
+    >>> import random
+    >>> order = Order(
+    ...     makerAddress=maker_address,
+    ...     takerAddress='0x0000000000000000000000000000000000000000',
+    ...     senderAddress='0x0000000000000000000000000000000000000000',
+    ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
+    ...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
+    ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
+    ...     salt=random.randint(1, 100000000000000000),
+    ...     makerFee=0,
+    ...     takerFee=0,
+    ...     makerAssetAmount=1,
+    ...     takerAssetAmount=1,
+    ...     expirationTimeSeconds=round(
+    ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
+    ...     )
+    ... )
+    """
 
     makerAddress: str
     """Address that created the order."""
@@ -203,11 +231,14 @@ def make_empty_order() -> Order:
 
 
 def order_to_jsdict(
-    order: Order, exchange_address="0x0000000000000000000000000000000000000000"
+    order: Order,
+    exchange_address="0x0000000000000000000000000000000000000000",
+    signature: str = None,
 ) -> dict:
     """Convert a Web3-compatible order struct to a JSON-schema-compatible dict.
 
-    More specifically, do explicit decoding for the `bytes`:code: fields.
+    More specifically, do explicit decoding for the `bytes`:code: fields, and
+    convert numerics to strings.
 
     >>> import pprint
     >>> pprint.pprint(order_to_jsdict(
@@ -228,18 +259,18 @@ def order_to_jsdict(
     ...     },
     ... ))
     {'exchangeAddress': '0x0000000000000000000000000000000000000000',
-     'expirationTimeSeconds': 1,
+     'expirationTimeSeconds': '1',
      'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
      'makerAddress': '0x0000000000000000000000000000000000000000',
-     'makerAssetAmount': 1,
+     'makerAssetAmount': '1',
      'makerAssetData': '0x0000000000000000000000000000000000000000',
-     'makerFee': 0,
-     'salt': 1,
+     'makerFee': '0',
+     'salt': '1',
      'senderAddress': '0x0000000000000000000000000000000000000000',
      'takerAddress': '0x0000000000000000000000000000000000000000',
-     'takerAssetAmount': 1,
+     'takerAssetAmount': '1',
      'takerAssetData': '0x0000000000000000000000000000000000000000',
-     'takerFee': 0}
+     'takerFee': '0'}
     """
     jsdict = cast(Dict, copy(order))
 
@@ -249,29 +280,43 @@ def order_to_jsdict(
 
     jsdict["exchangeAddress"] = exchange_address
 
+    jsdict["expirationTimeSeconds"] = str(order["expirationTimeSeconds"])
+
+    jsdict["makerAssetAmount"] = str(order["makerAssetAmount"])
+    jsdict["takerAssetAmount"] = str(order["takerAssetAmount"])
+
+    jsdict["makerFee"] = str(order["makerFee"])
+    jsdict["takerFee"] = str(order["takerFee"])
+
+    jsdict["salt"] = str(order["salt"])
+
+    if signature is not None:
+        jsdict["signature"] = signature
+
     assert_valid(jsdict, "/orderSchema")
 
     return jsdict
 
 
-def jsdict_order_to_struct(jsdict: dict) -> Order:
+def jsdict_to_order(jsdict: dict) -> Order:
     r"""Convert a JSON-schema-compatible dict order to a Web3-compatible struct.
 
-    More specifically, do explicit encoding of the `bytes`:code: fields.
+    More specifically, do explicit encoding of the `bytes`:code: fields, and
+    parse integers from strings.
 
     >>> import pprint
-    >>> pprint.pprint(jsdict_order_to_struct(
+    >>> pprint.pprint(jsdict_to_order(
     ...     {
     ...         'makerAddress': "0x0000000000000000000000000000000000000000",
     ...         'takerAddress': "0x0000000000000000000000000000000000000000",
     ...         'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
     ...         'senderAddress': "0x0000000000000000000000000000000000000000",
-    ...         'makerAssetAmount': 1000000000000000000,
-    ...         'takerAssetAmount': 1000000000000000000,
-    ...         'makerFee': 0,
-    ...         'takerFee': 0,
-    ...         'expirationTimeSeconds': 12345,
-    ...         'salt': 12345,
+    ...         'makerAssetAmount': "1000000000000000000",
+    ...         'takerAssetAmount': "1000000000000000000",
+    ...         'makerFee': "0",
+    ...         'takerFee': "0",
+    ...         'expirationTimeSeconds': "12345",
+    ...         'salt': "12345",
     ...         'makerAssetData': "0x0000000000000000000000000000000000000000",
     ...         'takerAssetData': "0x0000000000000000000000000000000000000000",
     ...         'exchangeAddress': "0x0000000000000000000000000000000000000000",
@@ -302,6 +347,16 @@ def jsdict_order_to_struct(jsdict: dict) -> Order:
     order["takerAssetData"] = bytes.fromhex(
         remove_0x_prefix(jsdict["takerAssetData"])
     )
+
+    order["makerAssetAmount"] = int(jsdict["makerAssetAmount"])
+    order["takerAssetAmount"] = int(jsdict["takerAssetAmount"])
+
+    order["makerFee"] = int(jsdict["makerFee"])
+    order["takerFee"] = int(jsdict["takerFee"])
+
+    order["expirationTimeSeconds"] = int(jsdict["expirationTimeSeconds"])
+
+    order["salt"] = int(jsdict["salt"])
 
     del order["exchangeAddress"]  # type: ignore
     # silence mypy pending release of

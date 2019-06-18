@@ -56,6 +56,16 @@ export const assert = {
     isNumber(variableName: string, value: number): void {
         assert.assert(_.isFinite(value), assert.typeAssertionMessage(variableName, 'number', value));
     },
+    isNumberOrBigNumber(variableName: string, value: any): void {
+        if (_.isFinite(value)) {
+            return;
+        } else {
+            assert.assert(
+                BigNumber.isBigNumber(value),
+                assert.typeAssertionMessage(variableName, 'number or BigNumber', value),
+            );
+        }
+    },
     isBoolean(variableName: string, value: boolean): void {
         assert.assert(_.isBoolean(value), assert.typeAssertionMessage(variableName, 'boolean', value));
     },
@@ -86,6 +96,20 @@ Validation errors: ${validationResult.errors.join(', ')}`;
     isUri(variableName: string, value: any): void {
         const isValidUri = validUrl.isUri(value) !== undefined;
         assert.assert(isValidUri, assert.typeAssertionMessage(variableName, 'uri', value));
+    },
+    isBlockParam(variableName: string, value: any): void {
+        if (Number.isInteger(value) && value >= 0) {
+            return;
+        }
+        if (value === 'earliest' || value === 'latest' || value === 'pending') {
+            return;
+        }
+        throw new Error(assert.typeAssertionMessage(variableName, 'BlockParam', value));
+    },
+    isArray(variableName: string, value: any): void {
+        if (!Array.isArray(value)) {
+            throw new Error(assert.typeAssertionMessage(variableName, 'Array', value));
+        }
     },
     assert(condition: boolean, message: string): void {
         if (!condition) {

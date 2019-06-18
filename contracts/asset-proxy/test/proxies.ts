@@ -111,72 +111,62 @@ describe('Asset Transfer Proxies', () => {
         );
 
         // Configure ERC20Proxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                from: owner,
-            }),
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            authorized,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         // Configure ERC721Proxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                from: owner,
-            }),
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            authorized,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         // Configure ERC115Proxy
         erc1155ProxyWrapper = new ERC1155ProxyWrapper(provider, usedAddresses, owner);
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                from: owner,
-            }),
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            authorized,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            multiAssetProxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
         // Configure MultiAssetProxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(authorized, {
-                from: owner,
-            }),
+        await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            authorized,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
-                from: owner,
-            }),
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
-                from: owner,
-            }),
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc721Proxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, {
-                from: owner,
-            }),
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(
+            erc1155Proxy.address,
+            { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
@@ -206,31 +196,32 @@ describe('Asset Transfer Proxies', () => {
         );
 
         await erc20Wrapper.setBalancesAndAllowancesAsync();
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await noReturnErc20Token.setBalance.sendTransactionAsync(fromAddress, constants.INITIAL_ERC20_BALANCE),
+        await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
+            fromAddress,
+            constants.INITIAL_ERC20_BALANCE,
+            {
+                from: owner,
+            },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await noReturnErc20Token.approve.sendTransactionAsync(
-                erc20Proxy.address,
-                constants.INITIAL_ERC20_ALLOWANCE,
-                { from: fromAddress },
-            ),
+        await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            constants.INITIAL_ERC20_ALLOWANCE,
+            { from: fromAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multipleReturnErc20Token.setBalance.sendTransactionAsync(
-                fromAddress,
-                constants.INITIAL_ERC20_BALANCE,
-            ),
+        await multipleReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
+            fromAddress,
+            constants.INITIAL_ERC20_BALANCE,
+            {
+                from: owner,
+            },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multipleReturnErc20Token.approve.sendTransactionAsync(
-                erc20Proxy.address,
-                constants.INITIAL_ERC20_ALLOWANCE,
-                { from: fromAddress },
-            ),
+        await multipleReturnErc20Token.approve.awaitTransactionSuccessAsync(
+            erc20Proxy.address,
+            constants.INITIAL_ERC20_ALLOWANCE,
+            { from: fromAddress },
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
@@ -419,10 +410,10 @@ describe('Asset Transfer Proxies', () => {
                     toAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
-                        from: fromAddress,
-                    }),
+                await erc20TokenA.approve.awaitTransactionSuccessAsync(
+                    erc20Proxy.address,
+                    allowance,
+                    { from: fromAddress },
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const erc20Balances = await erc20Wrapper.getBalancesAsync();
@@ -451,10 +442,10 @@ describe('Asset Transfer Proxies', () => {
                     toAddress,
                     amount,
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await noReturnErc20Token.approve.sendTransactionAsync(erc20Proxy.address, allowance, {
-                        from: fromAddress,
-                    }),
+                await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
+                    erc20Proxy.address,
+                    allowance,
+                    { from: fromAddress },
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 const initialFromBalance = await noReturnErc20Token.balanceOf.callAsync(fromAddress);
@@ -692,10 +683,10 @@ describe('Asset Transfer Proxies', () => {
                 const ownerFromAsset = await erc721TokenA.ownerOf.callAsync(erc721AFromTokenId);
                 expect(ownerFromAsset).to.be.equal(fromAddress);
                 // Remove transfer approval for fromAddress.
-                await web3Wrapper.awaitTransactionSuccessAsync(
-                    await erc721TokenA.approve.sendTransactionAsync(constants.NULL_ADDRESS, erc721AFromTokenId, {
-                        from: fromAddress,
-                    }),
+                await erc721TokenA.approve.awaitTransactionSuccessAsync(
+                    constants.NULL_ADDRESS,
+                    erc721AFromTokenId,
+                    { from: fromAddress },
                     constants.AWAIT_TRANSACTION_MINED_MS,
                 );
                 // Perform a transfer; expect this to fail.

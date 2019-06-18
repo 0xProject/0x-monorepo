@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen-wrappers",
-    "version": "4.2.0",
+    "version": "4.3.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -19,7 +19,7 @@
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry).json"
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json"
     },
     "repository": {
         "type": "git",
@@ -31,19 +31,22 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^2.0.9",
-        "@0x/abi-gen-templates": "^2.0.2",
+        "@0x/abi-gen": "^2.0.10",
+        "@0x/abi-gen-templates": "^2.1.0",
+        "@0x/assert": "^2.0.10",
+        "@0x/json-schemas": "^3.0.10",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.2.2",
-        "@0x/utils": "^4.3.1",
-        "@0x/web3-wrapper": "^6.0.5",
+        "@0x/utils": "^4.3.3",
+        "@0x/web3-wrapper": "^6.0.6",
         "ethereum-types": "^2.1.2",
         "ethers": "~4.0.4",
         "lodash": "^4.17.11",
         "shx": "^0.2.2"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.0.5"
+        "@0x/base-contract": "^5.1.0",
+        "@0x/contract-artifacts": "^1.5.1"
     },
     "publishConfig": {
         "access": "public"

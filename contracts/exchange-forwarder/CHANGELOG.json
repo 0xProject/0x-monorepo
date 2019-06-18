@@ -1,5 +1,42 @@
 [
     {
+        "timestamp": 1558712885,
+        "version": "3.0.3",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557961111,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1557799313,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Update contracts to solidity ^0.5.5 and unpin dependencies",
+                "pr": 1796
+            }
+        ],
+        "timestamp": 1557507213
+    },
+    {
         "version": "2.1.1",
         "changes": [
             {

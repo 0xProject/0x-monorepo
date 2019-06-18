@@ -30,6 +30,7 @@
         { "path": "./contracts/multisig" },
         { "path": "./contracts/test-utils" },
         { "path": "./contracts/utils" },
+        { "path": "./contracts/dev-utils" },
         { "path": "./packages/0x.js" },
         { "path": "./packages/abi-gen-wrappers" },
         { "path": "./packages/abi-gen" },

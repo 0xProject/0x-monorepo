@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.5;
 
 
 contract MWeth {
@@ -35,7 +35,7 @@ contract MWeth {
         uint256 wethSoldExcludingFeeOrders,
         uint256 wethSoldForZrx,
         uint256 feePercentage,
-        address feeRecipient
+        address payable feeRecipient
     )
         internal;
 }

@@ -85,6 +85,66 @@ export class ERC1155ProxyWrapper {
         return this._proxyIdIfExists as string;
     }
     /**
+     * @dev generates abi-encoded tx data for transferring erc1155 fungible/non-fungible tokens.
+     * @param from source address
+     * @param to destination address
+     * @param contractAddress address of erc155 contract
+     * @param tokensToTransfer array of erc1155 tokens to transfer
+     * @param valuesToTransfer array of corresponding values for each erc1155 token to transfer
+     * @param valueMultiplier each value in `valuesToTransfer` is multiplied by this
+     * @param receiverCallbackData callback data if `to` is a contract
+     * @param authorizedSender sender of `transferFrom` transaction
+     * @param extraData extra data to append to `transferFrom` transaction. Optional.
+     * @return abi encoded tx data.
+     */
+    public getTransferFromAbiEncodedTxData(
+        from: string,
+        to: string,
+        contractAddress: string,
+        tokensToTransfer: BigNumber[],
+        valuesToTransfer: BigNumber[],
+        valueMultiplier: BigNumber,
+        receiverCallbackData: string,
+        authorizedSender: string,
+        assetData_?: string,
+    ): string {
+        this._validateProxyContractExistsOrThrow();
+        const assetData =
+            assetData_ === undefined
+                ? assetDataUtils.encodeERC1155AssetData(
+                      contractAddress,
+                      tokensToTransfer,
+                      valuesToTransfer,
+                      receiverCallbackData,
+                  )
+                : assetData_;
+        const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+            assetData,
+            from,
+            to,
+            valueMultiplier,
+        );
+        return data;
+    }
+    /**
+     * @dev transfers erc1155 fungible/non-fungible tokens.
+     * @param txData: abi-encoded tx data
+     * @param authorizedSender sender of `transferFrom` transaction
+     */
+    public async transferFromRawAsync(
+        txData: string,
+        authorizedSender: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._web3Wrapper.sendTransactionAsync({
+            to: (this._proxyContract as ERC1155ProxyContract).address,
+            data: txData,
+            from: authorizedSender,
+            gas: 300000,
+        });
+        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return txReceipt;
+    }
+    /**
      * @dev transfers erc1155 fungible/non-fungible tokens.
      * @param from source address
      * @param to destination address
@@ -106,20 +166,20 @@ export class ERC1155ProxyWrapper {
         valueMultiplier: BigNumber,
         receiverCallbackData: string,
         authorizedSender: string,
-        extraData?: string,
-    ): Promise<string> {
+        assetData_?: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         this._validateProxyContractExistsOrThrow();
-        let encodedAssetData = assetDataUtils.encodeERC1155AssetData(
-            contractAddress,
-            tokensToTransfer,
-            valuesToTransfer,
-            receiverCallbackData,
-        );
-        if (extraData !== undefined) {
-            encodedAssetData = `${encodedAssetData}${extraData}`;
-        }
+        const assetData =
+            assetData_ === undefined
+                ? assetDataUtils.encodeERC1155AssetData(
+                      contractAddress,
+                      tokensToTransfer,
+                      valuesToTransfer,
+                      receiverCallbackData,
+                  )
+                : assetData_;
         const data = this._assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-            encodedAssetData,
+            assetData,
             from,
             to,
             valueMultiplier,
@@ -128,46 +188,9 @@ export class ERC1155ProxyWrapper {
             to: (this._proxyContract as ERC1155ProxyContract).address,
             data,
             from: authorizedSender,
+            gas: 300000,
         });
-        return txHash;
-    }
-    /**
-     * @dev transfers erc1155 fungible/non-fungible tokens.
-     * @param from source address
-     * @param to destination address
-     * @param contractAddress address of erc155 contract
-     * @param tokensToTransfer array of erc1155 tokens to transfer
-     * @param valuesToTransfer array of corresponding values for each erc1155 token to transfer
-     * @param valueMultiplier each value in `valuesToTransfer` is multiplied by this
-     * @param receiverCallbackData callback data if `to` is a contract
-     * @param authorizedSender sender of `transferFrom` transaction
-     * @param extraData extra data to append to `transferFrom` transaction. Optional.
-     * @return tranasction receipt with decoded logs.
-     */
-    public async transferFromWithLogsAsync(
-        from: string,
-        to: string,
-        contractAddress: string,
-        tokensToTransfer: BigNumber[],
-        valuesToTransfer: BigNumber[],
-        valueMultiplier: BigNumber,
-        receiverCallbackData: string,
-        authorizedSender: string,
-        extraData?: string,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(
-            await this.transferFromAsync(
-                from,
-                to,
-                contractAddress,
-                tokensToTransfer,
-                valuesToTransfer,
-                valueMultiplier,
-                receiverCallbackData,
-                authorizedSender,
-                extraData,
-            ),
-        );
+        const txReceipt = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return txReceipt;
     }
     /**

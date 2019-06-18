@@ -56,22 +56,6 @@ yarn clean
 yarn lint
 ```
 
-### Test providers
-
-By default tests run against an in-process Ganache instance. If you want to use Geth you'll need to [start a Geth dev node](https://github.com/0xProject/0x-monorepo/blob/v2-prototype/packages/devnet/README.md) first.
-
-```bash
-cd ../devnet
-docker build -t 0x-devnet .
-docker run -it --rm -p 8501:8501 0x-devnet
-```
-
-This Geth version supports snapshots and time travel. Then - run your tests against it.
-
-```
-TEST_PROVIDER=geth yarn test
-```
-
 ### Coverage
 
 ```bash

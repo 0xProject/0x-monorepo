@@ -68,7 +68,7 @@ export class StaticBytesDataType extends AbstractBlobDataType {
     private _sanityCheckValue(value: string | Buffer): void {
         if (typeof value === 'string') {
             if (!_.startsWith(value, '0x')) {
-                throw new Error(`Tried to encode non-hex value. Value must inlcude '0x' prefix.`);
+                throw new Error(`Tried to encode non-hex value. Value must include '0x' prefix.`);
             } else if (value.length % 2 !== 0) {
                 throw new Error(`Tried to assign ${value}, which is contains a half-byte. Use full bytes only.`);
             }
