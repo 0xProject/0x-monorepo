@@ -123,7 +123,7 @@ export class BaseContract {
                 );
             }
             const revertReason = revertReasonArray[0];
-            throw new Error(revertReason);
+            throw new Error(`VM Exception while processing transaction: revert ${revertReason}`);
         }
     }
     // Throws if the given arguments cannot be safely/correctly encoded based on

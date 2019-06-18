@@ -5,6 +5,7 @@ import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
+    BlockParamLiteral,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -1993,7 +1994,6 @@ export class AssetProxyOwnerContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-
         return AssetProxyOwnerContract.deployAsync(bytecode, abi, provider, txDefaults, _owners,
 _assetProxyContracts,
 _required,

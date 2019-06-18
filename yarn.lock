@@ -13651,10 +13651,6 @@ punycode@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/punycode/-/punycode-2.1.0.tgz#5f863edc89b96db09074bad7947bf09056ca4e7d"
 
-pure-evm@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/pure-evm/-/pure-evm-0.1.2.tgz#6dbeaa6fa6f42abf81070ddba32bdf26eb86eb9c"
-
 q@^1.1.2, q@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"

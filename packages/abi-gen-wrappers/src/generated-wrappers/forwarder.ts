@@ -5,6 +5,7 @@ import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
+    BlockParamLiteral,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -710,7 +711,6 @@ export class ForwarderContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-
         return ForwarderContract.deployAsync(bytecode, abi, provider, txDefaults, _exchange,
 _zrxAssetData,
 _wethAssetData

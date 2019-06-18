@@ -5,6 +5,7 @@ import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
+    BlockParamLiteral,
     CallData,
     ContractAbi,
     ContractArtifact,
@@ -78,7 +79,6 @@ export class EthBalanceCheckerContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-
         return EthBalanceCheckerContract.deployAsync(bytecode, abi, provider, txDefaults, );
     }
     public static async deployAsync(
