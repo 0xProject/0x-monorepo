@@ -138,11 +138,11 @@ export const utils = {
     writeOutputFile(filePath: string, renderedTsCode: string): void {
         fs.writeFileSync(filePath, renderedTsCode);
     },
-    isOutputFileUpToDate(abiFile: string, outputFile: string): boolean {
-        const abiFileModTimeMs = fs.statSync(abiFile).mtimeMs;
+    isOutputFileUpToDate(outputFile: string, sourceFiles: string[]): boolean {
+        const sourceFileModTimeMs = sourceFiles.map(file => fs.statSync(file).mtimeMs);
         try {
             const outFileModTimeMs = fs.statSync(outputFile).mtimeMs;
-            return outFileModTimeMs > abiFileModTimeMs;
+            return sourceFileModTimeMs.find(sourceMs => sourceMs > outFileModTimeMs) === undefined;
         } catch (err) {
             if (err.code === 'ENOENT') {
                 return false;
