@@ -69,11 +69,11 @@ contract MixinRewards is
     {
         uint256 poolBalance = rewardVault.balanceOfPool(poolId);
         return _computePayoutDenominatedInRealAsset(
-                delegatedStakeToPoolByOwner[owner][poolId],
-                delegatedStakeByPoolId[poolId],
-                shadowRewardsInPoolByOwner[owner][poolId],
-                shadowRewardsByPoolId[poolId],
-                poolBalance
+            delegatedStakeToPoolByOwner[owner][poolId],
+            delegatedStakeByPoolId[poolId],
+            shadowRewardsInPoolByOwner[owner][poolId],
+            shadowRewardsByPoolId[poolId],
+            poolBalance
         );
     }
 

@@ -1399,6 +1399,237 @@ describe('Staking Core', () => {
             expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
             expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);        
         });
+
+        it('Finalization with Protocol Fees and Delegation with shadow ETH (withdraw w/o undelegating)', async () => {
+            ///// 0 DEPLOY EXCHANGE /////
+            await stakingWrapper.addExchangeAddressAsync(exchange);
+            ///// 1 SETUP POOLS /////
+            const poolOperators = makers.slice(0, 3);
+            const operatorShares = [39, 59, 43];
+            const poolIds = await Promise.all([
+                stakingWrapper.createPoolAsync(poolOperators[0], operatorShares[0]),
+                stakingWrapper.createPoolAsync(poolOperators[1], operatorShares[1]),
+                stakingWrapper.createPoolAsync(poolOperators[2], operatorShares[2]),
+            ]);
+            const makersByPoolId = [
+                [
+                    makers[0],
+                ],
+                [
+                    makers[1],
+                    makers[2]
+                ],
+                [
+                    makers[3],
+                    makers[4],
+                    makers[5]
+                ],
+            ];
+            const protocolFeesByMaker = [
+                // pool 1 - adds up to protocolFeesByPoolId[0]
+                stakingWrapper.toBaseUnitAmount(0.304958),
+                // pool 2 - adds up to protocolFeesByPoolId[1]
+                stakingWrapper.toBaseUnitAmount(3.2),
+                stakingWrapper.toBaseUnitAmount(12.123258),
+                // pool 3 - adds up to protocolFeesByPoolId[2]
+                stakingWrapper.toBaseUnitAmount(23.577),
+                stakingWrapper.toBaseUnitAmount(4.54522236),
+                stakingWrapper.toBaseUnitAmount(0)
+            ];
+            await Promise.all([
+                // pool 0
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                // pool 1
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                // pool 2
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+            ]);
+            ///// 2 PAY FEES /////
+            await Promise.all([
+                // pool 0 - split into two payments
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2), exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[0], protocolFeesByMaker[0].div(2), exchange),
+                // pool 1 - pay full amounts
+                stakingWrapper.payProtocolFeeAsync(makers[1], protocolFeesByMaker[1], exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[2], protocolFeesByMaker[2], exchange),
+                // pool 2 -- pay full amounts
+                stakingWrapper.payProtocolFeeAsync(makers[3], protocolFeesByMaker[3], exchange),
+                stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4], exchange),
+                // maker 5 doesn't pay anything
+            ]);
+            ///// 3 VALIDATE FEES RECORDED FOR EACH POOL /////
+            const recordedProtocolFeesByPool = await Promise.all([
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[0]),
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[1]),
+                stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolIds[2]),
+            ]);
+            expect(recordedProtocolFeesByPool[0]).to.be.bignumber.equal(protocolFeesByMaker[0]);
+            expect(recordedProtocolFeesByPool[1]).to.be.bignumber.equal(protocolFeesByMaker[1].plus(protocolFeesByMaker[2]));
+            expect(recordedProtocolFeesByPool[2]).to.be.bignumber.equal(protocolFeesByMaker[3].plus(protocolFeesByMaker[4]));
+            ///// 4 VALIDATE TOTAL FEES /////
+            const recordedTotalProtocolFees = await stakingWrapper.getTotalProtocolFeesThisEpochAsync();
+            const totalProtocolFeesAsNumber = _.sumBy(protocolFeesByMaker, (value: BigNumber) => {return value.toNumber()});
+            const totalProtocolFees = new BigNumber(totalProtocolFeesAsNumber);
+            expect(recordedTotalProtocolFees).to.be.bignumber.equal(totalProtocolFees);
+            ///// 5 STAKE /////
+            const stakeByPoolOperator = [
+                stakingWrapper.toBaseUnitAmount(42),
+                stakingWrapper.toBaseUnitAmount(84),
+                stakingWrapper.toBaseUnitAmount(97),
+            ];
+            const totalStakeByPoolOperator = stakeByPoolOperator[0].plus(stakeByPoolOperator[1]).plus(stakeByPoolOperator[2]);
+            await Promise.all([
+                // pool 0
+                stakingWrapper.depositAndStakeAsync(poolOperators[0], stakeByPoolOperator[0]),
+                // pool 1
+                stakingWrapper.depositAndStakeAsync(poolOperators[1], stakeByPoolOperator[1]),
+                // pool 2
+                stakingWrapper.depositAndStakeAsync(poolOperators[2], stakeByPoolOperator[2]),
+            ]);
+
+            ///// 6 FINALIZE /////
+            await stakingWrapper.skipToNextEpochAsync();
+            
+            ///// 7 ADD DELEGATORS (Requires Shadow ETH) /////
+            const delegators = stakers.slice(0, 3);
+            const stakeByDelegator = [
+                stakingWrapper.toBaseUnitAmount(17),
+                stakingWrapper.toBaseUnitAmount(75),
+                stakingWrapper.toBaseUnitAmount(90),
+            ];
+            const totalStakeByDelegators = stakeByDelegator[0].plus(stakeByDelegator[1]).plus(stakeByDelegator[2]);
+            await Promise.all([
+                stakingWrapper.depositAndDelegateAsync(delegators[0], poolIds[2], stakeByDelegator[0]),
+                stakingWrapper.depositAndDelegateAsync(delegators[1], poolIds[2], stakeByDelegator[1]),
+                stakingWrapper.depositAndDelegateAsync(delegators[2], poolIds[2], stakeByDelegator[2]),
+            ]);
+
+            ///// 7 FINALIZE AGAIN /////
+            await stakingWrapper.skipToNextEpochAsync();
+        
+            ///// 7 CHECK PROFITS /////
+            // the expected payouts were computed by hand
+            // @TODO - get computations more accurate
+            /*
+                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
+                0    |  0.304958   | 42          | 0                     | 42
+                1    | 15.323258   | 84          | 0                     | 84
+                3    | 28.12222236 | 97          | 182                   | 260.8
+                ...
+                Cumulative Fees = 43.75043836
+                Cumulative Stake = 405
+                Total Rewards = 43.75043836
+            */
+
+            const expectedPayoutByPoolOperator = [
+                new BigNumber('4.75677'),  // 4.756772362932728793619590327361600155564384201215274334070
+                new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
+            ];
+
+            const payoutByPoolOperator = await Promise.all([
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[2]),
+            ]);
+
+            const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[0], 18), 5),
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[1], 18), 5),
+                stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[2], 18), 5),
+            ]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[0]).to.be.bignumber.equal(expectedPayoutByPoolOperator[0]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[1]).to.be.bignumber.equal(expectedPayoutByPoolOperator[1]);
+            expect(payoutAcurateToFiveDecimalsByPoolOperator[2]).to.be.bignumber.equal(expectedPayoutByPoolOperator[2]);
+
+            
+            ///// 10 CHECK DELEGATOR PAYOUT BY WITHDRAWING /////
+            {
+                const poolPayoutById = await Promise.all([
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[0]),
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[1]),
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[2]),
+                ]);
+                const ethBalancesByDelegatorInit = await Promise.all([
+                    stakingWrapper.getEthBalanceAsync(delegators[0]),
+                    stakingWrapper.getEthBalanceAsync(delegators[1]),
+                    stakingWrapper.getEthBalanceAsync(delegators[2]),
+                ]);
+                await Promise.all([
+                    stakingWrapper.withdrawTotalRewardAsync(poolIds[2], delegators[0]),
+                    stakingWrapper.withdrawTotalRewardAsync(poolIds[2], delegators[1]),
+                    stakingWrapper.withdrawTotalRewardAsync(poolIds[2], delegators[2]),
+                ]);
+                const ethBalancesByDelegatorFinal = await Promise.all([
+                    stakingWrapper.getEthBalanceAsync(delegators[0]),
+                    stakingWrapper.getEthBalanceAsync(delegators[1]),
+                    stakingWrapper.getEthBalanceAsync(delegators[2]),
+                ]);
+                const rewardByDelegator = [
+                    ethBalancesByDelegatorFinal[0].minus(ethBalancesByDelegatorInit[0]),
+                    ethBalancesByDelegatorFinal[1].minus(ethBalancesByDelegatorInit[1]),
+                    ethBalancesByDelegatorFinal[2].minus(ethBalancesByDelegatorInit[2]),
+                ];
+
+                // In this case, there was already a pot of ETH in the delegator pool that nobody had claimed.
+                // The first delegator got to claim it all. This is due to the necessary conservation of payouts.
+                // When a new delegator arrives, their new stake should not affect existing delegator payouts.
+                // In this case, there was unclaimed $$ in the delegator pool - which is claimed by the first delegator.
+                const expectedRewardByDelegator = [
+                    poolPayoutById[2],
+                    new BigNumber(0),
+                    new BigNumber(0),
+                ];
+                expect(rewardByDelegator[0]).to.be.bignumber.equal(expectedRewardByDelegator[0]);
+                expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
+                expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]); 
+            }
+            
+            {
+                ///// 10 CHECK DELEGATOR PAYOUT BY UNDELEGATING /////
+                const poolPayoutById = await Promise.all([
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[0]),
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[1]),
+                    stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[2]),
+                ]);
+                const ethBalancesByDelegatorInit = await Promise.all([
+                    stakingWrapper.getEthBalanceAsync(delegators[0]),
+                    stakingWrapper.getEthBalanceAsync(delegators[1]),
+                    stakingWrapper.getEthBalanceAsync(delegators[2]),
+                ]);
+                await Promise.all([
+                    stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[0], poolIds[2], stakeByDelegator[0]),
+                    stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[1], poolIds[2], stakeByDelegator[1]),
+                    stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(delegators[2], poolIds[2], stakeByDelegator[2]),
+                ]);
+                const ethBalancesByDelegatorFinal = await Promise.all([
+                    stakingWrapper.getEthBalanceAsync(delegators[0]),
+                    stakingWrapper.getEthBalanceAsync(delegators[1]),
+                    stakingWrapper.getEthBalanceAsync(delegators[2]),
+                ]);
+                const rewardByDelegator = [
+                    ethBalancesByDelegatorFinal[0].minus(ethBalancesByDelegatorInit[0]),
+                    ethBalancesByDelegatorFinal[1].minus(ethBalancesByDelegatorInit[1]),
+                    ethBalancesByDelegatorFinal[2].minus(ethBalancesByDelegatorInit[2]),
+                ];
+
+                // In this case, there was already a pot of ETH in the delegator pool that nobody had claimed.
+                // The first delegator got to claim it all. This is due to the necessary conservation of payouts.
+                // When a new delegator arrives, their new stake should not affect existing delegator payouts.
+                // In this case, there was unclaimed $$ in the delegator pool - which is claimed by the first delegator.
+                const expectedRewardByDelegator = [
+                    new BigNumber(0),
+                    new BigNumber(0),
+                    new BigNumber(0),
+                ];
+                expect(rewardByDelegator[0]).to.be.bignumber.equal(expectedRewardByDelegator[0]);
+                expect(rewardByDelegator[1]).to.be.bignumber.equal(expectedRewardByDelegator[1]);
+                expect(rewardByDelegator[2]).to.be.bignumber.equal(expectedRewardByDelegator[2]);
+            }
+        });
     });
 });
 // tslint:enable:no-unnecessary-type-assertion
