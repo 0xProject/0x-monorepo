@@ -163,4 +163,11 @@ contract MixinFees is
             totalRewardsRecordedInVault
         );
     }
+
+    function _finalizeFees()
+        internal
+    {
+        _payRebates();
+        _goToNextEpoch();
+    }
 }
