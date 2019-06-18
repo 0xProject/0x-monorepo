@@ -23,6 +23,14 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 
 contract LibRewards is SafeMath {
 
+    event J (
+uint256 amountDelegatedByOwner,
+        uint256 totalAmountDelegated,
+        uint256 amountOfShadowAssetHeldByOwner,
+        uint256 totalAmountOfShadowAsset,
+        uint256 totalAmountOfRealAsset
+    );
+
     function _computePayoutDenominatedInRealAsset(
         uint256 amountDelegatedByOwner,
         uint256 totalAmountDelegated,
@@ -34,16 +42,22 @@ contract LibRewards is SafeMath {
         pure
         returns (uint256)
     {
-        return _safeSub(
-            _safeDiv(
-                _safeMul(
-                    amountDelegatedByOwner,
-                    _safeAdd(totalAmountOfShadowAsset, totalAmountOfRealAsset)
-                ),
-                totalAmountDelegated
+        uint256 combinedPayout = _safeDiv(
+            _safeMul(
+                amountDelegatedByOwner,
+                _safeAdd(totalAmountOfShadowAsset, totalAmountOfRealAsset)
             ),
-            amountOfShadowAssetHeldByOwner
+            totalAmountDelegated
         );
+
+        // we round up the amount of shadow assets when computing buy-ins.
+        // the result is that sometimes the amount of actual assets in the pool
+        // is less than the shadow eth. in this case, we'll end up with a floating imbalance.
+        uint256 payoutInRealAsset = combinedPayout < amountOfShadowAssetHeldByOwner ?
+            0 :
+            combinedPayout - amountOfShadowAssetHeldByOwner;
+
+        return payoutInRealAsset;
     }
 
     function _computePartialPayout(
