@@ -136,7 +136,7 @@ contract RewardVault is
         return balance.operatorBalance + balance.poolBalance;
     }
 
-    function operatorBalanceOf(bytes32 poolId)
+    function balanceOfOperator(bytes32 poolId)
         external
         view
         returns (uint256)
@@ -144,7 +144,7 @@ contract RewardVault is
         return balanceByPoolId[poolId].operatorBalance;
     }
 
-    function poolBalanceOf(bytes32 poolId)
+    function balanceOfPool(bytes32 poolId)
         external
         view
         returns (uint256)
