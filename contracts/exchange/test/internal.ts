@@ -366,7 +366,7 @@ describe('Exchange core internal functions', () => {
             }
             const isRoundingError = await referenceIsRoundingErrorCeilAsync(numerator, denominator, target);
             if (isRoundingError) {
-                throw roundingErrorForCall();
+                throw roundingErrorForCall;
             }
             const product = numerator.multipliedBy(target);
             const offset = product.plus(denominator.minus(1));
