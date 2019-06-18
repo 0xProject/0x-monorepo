@@ -151,7 +151,7 @@ describe('Exchange core internal functions', () => {
         }
         const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
         if (isRoundingError) {
-            throw roundingErrorForCall();
+            throw roundingErrorForCall;
         }
         const product = numerator.multipliedBy(target);
         if (product.isGreaterThan(MAX_UINT256)) {
