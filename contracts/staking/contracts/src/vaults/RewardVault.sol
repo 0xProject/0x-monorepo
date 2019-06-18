@@ -19,7 +19,8 @@
 pragma solidity ^0.5.5;
 
 import "../interfaces/IVault.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "../libs/LibSafeMath.sol";
+import "../libs/LibSafeMath96Bit.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IRewardVault.sol";
 import "../immutable/MixinConstants.sol";
@@ -27,15 +28,18 @@ import "../immutable/MixinConstants.sol";
 
 contract RewardVault is
     IRewardVault,
-    SafeMath,
     MixinConstants,
     MixinVaultCore
 {
+
+    using LibSafeMath for uint256;
+    using LibSafeMath96Bit for uint96;
 
     // designed in such a way that it contains minimal logic (it is not upgradeable)
     // but has all the necessary information to compute withdrawals in the event of
     // a catastrophic failure
     struct Balance {
+        bool initialized;
         uint8 operatorShare;
         uint96 operatorBalance;
         uint96 poolBalance;
@@ -44,17 +48,29 @@ contract RewardVault is
     // mapping from Pool to Rebate Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
 
-    // mapping from operator to pool id
-    mapping (bytes32 => address payable) internal operatorByPoolId;
-
     constructor()
         public
+    {}
+
+    function deposit()
+        external
+        payable
+        onlyStakingContract
+        onlyNotInCatostrophicFailure
+    {}
+
+    function ()
+        external
+        payable
+        onlyStakingContract
+        onlyNotInCatostrophicFailure
     {}
 
     function depositFor(bytes32 poolId)
         external
         payable
         onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
         Balance memory balance = balanceByPoolId[poolId];
         incrementBalance(balance, msg.value);
@@ -64,46 +80,27 @@ contract RewardVault is
     function recordDepositFor(bytes32 poolId, uint256 amount)
         external
         onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
         Balance memory balance = balanceByPoolId[poolId];
         incrementBalance(balance, amount);
         balanceByPoolId[poolId] = balance;
     }
 
-    function incrementBalance(Balance memory balance, uint256 amount) internal pure {
-        require(
-            amount <= (2**96 - 1),
-            "AMOUNT_TOO_HIGH"
-        );
-        require(
-            amount * balance.operatorShare <= (2**96 - 1),
-            "AMOUNT_TOO_HIGH"
-        );
-
-        // round down the pool portion
-        uint96 poolPortion = (uint96(amount) * (uint96(100) - balance.operatorShare)) / uint96(100);
-        uint96 operatorPortion = uint96(amount) - poolPortion;
-
-        // return updated state
-        // @TODO UINT96 SAfeMath
-        balance.operatorBalance += operatorPortion;
-        balance.poolBalance += poolPortion;
-    }
-
-    function deposit()
-        external
-        payable
-        onlyStakingContract
-    {}
-
-    event EKF(uint256 amt);
-
-    function ()
-        external
-        payable
-        onlyStakingContract
+    function incrementBalance(Balance memory balance, uint256 amount256Bit)
+        private
+        pure
     {
-        emit EKF(msg.value);
+        // balances are stored as uint96; safely downscale.
+        uint96 amount = amount256Bit._downcastToUint96();
+
+        // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
+        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
+        uint96 poolPortion = amount._sub(operatorPortion);
+
+        // update balances
+        balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
+        balance.poolBalance = balance.poolBalance._add(poolPortion);
     }
 
     function withdrawFromOperator(bytes32 poolId, uint256 amount)
@@ -130,28 +127,6 @@ contract RewardVault is
         stakingContractAddress.transfer(amount);
     }
 
-/*
-    function withdrawAllFrom(bytes32 poolId)
-        external
-        onlyInCatostrophicFailure
-        returns (uint256)
-    {
-        address payable operator = operatorByPoolId[poolId];
-        require(
-            operator != NIL_ADDRESS,
-            "INVALID_OWNER"
-        );
-        uint256 balanceInPool = balanceByPoolId[poolId];
-        require(
-            balanceInPool > 0,
-            "POOL_BALANCE_IS_ZERO"
-        );
-
-        balanceByPoolId[poolId] = 0;
-        operator.transfer(balanceByPoolId[poolId]);
-    }
-    */
-
     function balanceOf(bytes32 poolId)
         external
         view
@@ -177,29 +152,27 @@ contract RewardVault is
         return balanceByPoolId[poolId].poolBalance;
     }
 
-    // It costs 1 wei to create a pool, but we don't enforce it here.
-    // it's enforced in the staking contract
-    function createPool(bytes32 poolId, address payable poolOperator, uint8 poolOperatorShare)
+    function createPool(bytes32 poolId, uint8 poolOperatorShare)
         external
         onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
-        require(
-            operatorByPoolId[poolId] == NIL_ADDRESS,
-            "POOL_ALREADY_EXISTS"
-        );
+        // operator share must be a valid percentage
         require(
             poolOperatorShare <= 100,
             "OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100"
         );
-        balanceByPoolId[poolId].operatorShare = poolOperatorShare;
-        operatorByPoolId[poolId] = poolOperator;
-    }
 
-    function getPoolOperator(bytes32 poolId)
-        external
-        view
-        returns (address)
-    {
-        return operatorByPoolId[poolId];
+        // pool must not exist
+        Balance memory balance = balanceByPoolId[poolId];
+        require(
+            !balance.initialized,
+            "POOL_ALREADY_EXISTS"
+        );
+
+        // set initial balance
+        balance.initialized = true;
+        balance.operatorShare = poolOperatorShare;
+        balanceByPoolId[poolId] = balance;
     }
 }

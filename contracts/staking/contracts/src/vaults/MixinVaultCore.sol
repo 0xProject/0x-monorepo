@@ -50,6 +50,14 @@ contract MixinVaultCore is
         _;
     }
 
+    modifier onlyNotInCatostrophicFailure {
+        require(
+            !isInCatostrophicFailure,
+            "ONLY_CALLABLE_NOT_IN_CATOSTROPHIC_FAILURE"
+        );
+        _;
+    }
+
     function setStakingContractAddrsess(address payable _stakingContractAddress)
         external
         onlyOwner
