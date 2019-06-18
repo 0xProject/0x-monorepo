@@ -41,12 +41,6 @@ contract MixinPools is
         internal
         returns (bytes32 poolId)
     {
-        // validate input
-        require(
-            operatorShare <= 100,
-            "OPERATOR_SHARE_MUST_BE_A_PERCENTAGE_BETWEEN_0_AND_100"
-        );
-
         // 
         poolId = nextPoolId;
         nextPoolId = bytes32(_safeAdd(uint256(nextPoolId >> 128), 1) << 128);
@@ -61,7 +55,6 @@ contract MixinPools is
         // create pool in reward vault
         rewardVault.createPool(
             poolId,
-            operatorAddress,
             operatorShare
         );
 

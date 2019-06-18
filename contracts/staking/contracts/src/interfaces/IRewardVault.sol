@@ -30,7 +30,6 @@ interface IRewardVault {
     function recordDepositFor(bytes32 poolId, uint256 amount)
         external;
 
-/*
     function deposit()
         external
         payable;
@@ -38,7 +37,6 @@ interface IRewardVault {
     function ()
         external
         payable;
-    */
 
     function withdrawFromOperator(bytes32 poolId, uint256 amount)
         external;
@@ -61,11 +59,6 @@ interface IRewardVault {
         view
         returns (uint256);
 
-    function createPool(bytes32 poolId, address payable poolOperator, uint8 poolOperatorShare)
+    function createPool(bytes32 poolId, uint8 poolOperatorShare)
         external;
-
-    function getPoolOperator(bytes32 poolId)
-        external
-        view
-        returns (address);
 }

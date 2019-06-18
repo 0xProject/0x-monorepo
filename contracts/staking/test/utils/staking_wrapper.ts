@@ -461,7 +461,7 @@ export class StakingWrapper {
         return balance;
     }
     public async rewardVaultCreatePoolAsync(poolId: string, poolOperator: string, poolOperatorShare: number, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOperator, poolOperatorShare);
+        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOperatorShare);
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
         return txReceipt;
     }
