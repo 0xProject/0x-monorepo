@@ -318,7 +318,7 @@ contract Staking is
 
     ///// REWARDS /////
 
-    function computeOperatorReward(address operator, bytes32 poolId)
+    function computeOperatorRewardBalance(address operator, bytes32 poolId)
         external
         view
         returns (uint256)
@@ -326,7 +326,7 @@ contract Staking is
         
     }
 
-    function computeDelegatorReward(address owner, bytes32 poolId)
+    function computeDelegatorRewardBalance(address owner, bytes32 poolId)
         external
         view
         returns (uint256)
