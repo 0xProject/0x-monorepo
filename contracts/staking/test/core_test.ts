@@ -558,15 +558,15 @@ describe('Staking Core', () => {
             const stakingContractAddress = stakingWrapper.getStakingContract().address;
             const notStakingContractAddress = poolOperator;
             // create pool in vault
-            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, operatorShare, stakingContractAddress);
+            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress);
             // should fail to create pool if it already exists
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator, operatorShare, stakingContractAddress),
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress),
                 RevertReason.PoolAlreadyExists
             );
             // should fail to create a pool from an address other than the staking contract
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, poolOperator,  operatorShare, notStakingContractAddress),
+                stakingWrapper.rewardVaultCreatePoolAsync(poolId,  operatorShare, notStakingContractAddress),
                 RevertReason.OnlyCallableByStakingContract
             );
         });
@@ -923,9 +923,9 @@ describe('Staking Core', () => {
                 new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
             ];
             const payoutByPoolOperator = await Promise.all([
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[0]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[1]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[2]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[2]),
             ]);
             const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
                 stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(payoutByPoolOperator[0], 18), 5),
@@ -1070,9 +1070,9 @@ describe('Staking Core', () => {
             ];
 
             const payoutByPoolOperator = await Promise.all([
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[0]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[1]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[2]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[2]),
             ]);
 
             const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
@@ -1089,9 +1089,9 @@ describe('Staking Core', () => {
 
             ///// 10 CHECK DELEGATOR BY UNDELEGATING /////
             const poolPayoutById = await Promise.all([
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[0]),
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[1]),
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[2]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[2]),
             ]);
             const ethBalancesByDelegatorInit = await Promise.all([
                 stakingWrapper.getEthBalanceAsync(delegators[0]),
@@ -1259,9 +1259,9 @@ describe('Staking Core', () => {
             ];
 
             const payoutByPoolOperator = await Promise.all([
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[0]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[1]),
-                stakingWrapper.rewardVaultGetBalanceAsync(poolIds[2]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfAsync(poolIds[2]),
             ]);
 
             const payoutAcurateToFiveDecimalsByPoolOperator = await Promise.all([
@@ -1275,9 +1275,9 @@ describe('Staking Core', () => {
 
             ///// 10 CHECK DELEGATOR PAYOUT BY UNDELEGATING /////
             const poolPayoutById = await Promise.all([
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[0]),
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[1]),
-                stakingWrapper.rewardVaultPoolBalanceOfAsync(poolIds[2]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[0]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[1]),
+                stakingWrapper.rewardVaultBalanceOfPoolAsync(poolIds[2]),
             ]);
             const ethBalancesByDelegatorInit = await Promise.all([
                 stakingWrapper.getEthBalanceAsync(delegators[0]),

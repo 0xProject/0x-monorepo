@@ -448,29 +448,23 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
         return txReceipt;
     }
-    public async rewardVaultGetBalanceAsync(poolId: string): Promise<BigNumber> {
+    public async rewardVaultBalanceOfAsync(poolId: string): Promise<BigNumber> {
         const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultOperatorBalanceOfAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().operatorBalanceOf.callAsync(poolId);
+    public async rewardVaultBalanceOfOperatorAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOfOperator.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultPoolBalanceOfAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().poolBalanceOf.callAsync(poolId);
+    public async rewardVaultBalanceOfPoolAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getRewardVaultContract().balanceOfPool.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultCreatePoolAsync(poolId: string, poolOperator: string, poolOperatorShare: number, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async rewardVaultCreatePoolAsync(poolId: string, poolOperatorShare: number, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOperatorShare);
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
         return txReceipt;
     }
-    /*
-    public async getEthBalanceOfRewardVaultAsync(): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOf.callAsync(this.getZrxVaultContract().address);
-        return balance;
-    }
-    */
     ///// ZRX VAULT /////
     public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);

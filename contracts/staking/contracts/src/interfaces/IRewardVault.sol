@@ -49,12 +49,12 @@ interface IRewardVault {
         view
         returns (uint256);
 
-    function operatorBalanceOf(bytes32 poolId)
+    function balanceOfOperator(bytes32 poolId)
         external
         view
         returns (uint256);
 
-    function poolBalanceOf(bytes32 poolId)
+    function balanceOfPool(bytes32 poolId)
         external
         view
         returns (uint256);
