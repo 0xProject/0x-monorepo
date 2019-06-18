@@ -5,6 +5,10 @@
             {
                 "note": "Remove evm.bytecode.linkReferences from all artifacts. Remove evm.deployedBytecode and sourceTreeHashHex from Coordinator artifact.",
                 "pr": 1842
+            },
+            {
+                "note": "Prune fields from EthBalanceChecker",
+                "pr": 1876
             }
         ]
     },
