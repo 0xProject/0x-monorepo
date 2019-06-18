@@ -69,6 +69,7 @@ contract ZrxVault is
     function depositFrom(address owner, uint256 amount)
         external
         onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
         // deposit ZRX from owner
         erc20Proxy.transferFrom(
@@ -85,6 +86,7 @@ contract ZrxVault is
     function withdrawFrom(address owner, uint256 amount)
         external
         onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
         _withdrawFrom(owner, amount);
     }
