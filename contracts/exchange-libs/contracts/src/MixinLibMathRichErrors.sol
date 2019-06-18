@@ -14,7 +14,11 @@ contract MixinLibMathRichErrors is
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(DIVISION_BY_ZERO);
+        bytes4 division_error = DIVISION_BY_ZERO_SELECTOR;
+        assembly {
+            mstore(0, division_error)
+            revert(0, 4)
+        }
     }
 
     function RoundingError(
@@ -27,7 +31,7 @@ contract MixinLibMathRichErrors is
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            ROUNDING_ERROR,
+            ROUNDING_ERROR_SELECTOR,
             numerator,
             denominator,
             target
