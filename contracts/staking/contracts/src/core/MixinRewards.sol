@@ -19,37 +19,62 @@
 pragma solidity ^0.5.5;
 
 import "../immutable/MixinStorage.sol";
+import "../libs/LibRewards.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
+import "./MixinStakeBalances.sol";
 
 contract MixinRewards is
     SafeMath,
+    LibRewards,
     IStakingEvents,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinStakeBalances
 {
     // Pinciple - design any Mixin such that internal members are callable without messing up internal state
     //            any function that could mess up internal state should be private.
 
     // @TODO -- add a MixinZrxVault and a MixinRewardVault that interact with the vaults.
 
-
-
-    function _computeOperatorReward(address operator, bytes32 poolId)
+     function _getRewardBalance(bytes32 poolId)
         internal
         view
         returns (uint256)
     {
-    
+        return rewardVault.balanceOf(poolId);
     }
 
-    function _computeDelegatorReward(address owner, bytes32 poolId)
+    function _getRewardBalanceOfOperator(bytes32 poolId)
         internal
         view
         returns (uint256)
     {
+        return rewardVault.balanceOfOperator(poolId);
+    }
 
+    function _getRewardBalanceOfPool(bytes32 poolId)
+        internal
+        view
+        returns (uint256)
+    {
+        return rewardVault.balanceOfPool(poolId);
+    }
+
+    function _computeRewardBalance(bytes32 poolId, address owner)
+        internal
+        view
+        returns (uint256)
+    {
+        uint256 poolBalance = rewardVault.balanceOfPool(poolId);
+        return _computePayoutDenominatedInRealAsset(
+                delegatedStakeToPoolByOwner[owner][poolId],
+                delegatedStakeByPoolId[poolId],
+                shadowRewardsInPoolByOwner[owner][poolId],
+                shadowRewardsByPoolId[poolId],
+                poolBalance
+        );
     }
 
     function _getShadowBalanceByPoolId(bytes32 poolId)
@@ -68,43 +93,52 @@ contract MixinRewards is
         return shadowRewardsInPoolByOwner[owner][poolId];
     }
 
-    /*
-    function _withdrawReward(address owner, bytes32 poolId, uint256 amount)
+    function _withdrawOperatorReward(bytes32 poolId, uint256 amount)
         internal
     {
-
+        rewardVault.withdrawFromOperator(poolId, amount);
+        poolById[poolId].operatorAddress.transfer(amount);
     }
 
-    function _withdrawRewardForOperator(address owner, bytes32 poolId, uint256 amount)
-        private
-    {
-
-    }
-    */
-
-    function _withdrawRewardForDelegator(address owner, bytes32 poolId, uint256 amount)
+    function _withdrawReward(bytes32 poolId, address payable owner, uint256 amount)
         internal
     {
-        //rebateVault.withdrawFrom(owner, poolId, amount);
+        uint256 ownerBalance = _computeRewardBalance(poolId, owner);
+        require(
+            amount <= ownerBalance,
+            "INVALID_AMOUNT"
+        );
+
+        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
+        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
+
+        rewardVault.withdrawFromPool(poolId, amount);
+        owner.transfer(amount);
     }
 
-/*
-    function _withdrawTotalReward(address owner, bytes32 poolId)
+    function _withdrawTotalOperatorReward(bytes32 poolId)
         internal
-        returns (uint256 amount)
+        returns (uint256)
     {
-        
+        uint256 amount = rewardVault.balanceOfOperator(poolId);
+        rewardVault.withdrawFromOperator(poolId, amount);
+        poolById[poolId].operatorAddress.transfer(amount);
+
+        return amount;
     }
 
-    function _withdrawTotalRewardForOperator(address owner, bytes32 poolId)
-        private
+    function _withdrawTotalReward(bytes32 poolId, address payable owner)
+        internal
+        returns (uint256)
     {
-        
-    }
+        uint256 amount = _computeRewardBalance(poolId, owner);
 
-    function _withdrawTotalRewardForDelegator(address owner, bytes32 poolId, uint256 amount)
-        private
-    {
-        
-    }*/
+        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
+        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
+
+        rewardVault.withdrawFromPool(poolId, amount);
+        owner.transfer(amount);
+
+        return amount;
+    }
 }
