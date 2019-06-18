@@ -171,6 +171,7 @@ contract Staking is
         return _getStakeDelegatedToPool(poolId);
     }
 
+
     ///// POOLS /////
     modifier onlyPoolOperator(bytes32 poolId) {
         require(
