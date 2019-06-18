@@ -7,8 +7,8 @@
                 "pr": 1842
             },
             {
-                "note": "Update state mutability in `TestAssetProxyOwner.isFunctionRemoveAuthorizedAddressAtIndex` to `view`",
-                "pr": 1829
+                "note": "Prune fields from EthBalanceChecker",
+                "pr": 1876
             }
         ]
     },

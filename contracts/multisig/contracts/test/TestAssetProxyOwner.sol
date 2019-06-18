@@ -50,7 +50,7 @@ contract TestAssetProxyOwner is
     /// @return Successful if data is a call to `removeAuthorizedAddressAtIndex`.
     function isFunctionRemoveAuthorizedAddressAtIndex(bytes memory data)
         public
-        view
+        pure
         returns (bool)
     {
         return data.readBytes4(0) == REMOVE_AUTHORIZED_ADDRESS_AT_INDEX_SELECTOR;
