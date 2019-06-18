@@ -274,7 +274,7 @@ export class StakingWrapper {
     }
     ///// EPOCHS /////
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().goToNextEpoch.getABIEncodedTransactionData();
+        const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
         console.log(JSON.stringify(txReceipt, null , 4));
         //console.log((txReceipt.logs[0] as LogWithDecodedArgs<StakingEEventArgs>).args);
