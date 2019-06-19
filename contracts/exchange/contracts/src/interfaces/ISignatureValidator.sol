@@ -96,4 +96,20 @@ contract ISignatureValidator {
         public
         view
         returns (bool isValid);
+
+    /// @dev Checks if a signature is of a type that should be verified for
+    /// every subsequent fill.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress The address of the signer.
+    /// @param signature The signature for `orderHash`.
+    /// @return needsRegularValidation True if the signature should be validated
+    ///                                for every operation.
+    function doesSignatureRequireRegularValidation(
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        pure
+        returns (bool needsRegularValidation);
 }

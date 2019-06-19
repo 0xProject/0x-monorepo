@@ -31,13 +31,13 @@ import "./MixinTransactions.sol";
 import "./MixinExchangeRichErrors.sol";
 
 
-contract MixinSignatureValidator is 
-    MixinExchangeRichErrors, 
-    ReentrancyGuard, 
-    LibOrder, 
+contract MixinSignatureValidator is
+    MixinExchangeRichErrors,
+    ReentrancyGuard,
+    LibOrder,
     ISignatureValidator,
     MixinTransactions
-{ 
+{
     using LibBytes for bytes;
 
     // Mapping of hash => signer => signed
@@ -161,13 +161,41 @@ contract MixinSignatureValidator is
         );
     }
 
+    /// @dev Checks if a signature is of a type that should be verified for
+    /// every subsequent fill.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress The address of the signer.
+    /// @param signature The signature for `orderHash`.
+    /// @return needsRegularValidation True if the signature should be validated
+    ///                                for every operation.
+    function doesSignatureRequireRegularValidation(
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        pure
+        returns (bool needsRegularValidation)
+    {
+        SignatureType signatureType =  _readValidSignatureType(
+            orderHash,
+            signerAddress,
+            signature
+        );
+        // Only signature types that take a full order should be validated
+        // regularly.
+        return
+            signatureType == SignatureType.OrderValidator ||
+            signatureType == SignatureType.WalletOrderValidator;
+    }
+
     /// @dev Verifies that an order, with provided order hash, has been signed
     ///      by the given signer.
     /// @param order The order.
     /// @param orderHash The hash of the order.
     /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
-    /// @return True if the signature is valid for the given hash and signer.
+    /// @return isValid True if the signature is valid for the given hash and signer.
     function _isValidOrderWithHashSignature(
         Order memory order,
         bytes32 orderHash,
