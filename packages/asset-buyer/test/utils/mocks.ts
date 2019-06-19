@@ -1,7 +1,7 @@
 import { Web3ProviderEngine } from '@0x/subproviders';
 import * as TypeMoq from 'typemoq';
 
-import { AssetBuyer } from '../../src/asset_buyer';
+import { SwapQuoter } from '../../src/asset_buyer';
 import { OrderProvider, OrderProviderResponse, OrdersAndFillableAmounts } from '../../src/types';
 
 // tslint:disable:promise-function-async
@@ -17,7 +17,7 @@ class OrderProviderClass implements OrderProvider {
         return Promise.resolve([]);
     }
     // tslint:disable-next-line:prefer-function-over-method
-    public async getAvailableTakerAssetDatasAsync(takerAssetData: string): Promise<string[]> {
+    public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
         return Promise.resolve([]);
     }
 }
@@ -42,15 +42,15 @@ export const mockAvailableAssetDatas = (
 const partiallyMockedAssetBuyer = (
     provider: Web3ProviderEngine,
     orderProvider: OrderProvider,
-): TypeMoq.IMock<AssetBuyer> => {
-    const rawAssetBuyer = new AssetBuyer(provider, orderProvider);
+): TypeMoq.IMock<SwapQuoter> => {
+    const rawAssetBuyer = new SwapQuoter(provider, orderProvider);
     const mockedAssetBuyer = TypeMoq.Mock.ofInstance(rawAssetBuyer, TypeMoq.MockBehavior.Loose, false);
     mockedAssetBuyer.callBase = true;
     return mockedAssetBuyer;
 };
 
 const mockGetOrdersAndAvailableAmounts = (
-    mockedAssetBuyer: TypeMoq.IMock<AssetBuyer>,
+    mockedAssetBuyer: TypeMoq.IMock<SwapQuoter>,
     assetData: string,
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
 ): void => {
@@ -65,7 +65,7 @@ export const mockedAssetBuyerWithOrdersAndFillableAmounts = (
     orderProvider: OrderProvider,
     assetData: string,
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
-): TypeMoq.IMock<AssetBuyer> => {
+): TypeMoq.IMock<SwapQuoter> => {
     const mockedAssetBuyer = partiallyMockedAssetBuyer(provider, orderProvider);
     mockGetOrdersAndAvailableAmounts(mockedAssetBuyer, assetData, ordersAndFillableAmounts);
     return mockedAssetBuyer;

@@ -12,13 +12,16 @@ export const utils = {
         );
     },
     getMethodAbiFromContractAbi(abi: ContractAbi, name: string): MethodAbi | undefined {
-        return _.find(abi, (def: AbiDefinition): boolean => {
-            if (def.type === `'function'`) {
-                const methodDef = def as MethodAbi;
-                return methodDef.name === name;
-            } else {
-                return false;
-            }
-        }) as MethodAbi | undefined;
+        return _.find(
+            abi,
+            (def: AbiDefinition): boolean => {
+                if (def.type === `'function'`) {
+                    const methodDef = def as MethodAbi;
+                    return methodDef.name === name;
+                } else {
+                    return false;
+                }
+            },
+        ) as MethodAbi | undefined;
     },
 };

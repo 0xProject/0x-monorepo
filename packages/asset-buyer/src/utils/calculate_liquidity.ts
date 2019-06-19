@@ -18,8 +18,12 @@ export const calculateLiquidity = (ordersAndFillableAmounts: OrdersAndFillableAm
                 makerTokensAvailableForCurrentOrder,
             );
             return {
-                makerTokensAvailableInBaseUnits: acc.makerTokensAvailableInBaseUnits.plus(makerTokensAvailableForCurrentOrder),
-                takerTokensAvailableInBaseUnits: acc.takerTokensAvailableInBaseUnits.plus(takerTokensAvailableForCurrentOrder),
+                makerTokensAvailableInBaseUnits: acc.makerTokensAvailableInBaseUnits.plus(
+                    makerTokensAvailableForCurrentOrder,
+                ),
+                takerTokensAvailableInBaseUnits: acc.takerTokensAvailableInBaseUnits.plus(
+                    takerTokensAvailableForCurrentOrder,
+                ),
             };
         },
         {
