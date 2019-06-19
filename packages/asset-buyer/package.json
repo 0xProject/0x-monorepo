@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience package for discovering and buying assets for both on chain and off chain needs.",
+    "description": "Convenience package for discovering and buying assets on-chain and off-chain.",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {

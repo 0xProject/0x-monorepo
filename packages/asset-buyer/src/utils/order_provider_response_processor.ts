@@ -7,11 +7,11 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    AssetSwapQuoterError,
     OrderProviderRequest,
     OrderProviderResponse,
     OrdersAndFillableAmounts,
     SignedOrderWithRemainingFillableMakerAssetAmount,
+    SwapQuoterError,
 } from '../types';
 
 export const orderProviderResponseProcessor = {
@@ -19,7 +19,7 @@ export const orderProviderResponseProcessor = {
         const { makerAssetData, takerAssetData } = request;
         _.forEach(response.orders, order => {
             if (order.makerAssetData !== makerAssetData || order.takerAssetData !== takerAssetData) {
-                throw new Error(AssetSwapQuoterError.InvalidOrderProviderResponse);
+                throw new Error(SwapQuoterError.InvalidOrderProviderResponse);
             }
         });
     },
@@ -33,11 +33,14 @@ export const orderProviderResponseProcessor = {
     async processAsync(
         orderProviderResponse: OrderProviderResponse,
         isMakerAssetZrxToken: boolean,
-        expiryBufferSeconds: number,
+        expiryBufferMs: number,
         orderValidator?: OrderValidatorWrapper,
     ): Promise<OrdersAndFillableAmounts> {
         // drop orders that are expired or not open
-        const filteredOrders = filterOutExpiredAndNonOpenOrders(orderProviderResponse.orders, expiryBufferSeconds);
+        const filteredOrders = filterOutExpiredAndNonOpenOrders(
+            orderProviderResponse.orders,
+            expiryBufferMs / constants.ONE_SECOND_MS,
+        );
         // set the orders to be sorted equal to the filtered orders
         let unsortedOrders = filteredOrders;
         // if an orderValidator is provided, use on chain information to calculate remaining fillable makerAsset amounts
@@ -78,12 +81,12 @@ export const orderProviderResponseProcessor = {
  */
 function filterOutExpiredAndNonOpenOrders(
     orders: SignedOrderWithRemainingFillableMakerAssetAmount[],
-    expiryBufferSeconds: number,
+    expiryBufferMs: number,
 ): SignedOrderWithRemainingFillableMakerAssetAmount[] {
     const result = _.filter(orders, order => {
         return (
             orderCalculationUtils.isOpenOrder(order) &&
-            !orderCalculationUtils.willOrderExpire(order, expiryBufferSeconds)
+            !orderCalculationUtils.willOrderExpire(order, expiryBufferMs / constants.ONE_SECOND_MS)
         );
     });
     return result;

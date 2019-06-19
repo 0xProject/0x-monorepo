@@ -1,5 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import { MethodAbi } from 'ethereum-types';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -9,6 +10,7 @@ import { BigNumber } from '@0x/utils';
 export interface OrderProviderRequest {
     makerAssetData: string;
     takerAssetData: string;
+    networkId: number;
 }
 
 /**
@@ -29,6 +31,7 @@ export interface SignedOrderWithRemainingFillableMakerAssetAmount extends Signed
 /**
  * gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
  * getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
+ * getAvailableTakerAssetDatasAsync: Given a maker asset data string, return all availabled paired taker asset data strings.
  */
 export interface OrderProvider {
     getOrdersAsync: (orderProviderRequest: OrderProviderRequest) => Promise<OrderProviderResponse>;
@@ -36,46 +39,108 @@ export interface OrderProvider {
     getAvailableTakerAssetDatasAsync: (makerAssetData: string) => Promise<string[]>;
 }
 
-export interface CalldataInformation {
+/**
+ * Represents the metadata to call a smart contract with calldata.
+ * calldataHexString: The hexstring of the calldata.
+ * to: The contract address to call.
+ * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
+ */
+export interface CalldataInfo {
     calldataHexString: string;
     to: string;
-    value: BigNumber;
+    ethAmount?: BigNumber;
 }
 
-export interface SmartContractParams {
-    params: { [name: string]: any };
+/**
+ * Represents the metadata to call a smart contract with parameters.
+ * params: The metadata object containing all the input parameters of a smart contract call.
+ * to: The contract address to call.
+ * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
+ * methodAbi: The abi of the smart contract to call.
+ */
+export interface SmartContractParamsInfo<T> {
+    params: T;
     to: string;
-    value: BigNumber;
+    ethAmount: BigNumber;
+    methodAbi: MethodAbi;
 }
 
-export interface SwapQuoteConsumer {
-    getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInformation;
-    getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParams;
+/**
+ * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
+ * makerAssetFillAmount: The amount of makerAsset to swap for.
+ * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
+ * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
+ * feeSignatures: An array of signatures that attest that the maker of the fee orders in fact made the orders.
+ * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
+ * feeRecipient: address of the receiver of the feePercentage of taker asset
+ */
+export interface ForwarderMarketBuySmartContractParams {
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
+    feeOrders: SignedOrder[];
+    feeSignatures: string[];
+    feePercentage: BigNumber;
+    feeRecipient: string;
+}
+
+/**
+ * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
+ * getCalldataOrThrow: Get CalldataInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
+ * getSmartContractParamsOrThrow: Get SmartContractParamsInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
+ * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
+ */
+export interface SwapQuoteConsumer<T> {
+    getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInfo;
+    getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<T>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
+/**
+ * networkId: The networkId that the desired orders should be for.
+ */
 export interface SwapQuoteConsumerOpts {
     networkId: number;
 }
 
+/**
+ * Represents the options provided to a generic SwapQuoteConsumer
+ */
 export interface SwapQuoteGetOutputOpts {}
 
 /**
- * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
-    ethAmount?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
     gasPrice?: BigNumber;
 }
 
 /**
- * assetData: String that represents a specific asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
- * assetBuyAmount: The amount of asset to buy.
+ * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
+ * feeRecipient: address of the receiver of the feePercentage of taker asset
+ * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
+ */
+export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
+    feePercentage: number;
+    feeRecipient: string;
+    ethAmount: BigNumber;
+}
+
+/**
+ * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
+ */
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {
+}
+
+/**
+ * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+ * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+ * makerAssetFillAmount: The amount of makerAsset to swap for.
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
@@ -84,7 +149,7 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 export interface SwapQuote {
     takerAssetData: string;
     makerAssetData: string;
-    makerAssetBuyAmount: BigNumber;
+    makerAssetFillAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
@@ -109,45 +174,46 @@ export interface SwapQuoteInfo {
 export interface SwapQuoteRequestOpts {
     shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
-    allowMarketBuyOrders: boolean;
 }
 
 /*
  * Options for checking liquidity
- *
  * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  */
 export type LiquidityRequestOpts = Pick<SwapQuoteRequestOpts, 'shouldForceOrderRefresh'>;
 
-export interface ForwarderSwapQuoteExecutionOpts extends SwapQuoteExecutionOpts {
-    feeRecipient?: string;
-}
-
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
- * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
+ * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
-export interface AssetSwapQuoterOpts {
+export interface SwapQuoterOpts {
     networkId: number;
     orderRefreshIntervalMs: number;
-    expiryBufferSeconds: number;
+    expiryBufferMs: number;
 }
 
 /**
- * Possible error messages thrown by an AssetBuyer instance or associated static methods.
+ * Possible error messages thrown by an SwapQuoterConsumer instance or associated static methods.
  */
-export enum AssetSwapQuoterError {
+export enum SwapQuoteConsumerError {
+    InvalidForwarderSwapQuote = 'INVALID_FORWARDER_SWAP_QUOTE_PROVIDED',
+    NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
+}
+
+/**
+ * Possible error messages thrown by an SwapQuoter instance or associated static methods.
+ */
+export enum SwapQuoterError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
     NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
-    NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
-    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
-    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 /**
