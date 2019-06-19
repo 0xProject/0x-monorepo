@@ -18,3 +18,6 @@ export * from './generated-wrappers/zrx_token';
 export * from './generated-wrappers/coordinator';
 export * from './generated-wrappers/coordinator_registry';
 export * from './generated-wrappers/eth_balance_checker';
+
+export * from '@0x/contract-artifacts';
+export * from '@0x/contract-addresses';
