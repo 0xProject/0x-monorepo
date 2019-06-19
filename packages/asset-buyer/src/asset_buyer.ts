@@ -89,7 +89,7 @@ export class SwapQuoter {
      *
      * @return  An instance of SwapQuoter
      */
-    constructor(supportedProvider: SupportedProvider, orderProvider: OrderProvider, options: Partial<SwapQuoter> = {}) {
+    constructor(supportedProvider: SupportedProvider, orderProvider: OrderProvider, options: Partial<SwapQuoterOpts> = {}) {
         const { networkId, orderRefreshIntervalMs, expiryBufferMs } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTER_OPTS,

@@ -6,11 +6,11 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    CalldataInformation,
-    ForwarderMarketBuyParams,
+    CalldataInfo,
+    ForwarderMarketBuySmartContractParams,
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
-    SmartContractParams,
+    SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumer,
     SwapQuoteConsumerError,
@@ -21,7 +21,7 @@ import { assert } from '../utils/assert';
 import { assetDataUtils } from '../utils/asset_data_utils';
 import { utils } from '../utils/utils';
 
-export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuyParams> {
+export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams> {
 
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
@@ -47,11 +47,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         });
     }
 
-    public getCalldataOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): CalldataInformation {
+    public getCalldataOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): CalldataInfo {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { params, to, value } = this.getSmartContractParamsOrThrow(quote, opts);
-        const methodAbi = utils.getMethodAbiFromContractAbi(this._contractWrappers.forwarder.abi, 'marketBuyOrdersWithEth') as MethodAbi;
+        const { params, to, ethAmount, methodAbi } = this.getSmartContractParamsOrThrow(quote, opts);
         const abiEncoder = new AbiEncoder.Method(methodAbi);
         const args = [
             params.orders,
@@ -66,11 +65,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         return {
             calldataHexString,
             to,
-            value,
+            ethAmount,
         };
     }
 
-    public getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): SmartContractParams<ForwarderMarketBuyParams> {
+    public getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): SmartContractParamsInfo<ForwarderMarketBuySmartContractParams> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
@@ -92,7 +91,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         const feePercentage = utils.numberPercentageToEtherTokenAmountPercentage(unFormattedFeePercentage);
 
-        const params: ForwarderMarketBuyParams = {
+        const params: ForwarderMarketBuySmartContractParams = {
             orders,
             makerAssetFillAmount,
             signatures,
@@ -102,10 +101,12 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             feeRecipient,
         };
 
+        const methodAbi = utils.getMethodAbiFromContractAbi(this._contractWrappers.forwarder.abi, 'marketBuyOrdersWithEth') as MethodAbi;
         return {
             params,
             to: this._contractWrappers.forwarder.address,
-            value: ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+            ethAmount: ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+            methodAbi,
         };
     }
 
