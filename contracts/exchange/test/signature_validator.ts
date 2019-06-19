@@ -13,7 +13,7 @@ import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, signatureUtils } 
 import { SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
+import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
 import {
@@ -31,7 +31,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('MixinSignatureValidator', () => {
+describe.only('MixinSignatureValidator', () => {
     let chainId: number;
     let signedOrder: SignedOrder;
     let orderFactory: OrderFactory;
@@ -93,12 +93,9 @@ describe('MixinSignatureValidator', () => {
 
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         const approveValidator = async (validatorAddress: string) => {
-            type SendApproveTx = (address: string, approved: boolean, txData: { from: string }) => Promise<string>;
-            const sendTx = async (fn: { sendTransactionAsync: SendApproveTx }) => {
-                return web3Wrapper.awaitTransactionSuccessAsync(
-                    await fn.sendTransactionAsync(validatorAddress, true, { from: signerAddress }),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
-                );
+            type SendApproveTx = (address: string, approved: boolean, txData: { from: string }) => Promise<any>;
+            const sendTx = async (fn: { awaitTransactionSuccessAsync: SendApproveTx }) => {
+                return fn.awaitTransactionSuccessAsync(validatorAddress, true, { from: signerAddress }) as Promise<any>;
             };
             await sendTx(signatureValidator.setSignatureValidatorApproval);
             await sendTx(signatureValidator.setOrderValidatorApproval);
@@ -410,13 +407,10 @@ describe('MixinSignatureValidator', () => {
 
         it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                    testValidator.address,
-                    false,
-                    { from: signerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                testValidator.address,
+                false,
+                { from: signerAddress },
             );
             // Validate signature
             const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
@@ -430,10 +424,7 @@ describe('MixinSignatureValidator', () => {
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {
             // Presign hash
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.preSign.sendTransactionAsync(orderHashHex, { from: signedOrder.makerAddress }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await signatureValidator.preSign.awaitTransactionSuccessAsync(orderHashHex, { from: signedOrder.makerAddress });
             // Validate presigned signature
             const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
             const signatureHex = ethUtil.bufferToHex(signature);
@@ -574,11 +565,10 @@ describe('MixinSignatureValidator', () => {
 
         it('should return false when SignatureType=OrderValidator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setOrderValidatorApproval.sendTransactionAsync(testValidator.address, false, {
-                    from: signerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await signatureValidator.setOrderValidatorApproval.awaitTransactionSuccessAsync(
+                testValidator.address,
+                false,
+                { from: signerAddress },
             );
             // Validate signature
             const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);

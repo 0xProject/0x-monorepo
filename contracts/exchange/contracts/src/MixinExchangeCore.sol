@@ -354,9 +354,15 @@ contract MixinExchangeCore is
             }
         }
 
-        // Validate Maker signature (check only if first time seen)
-        if (orderInfo.orderTakerAssetFilledAmount == 0) {
-            address makerAddress = order.makerAddress;
+        // Validate either on the first fill or if the signature type requires
+        // regular validation.
+        address makerAddress = order.makerAddress;
+        if (orderInfo.orderTakerAssetFilledAmount == 0 ||
+            doesSignatureRequireRegularValidation(
+                orderInfo.orderHash,
+                makerAddress,
+                signature
+            )) {
             if (!_isValidOrderWithHashSignature(
                     order,
                     orderInfo.orderHash,
