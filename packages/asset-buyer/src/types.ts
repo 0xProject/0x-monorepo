@@ -42,15 +42,25 @@ export interface CalldataInformation {
     value: BigNumber;
 }
 
-export interface SmartContractParams {
-    params: { [name: string]: any };
+export interface SmartContractParams<T> {
+    params: T;
     to: string;
     value: BigNumber;
 }
 
-export interface SwapQuoteConsumer {
+export interface ForwarderMarketBuyParams {
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
+    feeOrders: SignedOrder[];
+    feeSignatures: string[];
+    feePercentage: BigNumber;
+    feeRecipient: string;
+}
+
+export interface SwapQuoteConsumer<T> {
     getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInformation;
-    getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParams;
+    getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParams<T>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
@@ -61,16 +71,23 @@ export interface SwapQuoteConsumerOpts {
 export interface SwapQuoteGetOutputOpts {}
 
 /**
- * ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
  */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
-    ethAmount?: BigNumber;
     takerAddress?: string;
     gasLimit?: number;
     gasPrice?: BigNumber;
+}
+
+export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
+    feePercentage: number;
+    feeRecipient: string;
+    ethAmount: BigNumber;
+}
+
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {
 }
 
 /**
@@ -84,7 +101,7 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 export interface SwapQuote {
     takerAssetData: string;
     makerAssetData: string;
-    makerAssetBuyAmount: BigNumber;
+    makerAssetFillAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
@@ -119,35 +136,35 @@ export interface SwapQuoteRequestOpts {
  */
 export type LiquidityRequestOpts = Pick<SwapQuoteRequestOpts, 'shouldForceOrderRefresh'>;
 
-export interface ForwarderSwapQuoteExecutionOpts extends SwapQuoteExecutionOpts {
-    feeRecipient?: string;
-}
-
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).
  * orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
- * expiryBufferSeconds: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
+ * expiryBufferMs: The number of seconds to add when calculating whether an order is expired or not. Defaults to 300s (5m).
  */
-export interface AssetSwapQuoterOpts {
+export interface SwapQuoterOpts {
     networkId: number;
     orderRefreshIntervalMs: number;
-    expiryBufferSeconds: number;
+    expiryBufferMs: number;
+}
+
+export enum SwapQuoteConsumerError {
+    InvalidForwarderSwapQuote = 'INVALID_FORWARDER_SWAP_QUOTE_PROVIDED',
+    NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 /**
- * Possible error messages thrown by an AssetBuyer instance or associated static methods.
+ * Possible error messages thrown by an SwapQuoter instance or associated static methods.
  */
-export enum AssetSwapQuoterError {
+export enum SwapQuoterError {
     NoEtherTokenContractFound = 'NO_ETHER_TOKEN_CONTRACT_FOUND',
     NoZrxTokenContractFound = 'NO_ZRX_TOKEN_CONTRACT_FOUND',
     StandardRelayerApiError = 'STANDARD_RELAYER_API_ERROR',
     InsufficientAssetLiquidity = 'INSUFFICIENT_ASSET_LIQUIDITY',
     InsufficientZrxLiquidity = 'INSUFFICIENT_ZRX_LIQUIDITY',
-    NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     InvalidOrderProviderResponse = 'INVALID_ORDER_PROVIDER_RESPONSE',
     AssetUnavailable = 'ASSET_UNAVAILABLE',
-    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
-    TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
 }
 
 /**

@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
-import { AssetSwapQuoterError, OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo } from '../types';
+import { OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo, SwapQuoterError } from '../types';
 
 // Calculates a swap quote for orders
 export const swapQuoteCalculator = {
@@ -64,7 +64,7 @@ export const swapQuoteCalculator = {
             );
             // if we do not have enough feeOrders to cover the fees, throw
             if (feeOrdersAndRemainingFeeAmount.remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
-                throw new Error(AssetSwapQuoterError.InsufficientZrxLiquidity);
+                throw new Error(SwapQuoterError.InsufficientZrxLiquidity);
             }
             resultFeeOrders = feeOrdersAndRemainingFeeAmount.resultFeeOrders;
             feeOrdersRemainingFillableMakerAssetAmounts =
@@ -123,7 +123,10 @@ function calculateQuoteInfo(
         takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makserAssetBuyAmount);
     } else {
         // find eth and zrx amounts needed to buy
-        const takerTokenAndZrxAmountToBuyAsset = findTakerTokenAndZrxAmountNeededToBuyAsset(ordersAndFillableAmounts, makserAssetBuyAmount);
+        const takerTokenAndZrxAmountToBuyAsset = findTakerTokenAndZrxAmountNeededToBuyAsset(
+            ordersAndFillableAmounts,
+            makserAssetBuyAmount,
+        );
         takerTokenAmount = takerTokenAndZrxAmountToBuyAsset[0];
         const zrxAmountToBuyAsset = takerTokenAndZrxAmountToBuyAsset[1];
         // find eth amount needed to buy zrx
