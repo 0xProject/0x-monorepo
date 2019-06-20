@@ -17,8 +17,8 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors } from '@0x/order-utils';
-import { AssetProxyId, RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { AssetProxyId } from '@0x/types';
+import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -143,10 +143,11 @@ describe('AssetProxyDispatcher', () => {
         });
 
         it('should throw if requesting address is not owner', async () => {
+            const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
                 from: notOwner,
             });
-            return expect(tx).to.revertWith(RevertReason.OnlyContractOwner);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should log an event with correct arguments when an asset proxy is registered', async () => {
