@@ -22,21 +22,13 @@ import { assetDataUtils } from '../utils/asset_data_utils';
 import { utils } from '../utils/utils';
 
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams> {
-
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
     private readonly _contractWrappers: ContractWrappers;
 
-    constructor(
-        supportedProvider: SupportedProvider,
-        options: Partial<SwapQuoteConsumerOpts> = {},
-    ) {
-        const { networkId } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTER_OPTS,
-            options,
-        );
+    constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
+        const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
         assert.isNumber('networkId', networkId);
 
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -69,7 +61,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         };
     }
 
-    public getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): SmartContractParamsInfo<ForwarderMarketBuySmartContractParams> {
+    public getSmartContractParamsOrThrow(
+        quote: SwapQuote,
+        opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
+    ): SmartContractParamsInfo<ForwarderMarketBuySmartContractParams> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
@@ -82,7 +77,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         assert.isETHAddressHex('feeRecipient', feeRecipient);
         assert.isBigNumber('ethAmount', ethAmount);
 
-        const swapQuoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, unFormattedFeePercentage);
+        const swapQuoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(
+            quote,
+            unFormattedFeePercentage,
+        );
 
         const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
 
@@ -101,7 +99,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             feeRecipient,
         };
 
-        const methodAbi = utils.getMethodAbiFromContractAbi(this._contractWrappers.forwarder.abi, 'marketBuyOrdersWithEth') as MethodAbi;
+        const methodAbi = utils.getMethodAbiFromContractAbi(
+            this._contractWrappers.forwarder.abi,
+            'marketBuyOrdersWithEth',
+        ) as MethodAbi;
         return {
             params,
             to: this._contractWrappers.forwarder.address,
@@ -110,7 +111,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         };
     }
 
-    public async executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteExecutionOpts>): Promise<string> {
+    public async executeSwapQuoteOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<ForwarderSwapQuoteExecutionOpts>,
+    ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount, takerAddress, gasLimit, gasPrice, feeRecipient, feePercentage } = _.merge(
