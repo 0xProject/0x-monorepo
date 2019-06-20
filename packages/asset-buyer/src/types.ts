@@ -47,6 +47,7 @@ export interface OrderProvider {
  */
 export interface CalldataInfo {
     calldataHexString: string;
+    methodAbi: MethodAbi;
     to: string;
     ethAmount?: BigNumber;
 }
@@ -128,14 +129,13 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
     feePercentage: number;
     feeRecipient: string;
-    ethAmount: BigNumber;
+    ethAmount?: BigNumber;
 }
 
 /**
  * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
  */
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {
-}
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
