@@ -47,7 +47,10 @@ const expectLiquidityResult = async (
         WETH_ASSET_DATA,
         ordersAndFillableAmounts,
     );
-    const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, WETH_ASSET_DATA);
+    const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(
+        FAKE_MAKER_ASSET_DATA,
+        WETH_ASSET_DATA,
+    );
     expect(liquidityResult).to.deep.equal(expectedLiquidityResult);
 };
 
@@ -74,9 +77,9 @@ describe('SwapQuoter', () => {
                     FAKE_SRA_URL,
                 );
 
-                expect(swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, false as any)).to.be.rejectedWith(
-                    'Expected takerAssetData to be of type string, encountered: false',
-                );
+                expect(
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, false as any),
+                ).to.be.rejectedWith('Expected takerAssetData to be of type string, encountered: false');
             });
             it('should ensure makerAssetData is a string', async () => {
                 const swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
@@ -84,43 +87,21 @@ describe('SwapQuoter', () => {
                     FAKE_SRA_URL,
                 );
 
-                expect(swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(false as any, FAKE_TAKER_ASSET_DATA)).to.be.rejectedWith(
-                    'Expected makerAssetData to be of type string, encountered: false',
-                );
+                expect(
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(false as any, FAKE_TAKER_ASSET_DATA),
+                ).to.be.rejectedWith('Expected makerAssetData to be of type string, encountered: false');
             });
         });
 
         describe('asset pair not supported', () => {
-            it('should return 0s when no asset pair with specified makerAssetData are supported', async () => {
-                mockAvailableTakerAssetDatas(mockOrderProvider, FAKE_MAKER_ASSET_DATA, []);
-
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getAvailableMakerAssetDatasAsync(FAKE_MAKER_ASSET_DATA);
-                expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
-                });
-            });
-
-            it('should return 0s when only other asset pair supported', async () => {
-                mockAvailableTakerAssetDatas(mockOrderProvider, FAKE_MAKER_ASSET_DATA, [DAI_ASSET_DATA]);
-
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getAvailableTakerAssetDatasAsync(FAKE_MAKER_ASSET_DATA);
-                expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
-               });
-            });
-
-            it('should return 0s when no asset pair with specified takerAssetData are supported', async () => {
+            it('should return 0s when no asset pair are supported', async () => {
                 mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, []);
 
                 const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getAvailableMakerAssetDatasAsync(FAKE_TAKER_ASSET_DATA);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, FAKE_TAKER_ASSET_DATA);
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
+                    makerTokensAvailableInBaseUnits: new BigNumber(0),
+                    takerTokensAvailableInBaseUnits: new BigNumber(0),
                 });
             });
 
@@ -128,13 +109,13 @@ describe('SwapQuoter', () => {
                 mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, [DAI_ASSET_DATA]);
 
                 const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getAvailableMakerAssetDatasAsync(FAKE_TAKER_ASSET_DATA);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, FAKE_TAKER_ASSET_DATA);
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
-               });
+                    makerTokensAvailableInBaseUnits: new BigNumber(0),
+                    takerTokensAvailableInBaseUnits: new BigNumber(0),
+                });
             });
-        });
+       });
 
         describe('assetData is supported', () => {
             // orders
@@ -148,7 +129,7 @@ describe('SwapQuoter', () => {
             });
 
             beforeEach(() => {
-                mockAvailableTakerAssetDatas(mockOrderProvider, FAKE_MAKER_ASSET_DATA, [WETH_ASSET_DATA]);
+                mockAvailableMakerAssetDatas(mockOrderProvider, WETH_ASSET_DATA, [FAKE_MAKER_ASSET_DATA]);
             });
 
             it('should return 0s when no orders available', async () => {
