@@ -22,7 +22,6 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
 const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: ForwarderSwapQuoteGetOutputOpts = {
     feePercentage: 0,
     feeRecipient: NULL_ADDRESS,
-    ethAmount: new BigNumber(0),
 };
 
 const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;

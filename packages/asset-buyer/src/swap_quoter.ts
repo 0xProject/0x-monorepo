@@ -89,7 +89,11 @@ export class SwapQuoter {
      *
      * @return  An instance of SwapQuoter
      */
-    constructor(supportedProvider: SupportedProvider, orderProvider: OrderProvider, options: Partial<SwapQuoterOpts> = {}) {
+    constructor(
+        supportedProvider: SupportedProvider,
+        orderProvider: OrderProvider,
+        options: Partial<SwapQuoterOpts> = {},
+    ) {
         const { networkId, orderRefreshIntervalMs, expiryBufferMs } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTER_OPTS,
@@ -202,7 +206,7 @@ export class SwapQuoter {
     ): Promise<LiquidityForAssetData> {
         const shouldForceOrderRefresh =
             options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
-        assert.isString('makerAssetDataa', makerAssetData);
+        assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);

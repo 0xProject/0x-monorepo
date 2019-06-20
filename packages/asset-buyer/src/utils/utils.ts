@@ -15,7 +15,7 @@ export const utils = {
         return _.find(
             abi,
             (def: AbiDefinition): boolean => {
-                if (def.type === `'function'`) {
+                if (def.type === 'function') {
                     const methodDef = def as MethodAbi;
                     return methodDef.name === name;
                 } else {
