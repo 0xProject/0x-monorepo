@@ -99,7 +99,7 @@ packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers
-packages/abi-gen-wrappers/wrappers
+packages/abi-gen-wrappers/src/generated-wrappers/
 contracts/coordinator/generated-wrappers/
 contracts/exchange/generated-wrappers/
 contracts/asset-proxy/generated-wrappers/
