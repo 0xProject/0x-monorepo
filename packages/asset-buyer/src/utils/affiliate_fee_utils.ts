@@ -12,13 +12,18 @@ export const affiliateFeeUtils = {
     },
 };
 
+/**
+ * Adds a fee based on feePercentage of the takerTokenAmount and adds it to the feeTakerTokenAmount and totalTakerTokenAmount
+ * @param quoteInfo quote information to add fee to
+ * @param feePercentage the percentage of takerTokenAmount charged additionally as a fee
+ */
 const getSwapQuoteInfoWithAffiliateFee = (quoteInfo: SwapQuoteInfo, feePercentage: number): SwapQuoteInfo => {
     const newQuoteInfo = _.clone(quoteInfo);
-    const affiliateFeeAmount = newQuoteInfo.takerTokenAmount
+    const affiliateFeeAmount = quoteInfo.takerTokenAmount
         .multipliedBy(feePercentage)
         .integerValue(BigNumber.ROUND_CEIL);
-    const newFeeAmount = newQuoteInfo.feeTakerTokenAmount.plus(affiliateFeeAmount);
+    const newFeeAmount = quoteInfo.feeTakerTokenAmount.plus(affiliateFeeAmount);
     newQuoteInfo.feeTakerTokenAmount = newFeeAmount;
-    newQuoteInfo.totalTakerTokenAmount = newFeeAmount.plus(newQuoteInfo.takerTokenAmount);
+    newQuoteInfo.totalTakerTokenAmount = newFeeAmount.plus(quoteInfo.takerTokenAmount);
     return newQuoteInfo;
 };
