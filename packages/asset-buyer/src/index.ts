@@ -18,7 +18,8 @@ export {
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
-export { SwapQuoter } from './asset_buyer';
+export { ForwarderSwapQuoteConsumer } from './quote_consumers/forwarder_swap_quote_consumer';
+export { SwapQuoter } from './swap_quoter';
 export { InsufficientAssetLiquidityError } from './errors';
 
 export { BasicOrderProvider } from './order_providers/basic_order_provider';
