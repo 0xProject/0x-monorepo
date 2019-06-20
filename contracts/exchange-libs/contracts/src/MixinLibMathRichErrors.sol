@@ -14,9 +14,9 @@ contract MixinLibMathRichErrors is
         pure
         returns (bytes memory)
     {
-        bytes4 division_error = DIVISION_BY_ZERO_SELECTOR;
+        bytes4 divisionError = DIVISION_BY_ZERO_SELECTOR;
         assembly {
-            mstore(0, division_error)
+            mstore(0, divisionError)
             revert(0, 4)
         }
     }
