@@ -42,6 +42,7 @@
         "@0x/contract-addresses": "^2.3.3",
         "@0x/contract-wrappers": "^9.1.4",
         "@0x/dev-utils": "^2.2.3",
+        "@0x/fill-scenarios": "^3.0.10",
         "@0x/json-schemas": "^3.0.10",
         "@0x/migrations": "^4.1.6",
         "@0x/order-utils": "^8.1.1",
