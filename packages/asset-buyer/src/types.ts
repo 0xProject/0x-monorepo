@@ -158,7 +158,7 @@ export interface SwapQuote {
 
 /**
  * assetEthAmount: The amount of eth required to pay for the requested asset.
- * feeEthAmount: The amount of eth required to pay the affiliate fee.
+ * feeEthAmount: The amount of eth required to pay any fee concerned with an extension contract.
  * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface SwapQuoteInfo {
