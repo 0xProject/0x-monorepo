@@ -47,6 +47,7 @@ export interface OrderProvider {
  */
 export interface CalldataInfo {
     calldataHexString: string;
+    methodAbi: MethodAbi;
     to: string;
     ethAmount?: BigNumber;
 }
@@ -128,7 +129,7 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
 export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
     feePercentage: number;
     feeRecipient: string;
-    ethAmount: BigNumber;
+    ethAmount?: BigNumber;
 }
 
 /**

@@ -56,6 +56,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         const calldataHexString = abiEncoder.encode(args);
         return {
             calldataHexString,
+            methodAbi,
             to,
             ethAmount,
         };
@@ -75,7 +76,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         assert.isNumber('feePercentage', unFormattedFeePercentage);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isBigNumber('ethAmount', ethAmount);
+        if (ethAmount !== undefined) {
+            assert.isBigNumber('ethAmount', ethAmount);
+        }
 
         const swapQuoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(
             quote,
@@ -85,7 +88,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
 
         const signatures = _.map(orders, o => o.signature);
-        const feeSignatures = _.map(orders, o => o.signature);
+        const feeSignatures = _.map(feeOrders, o => o.signature);
 
         const feePercentage = utils.numberPercentageToEtherTokenAmountPercentage(unFormattedFeePercentage);
 
@@ -103,6 +106,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             this._contractWrappers.forwarder.abi,
             'marketBuyOrdersWithEth',
         ) as MethodAbi;
+
         return {
             params,
             to: this._contractWrappers.forwarder.address,
@@ -125,8 +129,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         assert.isNumber('feePercentage', feePercentage);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
-        assert.isBigNumber('ethAmount', ethAmount);
-
+        if (ethAmount !== undefined) {
+            assert.isBigNumber('ethAmount', ethAmount);
+        }
         if (takerAddress !== undefined) {
             assert.isETHAddressHex('takerAddress', takerAddress);
         }

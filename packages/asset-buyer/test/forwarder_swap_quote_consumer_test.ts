@@ -2,7 +2,6 @@ import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -23,6 +22,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const FILLABLE_AMOUNTS = [new BigNumber(5), new BigNumber(10)];
+const TESTRPC_NETWORK_ID = 50;
 
 describe('ForwarderSwapQuoteConsumer', () => {
     let userAddresses: string[];
@@ -33,6 +33,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     let makerAssetData: string;
     let takerAssetData: string;
     let wethAssetData: string;
+    const networkId = TESTRPC_NETWORK_ID;
     before(async () => {
         const contractAddresses = await migrateOnceAsync();
         await blockchainLifecycle.startAsync();
@@ -67,8 +68,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
 
         describe('validation', () => {
             it('should throw if swap quote provided is not a valid forwarder SwapQuote (taker asset is WETH)', async () => {
-                const invalidSignedOrders = await getSignedOrdersWithNoFees(
-                    fillScenarios,
+                const invalidSignedOrders = getSignedOrdersWithNoFees(
                     makerAssetData,
                     takerAssetData,
                     makerAddress,
@@ -81,6 +81,61 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 // expect(
                 //     swapQuoteConsumer.getSmartContractParamsOrThrow(invalidSwapQuote, {}),
                 // ).to.throws();
+            });
+        });
+
+        describe('valid swap quote', async () => {
+            it('provide correct smart contract params with default options', async () => {
+                const signedOrders = getSignedOrdersWithNoFees(
+                    makerAssetData,
+                    wethAssetData,
+                    makerAddress,
+                    takerAddress,
+                    FILLABLE_AMOUNTS,
+                );
+                const swapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, signedOrders);
+                const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, { networkId });
+                const smartContractParamsInfo = swapQuoteConsumer.getSmartContractParamsOrThrow(swapQuote, {});
+                // console.log(smartContractParamsInfo);
+                // TODO(dave4506): Add elaborate testing
+            });
+        });
+    });
+
+    describe('getCalldataOrThrow', () => {
+
+        describe('validation', () => {
+            it('should throw if swap quote provided is not a valid forwarder SwapQuote (taker asset is WETH)', async () => {
+                const invalidSignedOrders = getSignedOrdersWithNoFees(
+                    makerAssetData,
+                    takerAssetData,
+                    makerAddress,
+                    takerAddress,
+                    FILLABLE_AMOUNTS,
+                );
+                const invalidSwapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, invalidSignedOrders);
+                const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, {});
+                // TODO(dave4506) finish up testing/coverage
+                // expect(
+                //     swapQuoteConsumer.getSmartContractParamsOrThrow(invalidSwapQuote, {}),
+                // ).to.throws();
+            });
+        });
+
+        describe('valid swap quote', async () => {
+            it('provide correct calldata hex with default options', async () => {
+                const signedOrders = getSignedOrdersWithNoFees(
+                    makerAssetData,
+                    wethAssetData,
+                    makerAddress,
+                    takerAddress,
+                    FILLABLE_AMOUNTS,
+                );
+                const swapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, signedOrders);
+                const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, { networkId });
+                const callDataInfo = swapQuoteConsumer.getCalldataOrThrow(swapQuote, {});
+                // console.log(callDataInfo);
+                // TODO(dave4506): Add elaborate testing
             });
         });
     });
