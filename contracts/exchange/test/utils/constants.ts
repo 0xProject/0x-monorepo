@@ -33,3 +33,12 @@ export const constants = {
         ExchangeFunctionName.MarketSellOrdersNoThrow,
     ],
 };
+
+export enum ValidatorWalletAction {
+    Reject = 0,
+    Allow = 1,
+    Revert = 2,
+    UpdateState = 3,
+    ValidateSignature = 4,
+    NTypes = 5,
+}

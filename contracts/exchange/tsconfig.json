@@ -19,11 +19,8 @@
         "generated-artifacts/TestAssetProxyDispatcher.json",
         "generated-artifacts/TestExchangeInternals.json",
         "generated-artifacts/TestLibExchangeRichErrorDecoder.json",
-        "generated-artifacts/TestRevertReceiver.json",
         "generated-artifacts/TestSignatureValidator.json",
-        "generated-artifacts/TestStaticCallReceiver.json",
-        "generated-artifacts/Validator.json",
-        "generated-artifacts/Wallet.json",
+        "generated-artifacts/TestValidatorWallet.json",
         "generated-artifacts/Whitelist.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
