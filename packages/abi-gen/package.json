@@ -35,6 +35,7 @@
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.3",
         "chalk": "^2.3.0",
+        "change-case": "^3.1.0",
         "ethereum-types": "^2.1.2",
         "glob": "^7.1.2",
         "handlebars": "^4.0.11",

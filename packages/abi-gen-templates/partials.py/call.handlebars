@@ -1,0 +1,44 @@
+
+    def {{this.langLocalName}}(
+        self,
+        token_address: str,
+        {{> typed_params inputs=inputs}}
+        {{^this.constant}}
+        tx_params: Optional[TxParams] = None,
+        view_only: bool = False,
+        {{/this.constant}}
+    ) -> {{~> return_type outputs=outputs~}}:
+        """{{#if this.devdoc.details}}{{safeString this.devdoc.details}}{{else}}Contract method `{{this.langLocalName}}`.{{/if}}
+
+        {{#each this.devdoc.params}}
+        :param {{@key}}: {{this}}
+        {{/each}}
+        {{#if this.constant}}
+        {{#if this.devdoc.return}}:returns: {{this.devdoc.return}}{{/if}}
+        {{else}}
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
+
+        :returns: transaction hash
+        {{/if}}
+        """
+        token_address = self._validate_and_checksum_address(token_address)
+        {{#each this.inputs}}
+        {{#if (equal type 'address')}}
+        {{this.name}} = self._validate_and_checksum_address({{this.name}})
+        {{else if (equal type 'uint256')}}
+        # safeguard against fractional inputs
+        {{this.name}} = int({{this.name}})
+{{/if}}
+{{/each}}
+
+        # abi_encoded_args = abi_encode('{{this.functionSignature}}', [{{!--{{> params inputs=inputs}}--}}]);
+
+        func = self._get_contract_instance(token_address).functions.{{this.name}}(
+            {{> params}}
+        )
+        return self._invoke_function_call(
+            func=func,
+            tx_params={{#if this.constant}}None{{else}}tx_params{{/if}},
+            view_only={{#if this.constant}}True{{else}}view_only{{/if}}
+        )

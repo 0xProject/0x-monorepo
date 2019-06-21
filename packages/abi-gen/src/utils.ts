@@ -98,6 +98,45 @@ export const utils = {
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
+    solTypeToPyType(paramKind: ParamKind, backend: ContractsBackend, solType: string, components?: DataItem[]): string {
+        const trailingArrayRegex = /\[\d*\]$/;
+        if (solType.match(trailingArrayRegex)) {
+            const arrayItemSolType = solType.replace(trailingArrayRegex, '');
+            const arrayItemPyType = utils.solTypeToPyType(paramKind, backend, arrayItemSolType, components);
+            const arrayPyType = `Array[${arrayItemPyType}]`;
+            return arrayPyType;
+        } else {
+            const solTypeRegexToPyType = [
+                { regex: '^string$', pyType: 'str' },
+                { regex: '^address$', pyType: 'str' },
+                { regex: '^bool$', pyType: 'bool' },
+                { regex: '^u?int\\d*$', pyType: 'int' },
+                { regex: '^bytes\\d*$', pyType: 'bytes' },
+            ];
+            for (const regexAndTxType of solTypeRegexToPyType) {
+                const { regex, pyType } = regexAndTxType;
+                if (solType.match(regex)) {
+                    return pyType;
+                }
+            }
+            const TUPLE_TYPE_REGEX = '^tuple$';
+            if (solType.match(TUPLE_TYPE_REGEX)) {
+                const componentsType = _.map(components, component => {
+                    const componentValueType = utils.solTypeToPyType(
+                        paramKind,
+                        backend,
+                        component.type,
+                        component.components,
+                    );
+                    const componentType = `'${component.name}': ${componentValueType}`;
+                    return componentType;
+                });
+                const pyType = `TypedDict('${solType}(${components})', {${componentsType.join(',')}}`;
+                return pyType;
+            }
+            throw new Error(`Unknown Solidity type found: ${solType}`);
+        }
+    },
     isUnionType(tsType: string): boolean {
         return tsType === 'number|BigNumber';
     },

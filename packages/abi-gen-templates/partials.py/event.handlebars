@@ -1,0 +1,14 @@
+    def get_{{langLocalName}}_event(
+        self, token_address: str, tx_hash: Union[HexBytes, bytes]
+    ) -> Tuple[AttributeDict]:
+        """Get log entry for {{name}} event.
+
+        :param tx_hash: hash of transaction emitting {{name}} event.
+        """
+        tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
+        token_address = self._validate_and_checksum_address(token_address)
+        return (
+            self._get_contract_instance(token_address)
+            .events.{{name}}()
+            .processReceipt(tx_receipt)
+        )
