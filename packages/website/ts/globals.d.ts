@@ -20,6 +20,11 @@ declare module '*.json' {
     /* tslint:enable */
 }
 
+declare module '*.mdx' {
+    let MDXComponent: (props) => JSX.Element;
+    export default MDXComponent;
+}
+
 declare module '*.svg' {
     import { PureComponent, SVGProps } from 'react';
     export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
