@@ -76,16 +76,16 @@ describe('ForwarderSwapQuoteConsumer', () => {
                     FILLABLE_AMOUNTS,
                 );
                 const invalidSwapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, invalidSignedOrders);
-                const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, {});
-                // TODO(dave4506) finish up testing/coverage
-                // expect(
-                //     swapQuoteConsumer.getSmartContractParamsOrThrow(invalidSwapQuote, {}),
-                // ).to.throws();
+                const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, { networkId });
+
+                expect(
+                    () => swapQuoteConsumer.getSmartContractParamsOrThrow(invalidSwapQuote, {}),
+                ).to.throw(`Expected quote.orders[0] to have takerAssetData set as ${wethAssetData}, but is ${takerAssetData}`);
             });
         });
 
         describe('valid swap quote', async () => {
-            it('provide correct smart contract params with default options', async () => {
+            it('provide correct smart contract params with default options (no affiliate fee)', async () => {
                 const signedOrders = getSignedOrdersWithNoFees(
                     makerAssetData,
                     wethAssetData,
