@@ -251,8 +251,8 @@ export class StakingWrapper {
         const poolId = (createPoolLog as any).args.poolId;
         return poolId;
     }
-    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
+    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignedHash: string, makerSignature: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(poolId, makerAddress, makerSignedHash, makerSignature);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
