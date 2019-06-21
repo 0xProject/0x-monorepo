@@ -33,17 +33,25 @@ contract IExchangeRichErrors {
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
         0x7e5a2318;
 
-    // bytes4(keccak256("SignatureValidatorError(bytes32,address,bytes,bytes)"))
+    // bytes4(keccak256("SignatureValidatorNotApprovedError(address,address)"))
+    bytes4 internal constant SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR =
+        0xa15c0d06;
+
+    // bytes4(keccak256("SignatureOrderValidatorNotApprovedError(address,address)"))
+    bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR =
+        0x6d273c5a;
+
+    // bytes4(keccak256("SignatureValidatorError(bytes32,address,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_VALIDATOR_ERROR_SELECTOR =
-        0x169fad8c;
+        0xa23838b8;
 
     // bytes4(keccak256("SignatureWalletError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_WALLET_ERROR_SELECTOR =
         0x1b8388f7;
 
-    // bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,bytes,bytes)"))
+    // bytes4(keccak256("SignatureOrderValidatorError(bytes32,address,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
-        0xfabf4577;
+        0xf45375b7;
 
     // bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"))
     bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =

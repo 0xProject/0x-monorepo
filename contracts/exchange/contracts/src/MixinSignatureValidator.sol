@@ -360,7 +360,10 @@ contract MixinSignatureValidator is
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
         if (!allowedValidators[signerAddress][validatorAddress]) {
-            return false;
+            _rrevert(SignatureValidatorNotApprovedError(
+                signerAddress,
+                validatorAddress
+            ));
         }
         // Shave the validator address and signature type from the signature.
         assembly {
@@ -387,6 +390,7 @@ contract MixinSignatureValidator is
         _rrevert(SignatureValidatorError(
             hash,
             signerAddress,
+            validatorAddress,
             signature,
             returnData
         ));
@@ -468,7 +472,10 @@ contract MixinSignatureValidator is
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
         if (!allowedOrderValidators[signerAddress][validatorAddress]) {
-            return false;
+            _rrevert(SignatureOrderValidatorNotApprovedError(
+                signerAddress,
+                validatorAddress
+            ));
         }
         // Shave the validator address and signature type from the signature.
         assembly {
@@ -495,6 +502,7 @@ contract MixinSignatureValidator is
         _rrevert(SignatureOrderValidatorError(
             orderHash,
             signerAddress,
+            validatorAddress,
             signature,
             returnData
         ));
