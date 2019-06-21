@@ -20,16 +20,19 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "./OrderValidationUtils.sol";
+import "./OrderTransferSimulationUtils.sol";
 import "./LibTransactionDecoder.sol";
 
 
 // solhint-disable no-empty-blocks
 contract DevUtils is
     OrderValidationUtils,
+    OrderTransferSimulationUtils,
     LibTransactionDecoder
 {
     constructor (address _exchange)
         public
         OrderValidationUtils(_exchange)
+        OrderTransferSimulationUtils(_exchange)
     {}
 }

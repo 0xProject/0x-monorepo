@@ -21,6 +21,10 @@
             {
                 "note": "Refactor `OrderValidationUtils` to calculate `fillableTakerAssetAmount`",
                 "pr": 1848
+            },
+            {
+                "note": "Add `OrderTransferSimulationUtils` contract for simulating order transfers on-chain",
+                "pr": 1868
             }
         ]
     }
