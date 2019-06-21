@@ -23,13 +23,15 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinRewardVault.sol";
+import "./MixinSignatureValidator.sol";
 
 contract MixinPools is
     SafeMath,
     IStakingEvents,
     MixinConstants,
     MixinStorage,
-    MixinRewardVault
+    MixinRewardVault,
+    MixinSignatureValidator
 {
 
     function _getNextPoolId()
@@ -65,7 +67,8 @@ contract MixinPools is
     function _addMakerToPool(
         bytes32 poolId,
         address makerAddress,
-        bytes memory makeSignature,
+        bytes32 hashSignedByMaker,
+        bytes memory makerSignature,
         address operatorAddress
     )
         internal
@@ -73,6 +76,11 @@ contract MixinPools is
         require(
             _getPoolOperator(poolId) == operatorAddress,
             "BAD_POOL_OPERATOR"
+        );
+
+        require(
+            _isValidSignature(hashSignedByMaker, makerAddress, makerSignature),
+            "INVALID_MAKER_SIGNATURE"
         );
 
         _recordMaker(poolId, makerAddress);
