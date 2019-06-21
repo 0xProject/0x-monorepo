@@ -67,6 +67,13 @@ const config = {
                 loaders: ['style-loader', 'css-loader'],
             },
             {
+                test: /\.mdx$/,
+                use: [
+                    'babel-loader',
+                    '@mdx-js/loader'
+                ]
+            },
+            {
                 test: /\.svg$/,
                 use: [
                     {
