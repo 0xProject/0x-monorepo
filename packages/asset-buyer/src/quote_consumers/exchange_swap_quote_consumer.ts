@@ -6,9 +6,9 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import {
-    AssetSwapQuoterError,
-    CalldataInformation,
-    SmartContractParams,
+    CalldataInfo,
+    ExchangeMarketBuySmartContractParams,
+    SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumer,
     SwapQuoteConsumerOpts,
@@ -21,7 +21,7 @@ import { utils } from '../utils/utils';
 
 import { assetDataUtils } from '../utils/asset_data_utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer {
+export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams> {
 
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
@@ -34,7 +34,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer {
     ) {
         const { networkId } = _.merge(
             {},
-            constants.DEFAULT_ASSET_SWAP_QUOTER_OPTS,
+            constants.DEFAULT_SWAP_QUOTER_OPTS,
             options,
         );
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
@@ -46,11 +46,11 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer {
         });
     }
 
-    public getCalldataOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInformation => {
+    public getCalldataOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInfo => {
 
     }
     
-    public getSmartContractParamsOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParams => {
+    public getSmartContractParamsOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<ExchangeMarketBuySmartContractParams> => {
 
     }
 

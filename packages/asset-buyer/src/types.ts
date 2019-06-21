@@ -86,6 +86,10 @@ export interface ForwarderMarketBuySmartContractParams {
     feeRecipient: string;
 }
 
+export interface ExchangeMarketBuySmartContractParams {
+
+}
+
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
  * getCalldataOrThrow: Get CalldataInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
