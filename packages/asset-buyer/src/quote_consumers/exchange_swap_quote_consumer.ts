@@ -51,7 +51,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
     }
     
     public getSmartContractParamsOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<ExchangeMarketBuySmartContractParams> => {
-
+        
     }
 
     public executeSwapQuoteOrThrowAsync = async (quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> => {
