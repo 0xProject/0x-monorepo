@@ -46,6 +46,7 @@ contract MixinPoolsWrapper is
     function addMakerToPool(
         bytes32 poolId,
         address makerAddress,
+        bytes32 makerSignedHash,
         bytes calldata makerSignature
     )
         external
@@ -54,6 +55,7 @@ contract MixinPoolsWrapper is
         _addMakerToPool(
             poolId,
             makerAddress,
+            makerSignedHash,
             makerSignature,
             msg.sender
         );
