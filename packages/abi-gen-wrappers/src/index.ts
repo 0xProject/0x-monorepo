@@ -17,3 +17,4 @@ export * from './generated-wrappers/weth9';
 export * from './generated-wrappers/zrx_token';
 export * from './generated-wrappers/coordinator';
 export * from './generated-wrappers/coordinator_registry';
+export * from './generated-wrappers/eth_balance_checker';

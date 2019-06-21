@@ -25,6 +25,7 @@
         "./artifacts/WETH9.json",
         "./artifacts/ZRXToken.json",
         "./artifacts/CoordinatorRegistry.json",
-        "./artifacts/Coordinator.json"
+        "./artifacts/Coordinator.json",
+        "./artifacts/EthBalanceChecker.json"
     ]
 }

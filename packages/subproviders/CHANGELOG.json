@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.1.1",
+        "changes": [
+            {
+                "note": "Fix bug in Trezor subprovider causing Trezor response to not be hex encoded",
+                "pr": 1867
+            }
+        ]
+    },
+    {
         "version": "4.1.0",
         "changes": [
             {

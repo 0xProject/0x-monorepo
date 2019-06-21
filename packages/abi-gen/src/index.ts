@@ -58,8 +58,12 @@ const args = yargs
         'Full usage example',
     ).argv;
 
-function registerPartials(partialsGlob: string): void {
-    const partialTemplateFileNames = globSync(partialsGlob);
+const mainTemplate = utils.getNamedContent(args.template);
+const template = Handlebars.compile<ContextData>(mainTemplate.content);
+const abiFileNames = globSync(args.abis);
+const partialTemplateFileNames = globSync(args.partials);
+
+function registerPartials(): void {
     logUtils.log(`Found ${chalk.green(`${partialTemplateFileNames.length}`)} ${chalk.bold('partial')} templates`);
     for (const partialTemplateFileName of partialTemplateFileNames) {
         const namedContent = utils.getNamedContent(partialTemplateFileName);
@@ -70,12 +74,7 @@ function registerPartials(partialsGlob: string): void {
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
-if (args.partials) {
-    registerPartials(args.partials);
-}
-const mainTemplate = utils.getNamedContent(args.template);
-const template = Handlebars.compile<ContextData>(mainTemplate.content);
-const abiFileNames = globSync(args.abis);
+registerPartials();
 
 if (_.isEmpty(abiFileNames)) {
     logUtils.log(`${chalk.red(`No ABI files found.`)}`);
@@ -109,7 +108,7 @@ for (const abiFileName of abiFileNames) {
     const outFileName = utils.makeOutputFileName(namedContent.name);
     const outFilePath = `${args.output}/${outFileName}.ts`;
 
-    if (utils.isOutputFileUpToDate(abiFileName, outFilePath)) {
+    if (utils.isOutputFileUpToDate(outFilePath, [abiFileName, args.template, ...partialTemplateFileNames])) {
         logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);
         continue;
     }

@@ -17,21 +17,23 @@
 */
 
 pragma solidity ^0.5.5;
-pragma experimental ABIEncoderV2;
-
-import "./OrderValidationUtils.sol";
-import "./LibTransactionDecoder.sol";
-import "./EthBalanceChecker.sol";
 
 
-// solhint-disable no-empty-blocks
-contract DevUtils is
-    OrderValidationUtils,
-    LibTransactionDecoder,
-    EthBalanceChecker
-{
-    constructor (address _exchange, bytes memory _zrxAssetData)
+contract EthBalanceChecker {
+
+    /// @dev Batch fetches ETH balances
+    /// @param addresses Array of addresses.
+    /// @return Array of ETH balances.
+    function getEthBalances(address[] memory addresses)
         public
-        OrderValidationUtils(_exchange, _zrxAssetData)
-    {}
+        view
+        returns (uint256[] memory)
+    {
+        uint256[] memory balances = new uint256[](addresses.length);
+        for (uint256 i = 0; i != addresses.length; i++) {
+            balances[i] = addresses[i].balance;
+        }
+        return balances;
+    }
+
 }
