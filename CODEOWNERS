@@ -36,5 +36,4 @@ python-packages/ @feuGeneA
 packages/utils/ @hysz
 
 # Protocol/smart contracts
-contracts/core/test/ @albrow
 contracts/ @abandeali1 @hysz
