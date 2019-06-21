@@ -69,6 +69,17 @@ export interface SmartContractParamsInfo<T> {
 /**
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
+ * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ */
+export interface ExchangeMarketBuySmartContractParams {
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
+}
+
+/**
+ * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
+ * makerAssetFillAmount: The amount of makerAsset to swap for.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
@@ -76,10 +87,7 @@ export interface SmartContractParamsInfo<T> {
  * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
-export interface ForwarderMarketBuySmartContractParams {
-    orders: SignedOrder[];
-    makerAssetFillAmount: BigNumber;
-    signatures: string[];
+export interface ForwarderMarketBuySmartContractParams extends ExchangeMarketBuySmartContractParams {
     feeOrders: SignedOrder[];
     feeSignatures: string[];
     feePercentage: BigNumber;
@@ -87,7 +95,9 @@ export interface ForwarderMarketBuySmartContractParams {
 }
 
 export interface ExchangeMarketBuySmartContractParams {
-
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
 }
 
 /**
