@@ -6,7 +6,7 @@ import {
     SwapQuoteExecutionOpts,
  } from '../types';
 
-export const SwapQuoteConsumerUtils = {
+export const swapQuoteConsumerUtils = {
     async getTakerAddressOrThrowAsync(provider: SupportedProvider, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> {
         if (opts.takerAddress !== undefined) {
             return opts.takerAddress;
