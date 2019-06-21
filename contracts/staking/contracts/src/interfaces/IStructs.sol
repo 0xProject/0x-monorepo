@@ -21,6 +21,16 @@ pragma solidity ^0.5.5;
 
 interface IStructs {
 
+    // Allowed signature types.
+    enum SignatureType {
+        Illegal,            // 0x00, default value
+        Invalid,            // 0x01
+        EIP712,             // 0x02
+        EthSign,            // 0x03
+        Wallet,             // 0x04
+        NSignatureTypes     // 0x05, number of signature types. Always leave at end.
+    }
+
     struct Timelock {
         uint64 lockedAt;
         uint96 total;
