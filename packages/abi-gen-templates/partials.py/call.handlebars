@@ -32,8 +32,6 @@
 {{/if}}
 {{/each}}
 
-        # abi_encoded_args = abi_encode('{{this.functionSignature}}', [{{!--{{> params inputs=inputs}}--}}]);
-
         func = self._get_contract_instance(token_address).functions.{{this.name}}(
             {{> params}}
         )

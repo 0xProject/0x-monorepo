@@ -29,6 +29,10 @@ jobs:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo
+            - save_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/abi-gen-wrappers/src/generated-wrappers/py
     build-website:
         resource_class: medium+
         docker:
@@ -211,10 +215,13 @@ jobs:
             - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       cd python-packages
                       python -m ensurepip
+                      pushd contract_wrappers; ./setup.py pre_install; popd
                       ./install
             - save_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -419,6 +426,8 @@ workflows:
             - static-tests-python:
                   requires:
                       - test-python
-            - test-python
+            - test-python:
+                  requires:
+                      - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python
