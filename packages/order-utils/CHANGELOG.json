@@ -49,6 +49,14 @@
             {
                 "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` parameters used for hashing",
                 "pr": 1832
+            },
+            {
+                "note": "Add `validator` field to `SignatureOrderValidatorError` and `SignatureValidatorError` `RevertError` types.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `SignatureOrderValidatorNotApprovedError` and `SignatureValidatorNotApprovedError` `RevertError` types.",
+                "pr": "TODO"
             }
         ]
     },
