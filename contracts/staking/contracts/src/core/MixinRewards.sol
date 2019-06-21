@@ -24,6 +24,7 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
+import "./MixinRewardVault.sol";
 
 contract MixinRewards is
     SafeMath,
@@ -31,6 +32,7 @@ contract MixinRewards is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
+    MixinRewardVault,
     MixinStakeBalances
 {
     // Pinciple - design any Mixin such that internal members are callable without messing up internal state
@@ -38,36 +40,12 @@ contract MixinRewards is
 
     // @TODO -- add a MixinZrxVault and a MixinRewardVault that interact with the vaults.
 
-     function _getRewardBalance(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOf(poolId);
-    }
-
-    function _getRewardBalanceOfOperator(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfOperator(poolId);
-    }
-
-    function _getRewardBalanceOfPool(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfPool(poolId);
-    }
-
     function _computeRewardBalance(bytes32 poolId, address owner)
         internal
         view
         returns (uint256)
     {
-        uint256 poolBalance = rewardVault.balanceOfPool(poolId);
+        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
         return _computePayoutDenominatedInRealAsset(
             delegatedStakeToPoolByOwner[owner][poolId],
             delegatedStakeByPoolId[poolId],
@@ -96,7 +74,7 @@ contract MixinRewards is
     function _withdrawOperatorReward(bytes32 poolId, uint256 amount)
         internal
     {
-        rewardVault.withdrawFromOperator(poolId, amount);
+        _withdrawFromOperatorInRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
     }
 
@@ -112,7 +90,7 @@ contract MixinRewards is
         shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
         shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
 
-        rewardVault.withdrawFromPool(poolId, amount);
+        _withdrawFromPoolInRewardVault(poolId, amount);
         owner.transfer(amount);
     }
 
@@ -120,8 +98,8 @@ contract MixinRewards is
         internal
         returns (uint256)
     {
-        uint256 amount = rewardVault.balanceOfOperator(poolId);
-        rewardVault.withdrawFromOperator(poolId, amount);
+        uint256 amount = _balanceOfOperatorInRewardVault(poolId);
+        _withdrawFromOperatorInRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
 
         return amount;
@@ -136,7 +114,7 @@ contract MixinRewards is
         shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
         shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
 
-        rewardVault.withdrawFromPool(poolId, amount);
+        _withdrawFromPoolInRewardVault(poolId, amount);
         owner.transfer(amount);
 
         return amount;

@@ -25,10 +25,14 @@ import "./wrappers/MixinEpochWrapper.sol";
 import "./wrappers/MixinRewardsWrapper.sol";
 import "./wrappers/MixinFeesWrapper.sol";
 import "./wrappers/MixinExchangeWrapper.sol";
+import "./wrappers/MixinZrxVaultWrapper.sol";
+import "./wrappers/MixinRewardVaultWrapper.sol";
 
 
 contract Staking is
     MixinExchangeWrapper,
+    MixinZrxVaultWrapper,
+    MixinRewardVaultWrapper,
     MixinEpochWrapper,
     MixinRewardsWrapper,
     MixinStakeBalancesWrapper,
@@ -37,18 +41,9 @@ contract Staking is
     MixinFeesWrapper
 {
 
-    function setZrxVault(address _zrxVault)
+    // this contract can receive ETH
+    function ()
         external
-    {
-        zrxVault = IVault(_zrxVault);
-    }
-
-    function setRewardVault(address payable _rewardVault)
-        external
-    {
-        rewardVault = IRewardVault(_rewardVault);
-    }
-
-    ///// CAN RECEIVE FUNDS /////
-    function () external payable {}
+        payable
+    {}
 }

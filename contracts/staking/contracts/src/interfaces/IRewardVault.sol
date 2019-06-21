@@ -21,8 +21,6 @@ pragma solidity ^0.5.5;
 
 interface IRewardVault {
 
-
-
     function depositFor(bytes32 poolId)
         external
         payable;

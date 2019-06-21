@@ -18,29 +18,24 @@
 
 pragma solidity ^0.5.5;
 
-import "../core/MixinPools.sol";
-import "../core/MixinExchange.sol";
+import "../core/MixinZrxVault.sol";
 
 
-contract Modifiers is
-    MixinPools,
-    MixinExchange
+contract MixinZrxVaultWrapper is
+    MixinZrxVault
 {
 
-    modifier onlyPoolOperator(bytes32 poolId) {
-        require(
-            msg.sender == _getPoolOperator(poolId),
-            "ONLY_CALLABLE_BY_POOL_OPERATOR"
-        );
-
-        _;
+    function setZrxVault(address _zrxVault)
+        external
+    {
+        _setZrxVault(_zrxVault);
     }
 
-    modifier onlyExchange() {
-        require(
-            _isValidExchangeAddress(msg.sender),
-            "ONLY_CALLABLE_BY_EXCHANGE"
-        );
-        _;
+    function getZrxVault()
+        external
+        view
+        returns (address)
+    {
+        return _getZrxVault();
     }
 }
