@@ -204,6 +204,10 @@ export abstract class RevertError extends Error {
         return [];
     }
 
+    get [Symbol.toStringTag](): string {
+        return this.toString();
+    }
+
     /**
      * Compares this instance with another.
      * Fails if instances are not of the same type.
