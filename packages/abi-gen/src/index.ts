@@ -132,7 +132,7 @@ for (const abiFileName of abiFileNames) {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
-            tsName: sanitizedMethodAbis[methodAbiIndex].name,
+            langLocalName: sanitizedMethodAbis[methodAbiIndex].name,
             functionSignature: new AbiEncoder.Method(methodAbi).getSignature(),
         };
         return methodData;
