@@ -39,6 +39,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         });
     }
 
+    /**
+     * Given a SwapQuote, returns 'CalldataInfo' for a forwarder extension call. See type definition of CalldataInfo for more information.
+     * @param quote An object that conforms to SwapQuote. See type definition for more information.
+     * @param opts  Options for getting CalldataInfo. See type definition for more information.
+     */
     public getCalldataOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): CalldataInfo {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
@@ -62,6 +67,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         };
     }
 
+    /**
+     * Given a SwapQuote, returns 'SmartContractParamsInfo' for a forwarder extension call. See type definition of CalldataInfo for more information.
+     * @param quote An object that conforms to SwapQuote. See type definition for more information.
+     * @param opts  Options for getting CalldataInfo. See type definition for more information.
+     */
     public getSmartContractParamsOrThrow(
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
@@ -115,6 +125,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         };
     }
 
+    /**
+     * Given a SwapQuote and desired rate (in Eth), attempt to execute the swap.
+     * @param quote An object that conforms to SwapQuote. See type definition for more information.
+     * @param opts  Options for getting CalldataInfo. See type definition for more information.
+     */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteExecutionOpts>,
@@ -190,6 +205,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         }
     }
 
+    /**
+     * Get the assetData that represents the WETH token.
+     * Will throw if WETH does not exist for the current network.
+     */
     private _getEtherTokenAssetDataOrThrow(): string {
         return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
     }
