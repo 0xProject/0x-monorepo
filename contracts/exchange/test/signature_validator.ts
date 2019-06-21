@@ -31,7 +31,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe.only('MixinSignatureValidator', () => {
+describe('MixinSignatureValidator', () => {
     const SIGNATURE_LENGTH = 65;
     let chainId: number;
     let signedOrder: SignedOrder;
@@ -43,7 +43,7 @@ describe.only('MixinSignatureValidator', () => {
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
-    let notSignerPrivateKey: Buffer;
+    let signatureValidatorLogDecoder: LogDecoder;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -100,8 +100,9 @@ describe.only('MixinSignatureValidator', () => {
                 chainId,
             },
         };
+
+        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        notSignerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(notSignerAddress)];
         orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
     });
 
@@ -355,7 +356,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.Allow,
+                ValidatorWalletAction.Accept,
             );
             expect(isValidSignature).to.be.true();
         });
@@ -508,7 +509,7 @@ describe.only('MixinSignatureValidator', () => {
                 signedOrder,
                 signerAddress,
                 inappropriateSignatureHex,
-                ValidatorWalletAction.Allow,
+                ValidatorWalletAction.Accept,
             );
             return expect(tx).to.revertWith(expectedError);
         });
@@ -678,20 +679,19 @@ describe.only('MixinSignatureValidator', () => {
                 signerAddress,
                 validatorWallet.address,
             );
-            return expect(tx).to.rejectedWith(expectedError);
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return true when SignatureType=WalletOrderValidator and signature is valid', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
             const signature = Buffer.concat([
-                ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
-                ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.WalletOrderValidator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
                 signedOrder,
-                signerAddress,
+                validatorWallet.address,
                 signatureHex,
                 ValidatorWalletAction.ValidateSignature,
             );
@@ -699,16 +699,16 @@ describe.only('MixinSignatureValidator', () => {
         });
 
         it('should return false when SignatureType=WalletOrderValidator and signature is invalid', async () => {
+            signedOrder.makerAddress = notSignerAddress;
             const signature = Buffer.concat([
-                crypto.randomBytes(SIGNATURE_LENGTH),
-                ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
+                ethUtil.toBuffer([SignatureType.WalletOrderValidator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
                 signedOrder,
-                signerAddress,
+                validatorWallet.address,
                 signatureHex,
                 ValidatorWalletAction.ValidateSignature,
             );
@@ -716,11 +716,10 @@ describe.only('MixinSignatureValidator', () => {
         });
 
         it('should revert when validator attempts to update state and SignatureType=WalletOrderValidator', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const signature = Buffer.concat([
-                ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
-                ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.WalletOrderValidator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const expectedError = new ExchangeRevertErrors.SignatureWalletOrderValidatorError(
@@ -739,12 +738,10 @@ describe.only('MixinSignatureValidator', () => {
         });
 
         it('should revert when validator reverts and SignatureType=WalletOrderValidator', async () => {
-            // Create EIP712 signature
+            signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const signature = Buffer.concat([
-                ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
-                ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.WalletOrderValidator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const expectedError = new ExchangeRevertErrors.SignatureWalletOrderValidatorError(
@@ -776,7 +773,8 @@ describe.only('MixinSignatureValidator', () => {
                 },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as
+                LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
@@ -792,7 +790,8 @@ describe.only('MixinSignatureValidator', () => {
                 },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as
+                LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
@@ -808,7 +807,8 @@ describe.only('MixinSignatureValidator', () => {
                 },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as
+                LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
@@ -824,7 +824,8 @@ describe.only('MixinSignatureValidator', () => {
                 },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as
+                LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
             expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
