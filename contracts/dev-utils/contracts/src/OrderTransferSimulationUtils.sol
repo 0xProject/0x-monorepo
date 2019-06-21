@@ -122,6 +122,8 @@ contract OrderTransferSimulationUtils is
         } else if (keccak256(returnData) == _TRANSFERS_SUCCESSFUL_RESULT_HASH) {
             // All transfers were successful
             return OrderTransferResults.TransfersSuccessful;
+        } else {
+            revert("UNKNOWN_RETURN_DATA");
         }
     }
 
