@@ -33,7 +33,7 @@ contract TestValidatorWallet {
         // Return false (default)
         Reject,
         // Return true
-        Allow,
+        Accept,
         // Revert
         Revert,
         // Update state
@@ -85,7 +85,7 @@ contract TestValidatorWallet {
         ValidatorAction action = _hashActions[hash];
         if (action == ValidatorAction.Reject) {
             isValid = false;
-        } else if (action == ValidatorAction.Allow) {
+        } else if (action == ValidatorAction.Accept) {
             isValid = true;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
@@ -110,7 +110,7 @@ contract TestValidatorWallet {
         ValidatorAction action = _hashActions[hash];
         if (action == ValidatorAction.Reject) {
             isValid = false;
-        } else if (action == ValidatorAction.Allow) {
+        } else if (action == ValidatorAction.Accept) {
             isValid = true;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
@@ -121,7 +121,8 @@ contract TestValidatorWallet {
         }
     }
 
-    /// @dev Validates a hash with the `OrderValidator` signature type.
+    /// @dev Validates a hash with the `OrderValidator` and
+    ///      `WalletOrderValidator` signature types.
     /// @param order The order.
     /// @param orderHash The order hash.
     /// @param signature Proof of signing.
@@ -137,12 +138,16 @@ contract TestValidatorWallet {
         ValidatorAction action = _hashActions[orderHash];
         if (action == ValidatorAction.Reject) {
             isValid = false;
-        } else if (action == ValidatorAction.Allow) {
+        } else if (action == ValidatorAction.Accept) {
             isValid = true;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.ValidateSignature) {
-            isValid = _isSignedBy(orderHash, signature, order.makerAddress);
+            if (order.makerAddress == address(this)) {
+                isValid = true;
+            } else {
+                isValid = _isSignedBy(orderHash, signature, order.makerAddress);
+            }
         } else { // if (action == ValidatorAction.UpdateState) {
             _updateState();
         }
