@@ -14,11 +14,7 @@ contract MixinLibMathRichErrors is
         pure
         returns (bytes memory)
     {
-        bytes4 divisionError = DIVISION_BY_ZERO_SELECTOR;
-        assembly {
-            mstore(0, divisionError)
-            revert(0, 4)
-        }
+        return DIVISION_BY_ZERO_ERROR;
     }
 
     function RoundingError(
