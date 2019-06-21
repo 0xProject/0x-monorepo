@@ -17,7 +17,7 @@ import {
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
-import { SwapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
+import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
 export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams> {
@@ -100,7 +100,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
 
         const { orders, makerAssetFillAmount } = quote;
 
-        const finalTakerAddress = await SwapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
 
         try {
             const txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
