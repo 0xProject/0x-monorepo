@@ -446,7 +446,7 @@ describe('Exchange core internal functions', () => {
             const totalFilledAmount = takerAssetFilledAmount.plus(orderTakerAssetFilledAmount);
             if (totalFilledAmount.isGreaterThan(MAX_UINT256)) {
                 // FIXME throw safeMathErrorForSendTransaction(takerAssetFilledAmount, orderTakerAssetFilledAmount);
-                throw safeMathErrorForSendTransaction();
+                throw safeMathErrorForSendTransaction;
             }
             return totalFilledAmount;
         }
