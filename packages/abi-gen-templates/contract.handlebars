@@ -105,14 +105,23 @@ export class {{contractName}}Contract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new {{contractName}}Contract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new {{contractName}}Contract(txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('{{contractName}}', abi, address, supportedProvider, txDefaults);
-        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('{{contractName}}', ABI(), address, supportedProvider, txDefaults);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
-} // tslint:disable:max-file-line-count
+} 
+
+// Returns the ABI that was used to generate this wrapper
+// Hardcoded, do not edit!
+function ABI(): ContractAbi {
+
+    // HACK (xianny): handlebars cannot directly pass an array
+    return JSON.parse(`{{{ABI}}}`);
+}
+// tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
 // tslint:enable:trailing-comma whitespace no-trailing-whitespace

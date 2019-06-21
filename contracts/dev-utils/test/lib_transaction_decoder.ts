@@ -30,12 +30,7 @@ const signature =
 
 describe('LibTransactionDecoder', () => {
     let libTxDecoder: LibTransactionDecoderContract;
-    const exchangeInterface = new IExchangeContract(
-        exchangeArtifacts.Exchange.compilerOutput.abi,
-        constants.NULL_ADDRESS,
-        provider,
-        txDefaults,
-    );
+    const exchangeInterface = new IExchangeContract(constants.NULL_ADDRESS, provider, txDefaults);
     before(async () => {
         await blockchainLifecycle.startAsync();
         libTxDecoder = await LibTransactionDecoderContract.deployFrom0xArtifactAsync(

@@ -1,7 +1,11 @@
 [
     {
-        "version": "4.4.0",
+        "version": "5.0.0",
         "changes": [
+            {
+                "note": "Constructors no longer accept ABIs as argument",
+                "pr": 1882
+            },
             {
                 "note": "Update wrappers to include parameter assertions",
                 "pr": 1823

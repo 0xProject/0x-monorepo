@@ -1,5 +1,4 @@
 import { DummyERC20TokenContract, DummyERC721TokenContract, ExchangeContract } from '@0x/abi-gen-wrappers';
-import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { OrderWithoutExchangeAddress, SignedOrder } from '@0x/types';
@@ -120,7 +119,6 @@ export class FillScenarios {
             fillableAmount,
         );
         const exchangeInstance = new ExchangeContract(
-            artifacts.Exchange.compilerOutput.abi,
             signedOrder.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -195,7 +193,6 @@ export class FillScenarios {
         tokenId: BigNumber,
     ): Promise<void> {
         const erc721Token = new DummyERC721TokenContract(
-            artifacts.DummyERC721Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -211,7 +208,6 @@ export class FillScenarios {
         tokenId: BigNumber,
     ): Promise<void> {
         const erc721Token = new DummyERC721TokenContract(
-            artifacts.DummyERC721Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -241,7 +237,6 @@ export class FillScenarios {
     }
     private async _increaseERC20BalanceAsync(tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
-            artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -257,7 +252,6 @@ export class FillScenarios {
         amount: BigNumber,
     ): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
-            artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

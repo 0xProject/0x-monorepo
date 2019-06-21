@@ -66,7 +66,6 @@ export class ERC721ProxyWrapper extends ContractWrapper {
             return this._erc721ProxyContractIfExists;
         }
         const contractInstance = new ERC721ProxyContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

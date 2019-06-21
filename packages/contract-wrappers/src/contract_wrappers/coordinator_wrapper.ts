@@ -1,6 +1,6 @@
 import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
-import { Coordinator, CoordinatorRegistry, Exchange } from '@0x/contract-artifacts';
+import { Coordinator } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { generatePseudoRandomSalt, signatureUtils } from '@0x/order-utils';
 import { Order, SignedOrder, SignedZeroExTransaction, ZeroExTransaction } from '@0x/types';
@@ -69,19 +69,16 @@ export class CoordinatorWrapper extends ContractWrapper {
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
 
         this._contractInstance = new CoordinatorContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._registryInstance = new CoordinatorRegistryContract(
-            CoordinatorRegistry.compilerOutput.abi,
             this.registryAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
         this._exchangeInstance = new ExchangeContract(
-            Exchange.compilerOutput.abi,
             this.exchangeAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

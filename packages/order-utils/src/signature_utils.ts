@@ -1,6 +1,5 @@
 import { ExchangeContract, IValidatorContract, IWalletContract } from '@0x/abi-gen-wrappers';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
-import * as artifacts from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
     ECSignature,
@@ -111,11 +110,7 @@ export const signatureUtils = {
         const web3Wrapper = new Web3Wrapper(provider);
         const networkId = await web3Wrapper.getNetworkIdAsync();
         const addresses = getContractAddressesForNetworkOrThrow(networkId);
-        const exchangeContract = new ExchangeContract(
-            artifacts.Exchange.compilerOutput.abi,
-            addresses.exchange,
-            provider,
-        );
+        const exchangeContract = new ExchangeContract(addresses.exchange, provider);
         const isValid = await exchangeContract.preSigned.callAsync(data, signerAddress);
         return isValid;
     },
@@ -139,7 +134,7 @@ export const signatureUtils = {
         assert.isETHAddressHex('signerAddress', signerAddress);
         // tslint:disable-next-line:custom-no-magic-numbers
         const signatureWithoutType = signature.slice(0, -2);
-        const walletContract = new IWalletContract(artifacts.IWallet.compilerOutput.abi, signerAddress, provider);
+        const walletContract = new IWalletContract(signerAddress, provider);
         const isValid = await walletContract.isValidSignature.callAsync(data, signatureWithoutType);
         return isValid;
     },
@@ -162,7 +157,7 @@ export const signatureUtils = {
         assert.isHexString('signature', signature);
         assert.isETHAddressHex('signerAddress', signerAddress);
         const validatorSignature = parseValidatorSignature(signature);
-        const exchangeContract = new ExchangeContract(artifacts.Exchange.compilerOutput.abi, signerAddress, provider);
+        const exchangeContract = new ExchangeContract(signerAddress, provider);
         const isValidatorApproved = await exchangeContract.allowedValidators.callAsync(
             signerAddress,
             validatorSignature.validatorAddress,
@@ -173,11 +168,7 @@ export const signatureUtils = {
             );
         }
 
-        const validatorContract = new IValidatorContract(
-            artifacts.IValidator.compilerOutput.abi,
-            signerAddress,
-            provider,
-        );
+        const validatorContract = new IValidatorContract(signerAddress, provider);
         const isValid = await validatorContract.isValidSignature.callAsync(
             data,
             signerAddress,

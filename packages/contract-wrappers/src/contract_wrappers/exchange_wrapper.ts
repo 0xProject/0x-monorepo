@@ -1212,11 +1212,7 @@ export class ExchangeWrapper extends ContractWrapper {
         const makerAssetData = signedOrder.makerAssetData;
         const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
         const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
-        const assetProxy = new IAssetProxyContract(
-            IAssetProxy.compilerOutput.abi,
-            assetProxyAddress,
-            this._web3Wrapper.getProvider(),
-        );
+        const assetProxy = new IAssetProxyContract(assetProxyAddress, this._web3Wrapper.getProvider());
 
         const result = await assetProxy.transferFrom.callAsync(
             makerAssetData,
@@ -1285,7 +1281,6 @@ export class ExchangeWrapper extends ContractWrapper {
             return this._exchangeContractIfExists;
         }
         const contractInstance = new ExchangeContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

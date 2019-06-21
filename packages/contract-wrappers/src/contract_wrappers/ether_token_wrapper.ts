@@ -199,7 +199,6 @@ export class EtherTokenWrapper extends ContractWrapper {
             return etherTokenContract;
         }
         const contractInstance = new WETH9Contract(
-            this.abi,
             etherTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

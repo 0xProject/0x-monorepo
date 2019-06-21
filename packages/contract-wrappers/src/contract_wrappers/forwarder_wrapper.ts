@@ -241,7 +241,6 @@ export class ForwarderWrapper extends ContractWrapper {
             return this._forwarderContractIfExists;
         }
         const contractInstance = new ForwarderContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

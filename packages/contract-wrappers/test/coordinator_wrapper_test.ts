@@ -162,11 +162,7 @@ describe('CoordinatorWrapper', () => {
         });
 
         // setup coordinator registry
-        coordinatorRegistryInstance = new CoordinatorRegistryContract(
-            CoordinatorRegistry.compilerOutput.abi,
-            contractAddresses.coordinatorRegistry,
-            provider,
-        );
+        coordinatorRegistryInstance = new CoordinatorRegistryContract(contractAddresses.coordinatorRegistry, provider);
 
         // register coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(

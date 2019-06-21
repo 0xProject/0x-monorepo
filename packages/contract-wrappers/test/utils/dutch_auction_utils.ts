@@ -122,7 +122,6 @@ export class DutchAuctionUtils {
     }
     private async _increaseERC20BalanceAsync(tokenAddress: string, address: string, amount: BigNumber): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
-            artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
@@ -138,7 +137,6 @@ export class DutchAuctionUtils {
         amount: BigNumber,
     ): Promise<void> {
         const erc20Token = new DummyERC20TokenContract(
-            artifacts.DummyERC20Token.compilerOutput.abi,
             tokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

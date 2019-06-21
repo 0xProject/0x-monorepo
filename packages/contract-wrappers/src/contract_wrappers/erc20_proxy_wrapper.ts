@@ -66,7 +66,6 @@ export class ERC20ProxyWrapper extends ContractWrapper {
             return this._erc20ProxyContractIfExists;
         }
         const contractInstance = new ERC20ProxyContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
