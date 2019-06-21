@@ -1,5 +1,7 @@
 lib
 .nyc_output
+/contracts/abi-gen-test/generated-wrappers
+/contracts/abi-gen-test/generated-artifacts
 /contracts/coordinator/generated-wrappers
 /contracts/coordinator/generated-artifacts
 /contracts/exchange/generated-wrappers
