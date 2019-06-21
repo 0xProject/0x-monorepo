@@ -48,7 +48,9 @@ class ERC20Token(BaseContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """`msg.sender` approves `_spender` to spend `_value` tokens
+        """Execute underlying, same-named contract method.
+
+        `msg.sender` approves `_spender` to spend `_value` tokens
 
         :param _spender: The address of the account able to transfer the tokens
         :param _value: The amount of wei to be approved for transfer
@@ -70,7 +72,9 @@ class ERC20Token(BaseContractWrapper):
         )
 
     def total_supply(self, token_address: str) -> int:
-        """Query total supply of token
+        """Execute underlying, same-named contract method.
+
+        Query total supply of token
 
         :returns: Total supply of token
         """
@@ -92,7 +96,10 @@ class ERC20Token(BaseContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """send `value` token to `to` from `from` on the condition it is approved by `from`
+        """Execute underlying, same-named contract method.
+
+        send `value` token to `to` from `from` on the condition it is
+        approved by `from`
 
         :param _from: The address of the sender
         :param _to: The address of the recipient
@@ -116,7 +123,9 @@ class ERC20Token(BaseContractWrapper):
         )
 
     def balance_of(self, token_address: str, _owner: str) -> int:
-        """Query the balance of owner
+        """Execute underlying, same-named contract method.
+
+        Query the balance of owner
 
         :param _owner: The address from which the balance will be retrieved
         :returns: Balance of owner
@@ -139,7 +148,9 @@ class ERC20Token(BaseContractWrapper):
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """send `value` token to `to` from `msg.sender`
+        """Execute underlying, same-named contract method.
+
+        send `value` token to `to` from `msg.sender`
 
         :param _to: The address of the recipient
         :param _value: The amount of token to be transferred
@@ -161,7 +172,7 @@ class ERC20Token(BaseContractWrapper):
         )
 
     def allowance(self, token_address: str, _owner: str, _spender: str) -> int:
-        """Contract method `allowance`.
+        """Execute underlying, same-named contract method.
 
         :param _owner: The address of the account owning tokens
         :param _spender: The address of the account able to transfer the tokens

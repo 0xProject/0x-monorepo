@@ -3,6 +3,7 @@
 import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import * as changeCase from 'change-case';
+import * as cliFormat from 'cli-format';
 import { AbiDefinition, ConstructorAbi, DevdocOutput, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
@@ -89,6 +90,24 @@ if (args.language === 'TypeScript') {
     Handlebars.registerHelper('safeString', (str, options) => new Handlebars.SafeString(str));
     Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils, ParamKind.Input, args.backend));
     Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils, ParamKind.Output, args.backend));
+    Handlebars.registerHelper(
+        'sanitizeDevdocDetails',
+        (methodName: string, devdocDetails: string, indent: number, options) => {
+            // wrap to 80 columns, assuming given indent, so that generated
+            // docstrings can pass pycodestyle checks.
+            if (devdocDetails === undefined || devdocDetails.length === 0) {
+                return '';
+            }
+            const columnsPerRow = 80;
+            return new Handlebars.SafeString(
+                `\n${cliFormat.wrap(devdocDetails || '', {
+                    paddingLeft: ' '.repeat(indent),
+                    width: columnsPerRow - indent,
+                    ansi: false,
+                })}\n`,
+            );
+        },
+    );
 }
 registerPartials();
 

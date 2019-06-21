@@ -8,8 +8,8 @@
         view_only: bool = False,
         {{/this.constant}}
     ) -> {{~> return_type outputs=outputs~}}:
-        """{{#if this.devdoc.details}}{{safeString this.devdoc.details}}{{else}}Contract method `{{this.langLocalName}}`.{{/if}}
-
+        """Execute underlying, same-named contract method.
+{{sanitizeDevdocDetails this.name this.devdoc.details 8}}
         {{#each this.devdoc.params}}
         :param {{@key}}: {{this}}
         {{/each}}
