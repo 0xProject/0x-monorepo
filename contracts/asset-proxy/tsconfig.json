@@ -10,7 +10,9 @@
         "generated-artifacts/IAssetProxy.json",
         "generated-artifacts/IAuthorizable.json",
         "generated-artifacts/MixinAuthorizable.json",
-        "generated-artifacts/MultiAssetProxy.json"
+        "generated-artifacts/MultiAssetProxy.json",
+        "generated-artifacts/StaticCallProxy.json",
+        "generated-artifacts/TestStaticCallTarget.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

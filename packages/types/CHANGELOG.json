@@ -1,5 +1,18 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Add StaticCallProxy types",
+                "pr": 1863
+            },
+            {
+                "note": "Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum",
+                "pr": 1863
+            }
+        ]
+    },
+    {
         "version": "2.2.2",
         "changes": [
             {

@@ -105,15 +105,6 @@ export class CoordinatorRegistryContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            coordinatorEndpoint: string,
-        ): string {
-        assert.isString('coordinatorEndpoint', coordinatorEndpoint);
-        const self = this as any as CoordinatorRegistryContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             coordinatorEndpoint: string,
             callData: Partial<CallData> = {},
@@ -148,6 +139,15 @@ export class CoordinatorRegistryContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                coordinatorEndpoint: string,
+            ): string {
+            assert.isString('coordinatorEndpoint', coordinatorEndpoint);
+            const self = this as any as CoordinatorRegistryContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setCoordinatorEndpoint(string)', [coordinatorEndpoint
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public getCoordinatorEndpoint = {
@@ -185,6 +185,15 @@ export class CoordinatorRegistryContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                coordinatorOperator: string,
+            ): string {
+            assert.isString('coordinatorOperator', coordinatorOperator);
+            const self = this as any as CoordinatorRegistryContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [coordinatorOperator
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

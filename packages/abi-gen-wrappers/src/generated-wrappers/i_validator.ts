@@ -70,6 +70,21 @@ export class IValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isString('signerAddress', signerAddress);
+            assert.isString('signature', signature);
+            const self = this as any as IValidatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+        signerAddress,
+        signature
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

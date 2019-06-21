@@ -1,6 +1,6 @@
 import * as chai from 'chai';
 
-import { AssetProxyId, ERC1155AssetData, ERC721AssetData } from '@0x/types';
+import { AssetProxyId, ERC1155AssetData, ERC20AssetData, ERC721AssetData } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 import { assetDataUtils } from '../src/asset_data_utils';
@@ -98,7 +98,8 @@ describe('assetDataUtils', () => {
         expect(decodedAssetData.assetProxyId).to.equal(AssetProxyId.MultiAsset);
         expect(decodedAssetData.amounts).to.deep.equal(KNOWN_MULTI_ASSET_ENCODING.amounts);
         expect(decodedAssetData.nestedAssetData.length).to.equal(3);
-        const decodedErc20AssetData = decodedAssetData.nestedAssetData[0];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const decodedErc20AssetData = decodedAssetData.nestedAssetData[0] as ERC20AssetData;
         expect(decodedErc20AssetData.tokenAddress).to.equal(KNOWN_ERC20_ENCODING.address);
         expect(decodedErc20AssetData.assetProxyId).to.equal(AssetProxyId.ERC20);
         // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -144,7 +145,8 @@ describe('assetDataUtils', () => {
         expect(decodedAssetData.nestedAssetData.length).to.be.equal(expectedNestedAssetDataLength);
         // validate nested asset data (outer)
         let nestedAssetDataIndex = 0;
-        const decodedErc20AssetData1 = decodedAssetData.nestedAssetData[nestedAssetDataIndex++];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const decodedErc20AssetData1 = decodedAssetData.nestedAssetData[nestedAssetDataIndex++] as ERC20AssetData;
         expect(decodedErc20AssetData1.tokenAddress).to.equal(KNOWN_ERC20_ENCODING.address);
         expect(decodedErc20AssetData1.assetProxyId).to.equal(AssetProxyId.ERC20);
         // tslint:disable-next-line:no-unnecessary-type-assertion
@@ -158,7 +160,8 @@ describe('assetDataUtils', () => {
         expect(decodedErc1155AssetData1.tokenIds).to.be.deep.equal(KNOWN_ERC1155_ENCODING.tokenIds);
         expect(decodedErc1155AssetData1.callbackData).to.be.equal(KNOWN_ERC1155_ENCODING.callbackData);
         // validate nested asset data (inner)
-        const decodedErc20AssetData2 = decodedAssetData.nestedAssetData[nestedAssetDataIndex++];
+        // tslint:disable-next-line:no-unnecessary-type-assertion
+        const decodedErc20AssetData2 = decodedAssetData.nestedAssetData[nestedAssetDataIndex++] as ERC20AssetData;
         expect(decodedErc20AssetData2.tokenAddress).to.equal(KNOWN_ERC20_ENCODING.address);
         expect(decodedErc20AssetData2.assetProxyId).to.equal(AssetProxyId.ERC20);
         // tslint:disable-next-line:no-unnecessary-type-assertion

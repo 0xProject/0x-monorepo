@@ -5,6 +5,10 @@
             {
                 "note": "add parameter assertions to methods",
                 "pr": 1823
+            },
+            {
+                "note": "Move `getABITransactionData` to `callAsync` template",
+                "pr": 1863
             }
         ]
     },
