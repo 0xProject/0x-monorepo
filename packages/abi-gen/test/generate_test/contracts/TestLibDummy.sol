@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "../src/LibDummy.sol";
+import "./LibDummy.sol";
 
 
 contract TestLibDummy {

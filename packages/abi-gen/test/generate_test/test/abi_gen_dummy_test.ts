@@ -1,25 +1,26 @@
 import { chaiSetup, expectContractCallFailedAsync, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
+
+import * as ChaiBigNumber from 'chai-bignumber';
 
 import { AbiGenDummyContract, artifacts, TestLibDummyContract } from '../src';
 
 chaiSetup.configure();
+chai.use(ChaiBigNumber());
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
     before(async () => {
-        await blockchainLifecycle.startAsync();
+        providerUtils.startProviderEngine(provider);
+        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
     });
     after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
+        provider.stop();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

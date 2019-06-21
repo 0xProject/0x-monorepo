@@ -96,6 +96,7 @@ contracts/erc1155/generated-artifacts/
 contracts/extensions/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
+/packages/abi-gen/test/generate_test/generated-artifacts
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
@@ -114,6 +115,7 @@ contracts/erc1155/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
+/packages/abi-gen/test/generate_test/generated-wrappers
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler

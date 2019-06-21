@@ -1,7 +1,5 @@
 lib
 .nyc_output
-/contracts/abi-gen-test/generated-wrappers
-/contracts/abi-gen-test/generated-artifacts
 /contracts/coordinator/generated-wrappers
 /contracts/coordinator/generated-artifacts
 /contracts/exchange/generated-wrappers
@@ -26,6 +24,8 @@ lib
 /contracts/exchange-forwarder/generated-artifacts
 /contracts/dev-utils/generated-wrappers
 /contracts/dev-utils/generated-artifacts
+/packages/abi-gen/test/generate_test/generated-wrappers
+/packages/abi-gen/test/generate_test/generated-artifacts
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts

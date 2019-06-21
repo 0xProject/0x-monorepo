@@ -1,0 +1,14 @@
+{
+    "extends": "../../../../tsconfig",
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "outDir": "lib",
+        "rootDir": "."
+    },
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "files": [
+        "./generated-artifacts/AbiGenDummy.json",
+        "./generated-artifacts/LibDummy.json",
+        "./generated-artifacts/TestLibDummy.json"
+    ]
+}
