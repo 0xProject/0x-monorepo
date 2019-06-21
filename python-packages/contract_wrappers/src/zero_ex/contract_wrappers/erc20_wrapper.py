@@ -41,32 +41,6 @@ class ERC20Token(BaseContractWrapper):
         )
 
     # pylint: disable=too-many-arguments
-    def transfer(
-        self,
-        token_address: str,
-        to_address: str,
-        value: int,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[HexBytes, bytes]:
-        """Transfer the balance from owner's account to another account.
-
-        :param value: integer amount to send
-        :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
-
-        :returns: transaction hash
-        """
-        token_address = self._validate_and_checksum_address(token_address)
-        to_address = self._validate_and_checksum_address(to_address)
-        # safeguard against fractional inputs
-        value = int(value)
-        func = self._erc20(token_address).functions.transfer(to_address, value)
-        return self._invoke_function_call(
-            func=func, tx_params=tx_params, view_only=view_only
-        )
-
-    # pylint: disable=too-many-arguments
     def approve(
         self,
         token_address: str,
@@ -92,6 +66,17 @@ class ERC20Token(BaseContractWrapper):
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
+        )
+
+    def total_supply(self, token_address: str) -> int:
+        """Get total supply of a given ERC20 Token.
+
+        :returns: amount of tokens
+        """
+        token_address = self._validate_and_checksum_address(token_address)
+        func = self._erc20(token_address).functions.totalSupply()
+        return self._invoke_function_call(
+            func=func, tx_params=None, view_only=True
         )
 
     # pylint: disable=too-many-arguments
@@ -131,17 +116,6 @@ class ERC20Token(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def total_supply(self, token_address: str) -> int:
-        """Get total supply of a given ERC20 Token.
-
-        :returns: amount of tokens
-        """
-        token_address = self._validate_and_checksum_address(token_address)
-        func = self._erc20(token_address).functions.totalSupply()
-        return self._invoke_function_call(
-            func=func, tx_params=None, view_only=True
-        )
-
     def balance_of(self, token_address: str, owner_address: str) -> int:
         """Get token balance of a given owner address.
 
@@ -152,6 +126,32 @@ class ERC20Token(BaseContractWrapper):
         func = self._erc20(token_address).functions.balanceOf(owner_address)
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
+        )
+
+    # pylint: disable=too-many-arguments
+    def transfer(
+        self,
+        token_address: str,
+        to_address: str,
+        value: int,
+        tx_params: Optional[TxParams] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
+        """Transfer the balance from owner's account to another account.
+
+        :param value: integer amount to send
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
+
+        :returns: transaction hash
+        """
+        token_address = self._validate_and_checksum_address(token_address)
+        to_address = self._validate_and_checksum_address(to_address)
+        # safeguard against fractional inputs
+        value = int(value)
+        func = self._erc20(token_address).functions.transfer(to_address, value)
+        return self._invoke_function_call(
+            func=func, tx_params=tx_params, view_only=view_only
         )
 
     def allowance(
