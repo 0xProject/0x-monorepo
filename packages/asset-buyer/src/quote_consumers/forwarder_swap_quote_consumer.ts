@@ -84,7 +84,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             opts,
         );
 
-        assert.isNumber('feePercentage', unFormattedFeePercentage);
+        assert.isValidPercentage('feePercentage', unFormattedFeePercentage);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
         if (ethAmount !== undefined) {
             assert.isBigNumber('ethAmount', ethAmount);
@@ -142,7 +142,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             opts,
         );
 
-        assert.isNumber('feePercentage', feePercentage);
+        assert.isValidPercentage('feePercentage', feePercentage);
         assert.isETHAddressHex('feeRecipient', feeRecipient);
         if (ethAmount !== undefined) {
             assert.isBigNumber('ethAmount', ethAmount);
