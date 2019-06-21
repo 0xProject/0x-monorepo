@@ -1,5 +1,4 @@
 import { DummyERC20TokenContract } from '@0x/abi-gen-wrappers';
-import * as artifacts from '@0x/contract-artifacts';
 import { assetDataUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { SignedOrder } from '@0x/types';

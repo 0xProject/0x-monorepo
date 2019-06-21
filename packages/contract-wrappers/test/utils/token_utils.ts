@@ -1,5 +1,4 @@
 import { DummyERC721TokenContract } from '@0x/abi-gen-wrappers';
-import { DummyERC721Token } from '@0x/contract-artifacts';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
 

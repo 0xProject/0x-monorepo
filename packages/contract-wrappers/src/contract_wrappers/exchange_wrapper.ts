@@ -1,5 +1,5 @@
 import { ExchangeContract, ExchangeEventArgs, ExchangeEvents, IAssetProxyContract } from '@0x/abi-gen-wrappers';
-import { Exchange, IAssetProxy } from '@0x/contract-artifacts';
+import { Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
     assetDataUtils,

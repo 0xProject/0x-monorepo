@@ -4,7 +4,7 @@
         "changes": [
             {
                 "note": "Constructors no longer accept ABIs as argument",
-                "pr": 1882
+                "pr": 1883
             },
             {
                 "note": "Update wrappers to include parameter assertions",
