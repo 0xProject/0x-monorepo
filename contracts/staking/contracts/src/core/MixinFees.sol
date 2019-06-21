@@ -27,6 +27,7 @@ import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinEpoch.sol";
 import "./MixinPools.sol";
+import "./MixinRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibMath.sol";
 
@@ -37,6 +38,7 @@ contract MixinFees is
     IStructs,
     MixinConstants,
     MixinStorage,
+    MixinRewardVault,
     MixinEpoch,
     MixinStakeBalances,
     MixinPools
@@ -137,7 +139,7 @@ contract MixinFees is
             );
 
             // record reward in vault
-            rewardVault.recordDepositFor(activePoolIds[i].poolId, reward);
+            _recordDepositInRewardVault(activePoolIds[i].poolId, reward);
             totalRewardsRecordedInVault = _safeAdd(totalRewardsRecordedInVault, reward);
 
             // clear state for refunds
@@ -152,8 +154,7 @@ contract MixinFees is
             "MISCALCULATED_REWARDS"
         );
         if (totalRewardsRecordedInVault > 0) {
-            address payable rewardVaultAddress = address(uint160(address(rewardVault)));
-            rewardVaultAddress.transfer(totalRewardsRecordedInVault);
+            _depositIntoRewardVault(totalRewardsRecordedInVault);
         }
 
         // Notify finalization

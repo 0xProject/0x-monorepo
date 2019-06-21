@@ -27,30 +27,6 @@ contract MixinRewardsWrapper is
     Modifiers
 {
 
-    function getRewardBalance(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return _getRewardBalance(poolId);
-    }
-
-    function getRewardBalanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return _getRewardBalanceOfOperator(poolId);
-    }
-
-    function getRewardBalanceOfPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return _getRewardBalanceOfPool(poolId);
-    }
-
      function computeRewardBalance(bytes32 poolId, address owner)
         external
         view
