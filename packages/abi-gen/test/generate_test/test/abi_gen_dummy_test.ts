@@ -1,15 +1,27 @@
-import { chaiSetup, expectContractCallFailedAsync, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory} from '@0x/dev-utils';
+import { Web3ProviderEngine } from '@0x/subproviders';
 import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-
+import * as chaiAsPromised from 'chai-as-promised';
 import * as ChaiBigNumber from 'chai-bignumber';
+import * as dirtyChai from 'dirty-chai';
 
 import { AbiGenDummyContract, artifacts, TestLibDummyContract } from '../src';
 
-chaiSetup.configure();
+const txDefaults = {
+    from: devConstants.TESTRPC_FIRST_ADDRESS,
+    gas: devConstants.GAS_LIMIT,
+};
+
+const provider: Web3ProviderEngine = web3Factory.getRpcProvider({ shouldUseInProcessGanache: true });
+const web3Wrapper = new Web3Wrapper(provider);
+
+chai.config.includeStack = true;
 chai.use(ChaiBigNumber());
+chai.use(dirtyChai);
+chai.use(chaiAsPromised);
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
@@ -103,3 +115,16 @@ describe('Lib dummy contract', () => {
         expect(result).bignumber.to.equal(new BigNumber(1235));
     });
 });
+
+// HACK (xianny): copied from @0x/contracts-test-utils to avoid circular dependency
+/**
+ * Resolves if the the contract call fails with the given revert reason.
+ * @param p a Promise resulting from a contract call
+ * @param reason a specific revert reason
+ * @returns a new Promise which will reject if the conditions are not met and
+ * otherwise resolve with no value.
+ */
+function expectContractCallFailedAsync<T>(p: Promise<T>, reason: RevertReason): Chai.PromisedAssertion {
+    const rejectionMessageRegex = new RegExp(`^VM Exception while processing transaction: revert ${reason}$`);
+    return expect(p).to.be.rejectedWith(rejectionMessageRegex);
+}
