@@ -4,13 +4,14 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import { MetaTags } from 'ts/components/meta_tags';
-import { DocsHome } from 'ts/containers/docs_home';
 import { FAQ } from 'ts/containers/faq';
 import { NotFound } from 'ts/containers/not_found';
 import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
+import { DocsHome } from 'ts/pages/docs/home';
+import { DocsPageTemplate } from 'ts/pages/docs/page_template';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
@@ -217,6 +218,7 @@ render(
                                     path={`${WebsitePaths.AssetSwapper}/:version?`}
                                     component={LazyAssetSwapperDocumentation}
                                 />
+                                <Route path={`${WebsitePaths.Docs}/template`} component={DocsPageTemplate as any} />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}
                                 <Route

@@ -1,0 +1,17 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="80" height="80">
+<path d="M39.999 79.7333C61.9431 79.7333 79.7323 61.944 79.7323 39.9999C79.7323 18.0558 61.9431 0.266602 39.999 0.266602C18.0548 0.266602 0.265625 18.0558 0.265625 39.9999C0.265625 61.944 18.0548 79.7333 39.999 79.7333Z" fill="#00AE99"/>
+</mask>
+<g mask="url(#mask0)">
+<ellipse cx="39.9997" cy="40" rx="38.9333" ry="38.9333" stroke="#00AE99" stroke-width="2"/>
+<ellipse cx="39.9997" cy="40" rx="30.9333" ry="30.9333" stroke="#00AE99" stroke-width="2"/>
+<path d="M60.3641 19.6352L43 69L34.0031 45.9961M60.3641 19.6352L11.0013 36.6057L34.0031 45.9961M60.3641 19.6352L34.0031 45.9961" stroke="#00AE99" stroke-width="2"/>
+<path d="M40 1.06665V9.06665M40 70.9333V78.9333" stroke="#00AE99" stroke-width="2"/>
+<path d="M1.06641 40L9.06641 40M70.9331 40L78.9331 40" stroke="#00AE99" stroke-width="2"/>
+<path d="M6.28125 20.5332L13.2095 24.5332M66.7876 55.4665L73.7158 59.4665" stroke="#00AE99" stroke-width="2"/>
+<path d="M20.5312 6.28259L24.5313 13.2108M55.4646 66.7889L59.4646 73.7171" stroke="#00AE99" stroke-width="2"/>
+<path d="M59.4648 6.28259L55.4648 13.2108M24.5315 66.7889L20.5315 73.7171" stroke="#00AE99" stroke-width="2"/>
+<path d="M73.7168 20.5332L66.7886 24.5332M13.2105 55.4665L6.28229 59.4665" stroke="#00AE99" stroke-width="2"/>
+<path d="M11.4882 36.8321L45.6556 34.3431L43.2797 69.5287" stroke="#00AE99" stroke-width="2"/>
+</g>
+</svg>
