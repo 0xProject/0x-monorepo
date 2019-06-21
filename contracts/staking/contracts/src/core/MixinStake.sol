@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
 import "../libs/LibZrxToken.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinStorage.sol";
@@ -26,6 +25,8 @@ import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinEpoch.sol";
+import "./MixinZrxVault.sol";
+import "./MixinRewardVault.sol";
 import "../libs/LibRewards.sol";
 
 
@@ -35,6 +36,8 @@ contract MixinStake is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
+    MixinRewardVault,
     MixinEpoch,
     MixinStakeBalances
 {
@@ -126,7 +129,7 @@ contract MixinStake is
         private
     {
         // deposit equivalent amount of ZRX into vault
-        zrxVault.depositFrom(owner, amount);
+        _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
         stakeByOwner[owner] = _safeAdd(stakeByOwner[owner], amount);
@@ -145,7 +148,7 @@ contract MixinStake is
         stakeByOwner[owner] = _safeSub(stakeByOwner[owner], amount);
 
         // withdraw equivalent amount of ZRX from vault
-        zrxVault.withdrawFrom(owner, amount);
+        _withdrawToOwnerFromZrxVault(owner, amount);
 
         // emit stake event
         emit StakeBurned(
@@ -173,7 +176,7 @@ contract MixinStake is
 
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
-        uint256 poolBalance = rewardVault.balanceOfPool(poolId);
+        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
         uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
@@ -215,7 +218,7 @@ contract MixinStake is
 
         // get payout
         // TODO -- not full balance, just balance that belongs to delegators.
-        uint256 poolBalance = rewardVault.balanceOfPool(poolId);
+        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
         if (_delegatedStakeToPoolByOwner == amount) {
@@ -244,7 +247,7 @@ contract MixinStake is
 
         // withdraw payout for delegator
         if (payoutInRealAsset > 0) {
-            rewardVault.withdrawFromPool(poolId, payoutInRealAsset);
+            _withdrawFromPoolInRewardVault(poolId, payoutInRealAsset);
             owner.transfer(payoutInRealAsset);
         }
     }

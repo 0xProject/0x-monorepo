@@ -22,12 +22,14 @@ import "../immutable/MixinStorage.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
+import "./MixinRewardVault.sol";
 
 contract MixinPools is
     SafeMath,
     IStakingEvents,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinRewardVault
 {
 
     function _getNextPoolId()
@@ -53,10 +55,7 @@ contract MixinPools is
         poolById[poolId] = pool;
 
         // create pool in reward vault
-        rewardVault.createPool(
-            poolId,
-            operatorShare
-        );
+        _createPoolInRewardVault(poolId, operatorShare);
 
         // 
         emit PoolCreated(poolId, operatorAddress, operatorShare);
