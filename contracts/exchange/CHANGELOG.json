@@ -77,6 +77,18 @@
             {
                 "note": "Add `MixinTransferSimulator` contract for simulating multiple transfers on-chain",
                 "pr": 1868
+            },
+            {
+                "note": "Always check `OrderValidator` and `WalletOrderValidator` signature types on every fill",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `validatorAddress` field to `SignatureValidatorError` and `SignatureOrderValidatorError` rich reverts",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add separate `SignatureOrderValidatorNotApprovedError` for `OrderValidator` signatures",
+                "pr": "TODO"
             }
         ]
     },
