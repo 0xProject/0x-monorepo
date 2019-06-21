@@ -41,16 +41,27 @@ export class SignatureError extends RevertError {
     }
 }
 
-export class SignatureValidatorError extends RevertError {
-    constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
+export class SignatureValidatorNotApprovedError extends RevertError {
+    constructor(signer?: string, validator?: string) {
         super(
-            'SignatureValidatorError',
-            'SignatureValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)',
+            'SignatureValidatorNotApprovedError',
+            'SignatureValidatorNotApprovedError(address signer, address validator)',
             {
-                hash,
                 signer,
-                signature,
-                errorData,
+                validator,
+            },
+        );
+    }
+}
+
+export class SignatureOrderValidatorNotApprovedError extends RevertError {
+    constructor(signer?: string, validator?: string) {
+        super(
+            'SignatureOrderValidatorNotApprovedError',
+            'SignatureOrderValidatorNotApprovedError(address signer, address validator)',
+            {
+                signer,
+                validator,
             },
         );
     }
@@ -71,14 +82,31 @@ export class SignatureWalletError extends RevertError {
     }
 }
 
-export class SignatureOrderValidatorError extends RevertError {
-    constructor(hash?: string, signer?: string, signature?: string, errorData?: string) {
+export class SignatureValidatorError extends RevertError {
+    constructor(hash?: string, signer?: string, validator?: string, signature?: string, errorData?: string) {
         super(
-            'SignatureOrderValidatorError',
-            'SignatureOrderValidatorError(bytes32 hash, address signer, bytes signature, bytes errorData)',
+            'SignatureValidatorError',
+            'SignatureValidatorError(bytes32 hash, address signer, address validator, bytes signature, bytes errorData)',
             {
                 hash,
                 signer,
+                validator,
+                signature,
+                errorData,
+            },
+        );
+    }
+}
+
+export class SignatureOrderValidatorError extends RevertError {
+    constructor(hash?: string, signer?: string, validator?: string, signature?: string, errorData?: string) {
+        super(
+            'SignatureOrderValidatorError',
+            'SignatureOrderValidatorError(bytes32 hash, address signer, address validator, bytes signature, bytes errorData)',
+            {
+                hash,
+                signer,
+                validator,
                 signature,
                 errorData,
             },
@@ -218,6 +246,8 @@ export class IncompleteFillError extends RevertError {
 const types = [
     OrderStatusError,
     SignatureError,
+    SignatureValidatorNotApprovedError,
+    SignatureOrderValidatorNotApprovedError,
     SignatureWalletError,
     SignatureValidatorError,
     SignatureOrderValidatorError,
