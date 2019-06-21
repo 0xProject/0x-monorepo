@@ -62,7 +62,7 @@ export interface CalldataInfo {
 export interface SmartContractParamsInfo<T> {
     params: T;
     to: string;
-    ethAmount: BigNumber;
+    ethAmount?: BigNumber;
     methodAbi: MethodAbi;
 }
 
