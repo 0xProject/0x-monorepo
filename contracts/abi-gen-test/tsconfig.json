@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig",
+    "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
+    "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
+    "files": [
+        "generated-artifacts/AbiGenDummy.json",
+        "generated-artifacts/LibDummy.json",
+        "generated-artifacts/TestLibDummy.json"
+    ],
+    "exclude": ["./deploy/solc/solc_bin"]
+}
