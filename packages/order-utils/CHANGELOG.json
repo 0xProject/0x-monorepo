@@ -53,6 +53,10 @@
             {
                 "note": "Add `SignatureOrderValidatorNotApprovedError` and `SignatureValidatorNotApprovedError` `RevertError` types.",
                 "pr": "TODO"
+            },
+            {
+                "note": "Rename `SignatureWalletOrderValidatorError` to `SignatureOrderWalletError` `RevertError` type.",
+                "pr": "TODO"
             }
         ]
     },

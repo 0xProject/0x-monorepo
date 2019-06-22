@@ -114,11 +114,11 @@ export class SignatureOrderValidatorError extends RevertError {
     }
 }
 
-export class SignatureWalletOrderValidatorError extends RevertError {
+export class SignatureOrderWalletError extends RevertError {
     constructor(hash?: string, wallet?: string, signature?: string, errorData?: string) {
         super(
-            'SignatureWalletOrderValidatorError',
-            'SignatureWalletOrderValidatorError(bytes32 hash, address wallet, bytes signature, bytes errorData)',
+            'SignatureOrderWalletError',
+            'SignatureOrderWalletError(bytes32 hash, address wallet, bytes signature, bytes errorData)',
             {
                 hash,
                 wallet,
@@ -251,7 +251,7 @@ const types = [
     SignatureWalletError,
     SignatureValidatorError,
     SignatureOrderValidatorError,
-    SignatureWalletOrderValidatorError,
+    SignatureOrderWalletError,
     InvalidSenderError,
     InvalidTakerError,
     InvalidMakerError,
