@@ -52,15 +52,15 @@
             },
             {
                 "note": "Add `validator` field to `SignatureOrderValidatorError` and `SignatureValidatorError` `RevertError` types.",
-                "pr": "TODO"
+                "pr": 1885
             },
             {
                 "note": "Add `SignatureOrderValidatorNotApprovedError` and `SignatureValidatorNotApprovedError` `RevertError` types.",
-                "pr": "TODO"
+                "pr": 1885
             },
             {
                 "note": "Rename `SignatureWalletOrderValidatorError` to `SignatureOrderWalletError` `RevertError` type.",
-                "pr": "TODO"
+                "pr": 1885
             }
         ]
     },
