@@ -23,7 +23,7 @@ TutorialSteps.defaultProps = {
 const Wrapper = styled.ul<WrapperProps>`
     list-style-type: none;
     counter-reset: tutorialSteps;
-    margin-bottom: 16rem;
+    margin-bottom: 1.875rem;
 
     li {
         font-size: 1rem;
