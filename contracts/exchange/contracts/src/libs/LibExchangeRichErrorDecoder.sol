@@ -154,13 +154,13 @@ contract LibExchangeRichErrorDecoder is
         errorData = _readErrorParameterAsBytes(encoded, 4);
     }
 
-    /// @dev Decompose an ABI-encoded SignatureWalletOrderValidatorError.
+    /// @dev Decompose an ABI-encoded SignatureOrderWalletError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
     /// @return signerAddress The expected signer of the hash.
     /// @return signature The full signature bytes.
     /// @return errorData The revert data thrown by the validator contract.
-    function decodeSignatureWalletOrderValidatorError(bytes memory encoded)
+    function decodeSignatureOrderWalletError(bytes memory encoded)
         public
         pure
         returns (
@@ -170,7 +170,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, SIGNATURE_ORDER_WALLET_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);

@@ -24,6 +24,7 @@ import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "./interfaces/IWallet.sol";
+import "./interfaces/IEIP1271Wallet.sol";
 import "./interfaces/IValidator.sol";
 import "./interfaces/IOrderValidator.sol";
 import "./interfaces/ISignatureValidator.sol";
@@ -39,6 +40,9 @@ contract MixinSignatureValidator is
     MixinTransactions
 {
     using LibBytes for bytes;
+
+    // Magic bytes returned by EIP1271 wallets on success.
+    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
 
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
@@ -144,8 +148,11 @@ contract MixinSignatureValidator is
         );
         // Only hash-compatible signature types can be handled by this
         // function.
-        if (signatureType == SignatureType.OrderValidator ||
-            signatureType == SignatureType.WalletOrderValidator) {
+        if (
+            signatureType == SignatureType.OrderValidator ||
+            signatureType == SignatureType.OrderWallet ||
+            signatureType == SignatureType.EIP1271OrderWallet
+        ) {
             _rrevert(SignatureError(
                 SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
@@ -186,7 +193,8 @@ contract MixinSignatureValidator is
         // regularly.
         return
             signatureType == SignatureType.OrderValidator ||
-            signatureType == SignatureType.WalletOrderValidator;
+            signatureType == SignatureType.OrderWallet ||
+            signatureType == SignatureType.EIP1271OrderWallet;
     }
 
     /// @dev Verifies that an order, with provided order hash, has been signed
@@ -220,9 +228,18 @@ contract MixinSignatureValidator is
                 signature
             );
             return isValid;
-        } else if (signatureType == SignatureType.WalletOrderValidator) {
+        } else if (signatureType == SignatureType.OrderWallet) {
             // The entire order is verified by a wallet contract.
             isValid = _validateOrderWithWallet(
+                order,
+                orderHash,
+                signerAddress,
+                signature
+            );
+            return isValid;
+        } else if (signatureType == SignatureType.EIP1271OrderWallet) {
+            // The entire order is verified by a wallet contract.
+            isValid = _validateOrderWithEIP1271Wallet(
                 order,
                 orderHash,
                 signerAddress,
@@ -323,6 +340,53 @@ contract MixinSignatureValidator is
         // Return data should be a single bool.
         if (didSucceed && returnData.length == 32) {
             return returnData.readUint256(0) == 1;
+        }
+        // Static call to verifier failed.
+        _rrevert(SignatureWalletError(
+            hash,
+            walletAddress,
+            signature,
+            returnData
+        ));
+    }
+
+    /// @dev Verifies signature using logic defined by an EIP1271 Wallet contract.
+    /// @param hash Any 32 byte hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own signature verification method.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return True if the signature is validated by the Walidator.
+    function _validateHashWithEIP1271Wallet(
+        bytes32 hash,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        uint256 signatureLength = signature.length;
+        // Shave the signature type off the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 1))
+        }
+        // Encode the call data.
+        bytes memory data = new bytes(32);
+        data.writeBytes32(0, hash);
+        bytes memory callData = abi.encodeWithSelector(
+            IEIP1271Wallet(walletAddress).isValidSignature.selector,
+            data,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return data should be the `EIP1271_MAGIC_VALUE`.
+        if (didSucceed && returnData.length == 32) {
+            return bytes4(returnData.readBytes32(0)) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
         _rrevert(SignatureWalletError(
@@ -436,7 +500,55 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        _rrevert(SignatureWalletOrderValidatorError(
+        _rrevert(SignatureOrderWalletError(
+            orderHash,
+            walletAddress,
+            signature,
+            returnData
+        ));
+    }
+
+    /// @dev Verifies order AND signature via an EIP1271 Wallet contract.
+    /// @param order The order.
+    /// @param orderHash The order hash.
+    /// @param walletAddress Address that should have signed the given hash
+    ///                      and defines its own order/signature verification method.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return True if order and signature are validated by the Wallet.
+    function _validateOrderWithEIP1271Wallet(
+        Order memory order,
+        bytes32 orderHash,
+        address walletAddress,
+        bytes memory signature
+    )
+        private
+        view
+        returns (bool isValid)
+    {
+        uint256 signatureLength = signature.length;
+        // Shave the signature type off the signature.
+        assembly {
+            mstore(signature, sub(signatureLength, 1))
+        }
+        // Encode the call data.
+        bytes memory data = abi.encode(order);
+        bytes memory callData = abi.encodeWithSelector(
+            IEIP1271Wallet(walletAddress).isValidSignature.selector,
+            data,
+            signature
+        );
+        // Restore the full signature.
+        assembly {
+            mstore(signature, signatureLength)
+        }
+        // Static call the verification function.
+        (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
+        // Return data should be the `EIP1271_MAGIC_VALUE`.
+        if (didSucceed && returnData.length == 32) {
+            return bytes4(returnData.readBytes32(0)) == EIP1271_MAGIC_VALUE;
+        }
+        // Static call to verifier failed.
+        _rrevert(SignatureOrderWalletError(
             orderHash,
             walletAddress,
             signature,
@@ -509,7 +621,7 @@ contract MixinSignatureValidator is
     }
 
     /// Validates a hash-compatible signature type
-    /// (anything but `OrderValidator` and `WalletOrderValidator`).
+    /// (anything but `OrderValidator` and `OrderWallet`).
     function _validateHashSignatureTypes(
         SignatureType signatureType,
         bytes32 hash,
@@ -603,6 +715,15 @@ contract MixinSignatureValidator is
             );
             return isValid;
 
+        // Signature verified by an EIP1271 wallet contract.
+        // If used with an order, the maker of the order is the wallet contract.
+        } else if (signatureType == SignatureType.EIP1271Wallet) {
+            isValid = _validateHashWithEIP1271Wallet(
+                hash,
+                signerAddress,
+                signature
+            );
+            return isValid;
         }
         // Otherwise, signatureType == SignatureType.PreSigned
         assert(signatureType == SignatureType.PreSigned);

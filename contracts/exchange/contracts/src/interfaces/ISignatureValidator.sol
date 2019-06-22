@@ -26,16 +26,18 @@ contract ISignatureValidator {
 
    // Allowed signature types.
     enum SignatureType {
-        Illegal,                // 0x00, default value
-        Invalid,                // 0x01
-        EIP712,                 // 0x02
-        EthSign,                // 0x03
-        Wallet,                 // 0x04
-        Validator,              // 0x05
-        PreSigned,              // 0x06
-        OrderValidator,         // 0x07
-        WalletOrderValidator,   // 0x08
-        NSignatureTypes         // 0x09, number of signature types. Always leave at end.
+        Illegal,                     // 0x00, default value
+        Invalid,                     // 0x01
+        EIP712,                      // 0x02
+        EthSign,                     // 0x03
+        Wallet,                      // 0x04
+        Validator,                   // 0x05
+        PreSigned,                   // 0x06
+        OrderValidator,              // 0x07
+        OrderWallet,                 // 0x08
+        EIP1271Wallet,               // 0x09
+        EIP1271OrderWallet,          // 0x0A
+        NSignatureTypes              // 0x0B, number of signature types. Always leave at end.
     }
 
     event SignatureValidatorApproval(

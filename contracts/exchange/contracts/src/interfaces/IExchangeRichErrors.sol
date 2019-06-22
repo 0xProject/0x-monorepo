@@ -53,9 +53,9 @@ contract IExchangeRichErrors {
     bytes4 internal constant SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR =
         0xf45375b7;
 
-    // bytes4(keccak256("SignatureWalletOrderValidatorError(bytes32,address,bytes,bytes)"))
-    bytes4 internal constant SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR =
-        0xa85f3360;
+    // bytes4(keccak256("SignatureOrderWalletError(bytes32,address,bytes,bytes)"))
+    bytes4 internal constant SIGNATURE_ORDER_WALLET_ERROR_SELECTOR =
+        0x37fa88c3;
 
     // bytes4(keccak256("OrderStatusError(bytes32,uint8)"))
     bytes4 internal constant ORDER_STATUS_ERROR_SELECTOR =

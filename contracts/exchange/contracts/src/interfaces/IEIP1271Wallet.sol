@@ -16,24 +16,23 @@
 
 */
 
-pragma solidity ^0.5.5;
-pragma experimental ABIEncoderV2;
-
-import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "../src/MixinSignatureValidator.sol";
-import "../src/MixinTransactions.sol";
+pragma solidity ^0.5.9;
 
 
-contract TestSignatureValidator is
-    LibEIP712ExchangeDomain,
-    LibOrder,
-    MixinSignatureValidator
-{
+contract IEIP1271Wallet {
 
-    // solhint-disable no-empty-blocks
-    constructor (uint256 chainId)
-        public
-        LibEIP712ExchangeDomain(chainId, address(0))
-    {}
+    // Magic bytes returned by EIP1271 wallets on success.
+    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
+
+    /// @dev Verifies that a signature is valid.
+    /// @param data Arbitrary data.
+    /// @param signature Signature of `data`.
+    /// @return magicValue .
+    function isValidSignature(
+        bytes calldata data,
+        bytes calldata signature
+    )
+        external
+        view
+        returns (bytes4 magicValue);
 }

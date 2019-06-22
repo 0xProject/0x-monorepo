@@ -84,12 +84,7 @@ describe('LibExchangeRichErrorDecoder', () => {
         createDecodeTest(ExchangeRevertErrors.SignatureValidatorError, [orderHash, signer, validator, signature, errorData]);
         createDecodeTest(ExchangeRevertErrors.SignatureWalletError, [orderHash, signer, signature, errorData]);
         createDecodeTest(ExchangeRevertErrors.SignatureOrderValidatorError, [orderHash, signer, validator, signature, errorData]);
-        createDecodeTest(ExchangeRevertErrors.SignatureWalletOrderValidatorError, [
-            orderHash,
-            signer,
-            signature,
-            errorData,
-        ]);
+        createDecodeTest(ExchangeRevertErrors.SignatureOrderWalletError, [orderHash, signer, signature, errorData]);
     })();
 
     (() => {
