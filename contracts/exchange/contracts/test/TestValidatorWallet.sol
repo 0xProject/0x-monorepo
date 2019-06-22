@@ -23,11 +23,22 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
+
+interface ISimplifiedExchange {
+    function getOrderHash(LibOrder.Order calldata order)
+        external
+        view
+        returns (bytes32 orderHash);
+}
+
 // solhint-disable no-unused-vars
 contract TestValidatorWallet {
     using LibBytes for bytes;
 
+    // Revert reason for `Revert` `ValidatorAction`.
     string constant public REVERT_REASON = "you shall not pass";
+    // Magic bytes returned by EIP1271 wallets on success.
+    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
 
     enum ValidatorAction {
         // Return false (default)
@@ -42,12 +53,18 @@ contract TestValidatorWallet {
         ValidateSignature,
         NTypes
     }
+    /// @dev The Exchange contract.
+    ISimplifiedExchange internal _EXCHANGE;
     /// @dev Internal state to modify.
     uint256 internal _state = 1;
     /// @dev What action to execute when a hash is validated .
     mapping (bytes32=>ValidatorAction) internal _hashActions;
-    /// @dev Allowed signers for `ValidateSignature` actions using `Wallet` signature types.
-    mapping (bytes32=>address) internal _hashWalletSigners;
+    /// @dev Allowed signers for hash signature types.
+    mapping (bytes32=>address) internal _validSignerForHash;
+
+    constructor(address exchange) public {
+        _EXCHANGE = ISimplifiedExchange(exchange);
+    }
 
     /// @dev Set the action to take when validating a hash.
     /// @param hash The hash.
@@ -66,7 +83,75 @@ contract TestValidatorWallet {
             revert('UNSUPPORTED_VALIDATE_ACTION');
         }
         _hashActions[hash] = action;
-        _hashWalletSigners[hash] = allowedSigner;
+        _validSignerForHash[hash] = allowedSigner;
+    }
+
+    /// @dev Validates a hash with the following signature types:
+    ///      `EIP1271Wallet` and `EIP1271WalletOrder`signature types.
+    ///      The length of `data` will determine which signature type is in use.
+    /// @param data Arbitrary data. Either an Order hash or abi-encoded Order.
+    /// @param signature Signature for `data`.
+    /// @return magicValue Returns `EIP1271_MAGIC_VALUE` if the signature check succeeds.
+    function isValidSignature(
+        bytes memory data,
+        bytes memory signature
+    )
+        public
+        returns (bytes4 magicValue)
+    {
+        bytes32 hash = _getOrderHashFromEIP1271Data(data);
+        ValidatorAction action = _hashActions[hash];
+        if (action == ValidatorAction.Reject) {
+            // NOOP.
+        } else if (action == ValidatorAction.Accept) {
+            magicValue = EIP1271_MAGIC_VALUE;
+        } else if (action == ValidatorAction.Revert) {
+            revert(REVERT_REASON);
+        } else if (action == ValidatorAction.UpdateState) {
+            _updateState();
+        } else { // action == ValidatorAction.ValidateSignature
+            if (data.length != 32) {
+                // `data` is an abi-encoded Order.
+                LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
+                if (order.makerAddress == address(this)) {
+                    magicValue = EIP1271_MAGIC_VALUE;
+                }
+            } else if (_validSignerForHash[hash] == address(this)) {
+                magicValue = EIP1271_MAGIC_VALUE;
+            }
+        }
+    }
+
+    function _getOrderHashFromEIP1271Data(bytes memory data)
+        private
+        returns (bytes32 hash)
+    {
+        if (data.length == 32) {
+            // `data` is an order hash.
+            hash = data.readBytes32(0);
+        } else {
+            // `data` is an abi-encoded Order.
+            LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
+            // Use the Exchange contract to convert it into a hash.
+            hash = _EXCHANGE.getOrderHash(order);
+        }
+    }
+
+    function _getOrderFromEIP1271Data(bytes memory data)
+        private
+        returns (LibOrder.Order memory order)
+    {
+        require(data.length > 32, "INVALID_EIP1271_ORDER_DATA_LENGTH");
+        assembly {
+            // Skip past the length to find the first parameter.
+            let argsStart := add(data, 32)
+            order := add(argsStart, mload(argsStart))
+            // Destructively point the asset data fields to absolute locations.
+            for {let o := 0x140} lt(o, 0x1C0) {o := add(o, 0x20)} {
+                let arg := add(order, o)
+                mstore(arg, add(argsStart, add(mload(arg), 0x20)))
+            }
+        }
     }
 
     /// @dev Validates a hash with the `Validator` signature type.
@@ -91,7 +176,7 @@ contract TestValidatorWallet {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.ValidateSignature) {
             isValid = _isSignedBy(hash, signature, signerAddress);
-        } else { // if (action == ValidatorAction.UpdateState) {
+        } else { // action == ValidatorAction.UpdateState
             _updateState();
         }
     }
@@ -115,14 +200,14 @@ contract TestValidatorWallet {
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.ValidateSignature) {
-            isValid = _isSignedBy(hash, signature, _hashWalletSigners[hash]);
-        } else { // if (action == ValidatorAction.UpdateState) {
+            isValid = _validSignerForHash[hash] == address(this);
+        } else { // action == ValidatorAction.UpdateState
             _updateState();
         }
     }
 
-    /// @dev Validates a hash with the `OrderValidator` and
-    ///      `WalletOrderValidator` signature types.
+    /// @dev Validates a hash with the `OrderValidator` and `OrderWallet`
+    ///      signature types.
     /// @param order The order.
     /// @param orderHash The order hash.
     /// @param signature Proof of signing.
@@ -143,12 +228,14 @@ contract TestValidatorWallet {
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.ValidateSignature) {
-            if (order.makerAddress == address(this)) {
-                isValid = true;
+            if (signature.length == 0) {
+                // OrderWallet type.
+                isValid = order.makerAddress == address(this);
             } else {
+                // OrderValidator type.
                 isValid = _isSignedBy(orderHash, signature, order.makerAddress);
             }
-        } else { // if (action == ValidatorAction.UpdateState) {
+        } else { // action == ValidatorAction.UpdateState
             _updateState();
         }
     }

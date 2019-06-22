@@ -91,4 +91,12 @@ contract IExchangeCore {
         public
         view
         returns (LibOrder.OrderInfo memory orderInfo);
+
+    /// @dev Calculates Keccak-256 hash of the order.
+    /// @param order The order structure.
+    /// @return Keccak-256 EIP712 hash of the order.
+    function getOrderHash(LibOrder.Order memory order)
+        public
+        view
+        returns (bytes32 orderHash);
 }

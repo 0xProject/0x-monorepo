@@ -83,6 +83,26 @@
                 "pr": "TODO"
             },
             {
+                "note": "Rename `WalletOrderValidator` to `OrderWallet` signature type",
+                "pr": "TODO"
+            },
+            {
+                "note": "Rename `SignatureWalletOrderValidatorError` to `SignatureOrderWalletError`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `IEIP1271Wallet` interface",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `EIP1271Wallet` and `EIP1271OrderWallet` to `SignatureType`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Always check `OrderValidator`, `OrderWallet`, `EIP1271OrderWallet` signature types on every fill",
+                "pr": "TODO"
+            },
+            {
                 "note": "Add `validatorAddress` field to `SignatureValidatorError` and `SignatureOrderValidatorError` rich reverts",
                 "pr": "TODO"
             },

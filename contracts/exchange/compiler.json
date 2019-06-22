@@ -36,6 +36,7 @@
         "src/interfaces/ITransactions.sol",
         "src/interfaces/IValidator.sol",
         "src/interfaces/IWallet.sol",
+        "src/interfaces/IEIP1271Wallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",

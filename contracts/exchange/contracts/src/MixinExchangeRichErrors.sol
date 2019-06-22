@@ -138,7 +138,7 @@ contract MixinExchangeRichErrors is
         );
     }
 
-    function SignatureWalletOrderValidatorError(
+    function SignatureOrderWalletError(
         bytes32 orderHash,
         address wallet,
         bytes memory signature,
@@ -149,7 +149,7 @@ contract MixinExchangeRichErrors is
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR,
+            SIGNATURE_ORDER_WALLET_ERROR_SELECTOR,
             orderHash,
             wallet,
             signature,
