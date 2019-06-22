@@ -31,6 +31,7 @@ interface ISimplifiedExchange {
         returns (bytes32 orderHash);
 }
 
+
 // solhint-disable no-unused-vars
 contract TestValidatorWallet {
     using LibBytes for bytes;
@@ -53,8 +54,9 @@ contract TestValidatorWallet {
         ValidateSignature,
         NTypes
     }
+
     /// @dev The Exchange contract.
-    ISimplifiedExchange internal _EXCHANGE;
+    ISimplifiedExchange internal _exchange;
     /// @dev Internal state to modify.
     uint256 internal _state = 1;
     /// @dev What action to execute when a hash is validated .
@@ -63,7 +65,21 @@ contract TestValidatorWallet {
     mapping (bytes32=>address) internal _validSignerForHash;
 
     constructor(address exchange) public {
-        _EXCHANGE = ISimplifiedExchange(exchange);
+        _exchange = ISimplifiedExchange(exchange);
+    }
+
+    /// @dev Approves an ERC20 token to spend tokens from this address.
+    /// @param token Address of ERC20 token.
+    /// @param spender Address that will spend tokens.
+    /// @param value Amount of tokens spender is approved to spend.
+    function approveERC20(
+        address token,
+        address spender,
+        uint256 value
+    )
+        external
+    {
+        IERC20Token(token).approve(spender, value);
     }
 
     /// @dev Set the action to take when validating a hash.
@@ -80,7 +96,7 @@ contract TestValidatorWallet {
         external
     {
         if (uint8(action) >= uint8(ValidatorAction.NTypes)) {
-            revert('UNSUPPORTED_VALIDATE_ACTION');
+            revert("UNSUPPORTED_VALIDATE_ACTION");
         }
         _hashActions[hash] = action;
         _validSignerForHash[hash] = allowedSigner;
@@ -101,6 +117,7 @@ contract TestValidatorWallet {
     {
         bytes32 hash = _getOrderHashFromEIP1271Data(data);
         ValidatorAction action = _hashActions[hash];
+        // solhint-disable-next-line no-empty-blocks
         if (action == ValidatorAction.Reject) {
             // NOOP.
         } else if (action == ValidatorAction.Accept) {
@@ -118,38 +135,6 @@ contract TestValidatorWallet {
                 }
             } else if (_validSignerForHash[hash] == address(this)) {
                 magicValue = EIP1271_MAGIC_VALUE;
-            }
-        }
-    }
-
-    function _getOrderHashFromEIP1271Data(bytes memory data)
-        private
-        returns (bytes32 hash)
-    {
-        if (data.length == 32) {
-            // `data` is an order hash.
-            hash = data.readBytes32(0);
-        } else {
-            // `data` is an abi-encoded Order.
-            LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
-            // Use the Exchange contract to convert it into a hash.
-            hash = _EXCHANGE.getOrderHash(order);
-        }
-    }
-
-    function _getOrderFromEIP1271Data(bytes memory data)
-        private
-        returns (LibOrder.Order memory order)
-    {
-        require(data.length > 32, "INVALID_EIP1271_ORDER_DATA_LENGTH");
-        assembly {
-            // Skip past the length to find the first parameter.
-            let argsStart := add(data, 32)
-            order := add(argsStart, mload(argsStart))
-            // Destructively point the asset data fields to absolute locations.
-            for {let o := 0x140} lt(o, 0x1C0) {o := add(o, 0x20)} {
-                let arg := add(order, o)
-                mstore(arg, add(argsStart, add(mload(arg), 0x20)))
             }
         }
     }
@@ -240,23 +225,9 @@ contract TestValidatorWallet {
         }
     }
 
-    /// @dev Approves an ERC20 token to spend tokens from this address.
-    /// @param token Address of ERC20 token.
-    /// @param spender Address that will spend tokens.
-    /// @param value Amount of tokens spender is approved to spend.
-    function approveERC20(
-        address token,
-        address spender,
-        uint256 value
-    )
-        external
-    {
-        IERC20Token(token).approve(spender, value);
-    }
-
     /// @dev Increments state variable.
     function _updateState()
-        internal
+        private
     {
         _state++;
     }
@@ -267,7 +238,7 @@ contract TestValidatorWallet {
         bytes memory signature,
         address signerAddress
     )
-        internal
+        private
         pure
         returns (bool isSignedBy)
     {
@@ -289,4 +260,37 @@ contract TestValidatorWallet {
         }
         isSignedBy = recovered == signerAddress;
     }
+
+    function _getOrderHashFromEIP1271Data(bytes memory data)
+        private
+        returns (bytes32 hash)
+    {
+        if (data.length == 32) {
+            // `data` is an order hash.
+            hash = data.readBytes32(0);
+        } else {
+            // `data` is an abi-encoded Order.
+            LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
+            // Use the Exchange contract to convert it into a hash.
+            hash = _exchange.getOrderHash(order);
+        }
+    }
+
+    function _getOrderFromEIP1271Data(bytes memory data)
+        private
+        returns (LibOrder.Order memory order)
+    {
+        require(data.length > 32, "INVALID_EIP1271_ORDER_DATA_LENGTH");
+        assembly {
+            // Skip past the length to find the first parameter.
+            let argsStart := add(data, 32)
+            order := add(argsStart, mload(argsStart))
+            // Destructively point the asset data fields to absolute locations.
+            for {let o := 0x140} lt(o, 0x1C0) {o := add(o, 0x20)} {
+                let arg := add(order, o)
+                mstore(arg, add(argsStart, add(mload(arg), 0x20)))
+            }
+        }
+    }
+
 }
