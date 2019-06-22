@@ -60,6 +60,14 @@
             {
                 "note": "Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum",
                 "pr": 1868
+            },
+            {
+                "note": "Rename `WalletOrderValidator` to `OrderWallet` in `SignatureType`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `EIP1271Wallet` and `EIP1271OrderWallet` to `SignatureType`",
+                "pr": "TODO"
             }
         ]
     },
