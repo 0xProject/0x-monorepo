@@ -63,11 +63,11 @@
             },
             {
                 "note": "Rename `WalletOrderValidator` to `OrderWallet` in `SignatureType`",
-                "pr": "TODO"
+                "pr": 1885
             },
             {
                 "note": "Add `EIP1271Wallet` and `EIP1271OrderWallet` to `SignatureType`",
-                "pr": "TODO"
+                "pr": 1885
             }
         ]
     },

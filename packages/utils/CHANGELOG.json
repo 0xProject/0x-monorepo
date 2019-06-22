@@ -28,7 +28,7 @@
             },
             {
                 "note": "Add `toStringTag` symbol to `RevertError`",
-                "pr": "TODO"
+                "pr": 1885
             }
         ],
         "timestamp": 1563006338
