@@ -5,7 +5,8 @@
     "files": [
         "generated-artifacts/DevUtils.json",
         "generated-artifacts/LibAssetData.json",
-        "generated-artifacts/LibTransactionDecoder.json"
+        "generated-artifacts/LibTransactionDecoder.json",
+        "generated-artifacts/OrderTransferSimulationUtils.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

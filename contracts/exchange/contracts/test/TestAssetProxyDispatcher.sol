@@ -17,12 +17,15 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
 import "../src/MixinAssetProxyDispatcher.sol";
+import "../src/MixinTransferSimulator.sol";
 
 
 contract TestAssetProxyDispatcher is
-    MixinAssetProxyDispatcher
+    MixinAssetProxyDispatcher,
+    MixinTransferSimulator
 {
     function dispatchTransferFrom(
         bytes32 orderHash,

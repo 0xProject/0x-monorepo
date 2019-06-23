@@ -323,6 +323,7 @@ export enum RevertReason {
     InvalidValuesOffset = 'INVALID_VALUES_OFFSET',
     InvalidDataOffset = 'INVALID_DATA_OFFSET',
     InvalidAssetDataLength = 'INVALID_ASSET_DATA_LENGTH',
+    TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
 }
 
 export enum StatusCodes {
@@ -784,4 +785,12 @@ export enum OrderStatus {
     Expired,
     FullyFilled,
     Cancelled,
+}
+
+export enum OrderTransferResults {
+    TakerAssetDataFailed,
+    MakerAssetDataFailed,
+    TakerFeeAssetDataFailed,
+    MakerFeeAssetDataFailed,
+    TransfersSuccessful,
 }

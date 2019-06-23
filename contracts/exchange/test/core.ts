@@ -144,66 +144,39 @@ describe('Exchange core', () => {
             exchange.address,
         );
         // Configure ERC20Proxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+            from: owner,
+        });
 
         // Configure ERC721Proxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+            from: owner,
+        });
 
         // Configure ERC1155Proxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await erc1155Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(multiAssetProxy.address, {
+            from: owner,
+        });
 
         // Configure MultiAssetProxy
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await multiAssetProxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
+            from: owner,
+        });
+        await multiAssetProxy.registerAssetProxy.awaitTransactionSuccessAsync(erc721Proxy.address, {
+            from: owner,
+        });
 
         // Configure Exchange
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
@@ -277,7 +250,7 @@ describe('Exchange core', () => {
                     signedOrder = await orderFactory.newSignedOrderAsync({
                         makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
-                    await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId);
+                    await reentrantErc20Token.setReentrantFunction.awaitTransactionSuccessAsync(functionId);
                     const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
                     return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
                 });
@@ -319,20 +292,14 @@ describe('Exchange core', () => {
 
         it('should revert if `isValidSignature` tries to update state when SignatureType=Wallet', async () => {
             const maliciousMakerAddress = maliciousWallet.address;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenA.setBalance.sendTransactionAsync(
-                    maliciousMakerAddress,
-                    constants.INITIAL_ERC20_BALANCE,
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(
+                maliciousMakerAddress,
+                constants.INITIAL_ERC20_BALANCE,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await maliciousWallet.approveERC20.sendTransactionAsync(
-                    erc20TokenA.address,
-                    erc20Proxy.address,
-                    constants.INITIAL_ERC20_ALLOWANCE,
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await maliciousWallet.approveERC20.awaitTransactionSuccessAsync(
+                erc20TokenA.address,
+                erc20Proxy.address,
+                constants.INITIAL_ERC20_ALLOWANCE,
             );
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAddress: maliciousMakerAddress,
@@ -352,13 +319,10 @@ describe('Exchange core', () => {
 
         it('should revert if `isValidSignature` tries to update state when SignatureType=Validator', async () => {
             const isApproved = true;
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await exchange.setSignatureValidatorApproval.sendTransactionAsync(
-                    maliciousValidator.address,
-                    isApproved,
-                    { from: makerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                maliciousValidator.address,
+                isApproved,
+                { from: makerAddress },
             );
             signedOrder.signature = `${maliciousValidator.address}0${SignatureType.Validator}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
@@ -418,6 +382,167 @@ describe('Exchange core', () => {
         });
     });
 
+    describe('Fill transfer ordering', () => {
+        it('should allow the maker to exchange assets received by the taker', async () => {
+            // Set maker/taker assetData to the same asset
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+            const takerAssetAmount = new BigNumber(1);
+            const makerAssetData = assetDataUtils.encodeMultiAssetData([takerAssetAmount], [takerAssetData]);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData,
+                takerAssetData,
+                makerAssetAmount: takerAssetAmount,
+                takerAssetAmount,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
+            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(2);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+        });
+        it('should allow the taker to pay fees with an asset that received by the maker', async () => {
+            const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                takerFeeAssetData: makerAssetData,
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: new BigNumber(1),
+            });
+            // Set taker balance to 0 so that the asset must be received by the maker in order for the fill to succeed
+            await erc20TokenA.setBalance.awaitTransactionSuccessAsync(takerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(3);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerFee);
+        });
+        it('should allow the maker to pay fees with an asset that received by the taker', async () => {
+            const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenB.address);
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerFeeAssetData: takerAssetData,
+                makerFee: new BigNumber(1),
+                takerFee: constants.ZERO_AMOUNT,
+            });
+            // Set maker balance to 0 so that the asset must be received by the taker in order for the fill to succeed
+            await erc20TokenB.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
+                from: owner,
+            });
+            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            const logs = txReceipt.logs;
+            const transferLogs = _.filter(
+                logs,
+                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
+            );
+            expect(transferLogs.length).to.be.equal(3);
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                takerAddress,
+            );
+            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                makerAddress,
+            );
+            expect(
+                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenA.address,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                takerAddress,
+            );
+            expect(
+                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
+                erc20TokenB.address,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
+                makerAddress,
+            );
+            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
+                feeRecipientAddress,
+            );
+            expect(
+                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
+            ).to.be.bignumber.equal(signedOrder.makerFee);
+        });
+    });
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
             noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
@@ -429,17 +554,14 @@ describe('Exchange core', () => {
                 constants.DUMMY_TOKEN_DECIMALS,
                 constants.DUMMY_TOKEN_TOTAL_SUPPLY,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await noReturnErc20Token.setBalance.sendTransactionAsync(makerAddress, constants.INITIAL_ERC20_BALANCE),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
+                makerAddress,
+                constants.INITIAL_ERC20_BALANCE,
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await noReturnErc20Token.approve.sendTransactionAsync(
-                    erc20Proxy.address,
-                    constants.INITIAL_ERC20_ALLOWANCE,
-                    { from: makerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await noReturnErc20Token.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                constants.INITIAL_ERC20_ALLOWANCE,
+                { from: makerAddress },
             );
         });
         it('should transfer the correct amounts when makerAssetAmount === takerAssetAmount', async () => {
