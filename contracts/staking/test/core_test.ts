@@ -811,12 +811,20 @@ describe('Staking Core', () => {
                 stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, operatorAddress),
                 RevertReason.MakerAddressAlreadyRegistered
             );
+            // try to add a new maker address with a bad signature
+            const anotherMakerAddress = makers[1];
+            const badPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(operatorAddress)];
+            const anotherMakerApproval = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress, badPrivateKey);
+            await expectTransactionFailedAsync(
+                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, anotherMakerApproval.signature, operatorAddress),
+                RevertReason.InvalidMakerSignature
+            );
             // try to add a new maker address from an address other than the pool operator
             const notOperatorAddress = owner;
-            const anotherMakerAddress = makers[1];
-            const anotherMakerApproval = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress);
+            const anotherMakerAddress2 = makers[1];
+            const anotherMakerApproval2 = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress);
             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, anotherMakerApproval.signature, notOperatorAddress),
+                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress2, anotherMakerApproval2.signature, notOperatorAddress),
                 RevertReason.OnlyCallableByPoolOperator
             );
             // try to remove the maker address from an address other than the operator
