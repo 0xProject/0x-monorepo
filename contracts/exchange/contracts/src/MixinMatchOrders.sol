@@ -50,14 +50,67 @@ contract MixinMatchOrders is
         public
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
-        // FIXME
-        LibFillResults.FillResults[] memory empty;
-        return LibFillResults.BatchMatchedFillResults({
-            left: empty,
-            right: empty,
-            profitInLeftMakerAsset: 0,
-            profitInRightMakerAsset: 0
-        });
+        // Ensure that the left and right arrays are compatible and have nonzero lengths
+        require(leftOrders.length > 0, "Invalid number of left orders");
+        require(rightOrders.length > 0, "Invalid number of right orders");
+        require(leftOrders.length == leftSignatures.length, "Incompatible leftOrders and leftSignatures");
+        require(rightOrders.length == rightSignatures.length, "Incompatible rightOrders and rightSignatures");
+
+        uint256 minLength = _min256(leftOrders.length, rightOrders.length);
+
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](minLength);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](minLength);
+
+        uint256 leftIdx = 0;
+        uint256 rightIdx = 0;
+
+        LibOrder.Order memory leftOrder = leftOrders[0];
+        LibOrder.Order memory rightOrder = rightOrders[0];
+        bytes memory leftSignature = leftSignatures[0];
+        bytes memory rightSignature = leftSignatures[0];
+
+        for (uint i = 0;; i++) {
+            // Match the two orders that are pointed to by the left and right indices
+            LibFillResults.MatchedFillResults memory matchResults = matchOrders(
+                leftOrder,
+                rightOrder,
+                leftSignature,
+                rightSignature
+            );
+
+            // Add the matchResults and the profit made during the match to the
+            // batchMatchedFillResults for this batch.
+            batchMatchedFillResults.left[i] = matchResults.left;
+            batchMatchedFillResults.right[i] = matchResults.right;
+            batchMatchedFillResults.profitInLeftMakerAsset +=
+                matchResults.left.makerFeePaid;
+            batchMatchedFillResults.profitInRightMakerAsset +=
+                matchResults.right.makerFeePaid;
+
+            // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
+            // or break out of the loop if there are no more leftOrders to match.
+            if (_isFilled(leftOrder, matchResults.left)) {
+                if (++leftIdx == leftOrders.length) {
+                    break;
+                } else {
+                    leftOrder = leftOrders[leftIdx];
+                    leftSignature = leftSignatures[leftIdx];
+                }
+            }
+
+            // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
+            // or break out of the loop if there are no more rightOrders to match.
+            if (_isFilled(rightOrder, matchResults.right)) {
+                if (++rightIdx == rightOrders.length) {
+                    break;
+                } else {
+                    rightOrder = rightOrders[rightIdx];
+                    rightSignature = rightSignatures[rightIdx];
+                }
+            }
+        }
+
+        return batchMatchedFillResults;
     }
 
     /// @dev Match complementary orders that have a profitable spread.
@@ -315,6 +368,21 @@ contract MixinMatchOrders is
                 getOrderHash(rightOrder)
             ));
         }
+    }
+
+    function _isFilled(
+        LibOrder.Order memory order,
+        LibFillResults.FillResults memory fillResults
+
+    )
+        internal
+        view
+        returns (bool)
+    {
+        if (fillResults.takerAssetFilledAmount >= order.takerAssetAmount) {
+            return true;
+        }
+        return false;
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
