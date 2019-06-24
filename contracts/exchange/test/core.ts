@@ -76,6 +76,8 @@ describe('Exchange core', () => {
     let multiAssetProxy: MultiAssetProxyContract;
     let validatorWallet: TestValidatorWalletContract;
     let erc1155Contract: ERC1155MintableContract;
+    let staticCallProxy: StaticCallProxyContract;
+    let staticCallTarget: TestStaticCallTargetContract;
 
     let signedOrder: SignedOrder;
     let erc20Balances: ERC20BalancesByOwner;
