@@ -64,7 +64,6 @@ export const signTypedDataUtils = {
         for (const dep of deps) {
             result += `${dep}(${types[dep].map(({ name, type }) => `${type} ${name}`).join(',')})`;
         }
-       // console.log('*** ENCODE TYPE RESULT ***\n', result);
         return result;
     },
     _encodeData(primaryType: string, data: EIP712Object, types: EIP712Types): string {
