@@ -89,4 +89,20 @@ contract MixinPoolsWrapper is
         makerAddresses = _getMakerAddressesForPool(makerId);
         return makerAddresses;
     }
+
+    function isValidMakerSignature(bytes32 poolId, address makerAddress, bytes calldata makerSignature)
+        external
+        view
+        returns (bool isValid)
+    {
+        return _isValidMakerSignature(poolId, makerAddress, makerSignature);
+    }
+
+    function getStakingPoolApprovalMessageHash(bytes32 poolId, address makerAddress)
+        external
+        view
+        returns (bytes32 approvalHash)
+    {
+       return _getStakingPoolApprovalMessageHash(poolId, makerAddress);
+    }
 }

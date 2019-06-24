@@ -16,10 +16,12 @@ pragma solidity ^0.5.5;
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "../interfaces/IStructs.sol";
 import "../interfaces/IWallet.sol";
+import "../immutable/MixinConstants.sol";
 
 
 contract MixinSignatureValidator is
-    IStructs
+    IStructs,
+    MixinConstants
 {
     using LibBytes for bytes;
 
@@ -121,17 +123,7 @@ contract MixinSignatureValidator is
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
         } else if (signatureType == SignatureType.Wallet) {
-            isValid = isValidWalletSignature(
-                hash,
-                signerAddress,
-                signature
-            );
-            return isValid;
-
-        // Signature verified by wallet contract.
-        // If used with an order, the maker of the order is the wallet contract.
-        } else if (signatureType == SignatureType.Wallet) {
-            isValid = isValidWalletSignature(
+            isValid = _isValidWalletSignature(
                 hash,
                 signerAddress,
                 signature
@@ -153,7 +145,7 @@ contract MixinSignatureValidator is
     ///                      and defines its own signature verification method.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return True if signature is valid for given wallet..
-    function isValidWalletSignature(
+    function _isValidWalletSignature(
         bytes32 hash,
         address walletAddress,
         bytes memory signature
@@ -162,36 +154,28 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
+        // contruct hash as bytes, so that it is a valid EIP-1271 payload
+        bytes memory hashAsBytes = new bytes(32);
+        assembly {
+            mstore(add(hashAsBytes, 32), hash)
+        }
+
+        // Static call `isValidSignature` in the destination wallet
         bytes memory callData = abi.encodeWithSelector(
             IWallet(walletAddress).isValidSignature.selector,
             hash,
             signature
         );
-        assembly {
-            let cdStart := add(callData, 32)
-            let success := staticcall(
-                gas,              // forward all gas
-                walletAddress,    // address of Wallet contract
-                cdStart,          // pointer to start of input
-                mload(callData),  // length of input
-                cdStart,          // write output over input
-                32                // output size is 32 bytes
-            )
+        (bool success, bytes memory result) = walletAddress.staticcall(callData);
 
-            switch success
-            case 0 {
-                // Revert with `Error("WALLET_ERROR")`
-                mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
-                mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
-                mstore(64, 0x0000000c57414c4c45545f4552524f5200000000000000000000000000000000)
-                mstore(96, 0)
-                revert(0, 100)
-            }
-            case 1 {
-                // Signature is valid if call did not revert and returned true
-                isValid := mload(cdStart)
-            }
-        }
+        // Sanity check call and extract the magic value
+        require(
+            success,
+            "WALLET_ERROR"
+        );
+        bytes4 magicValue = result.readBytes4(0);
+
+        isValid = (magicValue == EIP1271_MAGIC_VALUE);
         return isValid;
     }
 }

@@ -31,6 +31,11 @@ interface IStructs {
         NSignatureTypes     // 0x05, number of signature types. Always leave at end.
     }
 
+    struct StakingPoolApproval {
+        bytes32 poolId;
+        address makerAddress;
+    }
+
     struct Timelock {
         uint64 lockedAt;
         uint96 total;

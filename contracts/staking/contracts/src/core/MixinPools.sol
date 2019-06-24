@@ -24,6 +24,7 @@ import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinRewardVault.sol";
 import "./MixinSignatureValidator.sol";
+import "../libs/LibEIP712Hash.sol";
 
 contract MixinPools is
     SafeMath,
@@ -79,7 +80,7 @@ contract MixinPools is
         );
 
         require(
-            _isValidSignature(hashSignedByMaker, makerAddress, makerSignature),
+            _isValidMakerSignature(poolId, makerAddress, makerSignature),
             "INVALID_MAKER_SIGNATURE"
         );
 
@@ -101,14 +102,32 @@ contract MixinPools is
         _unrecordMaker(poolId, makerAddress);
     }
 
-    /*
-    function _isValidMakerSignature(address makerAddress, bytes memory makerSignature)
+    function _isValidMakerSignature(bytes32 poolId, address makerAddress, bytes memory makerSignature)
         internal
+        view
         returns (bool isValid)
     {
-
+        bytes32 approvalHash = _getStakingPoolApprovalMessageHash(poolId, makerAddress);
+        isValid = _isValidSignature(approvalHash, makerAddress, makerSignature);
+        return isValid;
     }
-    */
+
+    function _getStakingPoolApprovalMessageHash(bytes32 poolId, address makerAddress)
+        internal
+        view
+        returns (bytes32 approvalHash)
+    {
+        StakingPoolApproval memory approval = StakingPoolApproval({
+            poolId: poolId,
+            makerAddress: makerAddress
+        });
+
+        // Hash approval message and check signer address
+        address verifierAddress = address(this);
+        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(approval, verifierAddress, CHAIN_ID);
+
+        return approvalHash;
+    }
 
     function _getMakerPoolId(address makerAddress)
         internal

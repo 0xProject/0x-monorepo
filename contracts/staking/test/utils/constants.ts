@@ -10,4 +10,5 @@ export const constants = {
     INITIAL_TIMELOCK_PERIOD: new BigNumber(0),
     EPOCH_PERIOD_IN_SECONDS: new BigNumber(1000), // @TODO SET FOR DEPLOYMENT*/
     TIMELOCK_PERIOD_IN_EPOCHS: new BigNumber(3), // @TODO SET FOR DEPLOYMENT
+    CHAIN_ID: 1,
 };

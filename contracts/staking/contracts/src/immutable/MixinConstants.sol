@@ -35,6 +35,9 @@ contract MixinConstants {
 
     uint64 constant public INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
+    // bytes4(keccak256("isValidSignature(bytes,bytes)")
+    bytes4 constant internal EIP1271_MAGIC_VALUE = 0x20c13b0b;
+
     uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1000; // @TODO SET FOR DEPLOYMENT
 
     uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 3; // @TODO SET FOR DEPLOYMENT
@@ -42,4 +45,6 @@ contract MixinConstants {
     uint256 constant public COBB_DOUGLAS_ALPHA_DENOMINATOR = 6; // @TODO SET FOR DEPLOYMENT
     
     uint256 constant public REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 90; // @TODO SET FOR DEPLOYMENT
+
+    uint256 constant public CHAIN_ID = 1;   // @TODO SET FOR DEPLOYMENT
 }

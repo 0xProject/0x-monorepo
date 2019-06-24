@@ -14,6 +14,7 @@
 pragma solidity ^0.5.5;
 
 import "../core/MixinSignatureValidator.sol";
+import "../libs/LibEIP712Hash.sol";
 
 
 contract MixinSignatureValidatorWrapper is
@@ -28,9 +29,9 @@ contract MixinSignatureValidatorWrapper is
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
-        bytes memory signature
+        bytes calldata signature
     )
-        internal
+        external
         view
         returns (bool isValid)
     {
