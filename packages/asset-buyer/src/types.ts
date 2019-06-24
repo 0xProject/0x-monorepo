@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0x/types';
+import { SignedOrder, ZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
@@ -84,6 +84,14 @@ export interface ForwarderMarketBuySmartContractParams {
     feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
+}
+
+export interface CoordinatorMarketBuySmartContractParams {
+    transaction: ZeroExTransaction;
+    txOrigin: string;
+    transactionSignature: string;
+    approvalExpirationTimeSeconds: number[];
+    approvalSignatures: string[];
 }
 
 /**

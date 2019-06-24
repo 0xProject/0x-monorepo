@@ -3,6 +3,7 @@ import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
+import { constants } from '../constants';
 import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
 
 export const assert = {
@@ -30,6 +31,22 @@ export const assert = {
         assert.assert(
             order.takerAssetData === wethAssetData,
             `Expected ${variableName} to have takerAssetData set as ${wethAssetData}, but is ${order.takerAssetData}`,
+        );
+    },
+    isValidCoordinatorSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {
+        assert.isValidSwapQuote(variableName, swapQuote);
+        assert.isValidCoordinatorSignedOrders(`${variableName}.orders`, swapQuote.orders, wethAssetData);
+        assert.isValidCoordinatorSignedOrders(`${variableName}.feeOrders`, swapQuote.feeOrders, wethAssetData);
+    },
+    isValidCoordinatorSignedOrders(variableName: string, orders: SignedOrder[], coordinatorAddress: string): void {
+        _.forEach(orders, (o: SignedOrder, i: number) => {
+            assert.isValidCoordinatorSignedOrder(`${variableName}[${i}]`, o, coordinatorAddress);
+        });
+    },
+    isValidCoordinatorSignedOrder(variableName: string, order: SignedOrder, coordinatorAddress: string): void {
+        assert.assert(
+            order.senderAddress === coordinatorAddress || order.senderAddress === constants.NULL_ADDRESS,
+            `Expected ${variableName} to have senderAddress set as ${coordinatorAddress} or null address, but is ${order.senderAddress}`,
         );
     },
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
