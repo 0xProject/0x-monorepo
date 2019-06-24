@@ -68,7 +68,6 @@ contract MixinPools is
     function _addMakerToPool(
         bytes32 poolId,
         address makerAddress,
-        bytes32 hashSignedByMaker,
         bytes memory makerSignature,
         address operatorAddress
     )
