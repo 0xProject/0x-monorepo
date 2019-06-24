@@ -44,10 +44,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting CalldataInfo. See type definition for more information.
      */
-    public getCalldataOrThrow(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): CalldataInfo {
+    public async getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { params, to, ethAmount, methodAbi } = this.getSmartContractParamsOrThrow(quote, opts);
+        const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
         const abiEncoder = new AbiEncoder.Method(methodAbi);
         const args = [
             params.orders,
@@ -72,10 +72,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting CalldataInfo. See type definition for more information.
      */
-    public getSmartContractParamsOrThrow(
+    public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
-    ): SmartContractParamsInfo<ForwarderMarketBuySmartContractParams> {
+    ): Promise<SmartContractParamsInfo<ForwarderMarketBuySmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
