@@ -31,6 +31,7 @@ import {
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 
+const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
 const TWO = new BigNumber(2);
 
@@ -1849,5 +1850,29 @@ describe('matchOrders', () => {
             }
         });
     });
+    describe.only('batchMatchOrders', () => {
+        it('should fail if there are zero leftOrders', async () => {
+            const leftOrders = []
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            const tx = exchangeWrapper.batchMatchOrdersAsync([], [ signedOrderRight ], takerAddress);
+            return expect(tx).to.be.rejected();
+        })
+        it('should fail if there are zero rightOrders', async () => {
+            const leftOrders = []
+            const signedOrdersLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const tx = exchangeWrapper.batchMatchOrdersAsync([ signedOrdersLeft ], [], takerAddress);
+            return expect(tx).to.be.rejected();
+        })
+    })
 });
 // tslint:disable-line:max-file-line-count

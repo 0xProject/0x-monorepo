@@ -266,6 +266,22 @@ export class ExchangeWrapper {
         const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
         return ordersInfo;
     }
+    public async batchMatchOrdersAsync(
+        signedOrdersLeft: SignedOrder[],
+        signedOrdersRight: SignedOrder[],
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
+        const txHash = await this._exchange.batchMatchOrders.sendTransactionAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
     public async matchOrdersAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,

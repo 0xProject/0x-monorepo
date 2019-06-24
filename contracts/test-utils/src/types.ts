@@ -130,6 +130,13 @@ export interface CancelOrder {
     takerAssetCancelAmount: BigNumber;
 }
 
+export interface BatchMatchOrder {
+    leftOrders: OrderWithoutDomain[];
+    rightOrders: OrderWithoutDomain[];
+    leftSignatures: string[];
+    rightSignatures: string[];
+}
+
 export interface MatchOrder {
     left: OrderWithoutDomain;
     right: OrderWithoutDomain;

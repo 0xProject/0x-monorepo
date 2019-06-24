@@ -56,6 +56,10 @@ export interface MatchResults {
     balances: TokenBalances;
 }
 
+export interface BatchMatchResults {
+    matches: MatchResults[];
+}
+
 export interface ERC1155Holdings {
     [owner: string]: {
         [contract: string]: {
@@ -79,6 +83,13 @@ export interface TokenBalances {
         };
     };
     erc1155: ERC1155Holdings;
+}
+
+export interface BatchMatchedOrders {
+    leftOrders: SignedOrder[];
+    rightOrders: SignedOrder[];
+    leftOrdersTakerAssetFilledAmounts: BigNumber[];
+    rightOrdersTakerAssetFilledAmounts: BigNumber[];
 }
 
 export interface MatchedOrders {
@@ -124,6 +135,22 @@ export class MatchOrderTester {
         this.erc1155ProxyWrapper = erc1155ProxyWrapper;
         this.matchOrdersCallAsync = matchOrdersCallAsync;
         this._initialTokenBalancesPromise = this.getBalancesAsync();
+    }
+
+    /**
+     * FIXME What parameters are necessary?
+     */
+    public async batchMatchOrdersAndAssertEffectsAsync(
+        orders: BatchMatchedOrders,
+        takerAddress: string,
+        matchPairs: [number, number][],
+        expectedTransferAmounts: Partial<MatchTransferAmounts>[],
+        initialTokenBalances?: TokenBalances,
+    ): Promise<BatchMatchResults> {
+        await assertBatchOrderStatesAsync(orders, this.exchangeWrapper);
+        return {
+            matches: [],
+        };
     }
 
     /**
@@ -528,6 +555,21 @@ function assertBalances(expectedBalances: TokenBalances, actualBalances: TokenBa
 }
 
 /**
+ * FIXME: Update these comments
+ * Asserts initial exchange state for matched orders.
+ * @param orders Matched orders with intial filled amounts.
+ * @param exchangeWrapper ExchangeWrapper isntance.
+ */
+async function assertBatchOrderStatesAsync(orders: BatchMatchedOrders, exchangeWrapper: ExchangeWrapper): Promise<void> {
+    for (let i = 0; i < orders.leftOrders.length; i++) {
+        assertOrderStateAsync(orders.leftOrders[i], orders.leftOrdersTakerAssetFilledAmounts[i], 'left', exchangeWrapper);
+    }
+    for (let i = 0; i < orders.rightOrders.length; i++) {
+        assertOrderStateAsync(orders.rightOrders[i], orders.rightOrdersTakerAssetFilledAmounts[i], 'right', exchangeWrapper);
+    }
+}
+
+/**
  * Asserts initial exchange state for matched orders.
  * @param orders Matched orders with intial filled amounts.
  * @param exchangeWrapper ExchangeWrapper isntance.
@@ -540,11 +582,23 @@ async function assertInitialOrderStatesAsync(orders: MatchedOrders, exchangeWrap
     await Promise.all(
         pairs.map(async ([order, expectedFilledAmount]) => {
             const side = order === orders.leftOrder ? 'left' : 'right';
-            const orderHash = orderHashUtils.getOrderHashHex(order);
-            const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-            expect(actualFilledAmount, `${side} order initial filled amount`).to.bignumber.equal(expectedFilledAmount);
-        }),
+            await assertOrderStateAsync(order, expectedFilledAmount, side, exchangeWrapper);
+        })
     );
+}
+
+/**
+ * FIXME: This needs to be commented and the name should be reconsidered
+ */
+async function assertOrderStateAsync(
+    order: SignedOrder,
+    expectedFilledAmount: BigNumber,
+    side: string,
+    exchangeWrapper: ExchangeWrapper
+): Promise<void> {
+    const orderHash = orderHashUtils.getOrderHashHex(order);
+    const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
+    expect(actualFilledAmount, `${side} order initial filled amount`).to.bignumber.equal(expectedFilledAmount);
 }
 
 /**

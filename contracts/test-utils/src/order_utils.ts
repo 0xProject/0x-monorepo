@@ -5,7 +5,7 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from './constants';
-import { CancelOrder, MatchOrder } from './types';
+import { CancelOrder, BatchMatchOrder, MatchOrder } from './types';
 
 export const orderUtils = {
     getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
@@ -32,6 +32,19 @@ export const orderUtils = {
     },
     getOrderWithoutDomain(signedOrder: SignedOrder): OrderWithoutDomain {
         return _.omit(signedOrder, ['signature', 'domain']) as OrderWithoutDomain;
+    },
+    createBatchMatchOrders(signedOrdersLeft: SignedOrder[], signedOrdersRight: SignedOrder[]): BatchMatchOrder {
+        return {
+            leftOrders: signedOrdersLeft.map(order => orderUtils.getOrderWithoutDomain(order)),
+            rightOrders: signedOrdersRight.map(order => {
+                let right = orderUtils.getOrderWithoutDomain(order);
+                right.makerAssetData = constants.NULL_BYTES;
+                right.takerAssetData = constants.NULL_BYTES;
+                return right
+            }),
+            leftSignatures: signedOrdersLeft.map(order => order.signature),
+            rightSignatures: signedOrdersRight.map(order => order.signature),
+        };
     },
     createMatchOrders(signedOrderLeft: SignedOrder, signedOrderRight: SignedOrder): MatchOrder {
         const fill = {
