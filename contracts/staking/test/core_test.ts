@@ -789,13 +789,7 @@ describe('Staking Core', () => {
             const makerAddress = makers[0];
             const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
             const makerApproval = stakingWrapper.getSignedApprovalForStakingPool(poolId, makerAddress, makerPrivateKey);
-
-            const onchainHash = await stakingWrapper.getStakingPoolApprovalMessageHashAsync(poolId, makerAddress);
-            console.log(`** ON-CHAIN HASH **\n`, onchainHash);
-
-            console.log(JSON.stringify(makerApproval, null , 4));
             await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, "0x00", makerApproval.signature, operatorAddress);
-            throw new Error(`ADDED SUCCESSFULLY!`);
             // check the pool id of the maker
             const poolIdOfMaker = await stakingWrapper.getMakerPoolId(makerAddress);
             expect(poolIdOfMaker).to.be.equal(poolId);
