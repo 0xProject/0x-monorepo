@@ -28,7 +28,6 @@ export class ApprovalFactory {
             this._verifyingContractAddress,
             this._chainId
         );
-        console.log('*** APPROVAL HASH ***\n', approvalHashBuff);
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
             makerAddress,
