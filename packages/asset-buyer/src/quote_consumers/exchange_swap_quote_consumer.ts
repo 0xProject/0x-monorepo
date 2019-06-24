@@ -39,7 +39,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         });
     }
 
-    public getCalldataOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInfo => {
+    public getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInfo {
         assert.isValidSwapQuote('quote', quote);
 
         const { params, to, ethAmount, methodAbi } = this.getSmartContractParamsOrThrow(quote, opts);
@@ -58,7 +58,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         };
     }
 
-    public getSmartContractParamsOrThrow = (quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<ExchangeMarketBuySmartContractParams> => {
+    public getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<ExchangeMarketBuySmartContractParams> {
         assert.isValidSwapQuote('quote', quote);
 
         const { orders, makerAssetFillAmount } = quote;
@@ -83,7 +83,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         };
     }
 
-    public executeSwapQuoteOrThrowAsync = async (quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> => {
+    public async executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 
         const { takerAddress, gasLimit, gasPrice } = opts;
