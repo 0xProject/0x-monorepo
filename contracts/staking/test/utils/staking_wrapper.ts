@@ -1,4 +1,4 @@
-import { LogDecoder, txDefaults } from '@0x/contracts-test-utils';
+import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -23,13 +23,14 @@ export class StakingWrapper {
     private readonly _ownerAddres: string;
     private readonly _erc20ProxyContract: ERC20ProxyContract;
     private readonly _zrxTokenContract: DummyERC20TokenContract;
+    private readonly _accounts: string[];
     private _stakingContractIfExists?: StakingContract;
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _rewardVaultContractIfExists?: RewardVaultContract;
     private _libMathTestContractIfExists?: LibMathTestContract;
 
-    constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract) {
+    constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract, accounts: string[]) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         const decoderArtifacts = _.merge(artifacts, erc20Artifacts);
@@ -37,6 +38,7 @@ export class StakingWrapper {
         this._ownerAddres= ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
         this._zrxTokenContract = zrxTokenContract;
+        this._accounts = accounts;
     }
     public getStakingContract(): StakingContract {
         this._validateDeployedOrThrow();
@@ -288,8 +290,9 @@ export class StakingWrapper {
         const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(returndata);
         return messageHash;
     }
-    public getSignedApprovalForStakingPool(poolId: string, makerAddress: string, makerPrivateKey: Buffer, signatureType: SignatureType = SignatureType.EthSign): SignedStakingPoolApproval {
-        const signedStakingPoolApproval = this.getSignedApprovalForStakingPoolFlexible(
+    public signApprovalForStakingPool(poolId: string, makerAddress: string, signatureType: SignatureType = SignatureType.EthSign): SignedStakingPoolApproval {
+        const makerPrivateKey = testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
+        const signedStakingPoolApproval = this.signApprovalForStakingPoolFlexible(
             poolId,
             makerAddress,
             makerPrivateKey,
@@ -299,7 +302,7 @@ export class StakingWrapper {
         );
         return signedStakingPoolApproval;
     }
-    public getSignedApprovalForStakingPoolFlexible(
+    public signApprovalForStakingPoolFlexible(
         poolId: string,
         makerAddress: string,
         makerPrivateKey: Buffer,
