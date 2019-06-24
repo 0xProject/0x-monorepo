@@ -25,11 +25,11 @@ describe('affiliateFeeUtils', () => {
     describe('getSwapQuoteWithAffiliateFee', () => {
         it('should return unchanged swapQuote if feePercentage is 0', () => {
             const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(dummySwapQuotes.fullyFilled, 0);
-            expect(updatedSwapQuote).to.deep.equal(dummySwapQuotes[0]);
+            expect(updatedSwapQuote).to.deep.equal(dummySwapQuotes.fullyFilled);
         });
         it('should return correct feeTakerToken and totalTakerToken amounts when provides SwapQuote with no fees', () => {
             const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(dummySwapQuotes.partiallyFilled, FEE_PERCENTAGE);
-
+            
         });
         it('should return correct feeTakerToken and totalTakerToken amounts when provides SwapQuote with fees', () => {
 
