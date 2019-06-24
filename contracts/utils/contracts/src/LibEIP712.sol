@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 
-contract LibEIP712 {
+library LibEIP712 {
 
     // Hash of the EIP712 Domain Separator Schema
     bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(

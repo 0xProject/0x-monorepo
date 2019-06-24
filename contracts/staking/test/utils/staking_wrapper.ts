@@ -1,14 +1,18 @@
-import { constants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
+import { LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { assetDataUtils } from '@0x/order-utils';
+import { SignatureType } from '@0x/types';
 import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
 import { artifacts, StakingEEventArgs, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
+import { ApprovalFactory } from './ApprovalFactory';
+import { SignedStakingPoolApproval } from './types';
+import { constants } from './constants';
 
 const expect = chai.expect;
 
@@ -271,6 +275,41 @@ export class StakingWrapper {
         const returndata = await this._callAsync(calldata);
         const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
         return makerAddresses;
+    }
+    public async isValidMakerSignatureAsync(poolId: string, makerAddress: string, makerSignature: string): Promise<Boolean> {
+        const calldata = this.getStakingContract().isValidMakerSignature.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
+        const returndata = await this._callAsync(calldata);
+        const isValid = this.getStakingContract().isValidMakerSignature.getABIDecodedReturnData(returndata);
+        return isValid;
+    }
+    public async getStakingPoolApprovalMessageHashAsync(poolId: string, makerAddress: string): Promise<string> {
+        const calldata = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIEncodedTransactionData(poolId, makerAddress);
+        const returndata = await this._callAsync(calldata);
+        const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(returndata);
+        return messageHash;
+    }
+    public getSignedApprovalForStakingPool(poolId: string, makerAddress: string, makerPrivateKey: Buffer, signatureType: SignatureType = SignatureType.EthSign): SignedStakingPoolApproval {
+        const signedStakingPoolApproval = this.getSignedApprovalForStakingPoolFlexible(
+            poolId,
+            makerAddress,
+            makerPrivateKey,
+            this.getStakingProxyContract().address,
+            constants.CHAIN_ID,
+            signatureType
+        );
+        return signedStakingPoolApproval;
+    }
+    public getSignedApprovalForStakingPoolFlexible(
+        poolId: string,
+        makerAddress: string,
+        makerPrivateKey: Buffer,
+        verifierAddress: string,
+        chainId: number,
+        signatureType: SignatureType = SignatureType.EthSign,
+    ): SignedStakingPoolApproval {
+        const approvalFactory = new ApprovalFactory(makerPrivateKey, verifierAddress, chainId);
+        const signedStakingPoolApproval = approvalFactory.newSignedApproval(poolId, makerAddress, signatureType);
+        return signedStakingPoolApproval;
     }
     ///// EPOCHS /////
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
