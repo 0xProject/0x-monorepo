@@ -95,7 +95,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const swapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, signedOrders);
                 const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, { networkId });
-                const smartContractParamsInfo = swapQuoteConsumer.getSmartContractParamsOrThrow(swapQuote, {});
+                const smartContractParamsInfo = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(swapQuote, {});
                 // console.log(smartContractParamsInfo);
                 // TODO(dave4506): Add elaborate testing
             });
@@ -133,7 +133,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 );
                 const swapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, signedOrders);
                 const swapQuoteConsumer = new ForwarderSwapQuoteConsumer(provider, { networkId });
-                const callDataInfo = swapQuoteConsumer.getCalldataOrThrow(swapQuote, {});
+                const callDataInfo = await swapQuoteConsumer.getCalldataOrThrowAsync(swapQuote, {});
                 // console.log(callDataInfo);
                 // TODO(dave4506): Add elaborate testing
             });
