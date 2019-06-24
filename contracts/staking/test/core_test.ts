@@ -61,7 +61,7 @@ describe('Staking Core', () => {
         [zrxTokenContract] = await erc20Wrapper.deployDummyTokensAsync(1, ZRX_TOKEN_DECIMALS);
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
-        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract);
+        stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
         await stakingWrapper.deployAndConfigureContracts();
     });
     beforeEach(async () => {
@@ -608,16 +608,27 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
+            const makerSignatures = [
+                // pool 0
+                stakingWrapper.signApprovalForStakingPool(poolIds[0], makersByPoolId[0][0]).signature,
+                // pool 1
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][1]).signature,
+                // pool 2
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][1]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][2]).signature,
+            ]
             await Promise.all([
                 // pool 0
-                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], makerSignatures[0], poolOperators[0]),
                 // pool 1
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], makerSignatures[1], poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], makerSignatures[2], poolOperators[1]),
                 // pool 2
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], makerSignatures[3], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], makerSignatures[4], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], makerSignatures[5], poolOperators[2]),
             ]);
             ///// 2 PAY FEES /////
             await Promise.all([
@@ -775,7 +786,7 @@ describe('Staking Core', () => {
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it.only('pool management', async() => {
+        it('pool management', async() => {
             // create first pool
             const operatorAddress = stakers[0];
             const operatorShare = 39;
@@ -787,8 +798,7 @@ describe('Staking Core', () => {
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
             // add maker to pool
             const makerAddress = makers[0];
-            const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-            const makerApproval = stakingWrapper.getSignedApprovalForStakingPool(poolId, makerAddress, makerPrivateKey);
+            const makerApproval = stakingWrapper.signApprovalForStakingPool(poolId, makerAddress);
             await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, operatorAddress);
             // check the pool id of the maker
             const poolIdOfMaker = await stakingWrapper.getMakerPoolId(makerAddress);
@@ -804,8 +814,7 @@ describe('Staking Core', () => {
             // try to add a new maker address from an address other than the pool operator
             const notOperatorAddress = owner;
             const anotherMakerAddress = makers[1];
-            const anotherMakerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(anotherMakerAddress)];
-            const anotherMakerApproval = stakingWrapper.getSignedApprovalForStakingPool(poolId, anotherMakerAddress, anotherMakerPrivateKey);
+            const anotherMakerApproval = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress);
             await expectTransactionFailedAsync(
                 stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, anotherMakerApproval.signature, notOperatorAddress),
                 RevertReason.OnlyCallableByPoolOperator
@@ -861,16 +870,27 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
+            const makerSignatures = [
+                // pool 0
+                stakingWrapper.signApprovalForStakingPool(poolIds[0], makersByPoolId[0][0]).signature,
+                // pool 1
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][1]).signature,
+                // pool 2
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][1]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][2]).signature,
+            ]
             await Promise.all([
                 // pool 0
-                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], makerSignatures[0], poolOperators[0]),
                 // pool 1
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], makerSignatures[1], poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], makerSignatures[2], poolOperators[1]),
                 // pool 2
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], makerSignatures[3], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], makerSignatures[4], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], makerSignatures[5], poolOperators[2]),
             ]);
             ///// 2 PAY FEES /////
             await Promise.all([
@@ -1009,16 +1029,27 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
+            const makerSignatures = [
+                // pool 0
+                stakingWrapper.signApprovalForStakingPool(poolIds[0], makersByPoolId[0][0]).signature,
+                // pool 1
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][1]).signature,
+                // pool 2
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][1]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][2]).signature,
+            ]
             await Promise.all([
                 // pool 0
-                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], makerSignatures[0], poolOperators[0]),
                 // pool 1
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], makerSignatures[1], poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], makerSignatures[2], poolOperators[1]),
                 // pool 2
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], makerSignatures[3], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], makerSignatures[4], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], makerSignatures[5], poolOperators[2]),
             ]);
             ///// 2 PAY FEES /////
             await Promise.all([
@@ -1253,16 +1284,27 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
+            const makerSignatures = [
+                // pool 0
+                stakingWrapper.signApprovalForStakingPool(poolIds[0], makersByPoolId[0][0]).signature,
+                // pool 1
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][1]).signature,
+                // pool 2
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][1]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][2]).signature,
+            ]
             await Promise.all([
                 // pool 0
-                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], makerSignatures[0], poolOperators[0]),
                 // pool 1
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], makerSignatures[1], poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], makerSignatures[2], poolOperators[1]),
                 // pool 2
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], makerSignatures[3], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], makerSignatures[4], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], makerSignatures[5], poolOperators[2]),
             ]);
             ///// 2 PAY FEES /////
             await Promise.all([
@@ -1439,16 +1481,27 @@ describe('Staking Core', () => {
                 stakingWrapper.toBaseUnitAmount(4.54522236),
                 stakingWrapper.toBaseUnitAmount(0)
             ];
+            const makerSignatures = [
+                // pool 0
+                stakingWrapper.signApprovalForStakingPool(poolIds[0], makersByPoolId[0][0]).signature,
+                // pool 1
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[1], makersByPoolId[1][1]).signature,
+                // pool 2
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][0]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][1]).signature,
+                stakingWrapper.signApprovalForStakingPool(poolIds[2], makersByPoolId[2][2]).signature,
+            ]
             await Promise.all([
                 // pool 0
-                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], "0x00", poolOperators[0]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[0], makersByPoolId[0][0], makerSignatures[0], poolOperators[0]),
                 // pool 1
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], "0x00", poolOperators[1]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], "0x00", poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][0], makerSignatures[1], poolOperators[1]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[1], makersByPoolId[1][1], makerSignatures[2], poolOperators[1]),
                 // pool 2
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], "0x00", poolOperators[2]),
-                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], "0x00", poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][0], makerSignatures[3], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][1], makerSignatures[4], poolOperators[2]),
+                stakingWrapper.addMakerToPoolAsync(poolIds[2], makersByPoolId[2][2], makerSignatures[5], poolOperators[2]),
             ]);
             ///// 2 PAY FEES /////
             await Promise.all([
