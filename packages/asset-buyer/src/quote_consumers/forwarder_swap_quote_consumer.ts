@@ -19,7 +19,7 @@ import {
 import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
 import { assetDataUtils } from '../utils/asset_data_utils';
-import { SwapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
+import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams> {
@@ -165,7 +165,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
 
-        const finalTakerAddress = await SwapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
 
         try {
             const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
