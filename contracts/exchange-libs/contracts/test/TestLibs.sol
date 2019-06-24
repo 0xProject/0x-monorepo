@@ -120,7 +120,7 @@ contract TestLibs is
         pure
         returns (bytes32)
     {
-        return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
+        return LibEIP712._getDomainSeparatorSchemaHash();
     }
 
     function getDomainSeparator()
