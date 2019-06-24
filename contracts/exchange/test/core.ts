@@ -21,7 +21,6 @@ import {
     chaiSetup,
     constants,
     ERC20BalancesByOwner,
-    expectTransactionFailedAsync,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
@@ -1724,10 +1723,14 @@ describe('Exchange core', () => {
                 constants.KECCAK256_NULL,
             );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
-            await expectTransactionFailedAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.TargetNotEven,
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
+                orderHashHex,
+                assetData,
+                new StringRevertError(RevertReason.TargetNotEven).encode(),
             );
+            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order if the staticcall is successful', async () => {
             const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(
@@ -1778,10 +1781,14 @@ describe('Exchange core', () => {
                 [assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress), staticCallAssetData],
             );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
-            await expectTransactionFailedAsync(
-                exchangeWrapper.fillOrderAsync(signedOrder, takerAddress),
-                RevertReason.TargetNotEven,
+            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const expectedError = new ExchangeRevertErrors.AssetProxyTransferError(
+                orderHashHex,
+                assetData,
+                new StringRevertError(RevertReason.TargetNotEven).encode(),
             );
+            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should fill the order is the staticcall is successful using the MultiAssetProxy', async () => {
             const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(
