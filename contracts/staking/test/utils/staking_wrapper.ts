@@ -290,26 +290,17 @@ export class StakingWrapper {
         const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(returndata);
         return messageHash;
     }
-    public signApprovalForStakingPool(poolId: string, makerAddress: string, signatureType: SignatureType = SignatureType.EthSign): SignedStakingPoolApproval {
-        const makerPrivateKey = testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
-        const signedStakingPoolApproval = this.signApprovalForStakingPoolFlexible(
-            poolId,
-            makerAddress,
-            makerPrivateKey,
-            this.getStakingProxyContract().address,
-            constants.CHAIN_ID,
-            signatureType
-        );
-        return signedStakingPoolApproval;
-    }
-    public signApprovalForStakingPoolFlexible(
+    public signApprovalForStakingPool(
         poolId: string,
         makerAddress: string,
-        makerPrivateKey: Buffer,
-        verifierAddress: string,
-        chainId: number,
+        makerPrivateKeyIfExists?: Buffer,
+        verifierAddressIfExists?: string,
+        chainIdIfExists?: number,
         signatureType: SignatureType = SignatureType.EthSign,
     ): SignedStakingPoolApproval {
+        const makerPrivateKey = makerPrivateKeyIfExists !== undefined ? makerPrivateKeyIfExists : testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
+        const verifierAddress = verifierAddressIfExists !== undefined ? verifierAddressIfExists : this.getStakingProxyContract().address;
+        const chainId = chainIdIfExists !== undefined ? chainIdIfExists : constants.CHAIN_ID;
         const approvalFactory = new ApprovalFactory(makerPrivateKey, verifierAddress, chainId);
         const signedStakingPoolApproval = approvalFactory.newSignedApproval(poolId, makerAddress, signatureType);
         return signedStakingPoolApproval;
