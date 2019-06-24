@@ -45,8 +45,8 @@ library LibEIP712Hash
     /// @return EIP712 hash of the StakingPool approval message with the domain separator of this contract.
     function _hashStakingPoolApprovalMessage(
         IStructs.StakingPoolApproval memory approval,
-        address verifierAddress,
-        uint256 chainId
+        uint256 chainId,
+        address verifierAddress
     )
         internal
         pure
@@ -54,8 +54,8 @@ library LibEIP712Hash
     {
         approvalHash = _hashEIP712StakingMessage(
             _hashStakingPoolApproval(approval),
-            verifierAddress,
-            chainId
+            chainId,
+            verifierAddress
         );
         return approvalHash;
     }
@@ -66,8 +66,8 @@ library LibEIP712Hash
     /// @return EIP712 hash applied to this EIP712 Domain.
     function _hashEIP712StakingMessage(
         bytes32 hashStruct,
-        address verifierAddress,
-        uint256 chainId
+        uint256 chainId,
+        address verifierAddress
     )
         internal
         pure
@@ -90,7 +90,7 @@ library LibEIP712Hash
         pure
         returns (bytes32 result)
     {
-        result = keccak256(abi.encodePacked(
+        result = keccak256(abi.encode(
              EIP712_STAKING_POOL_APPROVAL_SCHEMA_HASH,
              approval.poolId,
              approval.makerAddress
