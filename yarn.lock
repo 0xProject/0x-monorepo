@@ -649,6 +649,13 @@
   dependencies:
     "@0x/base-contract" "^4.0.3"
 
+"@0x/abi-gen-wrappers@^4.2.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-4.3.0.tgz#b36616b129f44072474a7d5739299e4b1068e3d4"
+  integrity sha512-KnpoHbbqfidECl4hTGOvBaCj1N3LASHcdNO38yOMo1eO4B0H+kuyDVFjN3nbNt7lnXTPJ+DdaQpoDVQwySdEDQ==
+  dependencies:
+    "@0x/base-contract" "^5.1.0"
+
 "@0x/abi-gen@^2.0.9":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@0x/abi-gen/-/abi-gen-2.1.1.tgz#2ca9072e64a2a46b6149aaea434f09d5dbf0866f"
@@ -697,13 +704,13 @@
     ethers "~4.0.4"
     lodash "^4.17.11"
 
-"@0x/contract-addresses@^2.2.1":
+"@0x/contract-addresses@^2.2.1", "@0x/contract-addresses@^2.3.1":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.3.3.tgz#8cf009e7668c2fccca416177c85f3f6612c724c6"
   dependencies:
     lodash "^4.17.11"
 
-"@0x/contract-artifacts@^1.3.0":
+"@0x/contract-artifacts@^1.3.0", "@0x/contract-artifacts@^1.5.0":
   version "1.5.1"
   resolved "https://registry.npmjs.org/@0x/contract-artifacts/-/contract-artifacts-1.5.1.tgz#6fba56a1d3e2d5d897a75fcfa432e49e2ebb17a7"
 
@@ -745,6 +752,21 @@
     ethereum-types "^2.0.0"
     ethereumjs-util "^5.1.1"
     lodash "^4.17.5"
+
+"@0x/contracts-utils@3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@0x/contracts-utils/-/contracts-utils-3.1.1.tgz#d3d70ec4f5f9e10d85abc7d0c1b2b7bb34f38927"
+  dependencies:
+    "@0x/base-contract" "^5.0.5"
+    "@0x/order-utils" "^7.2.0"
+    "@0x/types" "^2.2.2"
+    "@0x/typescript-typings" "^4.2.2"
+    "@0x/utils" "^4.3.1"
+    "@0x/web3-wrapper" "^6.0.5"
+    bn.js "^4.11.8"
+    ethereum-types "^2.1.2"
+    ethereumjs-util "^5.1.1"
+    lodash "^4.17.11"
 
 "@0x/coordinator-server@^0.1.3":
   version "0.1.3"
@@ -792,6 +814,29 @@
     "@types/node" "*"
     bn.js "^4.11.8"
     ethereum-types "^2.0.0"
+    ethereumjs-abi "0.6.5"
+    ethereumjs-util "^5.1.1"
+    ethers "~4.0.4"
+    lodash "^4.17.11"
+
+"@0x/order-utils@^7.2.0":
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/@0x/order-utils/-/order-utils-7.2.0.tgz#c73d81e3225e9ec7736f9789e14388c9fe2b831c"
+  integrity sha512-P1tVRKyUvfU/yjYS+bbK+InZr0V2wPlX7nTp6ORTuPWd5zjWrRN7rpq50qvgY+UZCeajcQh9g4Dt1l+LWot/AA==
+  dependencies:
+    "@0x/abi-gen-wrappers" "^4.2.0"
+    "@0x/assert" "^2.0.9"
+    "@0x/base-contract" "^5.0.5"
+    "@0x/contract-addresses" "^2.3.1"
+    "@0x/contract-artifacts" "^1.5.0"
+    "@0x/json-schemas" "^3.0.9"
+    "@0x/types" "^2.2.2"
+    "@0x/typescript-typings" "^4.2.2"
+    "@0x/utils" "^4.3.1"
+    "@0x/web3-wrapper" "^6.0.5"
+    "@types/node" "*"
+    bn.js "^4.11.8"
+    ethereum-types "^2.1.2"
     ethereumjs-abi "0.6.5"
     ethereumjs-util "^5.1.1"
     ethers "~4.0.4"
