@@ -21,8 +21,7 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-contract LibEIP712CoordinatorDomain is
-    LibEIP712
+contract LibEIP712CoordinatorDomain
 {
 
     // EIP712 Domain Name value for the Coordinator
@@ -44,7 +43,7 @@ contract LibEIP712CoordinatorDomain is
         public
     {
         address verifyingContractAddress = verifyingContractAddressIfExists == address(0) ? address(this) : verifyingContractAddressIfExists;
-        EIP712_COORDINATOR_DOMAIN_HASH = _hashEIP712Domain(
+        EIP712_COORDINATOR_DOMAIN_HASH = LibEIP712._hashEIP712Domain(
             EIP712_COORDINATOR_DOMAIN_NAME,
             EIP712_COORDINATOR_DOMAIN_VERSION,
             chainId,
@@ -61,6 +60,6 @@ contract LibEIP712CoordinatorDomain is
         view
         returns (bytes32 result)
     {
-        return _hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
+        return LibEIP712._hashEIP712Message(EIP712_COORDINATOR_DOMAIN_HASH, hashStruct);
     }
 }

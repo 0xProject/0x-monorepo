@@ -22,14 +22,15 @@ pragma solidity ^0.5.9;
 library LibEIP712 {
 
     // Hash of the EIP712 Domain Separator Schema
-    bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = keccak256(abi.encodePacked(
-        "EIP712Domain(",
-        "string name,",
-        "string version,",
-        "uint256 chainId,",
-        "address verifyingContractAddress",
-        ")"
-    ));
+    // keccak256(abi.encodePacked(
+    //  "EIP712Domain(",
+    //  "string name,",
+    //  "string version,",
+    //  "uint256 chainId,",
+    //  "address verifyingContractAddress",
+    //  ")"
+    // ));
+    bytes32 constant internal EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
 
     /// @dev Calculates a EIP712 domain separator.
     /// @param name The EIP712 domain name.
@@ -89,8 +90,8 @@ library LibEIP712 {
     function _getDomainSeparatorSchemaHash()
         internal
         pure
-        returns (bytes32)
+        returns (bytes32 hash)
     {
-        return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
+        return 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
     }
 }
