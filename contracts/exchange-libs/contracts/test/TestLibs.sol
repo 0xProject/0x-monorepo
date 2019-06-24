@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 import "../src/LibEIP712ExchangeDomain.sol";
 import "../src/LibMath.sol";
 import "../src/LibOrder.sol";
