@@ -34,6 +34,126 @@ contract MixinMatchOrders is
 {
     using LibBytes for bytes;
 
+    /// @dev Match complementary orders that have a profitable spread.
+    ///      Each order is filled at their respective price point, and
+    ///      the matcher receives a profit denominated in the left maker asset.
+    /// @param leftOrders Set of orders with the same maker / taker asset.
+    /// @param rightOrders Set of orders to match against `leftOrders`
+    /// @param leftSignatures Proof that left orders were created by the left makers.
+    /// @param rightSignatures Proof that right orders were created by the right makers.
+    /// @return batchMatchedFillResults Amounts filled and profit generated.
+    function batchMatchOrders(
+        LibOrder.Order[] memory leftOrders,
+        LibOrder.Order[] memory rightOrders,
+        bytes[] memory leftSignatures,
+        bytes[] memory rightSignatures
+    )
+        public
+        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
+    {
+        // Ensure that the left and right arrays are compatible and have nonzero lengths
+        require(leftOrders.length > 0, "Invalid number of left orders");
+        require(rightOrders.length > 0, "Invalid number of right orders");
+        require(leftOrders.length == leftSignatures.length, "Incompatible leftOrders and leftSignatures");
+        require(rightOrders.length == rightSignatures.length, "Incompatible rightOrders and rightSignatures");
+
+        uint256 minLength = _min256(leftOrders.length, rightOrders.length);
+
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](minLength);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](minLength);
+
+        // Initialize initial variables
+        uint256 matchCount;
+        uint256 leftIdx = 0;
+        uint256 rightIdx = 0;
+
+        LibOrder.Order memory leftOrder = leftOrders[0];
+        LibOrder.Order memory rightOrder = rightOrders[0];
+        bytes memory leftSignature = leftSignatures[0];
+        bytes memory rightSignature = leftSignatures[0];
+
+        // Loop infinitely (until broken inside of the loop), but keep a counter of how
+        // many orders have been matched.
+        for (matchCount = 0;; matchCount++) {
+            // Match the two orders that are pointed to by the left and right indices
+            LibFillResults.MatchedFillResults memory matchResults = matchOrders(
+                leftOrder,
+                rightOrder,
+                leftSignature,
+                rightSignature
+            );
+
+            // Add the matchResults and the profit made during the match to the
+            // batchMatchedFillResults for this batch.
+            batchMatchedFillResults.left[matchCount] = matchResults.left;
+            batchMatchedFillResults.right[matchCount] = matchResults.right;
+            batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
+                batchMatchedFillResults.profitInLeftMakerAsset,
+                matchResults.leftMakerAssetSpreadAmount
+            );
+            // batchMatchedFillResults.profitInRightMakerAsset += 0; // Placeholder for ZEIP 40
+
+            // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
+            // or break out of the loop if there are no more leftOrders to match.
+            if (_isFilled(leftOrder, matchResults.left)) {
+                if (++leftIdx == leftOrders.length) {
+                    break;
+                } else {
+                    leftOrder = leftOrders[leftIdx];
+                    leftSignature = leftSignatures[leftIdx];
+                }
+            }
+
+            // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
+            // or break out of the loop if there are no more rightOrders to match.
+            if (_isFilled(rightOrder, matchResults.right)) {
+                if (++rightIdx == rightOrders.length) {
+                    break;
+                } else {
+                    rightOrder = rightOrders[rightIdx];
+                    rightSignature = rightSignatures[rightIdx];
+                }
+            }
+        }
+
+        // Update the lengths of the fill results for batchMatchResults
+        assembly {
+            mstore(mload(batchMatchedFillResults), matchCount)
+            mstore(mload(add(batchMatchedFillResults, 32)), matchCount)
+        }
+
+        // Return the fill results from the batch match
+        return batchMatchedFillResults;
+    }
+
+    /// @dev Match complementary orders that have a profitable spread.
+    ///      Each order is maximally filled at their respective price point, and
+    ///      the matcher receives a profit denominated in either the left maker asset,
+    ///      right maker asset, or a combination of both.
+    /// @param leftOrders Set of orders with the same maker / taker asset.
+    /// @param rightOrders Set of orders to match against `leftOrders`
+    /// @param leftSignatures Proof that left orders were created by the left makers.
+    /// @param rightSignatures Proof that right orders were created by the right makers.
+    /// @return batchMatchedFillResults Amounts filled and profit generated.
+    function batchMatchOrdersWithMaximalFill(
+        LibOrder.Order[] memory leftOrders,
+        LibOrder.Order[] memory rightOrders,
+        bytes[] memory leftSignatures,
+        bytes[] memory rightSignatures
+    )
+        public
+        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
+    {
+        // FIXME
+        LibFillResults.FillResults[] memory empty;
+        return LibFillResults.BatchMatchedFillResults({
+            left: empty,
+            right: empty,
+            profitInLeftMakerAsset: 0,
+            profitInRightMakerAsset: 0
+        });
+    }
+
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -261,6 +381,22 @@ contract MixinMatchOrders is
                 getOrderHash(rightOrder)
             ));
         }
+    }
+
+    function _isFilled(
+        LibOrder.Order memory order,
+        LibFillResults.FillResults memory fillResults
+
+    )
+        internal
+        view
+        returns (bool)
+    {
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
+        if (OrderStatus(orderInfo.orderStatus) == OrderStatus.FULLY_FILLED) {
+            return true;
+        }
+        return false;
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.

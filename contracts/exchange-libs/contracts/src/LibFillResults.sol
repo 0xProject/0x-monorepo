@@ -24,6 +24,13 @@ import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 contract LibFillResults is
     SafeMath
 {
+    struct BatchMatchedFillResults {
+        FillResults[] left;              // Fill results for left orders
+        FillResults[] right;             // Fill results for right orders
+        uint256 profitInLeftMakerAsset;  // Profit taken from left makers
+        uint256 profitInRightMakerAsset; // Profit taken from right makers
+    }
+
     struct FillResults {
         uint256 makerAssetFilledAmount;  // Total amount of makerAsset(s) filled.
         uint256 takerAssetFilledAmount;  // Total amount of takerAsset(s) filled.
