@@ -60,6 +60,8 @@ export const signTypedDataUtils = {
         let deps = signTypedDataUtils._findDependencies(primaryType, types);
         deps = deps.filter(d => d !== primaryType);
         deps = [primaryType].concat(deps.sort());
+        console.log('*** DEPS ****\n', JSON.stringify(deps, null, 4));
+        console.log('*** TYPES ****\n', JSON.stringify(types, null, 4));
         let result = '';
         for (const dep of deps) {
             result += `${dep}(${types[dep].map(({ name, type }) => `${type} ${name}`).join(',')})`;

@@ -53,6 +53,7 @@
         "@0x/dev-utils": "^2.2.4",
         "@0x/sol-compiler": "^3.1.9",
         "@0x/tslint-config": "^3.0.1",
+        "@0x/utils": "^4.3.1",
         "@types/lodash": "4.14.104",
         "@types/node": "*",
         "chai": "^4.0.1",

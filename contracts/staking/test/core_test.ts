@@ -29,6 +29,7 @@ describe('Staking Core', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
+    let accounts: string[];
     let owner: string;
     let exchange: string;
     let stakers: string[];
@@ -48,7 +49,7 @@ describe('Staking Core', () => {
     });
     before(async () => {
         // create accounts
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         exchange = accounts[1];
         stakers = accounts.slice(2, 5);
@@ -774,7 +775,7 @@ describe('Staking Core', () => {
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it('pool management', async() => {
+        it.only('pool management', async() => {
             // create first pool
             const operatorAddress = stakers[0];
             const operatorShare = 39;
@@ -786,8 +787,15 @@ describe('Staking Core', () => {
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
             // add maker to pool
             const makerAddress = makers[0];
-            const makerSignature = "0x";
-            await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, "0x00", makerSignature, operatorAddress);
+            const makerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
+            const makerApproval = stakingWrapper.getSignedApprovalForStakingPool(poolId, makerAddress, makerPrivateKey);
+
+            const onchainHash = await stakingWrapper.getStakingPoolApprovalMessageHashAsync(poolId, makerAddress);
+            console.log(`** ON-CHAIN HASH **\n`, onchainHash);
+
+            console.log(JSON.stringify(makerApproval, null , 4));
+            await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, "0x00", makerApproval.signature, operatorAddress);
+            throw new Error(`ADDED SUCCESSFULLY!`);
             // check the pool id of the maker
             const poolIdOfMaker = await stakingWrapper.getMakerPoolId(makerAddress);
             expect(poolIdOfMaker).to.be.equal(poolId);
@@ -796,15 +804,16 @@ describe('Staking Core', () => {
             expect(makerAddressesForPool).to.be.deep.equal([makerAddress]);
             // try to add the same maker address again
             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, "0x00", makerSignature, operatorAddress),
+                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, "0x00", makerApproval.signature, operatorAddress),
                 RevertReason.MakerAddressAlreadyRegistered
             );
             // try to add a new maker address from an address other than the pool operator
             const notOperatorAddress = owner;
             const anotherMakerAddress = makers[1];
-            const anotherMakerSignature = "0x";
+            const anotherMakerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(anotherMakerAddress)];
+            const anotherMakerApproval = stakingWrapper.getSignedApprovalForStakingPool(poolId, anotherMakerAddress, anotherMakerPrivateKey);
             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, "0x00", anotherMakerSignature, notOperatorAddress),
+                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, "0x00", anotherMakerApproval.signature, notOperatorAddress),
                 RevertReason.OnlyCallableByPoolOperator
             );
             // try to remove the maker address from an address other than the operator

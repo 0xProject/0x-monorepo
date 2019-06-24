@@ -149,6 +149,15 @@ export const constants = {
             { name: 'approvalExpirationTimeSeconds', type: 'uint256' },
         ],
     },
+    STAKING_DOMAIN_NAME: '0x Protocol Staking',
+    STAKING_DOMAIN_VERSION: '1.0.0',
+    STAKING_POOL_APPROVAL_SCHEMA: {
+        name: 'StakingPoolApproval',
+        parameters: [
+            { name: 'poolId', type: 'bytes32' },
+            { name: 'makerAddress', type: 'address' },
+        ],
+    },
     ERC20_METHOD_ABI,
     ERC721_METHOD_ABI,
     MULTI_ASSET_METHOD_ABI,
