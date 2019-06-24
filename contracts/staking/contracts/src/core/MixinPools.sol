@@ -124,7 +124,7 @@ contract MixinPools is
 
         // Hash approval message and check signer address
         address verifierAddress = address(this);
-        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(approval, verifierAddress, CHAIN_ID);
+        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(approval, CHAIN_ID, verifierAddress);
 
         return approvalHash;
     }
