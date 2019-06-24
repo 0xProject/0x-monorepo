@@ -57,20 +57,23 @@ contract MixinMatchOrders is
         require(leftOrders.length == leftSignatures.length, "Incompatible leftOrders and leftSignatures");
         require(rightOrders.length == rightSignatures.length, "Incompatible rightOrders and rightSignatures");
 
-        uint256 minLength = _min256(leftOrders.length, rightOrders.length);
-
-        batchMatchedFillResults.left = new LibFillResults.FillResults[](minLength);
-        batchMatchedFillResults.right = new LibFillResults.FillResults[](minLength);
+        // Without simulating all of the order matching, this program cannot know how many
+        // matches there will be. To ensure that batchMatchedFillResults has enough memory
+        // allocated for the left and the right side, we will allocate enough space for the
+        // maximum amount of matches (the maximum of the left and the right sides).
+        uint256 maxLength = _max256(leftOrders.length, rightOrders.length);
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
 
         // Initialize initial variables
-        uint256 matchCount;
+        uint matchCount;
         uint256 leftIdx = 0;
         uint256 rightIdx = 0;
-
         LibOrder.Order memory leftOrder = leftOrders[0];
         LibOrder.Order memory rightOrder = rightOrders[0];
         bytes memory leftSignature = leftSignatures[0];
-        bytes memory rightSignature = leftSignatures[0];
+        bytes memory rightSignature = rightSignatures[0];
+
 
         // Loop infinitely (until broken inside of the loop), but keep a counter of how
         // many orders have been matched.
@@ -92,6 +95,7 @@ contract MixinMatchOrders is
                 matchResults.leftMakerAssetSpreadAmount
             );
             // batchMatchedFillResults.profitInRightMakerAsset += 0; // Placeholder for ZEIP 40
+
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
