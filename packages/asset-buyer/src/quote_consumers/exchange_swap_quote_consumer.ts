@@ -39,10 +39,10 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         });
     }
 
-    public getCalldataOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): CalldataInfo {
+    public async getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { params, to, ethAmount, methodAbi } = this.getSmartContractParamsOrThrow(quote, opts);
+        const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
         const abiEncoder = new AbiEncoder.Method(methodAbi);
         const args = [
             params.orders,
@@ -58,7 +58,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         };
     }
 
-    public getSmartContractParamsOrThrow(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): SmartContractParamsInfo<ExchangeMarketBuySmartContractParams> {
+    public async getSmartContractParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<SmartContractParamsInfo<ExchangeMarketBuySmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
         const { orders, makerAssetFillAmount } = quote;
