@@ -161,10 +161,7 @@ export enum SignatureType {
     Wallet,
     Validator,
     PreSigned,
-    OrderValidator,
-    OrderWallet,
     EIP1271Wallet,
-    EIP1271OrderWallet,
     NSignatureTypes,
 }
 
