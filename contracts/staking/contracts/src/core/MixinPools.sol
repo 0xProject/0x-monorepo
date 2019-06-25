@@ -193,9 +193,7 @@ contract MixinPools is
         pure
         returns (bytes32)
     {
-        uint256 poolIdRightAligned = uint256(poolId >> 128);
-        uint256 poolIdRightAlignedAndIncremented = poolIdRightAligned._add(1);
-        return bytes32(poolIdRightAlignedAndIncremented) << 128;
+        return bytes32(uint256(poolId)._add(POOL_ID_INCREMENT_AMOUNT));
     }
 
     function _recordMaker(
