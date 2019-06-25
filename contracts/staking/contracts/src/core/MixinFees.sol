@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "../libs/LibSafeMath.sol";
 import "../interfaces/IVault.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
@@ -33,8 +33,6 @@ import "../libs/LibMath.sol";
 
 
 contract MixinFees is
-    // libraries
-    SafeMath,
     // interfaces
     IStakingEvents,
     IStructs,
@@ -50,6 +48,8 @@ contract MixinFees is
     MixinPools
 {
 
+    using LibSafeMath for uint256;
+
     function payProtocolFee(address makerAddress)
         external
         payable
@@ -58,7 +58,7 @@ contract MixinFees is
         uint256 amount = msg.value;
         bytes32 poolId = getMakerPoolId(makerAddress);
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-        protocolFeesThisEpochByPool[poolId] = _safeAdd(_feesCollectedThisEpoch, amount);
+        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
         if (_feesCollectedThisEpoch == 0) {
             activePoolIdsThisEpoch.push(poolId);
         }
@@ -87,13 +87,6 @@ contract MixinFees is
         return address(this).balance;
     }
 
-    event E(
-        uint256 totalRewards,
-        uint256 ownerFees,
-        uint256 totalFees,
-        uint256 ownerStake,
-        uint256 totalStake
-    );
     function _payRebates()
         internal
     {
@@ -104,7 +97,7 @@ contract MixinFees is
         for (uint i = 0; i != numberOfActivePoolIds; i++) {
             activePoolIds[i].poolId = activePoolIdsThisEpoch[i];
             activePoolIds[i].feesCollected = protocolFeesThisEpochByPool[activePoolIds[i].poolId];
-            totalFees = _safeAdd(totalFees, activePoolIds[i].feesCollected);
+            totalFees = totalFees._add(activePoolIds[i].feesCollected);
         }
         uint256 totalRewards = address(this).balance;
         uint256 totalStake = getActivatedStakeAcrossAllOwners();
@@ -128,23 +121,12 @@ contract MixinFees is
         for (uint i = 0; i != numberOfActivePoolIds; i++) {
             uint256 stakeDelegatedToPool = getStakeDelegatedToPool(activePoolIds[i].poolId);
             uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getPoolOperator(activePoolIds[i].poolId));
-            uint256 scaledStake = _safeAdd(
-                stakeHeldByPoolOperator,
-                _safeDiv(
-                    _safeMul(
-                        stakeDelegatedToPool,
-                        REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE
-                    ),
-                    100
-                )
+            uint256 scaledStake = stakeHeldByPoolOperator._add(
+                stakeDelegatedToPool
+                ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
+                ._div(100)
             );
-            emit E(
-                totalRewards,
-                activePoolIds[i].feesCollected,
-                totalFees,
-                scaledStake,
-                totalStake
-            );
+
             uint256 reward = LibMath._cobbDouglasSuperSimplified(
                 totalRewards,
                 activePoolIds[i].feesCollected,
@@ -155,7 +137,7 @@ contract MixinFees is
 
             // record reward in vault
             _recordDepositInRewardVault(activePoolIds[i].poolId, reward);
-            totalRewardsRecordedInVault = _safeAdd(totalRewardsRecordedInVault, reward);
+            totalRewardsRecordedInVault = totalRewardsRecordedInVault._add(reward);
 
             // clear state for refunds
             protocolFeesThisEpochByPool[activePoolIds[i].poolId] = 0;
