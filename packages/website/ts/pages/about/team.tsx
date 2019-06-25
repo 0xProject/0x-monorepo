@@ -149,7 +149,7 @@ const team: TeamMember[] = [
         title: 'Technical Sourcer',
     },
     {
-        imageUrl: '/images/team/danielp.png',
+        imageUrl: '/images/team/danielp.jpg',
         name: 'Daniel Pyrathon',
         title: 'Engineer',
     },
