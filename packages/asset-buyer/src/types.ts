@@ -156,6 +156,10 @@ export interface SwapQuote {
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
+export interface SwapQuoteWithAffiliateFee extends SwapQuote {
+    feePercentage: number;
+}
+
 /**
  * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.

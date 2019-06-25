@@ -1,14 +1,14 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { SwapQuote, SwapQuoteInfo } from '../types';
+import { SwapQuote, SwapQuoteInfo, SwapQuoteWithAffiliateFee } from '../types';
 
 export const affiliateFeeUtils = {
-    getSwapQuoteWithAffiliateFee(quote: SwapQuote, feePercentage: number): SwapQuote {
+    getSwapQuoteWithAffiliateFee(quote: SwapQuote, feePercentage: number): SwapQuoteWithAffiliateFee {
         const newQuote = _.clone(quote);
         newQuote.bestCaseQuoteInfo = getSwapQuoteInfoWithAffiliateFee(newQuote.bestCaseQuoteInfo, feePercentage);
         newQuote.worstCaseQuoteInfo = getSwapQuoteInfoWithAffiliateFee(newQuote.worstCaseQuoteInfo, feePercentage);
-        return newQuote;
+        return { ...newQuote, ...{ feePercentage } };
     },
 };
 
