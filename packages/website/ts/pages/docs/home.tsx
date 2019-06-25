@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
+import { Button } from 'ts/components/button';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
 import { SearchInput } from 'ts/components/docs/search_input';
@@ -72,6 +73,33 @@ const usefulLinks: StepLinkConfig[] = [
     },
 ];
 
+const getStartedLinks: LinkProps[] = [
+    {
+        heading: 'Launch an exchange in 30 seconds',
+        description: 'Learn how to spin up an exchange or marketplace in seconds.',
+        icon: '0x-coreConcepts',
+        url: '/docs/core-concepts',
+    },
+    {
+        heading: 'Tap into contract-fillable liquidity',
+        description: 'Source contract-fillable liquidity at the best prices from 0x.',
+        icon: 'apiExplorer',
+        url: '/docs/core-concepts',
+    },
+    {
+        heading: 'Launch your in-game marketplace',
+        description: 'Make your in-game items tradable with minimal effort.',
+        icon: 'getStarted',
+        url: '/docs/get-started',
+    },
+    {
+        heading: 'Predict the future with 0x',
+        description: 'Build a prediction market end-to-end using 0x and Augur.',
+        icon: 'tools',
+        url: '/docs/core-concepts',
+    },
+];
+
 const communityShortcuts: CommunityLinkProps[] = [
     {
         heading: 'Discord',
@@ -111,6 +139,12 @@ export class DocsHome extends React.Component<Props> {
                     <Columns>
                         <div>
                             <Heading size="default">Get Started</Heading>
+                            {getStartedLinks.map((link, index) => (
+                                <>
+                                    <Button color={colors.brandDark} href={link.url} isWithArrow={true}>{link.heading}</Button>
+                                    <Paragraph color={colors.textDarkPrimary} isMuted={1}>{link.description}</Paragraph>
+                                </>
+                            ))}
                         </div>
                         <div>
                             <Heading size="default">Useful Links</Heading>
