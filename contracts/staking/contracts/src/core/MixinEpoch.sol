@@ -18,7 +18,8 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "../libs/LibSafeMath64Bit.sol";
+import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
 
@@ -27,10 +28,12 @@ contract MixinEpoch is
     MixinStorage
 {
 
+    using LibSafeMath64Bit for uint64;
+
     /// @dev returns the current epoch in seconds
     function getEpochPeriodInSeconds()
         public
-        view
+        pure
         returns (uint64)
     {
         return EPOCH_PERIOD_IN_SECONDS;
@@ -38,7 +41,7 @@ contract MixinEpoch is
 
     function getTimelockPeriodInEpochs()
         public
-        view
+        pure
         returns (uint64)
     {
         return TIMELOCK_PERIOD_IN_EPOCHS;
@@ -65,7 +68,7 @@ contract MixinEpoch is
         view
         returns (uint64)
     {
-        return getCurrentEpochStartTimeInSeconds() + getEpochPeriodInSeconds();
+        return getCurrentEpochStartTimeInSeconds()._add(getEpochPeriodInSeconds());
     }
 
     function getCurrentTimelockPeriodEndEpoch()
@@ -73,7 +76,7 @@ contract MixinEpoch is
         view
         returns (uint64)
     {
-        return getCurrentTimelockPeriodStartEpoch() + getTimelockPeriodInEpochs();
+        return getCurrentTimelockPeriodStartEpoch()._add(getTimelockPeriodInEpochs());
     }
 
     function getCurrentEpoch()
