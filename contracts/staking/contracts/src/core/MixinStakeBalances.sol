@@ -19,19 +19,20 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "../libs/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "./MixinEpoch.sol";
 
 
 contract MixinStakeBalances is
-    SafeMath,
     MixinConstants,
     MixinStorage,
     MixinEpoch
 {
+
+    using LibSafeMath for uint256;
 
     function getActivatedStakeAcrossAllOwners()
         public
@@ -62,16 +63,15 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return _safeSub(getTotalStake(owner), getActivatedStake(owner));
+        return getTotalStake(owner)._sub(getActivatedStake(owner));
     }
-
 
     function getActivatedAndUndelegatedStake(address owner)
         public
         view
         returns (uint256)
     {
-        return _safeSub(activeStakeByOwner[owner], getStakeDelegatedByOwner(owner));
+        return activeStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
     }
 
     function getActivatableStake(address owner)
@@ -79,7 +79,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return _safeSub(getDeactivatedStake(owner), getTimelockedStake(owner));
+        return getDeactivatedStake(owner)._sub(getTimelockedStake(owner));
     }
 
     function getWithdrawableStake(address owner)
@@ -134,7 +134,7 @@ contract MixinStakeBalances is
         uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
         ownerTimelock = timelockedStakeByOwner[owner];
         isOutOfSync = false;
-        if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
+        if (currentTimelockPeriod == ownerTimelock.lockedAt._add(1)) {
             // shift n periods
             ownerTimelock.pending = ownerTimelock.total;
             isOutOfSync = true;

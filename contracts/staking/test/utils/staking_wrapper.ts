@@ -9,7 +9,7 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contra
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingEEventArgs, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
+import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
 import { ApprovalFactory } from './ApprovalFactory';
 import { SignedStakingPoolApproval } from './types';
 import { constants } from './constants';

@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "../libs/LibSafeMath.sol";
 import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
 
@@ -33,8 +33,6 @@ import "./MixinRewardVault.sol";
 
 
 contract MixinPools is
-    // libraries
-    SafeMath,
     // interfaces
     IStakingEvents,
     // immutables
@@ -43,6 +41,8 @@ contract MixinPools is
     // standalone
     MixinRewardVault
 {
+
+    using LibSafeMath for uint256;
 
      modifier onlyPoolOperator(bytes32 poolId) {
         require(
@@ -58,9 +58,9 @@ contract MixinPools is
         returns (bytes32 poolId)
     {
         address payable operatorAddress = msg.sender;
-        // 
+
         poolId = nextPoolId;
-        nextPoolId = bytes32(_safeAdd(uint256(nextPoolId >> 128), 1) << 128);
+        nextPoolId = _computeNextPoolId(poolId);
 
         // 
         Pool memory pool = Pool({
@@ -186,6 +186,16 @@ contract MixinPools is
     {
         pool = poolById[poolId];
         return pool;
+    }
+
+    function _computeNextPoolId(bytes32 poolId)
+        internal
+        pure
+        returns (bytes32)
+    {
+        uint256 poolIdRightAligned = uint256(poolId >> 128);
+        uint256 poolIdRightAlignedAndIncremented = poolIdRightAligned._add(1);
+        return bytes32(poolIdRightAlignedAndIncremented) << 128;
     }
 
     function _recordMaker(

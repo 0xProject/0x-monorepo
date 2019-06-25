@@ -18,25 +18,18 @@
 
 pragma solidity ^0.5.5;
 
-import "../libs/LibRewards.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-
+import "../libs/LibSafeMath.sol";
+import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-
 import "../interfaces/IStakingEvents.sol";
-
 import "./MixinZrxVault.sol";
 import "./MixinRewardVault.sol";
-
 import "./MixinEpoch.sol";
 import "./MixinStakeBalances.sol";
 
 
 contract MixinStake is
-    // libraries
-    SafeMath,
-    LibRewards,
     // interfaces
     IStakingEvents,
     // immutables
@@ -49,6 +42,8 @@ contract MixinStake is
     // logic
     MixinStakeBalances
 {
+
+    using LibSafeMath for uint256;
 
     function deposit(uint256 amount)
         external
@@ -93,8 +88,8 @@ contract MixinStake is
             getDeactivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
-        activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
-        totalActivatedStake = _safeAdd(totalActivatedStake, amount);
+        activeStakeByOwner[owner] = activeStakeByOwner[owner]._add(amount);
+        totalActivatedStake = totalActivatedStake._add(amount);
     }
 
     function activateAndDelegateStake(
@@ -117,8 +112,8 @@ contract MixinStake is
             getActivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
-        activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
-        totalActivatedStake = _safeSub(totalActivatedStake, amount);
+        activeStakeByOwner[owner] = activeStakeByOwner[owner]._sub(amount);
+        totalActivatedStake = totalActivatedStake._sub(amount);
         _timelockStake(owner, amount);
     }
 
@@ -145,7 +140,7 @@ contract MixinStake is
         _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
-        stakeByOwner[owner] = _safeAdd(stakeByOwner[owner], amount);
+        stakeByOwner[owner] = stakeByOwner[owner]._add(amount);
 
         // emit stake event
         emit StakeMinted(
@@ -158,7 +153,7 @@ contract MixinStake is
         private
     {
         // burn stake
-        stakeByOwner[owner] = _safeSub(stakeByOwner[owner], amount);
+        stakeByOwner[owner] = stakeByOwner[owner]._sub(amount);
 
         // withdraw equivalent amount of ZRX from vault
         _withdrawToOwnerFromZrxVault(owner, amount);
@@ -179,37 +174,28 @@ contract MixinStake is
         uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
 
         // increment how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeAdd(_delegatedStakeByOwner, amount);
+        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._add(amount);
 
         // increment how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _safeAdd(_delegatedStakeToPoolByOwner, amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._add(amount);
 
         // increment how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _safeAdd(_delegatedStakeByPoolId, amount);
+        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._add(amount);
 
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
         uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
-        uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
+        uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
             shadowRewardsByPoolId[poolId],
             poolBalance
         );
         if (buyIn > 0) {
-            shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], buyIn);
-            shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], buyIn);
+            shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(buyIn);
+            shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(buyIn);
         }
     }
-
-    event K(
-        uint256 amountDelegatedByOwner,
-        uint256 totalAmountDelegated,
-        uint256 amountOfShadowAssetHeldByOwner,
-        uint256 totalAmountOfShadowAsset,
-        uint256 totalAmountOfRealAsset,
-        uint256 payoutInRealAsset
-    );
 
     // question - should we then return the amount withdrawn?
     function _undelegateStake(address payable owner, bytes32 poolId, uint256 amount)
@@ -221,13 +207,13 @@ contract MixinStake is
         uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
 
         // decrement how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _safeSub(_delegatedStakeByOwner, amount);
+        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._sub(amount);
 
         // decrement how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _safeSub(_delegatedStakeToPoolByOwner, amount);
+        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._sub(amount);
 
         // decrement how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _safeSub(_delegatedStakeByPoolId, amount);
+        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._sub(amount);
 
         // get payout
         // TODO -- not full balance, just balance that belongs to delegators.
@@ -237,7 +223,7 @@ contract MixinStake is
         if (_delegatedStakeToPoolByOwner == amount) {
             // full payout
             payoutInShadowAsset = shadowRewardsInPoolByOwner[owner][poolId];
-            payoutInRealAsset = _computePayoutDenominatedInRealAsset(
+            payoutInRealAsset = LibRewardMath._computePayoutDenominatedInRealAsset(
                 amount,
                 _delegatedStakeByPoolId,
                 payoutInShadowAsset,
@@ -246,7 +232,7 @@ contract MixinStake is
             );
         } else {
             // partial payout
-            (payoutInRealAsset, payoutInShadowAsset) = _computePartialPayout(
+            (payoutInRealAsset, payoutInShadowAsset) = LibRewardMath._computePartialPayout(
                  amount,
                 _delegatedStakeToPoolByOwner,
                 _delegatedStakeByPoolId,
@@ -255,8 +241,8 @@ contract MixinStake is
                 poolBalance
             );
         }
-        shadowRewardsInPoolByOwner[owner][poolId] = _safeSub(shadowRewardsInPoolByOwner[owner][poolId], payoutInShadowAsset);
-        shadowRewardsByPoolId[poolId] = _safeSub(shadowRewardsByPoolId[poolId], payoutInShadowAsset);
+        shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._sub(payoutInShadowAsset);
+        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._sub(payoutInShadowAsset);
 
         // withdraw payout for delegator
         if (payoutInRealAsset > 0) {
@@ -283,11 +269,7 @@ contract MixinStake is
         private
     {
         (Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
-        require(
-            amount <= 2**96 - 1,
-            "AMOUNT_TOO_LARGE"
-        );
-        uint96 downcastAmount = uint96(amount);
+        uint96 downcastAmount = amount._downcastToUint96();
         ownerTimelock.total += downcastAmount;
         timelockedStakeByOwner[owner] = ownerTimelock;
     }
