@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
+import "../interfaces/IZrxVault.sol";
 import "../immutable/MixinStorage.sol";
 
 
@@ -30,7 +30,7 @@ contract MixinZrxVault is
         external
         // onlyOwner
     {
-        zrxVault = IVault(_zrxVault);
+        zrxVault = IZrxVault(_zrxVault);
     }
 
     function getZrxVault()

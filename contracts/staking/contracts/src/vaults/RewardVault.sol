@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath96Bit.sol";
 import "./MixinVaultCore.sol";

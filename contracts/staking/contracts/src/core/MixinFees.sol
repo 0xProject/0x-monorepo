@@ -20,7 +20,6 @@ pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
 import "../libs/LibFeeMath.sol";
-import "../interfaces/IVault.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";

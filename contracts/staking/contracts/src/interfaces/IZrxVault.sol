@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 
-interface IVault {
+interface IZrxVault {
 
     function depositFrom(address owner, uint256 amount) external;
     function withdrawFrom(address owner, uint256 amount) external;
