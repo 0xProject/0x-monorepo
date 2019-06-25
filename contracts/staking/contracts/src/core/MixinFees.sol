@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
+import "../libs/LibFeeMath.sol";
 import "../interfaces/IVault.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
@@ -29,7 +30,6 @@ import "./MixinPools.sol";
 import "./MixinExchange.sol";
 import "./MixinRewardVault.sol";
 import "../interfaces/IStructs.sol";
-import "../libs/LibMath.sol";
 
 
 contract MixinFees is
@@ -127,7 +127,7 @@ contract MixinFees is
                 ._div(100)
             );
 
-            uint256 reward = LibMath._cobbDouglasSuperSimplified(
+            uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
                 totalRewards,
                 activePoolIds[i].feesCollected,
                 totalFees,
