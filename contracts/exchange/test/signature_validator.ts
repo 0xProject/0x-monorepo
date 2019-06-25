@@ -198,7 +198,7 @@ describe('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature.
-            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
+            // This will fail because the signature is random, not signed by `signerAddress`.
             const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
@@ -230,7 +230,7 @@ describe('MixinSignatureValidator', () => {
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature.
-            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
+            // This will fail because the signature is random, not signed by `signerAddress`.
             const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
