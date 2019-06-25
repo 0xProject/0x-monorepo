@@ -22,7 +22,7 @@ pragma solidity ^0.5.5;
 
 
 
-library LibMath {
+library LibFeeMath {
     
     function _nthRoot(uint256 base, uint256 n) internal pure returns (uint256 root) {
         assembly {

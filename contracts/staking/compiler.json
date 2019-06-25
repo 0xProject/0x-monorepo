@@ -25,6 +25,6 @@
         "src/libs/LibZrxToken.sol",
         "src/vaults/RewardVault.sol",
         "src/vaults/ZrxVault.sol",
-        "test/LibMathTest.sol"
+        "test/LibFeeMathTest.sol"
     ]
 }

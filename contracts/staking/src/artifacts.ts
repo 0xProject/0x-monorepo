@@ -5,7 +5,7 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as LibMathTest from '../generated-artifacts/LibMathTest.json';
+import * as LibFeeMathTest from '../generated-artifacts/LibFeeMathTest.json';
 import * as LibZrxToken from '../generated-artifacts/LibZrxToken.json';
 import * as MixinStake from '../generated-artifacts/MixinStake.json';
 import * as RewardVault from '../generated-artifacts/RewardVault.json';
@@ -17,7 +17,7 @@ export const artifacts = {
     StakingProxy: StakingProxy as ContractArtifact,
     MixinStake: MixinStake as ContractArtifact,
     LibZrxToken: LibZrxToken as ContractArtifact,
-    ZrxVault: ZrxVault as ContractArtifact,
     RewardVault: RewardVault as ContractArtifact,
-    LibMathTest: LibMathTest as ContractArtifact,
+    ZrxVault: ZrxVault as ContractArtifact,
+    LibFeeMathTest: LibFeeMathTest as ContractArtifact,
 };
