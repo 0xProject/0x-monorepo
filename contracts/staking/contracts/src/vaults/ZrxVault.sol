@@ -18,18 +18,19 @@
 
 pragma solidity ^0.5.5;
 
+import "../libs/LibSafeMath.sol";
 import "../interfaces/IZrxVault.sol";
 import "../interfaces/IAssetProxy.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "./MixinVaultCore.sol";
 
 
 contract ZrxVault is
     IZrxVault,
-    SafeMath,
     MixinVaultCore
 {
+
+    using LibSafeMath for uint256;
 
     // mapping from Owner to ZRX balance
     mapping (address => uint256) internal balances;
@@ -80,7 +81,7 @@ contract ZrxVault is
         );
 
         // update balance
-        balances[owner] = _safeAdd(balances[owner], amount);
+        balances[owner] = balances[owner]._add(amount);
     }
 
     function withdrawFrom(address owner, uint256 amount)
@@ -116,7 +117,7 @@ contract ZrxVault is
         // update balance
         // note that this call will revert if trying to withdraw more
         // than the current balance
-        balances[owner] = _safeSub(balances[owner], amount);
+        balances[owner] = balances[owner]._sub(amount);
     }
 
     function balanceOf(address owner)
