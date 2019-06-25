@@ -35,9 +35,6 @@ contract MixinConstants {
 
     uint64 constant public INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
 
-    // bytes4(keccak256("isValidSignature(bytes,bytes)")
-    bytes4 constant internal EIP1271_MAGIC_VALUE = 0x20c13b0b;
-
     uint64 constant public EPOCH_PERIOD_IN_SECONDS = 1000; // @TODO SET FOR DEPLOYMENT
 
     uint64 constant public TIMELOCK_PERIOD_IN_EPOCHS = 3; // @TODO SET FOR DEPLOYMENT

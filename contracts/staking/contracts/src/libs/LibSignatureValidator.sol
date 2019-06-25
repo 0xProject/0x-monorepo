@@ -16,14 +16,14 @@ pragma solidity ^0.5.5;
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "../interfaces/IStructs.sol";
 import "../interfaces/IWallet.sol";
-import "../immutable/MixinConstants.sol";
 
 
-contract MixinSignatureValidator is
-    IStructs,
-    MixinConstants
-{
+library LibSignatureValidator {
+    
     using LibBytes for bytes;
+
+    // bytes4(keccak256("isValidSignature(bytes,bytes)")
+    bytes4 constant internal EIP1271_MAGIC_VALUE = 0x20c13b0b;
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32 byte hash.
@@ -49,11 +49,11 @@ contract MixinSignatureValidator is
 
         // Ensure signature is supported
         require(
-            signatureTypeRaw < uint8(SignatureType.NSignatureTypes),
+            signatureTypeRaw < uint8(IStructs.SignatureType.NSignatureTypes),
             "SIGNATURE_UNSUPPORTED"
         );
 
-        SignatureType signatureType = SignatureType(signatureTypeRaw);
+        IStructs.SignatureType signatureType = IStructs.SignatureType(signatureTypeRaw);
 
         // Variables are not scoped in Solidity.
         uint8 v;
@@ -66,14 +66,14 @@ contract MixinSignatureValidator is
         // signature array with invalid type or length. We may as well make
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
-        if (signatureType == SignatureType.Illegal) {
+        if (signatureType == IStructs.SignatureType.Illegal) {
             revert("SIGNATURE_ILLEGAL");
 
         // Always invalid signature.
         // Like Illegal, this is always implicitly available and therefore
         // offered explicitly. It can be implicitly created by providing
         // a correctly formatted but incorrect signature.
-        } else if (signatureType == SignatureType.Invalid) {
+        } else if (signatureType == IStructs.SignatureType.Invalid) {
             require(
                 signature.length == 0,
                 "LENGTH_0_REQUIRED"
@@ -82,7 +82,7 @@ contract MixinSignatureValidator is
             return isValid;
 
         // Signature using EIP712
-        } else if (signatureType == SignatureType.EIP712) {
+        } else if (signatureType == IStructs.SignatureType.EIP712) {
             require(
                 signature.length == 65,
                 "LENGTH_65_REQUIRED"
@@ -100,7 +100,7 @@ contract MixinSignatureValidator is
             return isValid;
 
         // Signed using web3.eth_sign
-        } else if (signatureType == SignatureType.EthSign) {
+        } else if (signatureType == IStructs.SignatureType.EthSign) {
             require(
                 signature.length == 65,
                 "LENGTH_65_REQUIRED"
@@ -122,7 +122,7 @@ contract MixinSignatureValidator is
 
         // Signature verified by wallet contract.
         // If used with an order, the maker of the order is the wallet contract.
-        } else if (signatureType == SignatureType.Wallet) {
+        } else if (signatureType == IStructs.SignatureType.Wallet) {
             isValid = _isValidWalletSignature(
                 hash,
                 signerAddress,
