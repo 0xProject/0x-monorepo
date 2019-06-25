@@ -10,8 +10,9 @@ import { Wiki } from 'ts/containers/wiki';
 import { createLazyComponent } from 'ts/lazy_component';
 import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
-import { DocsPageTemplate } from 'ts/pages/docs/page_template';
 import { DocsGuides } from 'ts/pages/docs/guides';
+import { DocsPageTemplate } from 'ts/pages/docs/page_template';
+import { DocsTools } from 'ts/pages/docs/tools';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
@@ -221,6 +222,7 @@ render(
                                 />
                                 <Route path={`${WebsitePaths.Docs}/template`} component={DocsPageTemplate as any} />
                                 <Route path={`${WebsitePaths.Docs}/guides`} component={DocsGuides as any} />
+                                <Route path={`${WebsitePaths.Docs}/tools`} component={DocsTools as any} />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}
                                 <Route
