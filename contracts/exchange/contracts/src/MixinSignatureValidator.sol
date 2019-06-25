@@ -320,7 +320,9 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         uint256 signatureLength = signature.length;
-        // Shave the signature type off the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the signature type
+        // from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 1))
         }
@@ -365,7 +367,9 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         uint256 signatureLength = signature.length;
-        // Shave the signature type off the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the signature type
+        // from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 1))
         }
@@ -428,7 +432,9 @@ contract MixinSignatureValidator is
                 validatorAddress
             ));
         }
-        // Shave the validator address and signature type from the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the validator address
+        // and signature type from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 21))
         }
@@ -477,7 +483,9 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         uint256 signatureLength = signature.length;
-        // Shave the signature type off the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the signature type
+        // from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 1))
         }
@@ -525,7 +533,9 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         uint256 signatureLength = signature.length;
-        // Shave the signature type off the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the signature type
+        // from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 1))
         }
@@ -588,7 +598,9 @@ contract MixinSignatureValidator is
                 validatorAddress
             ));
         }
-        // Shave the validator address and signature type from the signature.
+        // HACK(dorothy-zbornak): Temporarily shave the validator address
+        // and signature type from the signature for the encode call then restore
+        // it immediately after because we want to keep signatures intact.
         assembly {
             mstore(signature, sub(signatureLength, 21))
         }
