@@ -49,15 +49,7 @@ export const AnimatedChatIcon = () => (
             </Bubble>
 
             <Dot delay={0} vectorEffect="non-scaling-stroke" cx="75" cy="75" r="4" stroke="#00AE99" strokeWidth="3" />
-            <Dot
-                delay={4.4}
-                vectorEffect="non-scaling-stroke"
-                cx="91"
-                cy="75"
-                r="4"
-                stroke="#00AE99"
-                strokeWidth="3"
-            />
+            <Dot delay={4.4} vectorEffect="non-scaling-stroke" cx="91" cy="75" r="4" stroke="#00AE99" strokeWidth="3" />
             <Dot
                 delay={-4.6}
                 vectorEffect="non-scaling-stroke"

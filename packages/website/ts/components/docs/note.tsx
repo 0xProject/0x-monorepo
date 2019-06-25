@@ -10,8 +10,7 @@ export interface NoteProps {
     description?: string;
 }
 
-interface WrapperProps {
-}
+interface WrapperProps {}
 
 export const Note: React.FunctionComponent<NoteProps> = (props: NoteProps) => (
     <>
@@ -26,7 +25,7 @@ export const Note: React.FunctionComponent<NoteProps> = (props: NoteProps) => (
 
 const Wrapper = styled.div`
     background-color: ${colors.backgroundLight};
-    border: 1px solid #DBDFDD;
+    border: 1px solid #dbdfdd;
     padding: 20px 14px;
     display: flex;
     align-items: center;
@@ -36,8 +35,7 @@ const Wrapper = styled.div`
     margin-bottom: 30px;
 `;
 
-const Content = styled.div`
-`;
+const Content = styled.div``;
 
 const NoteHeading = styled(Heading).attrs({ color: colors.brandDark, asElement: 'h4' })`
     font-size: 0.944444444rem !important;

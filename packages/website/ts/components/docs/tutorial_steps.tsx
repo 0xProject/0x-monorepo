@@ -6,19 +6,15 @@ export interface Props {
     children: React.ReactNode;
 }
 
-interface WrapperProps {
-}
+interface WrapperProps {}
 
 export const TutorialSteps: React.FunctionComponent<Props> = (props: Props) => (
     <>
-        <Wrapper>
-            {props.children}
-        </Wrapper>
+        <Wrapper>{props.children}</Wrapper>
     </>
 );
 
-TutorialSteps.defaultProps = {
-};
+TutorialSteps.defaultProps = {};
 
 const Wrapper = styled.ul<WrapperProps>`
     list-style-type: none;

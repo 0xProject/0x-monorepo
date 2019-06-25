@@ -31,8 +31,12 @@ export const ShortcutLink: React.FunctionComponent<LinkProps> = (props: LinkProp
         <Wrapper isHome={props.isHome} href={props.url}>
             <Icon color={colors.brandLight} name={props.icon} size={80} margin={[0, 40, 0, 0]} />
             <div>
-                <Heading size="small" marginBottom="8px">{props.heading}</Heading>
-                <Paragraph size="default" marginBottom="0">{props.description}</Paragraph>
+                <Heading size="small" marginBottom="8px">
+                    {props.heading}
+                </Heading>
+                <Paragraph size="default" marginBottom="0">
+                    {props.description}
+                </Paragraph>
             </div>
         </Wrapper>
     </>
@@ -44,7 +48,7 @@ ShortcutLink.defaultProps = {
 
 const Wrapper = styled.a<WrapperProps>`
     background-color: ${colors.backgroundLight};
-    border: 1px solid #DBDFDD;
+    border: 1px solid #dbdfdd;
     padding: 50px 50px;
     display: flex;
     align-items: center;

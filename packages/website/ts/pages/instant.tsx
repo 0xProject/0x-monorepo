@@ -172,7 +172,6 @@ export class Next0xInstant extends React.Component<Props> {
         window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
         this.setState({ isContactModalOpen: true });
     };
-
 }
 
 // scroll animation calc is simply (imageWidth * totalRepetitions) / 2

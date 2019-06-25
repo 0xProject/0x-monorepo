@@ -124,7 +124,6 @@ export class Extensions extends React.Component<Props> {
         window.history.replaceState(null, null, `${window.location.pathname}${window.location.search}#contact`);
         this.setState({ isContactModalOpen: true });
     };
-
 }
 
 const HeroActions = () => (

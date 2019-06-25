@@ -14,9 +14,7 @@ interface WrapperProps {
 }
 
 export const Tag: React.FunctionComponent<TagProps> = ({ isInverted, children }: TagProps) => (
-    <Wrapper isInverted={isInverted}>
-        {children}
-    </Wrapper>
+    <Wrapper isInverted={isInverted}>{children}</Wrapper>
 );
 
 Tag.defaultProps = {
@@ -24,9 +22,9 @@ Tag.defaultProps = {
 };
 
 const Wrapper = styled.div<WrapperProps>`
-    background-color: ${props => props.isInverted ? colors.brandDark : 'rgba(0, 56, 49, 0.1)'};
+    background-color: ${props => (props.isInverted ? colors.brandDark : 'rgba(0, 56, 49, 0.1)')};
     border-radius: 4px;
-    color: ${props => props.isInverted ? colors.white : colors.brandDark};
+    color: ${props => (props.isInverted ? colors.white : colors.brandDark)};
     font-size: 0.666666667rem;
     font-family: 'Formular Mono';
     font-weight: 400;
