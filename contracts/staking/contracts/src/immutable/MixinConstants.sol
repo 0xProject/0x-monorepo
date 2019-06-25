@@ -18,8 +18,12 @@
 
 pragma solidity ^0.5.5;
 
+import "./MixinDeploymentConstants.sol";
 
-contract MixinConstants {
+
+contract MixinConstants is
+    MixinDeploymentConstants
+{
 
     uint64 constant internal MAX_UINT_64 = 2**64 - 1;
 
@@ -36,14 +40,4 @@ contract MixinConstants {
     uint64 constant internal INITIAL_EPOCH = 0;
 
     uint64 constant internal INITIAL_TIMELOCK_PERIOD = INITIAL_EPOCH;
-
-    uint64 constant internal EPOCH_PERIOD_IN_SECONDS = 1000; // @TODO SET FOR DEPLOYMENT
-
-    uint64 constant internal TIMELOCK_PERIOD_IN_EPOCHS = 3; // @TODO SET FOR DEPLOYMENT
-
-    uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6; // @TODO SET FOR DEPLOYMENT
-    
-    uint256 constant internal REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE = 90; // @TODO SET FOR DEPLOYMENT
-
-    uint256 constant internal CHAIN_ID = 1;   // @TODO SET FOR DEPLOYMENT
 }
