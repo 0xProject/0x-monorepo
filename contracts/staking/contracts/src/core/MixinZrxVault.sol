@@ -26,14 +26,15 @@ contract MixinZrxVault is
     MixinStorage
 {
 
-    function _setZrxVault(address _zrxVault)
-        internal
+    function setZrxVault(address _zrxVault)
+        external
+        // onlyOwner
     {
         zrxVault = IVault(_zrxVault);
     }
 
-    function _getZrxVault()
-        internal
+    function getZrxVault()
+        public
         view
         returns (address)
     {

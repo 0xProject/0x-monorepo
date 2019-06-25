@@ -17,35 +17,47 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
-import "../immutable/MixinStorage.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "../immutable/MixinConstants.sol";
-import "../interfaces/IStakingEvents.sol";
-import "./MixinRewardVault.sol";
-import "./MixinSignatureValidator.sol";
+import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
 
+import "../interfaces/IStructs.sol";
+import "../interfaces/IStakingEvents.sol";
+
+import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
+
+import "./MixinRewardVault.sol";
+
+
 contract MixinPools is
+    // libraries
     SafeMath,
+    // interfaces
     IStakingEvents,
+    // immutables
     MixinConstants,
     MixinStorage,
-    MixinRewardVault,
-    MixinSignatureValidator
+    // standalone
+    MixinRewardVault
 {
 
-    function _getNextPoolId()
-        internal
-        returns (bytes32)
-    {
-        return nextPoolId;
+     modifier onlyPoolOperator(bytes32 poolId) {
+        require(
+            msg.sender == getPoolOperator(poolId),
+            "ONLY_CALLABLE_BY_POOL_OPERATOR"
+        );
+
+        _;
     }
 
-    function _createPool(address payable operatorAddress, uint8 operatorShare)
-        internal
+    function createPool(uint8 operatorShare)
+        external
         returns (bytes32 poolId)
     {
+        address payable operatorAddress = msg.sender;
         // 
         poolId = nextPoolId;
         nextPoolId = bytes32(_safeAdd(uint256(nextPoolId >> 128), 1) << 128);
@@ -65,54 +77,51 @@ contract MixinPools is
         return poolId;
     }
 
-    function _addMakerToPool(
+    function addMakerToPool(
         bytes32 poolId,
         address makerAddress,
-        bytes memory makerSignature,
-        address operatorAddress
+        bytes calldata makerSignature
     )
-        internal
+        external
+        onlyPoolOperator(poolId)
     {
         require(
-            _getPoolOperator(poolId) == operatorAddress,
-            "BAD_POOL_OPERATOR"
-        );
-
-        require(
-            _isValidMakerSignature(poolId, makerAddress, makerSignature),
+            isValidMakerSignature(poolId, makerAddress, makerSignature),
             "INVALID_MAKER_SIGNATURE"
         );
 
         _recordMaker(poolId, makerAddress);
     }
 
-    function _removeMakerFromPool(
+    function removeMakerFromPool(
         bytes32 poolId,
-        address makerAddress,
-        address operatorAddress
+        address makerAddress
     )
-        internal
+        external
+        onlyPoolOperator(poolId)
     {
-        require(
-            _getPoolOperator(poolId) == operatorAddress,
-            "BAD_POOL_OPERATOR"
-        );
-
         _unrecordMaker(poolId, makerAddress);
     }
 
-    function _isValidMakerSignature(bytes32 poolId, address makerAddress, bytes memory makerSignature)
-        internal
+    function getNextPoolId()
+        public
+        returns (bytes32)
+    {
+        return nextPoolId;
+    }
+
+    function isValidMakerSignature(bytes32 poolId, address makerAddress, bytes memory makerSignature)
+        public
         view
         returns (bool isValid)
     {
-        bytes32 approvalHash = _getStakingPoolApprovalMessageHash(poolId, makerAddress);
-        isValid = _isValidSignature(approvalHash, makerAddress, makerSignature);
+        bytes32 approvalHash = getStakingPoolApprovalMessageHash(poolId, makerAddress);
+        isValid = LibSignatureValidator._isValidSignature(approvalHash, makerAddress, makerSignature);
         return isValid;
     }
 
-    function _getStakingPoolApprovalMessageHash(bytes32 poolId, address makerAddress)
-        internal
+    function getStakingPoolApprovalMessageHash(bytes32 poolId, address makerAddress)
+        public
         view
         returns (bytes32 approvalHash)
     {
@@ -128,41 +137,32 @@ contract MixinPools is
         return approvalHash;
     }
 
-    function _getMakerPoolId(address makerAddress)
-        internal
+    function getMakerPoolId(address makerAddress)
+        public
         view
         returns (bytes32)
     {
         return poolIdByMakerAddress[makerAddress];
     }
 
-    function _getPoolOperator(bytes32 poolId)
-        internal
+    function getPoolOperator(bytes32 poolId)
+        public
         view
         returns (address operatorAddress)
     {
         operatorAddress = poolById[poolId].operatorAddress;
     }
 
-    function _getPool(bytes32 poolId)
-        internal
-        view
-        returns (Pool memory pool)
-    {
-        pool = poolById[poolId];
-        return pool;
-    }
-
-    function _isMakerRegistered(address makerAddress)
-        internal
+    function isMakerRegistered(address makerAddress)
+        public
         view
         returns (bool)
     {
-        return _getMakerPoolId(makerAddress) != NIL_MAKER_ID;
+        return getMakerPoolId(makerAddress) != NIL_MAKER_ID;
     }
 
-    function _getMakerAddressesForPool(bytes32 poolId)
-        internal
+    function getMakerAddressesForPool(bytes32 poolId)
+        public
         view
         returns (address[] memory _makerAddressesByPoolId)
     {
@@ -179,12 +179,14 @@ contract MixinPools is
         return _makerAddressesByPoolId;
     }
 
-    /*
-    function _recordPoolOperator(bytes32 poolId, address operatorAddress)
-        private
+    function _getPool(bytes32 poolId)
+        internal
+        view
+        returns (Pool memory pool)
     {
-        poolById[poolId] = 
-    }*/
+        pool = poolById[poolId];
+        return pool;
+    }
 
     function _recordMaker(
         bytes32 poolId,
@@ -193,7 +195,7 @@ contract MixinPools is
         private
     {
         require(
-            !_isMakerRegistered(makerAddress),
+            !isMakerRegistered(makerAddress),
             "MAKER_ADDRESS_ALREADY_REGISTERED"
         );
 
@@ -208,7 +210,7 @@ contract MixinPools is
         private
     {
         require(
-            _getMakerPoolId(makerAddress) == poolId,
+            getMakerPoolId(makerAddress) == poolId,
             "MAKER_ADDRESS_ALREADY_REGISTERED"
         );
 

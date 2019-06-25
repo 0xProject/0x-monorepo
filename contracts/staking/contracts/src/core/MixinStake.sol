@@ -18,80 +18,103 @@
 
 pragma solidity ^0.5.5;
 
-import "../libs/LibZrxToken.sol";
+import "../libs/LibRewards.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "../immutable/MixinStorage.sol";
+
 import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
+
 import "../interfaces/IStakingEvents.sol";
-import "./MixinStakeBalances.sol";
-import "./MixinEpoch.sol";
+
 import "./MixinZrxVault.sol";
 import "./MixinRewardVault.sol";
-import "../libs/LibRewards.sol";
+
+import "./MixinEpoch.sol";
+import "./MixinStakeBalances.sol";
 
 
 contract MixinStake is
+    // libraries
     SafeMath,
     LibRewards,
+    // interfaces
     IStakingEvents,
+    // immutables
     MixinConstants,
     MixinStorage,
+    // standalone
+    MixinEpoch,
     MixinZrxVault,
     MixinRewardVault,
-    MixinEpoch,
+    // logic
     MixinStakeBalances
 {
-    using LibZrxToken for uint256;
 
-    function _deposit(address owner, uint256 amount)
-        internal
+    function deposit(uint256 amount)
+        external
     {
-        _mintStake(owner, amount);
+        _mintStake(msg.sender, amount);
     }
 
-    function _depositAndStake(address owner, uint256 amount)
-        internal
+    function depositAndStake(uint256 amount)
+        external
     {
-        _mintStake(owner, amount);
-        _activateStake(owner, amount);
+        _mintStake(msg.sender, amount);
+        activateStake(amount);
     }
 
-    function _depositAndDelegate(address owner, bytes32 poolId, uint256 amount)
-        internal
+    function depositAndDelegate(bytes32 poolId, uint256 amount)
+        external
     {
-        _depositAndStake(owner, amount);
+        address owner = msg.sender;
+        _mintStake(owner, amount);
+        activateStake(amount);
         _delegateStake(owner, poolId, amount);
     }
 
-    function _activateStake(address owner, uint256 amount)
-        internal
+    function withdraw(uint256 amount)
+        external
     {
+        address owner = msg.sender;
+         _syncTimelockedStake(owner);
+        require(
+            getDeactivatedStake(owner) >= amount,
+            "INSUFFICIENT_BALANCE"
+        );
+        _burnStake(owner, amount);
+    }
+
+    function activateStake(uint256 amount)
+        public
+    {
+        address owner = msg.sender;
         _syncTimelockedStake(owner);
         require(
-            _getDeactivatedStake(owner) >= amount,
+            getDeactivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = _safeAdd(activeStakeByOwner[owner], amount);
         totalActivatedStake = _safeAdd(totalActivatedStake, amount);
     }
 
-    function _activateAndDelegateStake(
-        address owner,
+    function activateAndDelegateStake(
         bytes32 poolId,
         uint256 amount
     )
-        internal
+        public
     {
-        _activateStake(owner, amount);
+        activateStake(amount);
+        address owner = msg.sender;
         _delegateStake(owner, poolId, amount);
     }
 
-    function _deactivateAndTimelockStake(address owner, uint256 amount)
-        internal
+    function deactivateAndTimelockStake(uint256 amount)
+        public
     {
+        address owner = msg.sender;
         _syncTimelockedStake(owner);
         require(
-            _getActivatedStake(owner) >= amount,
+            getActivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = _safeSub(activeStakeByOwner[owner], amount);
@@ -99,26 +122,16 @@ contract MixinStake is
         _timelockStake(owner, amount);
     }
 
-    function _deactivateAndTimelockDelegatedStake(address payable owner, bytes32 poolId, uint256 amount)
-        internal
+    function deactivateAndTimelockDelegatedStake(bytes32 poolId, uint256 amount)
+        public
     {
-        _deactivateAndTimelockStake(owner, amount);
+        deactivateAndTimelockStake(amount);
+        address payable owner = msg.sender;
         _undelegateStake(owner, poolId, amount);
     }
 
-    function _withdraw(address owner, uint256 amount)
-        internal
-    {
-         _syncTimelockedStake(owner);
-        require(
-            _getDeactivatedStake(owner) >= amount,
-            "INSUFFICIENT_BALANCE"
-        );
-        _burnStake(owner, amount);
-    }
-
-    function _forceTimelockSync(address owner)
-        internal
+    function forceTimelockSync(address owner)
+        external
     {
         _syncTimelockedStake(owner);
     }
@@ -176,7 +189,7 @@ contract MixinStake is
 
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
-        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
         uint256 buyIn = _computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
@@ -218,7 +231,7 @@ contract MixinStake is
 
         // get payout
         // TODO -- not full balance, just balance that belongs to delegators.
-        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
         if (_delegatedStakeToPoolByOwner == amount) {
