@@ -9,7 +9,7 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contra
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibMathTestContract } from '../../src';
+import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibFeeMathTestContract } from '../../src';
 import { ApprovalFactory } from './ApprovalFactory';
 import { SignedStakingPoolApproval } from './types';
 import { constants } from './constants';
@@ -28,7 +28,7 @@ export class StakingWrapper {
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _rewardVaultContractIfExists?: RewardVaultContract;
-    private _libMathTestContractIfExists?: LibMathTestContract;
+    private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
 
     constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract, accounts: string[]) {
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -56,9 +56,9 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._rewardVaultContractIfExists as RewardVaultContract;
     }
-    public getLibMathTestContract(): LibMathTestContract {
+    public getLibFeeMathTestContract(): LibFeeMathTestContract {
         this._validateDeployedOrThrow();
-        return this._libMathTestContractIfExists as LibMathTestContract;
+        return this._LibFeeMathTestContractIfExists as LibFeeMathTestContract;
     }
     public async deployAndConfigureContracts(): Promise<void> {
         // deploy zrx vault
@@ -117,8 +117,8 @@ export class StakingWrapper {
              await this._web3Wrapper.sendTransactionAsync(setRewardVaultTxData)
         );
         // deploy libmath test
-        this._libMathTestContractIfExists = await LibMathTestContract.deployFrom0xArtifactAsync(
-            artifacts.LibMathTest,
+        this._LibFeeMathTestContractIfExists = await LibFeeMathTestContract.deployFrom0xArtifactAsync(
+            artifacts.LibFeeMathTest,
             this._provider,
             txDefaults,
         );
@@ -521,12 +521,12 @@ export class StakingWrapper {
     }
     ///// MATH /////
     public async nthRoot(value: BigNumber, n: BigNumber): Promise<BigNumber> {
-        //const txReceipt = await this.getLibMathTestContract().nthRoot.await(value, n);
-        const output = await this.getLibMathTestContract().nthRoot.callAsync(value, n);
+        //const txReceipt = await this.getLibFeeMathTestContract().nthRoot.await(value, n);
+        const output = await this.getLibFeeMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
     public async nthRootFixedPoint(value: BigNumber, n: BigNumber): Promise<BigNumber> {
-        const output = await this.getLibMathTestContract().nthRootFixedPoint.callAsync(value, n);
+        const output = await this.getLibFeeMathTestContract().nthRootFixedPoint.callAsync(value, n);
         return output;
     }
     public async cobbDouglasAsync(
@@ -538,7 +538,7 @@ export class StakingWrapper {
         alphaNumerator: BigNumber,
         alphaDenominator: BigNumber
     ) {
-        const output = await this.getLibMathTestContract().cobbDouglas.callAsync(
+        const output = await this.getLibFeeMathTestContract().cobbDouglas.callAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -557,7 +557,7 @@ export class StakingWrapper {
         totalStake: BigNumber,
         alphaDenominator: BigNumber
     ) {
-        const txReceipt = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+        const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -566,7 +566,7 @@ export class StakingWrapper {
             alphaDenominator
         );
         console.log(`Gas Used: ${txReceipt.gasUsed}`);
-        const output = await this.getLibMathTestContract().cobbDouglasSimplified.callAsync(
+        const output = await this.getLibFeeMathTestContract().cobbDouglasSimplified.callAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -584,7 +584,7 @@ export class StakingWrapper {
         totalStake: BigNumber,
         alphaDenominator: BigNumber
     ) {
-        const txReceipt = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+        const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -593,7 +593,7 @@ export class StakingWrapper {
             alphaDenominator
         );
 
-        const output = await this.getLibMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
+        const output = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
             totalRewards,
             ownerFees,
             totalFees,
