@@ -5,7 +5,6 @@ import styled, { keyframes } from 'styled-components';
 // import { Tabs } from 'react-tabs';
 import { Callout } from 'ts/components/docs/callout';
 import { Code } from 'ts/components/docs/code';
-import { Filters } from 'ts/components/docs/sidebar/filters';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
@@ -16,6 +15,7 @@ import { Note } from 'ts/components/docs/note';
 import { Resource } from 'ts/components/docs/resource/resource';
 import { SearchInput } from 'ts/components/docs/search_input';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
+import { Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
@@ -182,33 +182,33 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                                     <Code>
                                         {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
 
-    const exchange = new ExchangeContract(provider, networkId);
+const exchange = new ExchangeContract(provider, networkId);
 
-    const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-        from: senderAddress,
-    });`}
+const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
+    from: senderAddress,
+});`}
                                     </Code>
                                 </TabPanel>
                                 <TabPanel>
                                     <Code>
                                         {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
 
-        const exchange = new ExchangeContract(provider, networkId);
+const exchange = new ExchangeContract(provider, networkId);
 
-        const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-            from: senderAddress,
-        });`}
+const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
+    from: senderAddress,
+});`}
                                     </Code>
                                 </TabPanel>
                                 <TabPanel>
                                     <Code>
                                         {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
 
-        const exchange = new ExchangeContract(provider, networkId);
+const exchange = new ExchangeContract(provider, networkId);
 
-        const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-            from: senderAddress,
-        });`}
+const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
+    from: senderAddress,
+});`}
                                     </Code>
                                 </TabPanel>
                             </Tabs>
