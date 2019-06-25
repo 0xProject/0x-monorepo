@@ -6,6 +6,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
 import { Tag } from 'ts/components/docs/resource/tag';
+import { Level, Difficulty } from 'ts/components/docs/resource/level';
 
 export interface ResourceProps {
     heading?: string;
@@ -14,11 +15,9 @@ export interface ResourceProps {
     tags: TagProps[];
 }
 
-interface WrapperProps {
-}
-
 interface TagProps {
     label: React.ReactNode;
+    isInverted?: boolean;
 }
 
 export const Resource: React.FunctionComponent<ResourceProps> = ({ heading, description, url, tags }: ResourceProps) => (
@@ -27,11 +26,9 @@ export const Resource: React.FunctionComponent<ResourceProps> = ({ heading, desc
         <Paragraph size="default" marginBottom="30px">{description}</Paragraph>
         <Meta>
             <Tags>
-                {tags.map((tag, index) => <Tag key={`tag-${index}`}>{tag.label}</Tag>)}
+                {tags.map(({label, isInverted}, index) => <Tag key={`tag-${index}`} isInverted={isInverted}>{label}</Tag>)}
             </Tags>
-            <div>
-                Rating
-            </div>
+            <Level difficulty={Difficulty.Beginner} />
         </Meta>
     </Wrapper>
 );
@@ -41,10 +38,10 @@ Resource.defaultProps = {
     description: 'Get in touch here and we’ll be happy to help.',
 };
 
-const Wrapper = styled.a<WrapperProps>`
+const Wrapper = styled.a`
     border: 1px solid #D7E3DB;
     padding: 25px 30px;
-    margin-bottom: 1.875rem;
+    margin-bottom: 1.111111111rem;
     display: block;
 `;
 

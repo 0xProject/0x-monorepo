@@ -27,8 +27,10 @@ const Wrapper = styled.div<WrapperProps>`
     background-color: ${props => props.isInverted ? colors.brandDark : 'rgba(0, 56, 49, 0.1)'};
     border-radius: 4px;
     color: ${props => props.isInverted ? colors.white : colors.brandDark};
-    font-size: 0.75rem;
-    padding: 6px 10px 4px;
+    font-size: 0.666666667rem;
+    font-family: 'Formular Mono';
+    font-weight: 400;
+    padding: 6px 10px 5px;
     display: inline-flex;
     align-items: center;
     text-transform: uppercase;
