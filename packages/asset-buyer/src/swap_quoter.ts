@@ -81,6 +81,14 @@ export class SwapQuoter {
         const swapQuoter = new SwapQuoter(provider, orderProvider, options);
         return swapQuoter;
     }
+
+    /**
+     *
+     * get the key for _orderEntryMap for maker + taker asset pair
+     */
+    private static _getOrdersEntryMapKey(makerAssetData: string, takerAssetData: string): string {
+        return `${makerAssetData}_${takerAssetData}`;
+    }
     /**
      * Instantiates a new SwapQuoter instance
      * @param   supportedProvider   The Provider instance you would like to use for interacting with the Ethereum network.
@@ -284,7 +292,7 @@ export class SwapQuoter {
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         // try to get ordersEntry from the map
-        const ordersEntryIfExists = this._ordersEntryMap[this._getOrdersEntryMapKey(makerAssetData, takerAssetData)];
+        const ordersEntryIfExists = this._ordersEntryMap[SwapQuoter._getOrdersEntryMapKey(makerAssetData, takerAssetData)];
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
@@ -324,17 +332,8 @@ export class SwapQuoter {
             ordersAndFillableAmounts,
             lastRefreshTime,
         };
-        this._ordersEntryMap[this._getOrdersEntryMapKey(makerAssetData, takerAssetData)] = updatedOrdersEntry;
+        this._ordersEntryMap[SwapQuoter._getOrdersEntryMapKey(makerAssetData, takerAssetData)] = updatedOrdersEntry;
         return ordersAndFillableAmounts;
-    }
-
-    /**
-     *
-     * get the key for _orderEntryMap for maker + taker asset pair
-     */
-    // tslint:disable-next-line: prefer-function-over-method
-    private _getOrdersEntryMapKey(makerAssetData: string, takerAssetData: string): string {
-        return `${makerAssetData}_${takerAssetData}`;
     }
 
     /**
