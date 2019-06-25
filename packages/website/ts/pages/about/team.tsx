@@ -189,27 +189,27 @@ const advisors: TeamMember[] = [
     {
         imageUrl: '/images/team/advisors/frede.jpg',
         name: 'Fred Ehrsam',
-        title: 'Advisor',
+        title: 'Paradigm',
     },
     {
         imageUrl: '/images/team/advisors/olafc.jpg',
         name: 'Olaf Carlson-Wee',
-        title: 'Advisor',
+        title: 'Polychain Capital',
     },
     {
         imageUrl: '/images/team/advisors/joeyk.jpg',
         name: 'Joey Krug',
-        title: 'Advisor',
+        title: 'Pantera Capital, Augur',
     },
     {
         imageUrl: '/images/team/advisors/lindax.jpg',
         name: 'Linda Xie',
-        title: 'Advisor',
+        title: 'Scalar Capital',
     },
     {
         imageUrl: '/images/team/advisors/davids.jpg',
         name: 'David Sacks',
-        title: 'Advisor',
+        title: 'Craft Ventures',
     },
 ];
 
@@ -321,7 +321,7 @@ const Name = styled.h3`
     color: ${colors.textDarkPrimary};
     font-size: 14px;
     line-height: 1;
-    margin: 0;
+    margin: 0 0 3px 0;
 `;
 
 const MemberTitle = styled(Paragraph)`
