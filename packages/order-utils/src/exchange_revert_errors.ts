@@ -54,19 +54,6 @@ export class SignatureValidatorNotApprovedError extends RevertError {
     }
 }
 
-export class SignatureOrderValidatorNotApprovedError extends RevertError {
-    constructor(signer?: string, validator?: string) {
-        super(
-            'SignatureOrderValidatorNotApprovedError',
-            'SignatureOrderValidatorNotApprovedError(address signer, address validator)',
-            {
-                signer,
-                validator,
-            },
-        );
-    }
-}
-
 export class SignatureWalletError extends RevertError {
     constructor(hash?: string, wallet?: string, signature?: string, errorData?: string) {
         super(
@@ -91,37 +78,6 @@ export class SignatureValidatorError extends RevertError {
                 hash,
                 signer,
                 validator,
-                signature,
-                errorData,
-            },
-        );
-    }
-}
-
-export class SignatureOrderValidatorError extends RevertError {
-    constructor(hash?: string, signer?: string, validator?: string, signature?: string, errorData?: string) {
-        super(
-            'SignatureOrderValidatorError',
-            'SignatureOrderValidatorError(bytes32 hash, address signer, address validator, bytes signature, bytes errorData)',
-            {
-                hash,
-                signer,
-                validator,
-                signature,
-                errorData,
-            },
-        );
-    }
-}
-
-export class SignatureOrderWalletError extends RevertError {
-    constructor(hash?: string, wallet?: string, signature?: string, errorData?: string) {
-        super(
-            'SignatureOrderWalletError',
-            'SignatureOrderWalletError(bytes32 hash, address wallet, bytes signature, bytes errorData)',
-            {
-                hash,
-                wallet,
                 signature,
                 errorData,
             },
@@ -247,11 +203,8 @@ const types = [
     OrderStatusError,
     SignatureError,
     SignatureValidatorNotApprovedError,
-    SignatureOrderValidatorNotApprovedError,
     SignatureWalletError,
     SignatureValidatorError,
-    SignatureOrderValidatorError,
-    SignatureOrderWalletError,
     InvalidSenderError,
     InvalidTakerError,
     InvalidMakerError,
