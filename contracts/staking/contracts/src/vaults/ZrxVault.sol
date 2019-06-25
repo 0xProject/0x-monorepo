@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
+import "../interfaces/IZrxVault.sol";
 import "../interfaces/IAssetProxy.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
@@ -26,7 +26,7 @@ import "./MixinVaultCore.sol";
 
 
 contract ZrxVault is
-    IVault,
+    IZrxVault,
     SafeMath,
     MixinVaultCore
 {
