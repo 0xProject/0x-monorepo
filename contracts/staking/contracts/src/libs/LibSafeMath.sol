@@ -22,6 +22,7 @@ pragma solidity ^0.5.5;
 library LibSafeMath {
 
     uint256 constant internal MAX_UINT_96 = 79228162514264337593543950335; // 2**96-1
+    uint256 constant internal MAX_UINT_64 = 18446744073709551615; // 2**64-1
 
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
@@ -125,8 +126,20 @@ library LibSafeMath {
     {
         require(
             a <= MAX_UINT_96,
-            "VALUE_TOO_LARGE_TO_DOWNCAST"
+            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT96"
         );
         return uint96(a);
+    }
+
+     function _downcastToUint64(uint256 a)
+        internal
+        pure
+        returns (uint64)
+    {
+        require(
+            a <= MAX_UINT_64,
+            "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64"
+        );
+        return uint64(a);
     }
 }
