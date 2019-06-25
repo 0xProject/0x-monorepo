@@ -18,36 +18,45 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
-import "../libs/LibZrxToken.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "../interfaces/IVault.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinEpoch.sol";
 import "./MixinPools.sol";
+import "./MixinExchange.sol";
 import "./MixinRewardVault.sol";
 import "../interfaces/IStructs.sol";
 import "../libs/LibMath.sol";
 
 
 contract MixinFees is
+    // libraries
     SafeMath,
+    // interfaces
     IStakingEvents,
     IStructs,
+    // immutables
     MixinConstants,
     MixinStorage,
-    MixinRewardVault,
+    // standalones
     MixinEpoch,
+    MixinExchange,
+    MixinRewardVault,
+    // staking logic
     MixinStakeBalances,
     MixinPools
 {
 
-    function _payProtocolFee(address makerAddress, uint256 amount)
-        internal
+    function payProtocolFee(address makerAddress)
+        external
+        payable
+        onlyExchange
     {
-        bytes32 poolId = _getMakerPoolId(makerAddress);
+        uint256 amount = msg.value;
+        bytes32 poolId = getMakerPoolId(makerAddress);
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
         protocolFeesThisEpochByPool[poolId] = _safeAdd(_feesCollectedThisEpoch, amount);
         if (_feesCollectedThisEpoch == 0) {
@@ -55,17 +64,23 @@ contract MixinFees is
         }
     }
 
-    function _getProtocolFeesThisEpochByPool(bytes32 poolId)
-        internal
+    function finalizeFees()
+        external
+    {
+        _payRebates();
+        _goToNextEpoch();
+    }
+
+    function getProtocolFeesThisEpochByPool(bytes32 poolId)
+        public
         view
         returns (uint256)
     {
         return protocolFeesThisEpochByPool[poolId];
     }
 
-
-    function _getTotalProtocolFeesThisEpoch()
-        internal
+    function getTotalProtocolFeesThisEpoch()
+        public
         view
         returns (uint256)
     {
@@ -92,7 +107,7 @@ contract MixinFees is
             totalFees = _safeAdd(totalFees, activePoolIds[i].feesCollected);
         }
         uint256 totalRewards = address(this).balance;
-        uint256 totalStake = _getActivatedStakeAcrossAllOwners();
+        uint256 totalStake = getActivatedStakeAcrossAllOwners();
 
         emit EpochFinalized(
             numberOfActivePoolIds,
@@ -111,8 +126,8 @@ contract MixinFees is
         // Step 2 - payout
         uint256 totalRewardsRecordedInVault = 0;
         for (uint i = 0; i != numberOfActivePoolIds; i++) {
-            uint256 stakeDelegatedToPool = _getStakeDelegatedToPool(activePoolIds[i].poolId);
-            uint256 stakeHeldByPoolOperator = _getActivatedAndUndelegatedStake(_getPoolOperator(activePoolIds[i].poolId));
+            uint256 stakeDelegatedToPool = getStakeDelegatedToPool(activePoolIds[i].poolId);
+            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getPoolOperator(activePoolIds[i].poolId));
             uint256 scaledStake = _safeAdd(
                 stakeHeldByPoolOperator,
                 _safeDiv(
@@ -163,12 +178,5 @@ contract MixinFees is
             totalRewards,
             totalRewardsRecordedInVault
         );
-    }
-
-    function _finalizeFees()
-        internal
-    {
-        _payRebates();
-        _goToNextEpoch();
     }
 }

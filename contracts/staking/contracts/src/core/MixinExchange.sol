@@ -18,34 +18,35 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
-import "../libs/LibZrxToken.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "../immutable/MixinStorage.sol";
-import "../immutable/MixinConstants.sol";
+
 import "../interfaces/IStakingEvents.sol";
-import "./MixinStakeBalances.sol";
-import "./MixinEpoch.sol";
-import "./MixinPools.sol";
+
+import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
 
 
 contract MixinExchange is
+    // libraries
     SafeMath,
+    // interfaces
     IStakingEvents,
+    // immutables
     MixinConstants,
     MixinStorage
 {
 
-    function _isValidExchangeAddress(address addr)
-        internal
-        view
-        returns (bool)
-    {
-        return validExchanges[addr];
+    modifier onlyExchange() {
+        require(
+            isValidExchangeAddress(msg.sender),
+            "ONLY_CALLABLE_BY_EXCHANGE"
+        );
+        _;
     }
 
-    function _addExchangeAddress(address addr)
-        internal
+    function addExchangeAddress(address addr)
+        external
+        // @TODO - Only by 0x multi-sig
     {
         require(
             !validExchanges[addr],
@@ -55,8 +56,9 @@ contract MixinExchange is
         emit ExchangeAdded(addr);
     }
 
-    function _removeExchangeAddress(address addr)
-        internal
+    function removeExchangeAddress(address addr)
+        external
+        // @TODO - Only by 0x multi-sig
     {
         require(
             validExchanges[addr],
@@ -64,5 +66,13 @@ contract MixinExchange is
         );
         validExchanges[addr] = false;
         emit ExchangeRemoved(addr);
+    }
+
+    function isValidExchangeAddress(address addr)
+        public
+        view
+        returns (bool)
+    {
+        return validExchanges[addr];
     }
 }

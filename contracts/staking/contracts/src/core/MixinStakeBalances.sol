@@ -17,12 +17,12 @@
 */
 
 pragma solidity ^0.5.5;
+pragma experimental ABIEncoderV2;
 
-import "../interfaces/IVault.sol";
-import "../libs/LibZrxToken.sol";
+import "../interfaces/IStructs.sol";
 import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
+import "../immutable/MixinStorage.sol";
 import "./MixinEpoch.sol";
 
 
@@ -33,89 +33,89 @@ contract MixinStakeBalances is
     MixinEpoch
 {
 
-    function _getActivatedStakeAcrossAllOwners()
-        internal
+    function getActivatedStakeAcrossAllOwners()
+        public
         view
         returns (uint256)
     {
         return totalActivatedStake;
     }
 
-    function _getTotalStake(address owner)
-        internal
+    function getTotalStake(address owner)
+        public
         view
         returns (uint256)
     {
         return stakeByOwner[owner];
     }
 
-    function _getActivatedStake(address owner)
-        internal
+    function getActivatedStake(address owner)
+        public
         view
         returns (uint256)
     {
         return activeStakeByOwner[owner];
     }
 
-    function _getDeactivatedStake(address owner)
-        internal
+    function getDeactivatedStake(address owner)
+        public
         view
         returns (uint256)
     {
-        return _safeSub(_getTotalStake(owner), _getActivatedStake(owner));
+        return _safeSub(getTotalStake(owner), getActivatedStake(owner));
     }
 
 
-    function _getActivatedAndUndelegatedStake(address owner)
-        internal
+    function getActivatedAndUndelegatedStake(address owner)
+        public
         view
         returns (uint256)
     {
-        return _safeSub(activeStakeByOwner[owner], _getStakeDelegatedByOwner(owner));
+        return _safeSub(activeStakeByOwner[owner], getStakeDelegatedByOwner(owner));
     }
 
-    function _getActivatableStake(address owner)
-        internal
+    function getActivatableStake(address owner)
+        public
         view
         returns (uint256)
     {
-        return _safeSub(_getDeactivatedStake(owner), _getTimelockedStake(owner));
+        return _safeSub(getDeactivatedStake(owner), getTimelockedStake(owner));
     }
 
-    function _getWithdrawableStake(address owner)
-        internal
+    function getWithdrawableStake(address owner)
+        public
         view
         returns (uint256)
     {
-        return _getActivatableStake(owner);
+        return getActivatableStake(owner);
     }
 
-    function _getStakeDelegatedByOwner(address owner)
-        internal
+    function getStakeDelegatedByOwner(address owner)
+        public
         view
         returns (uint256)
     {
         return delegatedStakeByOwner[owner];
     }
 
-    function _getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
-        internal
+    function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
+        public
         view
         returns (uint256)
     {
         return delegatedStakeToPoolByOwner[owner][poolId];
     }
 
-    function _getStakeDelegatedToPool(bytes32 poolId)
-        internal
+    function getStakeDelegatedToPool(bytes32 poolId)
+        public
         view
         returns (uint256)
     {
         return delegatedStakeByPoolId[poolId];
     }
 
-    function _getTimelockedStake(address owner)
-        internal
+    function getTimelockedStake(address owner)
+        public
         view
         returns (uint256)
     {
@@ -127,11 +127,11 @@ contract MixinStakeBalances is
         internal
         view
         returns (
-            Timelock memory ownerTimelock,
+            IStructs.Timelock memory ownerTimelock,
             bool isOutOfSync
         )
     {
-        uint64 currentTimelockPeriod = _getCurrentTimelockPeriod();
+        uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
         ownerTimelock = timelockedStakeByOwner[owner];
         isOutOfSync = false;
         if (currentTimelockPeriod == _safeAdd(ownerTimelock.lockedAt, 1)) {
