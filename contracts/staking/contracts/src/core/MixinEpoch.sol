@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.5;
 
+import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath64Bit.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
@@ -28,6 +29,7 @@ contract MixinEpoch is
     MixinStorage
 {
 
+    using LibSafeMath for uint256;
     using LibSafeMath64Bit for uint64;
 
     /// @dev returns the current epoch in seconds
@@ -99,11 +101,8 @@ contract MixinEpoch is
         internal
     {
         // get current timestamp
-        require(
-            block.timestamp <= MAX_UINT_64,
-            "BLOCK_TIMESTAMP_NOT_UINT_64"
-        );
-        uint64 currentBlockTimestamp = uint64(block.timestamp);
+        // solium-disable-next-line security/no-block-members
+        uint64 currentBlockTimestamp = block.timestamp._downcastToUint64();
 
         // validate that we can increment the current epoch
         require(
@@ -112,13 +111,13 @@ contract MixinEpoch is
         );
 
         // incremment epoch
-        uint64 nextEpoch = currentEpoch + 1;
+        uint64 nextEpoch = currentEpoch._add(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
 
         // increment timelock period, if needed
         if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
-            currentTimelockPeriod += 1;
+            currentTimelockPeriod = currentTimelockPeriod._add(1);
             currentTimelockPeriodStartEpoch = currentEpoch;
         }
     }
