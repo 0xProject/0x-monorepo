@@ -94,10 +94,8 @@ const communityShortcuts: CommunityLinkProps[] = [
 ];
 
 export class DocsHome extends React.Component<Props> {
-    public state = {
-    };
-    public componentDidMount(): void {
-    }
+    public state = {};
+    public componentDidMount(): void {}
     public render(): React.ReactNode {
         return (
             <SiteWrap theme="light">
@@ -105,9 +103,11 @@ export class DocsHome extends React.Component<Props> {
                 <Hero isHome={true} title="0x Docs" />
                 <Section maxWidth={'1150px'} isPadded={false} padding="0 0">
                     <ShortcutsWrapper>
-                        {shortcuts.map((shortcut, index) => <ShortcutLink key={`shortcut-${index}`} {...shortcut} />)}
+                        {shortcuts.map((shortcut, index) => (
+                            <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
+                        ))}
                     </ShortcutsWrapper>
-                    <Separator/>
+                    <Separator />
                     <Columns>
                         <div>
                             <Heading size="default">Get Started</Heading>
@@ -117,9 +117,11 @@ export class DocsHome extends React.Component<Props> {
                             <StepLinks links={usefulLinks} />
                         </div>
                     </Columns>
-                    <Separator/>
+                    <Separator />
                     <CommunityWrapper>
-                        {communityShortcuts.map((shortcut, index) => <CommunityLink key={`communityLink-${index}`} {...shortcut} />)}
+                        {communityShortcuts.map((shortcut, index) => (
+                            <CommunityLink key={`communityLink-${index}`} {...shortcut} />
+                        ))}
                     </CommunityWrapper>
                 </Section>
             </SiteWrap>
@@ -154,7 +156,7 @@ Columns.defaultProps = {
 
 const Separator = styled.hr`
     border-width: 0 0 1px;
-    border-color: #E4E4E4;
+    border-color: #e4e4e4;
     height: 0;
     margin-top: 60px;
     margin-bottom: 60px;

@@ -171,5 +171,4 @@ export class NextMarketMaker extends React.Component<NextMarketMakerProps> {
             </Button>
         </>
     );
-
 }

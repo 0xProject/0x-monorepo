@@ -31,8 +31,12 @@ export const CommunityLink: React.FunctionComponent<CommunityLinkProps> = (props
         <Wrapper isHome={props.isHome} href={props.url}>
             <div>
                 <Icon color={colors.brandLight} name={props.icon} size={100} margin={[0, 0, 24, 0]} />
-                <Heading size="small" marginBottom="8px">{props.heading}</Heading>
-                <Paragraph size="default" marginBottom="0">{props.description}</Paragraph>
+                <Heading size="small" marginBottom="8px">
+                    {props.heading}
+                </Heading>
+                <Paragraph size="default" marginBottom="0">
+                    {props.description}
+                </Paragraph>
             </div>
         </Wrapper>
     </>
@@ -44,7 +48,7 @@ CommunityLink.defaultProps = {
 
 const Wrapper = styled.a<WrapperProps>`
     background-color: ${colors.backgroundLight};
-    border: 1px solid #DBDFDD;
+    border: 1px solid #dbdfdd;
     padding: 50px 50px;
     display: flex;
     flex-direction: column;

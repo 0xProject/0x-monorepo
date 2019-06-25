@@ -18,17 +18,17 @@ export enum Difficulty {
 const difficulties = {
     [Difficulty.Beginner]: {
         label: 'Beginner',
-        rating: 1
+        rating: 1,
     },
     [Difficulty.Intermediate]: {
         label: 'Intermediate',
-        rating: 2
+        rating: 2,
     },
     [Difficulty.Advanced]: {
         label: 'Advanced',
-        rating: 3
+        rating: 3,
     },
-}
+};
 
 export const Level: React.FunctionComponent<LevelProps> = ({ difficulty }: LevelProps) => {
     const info = difficulties[difficulty];
@@ -37,7 +37,7 @@ export const Level: React.FunctionComponent<LevelProps> = ({ difficulty }: Level
             <DifficultyLabel>{info.label}</DifficultyLabel>
             <RatingBar rating={info.rating} />
         </Wrapper>
-    )
+    );
 };
 
 const Wrapper = styled.div`

@@ -27,7 +27,9 @@ interface LinkConfig {
 export const Hero: React.FunctionComponent<Props> = (props: Props) => (
     <>
         <Wrapper isHome={props.isHome}>
-            <Heading size="large" isCentered={true} marginBottom={props.isHome || props.description ? '30px' : '0'}>{props.title}</Heading>
+            <Heading size="large" isCentered={true} marginBottom={props.isHome || props.description ? '30px' : '0'}>
+                {props.title}
+            </Heading>
             {props.description && <Paragraph isCentered={true}>{props.description}</Paragraph>}
             {props.isHome && <SearchInput isHome={true} />}
         </Wrapper>
@@ -44,7 +46,7 @@ const Wrapper = styled.div<Props>`
     padding-bottom: 80px;
     margin-bottom: 60px;
     min-height: 15rem;
-    min-height: ${props => props.isHome ? '21.875rem' : '13.222rem'};
+    min-height: ${props => (props.isHome ? '21.875rem' : '13.222rem')};
     display: flex;
     flex-direction: column;
     justify-content: center;

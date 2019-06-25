@@ -71,11 +71,31 @@ export class DocsGuides extends React.Component<Props> {
                         </aside>
                         <article>
                             <div>
-                            <Resource heading="0x Mesh - your gateway to networked liquidity" description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs" tags={[ { label: 'Relayer' } ]} />
-                                <Resource heading="0x Mesh - your gateway to networked liquidity" description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity." tags={[ { label: 'Relayer' } ]} />
-                                <Resource heading="0x Mesh - your gateway to networked liquidity" description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity." tags={[ { label: 'Relayer' } ]} />
-                                <Resource heading="0x Mesh - your gateway to networked liquidity" description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity." tags={[ { label: 'Relayer' } ]} />
-                                <Resource heading="0x Mesh - your gateway to networked liquidity" description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs" tags={[ { label: 'Community Maintained', isInverted: true }, { label: 'Relayer' } ]} />
+                                <Resource
+                                    heading="0x Mesh - your gateway to networked liquidity"
+                                    description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
+                                    tags={[{ label: 'Relayer' }]}
+                                />
+                                <Resource
+                                    heading="0x Mesh - your gateway to networked liquidity"
+                                    description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
+                                    tags={[{ label: 'Relayer' }]}
+                                />
+                                <Resource
+                                    heading="0x Mesh - your gateway to networked liquidity"
+                                    description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
+                                    tags={[{ label: 'Relayer' }]}
+                                />
+                                <Resource
+                                    heading="0x Mesh - your gateway to networked liquidity"
+                                    description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
+                                    tags={[{ label: 'Relayer' }]}
+                                />
+                                <Resource
+                                    heading="0x Mesh - your gateway to networked liquidity"
+                                    description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
+                                    tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
+                                />
                             </div>
                         </article>
                     </Columns>
@@ -98,7 +118,7 @@ Columns.defaultProps = {
 
 const Separator = styled.hr`
     border-width: 0 0 1px;
-    border-color: #E4E4E4;
+    border-color: #e4e4e4;
     height: 0;
     margin-top: 60px;
     margin-bottom: 60px;
@@ -112,5 +132,4 @@ const LargeHeading = styled(Heading).attrs({
 
 const LargeIntro = styled(Paragraph).attrs({
     size: 'medium',
-})`
-`;
+})``;

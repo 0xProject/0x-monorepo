@@ -10,11 +10,9 @@ import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 
-export interface FiltersProps {
-}
+export interface FiltersProps {}
 
-export interface FiltersState {
-}
+export interface FiltersState {}
 
 interface Group {
     heading: string;
@@ -23,8 +21,8 @@ interface Group {
 }
 
 interface FilterProps {
-value: string;
-label: string;
+    value: string;
+    label: string;
 }
 
 const groups: Group[] = [
@@ -34,21 +32,21 @@ const groups: Group[] = [
         filters: [
             {
                 value: 'mesh',
-                label: 'Mesh'
+                label: 'Mesh',
             },
             {
                 value: 'testing',
-                label: 'Testing'
+                label: 'Testing',
             },
             {
                 value: 'mesh',
-                label: 'Mesh'
+                label: 'Mesh',
             },
             {
                 value: 'testing',
-                label: 'Testing'
+                label: 'Testing',
             },
-        ]
+        ],
     },
     {
         heading: 'Level',
@@ -56,25 +54,23 @@ const groups: Group[] = [
         filters: [
             {
                 value: 'beginner',
-                label: 'Beginner'
+                label: 'Beginner',
             },
             {
                 value: 'intermediate',
-                label: 'Intermediate'
+                label: 'Intermediate',
             },
             {
                 value: 'advanced',
-                label: 'Advanced'
+                label: 'Advanced',
             },
-        ]
+        ],
     },
-]
+];
 
 export class Filters extends React.Component<FiltersProps, FiltersState> {
-    public static defaultProps = {
-    };
-    public state: FiltersState = {
-    };
+    public static defaultProps = {};
+    public state: FiltersState = {};
     public render(): React.ReactNode {
         return (
             <Wrapper>
@@ -82,8 +78,8 @@ export class Filters extends React.Component<FiltersProps, FiltersState> {
                     <GroupWrapper key={`filter-group-${index}`}>
                         <GroupHeading asElement="h3">{heading}</GroupHeading>
                         {filters.map(({ value, label }: FilterProps, index) => (
-                        <Filter key={`filter-${name}-${index}`} name={name} value={value} label={label} />
-                ))}
+                            <Filter key={`filter-${name}-${index}`} name={name} value={value} label={label} />
+                        ))}
                     </GroupWrapper>
                 ))}
             </Wrapper>
@@ -104,7 +100,7 @@ const GroupWrapper = styled.div`
 `;
 
 const GroupHeading = styled(Heading)`
-color: ${colors.textDarkPrimary};
+    color: ${colors.textDarkPrimary};
     font-size: 1rem !important;
     font-weight: 400 !important;
     margin-bottom: 1em !important;

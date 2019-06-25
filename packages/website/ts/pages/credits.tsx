@@ -115,5 +115,4 @@ export class Credits extends React.Component<CreditsProps> {
             Apply Now
         </Button>
     );
-
 }

@@ -9,17 +9,14 @@ export interface Props {
 
 export const Table: React.FunctionComponent<Props> = (props: Props) => (
     <>
-        <Wrapper>
-            {props.children}
-        </Wrapper>
+        <Wrapper>{props.children}</Wrapper>
     </>
 );
 
-Table.defaultProps = {
-};
+Table.defaultProps = {};
 
 const Wrapper = styled.table`
-    border: 1px solid #CFCFCF;
+    border: 1px solid #cfcfcf;
     margin-bottom: 1.875rem;
     width: 100%;
 
@@ -27,13 +24,13 @@ const Wrapper = styled.table`
         font-size: 0.888888889rem;
         font-weight: 400;
         padding: 14px 20px 13px;
-        border-bottom: 1px solid #CFCFCF;
+        border-bottom: 1px solid #cfcfcf;
         text-align: left;
     }
 
     td {
         padding: 14px 20px 13px;
-        border-bottom: 1px solid #CFCFCF;
+        border-bottom: 1px solid #cfcfcf;
         font-size: 0.777777778rem;
         opacity: 0.76;
         line-height: 1.428571429;
@@ -41,7 +38,7 @@ const Wrapper = styled.table`
 
     td + td,
     th + th {
-        border-left: 1px solid #CFCFCF;
+        border-left: 1px solid #cfcfcf;
     }
 
     tr {

@@ -30,11 +30,15 @@ export const NewsletterSignup: React.FunctionComponent<NewsletterSignupProps> = 
             <Paragraph marginBottom="25px">{props.description}</Paragraph>
             <InputWrapper>
                 <Label htmlFor="emailSignup">Email Address</Label>
-                <Input id="emailSignup" type="email" placeholder="Email Address"/>
+                <Input id="emailSignup" type="email" placeholder="Email Address" />
                 <Submit>
-                <svg width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path opacity=".5" d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z" fill="#5C5C5C"/>
-    </svg>
+                    <svg width="22" height="17" viewBox="0 0 22 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            opacity=".5"
+                            d="M13.066 0l-1.068 1.147 6.232 6.557H0v1.592h18.23l-6.232 6.557L13.066 17l8.08-8.5-8.08-8.5z"
+                            fill="#5C5C5C"
+                        />
+                    </svg>
                 </Submit>
             </InputWrapper>
         </Wrapper>
