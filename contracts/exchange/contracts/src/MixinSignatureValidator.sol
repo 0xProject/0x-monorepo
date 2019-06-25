@@ -28,17 +28,17 @@ import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
 import "./interfaces/ISignatureValidator.sol";
 import "./MixinExchangeRichErrors.sol";
-import "./MixinCommon.sol";
+import "./MixinTransactions.sol";
 
 
 contract MixinSignatureValidator is
-    ISignatureValidator,
+    MixinExchangeRichErrors,
+    ReentrancyGuard,
+    LibEIP1271,
     LibOrder,
     LibZeroExTransaction,
-    LibEIP1271,
-    ReentrancyGuard,
-    MixinCommon,
-    MixinExchangeRichErrors
+    ISignatureValidator,
+    MixinTransactions
 {
     using LibBytes for bytes;
 

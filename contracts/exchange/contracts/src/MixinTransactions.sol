@@ -21,15 +21,15 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "./interfaces/ITransactions.sol";
+import "./interfaces/ISignatureValidator.sol";
 import "./MixinExchangeRichErrors.sol";
-import "./MixinSignatureValidator.sol";
 
 
 contract MixinTransactions is
-    ITransactions,
-    LibZeroExTransaction,
     MixinExchangeRichErrors,
-    MixinSignatureValidator
+    LibZeroExTransaction,
+    ISignatureValidator,
+    ITransactions
 {
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.

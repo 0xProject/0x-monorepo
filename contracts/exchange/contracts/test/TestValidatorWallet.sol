@@ -81,7 +81,7 @@ contract TestValidatorWallet is
     /// @dev The data type of a hash.
     mapping (bytes32 => DataType) internal _hashDataTypes;
     /// @dev keccak256 of the expected signature data for a hash.
-    mapping (bytes32 => DataType) internal _hashSignatureHashes;
+    mapping (bytes32 => bytes32) internal _hashSignatureHashes;
 
     constructor(address exchange) public {
         _exchange = ISimplifiedExchange(exchange);
