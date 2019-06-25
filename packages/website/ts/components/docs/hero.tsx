@@ -44,7 +44,7 @@ const Wrapper = styled.div<Props>`
     padding-bottom: 80px;
     margin-bottom: 60px;
     min-height: 15rem;
-    min-height: 21.875rem;
+    min-height: ${props => props.isHome ? '21.875rem' : '13.222rem'};
     display: flex;
     flex-direction: column;
     justify-content: center;
