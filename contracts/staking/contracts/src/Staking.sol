@@ -18,27 +18,28 @@
 
 pragma solidity ^0.5.9;
 
-import "./wrappers/MixinStakeWrapper.sol";
-import "./wrappers/MixinStakeBalancesWrapper.sol";
-import "./wrappers/MixinPoolsWrapper.sol";
-import "./wrappers/MixinEpochWrapper.sol";
-import "./wrappers/MixinRewardsWrapper.sol";
-import "./wrappers/MixinFeesWrapper.sol";
-import "./wrappers/MixinExchangeWrapper.sol";
-import "./wrappers/MixinZrxVaultWrapper.sol";
-import "./wrappers/MixinRewardVaultWrapper.sol";
+
+import "./core/MixinExchange.sol";
+import "./core/MixinZrxVault.sol";
+import "./core/MixinRewardVault.sol";
+import "./core/MixinEpoch.sol";
+import "./core/MixinStakeBalances.sol";
+import "./core/MixinStake.sol";
+import "./core/MixinPools.sol";
+import "./core/MixinFees.sol";
+import "./core/MixinRewards.sol";
 
 
 contract Staking is
-    MixinExchangeWrapper,
-    MixinZrxVaultWrapper,
-    MixinRewardVaultWrapper,
-    MixinEpochWrapper,
-    MixinRewardsWrapper,
-    MixinStakeBalancesWrapper,
-    MixinStakeWrapper,
-    MixinPoolsWrapper,
-    MixinFeesWrapper
+    MixinEpoch,
+    MixinExchange,
+    MixinZrxVault,
+    MixinRewardVault,
+    MixinStakeBalances,
+    MixinStake,
+    MixinPools,
+    MixinRewards,
+    MixinFees
 {
 
     // this contract can receive ETH

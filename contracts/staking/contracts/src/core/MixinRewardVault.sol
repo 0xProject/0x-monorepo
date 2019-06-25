@@ -26,18 +26,43 @@ contract MixinRewardVault is
     MixinStorage
 {
 
-    function _setRewardVault(address payable _rewardVault)
-        internal
+    function setRewardVault(address payable _rewardVault)
+        external
+        // onlyOwner
     {
         rewardVault = IRewardVault(_rewardVault);
     }
 
-    function _getRewardVault()
-        internal
+    function getRewardVault()
+        public
         view
         returns (address)
     {
         return address(rewardVault);
+    }
+
+    function getBalanceInRewardVault(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return rewardVault.balanceOf(poolId);
+    }
+
+    function getBalanceOfOperatorInRewardVault(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return rewardVault.balanceOfOperator(poolId);
+    }
+
+    function getBalanceOfPoolInRewardVault(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return rewardVault.balanceOfPool(poolId);
     }
 
     function _createPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
@@ -47,30 +72,6 @@ contract MixinRewardVault is
             poolId,
             operatorShare
         );
-    }
-
-     function _balanceInRewardVault(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOf(poolId);
-    }
-
-    function _balanceOfOperatorInRewardVault(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfOperator(poolId);
-    }
-
-    function _balanceOfPoolInRewardVault(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return rewardVault.balanceOfPool(poolId);
     }
 
     function _withdrawFromPoolInRewardVault(bytes32 poolId, uint256 amount)

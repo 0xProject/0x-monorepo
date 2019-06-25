@@ -23,10 +23,74 @@ import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
 
 contract MixinEpoch is
-    IStructs,
     MixinConstants,
     MixinStorage
 {
+
+    /// @dev returns the current epoch in seconds
+    function getEpochPeriodInSeconds()
+        public
+        view
+        returns (uint64)
+    {
+        return EPOCH_PERIOD_IN_SECONDS;
+    }
+
+    function getTimelockPeriodInEpochs()
+        public
+        view
+        returns (uint64)
+    {
+        return TIMELOCK_PERIOD_IN_EPOCHS;
+    }
+
+    function getCurrentEpochStartTimeInSeconds()
+        public
+        view
+        returns (uint64)
+    {
+        return currentEpochStartTimeInSeconds;
+    }
+
+    function getCurrentTimelockPeriodStartEpoch()
+        public
+        view
+        returns (uint64)
+    {
+        return currentTimelockPeriodStartEpoch;
+    }
+
+    function getCurrentEpochEndTimeInSeconds()
+        public
+        view
+        returns (uint64)
+    {
+        return getCurrentEpochStartTimeInSeconds() + getEpochPeriodInSeconds();
+    }
+
+    function getCurrentTimelockPeriodEndEpoch()
+        public
+        view
+        returns (uint64)
+    {
+        return getCurrentTimelockPeriodStartEpoch() + getTimelockPeriodInEpochs();
+    }
+
+    function getCurrentEpoch()
+        public
+        view
+        returns (uint64)
+    {
+        return currentEpoch;
+    }
+
+    function getCurrentTimelockPeriod()
+        public
+        view
+        returns (uint64)
+    {
+        return currentTimelockPeriod;
+    }
 
     function _goToNextEpoch()
         internal
@@ -40,7 +104,7 @@ contract MixinEpoch is
 
         // validate that we can increment the current epoch
         require(
-            _getCurrentEpochEndTimeInSeconds() <= currentBlockTimestamp,
+            getCurrentEpochEndTimeInSeconds() <= currentBlockTimestamp,
             "BLOCK_TIMESTAMP_TOO_LOW"
         );
 
@@ -50,73 +114,9 @@ contract MixinEpoch is
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
 
         // increment timelock period, if needed
-        if (_getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
+        if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
             currentTimelockPeriod += 1;
             currentTimelockPeriodStartEpoch = currentEpoch;
         }
-    }
-
-    function _getEpochPeriodInSeconds()
-        internal
-        view
-        returns (uint64)
-    {
-        return EPOCH_PERIOD_IN_SECONDS;
-    }
-
-    function _getTimelockPeriodInEpochs()
-        internal
-        view
-        returns (uint64)
-    {
-        return TIMELOCK_PERIOD_IN_EPOCHS;
-    }
-
-    function _getCurrentEpochStartTimeInSeconds()
-        internal
-        view
-        returns (uint64)
-    {
-        return currentEpochStartTimeInSeconds;
-    }
-
-    function _getCurrentTimelockPeriodStartEpoch()
-        internal
-        view
-        returns (uint64)
-    {
-        return currentTimelockPeriodStartEpoch;
-    }
-
-    function _getCurrentEpochEndTimeInSeconds()
-        internal
-        view
-        returns (uint64)
-    {
-        return _getCurrentEpochStartTimeInSeconds() + _getEpochPeriodInSeconds();
-    }
-
-    function _getCurrentTimelockPeriodEndEpoch()
-        internal
-        view
-        returns (uint64)
-    {
-        return _getCurrentTimelockPeriodStartEpoch() + _getTimelockPeriodInEpochs();
-    }
-
-    function _getCurrentEpoch()
-        internal
-        view
-        returns (uint64)
-    {
-        return currentEpoch;
-    }
-
-    function _getCurrentTimelockPeriod()
-        internal
-        view
-        returns (uint64)
-    {
-        return currentTimelockPeriod;
     }
 }

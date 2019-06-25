@@ -25,63 +25,35 @@ import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinRewardVault.sol";
+import "./MixinPools.sol";
 
 contract MixinRewards is
+    // libraries
     SafeMath,
     LibRewards,
-    IStakingEvents,
+    // immutables
     MixinConstants,
     MixinStorage,
+    // standalones
     MixinRewardVault,
-    MixinStakeBalances
+    // logic
+    MixinStakeBalances,
+    MixinPools
 {
-    // Pinciple - design any Mixin such that internal members are callable without messing up internal state
-    //            any function that could mess up internal state should be private.
 
-    // @TODO -- add a MixinZrxVault and a MixinRewardVault that interact with the vaults.
-
-    function _computeRewardBalance(bytes32 poolId, address owner)
-        internal
-        view
-        returns (uint256)
-    {
-        uint256 poolBalance = _balanceOfPoolInRewardVault(poolId);
-        return _computePayoutDenominatedInRealAsset(
-            delegatedStakeToPoolByOwner[owner][poolId],
-            delegatedStakeByPoolId[poolId],
-            shadowRewardsInPoolByOwner[owner][poolId],
-            shadowRewardsByPoolId[poolId],
-            poolBalance
-        );
-    }
-
-    function _getShadowBalanceByPoolId(bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return shadowRewardsByPoolId[poolId];
-    }
-
-    function _getShadowBalanceInPoolByOwner(address owner, bytes32 poolId)
-        internal
-        view
-        returns (uint256)
-    {
-        return shadowRewardsInPoolByOwner[owner][poolId];
-    }
-
-    function _withdrawOperatorReward(bytes32 poolId, uint256 amount)
-        internal
+    function withdrawOperatorReward(bytes32 poolId, uint256 amount)
+        external
+        onlyPoolOperator(poolId)
     {
         _withdrawFromOperatorInRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
     }
 
-    function _withdrawReward(bytes32 poolId, address payable owner, uint256 amount)
-        internal
+    function withdrawReward(bytes32 poolId, uint256 amount)
+        external
     {
-        uint256 ownerBalance = _computeRewardBalance(poolId, owner);
+        address payable owner = msg.sender;
+        uint256 ownerBalance = computeRewardBalance(poolId, owner);
         require(
             amount <= ownerBalance,
             "INVALID_AMOUNT"
@@ -94,22 +66,24 @@ contract MixinRewards is
         owner.transfer(amount);
     }
 
-    function _withdrawTotalOperatorReward(bytes32 poolId)
-        internal
+    function withdrawTotalOperatorReward(bytes32 poolId)
+        external
+        onlyPoolOperator(poolId)
         returns (uint256)
     {
-        uint256 amount = _balanceOfOperatorInRewardVault(poolId);
+        uint256 amount = getBalanceOfOperatorInRewardVault(poolId);
         _withdrawFromOperatorInRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
 
         return amount;
     }
 
-    function _withdrawTotalReward(bytes32 poolId, address payable owner)
-        internal
+    function withdrawTotalReward(bytes32 poolId)
+        external
         returns (uint256)
     {
-        uint256 amount = _computeRewardBalance(poolId, owner);
+        address payable owner = msg.sender;
+        uint256 amount = computeRewardBalance(poolId, owner);
 
         shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
         shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
@@ -118,5 +92,60 @@ contract MixinRewards is
         owner.transfer(amount);
 
         return amount;
+    }
+
+    function computeRewardBalance(bytes32 poolId, address owner)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
+        return _computePayoutDenominatedInRealAsset(
+            delegatedStakeToPoolByOwner[owner][poolId],
+            delegatedStakeByPoolId[poolId],
+            shadowRewardsInPoolByOwner[owner][poolId],
+            shadowRewardsByPoolId[poolId],
+            poolBalance
+        );
+    }
+
+    function getShadowBalanceByPoolId(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return shadowRewardsByPoolId[poolId];
+    }
+
+    function getShadowBalanceInPoolByOwner(address owner, bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return shadowRewardsInPoolByOwner[owner][poolId];
+    }
+
+    function getRewardBalance(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceInRewardVault(poolId);
+    }
+
+    function getRewardBalanceOfOperator(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfOperatorInRewardVault(poolId);
+    }
+
+    function getRewardBalanceOfPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfPoolInRewardVault(poolId);
     }
 }
