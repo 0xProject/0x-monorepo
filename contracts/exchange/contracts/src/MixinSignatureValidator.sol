@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -36,13 +37,11 @@ contract MixinSignatureValidator is
     MixinExchangeRichErrors,
     ReentrancyGuard,
     LibOrder,
+    LibEIP1271,
     ISignatureValidator,
     MixinTransactions
 {
     using LibBytes for bytes;
-
-    // Magic bytes returned by EIP1271 wallets on success.
-    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
 
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
@@ -385,8 +384,8 @@ contract MixinSignatureValidator is
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length == 32) {
-            return bytes4(returnData.readBytes32(0)) == EIP1271_MAGIC_VALUE;
+        if (didSucceed && returnData.length <= 32) {
+            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
         _rrevert(SignatureWalletError(
@@ -544,8 +543,8 @@ contract MixinSignatureValidator is
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
         // Return data should be the `EIP1271_MAGIC_VALUE`.
-        if (didSucceed && returnData.length == 32) {
-            return bytes4(returnData.readBytes32(0)) == EIP1271_MAGIC_VALUE;
+        if (didSucceed && returnData.length <= 32) {
+            return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
         _rrevert(SignatureOrderWalletError(

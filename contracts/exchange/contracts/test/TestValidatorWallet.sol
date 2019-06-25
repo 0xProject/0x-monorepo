@@ -22,6 +22,7 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 
 
 interface ISimplifiedExchange {
@@ -33,13 +34,13 @@ interface ISimplifiedExchange {
 
 
 // solhint-disable no-unused-vars
-contract TestValidatorWallet {
+contract TestValidatorWallet is
+    LibEIP1271
+{
     using LibBytes for bytes;
 
     // Revert reason for `Revert` `ValidatorAction`.
     string constant public REVERT_REASON = "you shall not pass";
-    // Magic bytes returned by EIP1271 wallets on success.
-    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
 
     enum ValidatorAction {
         // Return false (default)
@@ -60,9 +61,9 @@ contract TestValidatorWallet {
     /// @dev Internal state to modify.
     uint256 internal _state = 1;
     /// @dev What action to execute when a hash is validated .
-    mapping (bytes32=>ValidatorAction) internal _hashActions;
+    mapping (bytes32 => ValidatorAction) internal _hashActions;
     /// @dev Allowed signers for hash signature types.
-    mapping (bytes32=>address) internal _validSignerForHash;
+    mapping (bytes32 => address) internal _validSignerForHash;
 
     constructor(address exchange) public {
         _exchange = ISimplifiedExchange(exchange);
@@ -281,16 +282,7 @@ contract TestValidatorWallet {
         returns (LibOrder.Order memory order)
     {
         require(data.length > 32, "INVALID_EIP1271_ORDER_DATA_LENGTH");
-        assembly {
-            // Skip past the length to find the first parameter.
-            let argsStart := add(data, 32)
-            order := add(argsStart, mload(argsStart))
-            // Destructively point the asset data fields to absolute locations.
-            for {let o := 0x140} lt(o, 0x1C0) {o := add(o, 0x20)} {
-                let arg := add(order, o)
-                mstore(arg, add(argsStart, add(mload(arg), 0x20)))
-            }
-        }
+        return abi.decode(data, (LibOrder.Order));
     }
 
 }
