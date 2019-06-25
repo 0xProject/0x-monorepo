@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 
-contract IEIP1271Wallet {
-
-    // Magic bytes returned by EIP1271 wallets on success.
-    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
-
+contract IEIP1271Wallet is
+    LibEIP1271
+{
     /// @dev Verifies that a signature is valid.
     /// @param data Arbitrary data.
     /// @param signature Signature of `data`.
