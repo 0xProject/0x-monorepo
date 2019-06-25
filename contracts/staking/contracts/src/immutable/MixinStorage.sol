@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IVault.sol";
+import "../interfaces/IZrxVault.sol";
 import "../interfaces/IRewardVault.sol";
 import "./MixinConstants.sol";
 import "../interfaces/IStructs.sol";
@@ -100,17 +100,8 @@ contract MixinStorage is
     // registrered 0x exchanges
     mapping (address => bool) validExchanges;
 
-
-    /*
-    // mapping from Owner to Pool Id to Amount Delegated
-    mapping (address => mapping (bytes32 => uint256)) shadowDelegatedStakeToPoolByOwner;
-
-    // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) shadowDelegatedStakeByPoolId;
-    */
-
     // ZRX vault
-    IVault zrxVault;
+    IZrxVault zrxVault;
 
     // Rebate Vault
     IRewardVault rewardVault;
