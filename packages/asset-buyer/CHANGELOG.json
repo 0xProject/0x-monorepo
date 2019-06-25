@@ -1,5 +1,14 @@
 [
     {
+        "version": "7.0.0",
+        "changes": [
+            {
+                "note": "Add support for ERC<>ERC market buy support for asset-buyer and renamed to swap-quoter",
+                "pr": 1845
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "6.1.5",
         "changes": [
