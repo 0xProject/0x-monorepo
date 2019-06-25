@@ -18,7 +18,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
@@ -26,8 +25,7 @@ import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./MixinAssetProxyDispatcher.sol";
-import "./MixinExchangeRichErrors.sol";
-import "./MixinCommon.sol";
+import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
@@ -35,10 +33,8 @@ contract MixinExchangeCore is
     LibExchangeSelectors,
     LibMath,
     LibFillResults,
-    LibOrder,
-    ReentrancyGuard,
-    MixinCommon,
-    MixinAssetProxyDispatcher
+    MixinAssetProxyDispatcher,
+    MixinSignatureValidator
 {
     using LibBytes for bytes;
 

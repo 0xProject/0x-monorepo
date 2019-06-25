@@ -112,4 +112,26 @@ contract ISignatureValidator {
         public
         pure
         returns (bool needsRegularValidation);
+    
+    // Defined in MixinSignatureValidator
+    function _isValidOrderWithHashSignature(
+        LibOrder.Order memory order,
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid);
+
+    // Defined in MixinSignatureValidator
+    function _isValidTransactionWithHashSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes32 transactionHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid);
 }

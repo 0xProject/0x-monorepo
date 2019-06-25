@@ -26,7 +26,7 @@ import "./MixinTransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
-// MixinAssetProxyDispatcher, MixinExchangeCore, MixinExchangeRichErrors, 
+// MixinAssetProxyDispatcher, MixinExchangeCore, MixinExchangeRichErrors,
 // and MixinTransactions are all inherited via the other Mixins that are
 // used.
 contract Exchange is
