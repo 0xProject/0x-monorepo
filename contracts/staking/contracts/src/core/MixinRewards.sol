@@ -18,9 +18,9 @@
 
 pragma solidity ^0.5.5;
 
+import "../libs/LibSafeMath.sol";
+import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
-import "../libs/LibRewards.sol";
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
@@ -28,9 +28,6 @@ import "./MixinRewardVault.sol";
 import "./MixinPools.sol";
 
 contract MixinRewards is
-    // libraries
-    SafeMath,
-    LibRewards,
     // immutables
     MixinConstants,
     MixinStorage,
@@ -40,6 +37,8 @@ contract MixinRewards is
     MixinStakeBalances,
     MixinPools
 {
+
+    using LibSafeMath for uint256;
 
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
@@ -59,8 +58,8 @@ contract MixinRewards is
             "INVALID_AMOUNT"
         );
 
-        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
-        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
+        shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
+        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
         _withdrawFromPoolInRewardVault(poolId, amount);
         owner.transfer(amount);
@@ -85,8 +84,8 @@ contract MixinRewards is
         address payable owner = msg.sender;
         uint256 amount = computeRewardBalance(poolId, owner);
 
-        shadowRewardsInPoolByOwner[owner][poolId] = _safeAdd(shadowRewardsInPoolByOwner[owner][poolId], amount);
-        shadowRewardsByPoolId[poolId] = _safeAdd(shadowRewardsByPoolId[poolId], amount);
+        shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
+        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
         _withdrawFromPoolInRewardVault(poolId, amount);
         owner.transfer(amount);
@@ -100,7 +99,7 @@ contract MixinRewards is
         returns (uint256)
     {
         uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
-        return _computePayoutDenominatedInRealAsset(
+        return LibRewardMath._computePayoutDenominatedInRealAsset(
             delegatedStakeToPoolByOwner[owner][poolId],
             delegatedStakeByPoolId[poolId],
             shadowRewardsInPoolByOwner[owner][poolId],
