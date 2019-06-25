@@ -20,16 +20,16 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "./interfaces/ISignatureValidator.sol";
 import "./interfaces/ITransactions.sol";
 import "./MixinExchangeRichErrors.sol";
+import "./MixinSignatureValidator.sol";
 
 
 contract MixinTransactions is
-    MixinExchangeRichErrors,
+    ITransactions,
     LibZeroExTransaction,
-    ISignatureValidator,
-    ITransactions
+    MixinExchangeRichErrors,
+    MixinSignatureValidator
 {
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
@@ -113,7 +113,8 @@ contract MixinTransactions is
         address signerAddress = transaction.signerAddress;
         if (signerAddress != msg.sender) {
             // Validate signature
-            if (!isValidHashSignature(
+            if (!_isValidTransactionWithHashSignature(
+                    transaction,
                     transactionHash,
                     signerAddress,
                     signature)) {
