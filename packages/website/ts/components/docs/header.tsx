@@ -46,13 +46,13 @@ const navItems: NavItemProps[] = [
         text: 'API Explorer',
     },
     {
-        id: 'tutorials',
-        url: WebsitePaths.AboutMission,
-        text: 'Tutorials',
+        id: 'guides',
+        url: '/docs/guides',
+        text: 'Guides',
     },
     {
         id: 'tools',
-        url: WebsitePaths.AboutMission,
+        url: '/docs/tools',
         text: 'Tools',
     },
 ];

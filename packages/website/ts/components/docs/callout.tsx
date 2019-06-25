@@ -64,7 +64,7 @@ Callout.defaultProps = {
     type: 'standard',
 };
 
-const Wrapper = styled.a<WrapperProps>`
+const Wrapper = styled.div<WrapperProps>`
 background-color: ${props => ThemeSettings[props.type].bgColor};
     color: ${colors.textDarkPrimary};
     padding: 1rem 1rem 1rem 1rem;

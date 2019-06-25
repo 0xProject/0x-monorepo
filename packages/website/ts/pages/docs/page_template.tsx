@@ -5,10 +5,15 @@ import styled, { keyframes } from 'styled-components';
 // import { Tabs } from 'react-tabs';
 import { Callout } from 'ts/components/docs/callout';
 import { Code } from 'ts/components/docs/code';
+import { Filters } from 'ts/components/docs/sidebar/filters';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
+import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
+import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
 import { NewsletterSignup } from 'ts/components/docs/newsletter_signup';
+import { Note } from 'ts/components/docs/note';
+import { Resource } from 'ts/components/docs/resource/resource';
 import { SearchInput } from 'ts/components/docs/search_input';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
@@ -24,7 +29,6 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { Resource } from 'ts/components/docs/resource/resource';
 
 interface Props {
     location: Location;
@@ -63,11 +67,11 @@ export class DocsPageTemplate extends React.Component<Props> {
                 <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                     <Columns>
                         <aside>
-                            <Paragraph>Sidebar</Paragraph>
+                            <Filters />
                         </aside>
                         <article>
                             <LargeHeading>Large Heading</LargeHeading>
-                            <LargeIntro>Large Heading</LargeIntro>
+                            <LargeIntro>Larger introduction text</LargeIntro>
                             <Heading asElement="h2" size="default">Notifications</Heading>
                             <Callout text="This is' a pretty standard information callout" />
                             <Callout text="This is an indication that something isn’t quite right" type="alert" />
@@ -97,20 +101,28 @@ export class DocsPageTemplate extends React.Component<Props> {
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>Step1</td>
-                                        <td>Step2</td>
+                                        <td>makerAddress</td>
+                                        <td>Address that created the order. The maker is one of the two parties that will be involved in the trade if the order gets filled.</td>
                                     </tr>
                                     <tr>
-                                        <td>Step1</td>
-                                        <td>Step2</td>
+                                        <td>takerAddress</td>
+                                        <td>Address that is allowed to fill the order. If set to 0, anyone is allowed to fill the order. This field allows makers to decide who can fill an order, rendering it useless to eavesdroppers or outside parties.</td>
                                     </tr>
                                     <tr>
-                                        <td>Step1</td>
-                                        <td>Step2</td>
+                                        <td>feeRecipientAddress</td>
+                                        <td>The address that will receive the fees stipulated by the order. This is typically used to incentivize off-chain order relay.</td>
                                     </tr>
                                     <tr>
-                                        <td>Step1</td>
-                                        <td>Step2</td>
+                                        <td>senderAddress</td>
+                                        <td>Is an advanced feature that can be defaulted to the 0 address. It allows the maker to enforce that the order must flow through some additional logic residing in an additional Ethereum smart contract before it can be filled (e.g a KYC whitelist contract) -- more on "extension contracts" later.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>makerAssetAmount</td>
+                                        <td>Amount of the maker'sAsset being offered by the maker. Must be greater than 0.</td>
+                                    </tr>
+                                    <tr>
+                                        <td>makerFee</td>
+                                        <td>The fee to be paid by the order maker to the <code>feeRecipientAddress</code> in the event of an order fill. Partial fills result in partial fees.</td>
                                     </tr>
                                 </tbody>
                             </Table>
@@ -170,6 +182,12 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                             <Paragraph>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat velit in nisl varius malesuada. Morbi at porttitor enim. Donec vel tristique dolor, quis convallis sapien. Nam et massa tempus, dignissim leo vitae, ultricies libero. Vivamus eu enim tellus. Phasellus eu mattis elit. Proin ut eleifend urna, sed tincidunt nunc. Sed eu dapibus metus, in congue ipsum. Duis volutpat sem et sem faucibus blandit. Nullam ultricies ante eu elit auctor, id mattis nunc euismod. Curabitur arcu enim, cursus ac pellentesque quis, accumsan sit amet turpis. Praesent dignissim mi a maximus euismod
                             </Paragraph>
+                            <div>
+                            <Note heading="Information" description="This is a side-info callout used to explain things a little more when needed." />
+                            <Paragraph>
+                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat velit in nisl varius malesuada. Morbi at porttitor enim. Donec vel tristique dolor, quis convallis sapien. Nam et massa tempus, dignissim leo vitae, ultricies libero. Vivamus eu enim tellus. Phasellus eu mattis elit. Proin ut eleifend urna, sed tincidunt nunc. Sed eu dapibus metus, in congue ipsum. Duis volutpat sem et sem faucibus blandit. Nullam ultricies ante eu elit auctor, id mattis nunc euismod. Curabitur arcu enim, cursus ac pellentesque quis, accumsan sit amet turpis. Praesent dignissim mi a maximus euismod
+                            </Paragraph>
+                            </div>
                             <UnorderedList>
                                 <li>List items</li>
                                 <li>List items</li>
@@ -182,7 +200,18 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                             <StepLinks links={usefulLinks} />
                             <HelpCallout />
                             <NewsletterSignup />
-                            <Resource heading="RadarRelay SDK" description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs" tags={[ { label: "Relayer" } ]} />
+                            <HelpfulCta />
+                            <div>
+                                <Heading asElement="h2" size="default">Resources</Heading>
+                                <Resource heading="RadarRelay SDK" description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs" tags={[ { label: 'Relayer' } ]} />
+                                <Resource heading="RadarRelay SDK" description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs" tags={[ { label: 'Community Maintained', isInverted: true }, { label: 'Relayer' } ]} />
+                            </div>
+                            <div>
+                                <Heading asElement="h2" size="default">Feature Links</Heading>
+                                <FeatureLink heading="RadarRelay SDK" description="A description could possibly go here but could be tight." icon="flexibleIntegration" url="#" />
+                                <FeatureLink heading="RadarRelay SDK" description="A description could possibly go here but could be tight." icon="flexibleIntegration" url="#" />
+                                <FeatureLink heading="RadarRelay SDK" description="A description could possibly go here but could be tight." icon="flexibleIntegration" url="#" />
+                            </div>
                         </article>
                     </Columns>
                 </Section>
