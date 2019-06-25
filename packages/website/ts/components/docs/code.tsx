@@ -168,7 +168,12 @@ export class Code extends React.Component<CodeProps, CodeState> {
                         <StyledButton>{copyButtonText}</StyledButton>
                     </CopyToClipboard>
                 </ButtonWrapper>
-                <SyntaxHighlighter language={this.props.language} style={customStyle} showLineNumbers={false} PreTag={CustomPre}>
+                <SyntaxHighlighter
+                    language={this.props.language}
+                    style={customStyle}
+                    showLineNumbers={false}
+                    PreTag={CustomPre}
+                >
                     {this.props.children}
                 </SyntaxHighlighter>
             </Wrapper>
@@ -181,8 +186,8 @@ export class Code extends React.Component<CodeProps, CodeState> {
 
 const StyledButton = styled(Button)`
     border-radius: 4px;
-    background: #FFFFFF;
-    border: 1px solid #EAEAEA;
+    background: #ffffff;
+    border: 1px solid #eaeaea;
     color: ${colors.brandDark};
     font-size: 15px;
     font-weight: 300;

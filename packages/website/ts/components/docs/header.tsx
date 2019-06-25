@@ -113,11 +113,7 @@ const NavItem = (props: { link: NavItemProps; key: string }) => {
         ) : (
             <StyledNavLink to={link.url}>{link.text}</StyledNavLink>
         );
-    return (
-        <LinkWrap>
-            {linkElement}
-        </LinkWrap>
-    );
+    return <LinkWrap>{linkElement}</LinkWrap>;
 };
 
 const DocsLogo = () => {

@@ -12,7 +12,9 @@ export interface LinkProps {
 export const StepLinks: React.FunctionComponent<LinkProps> = (props: LinkProps) => (
     <>
         <Wrapper>
-            {props.links.map((shortcut, index) => <StepLink key={`step-${index}`} {...shortcut} />)}
+            {props.links.map((shortcut, index) => (
+                <StepLink key={`step-${index}`} {...shortcut} />
+            ))}
         </Wrapper>
     </>
 );
@@ -23,6 +25,6 @@ StepLinks.defaultProps = {
 
 const Wrapper = styled.div`
     background-color: ${colors.backgroundLight};
-    border: 1px solid #DBDFDD;
+    border: 1px solid #dbdfdd;
     margin-bottom: 1.875rem;
 `;

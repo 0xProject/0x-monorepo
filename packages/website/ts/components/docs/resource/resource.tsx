@@ -20,13 +20,26 @@ interface TagProps {
     isInverted?: boolean;
 }
 
-export const Resource: React.FunctionComponent<ResourceProps> = ({ heading, description, url, tags }: ResourceProps) => (
+export const Resource: React.FunctionComponent<ResourceProps> = ({
+    heading,
+    description,
+    url,
+    tags,
+}: ResourceProps) => (
     <Wrapper href={url}>
-        <Heading color={colors.brandDark} size="small" marginBottom="8px">{heading}</Heading>
-        <Paragraph size="default" marginBottom="30px">{description}</Paragraph>
+        <Heading color={colors.brandDark} size="small" marginBottom="8px">
+            {heading}
+        </Heading>
+        <Paragraph size="default" marginBottom="30px">
+            {description}
+        </Paragraph>
         <Meta>
             <Tags>
-                {tags.map(({label, isInverted}, index) => <Tag key={`tag-${index}`} isInverted={isInverted}>{label}</Tag>)}
+                {tags.map(({ label, isInverted }, index) => (
+                    <Tag key={`tag-${index}`} isInverted={isInverted}>
+                        {label}
+                    </Tag>
+                ))}
             </Tags>
             <Level difficulty={Difficulty.Beginner} />
         </Meta>
@@ -39,7 +52,7 @@ Resource.defaultProps = {
 };
 
 const Wrapper = styled.a`
-    border: 1px solid #D7E3DB;
+    border: 1px solid #d7e3db;
     padding: 25px 30px;
     margin-bottom: 1.111111111rem;
     display: block;

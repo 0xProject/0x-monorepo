@@ -28,8 +28,12 @@ export const HelpCallout: React.FunctionComponent<HelpCalloutProps> = (props: He
         <Wrapper href={props.url}>
             <Icon color={colors.brandLight} name="help" size={38} margin={[0, 30, 0, 0]} />
             <div>
-                <Heading size="small" marginBottom="8px">{props.heading}</Heading>
-                <Paragraph size="default" marginBottom="0">{props.description}</Paragraph>
+                <Heading size="small" marginBottom="8px">
+                    {props.heading}
+                </Heading>
+                <Paragraph size="default" marginBottom="0">
+                    {props.description}
+                </Paragraph>
             </div>
         </Wrapper>
     </>

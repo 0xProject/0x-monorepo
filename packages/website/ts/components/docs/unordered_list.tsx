@@ -9,14 +9,11 @@ export interface Props {
 
 export const UnorderedList: React.FunctionComponent<Props> = (props: Props) => (
     <>
-        <Wrapper>
-            {props.children}
-        </Wrapper>
+        <Wrapper>{props.children}</Wrapper>
     </>
 );
 
-UnorderedList.defaultProps = {
-};
+UnorderedList.defaultProps = {};
 
 const Wrapper = styled.ul`
     list-style-type: disc;

@@ -25,7 +25,9 @@ export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = (props: Help
             <Text>Was this page helpful</Text>
             <Buttons>
                 <CtaButton color={colors.white}>Yes</CtaButton>
-                <CtaButton isTransparent={true} color={colors.brandLight} borderColor={colors.brandLight}>No</CtaButton>
+                <CtaButton isTransparent={true} color={colors.brandLight} borderColor={colors.brandLight}>
+                    No
+                </CtaButton>
             </Buttons>
         </Wrapper>
     </>
