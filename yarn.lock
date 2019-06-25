@@ -478,6 +478,24 @@
   dependencies:
     "@0x/base-contract" "^4.0.3"
 
+"@0x/asset-buyer@6.1.5", "@0x/asset-buyer@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@0x/asset-buyer/-/asset-buyer-6.1.5.tgz#bf2056ccd9e749034d993c4de259d2f1b572421e"
+  integrity sha512-8e2OTSEacyWnWiYtchKHeQ3mYq912dd8OL46Wekt7DMNYx85R1ExTHaTgoKEQAe4EDsETW41yBPT6DLXwMI/Tw==
+  dependencies:
+    "@0x/assert" "^2.0.10"
+    "@0x/connect" "^5.0.10"
+    "@0x/contract-wrappers" "^9.1.4"
+    "@0x/json-schemas" "^3.0.10"
+    "@0x/order-utils" "^8.1.1"
+    "@0x/subproviders" "^4.1.0"
+    "@0x/types" "^2.2.2"
+    "@0x/typescript-typings" "^4.2.2"
+    "@0x/utils" "^4.3.3"
+    "@0x/web3-wrapper" "^6.0.6"
+    ethereum-types "^2.1.2"
+    lodash "^4.17.11"
+
 "@0x/base-contract@^4.0.1", "@0x/base-contract@^4.0.3":
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/@0x/base-contract/-/base-contract-4.0.3.tgz#ea5e3640824ee096813350e55546d98455a57805"
