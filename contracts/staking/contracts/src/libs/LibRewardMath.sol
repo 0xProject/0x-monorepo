@@ -18,18 +18,12 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "./LibSafeMath.sol";
 
 
-contract LibRewards is SafeMath {
+library LibRewardMath {
 
-    event J (
-uint256 amountDelegatedByOwner,
-        uint256 totalAmountDelegated,
-        uint256 amountOfShadowAssetHeldByOwner,
-        uint256 totalAmountOfShadowAsset,
-        uint256 totalAmountOfRealAsset
-    );
+    using LibSafeMath for uint256;
 
     function _computePayoutDenominatedInRealAsset(
         uint256 amountDelegatedByOwner,
@@ -42,13 +36,9 @@ uint256 amountDelegatedByOwner,
         pure
         returns (uint256)
     {
-        uint256 combinedPayout = _safeDiv(
-            _safeMul(
-                amountDelegatedByOwner,
-                _safeAdd(totalAmountOfShadowAsset, totalAmountOfRealAsset)
-            ),
-            totalAmountDelegated
-        );
+        uint256 combinedPayout = amountDelegatedByOwner
+            ._mul(totalAmountOfShadowAsset._add(totalAmountOfRealAsset))
+            ._div(totalAmountDelegated);
 
         // we round up the amount of shadow assets when computing buy-ins.
         // the result is that sometimes the amount of actual assets in the pool
@@ -75,7 +65,10 @@ uint256 amountDelegatedByOwner,
             uint256 payoutInShadowAsset
         )
     {
-        payoutInShadowAsset = _safeDiv(_safeMul(amountOfShadowAssetHeldByOwner, partialAmountDelegatedByOwner), amountDelegatedByOwner);
+        payoutInShadowAsset = amountOfShadowAssetHeldByOwner
+            ._mul(partialAmountDelegatedByOwner)
+            ._div(amountDelegatedByOwner);
+
         payoutInRealAsset = _computePayoutDenominatedInRealAsset(
             partialAmountDelegatedByOwner,
             totalAmountDelegated,
@@ -99,20 +92,9 @@ uint256 amountDelegatedByOwner,
         if (totalAmountDelegated == 0) {
             return 0;
         }
-        return _safeDiv(
-            _safeAdd( // we round up when computing shadow asset
-                _safeMul(
-                    amountToDelegateByOwner,
-                    _safeAdd(
-                        totalAmountOfShadowAsset,
-                        totalAmountOfRealAsset
-                    )
-                ),
-                _safeSub(totalAmountDelegated, 1)
-            ),
-            totalAmountDelegated
-        );
+        return amountToDelegateByOwner
+            ._mul(totalAmountOfShadowAsset._add(totalAmountOfRealAsset))
+            ._add(totalAmountDelegated._sub(1)) // we round up when computing shadow asset
+            ._div(totalAmountDelegated);
     }
-
-
 }

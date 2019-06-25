@@ -18,8 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
-
 import "../interfaces/IStakingEvents.sol";
 
 import "../immutable/MixinConstants.sol";
@@ -27,8 +25,6 @@ import "../immutable/MixinStorage.sol";
 
 
 contract MixinExchange is
-    // libraries
-    SafeMath,
     // interfaces
     IStakingEvents,
     // immutables
