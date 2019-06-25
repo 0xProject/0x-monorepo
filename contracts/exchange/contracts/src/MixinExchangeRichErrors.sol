@@ -62,21 +62,6 @@ contract MixinExchangeRichErrors is
         );
     }
 
-    function SignatureOrderValidatorNotApprovedError(
-        address signerAddress,
-        address validatorAddress
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            SIGNATURE_ORDER_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR,
-            signerAddress,
-            validatorAddress
-        );
-    }
-
     function SignatureValidatorError(
         bytes32 hash,
         address signerAddress,
@@ -112,46 +97,6 @@ contract MixinExchangeRichErrors is
             SIGNATURE_WALLET_ERROR_SELECTOR,
             hash,
             signerAddress,
-            signature,
-            errorData
-        );
-    }
-
-    function SignatureOrderValidatorError(
-        bytes32 orderHash,
-        address signerAddress,
-        address validatorAddress,
-        bytes memory signature,
-        bytes memory errorData
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR,
-            orderHash,
-            signerAddress,
-            validatorAddress,
-            signature,
-            errorData
-        );
-    }
-
-    function SignatureOrderWalletError(
-        bytes32 orderHash,
-        address wallet,
-        bytes memory signature,
-        bytes memory errorData
-    )
-        internal
-        pure
-        returns (bytes memory)
-    {
-        return abi.encodeWithSelector(
-            SIGNATURE_ORDER_WALLET_ERROR_SELECTOR,
-            orderHash,
-            wallet,
             signature,
             errorData
         );

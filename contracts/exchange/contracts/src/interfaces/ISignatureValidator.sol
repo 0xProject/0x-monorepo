@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract ISignatureValidator {
@@ -33,11 +34,8 @@ contract ISignatureValidator {
         Wallet,                      // 0x04
         Validator,                   // 0x05
         PreSigned,                   // 0x06
-        OrderValidator,              // 0x07
-        OrderWallet,                 // 0x08
-        EIP1271Wallet,               // 0x09
-        EIP1271OrderWallet,          // 0x0A
-        NSignatureTypes              // 0x0B, number of signature types. Always leave at end.
+        EIP1271Wallet,               // 0x07
+        NSignatureTypes              // 0x08, number of signature types. Always leave at end.
     }
 
     event SignatureValidatorApproval(
@@ -71,13 +69,13 @@ contract ISignatureValidator {
     )
         external;
 
-    /// @dev Verifies that a signature for a hash is valid.
-    /// @param hash Message hash that is signed.
-    /// @param signerAddress Address of signer.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidHashSignature(
-        bytes32 hash,
+    /// @dev Verifies that a signature for an order is valid.
+    /// @param order The order.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid true if the signature is valid for the given order and signer.
+    function isValidOrderSignature(
+        LibOrder.Order memory order,
         address signerAddress,
         bytes memory signature
     )
@@ -85,13 +83,13 @@ contract ISignatureValidator {
         view
         returns (bool isValid);
 
-    /// @dev Verifies that a signature for an order is valid.
-    /// @param order The order.
-    /// @param signerAddress Address of signer.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidOrderSignature(
-        LibOrder.Order memory order,
+    /// @dev Verifies that a signature for a transaction is valid.
+    /// @param transaction The transaction.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid true if the signature is valid for the given transaction and signer.
+    function isValidTransactionSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         address signerAddress,
         bytes memory signature
     )

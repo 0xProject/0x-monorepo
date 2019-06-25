@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
@@ -30,6 +31,11 @@ interface ISimplifiedExchange {
         external
         view
         returns (bytes32 orderHash);
+
+    function getTransactionHash(LibZeroExTransaction.ZeroExTransaction calldata transaction)
+        external
+        view
+        returns (bytes32 transactionHash);
 }
 
 
@@ -39,20 +45,30 @@ contract TestValidatorWallet is
 {
     using LibBytes for bytes;
 
-    // Revert reason for `Revert` `ValidatorAction`.
+    /// @dev Revert reason for `Revert` `ValidatorAction`.
     string constant public REVERT_REASON = "you shall not pass";
 
+    enum DataType {
+        // No data type; only expecting a hash (default)
+        None,
+        // An Order
+        Order,
+        // A ZeroExTransaction
+        ZeroExTransaction,
+        NTypes
+    }
+
     enum ValidatorAction {
-        // Return false (default)
+        // Return failure (default)
         Reject,
-        // Return true
+        // Return success
         Accept,
         // Revert
         Revert,
         // Update state
         UpdateState,
-        // Validate signature
-        ValidateSignature,
+        // Ensure the signature hash matches what was prepared
+        MatchSignatureHash,
         NTypes
     }
 
@@ -62,8 +78,10 @@ contract TestValidatorWallet is
     uint256 internal _state = 1;
     /// @dev What action to execute when a hash is validated .
     mapping (bytes32 => ValidatorAction) internal _hashActions;
-    /// @dev Allowed signers for hash signature types.
-    mapping (bytes32 => address) internal _validSignerForHash;
+    /// @dev The data type of a hash.
+    mapping (bytes32 => DataType) internal _hashDataTypes;
+    /// @dev keccak256 of the expected signature data for a hash.
+    mapping (bytes32 => DataType) internal _hashSignatureHashes;
 
     constructor(address exchange) public {
         _exchange = ISimplifiedExchange(exchange);
@@ -83,32 +101,34 @@ contract TestValidatorWallet is
         IERC20Token(token).approve(spender, value);
     }
 
-    /// @dev Set the action to take when validating a hash.
+    /// @dev Prepares this contract to validate a signature.
     /// @param hash The hash.
-    /// @param action action to take.
-    /// @param allowedSigner Signer that must be recovered with
-    ///                      `ValidateSignature` action type and `Wallet` or
-    ///                      `OrderWallet` signature types.
-    function setValidateAction(
+    /// @param dataType The data type associated with the hash.
+    /// @param action Action to take.
+    /// @param signatureHash keccak256 of the expected signature data.
+    function prepare(
         bytes32 hash,
+        DataType dataType,
         ValidatorAction action,
-        address allowedSigner
+        bytes32 signatureHash
     )
         external
     {
-        if (uint8(action) >= uint8(ValidatorAction.NTypes)) {
-            revert("UNSUPPORTED_VALIDATE_ACTION");
+        if (uint8(dataType) >= uint8(DataType.NTypes)) {
+            revert("UNSUPPORTED_DATA_TYPE");
         }
+        if (uint8(action) >= uint8(ValidatorAction.NTypes)) {
+            revert("UNSUPPORTED_VALIDATOR_ACTION");
+        }
+        _hashDataTypes[hash] = dataType;
         _hashActions[hash] = action;
-        _validSignerForHash[hash] = allowedSigner;
+        _hashSignatureHashes[hash] = signatureHash;
     }
 
-    /// @dev Validates a hash with the following signature types:
-    ///      `EIP1271Wallet` and `EIP1271WalletOrder`signature types.
-    ///      The length of `data` will determine which signature type is in use.
-    /// @param data Arbitrary data. Either an Order hash or abi-encoded Order.
+    /// @dev Validates data signed by either `EIP1271Wallet` or `Validator` signature types.
+    /// @param data Abi-encoded data (Order or ZeroExTransaction) and a hash.
     /// @param signature Signature for `data`.
-    /// @return magicValue Returns `EIP1271_MAGIC_VALUE` if the signature check succeeds.
+    /// @return magicValue `EIP1271_MAGIC_VALUE` if the signature check succeeds.
     function isValidSignature(
         bytes memory data,
         bytes memory signature
@@ -116,35 +136,30 @@ contract TestValidatorWallet is
         public
         returns (bytes4 magicValue)
     {
-        bytes32 hash = _getOrderHashFromEIP1271Data(data);
+        bytes32 hash = _decodeAndValidateHashFromEncodedData(data);
         ValidatorAction action = _hashActions[hash];
-        // solhint-disable-next-line no-empty-blocks
         if (action == ValidatorAction.Reject) {
-            // NOOP.
+            magicValue = 0x0;
         } else if (action == ValidatorAction.Accept) {
             magicValue = EIP1271_MAGIC_VALUE;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
             _updateState();
-        } else { // action == ValidatorAction.ValidateSignature
-            if (data.length != 32) {
-                // `data` is an abi-encoded Order.
-                LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
-                if (order.makerAddress == address(this)) {
-                    magicValue = EIP1271_MAGIC_VALUE;
-                }
-            } else if (_validSignerForHash[hash] == address(this)) {
+        } else {
+            assert(action == ValidatorAction.MatchSignatureHash);
+            bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
+            if (keccak256(signature) == expectedSignatureHash) {
                 magicValue = EIP1271_MAGIC_VALUE;
             }
         }
     }
 
-    /// @dev Validates a hash with the `Validator` signature type.
+    /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return isValid `true` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         address signerAddress,
@@ -160,129 +175,61 @@ contract TestValidatorWallet is
             isValid = true;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
-        } else if (action == ValidatorAction.ValidateSignature) {
-            isValid = _isSignedBy(hash, signature, signerAddress);
-        } else { // action == ValidatorAction.UpdateState
+        } else if (action == ValidatorAction.UpdateState) {
             _updateState();
-        }
-    }
-
-    /// @dev Validates a hash with the `Wallet` signature type.
-    /// @param hash Message hash that is signed.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidSignature(
-        bytes32 hash,
-        bytes memory signature
-    )
-        public
-        returns (bool isValid)
-    {
-        ValidatorAction action = _hashActions[hash];
-        if (action == ValidatorAction.Reject) {
-            isValid = false;
-        } else if (action == ValidatorAction.Accept) {
-            isValid = true;
-        } else if (action == ValidatorAction.Revert) {
-            revert(REVERT_REASON);
-        } else if (action == ValidatorAction.ValidateSignature) {
-            isValid = _validSignerForHash[hash] == address(this);
-        } else { // action == ValidatorAction.UpdateState
-            _updateState();
-        }
-    }
-
-    /// @dev Validates a hash with the `OrderValidator` and `OrderWallet`
-    ///      signature types.
-    /// @param order The order.
-    /// @param orderHash The order hash.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidOrderSignature(
-        LibOrder.Order memory order,
-        bytes32 orderHash,
-        bytes memory signature
-    )
-        public
-        returns (bool isValid)
-    {
-        ValidatorAction action = _hashActions[orderHash];
-        if (action == ValidatorAction.Reject) {
-            isValid = false;
-        } else if (action == ValidatorAction.Accept) {
-            isValid = true;
-        } else if (action == ValidatorAction.Revert) {
-            revert(REVERT_REASON);
-        } else if (action == ValidatorAction.ValidateSignature) {
-            if (signature.length == 0) {
-                // OrderWallet type.
-                isValid = order.makerAddress == address(this);
-            } else {
-                // OrderValidator type.
-                isValid = _isSignedBy(orderHash, signature, order.makerAddress);
+        } else {
+            assert(action == ValidatorAction.MatchSignatureHash);
+            bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
+            if (keccak256(signature) == expectedSignatureHash) {
+                isValid = true;
             }
-        } else { // action == ValidatorAction.UpdateState
-            _updateState();
         }
     }
 
-    /// @dev Increments state variable.
+    /// @dev Increments state variable to trigger a state change.
     function _updateState()
         private
     {
         _state++;
     }
 
-    /// @dev Verifies the signer of a hash is correct.
-    function _isSignedBy(
-        bytes32 hash,
-        bytes memory signature,
-        address signerAddress
-    )
-        private
-        pure
-        returns (bool isSignedBy)
+    function _decodeAndValidateHashFromEncodedData(bytes memory data)
+            private
+            view
+            returns (bytes32 hash)
     {
-        require(signature.length == 65, "LENGTH_65_REQUIRED");
-        uint8 v = uint8(signature[0]);
-        bytes32 r = signature.readBytes32(1);
-        bytes32 s = signature.readBytes32(33);
-        // Try a naked signature.
-        address recovered = ecrecover(hash, v, r, s);
-        if (recovered != signerAddress) {
-            // Try an eth_sign signature.
-            bytes32 ethSignHash = keccak256(
-                abi.encodePacked(
-                    "\x19Ethereum Signed Message:\n32",
-                    hash
-                )
+        // HACK(dorothy-zbornak): First we want the hash, which is the second
+        // encoded parameter. We will initially treat all fields as inline
+        // `bytes32`s and ignore the first one to extract it.
+        (,hash) = abi.decode(data, (bytes32, bytes32));
+        // Now we can figure out what the data type is from a previous call to
+        // `prepare()`.
+        DataType dataType = _hashDataTypes[hash];
+        require(
+            dataType != DataType.None,
+            "EXPECTED_NO_DATA_TYPE"
+        );
+        if (dataType == DataType.Order) {
+            // Decode the first parameter as an `Order` type.
+            LibOrder.Order memory order = abi.decode(data, (LibOrder.Order));
+            // Use the Exchange to calculate the hash of the order and assert
+            // that it matches the one we extracted previously.
+            require(
+                _exchange.getOrderHash(order) == hash,
+                "UNEXPECTED_ORDER_HASH"
             );
-            recovered = ecrecover(ethSignHash, v, r, s);
-        }
-        isSignedBy = recovered == signerAddress;
-    }
-
-    function _getOrderHashFromEIP1271Data(bytes memory data)
-        private
-        returns (bytes32 hash)
-    {
-        if (data.length == 32) {
-            // `data` is an order hash.
-            hash = data.readBytes32(0);
         } else {
-            // `data` is an abi-encoded Order.
-            LibOrder.Order memory order = _getOrderFromEIP1271Data(data);
-            // Use the Exchange contract to convert it into a hash.
-            hash = _exchange.getOrderHash(order);
+            assert(dataType == DataType.ZeroExTransaction);
+            // Decode the first parameter as a `ZeroExTransaction` type.
+            LibZeroExTransaction.ZeroExTransaction memory transaction =
+                abi.decode(data, (LibZeroExTransaction.ZeroExTransaction));
+            // Use the Exchange to calculate the hash of the transaction and assert
+            // that it matches the one we extracted previously.
+            require(
+                _exchange.getTransactionHash(transaction) == hash,
+                "UNEXPECTED_TRANSACTION_HASH"
+            );
         }
+        return hash;
     }
-
-    function _getOrderFromEIP1271Data(bytes memory data)
-        private
-        returns (LibOrder.Order memory order)
-    {
-        require(data.length > 32, "INVALID_EIP1271_ORDER_DATA_LENGTH");
-        return abi.decode(data, (LibOrder.Order));
-    }
-
 }

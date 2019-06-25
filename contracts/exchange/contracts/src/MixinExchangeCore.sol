@@ -24,14 +24,10 @@ import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "./interfaces/IAssetProxyDispatcher.sol";
 import "./interfaces/IExchangeCore.sol";
-import "./interfaces/ISignatureValidator.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinExchangeRichErrors.sol";
-import "./MixinSignatureValidator.sol";
-import "./MixinAssetProxyDispatcher.sol";
-import "./MixinTransactions.sol";
+import "./MixinCommon.sol";
 
 
 contract MixinExchangeCore is
@@ -39,8 +35,10 @@ contract MixinExchangeCore is
     LibExchangeSelectors,
     LibMath,
     LibFillResults,
-    MixinAssetProxyDispatcher,
-    MixinSignatureValidator
+    LibOrder,
+    ReentrancyGuard,
+    MixinCommon,
+    MixinAssetProxyDispatcher
 {
     using LibBytes for bytes;
 
@@ -543,7 +541,7 @@ contract MixinExchangeCore is
             order.feeRecipientAddress,
             fillResults.takerFeePaid
         );
-    
+
         // Transfer maker fee -> feeRecipient
         _dispatchTransferFrom(
             orderHash,
