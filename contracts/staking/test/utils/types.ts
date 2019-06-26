@@ -1,10 +1,10 @@
 import { BigNumber } from '@0x/utils';
 
 export interface StakingPoolApproval {
-    makerAddress: string,
-    poolId: string,
-    verifyingContractAddress: string,
-    chainId: number
+    makerAddress: string;
+    poolId: string;
+    verifyingContractAddress: string;
+    chainId: number;
 }
 
 export interface SignedStakingPoolApproval extends StakingPoolApproval {
@@ -29,22 +29,22 @@ export interface DelegatorBalances extends StakerBalances {
 }
 
 export interface SimulationParams {
-    users: string[],
-    numberOfPools: number,
-    poolOperatorShares: number[],
-    stakeByPoolOperator: BigNumber[],
-    numberOfMakers: number,
-    numberOfMakersPerPool: number[],
-    protocolFeesByMaker: BigNumber[],
-    numberOfDelegators: number,
-    numberOfDelegatorsPerPool: number[],
-    stakeByDelegator: BigNumber[],
-    expectedFeesByPool: BigNumber[],
-    expectedPayoutByPool: BigNumber[],
-    expectedPayoutByPoolOperator: BigNumber[],
-    expectedMembersPayoutByPool: BigNumber[],
-    expectedPayoutByDelegator: BigNumber[],
-    exchangeAddress: string,
-    delegateInNextEpoch: Boolean,
-    withdrawByUndelegating: Boolean,
+    users: string[];
+    numberOfPools: number;
+    poolOperatorShares: number[];
+    stakeByPoolOperator: BigNumber[];
+    numberOfMakers: number;
+    numberOfMakersPerPool: number[];
+    protocolFeesByMaker: BigNumber[];
+    numberOfDelegators: number;
+    numberOfDelegatorsPerPool: number[];
+    stakeByDelegator: BigNumber[];
+    expectedFeesByPool: BigNumber[];
+    expectedPayoutByPool: BigNumber[];
+    expectedPayoutByPoolOperator: BigNumber[];
+    expectedMembersPayoutByPool: BigNumber[];
+    expectedPayoutByDelegator: BigNumber[];
+    exchangeAddress: string;
+    delegateInNextEpoch: Boolean;
+    withdrawByUndelegating: Boolean;
 }

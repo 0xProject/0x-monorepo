@@ -9,7 +9,14 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contra
 import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import * as _ from 'lodash';
 
-import { artifacts, StakingContract, StakingProxyContract, ZrxVaultContract, RewardVaultContract, LibFeeMathTestContract } from '../../src';
+import {
+    artifacts,
+    StakingContract,
+    StakingProxyContract,
+    ZrxVaultContract,
+    RewardVaultContract,
+    LibFeeMathTestContract,
+} from '../../src';
 import { ApprovalFactory } from './ApprovalFactory';
 import { SignedStakingPoolApproval } from './types';
 import { constants } from './constants';
@@ -30,12 +37,18 @@ export class StakingWrapper {
     private _rewardVaultContractIfExists?: RewardVaultContract;
     private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
 
-    constructor(provider: Provider, ownerAddres: string, erc20ProxyContract: ERC20ProxyContract, zrxTokenContract: DummyERC20TokenContract, accounts: string[]) {
+    constructor(
+        provider: Provider,
+        ownerAddres: string,
+        erc20ProxyContract: ERC20ProxyContract,
+        zrxTokenContract: DummyERC20TokenContract,
+        accounts: string[],
+    ) {
         this._web3Wrapper = new Web3Wrapper(provider);
         this._provider = provider;
         const decoderArtifacts = _.merge(artifacts, erc20Artifacts);
         this._logDecoder = new LogDecoder(this._web3Wrapper, decoderArtifacts);
-        this._ownerAddres= ownerAddres;
+        this._ownerAddres = ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
         this._zrxTokenContract = zrxTokenContract;
         this._accounts = accounts;
@@ -69,7 +82,7 @@ export class StakingWrapper {
             txDefaults,
             this._erc20ProxyContract.address,
             this._zrxTokenContract.address,
-            zrxAssetData
+            zrxAssetData,
         );
         // deploy reward vault
         this._rewardVaultContractIfExists = await RewardVaultContract.deployFrom0xArtifactAsync(
@@ -78,43 +91,57 @@ export class StakingWrapper {
             txDefaults,
         );
         // configure erc20 proxy to accept calls from zrx vault
-        await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync((this._zrxVaultContractIfExists as ZrxVaultContract).address);
+        await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
+            (this._zrxVaultContractIfExists as ZrxVaultContract).address,
+        );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
             artifacts.Staking,
             this._provider,
-            txDefaults
+            txDefaults,
         );
         // deploy staking proxy
         this._stakingProxyContractIfExists = await StakingProxyContract.deployFrom0xArtifactAsync(
             artifacts.StakingProxy,
             this._provider,
             txDefaults,
-            (this._stakingContractIfExists as StakingContract).address
+            (this._stakingContractIfExists as StakingContract).address,
         );
         // set staking proxy contract in zrx vault
-        await (this._zrxVaultContractIfExists as ZrxVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingProxyContractIfExists as StakingProxyContract).address);
+        await (this
+            ._zrxVaultContractIfExists as ZrxVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            (this._stakingProxyContractIfExists as StakingProxyContract).address,
+        );
         // set zrx vault in staking contract
-        const setZrxVaultCalldata = await (this._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData((this._zrxVaultContractIfExists as ZrxVaultContract).address);
+        const setZrxVaultCalldata = await (this
+            ._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData(
+            (this._zrxVaultContractIfExists as ZrxVaultContract).address,
+        );
         const setZrxVaultTxData = {
             from: this._ownerAddres,
             to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
-            data: setZrxVaultCalldata
-        }
+            data: setZrxVaultCalldata,
+        };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData)
+            await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData),
         );
         // set staking proxy contract in reward vault
-        await (this._rewardVaultContractIfExists as RewardVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync((this._stakingProxyContractIfExists as StakingProxyContract).address);
+        await (this
+            ._rewardVaultContractIfExists as RewardVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            (this._stakingProxyContractIfExists as StakingProxyContract).address,
+        );
         // set reward vault in staking contract
-        const setRewardVaultCalldata = await (this._stakingContractIfExists as StakingContract).setRewardVault.getABIEncodedTransactionData((this._rewardVaultContractIfExists as RewardVaultContract).address);
+        const setRewardVaultCalldata = await (this
+            ._stakingContractIfExists as StakingContract).setRewardVault.getABIEncodedTransactionData(
+            (this._rewardVaultContractIfExists as RewardVaultContract).address,
+        );
         const setRewardVaultTxData = {
             from: this._ownerAddres,
             to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
-            data: setRewardVaultCalldata
-        }
+            data: setRewardVaultCalldata,
+        };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-             await this._web3Wrapper.sendTransactionAsync(setRewardVaultTxData)
+            await this._web3Wrapper.sendTransactionAsync(setRewardVaultTxData),
         );
         // deploy libmath test
         this._LibFeeMathTestContractIfExists = await LibFeeMathTestContract.deployFrom0xArtifactAsync(
@@ -123,26 +150,33 @@ export class StakingWrapper {
             txDefaults,
         );
     }
-    private async _executeTransactionAsync(calldata: string, from?: string, value?: BigNumber, includeLogs?: boolean): Promise<TransactionReceiptWithDecodedLogs> {
+    private async _executeTransactionAsync(
+        calldata: string,
+        from?: string,
+        value?: BigNumber,
+        includeLogs?: boolean,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
-            from: (from ? from : this._ownerAddres),
+            from: from ? from : this._ownerAddres,
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000,
             gasPrice: 0,
-            value
-        }
+            value,
+        };
         const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
-        const txReceipt = await (includeLogs ? this._logDecoder.getTxWithDecodedLogsAsync(txHash) : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
+        const txReceipt = await (includeLogs
+            ? this._logDecoder.getTxWithDecodedLogsAsync(txHash)
+            : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
         return txReceipt;
     }
     private async _callAsync(calldata: string, from?: string): Promise<any> {
         const txData = {
-            from: (from ? from : this._ownerAddres),
+            from: from ? from : this._ownerAddres,
             to: this.getStakingProxyContract().address,
             data: calldata,
-            gas: 3000000
-        }
+            gas: 3000000,
+        };
         const returnValue = await this._web3Wrapper.callAsync(txData);
         return returnValue;
     }
@@ -161,7 +195,11 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async depositAndDelegateAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    public async depositAndDelegateAsync(
+        owner: string,
+        poolId: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
@@ -171,18 +209,35 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async activateAndDelegateStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().activateAndDelegateStake.getABIEncodedTransactionData(poolId, amount);
+    public async activateAndDelegateStakeAsync(
+        owner: string,
+        poolId: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().activateAndDelegateStake.getABIEncodedTransactionData(
+            poolId,
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async deactivateAndTimelockStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    public async deactivateAndTimelockStakeAsync(
+        owner: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().deactivateAndTimelockStake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async deactivateAndTimelockDelegatedStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(poolId, amount);
+    public async deactivateAndTimelockDelegatedStakeAsync(
+        owner: string,
+        poolId: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(
+            poolId,
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
     }
@@ -246,7 +301,10 @@ export class StakingWrapper {
         return value;
     }
     public async getStakeDelegatedToPoolByOwnerAsync(poolId: string, owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIEncodedTransactionData(owner, poolId);
+        const calldata = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIEncodedTransactionData(
+            owner,
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIDecodedReturnData(returnData);
         return value;
@@ -270,13 +328,29 @@ export class StakingWrapper {
         const poolId = (createPoolLog as any).args.poolId;
         return poolId;
     }
-    public async addMakerToPoolAsync(poolId: string, makerAddress: string, makerSignature: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
+    public async addMakerToPoolAsync(
+        poolId: string,
+        makerAddress: string,
+        makerSignature: string,
+        operatorAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(
+            poolId,
+            makerAddress,
+            makerSignature,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async removeMakerFromPoolAsync(poolId: string, makerAddress: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().removeMakerFromPool.getABIEncodedTransactionData(poolId, makerAddress);
+    public async removeMakerFromPoolAsync(
+        poolId: string,
+        makerAddress: string,
+        operatorAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().removeMakerFromPool.getABIEncodedTransactionData(
+            poolId,
+            makerAddress,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
@@ -291,16 +365,29 @@ export class StakingWrapper {
         const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
         return makerAddresses;
     }
-    public async isValidMakerSignatureAsync(poolId: string, makerAddress: string, makerSignature: string): Promise<Boolean> {
-        const calldata = this.getStakingContract().isValidMakerSignature.getABIEncodedTransactionData(poolId, makerAddress, makerSignature);
+    public async isValidMakerSignatureAsync(
+        poolId: string,
+        makerAddress: string,
+        makerSignature: string,
+    ): Promise<Boolean> {
+        const calldata = this.getStakingContract().isValidMakerSignature.getABIEncodedTransactionData(
+            poolId,
+            makerAddress,
+            makerSignature,
+        );
         const returndata = await this._callAsync(calldata);
         const isValid = this.getStakingContract().isValidMakerSignature.getABIDecodedReturnData(returndata);
         return isValid;
     }
     public async getStakingPoolApprovalMessageHashAsync(poolId: string, makerAddress: string): Promise<string> {
-        const calldata = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIEncodedTransactionData(poolId, makerAddress);
+        const calldata = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIEncodedTransactionData(
+            poolId,
+            makerAddress,
+        );
         const returndata = await this._callAsync(calldata);
-        const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(returndata);
+        const messageHash = this.getStakingContract().getStakingPoolApprovalMessageHash.getABIDecodedReturnData(
+            returndata,
+        );
         return messageHash;
     }
     public signApprovalForStakingPool(
@@ -311,8 +398,12 @@ export class StakingWrapper {
         chainIdIfExists?: number,
         signatureType: SignatureType = SignatureType.EthSign,
     ): SignedStakingPoolApproval {
-        const makerPrivateKey = makerPrivateKeyIfExists !== undefined ? makerPrivateKeyIfExists : testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
-        const verifierAddress = verifierAddressIfExists !== undefined ? verifierAddressIfExists : this.getStakingProxyContract().address;
+        const makerPrivateKey =
+            makerPrivateKeyIfExists !== undefined
+                ? makerPrivateKeyIfExists
+                : testUtilsConstants.TESTRPC_PRIVATE_KEYS[this._accounts.indexOf(makerAddress)];
+        const verifierAddress =
+            verifierAddressIfExists !== undefined ? verifierAddressIfExists : this.getStakingProxyContract().address;
         const chainId = chainIdIfExists !== undefined ? chainIdIfExists : constants.CHAIN_ID;
         const approvalFactory = new ApprovalFactory(makerPrivateKey, verifierAddress, chainId);
         const signedStakingPoolApproval = approvalFactory.newSignedApproval(poolId, makerAddress, signatureType);
@@ -322,7 +413,9 @@ export class StakingWrapper {
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
-       console.log(`finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`);
+        console.log(
+            `finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`,
+        );
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
@@ -395,7 +488,11 @@ export class StakingWrapper {
         return value;
     }
     ///// PROTOCOL FEES /////
-    public async payProtocolFeeAsync(makerAddress: string, amount: BigNumber, exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async payProtocolFeeAsync(
+        makerAddress: string,
+        amount: BigNumber,
+        exchangeAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().payProtocolFee.getABIEncodedTransactionData(makerAddress);
         const txReceipt = await this._executeTransactionAsync(calldata, exchangeAddress, amount);
         return txReceipt;
@@ -461,22 +558,36 @@ export class StakingWrapper {
         return value;
     }
     public async getShadowBalanceInPoolByOwnerAsync(owner: string, poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIEncodedTransactionData(owner, poolId);
+        const calldata = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIEncodedTransactionData(
+            owner,
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async withdrawOperatorRewardAsync(poolId: string, amount: BigNumber, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async withdrawOperatorRewardAsync(
+        poolId: string,
+        amount: BigNumber,
+        operatorAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().withdrawOperatorReward.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async withdrawRewardAsync(poolId: string, amount: BigNumber, owner: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async withdrawRewardAsync(
+        poolId: string,
+        amount: BigNumber,
+        owner: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().withdrawReward.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async withdrawTotalOperatorRewardAsync(poolId: string, operatorAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async withdrawTotalOperatorRewardAsync(
+        poolId: string,
+        operatorAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().withdrawTotalOperatorReward.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
@@ -487,12 +598,18 @@ export class StakingWrapper {
         return txReceipt;
     }
     ///// REWARD VAULT /////
-    public async rewardVaultDepositForAsync(poolId: string, amount: BigNumber, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async rewardVaultDepositForAsync(
+        poolId: string,
+        amount: BigNumber,
+        stakingContractAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().depositFor.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, amount);
         return txReceipt;
     }
-    public async rewardVaultEnterCatastrophicFailureModeAsync(zeroExMultisigAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async rewardVaultEnterCatastrophicFailureModeAsync(
+        zeroExMultisigAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
         return txReceipt;
@@ -509,8 +626,15 @@ export class StakingWrapper {
         const balance = await this.getRewardVaultContract().balanceOfPool.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultCreatePoolAsync(poolId: string, poolOperatorShare: number, stakingContractAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(poolId, poolOperatorShare);
+    public async rewardVaultCreatePoolAsync(
+        poolId: string,
+        poolOperatorShare: number,
+        stakingContractAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(
+            poolId,
+            poolOperatorShare,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress);
         return txReceipt;
     }
@@ -544,7 +668,7 @@ export class StakingWrapper {
         ownerStake: BigNumber,
         totalStake: BigNumber,
         alphaNumerator: BigNumber,
-        alphaDenominator: BigNumber
+        alphaDenominator: BigNumber,
     ) {
         const output = await this.getLibFeeMathTestContract().cobbDouglas.callAsync(
             totalRewards,
@@ -553,7 +677,7 @@ export class StakingWrapper {
             ownerStake,
             totalStake,
             alphaNumerator,
-            alphaDenominator
+            alphaDenominator,
         );
         return output;
     }
@@ -563,7 +687,7 @@ export class StakingWrapper {
         totalFees: BigNumber,
         ownerStake: BigNumber,
         totalStake: BigNumber,
-        alphaDenominator: BigNumber
+        alphaDenominator: BigNumber,
     ) {
         const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
@@ -571,7 +695,7 @@ export class StakingWrapper {
             totalFees,
             ownerStake,
             totalStake,
-            alphaDenominator
+            alphaDenominator,
         );
         const output = await this.getLibFeeMathTestContract().cobbDouglasSimplified.callAsync(
             totalRewards,
@@ -579,7 +703,7 @@ export class StakingWrapper {
             totalFees,
             ownerStake,
             totalStake,
-            alphaDenominator
+            alphaDenominator,
         );
         return output;
     }
@@ -589,7 +713,7 @@ export class StakingWrapper {
         totalFees: BigNumber,
         ownerStake: BigNumber,
         totalStake: BigNumber,
-        alphaDenominator: BigNumber
+        alphaDenominator: BigNumber,
     ) {
         const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
@@ -597,7 +721,7 @@ export class StakingWrapper {
             totalFees,
             ownerStake,
             totalStake,
-            alphaDenominator
+            alphaDenominator,
         );
 
         const output = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
@@ -606,32 +730,35 @@ export class StakingWrapper {
             totalFees,
             ownerStake,
             totalStake,
-            alphaDenominator
+            alphaDenominator,
         );
         return output;
     }
     public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
-        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
         const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
         return baseUnitAmount;
     }
     public toFixedPoint(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
         const scalar = Math.pow(10, decimals);
         const amountAsFixedPoint = amountAsBigNumber.times(scalar);
         return amountAsFixedPoint;
     }
     public toFloatingPoint(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
         const scalar = Math.pow(10, decimals);
         const amountAsFloatingPoint = amountAsBigNumber.dividedBy(scalar);
         return amountAsFloatingPoint;
     }
     public trimFloat(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof(amount)  === 'number' ? new BigNumber(amount) : amount;
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
         const scalar = Math.pow(10, decimals);
-        const amountAsFloatingPoint = ((amountAsBigNumber.multipliedBy(scalar)).dividedToIntegerBy(1)).dividedBy(scalar);
+        const amountAsFloatingPoint = amountAsBigNumber
+            .multipliedBy(scalar)
+            .dividedToIntegerBy(1)
+            .dividedBy(scalar);
         return amountAsFloatingPoint;
     }
     private _validateDeployedOrThrow() {

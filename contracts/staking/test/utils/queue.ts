@@ -2,7 +2,7 @@ import * as _ from 'lodash';
 
 export class Queue<T> {
     private _store: T[] = [];
-    constructor (store?: T[]) {
+    constructor(store?: T[]) {
         this._store = store !== undefined ? _.cloneDeep(store) : [];
     }
     public pushBack(val: T): void {

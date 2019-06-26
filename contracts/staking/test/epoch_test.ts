@@ -72,9 +72,13 @@ describe('Epochs', () => {
     describe('Epochs & Timelocks', () => {
         it('basic epochs & timelock periods', async () => {
             ///// 0/3 Validate Assumptions /////
-            expect(await stakingWrapper.getEpochPeriodInSecondsAsync()).to.be.bignumber.equal(stakingConstants.EPOCH_PERIOD_IN_SECONDS);
-            expect(await stakingWrapper.getTimelockPeriodInEpochsAsync()).to.be.bignumber.equal(stakingConstants.TIMELOCK_PERIOD_IN_EPOCHS);
-            
+            expect(await stakingWrapper.getEpochPeriodInSecondsAsync()).to.be.bignumber.equal(
+                stakingConstants.EPOCH_PERIOD_IN_SECONDS,
+            );
+            expect(await stakingWrapper.getTimelockPeriodInEpochsAsync()).to.be.bignumber.equal(
+                stakingConstants.TIMELOCK_PERIOD_IN_EPOCHS,
+            );
+
             ///// 1/3 Validate Initial Epoch & Timelock Period /////
             {
                 // epoch

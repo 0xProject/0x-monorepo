@@ -1,6 +1,4 @@
-import {
-    chaiSetup,
-} from '@0x/contracts-test-utils';
+import { chaiSetup } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 import * as chai from 'chai';
 
@@ -11,7 +9,6 @@ import { SimulationParams } from './types';
 import { StakingWrapper } from './staking_wrapper';
 import { Queue } from './queue';
 import { DelegatorActor } from '../actors/delegator_actor';
-
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -25,7 +22,7 @@ export class Simulation {
     private _poolIds: string[];
     private _makers: MakerActor[];
     private _delegators: DelegatorActor[];
-    
+
     constructor(stakingWrapper: StakingWrapper, simulationParams: SimulationParams) {
         this._stakingWrapper = stakingWrapper;
         this._p = simulationParams;
@@ -57,7 +54,7 @@ export class Simulation {
         } else {
             await this._withdrawRewardForDelegatorsByUndelegating(this._p);
         }
-        
+
         // @TODO cleanup state and verify the staking contract is empty
     }
 
@@ -73,10 +70,16 @@ export class Simulation {
                 const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
-                const reward = finalEthBalance.minus(initEthBalance); 
-                const rewardTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(reward, 18), 5);
+                const reward = finalEthBalance.minus(initEthBalance);
+                const rewardTrimmed = this._stakingWrapper.trimFloat(
+                    this._stakingWrapper.toFloatingPoint(reward, 18),
+                    5,
+                );
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
-                expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`).to.be.bignumber.equal(expectedReward);
+                expect(
+                    rewardTrimmed,
+                    `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`,
+                ).to.be.bignumber.equal(expectedReward);
                 delegatorIdx += 1;
             }
             poolIdx += 1;
@@ -94,10 +97,16 @@ export class Simulation {
                 const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 await this._stakingWrapper.withdrawTotalRewardAsync(poolId, delegatorAddress);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
-                const reward = finalEthBalance.minus(initEthBalance); 
-                const rewardTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(reward, 18), 5);
+                const reward = finalEthBalance.minus(initEthBalance);
+                const rewardTrimmed = this._stakingWrapper.trimFloat(
+                    this._stakingWrapper.toFloatingPoint(reward, 18),
+                    5,
+                );
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
-                expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`).to.be.bignumber.equal(expectedReward);
+                expect(
+                    rewardTrimmed,
+                    `reward withdrawn from pool ${poolId} for delegator ${delegatorAddress}`,
+                ).to.be.bignumber.equal(expectedReward);
                 delegatorIdx += 1;
             }
             poolIdx += 1;
@@ -198,19 +207,37 @@ export class Simulation {
             // check pool balance in vault
             const poolId = this._poolIds[i];
             const rewardVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfAsync(poolId);
-            const rewardVaultBalanceTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(rewardVaultBalance, 18), 5); 
+            const rewardVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
+                this._stakingWrapper.toFloatingPoint(rewardVaultBalance, 18),
+                5,
+            );
             const expectedRewardBalance = p.expectedPayoutByPool[i];
-            expect(rewardVaultBalanceTrimmed, `expected balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedRewardBalance);
+            expect(
+                rewardVaultBalanceTrimmed,
+                `expected balance in vault for pool with id ${poolId}`,
+            ).to.be.bignumber.equal(expectedRewardBalance);
             // check operator's balance
             const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfOperatorAsync(poolId);
-            const poolOperatorVaultBalanceTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18), 5);
+            const poolOperatorVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
+                this._stakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
+                5,
+            );
             const expectedPoolOperatorVaultBalance = p.expectedPayoutByPoolOperator[i];
-            expect(poolOperatorVaultBalanceTrimmed, `operator balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
+            expect(
+                poolOperatorVaultBalanceTrimmed,
+                `operator balance in vault for pool with id ${poolId}`,
+            ).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
             // check balance of pool members
             const membersVaultBalance = await this._stakingWrapper.getRewardBalanceOfPoolAsync(poolId);
-            const membersVaultBalanceTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(membersVaultBalance, 18), 5);
+            const membersVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
+                this._stakingWrapper.toFloatingPoint(membersVaultBalance, 18),
+                5,
+            );
             const expectedMembersVaultBalance = p.expectedMembersPayoutByPool[i];
-            expect(membersVaultBalanceTrimmed, `members balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedMembersVaultBalance);
+            expect(
+                membersVaultBalanceTrimmed,
+                `members balance in vault for pool with id ${poolId}`,
+            ).to.be.bignumber.equal(expectedMembersVaultBalance);
             // @TODO compute balance of each member
         }
     }
@@ -226,10 +253,12 @@ export class Simulation {
             const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
             await this._stakingWrapper.withdrawTotalOperatorRewardAsync(poolId, poolOperatorAddress);
             const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
-            const reward = finalEthBalance.minus(initEthBalance); 
+            const reward = finalEthBalance.minus(initEthBalance);
             const rewardTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(reward, 18), 5);
             const expectedReward = p.expectedPayoutByPoolOperator[i];
-            expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for operator`).to.be.bignumber.equal(expectedReward);
+            expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for operator`).to.be.bignumber.equal(
+                expectedReward,
+            );
         }
     }
 }
