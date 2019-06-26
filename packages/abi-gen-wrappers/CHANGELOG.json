@@ -3,7 +3,11 @@
         "version": "5.0.0",
         "changes": [
             {
-                "note": "Constructors no longer accept ABIs as argument",
+                "note": "Wrappers no longer require passing in the contract ABI at instantiation",
+                "pr": 1883
+            },
+            {
+                "note": "Contract addresses now re-exported from @0x/contract-addresses",
                 "pr": 1883
             },
             {

@@ -23,6 +23,7 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -34,7 +35,8 @@ export class IValidatorContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
@@ -46,12 +48,11 @@ export class IValidatorContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as IValidatorContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress,
-                signature,
-            ]);
+            const self = this as any as IValidatorContract;
+            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+        signerAddress,
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -64,7 +65,8 @@ export class IValidatorContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
@@ -85,7 +87,7 @@ export class IValidatorContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults);
+        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, );
     }
     public static async deployAsync(
         bytecode: string,
@@ -101,13 +103,17 @@ export class IValidatorContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
+        [] = BaseContract._formatABIDataItemList(
+            constructorAbi.inputs,
+            [],
+            BaseContract._bigNumberToString,
+        );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            { data: txData },
+            {data: txData},
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -120,19 +126,17 @@ export class IValidatorContract extends BaseContract {
         return contractInstance;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('IValidator', ABI(), address, supportedProvider, txDefaults);
+        super('IValidator', IValidatorContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
-}
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
 
-// Returns the ABI that was used to generate this wrapper
-// Hardcoded, do not edit!
-function ABI(): ContractAbi {
-    // HACK (xianny): handlebars cannot directly pass an array
-    return JSON.parse(
-        `[{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"signerAddress","type":"address"},{"name":"signature","type":"bytes"}],"name":"isValidSignature","outputs":[{"name":"isValid","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}]`,
-    );
-}
+        // HACK (xianny): handlebars cannot directly pass an array
+        return JSON.parse(`[{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"signerAddress","type":"address"},{"name":"signature","type":"bytes"}],"name":"isValidSignature","outputs":[{"name":"isValid","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}]`);
+    }
+} 
+
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
 // tslint:enable:trailing-comma whitespace no-trailing-whitespace

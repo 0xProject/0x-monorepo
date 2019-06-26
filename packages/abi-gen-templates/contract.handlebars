@@ -110,18 +110,17 @@ export class {{contractName}}Contract extends BaseContract {
         return contractInstance;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('{{contractName}}', ABI(), address, supportedProvider, txDefaults);
+        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+    }
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
+
+        // HACK (xianny): handlebars cannot directly pass an array
+        return JSON.parse(`{{{ABI}}}`);
     }
 } 
 
-// Returns the ABI that was used to generate this wrapper
-// Hardcoded, do not edit!
-function ABI(): ContractAbi {
-
-    // HACK (xianny): handlebars cannot directly pass an array
-    return JSON.parse(`{{{ABI}}}`);
-}
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
 // tslint:enable:trailing-comma whitespace no-trailing-whitespace
