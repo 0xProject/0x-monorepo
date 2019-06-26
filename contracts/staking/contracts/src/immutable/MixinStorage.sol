@@ -25,7 +25,6 @@ import "../interfaces/IStructs.sol";
 
 
 contract MixinStorage is
-    IStructs,
     MixinConstants
 {
 
@@ -46,7 +45,7 @@ contract MixinStorage is
     mapping (address => uint256) activeStakeByOwner;
 
     // mapping from Owner to Amount Timelocked
-    mapping (address => Timelock) timelockedStakeByOwner;
+    mapping (address => IStructs.Timelock) timelockedStakeByOwner;
 
     // mapping from Owner to Amount Delegated
     mapping (address => uint256) delegatedStakeByOwner;
@@ -64,7 +63,7 @@ contract MixinStorage is
     bytes32 nextPoolId = INITIAL_POOL_ID;
 
     // mapping from Pool Id to Pool
-    mapping (bytes32 => Pool) poolById;
+    mapping (bytes32 => IStructs.Pool) poolById;
 
     // mapping from Maker Address to Pool Id
     // A Maker can only hold a single token

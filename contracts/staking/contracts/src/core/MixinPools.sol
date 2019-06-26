@@ -33,12 +33,9 @@ import "./MixinRewardVault.sol";
 
 
 contract MixinPools is
-    // interfaces
     IStakingEvents,
-    // immutables
     MixinConstants,
     MixinStorage,
-    // standalone
     MixinRewardVault
 {
 
@@ -63,7 +60,7 @@ contract MixinPools is
         nextPoolId = _computeNextPoolId(poolId);
 
         // 
-        Pool memory pool = Pool({
+        IStructs.Pool memory pool = IStructs.Pool({
             operatorAddress: operatorAddress,
             operatorShare: operatorShare
         });
@@ -125,7 +122,7 @@ contract MixinPools is
         view
         returns (bytes32 approvalHash)
     {
-        StakingPoolApproval memory approval = StakingPoolApproval({
+        IStructs.StakingPoolApproval memory approval = IStructs.StakingPoolApproval({
             poolId: poolId,
             makerAddress: makerAddress
         });
@@ -182,7 +179,7 @@ contract MixinPools is
     function _getPool(bytes32 poolId)
         internal
         view
-        returns (Pool memory pool)
+        returns (IStructs.Pool memory pool)
     {
         pool = poolById[poolId];
         return pool;
