@@ -17,7 +17,6 @@ class BaseContractWrapper:
     transactions.
 
     :param provider: instance of :class:`web3.providers.base.BaseProvider`
-    :param account_address: default None, str of account address
     :param private_key: default None, str of private_key
     """
 
@@ -25,12 +24,10 @@ class BaseContractWrapper:
         self,
         provider: BaseProvider,
         contract_address: str,
-        account_address: str = None,
         private_key: str = None,
     ):
         """Create an instance of BaseContractWrapper."""
         self._provider = provider
-        self._account_address = account_address
         self._private_key = private_key
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member

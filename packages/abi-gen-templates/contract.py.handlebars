@@ -18,7 +18,6 @@ class {{contractName}}(BaseContractWrapper):
         self,
         provider: BaseProvider,
         contract_address: str,
-        account_address: str = None,
         private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
@@ -28,7 +27,6 @@ class {{contractName}}(BaseContractWrapper):
         super({{contractName}}, self).__init__(
             provider=provider,
             contract_address=contract_address,
-            account_address=account_address,
             private_key=private_key,
         )
 
