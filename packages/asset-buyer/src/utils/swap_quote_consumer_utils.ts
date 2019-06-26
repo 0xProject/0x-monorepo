@@ -1,13 +1,13 @@
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import {
-    SwapQuoteConsumerError,
-    SwapQuoteExecutionOpts,
- } from '../types';
+import { SwapQuoteConsumerError, SwapQuoteExecutionOpts } from '../types';
 
 export const swapQuoteConsumerUtils = {
-    async getTakerAddressOrThrowAsync(provider: SupportedProvider, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> {
+    async getTakerAddressOrThrowAsync(
+        provider: SupportedProvider,
+        opts: Partial<SwapQuoteExecutionOpts>,
+    ): Promise<string> {
         if (opts.takerAddress !== undefined) {
             return opts.takerAddress;
         } else {
