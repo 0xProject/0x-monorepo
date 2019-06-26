@@ -44,25 +44,25 @@ class ERC20Token(BaseContractWrapper):
     def approve(
         self,
         token_address: str,
-        spender_address: str,
-        value: int,
+        _spender: str,
+        _value: int,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """Approve an address to spend up to `value`:code: of your tokens.
+        """Approve an address to spend up to `_value`:code: of your tokens.
 
-        :param value: amount of allowance
+        :param _value: amount of allowance
         :param tx_params: transaction options
         :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
         token_address = self._validate_and_checksum_address(token_address)
-        spender_address = self._validate_and_checksum_address(spender_address)
+        _spender = self._validate_and_checksum_address(_spender)
         # safeguard against fractional inputs
-        value = int(value)
+        _value = int(_value)
         func = self._get_contract_instance(token_address).functions.approve(
-            spender_address, value
+            _spender, _value
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
@@ -85,48 +85,45 @@ class ERC20Token(BaseContractWrapper):
     def transfer_from(
         self,
         token_address: str,
-        authorized_address: str,
-        to_address: str,
-        value: int,
+        _from: str,
+        _to: str,
+        _value: int,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
-        """Transfer tokens from `authorized_address`:code: to another address.
+        """Transfer tokens from `_from`:code: to another address.
 
-        Note that the `authorized_address`:code: must have already called
+        Note that the `_from`:code: must have already called
         `approve`:code: for the `spender_address`:code:.
 
-        :param authorized_address: address you have been authorized to transfer
-            tokens from
-        :param value: amount to send
+        :param _from: address you have been authorized to transfer tokens from
+        :param _value: amount to send
         :param tx_params: transaction parameters
         :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
         token_address = self._validate_and_checksum_address(token_address)
-        authorized_address = self._validate_and_checksum_address(
-            authorized_address
-        )
-        to_address = self._validate_and_checksum_address(to_address)
+        _from = self._validate_and_checksum_address(_from)
+        _to = self._validate_and_checksum_address(_to)
         # safeguard against fractional inputs
-        value = int(value)
+        _value = int(_value)
         func = self._get_contract_instance(
             token_address
-        ).functions.transferFrom(authorized_address, to_address, value)
+        ).functions.transferFrom(_from, _to, _value)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def balance_of(self, token_address: str, owner_address: str) -> int:
+    def balance_of(self, token_address: str, _owner: str) -> int:
         """Get token balance of a given owner address.
 
         :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
-        owner_address = self._validate_and_checksum_address(owner_address)
+        _owner = self._validate_and_checksum_address(_owner)
         func = self._get_contract_instance(token_address).functions.balanceOf(
-            owner_address
+            _owner
         )
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
@@ -136,42 +133,42 @@ class ERC20Token(BaseContractWrapper):
     def transfer(
         self,
         token_address: str,
-        to_address: str,
-        value: int,
+        _to: str,
+        _value: int,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
         """Transfer the balance from owner's account to another account.
 
-        :param value: integer amount to send
+        :param _value: integer amount to send
         :param tx_params: transaction parameters
         :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
         """
         token_address = self._validate_and_checksum_address(token_address)
-        to_address = self._validate_and_checksum_address(to_address)
+        _to = self._validate_and_checksum_address(_to)
         # safeguard against fractional inputs
-        value = int(value)
+        _value = int(_value)
         func = self._get_contract_instance(token_address).functions.transfer(
-            to_address, value
+            _to, _value
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
 
     def allowance(
-        self, token_address: str, owner_address: str, spender_address: str
+        self, token_address: str, _owner: str, _spender: str
     ) -> Union[HexBytes, bytes]:
         """Get the amount of tokens approved for a spender.
 
         :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
-        owner_address = self._validate_and_checksum_address(owner_address)
-        spender_address = self._validate_and_checksum_address(spender_address)
+        _owner = self._validate_and_checksum_address(_owner)
+        _spender = self._validate_and_checksum_address(_spender)
         func = self._get_contract_instance(token_address).functions.allowance(
-            owner_address, spender_address
+            _owner, _spender
         )
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
