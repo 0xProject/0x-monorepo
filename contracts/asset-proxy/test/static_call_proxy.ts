@@ -43,7 +43,6 @@ describe('StaticCallProxy', () => {
             txDefaults,
         );
         staticCallProxy = new IAssetProxyContract(
-            artifacts.IAssetProxy.compilerOutput.abi,
             staticCallProxyWithoutTransferFrom.address,
             provider,
             txDefaults,
