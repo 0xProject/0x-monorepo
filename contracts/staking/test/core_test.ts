@@ -119,13 +119,10 @@ describe('Staking Core', () => {
             await staker.deactivateAndTimelockStakeAsync(amountToDeactivate);
             // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
             //        attempting to do so should revert.
-            console.log('first');
             await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
             await staker.skipToNextTimelockPeriodAsync();
-            console.log('second');
             await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
             await staker.skipToNextTimelockPeriodAsync();
-            console.log('done');
             // this forces the internal state to update; it is not necessary to activate stake, but
             // allows us to check that state is updated correctly after a timelock period rolls over.
             await staker.forceTimelockSyncAsync();
