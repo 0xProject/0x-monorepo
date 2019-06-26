@@ -99,4 +99,20 @@ contract IExchangeCore {
         public
         view
         returns (bytes32 orderHash);
+
+    /// @dev Validates context for fillOrder. Succeeds or throws.
+    /// @param order to be filled.
+    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
+    function assertValidFill(
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo,
+        uint256 takerAssetFillAmount,  // TODO: use FillResults
+        uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount
+    )
+        public
+        pure;
 }

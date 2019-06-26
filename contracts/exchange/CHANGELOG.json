@@ -105,6 +105,10 @@
             {
                 "note": "Add `validatorAddress` field to `SignatureValidatorError` rich reverts",
                 "pr": 1885
+            },
+            {
+                "note": "Make `assertValidFill` and `calculateMatchedFillResults` public",
+                "pr": 1885
             }
         ]
     },
