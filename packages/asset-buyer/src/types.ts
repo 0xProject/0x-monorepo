@@ -62,8 +62,19 @@ export interface CalldataInfo {
 export interface SmartContractParamsInfo<T> {
     params: T;
     to: string;
-    ethAmount: BigNumber;
+    ethAmount?: BigNumber;
     methodAbi: MethodAbi;
+}
+
+/**
+ * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
+ * makerAssetFillAmount: The amount of makerAsset to swap for.
+ * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ */
+export interface ExchangeMarketBuySmartContractParams {
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
 }
 
 /**
@@ -76,14 +87,17 @@ export interface SmartContractParamsInfo<T> {
  * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
-export interface ForwarderMarketBuySmartContractParams {
-    orders: SignedOrder[];
-    makerAssetFillAmount: BigNumber;
-    signatures: string[];
+export interface ForwarderMarketBuySmartContractParams extends ExchangeMarketBuySmartContractParams {
     feeOrders: SignedOrder[];
     feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
+}
+
+export interface ExchangeMarketBuySmartContractParams {
+    orders: SignedOrder[];
+    makerAssetFillAmount: BigNumber;
+    signatures: string[];
 }
 
 /**

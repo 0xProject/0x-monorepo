@@ -1,6 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { AbiEncoder, providerUtils } from '@0x/utils';
-import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
+import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -19,6 +19,7 @@ import {
 import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
 import { assetDataUtils } from '../utils/asset_data_utils';
+import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
 export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams> {
@@ -164,7 +165,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
 
-        const finalTakerAddress = await this._getTakerAddressOrThrowAsync(opts);
+        const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
 
         try {
             const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
@@ -193,25 +194,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
         }
     }
 
-    private async _getTakerAddressOrThrowAsync(opts: Partial<ForwarderSwapQuoteExecutionOpts>): Promise<string> {
-        if (opts.takerAddress !== undefined) {
-            return opts.takerAddress;
-        } else {
-            const web3Wrapper = new Web3Wrapper(this.provider);
-            const availableAddresses = await web3Wrapper.getAvailableAddressesAsync();
-            const firstAvailableAddress = _.head(availableAddresses);
-            if (firstAvailableAddress !== undefined) {
-                return firstAvailableAddress;
-            } else {
-                throw new Error(SwapQuoteConsumerError.NoAddressAvailable);
-            }
-        }
-    }
-
-    /**
-     * Get the assetData that represents the WETH token.
-     * Will throw if WETH does not exist for the current network.
-     */
     private _getEtherTokenAssetDataOrThrow(): string {
         return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
     }
