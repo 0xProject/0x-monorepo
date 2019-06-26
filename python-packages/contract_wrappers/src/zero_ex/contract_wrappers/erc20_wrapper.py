@@ -23,6 +23,9 @@ class ERC20Token(BaseContractWrapper):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param private_key: If specified, transactions will be signed locally,
+            via Web3.py's `eth.account.signTransaction()`:code:, before being
+            sent via `eth.sendRawTransaction()`:code:.
         """
         super(ERC20Token, self).__init__(
             provider=provider,
