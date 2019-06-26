@@ -119,7 +119,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        (Timelock memory timelock,) = _getSynchronizedTimelock(owner);
+        (IStructs.Timelock memory timelock,) = _getSynchronizedTimelock(owner);
         return timelock.total;
     }
 
@@ -128,7 +128,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        (Timelock memory timelock,) = _getSynchronizedTimelock(owner);
+        (IStructs.Timelock memory timelock,) = _getSynchronizedTimelock(owner);
         return timelock.lockedAt;
     }
 

@@ -25,9 +25,7 @@ import "../immutable/MixinStorage.sol";
 
 
 contract MixinExchange is
-    // interfaces
     IStakingEvents,
-    // immutables
     MixinConstants,
     MixinStorage
 {
