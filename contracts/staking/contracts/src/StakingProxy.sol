@@ -23,8 +23,8 @@ import "./interfaces/IStakingProxy.sol";
 
 
 contract StakingProxy is
-    IStakingProxy,
-    MixinStorage
+    MixinStorage,
+    IStakingProxy
 {
     address constant NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
