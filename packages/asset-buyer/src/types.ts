@@ -154,6 +154,11 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
  */
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
+export enum SwapQuoteOperation {
+    MarketSell = 'MARKET_SELL',
+    MarketBuy = 'MARKET_BUY',
+}
+
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -171,6 +176,7 @@ export interface SwapQuote {
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
+    operation: SwapQuoteOperation;
 }
 
 export interface SwapQuoteWithAffiliateFee extends SwapQuote {
@@ -195,6 +201,7 @@ export interface SwapQuoteInfo {
 export interface SwapQuoteRequestOpts {
     shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
+    operation: SwapQuoteOperation;
 }
 
 /*
