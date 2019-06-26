@@ -1,5 +1,5 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError, SignedOrder } from '@0x/contract-wrappers';
-import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
+import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -44,7 +44,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
      * @param opts  Options for getting CalldataInfo. See type definition for more information.
      */
-    public async getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<ForwarderSwapQuoteGetOutputOpts>): Promise<CalldataInfo> {
+    public async getCalldataOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
+    ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);

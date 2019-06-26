@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 
+// tslint:disable:no-unnecessary-type-assertion
 export const utils = {
     numberPercentageToEtherTokenAmountPercentage(percentage: number): BigNumber {
         return Web3Wrapper.toBaseUnitAmount(constants.ONE_AMOUNT, constants.ETHER_TOKEN_DECIMALS).multipliedBy(
