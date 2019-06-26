@@ -123,7 +123,7 @@ contract MixinSignatureValidator is
     /// @param order The order.
     /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
-    /// @return isValid true if the signature is valid for the given order and signer.
+    /// @return isValid `true` if the signature is valid for the given order and signer.
     function isValidOrderSignature(
         Order memory order,
         address signerAddress,
@@ -146,7 +146,7 @@ contract MixinSignatureValidator is
     /// @param transaction The transaction.
     /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
-    /// @return isValid true if the signature is valid for the given transaction and signer.
+    /// @return isValid `true` if the signature is valid for the given transaction and signer.
     function isValidTransactionSignature(
         ZeroExTransaction memory transaction,
         address signerAddress,
