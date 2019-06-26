@@ -21,7 +21,6 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
-
 import { StakerActor } from './actors/staker_actor';
 import { DelegatorActor } from './actors/delegator_actor';
 
@@ -77,7 +76,7 @@ describe('Exchange Integrations', () => {
     describe('Exchange Tracking in Staking Contract', () => {
         it('basic exchange tracking', async () => {
             // 1 try querying an invalid addresses
-            const invalidAddress = "0x0000000000000000000000000000000000000001";
+            const invalidAddress = '0x0000000000000000000000000000000000000001';
             const isInvalidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(invalidAddress);
             expect(isInvalidAddressValid).to.be.false();
             // 2 add valid address
@@ -87,7 +86,7 @@ describe('Exchange Integrations', () => {
             // 3 try adding valid address again
             await expectTransactionFailedAsync(
                 stakingWrapper.addExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressAlreadyRegistered
+                RevertReason.ExchangeAddressAlreadyRegistered,
             );
             // 4 remove valid address
             await stakingWrapper.removeExchangeAddressAsync(exchange);
@@ -96,7 +95,7 @@ describe('Exchange Integrations', () => {
             // 5 try removing valid address again
             await expectTransactionFailedAsync(
                 stakingWrapper.removeExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressNotRegistered
+                RevertReason.ExchangeAddressNotRegistered,
             );
         });
     });

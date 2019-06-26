@@ -133,13 +133,13 @@ export const eip712Utils = {
         poolId: string,
         makerAddress: string,
         verifyingContractAddress: string,
-        chainId: number
+        chainId: number,
     ): EIP712TypedData => {
         const domain = {
             name: constants.STAKING_DOMAIN_NAME,
             version: constants.STAKING_DOMAIN_VERSION,
             verifyingContractAddress,
-            chainId
+            chainId,
         };
         const approval = {
             poolId,

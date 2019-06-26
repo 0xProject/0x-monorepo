@@ -26,7 +26,7 @@ export class ApprovalFactory {
             poolId,
             makerAddress,
             this._verifyingContractAddress,
-            this._chainId
+            this._chainId,
         );
         const signatureBuff = signingUtils.signMessage(approvalHashBuff, this._privateKey, signatureType);
         const signedApproval = {
