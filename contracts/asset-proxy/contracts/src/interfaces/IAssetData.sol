@@ -48,5 +48,11 @@ interface IAssetData {
         bytes[] calldata nestedAssetData
     )
         external;
-    
+
+    function StaticCall(
+        address callTarget,
+        bytes calldata staticCallData,
+        bytes32 callResultHash
+    )
+        external;
 }

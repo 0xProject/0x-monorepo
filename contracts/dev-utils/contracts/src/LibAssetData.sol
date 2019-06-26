@@ -43,6 +43,9 @@ contract LibAssetData is
     bytes4 constant internal _ERC1155_BALANCE_OF_SELECTOR = 0x00fdd58e;
     bytes4 constant internal _ERC1155_IS_APPROVED_FOR_ALL_SELECTOR = 0xe985e9c5;
 
+    // `transferFrom` selector for all AssetProxy contracts
+    bytes4 constant internal _ASSET_PROXY_TRANSFER_FROM_SELECTOR = 0xa85e59e4;
+
     using LibBytes for bytes;
 
     // solhint-disable var-name-mixedcase
@@ -50,6 +53,7 @@ contract LibAssetData is
     address internal _ERC20_PROXY_ADDRESS;
     address internal _ERC721_PROXY_ADDRESS;
     address internal _ERC1155_PROXY_ADDRESS;
+    address internal _STATIC_CALL_PROXY_ADDRESS;
     // solhint-enable var-name-mixedcase
 
     constructor (address _exchange)
@@ -59,6 +63,7 @@ contract LibAssetData is
         _ERC20_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(ERC20_PROXY_ID);
         _ERC721_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(ERC721_PROXY_ID);
         _ERC1155_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(ERC1155_PROXY_ID);
+        _STATIC_CALL_PROXY_ADDRESS = _EXCHANGE.getAssetProxy(STATIC_CALL_PROXY_ID);
     }
 
     /// @dev Returns the owner's balance of the assets(s) specified in
@@ -115,6 +120,21 @@ contract LibAssetData is
                     balance = scaledBalance;
                 }
             }
+        } else if (assetProxyId == STATIC_CALL_PROXY_ID) {
+            // Encode data for `staticCallProxy.transferFrom(assetData,...)`
+            bytes memory transferFromData = abi.encodeWithSelector(
+                _ASSET_PROXY_TRANSFER_FROM_SELECTOR,
+                assetData,
+                address(0),  // `from` address is not used
+                address(0),  // `to` address is not used
+                0            // `amount` is not used
+            );
+
+            // Check if staticcall would be successful
+            (bool success,) = _STATIC_CALL_PROXY_ADDRESS.staticcall(transferFromData);
+
+            // Success means that the staticcall can be made an unlimited amount of times
+            balance = success ? _MAX_UINT256 : 0;
         } else if (assetProxyId == MULTI_ASSET_PROXY_ID) {
             // Get array of values and array of assetDatas
             (, uint256[] memory assetAmounts, bytes[] memory nestedAssetData) = decodeMultiAssetData(assetData);
@@ -241,6 +261,9 @@ contract LibAssetData is
             // Query allowance
             (bool success, bytes memory returnData) = tokenAddress.staticcall(isApprovedForAllData);
             allowance = success && returnData.length == 32 && returnData.readUint256(0) == 1 ? _MAX_UINT256 : 0;
+        } else if (assetProxyId == STATIC_CALL_PROXY_ID) {
+            // The StaticCallProxy does not require any approvals
+            allowance = _MAX_UINT256;
         }
 
         // Allowance will be 0 if the assetProxyId is unknown

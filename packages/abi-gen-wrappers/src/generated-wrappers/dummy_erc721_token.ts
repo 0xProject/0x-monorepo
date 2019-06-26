@@ -90,6 +90,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public getApproved = {
         async callAsync(
@@ -126,6 +132,15 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _tokenId: BigNumber,
+            ): string {
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public approve = {
@@ -203,18 +218,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _approved: string,
-            _tokenId: BigNumber,
-        ): string {
-        assert.isString('_approved', _approved);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
-    _tokenId
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _approved: string,
             _tokenId: BigNumber,
@@ -252,6 +255,18 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _approved: string,
+                _tokenId: BigNumber,
+            ): string {
+            assert.isString('_approved', _approved);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_approved,
+        _tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transferFrom = {
@@ -339,21 +354,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-        ): string {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
-    _to,
-    _tokenId
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _from: string,
             _to: string,
@@ -394,6 +394,21 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _from: string,
+                _to: string,
+                _tokenId: BigNumber,
+            ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        _to,
+        _tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public mint = {
@@ -471,18 +486,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _to: string,
-            _tokenId: BigNumber,
-        ): string {
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to,
-    _tokenId
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _to: string,
             _tokenId: BigNumber,
@@ -520,6 +523,18 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _to: string,
+                _tokenId: BigNumber,
+            ): string {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to,
+        _tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public safeTransferFrom1 = {
@@ -607,21 +622,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-        ): string {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
-    _to,
-    _tokenId
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _from: string,
             _to: string,
@@ -663,6 +663,21 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _from: string,
+                _to: string,
+                _tokenId: BigNumber,
+            ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [_from,
+        _to,
+        _tokenId
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public ownerOf = {
         async callAsync(
@@ -699,6 +714,15 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _tokenId: BigNumber,
+            ): string {
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public balanceOf = {
@@ -737,6 +761,15 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _owner: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public owner = {
         async callAsync(
@@ -771,6 +804,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public symbol = {
         async callAsync(
@@ -804,6 +843,12 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
+            return abiEncodedTransactionData;
         },
     };
     public burn = {
@@ -881,18 +926,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _owner: string,
-            _tokenId: BigNumber,
-        ): string {
-        assert.isString('_owner', _owner);
-        assert.isBigNumber('_tokenId', _tokenId);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
-    _tokenId
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _owner: string,
             _tokenId: BigNumber,
@@ -930,6 +963,18 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _owner: string,
+                _tokenId: BigNumber,
+            ): string {
+            assert.isString('_owner', _owner);
+            assert.isBigNumber('_tokenId', _tokenId);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner,
+        _tokenId
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public setApprovalForAll = {
@@ -1007,18 +1052,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _operator: string,
-            _approved: boolean,
-        ): string {
-        assert.isString('_operator', _operator);
-        assert.isBoolean('_approved', _approved);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
-    _approved
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _operator: string,
             _approved: boolean,
@@ -1056,6 +1089,18 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _operator: string,
+                _approved: boolean,
+            ): string {
+            assert.isString('_operator', _operator);
+            assert.isBoolean('_approved', _approved);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator,
+        _approved
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public safeTransferFrom2 = {
@@ -1153,24 +1198,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _from: string,
-            _to: string,
-            _tokenId: BigNumber,
-            _data: string,
-        ): string {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_tokenId', _tokenId);
-        assert.isString('_data', _data);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
-    _to,
-    _tokenId,
-    _data
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _from: string,
             _to: string,
@@ -1215,6 +1242,24 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _from: string,
+                _to: string,
+                _tokenId: BigNumber,
+                _data: string,
+            ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_tokenId', _tokenId);
+            assert.isString('_data', _data);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [_from,
+        _to,
+        _tokenId,
+        _data
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public isApprovedForAll = {
         async callAsync(
@@ -1254,6 +1299,18 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _owner: string,
+                _operator: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            assert.isString('_operator', _operator);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isApprovedForAll(address,address)', [_owner,
+        _operator
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
@@ -1321,15 +1378,6 @@ export class DummyERC721TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            newOwner: string,
-        ): string {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as DummyERC721TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -1364,6 +1412,15 @@ export class DummyERC721TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
+            assert.isString('newOwner', newOwner);
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -112,15 +112,6 @@ export class ERC20ProxyContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            target: string,
-        ): string {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             target: string,
             callData: Partial<CallData> = {},
@@ -155,6 +146,15 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                target: string,
+            ): string {
+            assert.isString('target', target);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public authorities = {
@@ -192,6 +192,15 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                index_0: BigNumber,
+            ): string {
+            assert.isBigNumber('index_0', index_0);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public removeAuthorizedAddress = {
@@ -259,15 +268,6 @@ export class ERC20ProxyContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            target: string,
-        ): string {
-        assert.isString('target', target);
-        const self = this as any as ERC20ProxyContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             target: string,
             callData: Partial<CallData> = {},
@@ -303,6 +303,15 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                target: string,
+            ): string {
+            assert.isString('target', target);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public owner = {
         async callAsync(
@@ -336,6 +345,12 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
+            return abiEncodedTransactionData;
         },
     };
     public removeAuthorizedAddressAtIndex = {
@@ -413,18 +428,6 @@ export class ERC20ProxyContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            target: string,
-            index: BigNumber,
-        ): string {
-        assert.isString('target', target);
-        assert.isBigNumber('index', index);
-        const self = this as any as ERC20ProxyContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
-    index
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             target: string,
             index: BigNumber,
@@ -463,6 +466,18 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                target: string,
+                index: BigNumber,
+            ): string {
+            assert.isString('target', target);
+            assert.isBigNumber('index', index);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [target,
+        index
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getProxyId = {
         async callAsync(
@@ -496,6 +511,12 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
+            return abiEncodedTransactionData;
         },
     };
     public authorized = {
@@ -534,6 +555,15 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('authorized(address)', [index_0
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getAuthorizedAddresses = {
         async callAsync(
@@ -567,6 +597,12 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
@@ -634,15 +670,6 @@ export class ERC20ProxyContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            newOwner: string,
-        ): string {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as ERC20ProxyContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -677,6 +704,15 @@ export class ERC20ProxyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
+            assert.isString('newOwner', newOwner);
+            const self = this as any as ERC20ProxyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

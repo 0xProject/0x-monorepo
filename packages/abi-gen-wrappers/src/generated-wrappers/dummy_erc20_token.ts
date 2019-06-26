@@ -82,6 +82,12 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public approve = {
         async sendTransactionAsync(
@@ -158,18 +164,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _spender: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_spender', _spender);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -208,6 +202,18 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _spender: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_spender', _spender);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+        _value
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public totalSupply = {
         async callAsync(
@@ -241,6 +247,12 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transferFrom = {
@@ -328,21 +340,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _from: string,
-            _to: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
-    _to,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _from: string,
             _to: string,
@@ -384,6 +381,21 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _from: string,
+                _to: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        _to,
+        _value
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public decimals = {
         async callAsync(
@@ -417,6 +429,12 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
+            return abiEncodedTransactionData;
         },
     };
     public balanceOf = {
@@ -455,6 +473,15 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _owner: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public owner = {
         async callAsync(
@@ -489,6 +516,12 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public symbol = {
         async callAsync(
@@ -522,6 +555,12 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
+            return abiEncodedTransactionData;
         },
     };
     public mint = {
@@ -589,15 +628,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _value: BigNumber,
-        ): string {
-        assert.isBigNumber('_value', _value);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _value: BigNumber,
             callData: Partial<CallData> = {},
@@ -632,6 +662,15 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _value: BigNumber,
+            ): string {
+            assert.isBigNumber('_value', _value);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transfer = {
@@ -709,18 +748,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _to: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -758,6 +785,18 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _to: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+        _value
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public allowance = {
@@ -798,6 +837,18 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _owner: string,
+                _spender: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            assert.isString('_spender', _spender);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [_owner,
+        _spender
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public setBalance = {
@@ -875,18 +926,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _target: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_target', _target);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _target: string,
             _value: BigNumber,
@@ -924,6 +963,18 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _target: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_target', _target);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setBalance(address,uint256)', [_target,
+        _value
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
@@ -991,15 +1042,6 @@ export class DummyERC20TokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            newOwner: string,
-        ): string {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as DummyERC20TokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -1035,6 +1077,15 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
+            assert.isString('newOwner', newOwner);
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public MAX_MINT_AMOUNT = {
         async callAsync(
@@ -1068,6 +1119,12 @@ export class DummyERC20TokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as DummyERC20TokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('MAX_MINT_AMOUNT()', []);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

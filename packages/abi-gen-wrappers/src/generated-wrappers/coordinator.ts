@@ -67,6 +67,18 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                hash: string,
+                signature: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isString('signature', signature);
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getSignerAddress(bytes32,bytes)', [hash,
+        signature
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getTransactionHash = {
         async callAsync(
@@ -104,6 +116,15 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                transaction: {salt: BigNumber;signerAddress: string;data: string},
+            ): string {
+            
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getTransactionHash((uint256,address,bytes))', [transaction
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public getCoordinatorApprovalHash = {
         async callAsync(
@@ -140,6 +161,15 @@ export class CoordinatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                approval: {txOrigin: string;transactionHash: string;transactionSignature: string;approvalExpirationTimeSeconds: BigNumber},
+            ): string {
+            
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))', [approval
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public executeTransaction = {
@@ -247,27 +277,6 @@ export class CoordinatorContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            transaction: {salt: BigNumber;signerAddress: string;data: string},
-            txOrigin: string,
-            transactionSignature: string,
-            approvalExpirationTimeSeconds: BigNumber[],
-            approvalSignatures: string[],
-        ): string {
-        
-        assert.isString('txOrigin', txOrigin);
-        assert.isString('transactionSignature', transactionSignature);
-        assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
-        assert.isArray('approvalSignatures', approvalSignatures);
-        const self = this as any as CoordinatorContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
-    txOrigin,
-    transactionSignature,
-    approvalExpirationTimeSeconds,
-    approvalSignatures
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             transaction: {salt: BigNumber;signerAddress: string;data: string},
             txOrigin: string,
@@ -315,6 +324,27 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                transaction: {salt: BigNumber;signerAddress: string;data: string},
+                txOrigin: string,
+                transactionSignature: string,
+                approvalExpirationTimeSeconds: BigNumber[],
+                approvalSignatures: string[],
+            ): string {
+            
+            assert.isString('txOrigin', txOrigin);
+            assert.isString('transactionSignature', transactionSignature);
+            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
+            assert.isArray('approvalSignatures', approvalSignatures);
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
+        txOrigin,
+        transactionSignature,
+        approvalExpirationTimeSeconds,
+        approvalSignatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         async callAsync(
@@ -348,6 +378,12 @@ export class CoordinatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_EXCHANGE_DOMAIN_HASH()', []);
+            return abiEncodedTransactionData;
         },
     };
     public assertValidCoordinatorApprovals = {
@@ -398,6 +434,27 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                transaction: {salt: BigNumber;signerAddress: string;data: string},
+                txOrigin: string,
+                transactionSignature: string,
+                approvalExpirationTimeSeconds: BigNumber[],
+                approvalSignatures: string[],
+            ): string {
+            
+            assert.isString('txOrigin', txOrigin);
+            assert.isString('transactionSignature', transactionSignature);
+            assert.isArray('approvalExpirationTimeSeconds', approvalExpirationTimeSeconds);
+            assert.isArray('approvalSignatures', approvalSignatures);
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])', [transaction,
+        txOrigin,
+        transactionSignature,
+        approvalExpirationTimeSeconds,
+        approvalSignatures
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public decodeOrdersFromFillData = {
         async callAsync(
@@ -435,6 +492,15 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                data: string,
+            ): string {
+            assert.isString('data', data);
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decodeOrdersFromFillData(bytes)', [data
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public EIP712_COORDINATOR_DOMAIN_HASH = {
         async callAsync(
@@ -468,6 +534,12 @@ export class CoordinatorContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as CoordinatorContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_COORDINATOR_DOMAIN_HASH()', []);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(
@@ -526,7 +598,7 @@ export class CoordinatorContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Coordinator successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new CoordinatorContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new CoordinatorContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [_exchange
 ];
         return contractInstance;

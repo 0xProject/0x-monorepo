@@ -96,6 +96,12 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public approve = {
         async sendTransactionAsync(
@@ -172,18 +178,6 @@ export class WETH9Contract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            guy: string,
-            wad: BigNumber,
-        ): string {
-        assert.isString('guy', guy);
-        assert.isBigNumber('wad', wad);
-        const self = this as any as WETH9Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [guy,
-    wad
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             guy: string,
             wad: BigNumber,
@@ -222,6 +216,18 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                guy: string,
+                wad: BigNumber,
+            ): string {
+            assert.isString('guy', guy);
+            assert.isBigNumber('wad', wad);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [guy,
+        wad
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public totalSupply = {
         async callAsync(
@@ -255,6 +261,12 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transferFrom = {
@@ -342,21 +354,6 @@ export class WETH9Contract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            src: string,
-            dst: string,
-            wad: BigNumber,
-        ): string {
-        assert.isString('src', src);
-        assert.isString('dst', dst);
-        assert.isBigNumber('wad', wad);
-        const self = this as any as WETH9Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
-    dst,
-    wad
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             src: string,
             dst: string,
@@ -397,6 +394,21 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                src: string,
+                dst: string,
+                wad: BigNumber,
+            ): string {
+            assert.isString('src', src);
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src,
+        dst,
+        wad
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public withdraw = {
@@ -464,15 +476,6 @@ export class WETH9Contract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            wad: BigNumber,
-        ): string {
-        assert.isBigNumber('wad', wad);
-        const self = this as any as WETH9Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             wad: BigNumber,
             callData: Partial<CallData> = {},
@@ -508,6 +511,15 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                wad: BigNumber,
+            ): string {
+            assert.isBigNumber('wad', wad);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public decimals = {
         async callAsync(
@@ -541,6 +553,12 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
+            return abiEncodedTransactionData;
         },
     };
     public balanceOf = {
@@ -579,6 +597,15 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [index_0
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public symbol = {
         async callAsync(
@@ -612,6 +639,12 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transfer = {
@@ -689,18 +722,6 @@ export class WETH9Contract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            dst: string,
-            wad: BigNumber,
-        ): string {
-        assert.isString('dst', dst);
-        assert.isBigNumber('wad', wad);
-        const self = this as any as WETH9Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
-    wad
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             dst: string,
             wad: BigNumber,
@@ -738,6 +759,18 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                dst: string,
+                wad: BigNumber,
+            ): string {
+            assert.isString('dst', dst);
+            assert.isBigNumber('wad', wad);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [dst,
+        wad
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public deposit = {
@@ -795,12 +828,6 @@ export class WETH9Contract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-        ): string {
-        const self = this as any as WETH9Contract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
@@ -832,6 +859,12 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
+            return abiEncodedTransactionData;
         },
     };
     public allowance = {
@@ -872,6 +905,18 @@ export class WETH9Contract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
+            assert.isString('index_0', index_0);
+            assert.isString('index_1', index_1);
+            const self = this as any as WETH9Contract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [index_0,
+        index_1
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(
