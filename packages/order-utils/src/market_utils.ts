@@ -9,10 +9,20 @@ import {
     FeeOrdersAndRemainingFeeAmount,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
+    FindOrdersThatCoverTakerAssetFillAmountOpts,
     OrdersAndRemainingFillAmount,
 } from './types';
 
 export const marketUtils = {
+    findOrdersThatCoverTakerAssetFillAmount<T extends Order>(
+        orders: T[],
+        takerAssetFillAmount: BigNumber,
+        opts?: FindOrdersThatCoverTakerAssetFillAmountOpts,
+    ): OrdersAndRemainingFillAmount<T> {
+        assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
+        assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
+        
+    },
     /**
      * Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount
      * in order to fill the input makerAssetFillAmount plus slippageBufferAmount. Iterates from first order to last order.
