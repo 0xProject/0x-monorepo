@@ -58,6 +58,7 @@ export interface MatchResults {
 
 export interface BatchMatchResults {
     matches: MatchResults[];
+    filledAmounts: Array<[SignedOrder, BigNumber, string]>;
 }
 
 export interface ERC1155Holdings {
@@ -99,6 +100,12 @@ export interface MatchedOrders {
     rightOrderTakerAssetFilledAmount?: BigNumber;
 }
 
+export type BatchMatchOrdersAsyncCall = (
+    leftOrders: SignedOrder[],
+    rightOrders: SignedOrder[],
+    takerAddress: string,
+) => Promise<TransactionReceiptWithDecodedLogs>;
+
 export type MatchOrdersAsyncCall = (
     leftOrder: SignedOrder,
     rightOrder: SignedOrder,
@@ -110,6 +117,7 @@ export class MatchOrderTester {
     public erc20Wrapper: ERC20Wrapper;
     public erc721Wrapper: ERC721Wrapper;
     public erc1155ProxyWrapper: ERC1155ProxyWrapper;
+    public batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall;
     public matchOrdersCallAsync?: MatchOrdersAsyncCall;
     private readonly _initialTokenBalancesPromise: Promise<TokenBalances>;
 
@@ -119,6 +127,8 @@ export class MatchOrderTester {
      * @param erc20Wrapper Used to fetch ERC20 balances.
      * @param erc721Wrapper Used to fetch ERC721 token owners.
      * @param erc1155Wrapper Used to fetch ERC1155 token owners.
+     * @param batchMatchOrdersCallAsync Optional, custom caller for
+     *                             `ExchangeWrapper.batchMatchOrdersAsync()`.
      * @param matchOrdersCallAsync Optional, custom caller for
      *                             `ExchangeWrapper.matchOrdersAsync()`.
      */
@@ -128,6 +138,7 @@ export class MatchOrderTester {
         erc721Wrapper: ERC721Wrapper,
         erc1155ProxyWrapper: ERC1155ProxyWrapper,
         matchOrdersCallAsync?: MatchOrdersAsyncCall,
+        batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall,
     ) {
         this.exchangeWrapper = exchangeWrapper;
         this.erc20Wrapper = erc20Wrapper;
@@ -138,19 +149,50 @@ export class MatchOrderTester {
     }
 
     /**
-     * FIXME What parameters are necessary?
+     * Performs batch order matching on a set of complementary orders and asserts results.
+     * @param orders The list of orders and filled states
+     * @param matchPairs An array of left and right indices that will be used to perform
+     *                   the expected simulation.
+     * @param takerAddress Address of taker (the address who matched the two orders)
+     * @param expectedTransferAmounts Expected amounts transferred as a result of each round of
+     *                                order matching. Omitted fields are either set to 0 or their
+     *                                complementary field.
+     * @return Results of `batchMatchOrders()`.
      */
     public async batchMatchOrdersAndAssertEffectsAsync(
         orders: BatchMatchedOrders,
         takerAddress: string,
-        matchPairs: [number, number][],
-        expectedTransferAmounts: Partial<MatchTransferAmounts>[],
+        matchPairs: Array<[number, number]>,
+        expectedTransferAmounts: Array<Partial<MatchTransferAmounts>>,
         initialTokenBalances?: TokenBalances,
     ): Promise<BatchMatchResults> {
         await assertBatchOrderStatesAsync(orders, this.exchangeWrapper);
-        return {
-            matches: [],
-        };
+        // Get the token balances before executing `matchOrders()`.
+        const _initialTokenBalances = initialTokenBalances
+            ? initialTokenBalances
+            : await this._initialTokenBalancesPromise;
+        // Execute `matchOrders()`
+        const transactionReceipt = await this._executeBatchMatchOrdersAsync(
+            orders.leftOrders,
+            orders.rightOrders,
+            takerAddress,
+        );
+        // Simulate the batch order match.
+        const batchMatchResults = simulateBatchMatchOrders(
+            orders,
+            takerAddress,
+            _initialTokenBalances,
+            matchPairs,
+            expectedTransferAmounts,
+        );
+        // Validate the simulation against reality.
+        await assertBatchMatchResultsAsync(
+            batchMatchResults,
+            transactionReceipt,
+            await this.getBalancesAsync(),
+            this.exchangeWrapper,
+        );
+        return batchMatchResults;
     }
 
     /**
@@ -186,7 +228,7 @@ export class MatchOrderTester {
             _initialTokenBalances,
             toFullMatchTransferAmounts(expectedTransferAmounts),
         );
-        // Validate the simulation against realit.
+        // Validate the simulation against reality.
         await assertMatchResultsAsync(
             matchResults,
             transactionReceipt,
@@ -201,6 +243,18 @@ export class MatchOrderTester {
      */
     public async getBalancesAsync(): Promise<TokenBalances> {
         return getTokenBalancesAsync(this.erc20Wrapper, this.erc721Wrapper, this.erc1155ProxyWrapper);
+    }
+
+    private async _executeBatchMatchOrdersAsync(
+        leftOrders: SignedOrder[],
+        rightOrders: SignedOrder[],
+        takerAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const caller =
+            this.batchMatchOrdersCallAsync ||
+            (async (_leftOrders: SignedOrder[], _rightOrders: SignedOrder[], _takerAddress: string) =>
+                this.exchangeWrapper.batchMatchOrdersAsync(_leftOrders, _rightOrders, _takerAddress));
+        return caller(leftOrders, rightOrders, takerAddress);
     }
 
     private async _executeMatchOrdersAsync(
@@ -252,6 +306,112 @@ function toFullMatchTransferAmounts(partial: Partial<MatchTransferAmounts>): Mat
         rightTakerFeeAssetPaidByTakerAmount:
             partial.rightTakerFeeAssetPaidByTakerAmount || ZERO,
     };
+}
+
+/**
+ * Simulates matching a batch of orders by transferring amounts defined in
+ * `transferAmounts` and returns the results.
+ * @param orders The orders being batch matched and their filled states.
+ * @param takerAddress Address of taker (the address who matched the two orders)
+ * @param tokenBalances Current token balances.
+ * @param transferAmounts Amounts to transfer during the simulation.
+ * @return The new account balances and fill events that occurred during the match.
+ */
+function simulateBatchMatchOrders(
+    orders: BatchMatchedOrders,
+    takerAddress: string,
+    tokenBalances: TokenBalances,
+    matchPairs: Array<[number, number]>,
+    transferAmounts: Array<Partial<MatchTransferAmounts>>,
+): BatchMatchResults {
+    // Initialize variables
+    let lastLeftIdx = 0;
+    let lastRightIdx = 0;
+    let matchedOrders: MatchedOrders;
+    const batchMatchResults: BatchMatchResults = {
+        matches: [],
+        filledAmounts: [],
+    };
+    // Loop over all of the matched pairs from the round
+    for (let i = 0; i < matchPairs.length; i++) {
+        const leftIdx = matchPairs[i][0];
+        const rightIdx = matchPairs[i][1];
+        // Construct a matched order out of the current left and right orders
+        matchedOrders = {
+            leftOrder: orders.leftOrders[leftIdx],
+            rightOrder: orders.rightOrders[rightIdx],
+            leftOrderTakerAssetFilledAmount: orders.leftOrdersTakerAssetFilledAmounts[leftIdx],
+            rightOrderTakerAssetFilledAmount: orders.rightOrdersTakerAssetFilledAmounts[rightIdx],
+        };
+        // If there has been a match recorded and one or both of the side indices have not changed,
+        // replace the side's taker asset filled amount
+        if (batchMatchResults.matches.length > 0) {
+            if (lastLeftIdx === leftIdx) {
+                matchedOrders.leftOrderTakerAssetFilledAmount =
+                    getLastMatch(batchMatchResults)
+                        .orders.leftOrderTakerAssetFilledAmount;
+            } else {
+                batchMatchResults.filledAmounts.push([
+                    orders.leftOrders[lastLeftIdx],
+                    getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || ZERO,
+                    'left',
+                ]);
+            }
+            if (lastRightIdx === rightIdx) {
+                matchedOrders.rightOrderTakerAssetFilledAmount =
+                    getLastMatch(batchMatchResults)
+                        .orders.rightOrderTakerAssetFilledAmount;
+            } else {
+                batchMatchResults.filledAmounts.push([
+                    orders.rightOrders[lastRightIdx],
+                    getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
+                    'right',
+                ]);
+            }
+        }
+        lastLeftIdx = leftIdx;
+        lastRightIdx = rightIdx;
+        // Add the latest match to the batch match results
+        batchMatchResults.matches.push(
+            simulateMatchOrders(
+                matchedOrders,
+                takerAddress,
+                tokenBalances,
+                toFullMatchTransferAmounts(transferAmounts[i]),
+            ),
+        );
+    }
+    // The two orders indexed by lastLeftIdx and lastRightIdx were potentially
+    // filled; however, the TakerAssetFilledAmounts that pertain to these orders
+    // will not have been added to batchMatchResults, so we need to write them
+    // here.
+    batchMatchResults.filledAmounts.push([
+        orders.leftOrders[lastLeftIdx],
+        getLastMatch(batchMatchResults).orders.leftOrderTakerAssetFilledAmount || ZERO,
+        'left',
+    ]);
+    batchMatchResults.filledAmounts.push([
+        orders.rightOrders[lastRightIdx],
+        getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
+        'right',
+    ]);
+    // Write the remaining order's fill amounts in the batch match results
+    for (let j = lastLeftIdx + 1; j < orders.leftOrders.length; j++) {
+        batchMatchResults.filledAmounts.push([
+            orders.leftOrders[j],
+            orders.leftOrdersTakerAssetFilledAmounts[j] || ZERO,
+            'left',
+        ]);
+    }
+    for (let k = lastRightIdx + 1; k < orders.rightOrders.length; k++) {
+        batchMatchResults.filledAmounts.push([
+            orders.rightOrders[k],
+            orders.rightOrdersTakerAssetFilledAmounts[k] || ZERO,
+            'right',
+        ]);
+    }
+    // Return the batch match results
+    return batchMatchResults;
 }
 
 /**
@@ -434,6 +594,32 @@ function transferAsset(
 }
 
 /**
+ * Checks that the results of `simulateBatchMatchOrders()` agrees with reality.
+ * @param batchMatchResults The results of a `simulateBatchMatchOrders()`.
+ * @param transactionReceipt The transaction receipt of a call to `matchOrders()`.
+ * @param actualTokenBalances The actual, on-chain token balances of known addresses.
+ * @param exchangeWrapper The ExchangeWrapper instance.
+ */
+async function assertBatchMatchResultsAsync(
+    batchMatchResults: BatchMatchResults,
+    transactionReceipt: TransactionReceiptWithDecodedLogs,
+    actualTokenBalances: TokenBalances,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
+    // Ensure that the batchMatchResults contain at least one match
+    expect(batchMatchResults.matches.length).to.be.gt(0);
+    // Check the fill events.
+    assertFillEvents(
+        batchMatchResults.matches.map(match => match.fills).reduce((total, fills) => total.concat(fills)),
+        transactionReceipt,
+    );
+    // Check the token balances.
+    assertBalances(batchMatchResults.matches[batchMatchResults.matches.length - 1].balances, actualTokenBalances);
+    // Check the Exchange state.
+    await assertPostBatchExchangeStateAsync(batchMatchResults, exchangeWrapper);
+}
+
+/**
  * Checks that the results of `simulateMatchOrders()` agrees with reality.
  * @param matchResults The results of a `simulateMatchOrders()`.
  * @param transactionReceipt The transaction receipt of a call to `matchOrders()`.
@@ -555,24 +741,36 @@ function assertBalances(expectedBalances: TokenBalances, actualBalances: TokenBa
 }
 
 /**
- * FIXME: Update these comments
- * Asserts initial exchange state for matched orders.
- * @param orders Matched orders with intial filled amounts.
- * @param exchangeWrapper ExchangeWrapper isntance.
+ * Asserts the initial exchange state for batch matched orders.
+ * @param orders Batch matched orders with intial filled amounts.
+ * @param exchangeWrapper ExchangeWrapper instance.
  */
-async function assertBatchOrderStatesAsync(orders: BatchMatchedOrders, exchangeWrapper: ExchangeWrapper): Promise<void> {
+async function assertBatchOrderStatesAsync(
+    orders: BatchMatchedOrders,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
     for (let i = 0; i < orders.leftOrders.length; i++) {
-        assertOrderStateAsync(orders.leftOrders[i], orders.leftOrdersTakerAssetFilledAmounts[i], 'left', exchangeWrapper);
+        await assertOrderFilledAmountAsync(
+            orders.leftOrders[i],
+            orders.leftOrdersTakerAssetFilledAmounts[i],
+            'left',
+            exchangeWrapper,
+        );
     }
     for (let i = 0; i < orders.rightOrders.length; i++) {
-        assertOrderStateAsync(orders.rightOrders[i], orders.rightOrdersTakerAssetFilledAmounts[i], 'right', exchangeWrapper);
+        await assertOrderFilledAmountAsync(
+            orders.rightOrders[i],
+            orders.rightOrdersTakerAssetFilledAmounts[i],
+            'right',
+            exchangeWrapper,
+        );
     }
 }
 
 /**
- * Asserts initial exchange state for matched orders.
+ * Asserts the initial exchange state for matched orders.
  * @param orders Matched orders with intial filled amounts.
- * @param exchangeWrapper ExchangeWrapper isntance.
+ * @param exchangeWrapper ExchangeWrapper instance.
  */
 async function assertInitialOrderStatesAsync(orders: MatchedOrders, exchangeWrapper: ExchangeWrapper): Promise<void> {
     const pairs = [
@@ -582,23 +780,21 @@ async function assertInitialOrderStatesAsync(orders: MatchedOrders, exchangeWrap
     await Promise.all(
         pairs.map(async ([order, expectedFilledAmount]) => {
             const side = order === orders.leftOrder ? 'left' : 'right';
-            await assertOrderStateAsync(order, expectedFilledAmount, side, exchangeWrapper);
-        })
+            await assertOrderFilledAmountAsync(order, expectedFilledAmount, side, exchangeWrapper);
+        }),
     );
 }
 
 /**
- * FIXME: This needs to be commented and the name should be reconsidered
+ * Asserts the exchange state after a call to `batchMatchOrders()`.
+ * @param batchMatchResults Results from a call to `simulateBatchMatchOrders()`.
+ * @param exchangeWrapper The ExchangeWrapper instance.
  */
-async function assertOrderStateAsync(
-    order: SignedOrder,
-    expectedFilledAmount: BigNumber,
-    side: string,
-    exchangeWrapper: ExchangeWrapper
+async function assertPostBatchExchangeStateAsync(
+    batchMatchResults: BatchMatchResults,
+    exchangeWrapper: ExchangeWrapper,
 ): Promise<void> {
-    const orderHash = orderHashUtils.getOrderHashHex(order);
-    const actualFilledAmount = await exchangeWrapper.getTakerAssetFilledAmountAsync(orderHash);
-    expect(actualFilledAmount, `${side} order initial filled amount`).to.bignumber.equal(expectedFilledAmount);
+    await assertTriplesExchangeStateAsync(batchMatchResults.filledAmounts, exchangeWrapper);
 }
 
 /**
@@ -610,25 +806,58 @@ async function assertPostExchangeStateAsync(
     matchResults: MatchResults,
     exchangeWrapper: ExchangeWrapper,
 ): Promise<void> {
-    const pairs = [
-        [matchResults.orders.leftOrder, matchResults.orders.leftOrderTakerAssetFilledAmount],
-        [matchResults.orders.rightOrder, matchResults.orders.rightOrderTakerAssetFilledAmount],
-    ] as Array<[SignedOrder, BigNumber]>;
+    const triples = [
+        [matchResults.orders.leftOrder, matchResults.orders.leftOrderTakerAssetFilledAmount, 'left'],
+        [matchResults.orders.rightOrder, matchResults.orders.rightOrderTakerAssetFilledAmount, 'right'],
+    ] as Array<[SignedOrder, BigNumber, string]>;
+    await assertTriplesExchangeStateAsync(triples, exchangeWrapper);
+}
+
+/**
+ * Asserts the exchange state represented by provided sequence of triples.
+ * @param triples The sequence of triples to verifiy. Each triple consists
+ *                of an `order`, a `takerAssetFilledAmount`, and a `side`,
+ *                which will be used to determine if the exchange's state
+ *                is valid.
+ * @param exchangeWrapper The ExchangeWrapper instance.
+ */
+async function assertTriplesExchangeStateAsync(
+    triples: Array<[SignedOrder, BigNumber, string]>,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
     await Promise.all(
-        pairs.map(async ([order, expectedFilledAmount]) => {
-            const side = order === matchResults.orders.leftOrder ? 'left' : 'right';
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(order);
-            // Check filled amount of order.
-            const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
-            expect(actualFilledAmount, `${side} order final filled amount`).to.be.bignumber.equal(expectedFilledAmount);
-            // Check status of order.
-            const expectedStatus = expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount)
-                ? OrderStatus.FullyFilled
-                : OrderStatus.Fillable;
-            const actualStatus = orderInfo.orderStatus;
-            expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
+        triples.map(async ([order, expectedFilledAmount, side]) => {
+            expect(['left', 'right']).to.include(side);
+            await assertOrderFilledAmountAsync(order, expectedFilledAmount, side, exchangeWrapper);
         }),
     );
+}
+
+/**
+ * Asserts that the provided order's fill amount and order status
+ * are the expected values.
+ * @param order The order to verify for a correct state.
+ * @param expectedFilledAmount The amount that the order should
+ *                             have been filled.
+ * @param side The side that the provided order should be matched on.
+ * @param exchangeWrapper The ExchangeWrapper instance.
+ */
+async function assertOrderFilledAmountAsync(
+    order: SignedOrder,
+    expectedFilledAmount: BigNumber,
+    side: string,
+    exchangeWrapper: ExchangeWrapper,
+): Promise<void> {
+    const orderInfo = await exchangeWrapper.getOrderInfoAsync(order);
+    // Check filled amount of order.
+    const actualFilledAmount = orderInfo.orderTakerAssetFilledAmount;
+    expect(actualFilledAmount, `${side} order final filled amount`).to.be.bignumber.equal(expectedFilledAmount);
+    // Check status of order.
+    const expectedStatus = expectedFilledAmount.isGreaterThanOrEqualTo(order.takerAssetAmount)
+        ? OrderStatus.FullyFilled
+        : OrderStatus.Fillable;
+    const actualStatus = orderInfo.orderStatus;
+    expect(actualStatus, `${side} order final status`).to.equal(expectedStatus);
 }
 
 /**
@@ -687,5 +916,14 @@ function encodeTokenBalances(obj: any): any {
     }
     const keys = _.keys(obj).sort();
     return _.zip(keys, keys.map(k => encodeTokenBalances(obj[k])));
+}
+
+/**
+ * Gets the last match in a BatchMatchResults object.
+ * @param batchMatchResults The BatchMatchResults object.
+ * @return The last match of the results.
+ */
+function getLastMatch(batchMatchResults: BatchMatchResults): MatchResults {
+    return batchMatchResults.matches[batchMatchResults.matches.length - 1];
 }
 // tslint:disable-line:max-file-line-count

@@ -67,7 +67,7 @@ contract MixinMatchOrders is
         LibOrder.Order memory leftOrder = leftOrders[0];
         LibOrder.Order memory rightOrder = rightOrders[0];
         bytes memory leftSignature = leftSignatures[0];
-        bytes memory rightSignature = leftSignatures[0];
+        bytes memory rightSignature = rightSignatures[0];
 
         for (uint i = 0;; i++) {
             // Match the two orders that are pointed to by the left and right indices
