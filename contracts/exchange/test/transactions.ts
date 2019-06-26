@@ -1101,13 +1101,10 @@ describe('Exchange transactions', () => {
                         exchangeInstance.address,
                     );
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await exchangeInstance.setSignatureValidatorApproval.sendTransactionAsync(
-                            whitelistContract.address,
-                            isApproved,
-                            { from: takerAddress },
-                        ),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await exchangeInstance.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                        whitelistContract.address,
+                        isApproved,
+                        { from: takerAddress },
                     );
                 });
 
@@ -1161,18 +1158,16 @@ describe('Exchange transactions', () => {
 
                 it('should fill the order if maker and taker have been whitelisted', async () => {
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        makerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        takerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
                     const signedOrder = await orderFactory.newSignedOrderAsync({

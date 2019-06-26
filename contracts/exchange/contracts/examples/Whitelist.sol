@@ -23,10 +23,12 @@ import "../src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 
 
 contract Whitelist is
-    Ownable
+    Ownable,
+    LibEIP1271
 {
     // Mapping of address => whitelist status.
     mapping (address => bool) public isWhitelisted;
@@ -59,24 +61,28 @@ contract Whitelist is
         isWhitelisted[target] = isApproved;
     }
 
-    /// @dev Verifies signer is same as signer of current Ethereum transaction.
+    /// @dev Verifies a ZeroExTransaction's signer is same as signer of current Ethereum transaction.
     ///      NOTE: This function can currently be used to validate signatures coming from outside of this contract.
     ///      Extra safety checks can be added for a production contract.
-    /// @param signerAddress Address that should have signed the given hash.
+    /// @param data The abi-encoded ZeroExTransaction.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return magicValue `EIP1271_MAGIC_VALUE` if the signature is authorized.
     // solhint-disable no-unused-vars
     function isValidSignature(
-        bytes32 hash,
-        address signerAddress,
+        bytes calldata data,
         bytes calldata signature
     )
         external
         view
-        returns (bool isValid)
+        returns (bytes4 magicValue)
     {
+        // Decode the ZeroExTransaction.
+        LibZeroExTransaction.ZeroExTransaction memory transaction =
+            abi.decode(data, (LibZeroExTransaction.ZeroExTransaction));
         // solhint-disable-next-line avoid-tx-origin
-        return signerAddress == tx.origin;
+        if (transaction.signerAddress == tx.origin) {
+            magicValue = EIP1271_MAGIC_VALUE;
+        }
     }
     // solhint-enable no-unused-vars
 

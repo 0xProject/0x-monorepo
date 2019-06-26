@@ -79,15 +79,23 @@
                 "pr": 1868
             },
             {
-                "note": "Always check `OrderValidator` and `WalletOrderValidator` signature types on every fill",
+                "note": "Add `EIP1271Wallet` signature type",
                 "pr": 1885
             },
             {
-                "note": "Rename `WalletOrderValidator` to `OrderWallet` signature type",
+                "note": "Remove `WalletOrderValidator` and `OrderValidator` signature types",
                 "pr": 1885
             },
             {
-                "note": "Rename `SignatureWalletOrderValidatorError` to `SignatureOrderWalletError`",
+                "note": "Make the regular `Validator` signature type have EIP1271 behavior",
+                "pr": 1885
+            },
+            {
+                "note": "Always check signature types that are validated via contract (not just on first fill).",
+                "pr": 1885
+            },
+            {
+                "note": "Remove unecessary rich revert error types.",
                 "pr": 1885
             },
             {
@@ -95,19 +103,7 @@
                 "pr": 1885
             },
             {
-                "note": "Add `EIP1271Wallet` and `EIP1271OrderWallet` to `SignatureType`",
-                "pr": 1885
-            },
-            {
-                "note": "Always check `OrderValidator`, `OrderWallet`, `EIP1271OrderWallet` signature types on every fill",
-                "pr": 1885
-            },
-            {
-                "note": "Add `validatorAddress` field to `SignatureValidatorError` and `SignatureOrderValidatorError` rich reverts",
-                "pr": 1885
-            },
-            {
-                "note": "Add separate `SignatureOrderValidatorNotApprovedError` for `OrderValidator` signatures",
+                "note": "Add `validatorAddress` field to `SignatureValidatorError` rich reverts",
                 "pr": 1885
             }
         ]
