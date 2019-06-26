@@ -13,7 +13,6 @@ import { Hero } from 'ts/components/docs/hero';
 import { NewsletterSignup } from 'ts/components/docs/newsletter_signup';
 import { Note } from 'ts/components/docs/note';
 import { Resource } from 'ts/components/docs/resource/resource';
-import { SearchInput } from 'ts/components/docs/search_input';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
@@ -29,6 +28,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
+import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
 
 interface Props {
     location: Location;
@@ -68,6 +68,7 @@ export class DocsPageTemplate extends React.Component<Props> {
                     <Columns>
                         <aside>
                             <Filters />
+                            <ChapterLinks />
                         </aside>
                         <article>
                             <LargeHeading>Large Heading</LargeHeading>
