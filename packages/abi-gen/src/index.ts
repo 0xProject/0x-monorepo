@@ -207,6 +207,7 @@ for (const abiFileName of abiFileNames) {
     const contextData = {
         contractName: namedContent.name,
         ctor,
+        ABI: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
     };

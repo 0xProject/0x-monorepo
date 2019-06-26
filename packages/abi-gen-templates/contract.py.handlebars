@@ -1,12 +1,11 @@
 """Generated wrapper for {{contractName}} Solidity contract."""
 
+import json
 from typing import Optional, Tuple, Union
 
 from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
-
-from zero_ex.contract_artifacts import abi_by_name
 
 from ._base_contract_wrapper import BaseContractWrapper
 from .tx_params import TxParams
@@ -37,7 +36,7 @@ class {{contractName}}(BaseContractWrapper):
         :returns: contract object
         """
         return self._contract_instance(
-            address=token_address, abi=abi_by_name("{{contractName}}")
+            address=token_address, abi={{contractName}}.abi()
         )
 {{#each methods}}
 {{> call contractName=../contractName}}
@@ -45,3 +44,10 @@ class {{contractName}}(BaseContractWrapper):
 {{#each events}}
 {{> event}}
 {{/each}}
+
+    @staticmethod
+    def abi():
+        """Return the ABI to the underlying contract."""
+        return json.loads(
+            '{{{ABI}}}'  # noqa: E501 (line-too-long)
+        )

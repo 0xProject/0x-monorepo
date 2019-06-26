@@ -1,12 +1,11 @@
 """Generated wrapper for ERC20Token Solidity contract."""
 
+import json
 from typing import Optional, Tuple, Union
 
 from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
-
-from zero_ex.contract_artifacts import abi_by_name
 
 from ._base_contract_wrapper import BaseContractWrapper
 from .tx_params import TxParams
@@ -37,7 +36,7 @@ class ERC20Token(BaseContractWrapper):
         :returns: contract object
         """
         return self._contract_instance(
-            address=token_address, abi=abi_by_name("ERC20Token")
+            address=token_address, abi=ERC20Token.abi()
         )
 
     def approve(
@@ -217,4 +216,11 @@ class ERC20Token(BaseContractWrapper):
             self._get_contract_instance(token_address)
             .events.Approval()
             .processReceipt(tx_receipt)
+        )
+
+    @staticmethod
+    def abi():
+        """Return the ABI to the underlying contract."""
+        return json.loads(
+            '[{"constant":false,"inputs":[{"name":"_spender","type":"address"},{"name":"_value","type":"uint256"}],"name":"approve","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_from","type":"address"},{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_owner","type":"address"},{"name":"_spender","type":"address"}],"name":"allowance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":true,"name":"_spender","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Approval","type":"event"}]'  # noqa: E501 (line-too-long)
         )
