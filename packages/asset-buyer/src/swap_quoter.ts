@@ -1,9 +1,8 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { ContractWrappers } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -292,7 +291,9 @@ export class SwapQuoter {
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(takerAssetData);
         // try to get ordersEntry from the map
-        const ordersEntryIfExists = this._ordersEntryMap[SwapQuoter._getOrdersEntryMapKey(makerAssetData, takerAssetData)];
+        const ordersEntryIfExists = this._ordersEntryMap[
+            SwapQuoter._getOrdersEntryMapKey(makerAssetData, takerAssetData)
+        ];
         // we should refresh if:
         // we do not have any orders OR
         // we are forced to OR
