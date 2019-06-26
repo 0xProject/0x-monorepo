@@ -1,6 +1,5 @@
 import { signingUtils } from '@0x/contracts-test-utils';
 import { SignatureType } from '@0x/types';
-import { BigNumber } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { hashUtils } from './hash_utils';

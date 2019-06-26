@@ -1,3 +1,17 @@
+import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import {
+    expectTransactionFailedAsync,
+    provider,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
+import { RevertReason } from '@0x/types';
+import { BigNumber } from '@0x/utils';
+import * as _ from 'lodash';
+
+
+import { Simulation } from './utils/Simulation';
+import { StakingWrapper } from './utils/staking_wrapper';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,
@@ -6,41 +20,13 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
-
-import { constants as stakingConstants } from './utils/constants';
-
-import { StakingWrapper } from './utils/staking_wrapper';
-
-import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
-import { StakingContract } from '../src';
-
-import { StakerActor } from './actors/staker_actor';
-import { DelegatorActor } from './actors/delegator_actor';
-
-import { SimulationParams } from './utils/types';
-import { Simulation } from './utils/Simulation';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-// tslint:disable:no-unnecessary-type-assertion
-describe('End-To-End Simulations', () => {
-    // constants
-    const ZRX_TOKEN_DECIMALS = new BigNumber(18);
-    // tokens & addresses
-    let accounts: string[];
-    let owner: string;
-    let exchange: string;
-    let users: string[];
-    let zrxTokenContract: DummyERC20TokenContract;
-    let erc20ProxyContract: ERC20ProxyContract;
+rc20ProxyContract: ERC20ProxyContract;
 
     let stakers: string[];
     let makers: string[];
@@ -141,7 +127,7 @@ describe('End-To-End Simulations', () => {
             /*
 \           // the expected payouts were computed by hand
             // @TODO - get computations more accurate
-                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
+                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
                 0    |  0.304958   | 42          | 0                     | 42
                 1    | 15.323258   | 84          | 0                     | 84
                 3    | 28.12222236 | 97          | 182                   | 260.8
@@ -218,7 +204,7 @@ describe('End-To-End Simulations', () => {
         it('Should successfully simulate (delegators withdraw by undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
             // @TODO - get computations more accurate
             /*
-                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
+                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
                 0    |  0.304958   | 42          | 0                     | 42
                 1    | 15.323258   | 84          | 0                     | 84
                 3    | 28.12222236 | 97          | 182                   | 260.8
@@ -297,7 +283,7 @@ describe('End-To-End Simulations', () => {
         it('Should successfully simulate (delegators withdraw without undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
             // @TODO - get computations more accurate
             /*
-                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
+                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
                 0    |  0.304958   | 42          | 0                     | 42
                 1    | 15.323258   | 84          | 0                     | 84
                 3    | 28.12222236 | 97          | 182                   | 260.8

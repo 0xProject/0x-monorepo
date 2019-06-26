@@ -1,28 +1,19 @@
+import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
-    constants,
     expectTransactionFailedAsync,
     provider,
-    txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants as stakingConstants } from './utils/constants';
 
 import { StakingWrapper } from './utils/staking_wrapper';
-
-import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
-import { StakingContract } from '../src';
-
-import { StakerActor } from './actors/staker_actor';
-import { DelegatorActor } from './actors/delegator_actor';
 
 chaiSetup.configure();
 const expect = chai.expect;

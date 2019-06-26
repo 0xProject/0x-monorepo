@@ -1,14 +1,15 @@
 import { chaiSetup } from '@0x/contracts-test-utils';
-import * as _ from 'lodash';
-import * as chai from 'chai';
-
-import { PoolOperatorActor } from '../actors/pool_operator_actor';
-import { MakerActor } from '../actors/maker_actor';
 import { BigNumber } from '@0x/utils';
-import { SimulationParams } from './types';
-import { StakingWrapper } from './staking_wrapper';
-import { Queue } from './queue';
+import * as chai from 'chai';
+import * as _ from 'lodash';
+
 import { DelegatorActor } from '../actors/delegator_actor';
+import { MakerActor } from '../actors/maker_actor';
+import { PoolOperatorActor } from '../actors/pool_operator_actor';
+
+import { Queue } from './queue';
+import { StakingWrapper } from './staking_wrapper';
+import { SimulationParams } from './types';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -17,11 +18,11 @@ export class Simulation {
     private readonly _stakingWrapper: StakingWrapper;
     private readonly _p: SimulationParams;
     private _userQueue: Queue<string>;
-    private _poolOperators: PoolOperatorActor[];
-    private _poolOperatorsAsDelegators: DelegatorActor[];
-    private _poolIds: string[];
-    private _makers: MakerActor[];
-    private _delegators: DelegatorActor[];
+    private readonly _poolOperators: PoolOperatorActor[];
+    private readonly _poolOperatorsAsDelegators: DelegatorActor[];
+    private readonly _poolIds: string[];
+    private readonly _makers: MakerActor[];
+    private readonly _delegators: DelegatorActor[];
 
     constructor(stakingWrapper: StakingWrapper, simulationParams: SimulationParams) {
         this._stakingWrapper = stakingWrapper;
