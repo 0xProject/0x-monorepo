@@ -157,12 +157,10 @@ contract TestValidatorWallet is
 
     /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
-    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof of signing.
     /// @return isValid `true` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
-        address signerAddress,
         bytes memory signature
     )
         public
