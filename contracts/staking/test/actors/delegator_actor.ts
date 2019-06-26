@@ -14,7 +14,7 @@ import * as _ from 'lodash';
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { DelegatorBalances, StakerBalances } from '../utils/types';
 
-import { StakerActor } from './StakerActor';
+import { StakerActor } from './staker_actor';
 
 const expect = chai.expect;
 
