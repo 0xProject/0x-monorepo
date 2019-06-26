@@ -131,7 +131,7 @@ library LibSafeMath {
         return uint96(a);
     }
 
-     function _downcastToUint64(uint256 a)
+    function _downcastToUint64(uint256 a)
         internal
         pure
         returns (uint64)
