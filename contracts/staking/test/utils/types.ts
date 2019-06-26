@@ -46,5 +46,5 @@ export interface SimulationParams {
     expectedPayoutByDelegator: BigNumber[],
     exchangeAddress: string,
     delegateInNextEpoch: Boolean,
-    undelegateAtEnd: Boolean,
+    withdrawByUndelegating: Boolean,
 }
