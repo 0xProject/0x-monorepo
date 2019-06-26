@@ -13,7 +13,6 @@ import * as chai from 'chai';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-
 import { MakerActor } from './actors/maker_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
 import { constants as stakingConstants } from './utils/constants';
@@ -29,7 +28,6 @@ describe('Staking Pool Management', () => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
-    let exchange: string;
     let users: string[];
     let zrxTokenContract: DummyERC20TokenContract;
     let erc20ProxyContract: ERC20ProxyContract;
@@ -47,8 +45,7 @@ describe('Staking Pool Management', () => {
         // create accounts
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
-        exchange = accounts[1];
-        users = accounts.slice(2);
+        users = accounts.slice(1);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -57,7 +54,7 @@ describe('Staking Pool Management', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -151,7 +148,6 @@ describe('Staking Pool Management', () => {
             const operatorShare = 39;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             const makerAddress = users[1];
-            const maker = new MakerActor(makerAddress, stakingWrapper);
             // create pool
             const poolId = await poolOperator.createPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
