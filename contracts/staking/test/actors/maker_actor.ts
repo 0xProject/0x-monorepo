@@ -15,12 +15,12 @@ import { SignatureType } from '@0x/types';
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { DelegatorBalances, StakerBalances } from '../utils/types';
 
-import { Actor } from './Actor';
+import { BaseActor } from './base_actor';
 import { SignedStakingPoolApproval } from '../utils/types';
 
 const expect = chai.expect;
 
-export class MakerActor extends Actor {
+export class MakerActor extends BaseActor {
     private readonly _ownerPrivateKeyIfExists?: Buffer;
     private readonly _signatureVerifierIfExists?: string;
     private readonly _chainIdIfExists?: number;

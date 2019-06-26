@@ -27,3 +27,23 @@ export interface DelegatorBalances extends StakerBalances {
     stakeDelegatedToPoolByOwner: BigNumber[];
     stakeDelegatedToPool: BigNumber[];
 }
+
+export interface SimulationParams {
+    users: string[],
+    numberOfPools: number,
+    poolOperatorShares: number[],
+    stakeByPoolOperator: BigNumber[],
+    numberOfMakers: number,
+    numberOfMakersPerPool: number[],
+    protocolFeesByMaker: BigNumber[],
+    numberOfDelegators: number,
+    numberOfDelegatorsPerPool: number[],
+    stakeByDelegator: BigNumber[],
+    expectedFeesByPool: BigNumber[],
+    expectedPayoutByPool: BigNumber[],
+    expectedPayoutByPoolOperator: BigNumber[],
+    expectedPayoutByDelegator: BigNumber[],
+    exchangeAddress: string,
+    delegateInNextEpoch: Boolean,
+    undelegateAtEnd: Boolean,
+}
