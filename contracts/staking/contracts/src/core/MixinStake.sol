@@ -85,7 +85,7 @@ contract MixinStake is
         address owner = msg.sender;
         _syncTimelockedStake(owner);
         require(
-            getDeactivatedStake(owner) >= amount,
+            amount <= getActivatableStake(owner),
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = activeStakeByOwner[owner]._add(amount);
@@ -109,7 +109,7 @@ contract MixinStake is
         address owner = msg.sender;
         _syncTimelockedStake(owner);
         require(
-            getActivatedStake(owner) >= amount,
+            amount <= getActivatedStake(owner),
             "INSUFFICIENT_BALANCE"
         );
         activeStakeByOwner[owner] = activeStakeByOwner[owner]._sub(amount);

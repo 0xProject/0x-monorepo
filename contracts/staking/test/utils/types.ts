@@ -10,3 +10,14 @@ export interface StakingPoolApproval {
 export interface SignedStakingPoolApproval extends StakingPoolApproval {
     signature: string;
 }
+
+export interface StakerBalances {
+    zrxBalance: BigNumber;
+    stakeBalance: BigNumber;
+    stakeBalanceInVault: BigNumber;
+    withdrawableStakeBalance: BigNumber;
+    activatableStakeBalance: BigNumber;
+    activatedStakeBalance: BigNumber;
+    deactivatedStakeBalance: BigNumber;
+    timelockedStakeBalance: BigNumber;
+}
