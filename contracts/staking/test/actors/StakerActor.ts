@@ -28,9 +28,7 @@ export class StakerActor {
     public async depositAsync(amount: BigNumber, revertReason?: RevertReason) {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
-        const initZrxBalanceOfOwner = await this._stakingWrapper.getZrxTokenBalance(this._owner);
-        const initStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const initStakeBalanceOfOwnerInVault = await this._stakingWrapper.getZrxVaultBalance(this._owner);
+        const initStakerBalances = await this.getBalancesAsync();
         // deposit stake
         const txReceiptPromise = this._stakingWrapper.depositAsync(this._owner, amount);
         if (revertReason !== undefined) {
@@ -42,33 +40,26 @@ export class StakerActor {
         }
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
-        // query final balances
+        // check balances
+        let expectedStakerBalances = initStakerBalances;
+        expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
+        expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.plus(amount);
+        expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.plus(amount);
+        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.plus(amount);
+        expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.plus(amount);
+        expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
+        await this.assertBalancesAsync(expectedStakerBalances);
+        // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
-        const finalZrxBalanceOfOwner = await this._stakingWrapper.getZrxTokenBalance(this._owner);
-        const finalStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const finalStakeBalanceOfOwnerInVault = await this._stakingWrapper.getZrxVaultBalance(this._owner);
-        // validate final balances
-        expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.plus(amount));
-        expect(finalZrxBalanceOfOwner).to.be.bignumber.equal(initZrxBalanceOfOwner.minus(amount));
-        expect(finalStakeBalanceOfOwner).to.be.bignumber.equal(initStakeBalanceOfOwner.plus(amount));
-        expect(finalStakeBalanceOfOwnerInVault).to.be.bignumber.equal(initStakeBalanceOfOwnerInVault.plus(amount));
+        expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.minus(amount));
     }
     public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
         // @TODO - Implement
         const txReceipt = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
-
-
-         
-
     }
     public async activateStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
         // query init balances
-        const initStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const initWithdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        const initActivatedStakeBalance = await this._stakingWrapper.getActivatedStakeAsync(this._owner);
-        const initActivatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
-        const initDeactivatedStakeBalance = await this._stakingWrapper.getDeactivatedStakeAsync(this._owner);
-        const initTimelockedStakeBalance = await this._stakingWrapper.getTimelockedStakeAsync(this._owner);
+        const initStakerBalances = await this.getBalancesAsync();
         // activate stake
         const txReceiptPromise = this._stakingWrapper.activateStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
@@ -80,30 +71,17 @@ export class StakerActor {
         }
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
-        // check total stake balance didn't change
-        const stakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        expect(stakeBalanceOfOwner).to.be.bignumber.equal(initStakeBalanceOfOwner); 
-        // check timelocked stake is no longer activated
-        const activatedStakeBalance = await this._stakingWrapper.getActivatedStakeAsync(this._owner);
-        expect(activatedStakeBalance).to.be.bignumber.equal(initActivatedStakeBalance.plus(amount)); 
-        // check that timelocked stake is deactivated
-        const deactivatedStakeBalance = await this._stakingWrapper.getDeactivatedStakeAsync(this._owner);
-        expect(deactivatedStakeBalance).to.be.bignumber.equal(initDeactivatedStakeBalance.minus(amount)); 
-        // check amount that is timelocked
-        const timelockedStakeBalance = await this._stakingWrapper.getTimelockedStakeAsync(this._owner);
-        expect(timelockedStakeBalance).to.be.bignumber.equal(initTimelockedStakeBalance);
-        // check that timelocked stake cannot be withdrawn
-        const withdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        expect(withdrawableStakeBalance).to.be.bignumber.equal(initWithdrawableStakeBalance.minus(amount));
-        // check that timelocked stake cannot be reactivated
-        const activatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
-        expect(activatableStakeBalance).to.be.bignumber.equal(initActivatableStakeBalance.minus(amount));
+        // check balances
+        let expectedStakerBalances = initStakerBalances;
+        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
+        expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.minus(amount);
+        expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.plus(amount);
+        expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
+        await this.assertBalancesAsync(expectedStakerBalances);
     }
     public async deactivateAndTimelockStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
         // query init balances
-        const initStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const initWithdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        const initActivatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
+        const initStakerBalances = await this.getBalancesAsync();
         // deactivate and timelock stake
         const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
@@ -115,35 +93,17 @@ export class StakerActor {
         }
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
-        // check total stake balance didn't change
-        const stakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        expect(stakeBalanceOfOwner).to.be.bignumber.equal(initStakeBalanceOfOwner); 
-        // check timelocked stake is no longer activated
-        const activatedStakeBalance = await this._stakingWrapper.getActivatedStakeAsync(this._owner);
-        expect(activatedStakeBalance).to.be.bignumber.equal(initStakeBalanceOfOwner.minus(amount)); 
-        // check that timelocked stake is deactivated
-        const deactivatedStakeBalance = await this._stakingWrapper.getDeactivatedStakeAsync(this._owner);
-        expect(deactivatedStakeBalance).to.be.bignumber.equal(amount); 
-        // check amount that is timelocked
-        const timelockedStakeBalance = await this._stakingWrapper.getTimelockedStakeAsync(this._owner);
-        expect(timelockedStakeBalance).to.be.bignumber.equal(amount);
-        // check that timelocked stake cannot be withdrawn
-        const withdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        expect(withdrawableStakeBalance).to.be.bignumber.equal(initWithdrawableStakeBalance);
-        // check that timelocked stake cannot be reactivated
-        const activatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
-        expect(activatableStakeBalance).to.be.bignumber.equal(initActivatableStakeBalance);
+        // check balances
+        let expectedStakerBalances = initStakerBalances;
+        expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.minus(amount);
+        expectedStakerBalances.timelockedStakeBalance = initStakerBalances.timelockedStakeBalance.plus(amount);
+        expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
+        await this.assertBalancesAsync(expectedStakerBalances);
     }
     public async withdrawAsync(amount: BigNumber, revertReason?: RevertReason) {
+        // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
-        const initZrxBalanceOfOwner = await this._stakingWrapper.getZrxTokenBalance(this._owner);
-        const initStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const initStakeBalanceOfOwnerInVault = await this._stakingWrapper.getZrxVaultBalance(this._owner);
-        const initWithdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        const initActivatedStakeBalance = await this._stakingWrapper.getActivatedStakeAsync(this._owner);
-        const initActivatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
-        const initDeactivatedStakeBalance = await this._stakingWrapper.getDeactivatedStakeAsync(this._owner);
-        const initTimelockedStakeBalance = await this._stakingWrapper.getTimelockedStakeAsync(this._owner);
+        const initStakerBalances = await this.getBalancesAsync();
         // withdraw stake
         const txReceiptPromise = this._stakingWrapper.withdrawAsync(this._owner, amount);
         if (revertReason !== undefined) {
@@ -155,33 +115,18 @@ export class StakerActor {
         }
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
-        // check total stake balance
-        const stakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        expect(stakeBalanceOfOwner).to.be.bignumber.equal(initStakeBalanceOfOwner.minus(amount)); 
-        // check timelocked stake didn't change
-        const activatedStakeBalance = await this._stakingWrapper.getActivatedStakeAsync(this._owner);
-        expect(activatedStakeBalance).to.be.bignumber.equal(initActivatedStakeBalance); 
-        // check deactivated stake
-        const deactivatedStakeBalance = await this._stakingWrapper.getDeactivatedStakeAsync(this._owner);
-        expect(deactivatedStakeBalance).to.be.bignumber.equal(initDeactivatedStakeBalance.minus(amount)); 
-        // check amount that is timelocked
-        const timelockedStakeBalance = await this._stakingWrapper.getTimelockedStakeAsync(this._owner);
-        expect(timelockedStakeBalance).to.be.bignumber.equal(initTimelockedStakeBalance);
-        // check that timelocked stake cannot be withdrawn
-        const withdrawableStakeBalance = await this._stakingWrapper.getWithdrawableStakeAsync(this._owner);
-        expect(withdrawableStakeBalance).to.be.bignumber.equal(initWithdrawableStakeBalance.minus(amount));
-        // check that timelocked stake cannot be reactivated
-        const activatableStakeBalance = await this._stakingWrapper.getActivatableStakeAsync(this._owner);
-        expect(activatableStakeBalance).to.be.bignumber.equal(initActivatableStakeBalance.minus(amount));
-        // check zrx balances
+        // check balances
+        let expectedStakerBalances = initStakerBalances;
+        expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
+        expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.minus(amount);
+        expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.minus(amount);
+        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
+        expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.minus(amount);
+        expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
+        await this.assertBalancesAsync(expectedStakerBalances);
+        // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
-        const finalZrxBalanceOfOwner = await this._stakingWrapper.getZrxTokenBalance(this._owner);
-        const finalStakeBalanceOfOwner = await this._stakingWrapper.getTotalStakeAsync(this._owner);
-        const finalStakeBalanceOfOwnerInVault = await this._stakingWrapper.getZrxVaultBalance(this._owner);
         expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.minus(amount));
-        expect(finalZrxBalanceOfOwner).to.be.bignumber.equal(initZrxBalanceOfOwner.plus(amount));
-        expect(finalStakeBalanceOfOwner).to.be.bignumber.equal(initStakeBalanceOfOwner.minus(amount));
-        expect(finalStakeBalanceOfOwnerInVault).to.be.bignumber.equal(initStakeBalanceOfOwnerInVault.minus(amount));
     }
 
     public async getBalancesAsync(): Promise<StakerBalances> {
