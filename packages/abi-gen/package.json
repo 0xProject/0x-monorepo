@@ -8,12 +8,13 @@
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
-        "lint": "tslint --format stylish --project . --exclude ./test/generated_test/generated-wrappers/**/* --exclude ./test/generated_test/generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
-        "fix": "tslint --fix --format stylish --project . --exclude ./test/generated_test/generated-wrappers/**/* --exclude ./test/generated_test/generated-artifacts/**/* --exclude **/lib/**/* && yarn lint-contracts",
-        "clean": "shx rm -rf lib test/generated_test/generated-artifacts test/generated_test/generated-wrappers",
+        "lint": "tslint --format stylish --project . && yarn lint-contracts",
+        "lint-contracts": "solhint -c ../../contracts/.solhint.json contracts/**/**/**/**/*.sol",
+        "fix": "tslint --fix --format stylish --project . && yarn lint-contracts",
+        "clean": "shx rm -rf lib test/generated_test/generated-*",
         "build": "tsc -b",
         "pre_test": "run-s compile:sol generate_contract_wrappers build:test",
-        "build:test": "tsc --project test/generated_test/tsconfig.json ",
+        "build:test": "tsc --project test/generated_test/tsconfig.json",
         "build:ci": "yarn build",
         "test": "yarn pre_test && yarn run_mocha",
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js test/generated_test/lib/**/*_test.js --timeout 100000 --bail --exit",
@@ -29,8 +30,7 @@
         "coverage:report:text": "istanbul report text",
         "coverage:report:html": "istanbul report html && open coverage/index.html",
         "profiler:report:html": "istanbul report html && open coverage/index.html",
-        "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../../contracts/.solhint.json contracts/**/**/**/**/*.sol"
+        "contracts:gen": "contracts-gen"
     },
     "config": {
         "abis": "./test/generated_test/generated-artifacts/@(AbiGenDummy|LibDummy|TestLibDummy).json",

@@ -1,4 +1,4 @@
-import { BlockchainLifecycle, devConstants, web3Factory} from '@0x/dev-utils';
+import { BlockchainLifecycle, devConstants, web3Factory } from '@0x/dev-utils';
 import { Web3ProviderEngine } from '@0x/subproviders';
 import { RevertReason } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
@@ -31,17 +31,11 @@ describe('AbiGenDummy Contract', () => {
     before(async () => {
         providerUtils.startProviderEngine(provider);
         abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
-    });
-    after(async () => {
-        provider.stop();
-    });
-    beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });
-    afterEach(async () => {
+    after(async () => {
         await blockchainLifecycle.revertAsync();
     });
-
     describe('simplePureFunction', () => {
         it('should call simplePureFunction', async () => {
             const result = await abiGenDummy.simplePureFunction.callAsync();
@@ -62,28 +56,22 @@ describe('AbiGenDummy Contract', () => {
     });
     describe('simpleRevert', () => {
         it('should call simpleRevert', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.simpleRevert.callAsync(), RevertReason.ValidatorError);
+            return expectContractCallFailedAsync(abiGenDummy.simpleRevert.callAsync(), 'SIMPLE_REVERT');
         });
     });
     describe('revertWithConstant', () => {
         it('should call revertWithConstant', async () => {
-            return expectContractCallFailedAsync(
-                abiGenDummy.revertWithConstant.callAsync(),
-                RevertReason.ValidatorError,
-            );
+            return expectContractCallFailedAsync(abiGenDummy.revertWithConstant.callAsync(), 'REVERT_WITH_CONSTANT');
         });
     });
     describe('simpleRequire', () => {
         it('should call simpleRequire', async () => {
-            return expectContractCallFailedAsync(abiGenDummy.simpleRequire.callAsync(), RevertReason.ValidatorError);
+            return expectContractCallFailedAsync(abiGenDummy.simpleRequire.callAsync(), 'SIMPLE_REQUIRE');
         });
     });
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
-            return expectContractCallFailedAsync(
-                abiGenDummy.requireWithConstant.callAsync(),
-                RevertReason.ValidatorError,
-            );
+            return expectContractCallFailedAsync(abiGenDummy.requireWithConstant.callAsync(), 'REQUIRE_WITH_CONSTANT');
         });
     });
 
@@ -143,7 +131,7 @@ describe('Lib dummy contract', () => {
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-function expectContractCallFailedAsync<T>(p: Promise<T>, reason: RevertReason): Chai.PromisedAssertion {
+function expectContractCallFailedAsync<T>(p: Promise<T>, reason: string): Chai.PromisedAssertion {
     const rejectionMessageRegex = new RegExp(`^VM Exception while processing transaction: revert ${reason}$`);
     return expect(p).to.be.rejectedWith(rejectionMessageRegex);
 }

@@ -23,7 +23,8 @@ contract AbiGenDummy
 {
 
     uint256 constant internal SOME_CONSTANT = 1234;
-    string constant internal REVERT_REASON = "VALIDATOR_ERROR";
+    string constant internal REVERT_REASON = "REVERT_WITH_CONSTANT";
+    string constant internal REQUIRE_REASON = "REQUIRE_WITH_CONSTANT";
 
     function simplePureFunction ()
         public
@@ -53,7 +54,7 @@ contract AbiGenDummy
         public
         pure
     {
-        revert("VALIDATOR_ERROR");
+        revert("SIMPLE_REVERT");
     }
 
     function revertWithConstant ()
@@ -67,14 +68,14 @@ contract AbiGenDummy
         public
         pure
     {
-        require(0 > 1, "VALIDATOR_ERROR");
+        require(0 > 1, "SIMPLE_REQUIRE");
     }
 
     function requireWithConstant ()
         public
         pure
     {
-        require(0 > 1, REVERT_REASON);
+        require(0 > 1, REQUIRE_REASON);
     }
 
     function ecrecoverFn(bytes32 hash, uint8 v, bytes32 r, bytes32 s)
