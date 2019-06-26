@@ -8,13 +8,12 @@ import { ContractArtifact } from 'ethereum-types';
 import * as Exchange from '../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
 import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispatcher.json';
+import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
 import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
-import * as IOrderValidator from '../generated-artifacts/IOrderValidator.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
-import * as IValidator from '../generated-artifacts/IValidator.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
 import * as ReentrantERC20Token from '../generated-artifacts/ReentrantERC20Token.json';
@@ -32,11 +31,10 @@ export const artifacts = {
     IExchange: IExchange as ContractArtifact,
     IExchangeCore: IExchangeCore as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
-    IOrderValidator: IOrderValidator as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
-    IValidator: IValidator as ContractArtifact,
     IWallet: IWallet as ContractArtifact,
+    IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
