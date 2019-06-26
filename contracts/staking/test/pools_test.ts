@@ -23,10 +23,10 @@ import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
 
-import { StakerActor } from './actors/StakerActor';
-import { DelegatorActor } from './actors/DelegatorActor';
-import { PoolOperatorActor } from './actors/PoolOperatorActor';
-import { MakerActor } from './actors/MakerActor';
+import { StakerActor } from './actors/staker_actor';
+import { DelegatorActor } from './actors/delegator_actor';
+import { PoolOperatorActor } from './actors/pool_operator_actor';
+import { MakerActor } from './actors/maker_actor';
 
 chaiSetup.configure();
 const expect = chai.expect;
