@@ -123,6 +123,15 @@ contract MixinStakeBalances is
         return timelock.total;
     }
 
+    function getTimelockStart(address owner)
+        public
+        view
+        returns (uint256)
+    {
+        (Timelock memory timelock,) = _getSynchronizedTimelock(owner);
+        return timelock.lockedAt;
+    }
+
     function _getSynchronizedTimelock(address owner)
         internal
         view
