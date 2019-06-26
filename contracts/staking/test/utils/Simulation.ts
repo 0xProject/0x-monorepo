@@ -49,8 +49,12 @@ export class Simulation {
         }
         await this._setupDelegatorsAsync(this._p);
         await this._stakingWrapper.skipToNextEpochAsync();
-        // everyone has been paid out. check balances.
+        // everyone has been paid out into the vault. check balances.
         await this._assertVaultBalancesAsync(this._p);
+        //await this._withdrawOperatorRewards(this._p);
+        //await this._withdrawDelegatorRewardsByUndelegating(this._p);
+        //OR
+        // await this._withdrawDelegatorRewardsWithoutUndelegating(this._p);
     }
 
     private async _setupPoolsAsync(p: SimulationParams): Promise<void> {
@@ -142,6 +146,8 @@ export class Simulation {
 
     private async _assertVaultBalancesAsync(p: SimulationParams): Promise<void> {
         for (const i in _.range(p.numberOfPools)) {
+            // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
+            //          update once more accurate.
             // check pool balance in vault
             const poolId = this._poolIds[i];
             const rewardVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfAsync(poolId);
@@ -149,7 +155,17 @@ export class Simulation {
             const expectedRewardBalance = p.expectedPayoutByPool[i];
             expect(rewardVaultBalanceTrimmed, `expected balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedRewardBalance);
             // check operator's balance
-            const poolOperator = this._poolOperators[i];
+            const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfOperatorAsync(poolId);
+            const poolOperatorVaultBalanceTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18), 5);
+            const expectedPoolOperatorVaultBalance = p.expectedPayoutByPoolOperator[i];
+            expect(poolOperatorVaultBalanceTrimmed, `operator balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
+            // check balance of pool members
+            const membersVaultBalance = await this._stakingWrapper.getRewardBalanceOfPoolAsync(poolId);
+            const membersVaultBalanceTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(membersVaultBalance, 18), 5);
+            const expectedMembersVaultBalance = p.expectedMembersPayoutByPool[i];
+            expect(membersVaultBalanceTrimmed, `members balance in vault for pool with id ${poolId}`).to.be.bignumber.equal(expectedMembersVaultBalance);
+            // compute balance of each member
+
         }
     }
 }
