@@ -13,6 +13,7 @@ import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
+test
 
 class TestCommandExtension(TestCommand):
     """Run pytest tests."""
