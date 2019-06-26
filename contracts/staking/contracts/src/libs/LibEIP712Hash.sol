@@ -91,10 +91,10 @@ library LibEIP712Hash
         returns (bytes32 result)
     {
         result = keccak256(abi.encode(
-             EIP712_STAKING_POOL_APPROVAL_SCHEMA_HASH,
-             approval.poolId,
-             approval.makerAddress
-         ));
+            EIP712_STAKING_POOL_APPROVAL_SCHEMA_HASH,
+            approval.poolId,
+            approval.makerAddress
+        ));
         return result;
     }
 }

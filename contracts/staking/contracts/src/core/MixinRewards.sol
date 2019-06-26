@@ -90,6 +90,30 @@ contract MixinRewards is
         return amount;
     }
 
+    function getRewardBalance(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceInRewardVault(poolId);
+    }
+
+    function getRewardBalanceOfOperator(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfOperatorInRewardVault(poolId);
+    }
+
+    function getRewardBalanceOfPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfPoolInRewardVault(poolId);
+    }
+
     function computeRewardBalance(bytes32 poolId, address owner)
         public
         view
@@ -119,29 +143,5 @@ contract MixinRewards is
         returns (uint256)
     {
         return shadowRewardsInPoolByOwner[owner][poolId];
-    }
-
-    function getRewardBalance(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceInRewardVault(poolId);
-    }
-
-    function getRewardBalanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfOperatorInRewardVault(poolId);
-    }
-
-    function getRewardBalanceOfPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfPoolInRewardVault(poolId);
     }
 }

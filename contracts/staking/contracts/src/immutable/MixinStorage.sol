@@ -24,84 +24,84 @@ import "./MixinConstants.sol";
 import "../interfaces/IStructs.sol";
 
 
+// solhint-disable max-states-count
 contract MixinStorage is
     MixinConstants
 {
 
-    // @TODO Make these internal
     // @TODO Add notes about which Mixin manages which state
 
     // address of staking contract
-    address stakingContract;
+    address internal stakingContract;
 
     // mapping from Owner to Amount Staked
-    mapping (address => uint256) stakeByOwner;
+    mapping (address => uint256) internal stakeByOwner;
 
     // @TODO Think about merging these different states
     // It would be nice if the sum of the different states had to equal `stakeByOwner`
     // and it were all in a single variable (stakeByOwner in its own)
 
     // mapping from Owner to Amount of Instactive Stake
-    mapping (address => uint256) activeStakeByOwner;
+    mapping (address => uint256) internal activeStakeByOwner;
 
     // mapping from Owner to Amount Timelocked
-    mapping (address => IStructs.Timelock) timelockedStakeByOwner;
+    mapping (address => IStructs.Timelock) internal timelockedStakeByOwner;
 
     // mapping from Owner to Amount Delegated
-    mapping (address => uint256) delegatedStakeByOwner;
+    mapping (address => uint256) internal delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
-    mapping (address => mapping (bytes32 => uint256)) delegatedStakeToPoolByOwner;
+    mapping (address => mapping (bytes32 => uint256)) internal delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) delegatedStakeByPoolId;
+    mapping (bytes32 => uint256) internal delegatedStakeByPoolId;
 
     // total activated stake in the system
-    uint256 totalActivatedStake;
+    uint256 internal totalActivatedStake;
 
     // tracking Pool Id
-    bytes32 nextPoolId = INITIAL_POOL_ID;
+    bytes32 internal nextPoolId = INITIAL_POOL_ID;
 
     // mapping from Pool Id to Pool
-    mapping (bytes32 => IStructs.Pool) poolById;
+    mapping (bytes32 => IStructs.Pool) internal poolById;
 
     // mapping from Maker Address to Pool Id
     // A Maker can only hold a single token
-    mapping (address => bytes32) poolIdByMakerAddress;
+    mapping (address => bytes32) internal poolIdByMakerAddress;
 
     // mapping from Pool Id to Addresses
-    mapping (bytes32 => address[]) makerAddressesByPoolId;
+    mapping (bytes32 => address[]) internal makerAddressesByPoolId;
 
     // current epoch
-    uint64 currentEpoch = INITIAL_EPOCH;
+    uint64 internal currentEpoch = INITIAL_EPOCH;
 
     // current epoch start time
-    uint64 currentEpochStartTimeInSeconds;
+    uint64 internal currentEpochStartTimeInSeconds;
 
     // current withdrawal period
-    uint64 currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
+    uint64 internal currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
 
     // current epoch start time
-    uint64 currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
+    uint64 internal currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
 
     // fees collected this epoch
-    mapping (bytes32 => uint256) protocolFeesThisEpochByPool;
+    mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
 
     // 
-    bytes32[] activePoolIdsThisEpoch;
+    bytes32[] internal activePoolIdsThisEpoch;
 
     // mapping from POol Id to Shadow Rewards
-    mapping (bytes32 => uint256) shadowRewardsByPoolId;
+    mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
 
     // shadow balances by
-    mapping (address => mapping (bytes32 => uint256)) shadowRewardsInPoolByOwner;
+    mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
 
     // registrered 0x exchanges
-    mapping (address => bool) validExchanges;
+    mapping (address => bool) internal validExchanges;
 
     // ZRX vault
-    IZrxVault zrxVault;
+    IZrxVault internal zrxVault;
 
     // Rebate Vault
-    IRewardVault rewardVault;
+    IRewardVault internal rewardVault;
 }

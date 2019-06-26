@@ -48,18 +48,16 @@ contract RewardVault is
     // mapping from Pool to Rebate Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
 
-    constructor()
-        public
-    {}
-
-    function deposit()
+    // solhint-disable no-empty-blocks
+    function ()
         external
         payable
         onlyStakingContract
         onlyNotInCatostrophicFailure
     {}
 
-    function ()
+    // solhint-disable no-empty-blocks
+    function deposit()
         external
         payable
         onlyStakingContract
@@ -73,7 +71,7 @@ contract RewardVault is
         onlyNotInCatostrophicFailure
     {
         Balance memory balance = balanceByPoolId[poolId];
-        incrementBalance(balance, msg.value);
+        _incrementBalance(balance, msg.value);
         balanceByPoolId[poolId] = balance;
     }
 
@@ -83,24 +81,8 @@ contract RewardVault is
         onlyNotInCatostrophicFailure
     {
         Balance memory balance = balanceByPoolId[poolId];
-        incrementBalance(balance, amount);
+        _incrementBalance(balance, amount);
         balanceByPoolId[poolId] = balance;
-    }
-
-    function incrementBalance(Balance memory balance, uint256 amount256Bit)
-        private
-        pure
-    {
-        // balances are stored as uint96; safely downscale.
-        uint96 amount = amount256Bit._downcastToUint96();
-
-        // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
-        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
-        uint96 poolPortion = amount._sub(operatorPortion);
-
-        // update balances
-        balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
-        balance.poolBalance = balance.poolBalance._add(poolPortion);
     }
 
     function withdrawFromOperator(bytes32 poolId, uint256 amount)
@@ -125,6 +107,30 @@ contract RewardVault is
         );
         balanceByPoolId[poolId].poolBalance -= uint96(amount);
         stakingContractAddress.transfer(amount);
+    }
+
+    function createPool(bytes32 poolId, uint8 poolOperatorShare)
+        external
+        onlyStakingContract
+        onlyNotInCatostrophicFailure
+    {
+        // operator share must be a valid percentage
+        require(
+            poolOperatorShare <= 100,
+            "OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100"
+        );
+
+        // pool must not exist
+        Balance memory balance = balanceByPoolId[poolId];
+        require(
+            !balance.initialized,
+            "POOL_ALREADY_EXISTS"
+        );
+
+        // set initial balance
+        balance.initialized = true;
+        balance.operatorShare = poolOperatorShare;
+        balanceByPoolId[poolId] = balance;
     }
 
     function balanceOf(bytes32 poolId)
@@ -152,27 +158,19 @@ contract RewardVault is
         return balanceByPoolId[poolId].poolBalance;
     }
 
-    function createPool(bytes32 poolId, uint8 poolOperatorShare)
-        external
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
+    function _incrementBalance(Balance memory balance, uint256 amount256Bit)
+        private
+        pure
     {
-        // operator share must be a valid percentage
-        require(
-            poolOperatorShare <= 100,
-            "OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100"
-        );
+        // balances are stored as uint96; safely downscale.
+        uint96 amount = amount256Bit._downcastToUint96();
 
-        // pool must not exist
-        Balance memory balance = balanceByPoolId[poolId];
-        require(
-            !balance.initialized,
-            "POOL_ALREADY_EXISTS"
-        );
+        // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
+        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
+        uint96 poolPortion = amount._sub(operatorPortion);
 
-        // set initial balance
-        balance.initialized = true;
-        balance.operatorShare = poolOperatorShare;
-        balanceByPoolId[poolId] = balance;
+        // update balances
+        balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
+        balance.poolBalance = balance.poolBalance._add(poolPortion);
     }
 }
