@@ -108,7 +108,7 @@ describe('Staking Core', () => {
             }
         });
 
-        it.only('staking/unstaking', async () => {
+        it.only('actor based staking/unstaking', async () => {
             // setup test parameters
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);
             const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
@@ -132,7 +132,7 @@ describe('Staking Core', () => {
             await staker.withdrawAsync(amountToWithdraw);
         });
 
-        it.only('delegating/undelegating', async () => {
+        it.only('actor based delegating/undelegating', async () => {
             // setup test parameters
             const amountToDelegate = stakingWrapper.toBaseUnitAmount(10);
             const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
@@ -159,7 +159,7 @@ describe('Staking Core', () => {
             await delegator.withdrawAsync(amountToWithdraw);
         });
 
-        it('Exchange Tracking', async () => {
+        it('exchange tracking', async () => {
             // 1 try querying an invalid addresses
             const invalidAddress = "0x0000000000000000000000000000000000000001";
             const isInvalidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(invalidAddress);
@@ -297,127 +297,6 @@ describe('Staking Core', () => {
             );
         });
 
-        it('nth root', async () => {
-            const base = new BigNumber(1419857);
-            const n = new BigNumber(5);
-            const root = await stakingWrapper.nthRoot(base, n);
-            expect(root).to.be.bignumber.equal(17);
-        });
-
-        it('nth root #2', async () => {
-            const base = new BigNumber(3375);
-            const n = new BigNumber(3);
-            const root = await stakingWrapper.nthRoot(base, n);
-            expect(root).to.be.bignumber.equal(15);
-        });
-
-        it('nth root #3 with fixed point', async () => {
-            const decimals = 18;
-            const base = stakingWrapper.toFixedPoint(4.234, decimals);
-            const n = new BigNumber(2);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
-            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
-            const expectedResult = new BigNumber(2.057668584);
-            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-        });
-
-        it('nth root #3 with fixed point (integer nth root would fail here)', async () => {
-            const decimals = 18;
-            const base = stakingWrapper.toFixedPoint(5429503678976, decimals);
-            console.log(base);
-            const n = new BigNumber(9);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
-            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
-            const expectedResult = new BigNumber(26);
-            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-        });
-
-        it.skip('nth root #4 with fixed point (integer nth root would fail here) (max number of decimals - currently does not retain)', async () => {
-            const decimals = 18;
-            const base = stakingWrapper.toFixedPoint(new BigNumber('5429503678976.295036789761543678', 10), decimals);
-            console.log(base);
-            const n = new BigNumber(9);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
-            console.log(`root - ${root}`);
-            const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
-            const expectedResult = new BigNumber(26);
-            expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
-        });
-
-        it('cobb douglas - approximate', async() => {
-            const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
-            const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
-            const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
-            const ownerStake = stakingWrapper.toBaseUnitAmount(56);
-            const totalStake = stakingWrapper.toBaseUnitAmount(10906);
-            const alphaNumerator = new BigNumber(3);
-            const alphaDenominator = new BigNumber(7);
-            // create expected output
-            // https://www.wolframalpha.com/input/?i=57.154398+*+(5.64375%2F29.00679)+%5E+(3%2F7)+*+(56+%2F+10906)+%5E+(1+-+3%2F7)
-            const expectedOwnerReward = new BigNumber(1.3934);
-            // run computation
-            const ownerReward = await stakingWrapper.cobbDouglasAsync(
-                totalRewards,
-                ownerFees,
-                totalFees,
-                ownerStake,
-                totalStake,
-                alphaNumerator,
-                alphaDenominator
-            );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 4);
-            // validation
-            expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
-        });
-
-        it('cobb douglas - simplified (alpha = 1/x)', async() => {
-            // setup test parameters
-            const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
-            const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
-            const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
-            const ownerStake = stakingWrapper.toBaseUnitAmount(56);
-            const totalStake = stakingWrapper.toBaseUnitAmount(10906);
-            const alphaDenominator = new BigNumber(3);
-            // create expected output
-            // https://www.wolframalpha.com/input/?i=57.154398+*+(5.64375%2F29.00679)+%5E+(1%2F3)+*+(56+%2F+10906)+%5E+(1+-+1%2F3)
-            const expectedOwnerReward = new BigNumber(0.98572107681878);
-            // run computation
-            const ownerReward = await stakingWrapper.cobbDouglasSimplifiedAsync(
-                totalRewards,
-                ownerFees,
-                totalFees,
-                ownerStake,
-                totalStake,
-                alphaDenominator
-            );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 14);
-            // validation
-            expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
-        });
-
-        it('cobb douglas - simplified inverse (1 - alpha = 1/x)', async() => {
-            const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
-            const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
-            const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
-            const ownerStake = stakingWrapper.toBaseUnitAmount(56);
-            const totalStake = stakingWrapper.toBaseUnitAmount(10906);
-            const inverseAlphaDenominator = new BigNumber(3);
-            // create expected output
-            // https://www.wolframalpha.com/input/?i=57.154398+*+(5.64375%2F29.00679)+%5E+(2%2F3)+*+(56+%2F+10906)+%5E+(1+-+2%2F3)
-            const expectedOwnerReward = new BigNumber(3.310822494188);
-            // run computation
-            const ownerReward = await stakingWrapper.cobbDouglasSimplifiedInverseAsync(
-                totalRewards,
-                ownerFees,
-                totalFees,
-                ownerStake,
-                totalStake,
-                inverseAlphaDenominator
-            );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 12);
-            // validation
-            expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
-        });
 
         it('pool management', async() => {
             // create first pool
