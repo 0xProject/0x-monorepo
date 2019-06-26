@@ -1,10 +1,5 @@
 import {
-    chaiSetup,
-    constants,
     expectTransactionFailedAsync,
-    provider,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -13,6 +8,7 @@ import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { StakerBalances } from '../utils/types';
+
 import { BaseActor } from './base_actor';
 
 const expect = chai.expect;
@@ -38,7 +34,7 @@ export class StakerActor extends BaseActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedStakerBalances = initStakerBalances;
+        const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.minus(amount);
         expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.plus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.plus(amount);
@@ -60,7 +56,7 @@ export class StakerActor extends BaseActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedStakerBalances = initStakerBalances;
+        const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.minus(amount);
         expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.minus(amount);
         expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.plus(amount);
@@ -79,7 +75,7 @@ export class StakerActor extends BaseActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedStakerBalances = initStakerBalances;
+        const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.minus(amount);
         expectedStakerBalances.timelockedStakeBalance = initStakerBalances.timelockedStakeBalance.plus(amount);
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
@@ -98,7 +94,7 @@ export class StakerActor extends BaseActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedStakerBalances = initStakerBalances;
+        const expectedStakerBalances = initStakerBalances;
         expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
         expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.minus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.minus(amount);
@@ -158,7 +154,7 @@ export class StakerActor extends BaseActor {
         // skip to next period
         await this._stakingWrapper.skipToNextTimelockPeriodAsync();
         // validate new balances
-        let expectedBalances = initBalances;
+        const expectedBalances = initBalances;
         const currentTimelockPeriod = await this._stakingWrapper.getCurrentTimelockPeriodAsync();
         if (currentTimelockPeriod.minus(timelockStart).isGreaterThan(1)) {
             expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(

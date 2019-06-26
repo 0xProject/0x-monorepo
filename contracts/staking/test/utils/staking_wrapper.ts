@@ -1,25 +1,26 @@
+import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
+import { assetDataUtils } from '@0x/order-utils';
+import { SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { assetDataUtils } from '@0x/order-utils';
-import { SignatureType } from '@0x/types';
-import { LogWithDecodedArgs, Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
-import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
-import { ERC20ProxyContract } from '@0x/contracts-asset-proxy';
+import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
     artifacts,
+    LibFeeMathTestContract,
+    RewardVaultContract,
     StakingContract,
     StakingProxyContract,
     ZrxVaultContract,
-    RewardVaultContract,
-    LibFeeMathTestContract,
 } from '../../src';
+
 import { ApprovalFactory } from './ApprovalFactory';
-import { SignedStakingPoolApproval } from './types';
 import { constants } from './constants';
+import { SignedStakingPoolApproval } from './types';
 
 const expect = chai.expect;
 
@@ -92,7 +93,7 @@ export class StakingWrapper {
         );
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            (this._zrxVaultContractIfExists as ZrxVaultContract).address,
+            (this._zrxVaultContractIfExists).address,
         );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
@@ -105,21 +106,21 @@ export class StakingWrapper {
             artifacts.StakingProxy,
             this._provider,
             txDefaults,
-            (this._stakingContractIfExists as StakingContract).address,
+            (this._stakingContractIfExists).address,
         );
         // set staking proxy contract in zrx vault
         await (this
-            ._zrxVaultContractIfExists as ZrxVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync(
-            (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            ._zrxVaultContractIfExists).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            (this._stakingProxyContractIfExists).address,
         );
         // set zrx vault in staking contract
         const setZrxVaultCalldata = await (this
-            ._stakingContractIfExists as StakingContract).setZrxVault.getABIEncodedTransactionData(
-            (this._zrxVaultContractIfExists as ZrxVaultContract).address,
+            ._stakingContractIfExists).setZrxVault.getABIEncodedTransactionData(
+            (this._zrxVaultContractIfExists).address,
         );
         const setZrxVaultTxData = {
             from: this._ownerAddres,
-            to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            to: (this._stakingProxyContractIfExists).address,
             data: setZrxVaultCalldata,
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
@@ -127,17 +128,17 @@ export class StakingWrapper {
         );
         // set staking proxy contract in reward vault
         await (this
-            ._rewardVaultContractIfExists as RewardVaultContract).setStakingContractAddrsess.awaitTransactionSuccessAsync(
-            (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            ._rewardVaultContractIfExists).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            (this._stakingProxyContractIfExists).address,
         );
         // set reward vault in staking contract
         const setRewardVaultCalldata = await (this
-            ._stakingContractIfExists as StakingContract).setRewardVault.getABIEncodedTransactionData(
-            (this._rewardVaultContractIfExists as RewardVaultContract).address,
+            ._stakingContractIfExists).setRewardVault.getABIEncodedTransactionData(
+            (this._rewardVaultContractIfExists).address,
         );
         const setRewardVaultTxData = {
             from: this._ownerAddres,
-            to: (this._stakingProxyContractIfExists as StakingProxyContract).address,
+            to: (this._stakingProxyContractIfExists).address,
             data: setRewardVaultCalldata,
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
@@ -149,36 +150,6 @@ export class StakingWrapper {
             this._provider,
             txDefaults,
         );
-    }
-    private async _executeTransactionAsync(
-        calldata: string,
-        from?: string,
-        value?: BigNumber,
-        includeLogs?: boolean,
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txData = {
-            from: from ? from : this._ownerAddres,
-            to: this.getStakingProxyContract().address,
-            data: calldata,
-            gas: 3000000,
-            gasPrice: 0,
-            value,
-        };
-        const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
-        const txReceipt = await (includeLogs
-            ? this._logDecoder.getTxWithDecodedLogsAsync(txHash)
-            : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
-        return txReceipt;
-    }
-    private async _callAsync(calldata: string, from?: string): Promise<any> {
-        const txData = {
-            from: from ? from : this._ownerAddres,
-            to: this.getStakingProxyContract().address,
-            data: calldata,
-            gas: 3000000,
-        };
-        const returnValue = await this._web3Wrapper.callAsync(txData);
-        return returnValue;
     }
     public async getEthBalanceAsync(owner: string): Promise<BigNumber> {
         const balance = this._web3Wrapper.getBalanceInWeiAsync(owner);
@@ -653,7 +624,7 @@ export class StakingWrapper {
     }
     ///// MATH /////
     public async nthRoot(value: BigNumber, n: BigNumber): Promise<BigNumber> {
-        //const txReceipt = await this.getLibFeeMathTestContract().nthRoot.await(value, n);
+        // const txReceipt = await this.getLibFeeMathTestContract().nthRoot.await(value, n);
         const output = await this.getLibFeeMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
@@ -760,6 +731,36 @@ export class StakingWrapper {
             .dividedToIntegerBy(1)
             .dividedBy(scalar);
         return amountAsFloatingPoint;
+    }
+    private async _executeTransactionAsync(
+        calldata: string,
+        from?: string,
+        value?: BigNumber,
+        includeLogs?: boolean,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txData = {
+            from: from ? from : this._ownerAddres,
+            to: this.getStakingProxyContract().address,
+            data: calldata,
+            gas: 3000000,
+            gasPrice: 0,
+            value,
+        };
+        const txHash = await this._web3Wrapper.sendTransactionAsync(txData);
+        const txReceipt = await (includeLogs
+            ? this._logDecoder.getTxWithDecodedLogsAsync(txHash)
+            : this._web3Wrapper.awaitTransactionSuccessAsync(txHash));
+        return txReceipt;
+    }
+    private async _callAsync(calldata: string, from?: string): Promise<any> {
+        const txData = {
+            from: from ? from : this._ownerAddres,
+            to: this.getStakingProxyContract().address,
+            data: calldata,
+            gas: 3000000,
+        };
+        const returnValue = await this._web3Wrapper.callAsync(txData);
+        return returnValue;
     }
     private _validateDeployedOrThrow() {
         if (this._stakingContractIfExists === undefined) {
