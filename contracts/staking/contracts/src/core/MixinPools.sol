@@ -219,7 +219,7 @@ contract MixinPools is
     {
         require(
             getMakerPoolId(makerAddress) == poolId,
-            "MAKER_ADDRESS_ALREADY_REGISTERED"
+            "MAKER_ADDRESS_NOT_REGISTERED"
         );
 
         //
