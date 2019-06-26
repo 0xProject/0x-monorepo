@@ -5,7 +5,7 @@ import {
     provider,
     txDefaults,
     web3Wrapper,
-} from '@0x/contracts-test-utils'
+} from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -25,7 +25,13 @@ export class MakerActor extends BaseActor {
     private readonly _signatureVerifierIfExists?: string;
     private readonly _chainIdIfExists?: number;
 
-    constructor(owner: string, stakingWrapper: StakingWrapper, ownerPrivateKey?: Buffer, signatureVerifier?: string, chainId?: number) {
+    constructor(
+        owner: string,
+        stakingWrapper: StakingWrapper,
+        ownerPrivateKey?: Buffer,
+        signatureVerifier?: string,
+        chainId?: number,
+    ) {
         super(owner, stakingWrapper);
         this._ownerPrivateKeyIfExists = ownerPrivateKey;
         this._signatureVerifierIfExists = signatureVerifier;
@@ -42,7 +48,7 @@ export class MakerActor extends BaseActor {
             this._ownerPrivateKeyIfExists,
             this._signatureVerifierIfExists,
             this._chainIdIfExists,
-            signatureType
+            signatureType,
         );
         return approval;
     }

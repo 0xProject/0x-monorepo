@@ -5,7 +5,7 @@ import {
     provider,
     txDefaults,
     web3Wrapper,
-} from '@0x/contracts-test-utils'
+} from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -19,21 +19,21 @@ import { StakerActor } from './staker_actor';
 const expect = chai.expect;
 
 export class DelegatorActor extends StakerActor {
-
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
-    public async depositAndDelegateAsync(poolId: string, amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async depositAndDelegateAsync(
+        poolId: string,
+        amount: BigNumber,
+        revertReason?: RevertReason,
+    ): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // deposit stake
         const txReceiptPromise = this._stakingWrapper.depositAndDelegateAsync(this._owner, poolId, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -45,23 +45,26 @@ export class DelegatorActor extends StakerActor {
         expectedDelegatorBalances.stakeBalanceInVault = initDelegatorBalances.stakeBalanceInVault.plus(amount);
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.plus(amount);
         expectedDelegatorBalances.delegatedStakeBalance = initDelegatorBalances.delegatedStakeBalance.plus(amount);
-        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].plus(amount);
+        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].plus(
+            amount,
+        );
         expectedDelegatorBalances.stakeDelegatedToPool[0] = initDelegatorBalances.stakeDelegatedToPool[0].plus(amount);
         await this.assertBalancesAsync(expectedDelegatorBalances, [poolId]);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.plus(amount));
     }
-    public async activateAndDelegateStakeAsync(poolId: string, amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async activateAndDelegateStakeAsync(
+        poolId: string,
+        amount: BigNumber,
+        revertReason?: RevertReason,
+    ): Promise<void> {
         // query init balances
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // activate and delegate
         const txReceiptPromise = this._stakingWrapper.activateAndDelegateStakeAsync(this._owner, poolId, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -70,24 +73,37 @@ export class DelegatorActor extends StakerActor {
         // check balances
         let expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.plus(amount);
-        expectedDelegatorBalances.withdrawableStakeBalance = expectedDelegatorBalances.withdrawableStakeBalance.minus(amount);
-        expectedDelegatorBalances.activatableStakeBalance = expectedDelegatorBalances.activatableStakeBalance.minus(amount);
-        expectedDelegatorBalances.deactivatedStakeBalance = expectedDelegatorBalances.deactivatedStakeBalance.minus(amount);
+        expectedDelegatorBalances.withdrawableStakeBalance = expectedDelegatorBalances.withdrawableStakeBalance.minus(
+            amount,
+        );
+        expectedDelegatorBalances.activatableStakeBalance = expectedDelegatorBalances.activatableStakeBalance.minus(
+            amount,
+        );
+        expectedDelegatorBalances.deactivatedStakeBalance = expectedDelegatorBalances.deactivatedStakeBalance.minus(
+            amount,
+        );
         expectedDelegatorBalances.delegatedStakeBalance = initDelegatorBalances.delegatedStakeBalance.plus(amount);
-        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].plus(amount);
+        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].plus(
+            amount,
+        );
         expectedDelegatorBalances.stakeDelegatedToPool[0] = initDelegatorBalances.stakeDelegatedToPool[0].plus(amount);
         await this.assertBalancesAsync(expectedDelegatorBalances, [poolId]);
     }
-    public async deactivateAndTimelockDelegatedStakeAsync(poolId: string, amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async deactivateAndTimelockDelegatedStakeAsync(
+        poolId: string,
+        amount: BigNumber,
+        revertReason?: RevertReason,
+    ): Promise<void> {
         // query init balances
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // deactivate and timelock
-        const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(this._owner, poolId, amount);
+        const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockDelegatedStakeAsync(
+            this._owner,
+            poolId,
+            amount,
+        );
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -95,10 +111,16 @@ export class DelegatorActor extends StakerActor {
         // check balances
         let expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.minus(amount);
-        expectedDelegatorBalances.timelockedStakeBalance = expectedDelegatorBalances.timelockedStakeBalance.plus(amount);
-        expectedDelegatorBalances.deactivatedStakeBalance = expectedDelegatorBalances.deactivatedStakeBalance.plus(amount);
+        expectedDelegatorBalances.timelockedStakeBalance = expectedDelegatorBalances.timelockedStakeBalance.plus(
+            amount,
+        );
+        expectedDelegatorBalances.deactivatedStakeBalance = expectedDelegatorBalances.deactivatedStakeBalance.plus(
+            amount,
+        );
         expectedDelegatorBalances.delegatedStakeBalance = initDelegatorBalances.delegatedStakeBalance.minus(amount);
-        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].minus(amount);
+        expectedDelegatorBalances.stakeDelegatedToPoolByOwner[0] = initDelegatorBalances.stakeDelegatedToPoolByOwner[0].minus(
+            amount,
+        );
         expectedDelegatorBalances.stakeDelegatedToPool[0] = initDelegatorBalances.stakeDelegatedToPool[0].minus(amount);
         await this.assertBalancesAsync(expectedDelegatorBalances, [poolId]);
     }
@@ -112,7 +134,10 @@ export class DelegatorActor extends StakerActor {
         };
         const poolIds = maybePoolIds !== undefined ? maybePoolIds : [];
         for (const poolId of poolIds) {
-            const stakeDelegatedToPoolByOwner = await this._stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(poolId, this._owner);
+            const stakeDelegatedToPoolByOwner = await this._stakingWrapper.getStakeDelegatedToPoolByOwnerAsync(
+                poolId,
+                this._owner,
+            );
             delegatorBalances.stakeDelegatedToPoolByOwner.push(stakeDelegatedToPoolByOwner);
             const stakeDelegatedToPool = await this._stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
             delegatorBalances.stakeDelegatedToPool.push(stakeDelegatedToPool);
@@ -122,11 +147,19 @@ export class DelegatorActor extends StakerActor {
     public async assertBalancesAsync(expectedBalances: DelegatorBalances, maybePoolIds?: string[]): Promise<void> {
         await super.assertBalancesAsync(expectedBalances);
         const balances = await this.getBalancesAsync(maybePoolIds);
-        expect(balances.delegatedStakeBalance, 'delegated stake balance').to.be.bignumber.equal(expectedBalances.delegatedStakeBalance);
+        expect(balances.delegatedStakeBalance, 'delegated stake balance').to.be.bignumber.equal(
+            expectedBalances.delegatedStakeBalance,
+        );
         const poolIds = maybePoolIds !== undefined ? maybePoolIds : [];
         for (let i = 0; i < poolIds.length; i++) {
-            expect(balances.stakeDelegatedToPoolByOwner[i], `stake delegated to pool ${poolIds[i]} by owner`).to.be.bignumber.equal(expectedBalances.stakeDelegatedToPoolByOwner[i]);
-            expect(balances.stakeDelegatedToPool[i], `total stake delegated to pool ${poolIds[i]}`).to.be.bignumber.equal(expectedBalances.stakeDelegatedToPool[i]);
+            expect(
+                balances.stakeDelegatedToPoolByOwner[i],
+                `stake delegated to pool ${poolIds[i]} by owner`,
+            ).to.be.bignumber.equal(expectedBalances.stakeDelegatedToPoolByOwner[i]);
+            expect(
+                balances.stakeDelegatedToPool[i],
+                `total stake delegated to pool ${poolIds[i]}`,
+            ).to.be.bignumber.equal(expectedBalances.stakeDelegatedToPool[i]);
         }
     }
 }
