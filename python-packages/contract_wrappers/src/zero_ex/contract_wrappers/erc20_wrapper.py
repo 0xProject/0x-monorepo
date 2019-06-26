@@ -157,9 +157,7 @@ class ERC20Token(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def allowance(
-        self, token_address: str, _owner: str, _spender: str
-    ) -> Union[HexBytes, bytes]:
+    def allowance(self, token_address: str, _owner: str, _spender: str) -> int:
         """Get the amount of tokens approved for a spender.
 
         :returns: amount of tokens
