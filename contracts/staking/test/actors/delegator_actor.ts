@@ -23,7 +23,7 @@ export class DelegatorActor extends StakerActor {
         revertReason?: RevertReason,
     ): Promise<void> {
         // query init balances
-        const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
+        const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // deposit stake
         const txReceiptPromise = this._stakingWrapper.depositAndDelegateAsync(this._owner, poolId, amount);
@@ -31,7 +31,7 @@ export class DelegatorActor extends StakerActor {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
-        const txReceipt = await txReceiptPromise;
+        await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
         const expectedDelegatorBalances = initDelegatorBalances;
@@ -46,7 +46,7 @@ export class DelegatorActor extends StakerActor {
         expectedDelegatorBalances.stakeDelegatedToPool[0] = initDelegatorBalances.stakeDelegatedToPool[0].plus(amount);
         await this.assertBalancesAsync(expectedDelegatorBalances, [poolId]);
         // check zrx balance of vault
-        const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
+        const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.plus(amount));
     }
     public async activateAndDelegateStakeAsync(
@@ -62,7 +62,7 @@ export class DelegatorActor extends StakerActor {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
-        const txReceipt = await txReceiptPromise;
+        await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
         // check balances
@@ -101,7 +101,7 @@ export class DelegatorActor extends StakerActor {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
-        const txReceipt = await txReceiptPromise;
+        await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
         const expectedDelegatorBalances = initDelegatorBalances;
