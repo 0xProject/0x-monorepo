@@ -41,7 +41,7 @@ contract MixinPools is
 
     using LibSafeMath for uint256;
 
-     modifier onlyPoolOperator(bytes32 poolId) {
+    modifier onlyPoolOperator(bytes32 poolId) {
         require(
             msg.sender == getPoolOperator(poolId),
             "ONLY_CALLABLE_BY_POOL_OPERATOR"
@@ -169,7 +169,7 @@ contract MixinPools is
 
         // 
         _makerAddressesByPoolId = new address[](makerAddressesByPoolIdLength);
-        for(uint i = 0; i < makerAddressesByPoolIdLength; ++i) {
+        for (uint i = 0; i < makerAddressesByPoolIdLength; ++i) {
             _makerAddressesByPoolId[i] = makerAddressesByPoolIdPtr[i];
         }
 
@@ -225,7 +225,7 @@ contract MixinPools is
 
         // 
         uint indexOfMakerAddress = 0;
-        for(; indexOfMakerAddress < makerAddressesByPoolIdLength; ++indexOfMakerAddress) {
+        for (; indexOfMakerAddress < makerAddressesByPoolIdLength; ++indexOfMakerAddress) {
             if (makerAddressesByPoolIdPtr[indexOfMakerAddress] == makerAddress) {
                 break;
             }

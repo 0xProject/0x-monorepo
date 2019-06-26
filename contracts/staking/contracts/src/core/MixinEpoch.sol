@@ -24,6 +24,7 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
 
+
 contract MixinEpoch is
     MixinConstants,
     MixinStorage
@@ -101,7 +102,8 @@ contract MixinEpoch is
         internal
     {
         // get current timestamp
-        // solium-disable-next-line security/no-block-members
+        // solium-disable security/no-block-members
+        // solhint-disable-next-line not-rely-on-time
         uint64 currentBlockTimestamp = block.timestamp._downcastToUint64();
 
         // validate that we can increment the current epoch

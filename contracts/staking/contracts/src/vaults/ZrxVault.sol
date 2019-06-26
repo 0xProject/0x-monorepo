@@ -105,26 +105,26 @@ contract ZrxVault is
         return totalBalance;
     }
 
-    function _withdrawFrom(address owner, uint256 amount)
-        internal
-    {
-        // withdraw ZRX to owner
-        zrxToken.transfer(
-            owner,
-            amount
-        );
-
-        // update balance
-        // note that this call will revert if trying to withdraw more
-        // than the current balance
-        balances[owner] = balances[owner]._sub(amount);
-    }
-
     function balanceOf(address owner)
         external
         view
         returns (uint256)
     {
         return balances[owner];
+    }
+
+    function _withdrawFrom(address owner, uint256 amount)
+        internal
+    {
+        // update balance
+        // note that this call will revert if trying to withdraw more
+        // than the current balance
+        balances[owner] = balances[owner]._sub(amount);
+        
+        // withdraw ZRX to owner
+        zrxToken.transfer(
+            owner,
+            amount
+        );
     }
 }
