@@ -22,18 +22,15 @@ import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
-import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinRewardVault.sol";
 import "./MixinPools.sol";
 
+
 contract MixinRewards is
-    // immutables
     MixinConstants,
     MixinStorage,
-    // standalones
     MixinRewardVault,
-    // logic
     MixinStakeBalances,
     MixinPools
 {

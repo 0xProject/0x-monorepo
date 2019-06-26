@@ -30,16 +30,12 @@ import "./MixinStakeBalances.sol";
 
 
 contract MixinStake is
-    // interfaces
     IStakingEvents,
-    // immutables
     MixinConstants,
     MixinStorage,
-    // standalone
     MixinEpoch,
-    MixinZrxVault,
     MixinRewardVault,
-    // logic
+    MixinZrxVault,
     MixinStakeBalances
 {
 
@@ -268,7 +264,7 @@ contract MixinStake is
     function _timelockStake(address owner, uint256 amount)
         private
     {
-        (Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
+        (IStructs.Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
         uint96 downcastAmount = amount._downcastToUint96();
         ownerTimelock.total += downcastAmount;
         timelockedStakeByOwner[owner] = ownerTimelock;
@@ -277,7 +273,7 @@ contract MixinStake is
     function _syncTimelockedStake(address owner)
         private
     {
-        (Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner);
+        (IStructs.Timelock memory ownerTimelock, bool isOutOfSync) = _getSynchronizedTimelock(owner);
         if (!isOutOfSync) {
             return;
         }

@@ -32,17 +32,12 @@ import "../interfaces/IStructs.sol";
 
 
 contract MixinFees is
-    // interfaces
     IStakingEvents,
-    IStructs,
-    // immutables
     MixinConstants,
     MixinStorage,
-    // standalones
     MixinEpoch,
-    MixinExchange,
     MixinRewardVault,
-    // staking logic
+    MixinExchange,
     MixinStakeBalances,
     MixinPools
 {
@@ -91,7 +86,7 @@ contract MixinFees is
     {
         // Step 1 - compute total fees this epoch
         uint256 numberOfActivePoolIds = activePoolIdsThisEpoch.length;
-        ActivePool[] memory activePoolIds = new ActivePool[](activePoolIdsThisEpoch.length);
+        IStructs.ActivePool[] memory activePoolIds = new IStructs.ActivePool[](activePoolIdsThisEpoch.length);
         uint256 totalFees = 0;
         for (uint i = 0; i != numberOfActivePoolIds; i++) {
             activePoolIds[i].poolId = activePoolIdsThisEpoch[i];
