@@ -51,10 +51,28 @@ export class Simulation {
         await this._stakingWrapper.skipToNextEpochAsync();
         // everyone has been paid out into the vault. check balances.
         await this._assertVaultBalancesAsync(this._p);
-        //await this._withdrawOperatorRewards(this._p);
+        await this._withdrawRewardForOperators(this._p);
         //await this._withdrawDelegatorRewardsByUndelegating(this._p);
         //OR
         // await this._withdrawDelegatorRewardsWithoutUndelegating(this._p);
+    }
+
+    private async _withdrawRewardForOperators(p: SimulationParams): Promise<void> {
+        for (const i in _.range(p.numberOfPools)) {
+            // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
+            //          update once more accurate.
+            // check pool balance in vault
+            const poolId = this._poolIds[i];
+            const poolOperator = this._poolOperators[i];
+            const poolOperatorAddress = poolOperator.getOwner();
+            const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
+            await this._stakingWrapper.withdrawTotalOperatorRewardAsync(poolId, poolOperatorAddress);
+            const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
+            const reward = finalEthBalance.minus(initEthBalance); 
+            const rewardTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(reward, 18), 5);
+            const expectedReward = p.expectedPayoutByPoolOperator[i];
+            expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for operator`).to.be.bignumber.equal(expectedReward);
+        }
     }
 
     private async _setupPoolsAsync(p: SimulationParams): Promise<void> {
