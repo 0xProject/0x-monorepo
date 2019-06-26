@@ -164,7 +164,6 @@ export class StakingWrapper {
     public async depositAndDelegateAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
-        console.log(JSON.stringify(txReceipt, null, 4));
         return txReceipt;
     }
     public async activateStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
@@ -185,7 +184,6 @@ export class StakingWrapper {
     public async deactivateAndTimelockDelegatedStakeAsync(owner: string, poolId: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().deactivateAndTimelockDelegatedStake.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
-        console.log(JSON.stringify(txReceipt, null, 4));
         return txReceipt;
     }
     public async withdrawAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
@@ -199,50 +197,65 @@ export class StakingWrapper {
         return txReceipt;
     }
     ///// STAKE BALANCES /////
-    public async getTotalStakeAsync(owner: string): Promise<string> {
+    public async getTotalStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getTotalStake.getABIEncodedTransactionData(owner);
-        const totalStake = await this._callAsync(calldata);
-        return totalStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getTotalStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getActivatedStakeAsync(owner: string): Promise<string> {
+    public async getActivatedStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getActivatedStake.getABIEncodedTransactionData(owner);
-        const activatedStake = await this._callAsync(calldata);
-        return activatedStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getActivatedStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getDeactivatedStakeAsync(owner: string): Promise<string> {
+    public async getDeactivatedStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getDeactivatedStake.getABIEncodedTransactionData(owner);
-        const deactivatedStake = await this._callAsync(calldata);
-        return deactivatedStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getDeactivatedStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getActivatableStakeAsync(owner: string): Promise<string> {
+    public async getActivatableStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getActivatableStake.getABIEncodedTransactionData(owner);
-        const activatableStake = await this._callAsync(calldata);
-        return activatableStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getActivatableStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getWithdrawableStakeAsync(owner: string): Promise<string> {
+    public async getWithdrawableStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getWithdrawableStake.getABIEncodedTransactionData(owner);
-        const withdrawableStake = await this._callAsync(calldata);
-        return withdrawableStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getWithdrawableStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getTimelockedStakeAsync(owner: string): Promise<string> {
+    public async getTimelockedStakeAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getTimelockedStake.getABIEncodedTransactionData(owner);
-        const timelockedStake = await this._callAsync(calldata);
-        return timelockedStake;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getTimelockedStake.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getStakeDelegatedByOwnerAsync(owner: string): Promise<string> {
+    public async getTimelockStartAsync(owner: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimelockStart.getABIEncodedTransactionData(owner);
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getTimelockStart.getABIDecodedReturnData(returnData);
+        return value;
+    }
+    public async getStakeDelegatedByOwnerAsync(owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getStakeDelegatedByOwner.getABIEncodedTransactionData(owner);
-        const stakeDelegatedByOwner = await this._callAsync(calldata);
-        return stakeDelegatedByOwner;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getStakeDelegatedByOwner.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getStakeDelegatedToPoolByOwnerAsync(poolId: string, owner: string): Promise<string> {
+    public async getStakeDelegatedToPoolByOwnerAsync(poolId: string, owner: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIEncodedTransactionData(owner, poolId);
-        const stakeDelegatedToPoolByOwner = await this._callAsync(calldata);
-        return stakeDelegatedToPoolByOwner;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIDecodedReturnData(returnData);
+        return value;
     }
-    public async getStakeDelegatedToPoolAsync(poolId: string): Promise<string> {
+    public async getStakeDelegatedToPoolAsync(poolId: string): Promise<BigNumber> {
         const calldata = this.getStakingContract().getStakeDelegatedToPool.getABIEncodedTransactionData(poolId);
-        const stakeDelegatedToPool = await this._callAsync(calldata);
-        return stakeDelegatedToPool;
+        const returnData = await this._callAsync(calldata);
+        const value = this.getStakingContract().getStakeDelegatedToPool.getABIDecodedReturnData(returnData);
+        return value;
     }
     ///// POOLS /////
     public async getNextPoolIdAsync(): Promise<string> {
@@ -309,11 +322,6 @@ export class StakingWrapper {
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
-        console.log(JSON.stringify(txReceipt, null , 4));
-        //console.log((txReceipt.logs[0] as LogWithDecodedArgs<StakingEEventArgs>).args);
-        //console.log((txReceipt.logs[1] as LogWithDecodedArgs<StakingEEventArgs>).args);
-        //console.log((txReceipt.logs[2] as LogWithDecodedArgs<StakingEEventArgs>).args);
-       
        console.log(`finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`);
         return txReceipt;
     }
@@ -565,7 +573,6 @@ export class StakingWrapper {
             totalStake,
             alphaDenominator
         );
-        console.log(`Gas Used: ${txReceipt.gasUsed}`);
         const output = await this.getLibFeeMathTestContract().cobbDouglasSimplified.callAsync(
             totalRewards,
             ownerFees,

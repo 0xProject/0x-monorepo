@@ -21,6 +21,9 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
+
+import { StakerActor } from './actors/StakerActor';
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -103,6 +106,34 @@ describe('Staking Core', () => {
                 expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD.plus(1));
             }
         });
+
+        it.only('staking/unstaking', async () => {
+            // setup test parameters
+            const amountToStake = stakingWrapper.toBaseUnitAmount(10);
+            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
+            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
+            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
+            // run test - this actor will validate its own state
+            const staker = new StakerActor(stakers[0], stakingWrapper);
+            await staker.depositAndStakeAsync(amountToStake);
+            await staker.deactivateAndTimelockStakeAsync(amountToDeactivate);
+            // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
+            //        attempting to do so should revert.
+            console.log('first');
+            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            await staker.skipToNextTimelockPeriodAsync();
+            console.log('second');
+            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
+            await staker.skipToNextTimelockPeriodAsync();
+            console.log('done');
+            // this forces the internal state to update; it is not necessary to activate stake, but
+            // allows us to check that state is updated correctly after a timelock period rolls over.
+            await staker.forceTimelockSyncAsync();
+            // now we can activate stake
+            await staker.activateStakeAsync(amountToReactivate);
+            await staker.withdrawAsync(amountToWithdraw);
+        });
+
         it('staking/unstaking', async () => {
             ///// 1 SETUP TEST PARAMETERS /////
             const amountToStake = stakingWrapper.toBaseUnitAmount(10);
@@ -154,6 +185,7 @@ describe('Staking Core', () => {
                 const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
                 expect(activatableStakeBalance).to.be.bignumber.equal(0);
             }
+            /*
             ///// 4 SKIP TO NEXT TIMELOCK PERIOD - NOTHING SHOULD HAVE CHANGED /////
             await stakingWrapper.skipToNextTimelockPeriodAsync();
             {
@@ -198,6 +230,9 @@ describe('Staking Core', () => {
                 const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
                 expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
             }
+            
+
+
             ///// 6 FORCE A SYNC - BALANCES SHOULD NOT CHANGE
             await stakingWrapper.forceTimelockSyncAsync(owner);
             {
@@ -220,7 +255,12 @@ describe('Staking Core', () => {
                 const activatableStakeBalance = await stakingWrapper.getActivatableStakeAsync(owner);
                 expect(activatableStakeBalance).to.be.bignumber.equal(amountToDeactivate);
             }
+            */
+
+
             ///// 7 REACTIVATE SOME STAKE /////
+
+
             await stakingWrapper.activateStakeAsync(owner, amountToReactivate);
             {
                 // check total stake balance didn't change

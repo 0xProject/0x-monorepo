@@ -352,6 +352,7 @@ export enum RevertReason {
     AmountExceedsBalanceOfPool = 'AMOUNT_EXCEEDS_BALANCE_OF_POOL',
     OnlyCallableByStakingContract = 'ONLY_CALLABLE_BY_STAKING_CONTRACT',
     InvalidMakerSignature = 'INVALID_MAKER_SIGNATURE',
+    InsufficientBalance = 'INSUFFICIENT_BALANCE',
 }
 
 export enum StatusCodes {
