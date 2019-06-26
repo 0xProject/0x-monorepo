@@ -46,7 +46,7 @@ describe('Math Libraries', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -58,14 +58,14 @@ describe('Math Libraries', () => {
         it('nth root', async () => {
             const base = new BigNumber(1419857);
             const n = new BigNumber(5);
-            const root = await stakingWrapper.nthRoot(base, n);
+            const root = await stakingWrapper.nthRootAsync(base, n);
             expect(root).to.be.bignumber.equal(17);
         });
 
         it('nth root #2', async () => {
             const base = new BigNumber(3375);
             const n = new BigNumber(3);
-            const root = await stakingWrapper.nthRoot(base, n);
+            const root = await stakingWrapper.nthRootAsync(base, n);
             expect(root).to.be.bignumber.equal(15);
         });
 
@@ -73,7 +73,7 @@ describe('Math Libraries', () => {
             const decimals = 18;
             const base = stakingWrapper.toFixedPoint(4.234, decimals);
             const n = new BigNumber(2);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
+            const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
             const expectedResult = new BigNumber(2.057668584);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
@@ -82,21 +82,19 @@ describe('Math Libraries', () => {
         it('nth root #3 with fixed point (integer nth root would fail here)', async () => {
             const decimals = 18;
             const base = stakingWrapper.toFixedPoint(5429503678976, decimals);
-            console.log(base);
             const n = new BigNumber(9);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
+            const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
             const expectedResult = new BigNumber(26);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
 
         it.skip('nth root #4 with fixed point (integer nth root would fail here) (max number of decimals - currently does not retain)', async () => {
+            // @TODO This is the gold standard for nth root. Retain all these decimals :)
             const decimals = 18;
             const base = stakingWrapper.toFixedPoint(new BigNumber('5429503678976.295036789761543678', 10), decimals);
-            console.log(base);
             const n = new BigNumber(9);
-            const root = await stakingWrapper.nthRootFixedPoint(base, n);
-            console.log(`root - ${root}`);
+            const root = await stakingWrapper.nthRootFixedPointAsync(base, n);
             const rootAsFloatingPoint = stakingWrapper.toFloatingPoint(root, decimals);
             const expectedResult = new BigNumber(26);
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);

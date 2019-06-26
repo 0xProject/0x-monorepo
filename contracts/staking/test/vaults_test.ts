@@ -9,14 +9,11 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
-
 
 import { StakingWrapper } from './utils/staking_wrapper';
 
 chaiSetup.configure();
-const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Staking Vaults', () => {
@@ -25,10 +22,7 @@ describe('Staking Vaults', () => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
-    let exchange: string;
-    let stakers: string[];
-    let makers: string[];
-    let delegators: string[];
+    let users: string[];
     let zrxTokenContract: DummyERC20TokenContract;
     let erc20ProxyContract: ERC20ProxyContract;
     // wrappers
@@ -45,9 +39,7 @@ describe('Staking Vaults', () => {
         // create accounts
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
-        exchange = accounts[1];
-        stakers = accounts.slice(2, 5);
-        makers = accounts.slice(4, 10);
+        users = accounts.slice(1);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -56,7 +48,7 @@ describe('Staking Vaults', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -67,7 +59,7 @@ describe('Staking Vaults', () => {
     describe('Reward Vault', () => {
         it.skip('basic management', async () => {
             // 1 setup test parameters
-            const poolOperator = stakers[1];
+            const poolOperator = users[0];
             const operatorShare = 39;
             const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);
             const stakingContractAddress = stakingWrapper.getStakingContract().address;
