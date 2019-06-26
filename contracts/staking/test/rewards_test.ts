@@ -29,7 +29,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking Core', () => {
+describe('Rewards', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -74,137 +74,7 @@ describe('Staking Core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('end-to-end tests', () => {
-        it('epochs & timelock periods', async () => {
-            ///// 0/3 Validate Assumptions /////
-            expect(await stakingWrapper.getEpochPeriodInSecondsAsync()).to.be.bignumber.equal(stakingConstants.EPOCH_PERIOD_IN_SECONDS);
-            expect(await stakingWrapper.getTimelockPeriodInEpochsAsync()).to.be.bignumber.equal(stakingConstants.TIMELOCK_PERIOD_IN_EPOCHS);
-            
-            ///// 1/3 Validate Initial Epoch & Timelock Period /////
-            {
-                // epoch
-                const currentEpoch = await stakingWrapper.getCurrentEpochAsync();
-                expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH);
-                // timelock period
-                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
-                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD);
-            }
-            ///// 2/3 Increment Epoch (Timelock Should Not Increment) /////
-            await stakingWrapper.skipToNextEpochAsync();
-            {
-                // epoch
-                const currentEpoch = await stakingWrapper.getCurrentEpochAsync();
-                expect(currentEpoch).to.be.bignumber.equal(stakingConstants.INITIAL_EPOCH.plus(1));
-                // timelock period
-                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
-                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD);
-            }
-            ///// 3/3 Increment Epoch (Timelock Should Increment) /////
-            await stakingWrapper.skipToNextTimelockPeriodAsync();
-            {
-                // timelock period
-                const currentTimelockPeriod = await stakingWrapper.getCurrentTimelockPeriodAsync();
-                expect(currentTimelockPeriod).to.be.bignumber.equal(stakingConstants.INITIAL_TIMELOCK_PERIOD.plus(1));
-            }
-        });
-
-        it.only('actor based staking/unstaking', async () => {
-            // setup test parameters
-            const amountToStake = stakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
-            // run test - this actor will validate its own state
-            const staker = new StakerActor(stakers[0], stakingWrapper);
-            await staker.depositAndStakeAsync(amountToStake);
-            await staker.deactivateAndTimelockStakeAsync(amountToDeactivate);
-            // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
-            //        attempting to do so should revert.
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimelockPeriodAsync();
-            await staker.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await staker.skipToNextTimelockPeriodAsync();
-            // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timelock period rolls over.
-            await staker.forceTimelockSyncAsync();
-            // now we can activate stake
-            await staker.activateStakeAsync(amountToReactivate);
-            await staker.withdrawAsync(amountToWithdraw);
-        });
-
-        it.only('actor based delegating/undelegating', async () => {
-            // setup test parameters
-            const amountToDelegate = stakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
-            const poolOperator = stakers[1];
-            const operatorShare = 39;
-            const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);
-            // run test
-            const delegator = new DelegatorActor(stakers[0], stakingWrapper);
-            await delegator.depositAndDelegateAsync(poolId, amountToDelegate);
-            await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountToDeactivate);
-            // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
-            //        attempting to do so should revert.
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimelockPeriodAsync();
-            await delegator.activateStakeAsync(amountToReactivate, RevertReason.InsufficientBalance);
-            await delegator.skipToNextTimelockPeriodAsync();
-            // this forces the internal state to update; it is not necessary to activate stake, but
-            // allows us to check that state is updated correctly after a timelock period rolls over.
-            await delegator.forceTimelockSyncAsync();
-            // now we can activate stake
-            await delegator.activateAndDelegateStakeAsync(poolId, amountToReactivate);
-            await delegator.withdrawAsync(amountToWithdraw);
-        });
-
-        it('exchange tracking', async () => {
-            // 1 try querying an invalid addresses
-            const invalidAddress = "0x0000000000000000000000000000000000000001";
-            const isInvalidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(invalidAddress);
-            expect(isInvalidAddressValid).to.be.false();
-            // 2 add valid address
-            await stakingWrapper.addExchangeAddressAsync(exchange);
-            const isValidAddressValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
-            expect(isValidAddressValid).to.be.true();
-            // 3 try adding valid address again
-            await expectTransactionFailedAsync(
-                stakingWrapper.addExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressAlreadyRegistered
-            );
-            // 4 remove valid address
-            await stakingWrapper.removeExchangeAddressAsync(exchange);
-            const isValidAddressStillValid = await stakingWrapper.isValidExchangeAddressAsync(exchange);
-            expect(isValidAddressStillValid).to.be.false();
-            // 5 try removing valid address again
-            await expectTransactionFailedAsync(
-                stakingWrapper.removeExchangeAddressAsync(exchange),
-                RevertReason.ExchangeAddressNotRegistered
-            );
-        });
-
-        it.skip('Reward Vault', async () => {
-            // 1 setup test parameters
-            const poolOperator = stakers[1];
-            const operatorShare = 39;
-            const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);
-            const stakingContractAddress = stakingWrapper.getStakingContract().address;
-            const notStakingContractAddress = poolOperator;
-            // create pool in vault
-            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress);
-            // should fail to create pool if it already exists
-            await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress),
-                RevertReason.PoolAlreadyExists
-            );
-            // should fail to create a pool from an address other than the staking contract
-            await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId,  operatorShare, notStakingContractAddress),
-                RevertReason.OnlyCallableByStakingContract
-            );
-        });
-
+    describe('Rewards', () => {
         it('Protocol Fees', async () => {
             ///// 0 DEPLOY EXCHANGE /////
             await stakingWrapper.addExchangeAddressAsync(exchange);
@@ -295,63 +165,6 @@ describe('Staking Core', () => {
                 stakingWrapper.payProtocolFeeAsync(makers[4], protocolFeesByMaker[4], owner),
                 RevertReason.OnlyCallableByExchange
             );
-        });
-
-
-        it('pool management', async() => {
-            // create first pool
-            const operatorAddress = stakers[0];
-            const operatorShare = 39;
-            const poolId = await stakingWrapper.createPoolAsync(operatorAddress, operatorShare);
-            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-            // check that the next pool id was incremented
-            const expectedNextPoolId = "0x0000000000000000000000000000000200000000000000000000000000000000";
-            const nextPoolId = await stakingWrapper.getNextPoolIdAsync();
-            expect(nextPoolId).to.be.equal(expectedNextPoolId);
-            // add maker to pool
-            const makerAddress = makers[0];
-            const makerApproval = stakingWrapper.signApprovalForStakingPool(poolId, makerAddress);
-            await stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, operatorAddress);
-            // check the pool id of the maker
-            const poolIdOfMaker = await stakingWrapper.getMakerPoolId(makerAddress);
-            expect(poolIdOfMaker).to.be.equal(poolId);
-            // check the list of makers for the pool
-            const makerAddressesForPool = await stakingWrapper.getMakerAddressesForPool(poolId);
-            expect(makerAddressesForPool).to.be.deep.equal([makerAddress]);
-            // try to add the same maker address again
-            await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, operatorAddress),
-                RevertReason.MakerAddressAlreadyRegistered
-            );
-            // try to add a new maker address with a bad signature
-            const anotherMakerAddress = makers[1];
-            const badPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(operatorAddress)];
-            const anotherMakerApproval = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress, badPrivateKey);
-            await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress, anotherMakerApproval.signature, operatorAddress),
-                RevertReason.InvalidMakerSignature
-            );
-            // try to add a new maker address from an address other than the pool operator
-            const notOperatorAddress = owner;
-            const anotherMakerAddress2 = makers[1];
-            const anotherMakerApproval2 = stakingWrapper.signApprovalForStakingPool(poolId, anotherMakerAddress);
-            await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, anotherMakerAddress2, anotherMakerApproval2.signature, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperator
-            );
-            // try to remove the maker address from an address other than the operator
-            await expectTransactionFailedAsync(
-                stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperator
-            );
-            // remove maker from pool
-            await stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, operatorAddress);
-            // check the pool id of the maker
-            const poolIdOfMakerAfterRemoving = await stakingWrapper.getMakerPoolId(makerAddress);
-            expect(poolIdOfMakerAfterRemoving).to.be.equal(stakingConstants.NIL_POOL_ID);
-            // check the list of makers for the pool
-            const makerAddressesForPoolAfterRemoving = await stakingWrapper.getMakerAddressesForPool(poolId);
-            expect(makerAddressesForPoolAfterRemoving).to.be.deep.equal([]);
         });
 
         it('Finalization with Protocol Fees (no delegators)', async () => {
