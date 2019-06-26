@@ -16,7 +16,6 @@ import { StakingWrapper } from './utils/staking_wrapper';
 
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 
-
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -107,7 +106,7 @@ describe('Math Libraries', () => {
             expect(rootAsFloatingPoint).to.be.bignumber.equal(expectedResult);
         });
 
-        it('cobb douglas - approximate', async() => {
+        it('cobb douglas - approximate', async () => {
             const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
             const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
             const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
@@ -126,14 +125,17 @@ describe('Math Libraries', () => {
                 ownerStake,
                 totalStake,
                 alphaNumerator,
-                alphaDenominator
+                alphaDenominator,
             );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 4);
+            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(
+                stakingWrapper.toFloatingPoint(ownerReward, 18),
+                4,
+            );
             // validation
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it('cobb douglas - simplified (alpha = 1/x)', async() => {
+        it('cobb douglas - simplified (alpha = 1/x)', async () => {
             // setup test parameters
             const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
             const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
@@ -151,14 +153,17 @@ describe('Math Libraries', () => {
                 totalFees,
                 ownerStake,
                 totalStake,
-                alphaDenominator
+                alphaDenominator,
             );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 14);
+            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(
+                stakingWrapper.toFloatingPoint(ownerReward, 18),
+                14,
+            );
             // validation
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });
 
-        it('cobb douglas - simplified inverse (1 - alpha = 1/x)', async() => {
+        it('cobb douglas - simplified inverse (1 - alpha = 1/x)', async () => {
             const totalRewards = stakingWrapper.toBaseUnitAmount(57.154398);
             const ownerFees = stakingWrapper.toBaseUnitAmount(5.64375);
             const totalFees = stakingWrapper.toBaseUnitAmount(29.00679);
@@ -175,9 +180,12 @@ describe('Math Libraries', () => {
                 totalFees,
                 ownerStake,
                 totalStake,
-                inverseAlphaDenominator
+                inverseAlphaDenominator,
             );
-            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(stakingWrapper.toFloatingPoint(ownerReward, 18), 12);
+            const ownerRewardFloatingPoint = stakingWrapper.trimFloat(
+                stakingWrapper.toFloatingPoint(ownerReward, 18),
+                12,
+            );
             // validation
             expect(ownerRewardFloatingPoint).to.be.bignumber.equal(expectedOwnerReward);
         });

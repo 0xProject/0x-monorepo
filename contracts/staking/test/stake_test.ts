@@ -21,7 +21,6 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
-
 import { StakerActor } from './actors/staker_actor';
 import { DelegatorActor } from './actors/delegator_actor';
 

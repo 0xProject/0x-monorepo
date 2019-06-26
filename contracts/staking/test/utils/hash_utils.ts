@@ -7,13 +7,13 @@ export const hashUtils = {
         poolId: string,
         makerAddress: string,
         verifyingContractAddress: string,
-        chainId: number
+        chainId: number,
     ): Buffer {
         const typedData = eip712Utils.createStakingPoolApprovalTypedData(
             poolId,
             makerAddress,
             verifyingContractAddress,
-            chainId
+            chainId,
         );
         const hashBuffer = signTypedDataUtils.generateTypedDataHash(typedData);
         return hashBuffer;
@@ -22,7 +22,7 @@ export const hashUtils = {
         poolId: string,
         makerAddress: string,
         verifyingContractAddress: string,
-        chainId: number
+        chainId: number,
     ): string {
         const hashHex = `0x${hashUtils
             .getStakingPoolApprovalHashBuffer(poolId, makerAddress, verifyingContractAddress, chainId)

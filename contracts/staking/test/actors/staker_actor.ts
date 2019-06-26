@@ -5,7 +5,7 @@ import {
     provider,
     txDefaults,
     web3Wrapper,
-} from '@0x/contracts-test-utils'
+} from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -18,7 +18,6 @@ import { BaseActor } from './base_actor';
 const expect = chai.expect;
 
 export class StakerActor extends BaseActor {
-
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
@@ -33,10 +32,7 @@ export class StakerActor extends BaseActor {
         // deposit stake
         const txReceiptPromise = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -58,10 +54,7 @@ export class StakerActor extends BaseActor {
         // activate stake
         const txReceiptPromise = this._stakingWrapper.activateStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -80,10 +73,7 @@ export class StakerActor extends BaseActor {
         // deactivate and timelock stake
         const txReceiptPromise = this._stakingWrapper.deactivateAndTimelockStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -102,10 +92,7 @@ export class StakerActor extends BaseActor {
         // withdraw stake
         const txReceiptPromise = this._stakingWrapper.withdrawAsync(this._owner, amount);
         if (revertReason !== undefined) {
-            await expectTransactionFailedAsync(
-                txReceiptPromise,
-                revertReason
-            );
+            await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         const txReceipt = await txReceiptPromise;
@@ -133,19 +120,31 @@ export class StakerActor extends BaseActor {
             activatedStakeBalance: await this._stakingWrapper.getActivatedStakeAsync(this._owner),
             timelockedStakeBalance: await this._stakingWrapper.getTimelockedStakeAsync(this._owner),
             deactivatedStakeBalance: await this._stakingWrapper.getDeactivatedStakeAsync(this._owner),
-        }
+        };
         return stakerBalances;
     }
     public async assertBalancesAsync(expectedBalances: StakerBalances): Promise<void> {
         const balances = await this.getBalancesAsync();
         expect(balances.zrxBalance, 'zrx balance').to.be.bignumber.equal(expectedBalances.zrxBalance);
         expect(balances.stakeBalance, 'stake balance').to.be.bignumber.equal(expectedBalances.stakeBalance);
-        expect(balances.stakeBalanceInVault, 'stake balance, recorded in vault').to.be.bignumber.equal(expectedBalances.stakeBalanceInVault);
-        expect(balances.withdrawableStakeBalance, 'withdrawable stake balance').to.be.bignumber.equal(expectedBalances.withdrawableStakeBalance);
-        expect(balances.activatableStakeBalance, 'activatable stake balance').to.be.bignumber.equal(expectedBalances.activatableStakeBalance);
-        expect(balances.activatedStakeBalance, 'activated stake balance').to.be.bignumber.equal(expectedBalances.activatedStakeBalance);
-        expect(balances.timelockedStakeBalance, 'timelocked stake balance').to.be.bignumber.equal(expectedBalances.timelockedStakeBalance);
-        expect(balances.deactivatedStakeBalance, 'deactivated stake balance').to.be.bignumber.equal(expectedBalances.deactivatedStakeBalance);
+        expect(balances.stakeBalanceInVault, 'stake balance, recorded in vault').to.be.bignumber.equal(
+            expectedBalances.stakeBalanceInVault,
+        );
+        expect(balances.withdrawableStakeBalance, 'withdrawable stake balance').to.be.bignumber.equal(
+            expectedBalances.withdrawableStakeBalance,
+        );
+        expect(balances.activatableStakeBalance, 'activatable stake balance').to.be.bignumber.equal(
+            expectedBalances.activatableStakeBalance,
+        );
+        expect(balances.activatedStakeBalance, 'activated stake balance').to.be.bignumber.equal(
+            expectedBalances.activatedStakeBalance,
+        );
+        expect(balances.timelockedStakeBalance, 'timelocked stake balance').to.be.bignumber.equal(
+            expectedBalances.timelockedStakeBalance,
+        );
+        expect(balances.deactivatedStakeBalance, 'deactivated stake balance').to.be.bignumber.equal(
+            expectedBalances.deactivatedStakeBalance,
+        );
     }
     public async forceTimelockSyncAsync(): Promise<void> {
         const initBalances = await this.getBalancesAsync();
@@ -162,7 +161,9 @@ export class StakerActor extends BaseActor {
         let expectedBalances = initBalances;
         const currentTimelockPeriod = await this._stakingWrapper.getCurrentTimelockPeriodAsync();
         if (currentTimelockPeriod.minus(timelockStart).isGreaterThan(1)) {
-            expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(initBalances.timelockedStakeBalance);
+            expectedBalances.activatableStakeBalance = initBalances.activatableStakeBalance.plus(
+                initBalances.timelockedStakeBalance,
+            );
             expectedBalances.withdrawableStakeBalance = expectedBalances.activatableStakeBalance;
             expectedBalances.timelockedStakeBalance = new BigNumber(0);
         }

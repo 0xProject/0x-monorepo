@@ -22,7 +22,6 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
-
 import { StakerActor } from './actors/staker_actor';
 import { DelegatorActor } from './actors/delegator_actor';
 import { PoolOperatorActor } from './actors/pool_operator_actor';
@@ -75,7 +74,7 @@ describe('Staking Pool Management', () => {
         await blockchainLifecycle.revertAsync();
     });
     describe('Staking Pool Management', () => {
-        it('Should successfully create a pool', async() => {
+        it('Should successfully create a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -84,11 +83,11 @@ describe('Staking Pool Management', () => {
             const poolId = await poolOperator.createPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
-            const expectedNextPoolId = "0x0000000000000000000000000000000200000000000000000000000000000000";
+            const expectedNextPoolId = '0x0000000000000000000000000000000200000000000000000000000000000000';
             const nextPoolId = await stakingWrapper.getNextPoolIdAsync();
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
         });
-        it('Should successfully add/remove a maker to a pool', async() => {
+        it('Should successfully add/remove a maker to a pool', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -104,7 +103,7 @@ describe('Staking Pool Management', () => {
             // remove maker from pool
             await poolOperator.removeMakerFromPoolAsync(poolId, makerAddress);
         });
-        it('Should successfully add/remove multipler makers to the same pool', async() => {
+        it('Should successfully add/remove multipler makers to the same pool', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -133,7 +132,7 @@ describe('Staking Pool Management', () => {
             // @TODO - this fails with `RuntimeError: VM Exception while processing transaction: revert` on Ganache
             // await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[2]);
         });
-        it('Should fail to add the same maker twice', async() => {
+        it('Should fail to add the same maker twice', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -147,9 +146,14 @@ describe('Staking Pool Management', () => {
             const makerApproval = maker.signApprovalForStakingPool(poolId);
             await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
             // add same maker to pool again
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, RevertReason.MakerAddressAlreadyRegistered);
+            await poolOperator.addMakerToPoolAsync(
+                poolId,
+                makerAddress,
+                makerApproval.signature,
+                RevertReason.MakerAddressAlreadyRegistered,
+            );
         });
-        it('Should fail to remove a maker that does not exist', async() => {
+        it('Should fail to remove a maker that does not exist', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -162,22 +166,29 @@ describe('Staking Pool Management', () => {
             // remove non-existent maker from pool
             await poolOperator.removeMakerFromPoolAsync(poolId, makerAddress, RevertReason.MakerAddressNotRegistered);
         });
-        it('Should fail to add a maker who signed with the wrong private key', async() => {
+        it('Should fail to add a maker who signed with the wrong private key', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             const makerAddress = users[1];
-            const badMakerPrivateKey = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
+            const badMakerPrivateKey = ethUtil.toBuffer(
+                '0x0000000000000000000000000000000000000000000000000000000000000001',
+            );
             const maker = new MakerActor(makerAddress, stakingWrapper, badMakerPrivateKey);
             // create pool
             const poolId = await poolOperator.createPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, RevertReason.InvalidMakerSignature);
+            await poolOperator.addMakerToPoolAsync(
+                poolId,
+                makerAddress,
+                makerApproval.signature,
+                RevertReason.InvalidMakerSignature,
+            );
         });
-        it('Should fail to add a maker who signed with the wrong staking contract address', async() => {
+        it('Should fail to add a maker who signed with the wrong staking contract address', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -191,9 +202,14 @@ describe('Staking Pool Management', () => {
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, RevertReason.InvalidMakerSignature);
+            await poolOperator.addMakerToPoolAsync(
+                poolId,
+                makerAddress,
+                makerApproval.signature,
+                RevertReason.InvalidMakerSignature,
+            );
         });
-        it('Should fail to add a maker who signed with the wrong chain id', async() => {
+        it('Should fail to add a maker who signed with the wrong chain id', async () => {
             // test parameters
             const operatorAddress = users[0];
             const operatorShare = 39;
@@ -202,50 +218,61 @@ describe('Staking Pool Management', () => {
             const forceMakerKeyLookup = undefined;
             const forceStakingContractLookup = undefined;
             const badChainId = 209348;
-            const maker = new MakerActor(makerAddress, stakingWrapper, forceMakerKeyLookup, forceStakingContractLookup, badChainId);
+            const maker = new MakerActor(
+                makerAddress,
+                stakingWrapper,
+                forceMakerKeyLookup,
+                forceStakingContractLookup,
+                badChainId,
+            );
             // create pool
             const poolId = await poolOperator.createPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, RevertReason.InvalidMakerSignature);
-        });
-        it('Should fail to add a maker when called by someone other than the pool operator', async() => {
-             // test parameters
-             const operatorAddress = users[0];
-             const operatorShare = 39;
-             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
-             const makerAddress = users[1];
-             const maker = new MakerActor(makerAddress, stakingWrapper);
-             const notOperatorAddress = users[2];
-             // create pool
-             const poolId = await poolOperator.createPoolAsync(operatorShare);
-             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-             // add maker to pool
-             const makerApproval = maker.signApprovalForStakingPool(poolId);
-             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperator
+            await poolOperator.addMakerToPoolAsync(
+                poolId,
+                makerAddress,
+                makerApproval.signature,
+                RevertReason.InvalidMakerSignature,
             );
         });
-        it('Should fail to remove a maker when called by someone other than the pool operator', async() => {
-             // test parameters
-             const operatorAddress = users[0];
-             const operatorShare = 39;
-             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
-             const makerAddress = users[1];
-             const maker = new MakerActor(makerAddress, stakingWrapper);
-             const notOperatorAddress = users[2];
-             // create pool
-             const poolId = await poolOperator.createPoolAsync(operatorShare);
-             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
-             // add maker to pool
-             const makerApproval = maker.signApprovalForStakingPool(poolId);
-             await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
-             // try to remove the maker address from an address other than the operator
+        it('Should fail to add a maker when called by someone other than the pool operator', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = 39;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingWrapper);
+            const notOperatorAddress = users[2];
+            // create pool
+            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // add maker to pool
+            const makerApproval = maker.signApprovalForStakingPool(poolId);
+            await expectTransactionFailedAsync(
+                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, notOperatorAddress),
+                RevertReason.OnlyCallableByPoolOperator,
+            );
+        });
+        it('Should fail to remove a maker when called by someone other than the pool operator', async () => {
+            // test parameters
+            const operatorAddress = users[0];
+            const operatorShare = 39;
+            const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
+            const makerAddress = users[1];
+            const maker = new MakerActor(makerAddress, stakingWrapper);
+            const notOperatorAddress = users[2];
+            // create pool
+            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
+            // add maker to pool
+            const makerApproval = maker.signApprovalForStakingPool(poolId);
+            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
+            // try to remove the maker address from an address other than the operator
             await expectTransactionFailedAsync(
                 stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperator
+                RevertReason.OnlyCallableByPoolOperator,
             );
         });
     });
