@@ -4,11 +4,11 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
-import { OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo, SwapQuoterError } from '../types';
+import { OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo, SwapQuoteOperation, SwapQuoterError } from '../types';
 
 // Calculates a swap quote for orders
 export const swapQuoteCalculator = {
-    calculate(
+    calculateMarketBuySwapQuote(
         ordersAndFillableAmounts: OrdersAndFillableAmounts,
         feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
         makerAssetFillAmount: BigNumber,
@@ -106,6 +106,7 @@ export const swapQuoteCalculator = {
             feeOrders: resultFeeOrders,
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
+            operation: SwapQuoteOperation.MarketBuy,
         };
     },
 };
