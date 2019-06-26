@@ -13,16 +13,14 @@ import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { StakerBalances } from '../utils/types';
+import { Actor } from './actor';
 
 const expect = chai.expect;
 
-export class StakerActor {
-    protected readonly _owner: string;
-    protected readonly _stakingWrapper: StakingWrapper;
+export class StakerActor extends Actor {
 
     constructor(owner: string, stakingWrapper: StakingWrapper) {
-        this._owner = owner;
-        this._stakingWrapper = stakingWrapper;
+        super(owner, stakingWrapper);
     }
     public async depositAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         throw new Error('Unimplemented');
