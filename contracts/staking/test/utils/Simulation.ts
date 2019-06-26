@@ -73,8 +73,8 @@ export class Simulation {
                 await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = this._stakingWrapper.trimFloat(
-                    this._stakingWrapper.toFloatingPoint(reward, 18),
+                const rewardTrimmed = StakingWrapper.trimFloat(
+                    StakingWrapper.toFloatingPoint(reward, 18),
                     5,
                 );
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
@@ -101,8 +101,8 @@ export class Simulation {
                 await this._stakingWrapper.withdrawTotalRewardAsync(poolId, delegatorAddress);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = this._stakingWrapper.trimFloat(
-                    this._stakingWrapper.toFloatingPoint(reward, 18),
+                const rewardTrimmed = StakingWrapper.trimFloat(
+                    StakingWrapper.toFloatingPoint(reward, 18),
                     5,
                 );
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
@@ -218,8 +218,8 @@ export class Simulation {
             // check pool balance in vault
             const poolId = this._poolIds[i];
             const rewardVaultBalance = await this._stakingWrapper.rewardVaultBalanceOfAsync(poolId);
-            const rewardVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
-                this._stakingWrapper.toFloatingPoint(rewardVaultBalance, 18),
+            const rewardVaultBalanceTrimmed = StakingWrapper.trimFloat(
+                StakingWrapper.toFloatingPoint(rewardVaultBalance, 18),
                 5,
             );
             const expectedRewardBalance = p.expectedPayoutByPool[i];
@@ -229,8 +229,8 @@ export class Simulation {
             ).to.be.bignumber.equal(expectedRewardBalance);
             // check operator's balance
             const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfOperatorAsync(poolId);
-            const poolOperatorVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
-                this._stakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
+            const poolOperatorVaultBalanceTrimmed = StakingWrapper.trimFloat(
+                StakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
                 5,
             );
             const expectedPoolOperatorVaultBalance = p.expectedPayoutByPoolOperator[i];
@@ -240,8 +240,8 @@ export class Simulation {
             ).to.be.bignumber.equal(expectedPoolOperatorVaultBalance);
             // check balance of pool members
             const membersVaultBalance = await this._stakingWrapper.getRewardBalanceOfPoolAsync(poolId);
-            const membersVaultBalanceTrimmed = this._stakingWrapper.trimFloat(
-                this._stakingWrapper.toFloatingPoint(membersVaultBalance, 18),
+            const membersVaultBalanceTrimmed = StakingWrapper.trimFloat(
+                StakingWrapper.toFloatingPoint(membersVaultBalance, 18),
                 5,
             );
             const expectedMembersVaultBalance = p.expectedMembersPayoutByPool[i];
@@ -266,7 +266,7 @@ export class Simulation {
             await this._stakingWrapper.withdrawTotalOperatorRewardAsync(poolId, poolOperatorAddress);
             const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(poolOperatorAddress);
             const reward = finalEthBalance.minus(initEthBalance);
-            const rewardTrimmed = this._stakingWrapper.trimFloat(this._stakingWrapper.toFloatingPoint(reward, 18), 5);
+            const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
             const expectedReward = p.expectedPayoutByPoolOperator[i];
             expect(rewardTrimmed, `reward withdrawn from pool ${poolId} for operator`).to.be.bignumber.equal(
                 expectedReward,
