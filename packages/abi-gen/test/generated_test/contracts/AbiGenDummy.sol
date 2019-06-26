@@ -76,4 +76,15 @@ contract AbiGenDummy
     {
         require(0 > 1, REVERT_REASON);
     }
+
+    function ecrecoverFn(bytes32 hash, uint8 v, bytes32 r, bytes32 s)
+        public
+        pure
+        returns (address signerAddress)
+    {
+        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
+        bytes32 prefixedHash = keccak256(abi.encodePacked(prefix, hash));
+        return ecrecover(prefixedHash, v, r, s);
+    }
+
 }

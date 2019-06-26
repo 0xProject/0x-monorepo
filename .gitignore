@@ -83,7 +83,6 @@ packages/react-docs/example/public/bundle*
 packages/testnet-faucets/server/
 
 # generated contract artifacts/
-contracts/abi-gen-test/generated-artifacts/
 contracts/coordinator/generated-artifacts/
 contracts/exchange/generated-artifacts/
 contracts/asset-proxy/generated-artifacts/
@@ -96,13 +95,12 @@ contracts/erc1155/generated-artifacts/
 contracts/extensions/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
-/packages/abi-gen/test/generate_test/generated-artifacts
+/packages/abi-gen/test/generated_test/generated-artifacts
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/wrappers
-contracts/abi-gen-test/generated-wrappers/
 contracts/coordinator/generated-wrappers/
 contracts/exchange/generated-wrappers/
 contracts/asset-proxy/generated-wrappers/
@@ -115,7 +113,7 @@ contracts/erc1155/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
-/packages/abi-gen/test/generate_test/generated-wrappers
+/packages/abi-gen/test/generated_test/generated-wrappers
 packages/metacoin/src/contract_wrappers
 
 # solc-bin in sol-compiler
