@@ -42,11 +42,7 @@ describe('StaticCallProxy', () => {
             provider,
             txDefaults,
         );
-        staticCallProxy = new IAssetProxyContract(
-            staticCallProxyWithoutTransferFrom.address,
-            provider,
-            txDefaults,
-        );
+        staticCallProxy = new IAssetProxyContract(staticCallProxyWithoutTransferFrom.address, provider, txDefaults);
         staticCallTarget = await TestStaticCallTargetContract.deployFrom0xArtifactAsync(
             artifacts.TestStaticCallTarget,
             provider,
