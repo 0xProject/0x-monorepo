@@ -42,6 +42,7 @@ export interface SimulationParams {
     expectedFeesByPool: BigNumber[],
     expectedPayoutByPool: BigNumber[],
     expectedPayoutByPoolOperator: BigNumber[],
+    expectedMembersPayoutByPool: BigNumber[],
     expectedPayoutByDelegator: BigNumber[],
     exchangeAddress: string,
     delegateInNextEpoch: Boolean,

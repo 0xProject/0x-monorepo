@@ -849,15 +849,17 @@ describe.only('Rewards', () => {
                     new BigNumber('20.31028'),  // 20.31028447343014834523983759032242063760612769662934308289
                 ],
                 expectedPayoutByPoolOperator: [
-                    
+                    new BigNumber('1.85514'),   // 0.39 * 4.75677
+                    new BigNumber('9.60597'),   // 0.59 * 16.28130
+                    new BigNumber('8.73342')    // 0.43 * 20.31028
                 ],
                 expectedMembersPayoutByPool: [
-                    new BigNumber('2.9016297'),     // (1 - 0.39) * 4.75677
-                    new BigNumber('6.675333'),      // (1 - 0.59) * 16.28130
-                    new BigNumber('11.5768596'),    // (1 - 0.43) * 20.31028
+                    new BigNumber('2.90163'),   // (1 - 0.39) * 4.75677
+                    new BigNumber('6.67533'),   // (1 - 0.59) * 16.28130
+                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
                 ],
                 expectedPayoutByDelegator: [
-                    new BigNumber('11.5768596'),    // (1 - 0.43) * 20.31028
+                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
                     new BigNumber(0),
                     new BigNumber(0),
                 ],
@@ -888,9 +890,8 @@ describe.only('Rewards', () => {
         
             ///// 7 CHECK PROFITS /////
             // the expected payouts were computed by hand
-  
+  /*
             
-            /*
             ///// 10 CHECK DELEGATOR PAYOUT BY WITHDRAWING /////
             {
                 const poolPayoutById = await Promise.all([
