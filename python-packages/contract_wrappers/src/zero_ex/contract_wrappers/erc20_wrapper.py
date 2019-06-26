@@ -31,7 +31,7 @@ class ERC20Token(BaseContractWrapper):
             private_key=private_key,
         )
 
-    def _erc20(self, token_address):
+    def _get_contract_instance(self, token_address):
         """Get an instance of the ERC20 smart contract at a specific address.
 
         :returns: ERC20 contract object
@@ -61,7 +61,7 @@ class ERC20Token(BaseContractWrapper):
         spender_address = self._validate_and_checksum_address(spender_address)
         # safeguard against fractional inputs
         value = int(value)
-        func = self._erc20(token_address).functions.approve(
+        func = self._get_contract_instance(token_address).functions.approve(
             spender_address, value
         )
         return self._invoke_function_call(
@@ -74,7 +74,9 @@ class ERC20Token(BaseContractWrapper):
         :returns: amount of tokens
         """
         token_address = self._validate_and_checksum_address(token_address)
-        func = self._erc20(token_address).functions.totalSupply()
+        func = self._get_contract_instance(
+            token_address
+        ).functions.totalSupply()
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
         )
@@ -109,9 +111,9 @@ class ERC20Token(BaseContractWrapper):
         to_address = self._validate_and_checksum_address(to_address)
         # safeguard against fractional inputs
         value = int(value)
-        func = self._erc20(token_address).functions.transferFrom(
-            authorized_address, to_address, value
-        )
+        func = self._get_contract_instance(
+            token_address
+        ).functions.transferFrom(authorized_address, to_address, value)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
@@ -123,7 +125,9 @@ class ERC20Token(BaseContractWrapper):
         """
         token_address = self._validate_and_checksum_address(token_address)
         owner_address = self._validate_and_checksum_address(owner_address)
-        func = self._erc20(token_address).functions.balanceOf(owner_address)
+        func = self._get_contract_instance(token_address).functions.balanceOf(
+            owner_address
+        )
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
         )
@@ -149,7 +153,9 @@ class ERC20Token(BaseContractWrapper):
         to_address = self._validate_and_checksum_address(to_address)
         # safeguard against fractional inputs
         value = int(value)
-        func = self._erc20(token_address).functions.transfer(to_address, value)
+        func = self._get_contract_instance(token_address).functions.transfer(
+            to_address, value
+        )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
@@ -164,7 +170,7 @@ class ERC20Token(BaseContractWrapper):
         token_address = self._validate_and_checksum_address(token_address)
         owner_address = self._validate_and_checksum_address(owner_address)
         spender_address = self._validate_and_checksum_address(spender_address)
-        func = self._erc20(token_address).functions.allowance(
+        func = self._get_contract_instance(token_address).functions.allowance(
             owner_address, spender_address
         )
         return self._invoke_function_call(
@@ -181,7 +187,7 @@ class ERC20Token(BaseContractWrapper):
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)
         return (
-            self._erc20(token_address)
+            self._get_contract_instance(token_address)
             .events.Transfer()
             .processReceipt(tx_receipt)
         )
@@ -196,7 +202,7 @@ class ERC20Token(BaseContractWrapper):
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         token_address = self._validate_and_checksum_address(token_address)
         return (
-            self._erc20(token_address)
+            self._get_contract_instance(token_address)
             .events.Approval()
             .processReceipt(tx_receipt)
         )
