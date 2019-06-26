@@ -49,6 +49,7 @@ import {
     ReentrantERC20TokenContract,
     TestValidatorWalletContract,
     ValidatorWalletAction,
+    ValidatorWalletDataType,
 } from '../src';
 
 chaiSetup.configure();
@@ -265,8 +266,8 @@ describe('Exchange core', () => {
                     validatorWallet.address,
                     constants.INITIAL_ERC20_BALANCE,
                 );
-                // Approve the order validator.
-                await exchange.setOrderValidatorApproval.awaitTransactionSuccessAsync(validatorWallet.address, true, {
+                // Approve the validator.
+                await exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(validatorWallet.address, true, {
                     from: makerAddress,
                 });
                 signedOrder = await orderFactory.newSignedOrderAsync({
@@ -275,26 +276,28 @@ describe('Exchange core', () => {
                 });
             });
 
-            it('should revert if `OrderValidator` signature type rejects during a second fill', async () => {
+            it('should revert if `Validator` signature type rejects during a second fill', async () => {
                 const signature = Buffer.concat([
                     ethUtil.toBuffer(validatorWallet.address),
-                    ethUtil.toBuffer([SignatureType.OrderValidator]),
+                    ethUtil.toBuffer([SignatureType.Validator]),
                 ]);
                 signedOrder.signature = ethUtil.bufferToHex(signature);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
-                    makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
-                    makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,
@@ -308,24 +311,26 @@ describe('Exchange core', () => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `OrderWallet` signature type rejects during a second fill', async () => {
-                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.OrderWallet])]);
+            it('should revert if `Wallet` signature type rejects during a second fill', async () => {
+                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.Wallet])]);
                 signedOrder.makerAddress = validatorWallet.address;
                 signedOrder.signature = ethUtil.bufferToHex(signature);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
-                    makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
-                    makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,
@@ -339,24 +344,26 @@ describe('Exchange core', () => {
                 return expect(tx).to.revertWith(expectedError);
             });
 
-            it('should revert if `EIP1271OrderWallet` signature type rejects during a second fill', async () => {
-                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271OrderWallet])]);
+            it('should revert if `EIP1271Wallet` signature type rejects during a second fill', async () => {
+                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
                 signedOrder.makerAddress = validatorWallet.address;
                 signedOrder.signature = ethUtil.bufferToHex(signature);
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Accept,
-                    signedOrder.makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const fillAmount = signedOrder.takerAssetAmount.div(10);
                 await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount: fillAmount });
                 // Reject the signature check for the second fill.
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     ValidatorWalletAction.Reject,
-                    signedOrder.makerAddress,
+                    constants.NULL_BYTES,
                 );
                 const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
                     takerAssetFillAmount: fillAmount,

@@ -46,11 +46,6 @@ export const exchangeDataEncoder = {
                 constants.NULL_ADDRESS,
                 true,
             );
-        } else if (fnName === ExchangeFunctionName.SetOrderValidatorApproval) {
-            data = exchangeInstance.setOrderValidatorApproval.getABIEncodedTransactionData(
-                constants.NULL_ADDRESS,
-                true,
-            );
         } else {
             throw new Error(`Error: ${fnName} not a supported function`);
         }

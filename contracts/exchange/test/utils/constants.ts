@@ -14,7 +14,6 @@ export const constants = {
         'CANCEL_ORDERS_UP_TO',
         'PRE_SIGN',
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
-        'SET_ORDER_VALIDATOR_APPROVAL',
     ],
     SINGLE_FILL_FN_NAMES: [
         ExchangeFunctionName.FillOrder,
@@ -39,6 +38,13 @@ export enum ValidatorWalletAction {
     Accept = 1,
     Revert = 2,
     UpdateState = 3,
-    ValidateSignature = 4,
+    MatchSignatureHash = 4,
     NTypes = 5,
+}
+
+export enum ValidatorWalletDataType {
+    None = 0,
+    Order = 1,
+    ZeroExTransaction = 2,
+    NTypes = 3,
 }

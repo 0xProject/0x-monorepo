@@ -59,15 +59,19 @@ contract ISignatureValidator {
     )
         external;
 
-    /// @dev Approves/unnapproves an OrderValidator contract to verify signatures on signer's behalf
-    ///      using the `OrderValidator` signature type.
-    /// @param validatorAddress Address of Validator contract.
-    /// @param approval Approval or disapproval of  Validator contract.
-    function setOrderValidatorApproval(
-        address validatorAddress,
-        bool approval
+    /// @dev Verifies that a hash has been signed by the given signer.
+    /// @param hash Any 32-byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given hash and signer.
+    function isValidHashSignature(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
     )
-        external;
+        public
+        view
+        returns (bool isValid);
 
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
@@ -112,8 +116,14 @@ contract ISignatureValidator {
         public
         pure
         returns (bool needsRegularValidation);
-    
-    // Defined in MixinSignatureValidator
+
+    /// @dev Verifies that an order, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param order The order.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given order and signer.
     function _isValidOrderWithHashSignature(
         LibOrder.Order memory order,
         bytes32 orderHash,
@@ -124,7 +134,13 @@ contract ISignatureValidator {
         view
         returns (bool isValid);
 
-    // Defined in MixinSignatureValidator
+    /// @dev Verifies that a transaction, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param transaction The transaction.
+    /// @param transactionHash The hash of the transaction.
+    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given transaction and signer.
     function _isValidTransactionWithHashSignature(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes32 transactionHash,
