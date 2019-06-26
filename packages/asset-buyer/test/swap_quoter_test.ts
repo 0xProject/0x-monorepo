@@ -14,7 +14,6 @@ import { LiquidityForAssetData, OrderProvider, OrdersAndFillableAmounts } from '
 import { chaiSetup } from './utils/chai_setup';
 import {
     mockAvailableMakerAssetDatas,
-    mockAvailableTakerAssetDatas,
     mockedSwapQuoterWithOrdersAndFillableAmounts,
     orderProviderMock,
 } from './utils/mocks';
@@ -98,7 +97,10 @@ describe('SwapQuoter', () => {
                 mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, []);
 
                 const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, FAKE_TAKER_ASSET_DATA);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                    FAKE_MAKER_ASSET_DATA,
+                    FAKE_TAKER_ASSET_DATA,
+                );
                 expect(liquidityResult).to.deep.equal({
                     makerTokensAvailableInBaseUnits: new BigNumber(0),
                     takerTokensAvailableInBaseUnits: new BigNumber(0),
@@ -109,13 +111,16 @@ describe('SwapQuoter', () => {
                 mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, [DAI_ASSET_DATA]);
 
                 const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, FAKE_TAKER_ASSET_DATA);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                    FAKE_MAKER_ASSET_DATA,
+                    FAKE_TAKER_ASSET_DATA,
+                );
                 expect(liquidityResult).to.deep.equal({
                     makerTokensAvailableInBaseUnits: new BigNumber(0),
                     takerTokensAvailableInBaseUnits: new BigNumber(0),
                 });
             });
-       });
+        });
 
         describe('assetData is supported', () => {
             // orders

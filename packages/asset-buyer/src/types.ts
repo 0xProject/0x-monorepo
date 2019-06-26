@@ -94,7 +94,10 @@ export interface ForwarderMarketBuySmartContractParams {
  */
 export interface SwapQuoteConsumer<T> {
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
-    getSmartContractParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<SmartContractParamsInfo<T>>;
+    getSmartContractParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetOutputOpts>,
+    ): Promise<SmartContractParamsInfo<T>>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
