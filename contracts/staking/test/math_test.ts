@@ -21,7 +21,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Staking Core', () => {
+describe('Math Libraries', () => {
     // constants
     const ZRX_TOKEN_DECIMALS = new BigNumber(18);
     // tokens & addresses
@@ -59,8 +59,7 @@ describe('Staking Core', () => {
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    describe('end-to-end tests', () => {
-
+    describe('LibFeesMath', () => {
         it('nth root', async () => {
             const base = new BigNumber(1419857);
             const n = new BigNumber(5);
