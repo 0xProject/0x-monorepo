@@ -47,15 +47,11 @@
                 "pr": 1832
             },
             {
-                "note": "Add `validator` field to `SignatureOrderValidatorError` and `SignatureValidatorError` `RevertError` types.",
+                "note": "Add `validator` field to `SignatureValidatorError` `RevertError` types.",
                 "pr": 1885
             },
             {
-                "note": "Add `SignatureOrderValidatorNotApprovedError` and `SignatureValidatorNotApprovedError` `RevertError` types.",
-                "pr": 1885
-            },
-            {
-                "note": "Rename `SignatureWalletOrderValidatorError` to `SignatureOrderWalletError` `RevertError` type.",
+                "note": "Remove unused `RevertError` types.",
                 "pr": 1885
             }
         ]
