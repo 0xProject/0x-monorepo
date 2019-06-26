@@ -21,7 +21,6 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
 export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams> {
-
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -39,16 +38,15 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         });
     }
 
-    public async getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo> {
+    public async getCalldataOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetOutputOpts>,
+    ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
         const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-        const args = [
-            params.orders,
-            params.makerAssetFillAmount,
-            params.signatures,
-        ];
+        const args = [params.orders, params.makerAssetFillAmount, params.signatures];
         const calldataHexString = abiEncoder.encode(args);
         return {
             calldataHexString,
@@ -58,7 +56,10 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         };
     }
 
-    public async getSmartContractParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<SmartContractParamsInfo<ExchangeMarketBuySmartContractParams>> {
+    public async getSmartContractParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetOutputOpts>,
+    ): Promise<SmartContractParamsInfo<ExchangeMarketBuySmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
         const { orders, makerAssetFillAmount } = quote;
@@ -66,9 +67,9 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         const signatures = _.map(orders, o => o.signature);
 
         const params: ExchangeMarketBuySmartContractParams = {
-           orders,
-           signatures,
-           makerAssetFillAmount,
+            orders,
+            signatures,
+            makerAssetFillAmount,
         };
 
         const methodAbi = utils.getMethodAbiFromContractAbi(
@@ -83,7 +84,10 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
         };
     }
 
-    public async executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string> {
+    public async executeSwapQuoteOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteExecutionOpts>,
+    ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 
         const { takerAddress, gasLimit, gasPrice } = opts;
