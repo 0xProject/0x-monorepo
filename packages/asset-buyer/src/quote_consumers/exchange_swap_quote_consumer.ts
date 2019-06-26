@@ -1,6 +1,6 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError, SignedOrder } from '@0x/contract-wrappers';
-import { AbiEncoder, abiUtils, BigNumber, providerUtils } from '@0x/utils';
-import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
+import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { AbiEncoder, providerUtils } from '@0x/utils';
+import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 

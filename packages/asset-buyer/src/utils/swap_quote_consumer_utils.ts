@@ -1,4 +1,4 @@
-import { SupportedProvider, Web3Wrapper, ZeroExProvider } from '@0x/web3-wrapper';
+import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import {
