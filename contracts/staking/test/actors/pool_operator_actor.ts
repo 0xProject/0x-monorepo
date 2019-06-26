@@ -14,12 +14,12 @@ import * as _ from 'lodash';
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { DelegatorBalances, StakerBalances } from '../utils/types';
 
-import { Actor } from './Actor';
+import { BaseActor } from './base_actor';
 import { constants as stakingConstants } from '../utils/constants';
 
 const expect = chai.expect;
 
-export class PoolOperatorActor extends Actor {
+export class PoolOperatorActor extends BaseActor {
 
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
