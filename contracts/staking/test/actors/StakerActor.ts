@@ -25,11 +25,15 @@ export class StakerActor {
         this._stakingWrapper = stakingWrapper;
     }
     public async depositAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+        throw new Error('Unimplemented');
+        // @TODO - Implement by calling this._stakingWrapper.depositAsync(this._owner, amount);
+    }
+    public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         const initStakerBalances = await this.getBalancesAsync();
         // deposit stake
-        const txReceiptPromise = this._stakingWrapper.depositAsync(this._owner, amount);
+        const txReceiptPromise = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(
                 txReceiptPromise,
@@ -41,20 +45,14 @@ export class StakerActor {
         // @TODO check receipt logs and return value via eth_call
         // check balances
         let expectedStakerBalances = initStakerBalances;
-        expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.plus(amount);
+        expectedStakerBalances.zrxBalance = initStakerBalances.zrxBalance.minus(amount);
         expectedStakerBalances.stakeBalance = initStakerBalances.stakeBalance.plus(amount);
         expectedStakerBalances.stakeBalanceInVault = initStakerBalances.stakeBalanceInVault.plus(amount);
-        expectedStakerBalances.withdrawableStakeBalance = initStakerBalances.withdrawableStakeBalance.plus(amount);
-        expectedStakerBalances.activatableStakeBalance = initStakerBalances.activatableStakeBalance.plus(amount);
-        expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
+        expectedStakerBalances.activatedStakeBalance = initStakerBalances.activatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
         // check zrx balance of vault
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
-        expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.minus(amount));
-    }
-    public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
-        // @TODO - Implement
-        const txReceipt = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
+        expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.plus(amount));
     }
     public async activateStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
