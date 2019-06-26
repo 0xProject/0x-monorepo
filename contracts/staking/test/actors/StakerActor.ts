@@ -17,15 +17,14 @@ import { StakerBalances } from '../utils/types';
 const expect = chai.expect;
 
 export class StakerActor {
-    private readonly _owner: string;
-    private readonly _stakingWrapper: StakingWrapper;
+    protected readonly _owner: string;
+    protected readonly _stakingWrapper: StakingWrapper;
 
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         this._owner = owner;
         this._stakingWrapper = stakingWrapper;
     }
-    
-    public async depositAsync(amount: BigNumber, revertReason?: RevertReason) {
+    public async depositAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         const initStakerBalances = await this.getBalancesAsync();
@@ -53,11 +52,11 @@ export class StakerActor {
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.minus(amount));
     }
-    public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
+    public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // @TODO - Implement
         const txReceipt = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
     }
-    public async activateStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
+    public async activateStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initStakerBalances = await this.getBalancesAsync();
         // activate stake
@@ -79,7 +78,7 @@ export class StakerActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.minus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async deactivateAndTimelockStakeAsync(amount: BigNumber, revertReason?: RevertReason) {
+    public async deactivateAndTimelockStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initStakerBalances = await this.getBalancesAsync();
         // deactivate and timelock stake
@@ -100,7 +99,7 @@ export class StakerActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async withdrawAsync(amount: BigNumber, revertReason?: RevertReason) {
+    public async withdrawAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         const initStakerBalances = await this.getBalancesAsync();
@@ -128,7 +127,6 @@ export class StakerActor {
         const finalZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVault();
         expect(finalZrxBalanceOfVault).to.be.bignumber.equal(initZrxBalanceOfVault.minus(amount));
     }
-
     public async getBalancesAsync(): Promise<StakerBalances> {
         const stakerBalances = {
             zrxBalance: await this._stakingWrapper.getZrxTokenBalance(this._owner),
@@ -142,7 +140,6 @@ export class StakerActor {
         }
         return stakerBalances;
     }
-
     public async assertBalancesAsync(expectedBalances: StakerBalances): Promise<void> {
         const balances = await this.getBalancesAsync();
         expect(balances.zrxBalance, 'zrx balance').to.be.bignumber.equal(expectedBalances.zrxBalance);
@@ -154,14 +151,12 @@ export class StakerActor {
         expect(balances.timelockedStakeBalance, 'timelocked stake balance').to.be.bignumber.equal(expectedBalances.timelockedStakeBalance);
         expect(balances.deactivatedStakeBalance, 'deactivated stake balance').to.be.bignumber.equal(expectedBalances.deactivatedStakeBalance);
     }
-
-    public async forceTimelockSyncAsync() {
+    public async forceTimelockSyncAsync(): Promise<void> {
         const initBalances = await this.getBalancesAsync();
         await this._stakingWrapper.forceTimelockSyncAsync(this._owner);
         await this.assertBalancesAsync(initBalances);
     }
-
-    public async skipToNextTimelockPeriodAsync() {
+    public async skipToNextTimelockPeriodAsync(): Promise<void> {
         // query some initial values
         const initBalances = await this.getBalancesAsync();
         const timelockStart = await this._stakingWrapper.getTimelockStartAsync(this._owner);
