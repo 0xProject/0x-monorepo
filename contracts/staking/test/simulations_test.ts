@@ -68,22 +68,22 @@ describe('End-To-End Simulations', () => {
                 numberOfPools: 3,
                 poolOperatorShares: [100, 100, 100],
                 stakeByPoolOperator: [
-                    stakingWrapper.toBaseUnitAmount(42),
-                    stakingWrapper.toBaseUnitAmount(84),
-                    stakingWrapper.toBaseUnitAmount(97),
+                    StakingWrapper.toBaseUnitAmount(42),
+                    StakingWrapper.toBaseUnitAmount(84),
+                    StakingWrapper.toBaseUnitAmount(97),
                 ],
                 numberOfMakers: 6,
                 numberOfMakersPerPool: [1, 2, 3],
                 protocolFeesByMaker: [
                     // pool 1
-                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
                     // pool 2
-                    stakingWrapper.toBaseUnitAmount(3.2),
-                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    StakingWrapper.toBaseUnitAmount(3.2),
+                    StakingWrapper.toBaseUnitAmount(12.123258),
                     // pool 3
-                    stakingWrapper.toBaseUnitAmount(23.577),
-                    stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0),
+                    StakingWrapper.toBaseUnitAmount(23.577),
+                    StakingWrapper.toBaseUnitAmount(4.54522236),
+                    StakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 0,
                 numberOfDelegatorsPerPool: [0, 0, 0],
@@ -91,9 +91,9 @@ describe('End-To-End Simulations', () => {
                 delegateInNextEpoch: false, // no shadow eth
                 withdrawByUndelegating: false, // profits are withdrawn without undelegating
                 expectedFeesByPool: [
-                    stakingWrapper.toBaseUnitAmount(0.304958),
-                    stakingWrapper.toBaseUnitAmount(15.323258),
-                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(15.323258),
+                    StakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
                     new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
@@ -132,36 +132,36 @@ describe('End-To-End Simulations', () => {
                 numberOfPools: 3,
                 poolOperatorShares: [39, 59, 43],
                 stakeByPoolOperator: [
-                    stakingWrapper.toBaseUnitAmount(42),
-                    stakingWrapper.toBaseUnitAmount(84),
-                    stakingWrapper.toBaseUnitAmount(97),
+                    StakingWrapper.toBaseUnitAmount(42),
+                    StakingWrapper.toBaseUnitAmount(84),
+                    StakingWrapper.toBaseUnitAmount(97),
                 ],
                 numberOfMakers: 6,
                 numberOfMakersPerPool: [1, 2, 3],
                 protocolFeesByMaker: [
                     // pool 1
-                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
                     // pool 2
-                    stakingWrapper.toBaseUnitAmount(3.2),
-                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    StakingWrapper.toBaseUnitAmount(3.2),
+                    StakingWrapper.toBaseUnitAmount(12.123258),
                     // pool 3
-                    stakingWrapper.toBaseUnitAmount(23.577),
-                    stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0),
+                    StakingWrapper.toBaseUnitAmount(23.577),
+                    StakingWrapper.toBaseUnitAmount(4.54522236),
+                    StakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 3,
                 numberOfDelegatorsPerPool: [0, 0, 3],
                 stakeByDelegator: [
-                    stakingWrapper.toBaseUnitAmount(17),
-                    stakingWrapper.toBaseUnitAmount(75),
-                    stakingWrapper.toBaseUnitAmount(90),
+                    StakingWrapper.toBaseUnitAmount(17),
+                    StakingWrapper.toBaseUnitAmount(75),
+                    StakingWrapper.toBaseUnitAmount(90),
                 ],
                 delegateInNextEpoch: false, // delegated stake is included in payout computation + no shadow ether
                 withdrawByUndelegating: false, // profits are withdrawn without undelegating
                 expectedFeesByPool: [
-                    stakingWrapper.toBaseUnitAmount(0.304958),
-                    stakingWrapper.toBaseUnitAmount(15.323258),
-                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(15.323258),
+                    StakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
                     new BigNumber('2.89303'), // 2.8930364057678784829875695710382241749912199174798475
@@ -214,36 +214,36 @@ describe('End-To-End Simulations', () => {
                 numberOfPools: 3,
                 poolOperatorShares: [39, 59, 43],
                 stakeByPoolOperator: [
-                    stakingWrapper.toBaseUnitAmount(42),
-                    stakingWrapper.toBaseUnitAmount(84),
-                    stakingWrapper.toBaseUnitAmount(97),
+                    StakingWrapper.toBaseUnitAmount(42),
+                    StakingWrapper.toBaseUnitAmount(84),
+                    StakingWrapper.toBaseUnitAmount(97),
                 ],
                 numberOfMakers: 6,
                 numberOfMakersPerPool: [1, 2, 3],
                 protocolFeesByMaker: [
                     // pool 1
-                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
                     // pool 2
-                    stakingWrapper.toBaseUnitAmount(3.2),
-                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    StakingWrapper.toBaseUnitAmount(3.2),
+                    StakingWrapper.toBaseUnitAmount(12.123258),
                     // pool 3
-                    stakingWrapper.toBaseUnitAmount(23.577),
-                    stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0),
+                    StakingWrapper.toBaseUnitAmount(23.577),
+                    StakingWrapper.toBaseUnitAmount(4.54522236),
+                    StakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 3,
                 numberOfDelegatorsPerPool: [0, 0, 3],
                 stakeByDelegator: [
-                    stakingWrapper.toBaseUnitAmount(17),
-                    stakingWrapper.toBaseUnitAmount(75),
-                    stakingWrapper.toBaseUnitAmount(90),
+                    StakingWrapper.toBaseUnitAmount(17),
+                    StakingWrapper.toBaseUnitAmount(75),
+                    StakingWrapper.toBaseUnitAmount(90),
                 ],
                 delegateInNextEpoch: true, // delegated stake is included in payout computation + forces shadow eth
                 withdrawByUndelegating: true, // profits are withdrawn as result of undelegating
                 expectedFeesByPool: [
-                    stakingWrapper.toBaseUnitAmount(0.304958),
-                    stakingWrapper.toBaseUnitAmount(15.323258),
-                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(15.323258),
+                    StakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
                     new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
@@ -293,36 +293,36 @@ describe('End-To-End Simulations', () => {
                 numberOfPools: 3,
                 poolOperatorShares: [39, 59, 43],
                 stakeByPoolOperator: [
-                    stakingWrapper.toBaseUnitAmount(42),
-                    stakingWrapper.toBaseUnitAmount(84),
-                    stakingWrapper.toBaseUnitAmount(97),
+                    StakingWrapper.toBaseUnitAmount(42),
+                    StakingWrapper.toBaseUnitAmount(84),
+                    StakingWrapper.toBaseUnitAmount(97),
                 ],
                 numberOfMakers: 6,
                 numberOfMakersPerPool: [1, 2, 3],
                 protocolFeesByMaker: [
                     // pool 1
-                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
                     // pool 2
-                    stakingWrapper.toBaseUnitAmount(3.2),
-                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    StakingWrapper.toBaseUnitAmount(3.2),
+                    StakingWrapper.toBaseUnitAmount(12.123258),
                     // pool 3
-                    stakingWrapper.toBaseUnitAmount(23.577),
-                    stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0),
+                    StakingWrapper.toBaseUnitAmount(23.577),
+                    StakingWrapper.toBaseUnitAmount(4.54522236),
+                    StakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 3,
                 numberOfDelegatorsPerPool: [0, 0, 3],
                 stakeByDelegator: [
-                    stakingWrapper.toBaseUnitAmount(17),
-                    stakingWrapper.toBaseUnitAmount(75),
-                    stakingWrapper.toBaseUnitAmount(90),
+                    StakingWrapper.toBaseUnitAmount(17),
+                    StakingWrapper.toBaseUnitAmount(75),
+                    StakingWrapper.toBaseUnitAmount(90),
                 ],
                 delegateInNextEpoch: true, // delegated stake is included in payout computation + forces shadow eth
                 withdrawByUndelegating: false, // profits are withdrawn without undelegating
                 expectedFeesByPool: [
-                    stakingWrapper.toBaseUnitAmount(0.304958),
-                    stakingWrapper.toBaseUnitAmount(15.323258),
-                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                    StakingWrapper.toBaseUnitAmount(0.304958),
+                    StakingWrapper.toBaseUnitAmount(15.323258),
+                    StakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
                     new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070

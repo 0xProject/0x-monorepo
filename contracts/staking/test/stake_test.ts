@@ -60,10 +60,10 @@ describe('Staking & Delegating', () => {
     describe('Staking', () => {
         it('basic staking/unstaking', async () => {
             // setup test parameters
-            const amountToStake = stakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
+            const amountToStake = StakingWrapper.toBaseUnitAmount(10);
+            const amountToDeactivate = StakingWrapper.toBaseUnitAmount(4);
+            const amountToReactivate = StakingWrapper.toBaseUnitAmount(1);
+            const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
             // run test - this actor will validate its own state
             const staker = new StakerActor(stakers[0], stakingWrapper);
             await staker.depositAndStakeAsync(amountToStake);
@@ -86,10 +86,10 @@ describe('Staking & Delegating', () => {
     describe('Delegating', () => {
         it('basic delegating/undelegating', async () => {
             // setup test parameters
-            const amountToDelegate = stakingWrapper.toBaseUnitAmount(10);
-            const amountToDeactivate = stakingWrapper.toBaseUnitAmount(4);
-            const amountToReactivate = stakingWrapper.toBaseUnitAmount(1);
-            const amountToWithdraw = stakingWrapper.toBaseUnitAmount(1.5);
+            const amountToDelegate = StakingWrapper.toBaseUnitAmount(10);
+            const amountToDeactivate = StakingWrapper.toBaseUnitAmount(4);
+            const amountToReactivate = StakingWrapper.toBaseUnitAmount(1);
+            const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
             const poolOperator = stakers[1];
             const operatorShare = 39;
             const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);

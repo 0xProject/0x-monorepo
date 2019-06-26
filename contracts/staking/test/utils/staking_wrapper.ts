@@ -17,7 +17,7 @@ import {
     ZrxVaultContract,
 } from '../../src';
 
-import { ApprovalFactory } from './ApprovalFactory';
+import { ApprovalFactory } from './approval_factory';
 import { constants } from './constants';
 import { SignedStakingPoolApproval } from './types';
 
