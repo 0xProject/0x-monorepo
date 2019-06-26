@@ -21,7 +21,6 @@ import { StakingWrapper } from './utils/staking_wrapper';
 import { ERC20Wrapper, ERC20ProxyContract } from '@0x/contracts-asset-proxy';
 import { StakingContract } from '../src';
 
-
 import { StakerActor } from './actors/staker_actor';
 import { DelegatorActor } from './actors/delegator_actor';
 
@@ -43,10 +42,9 @@ describe('End-To-End Simulations', () => {
     let zrxTokenContract: DummyERC20TokenContract;
     let erc20ProxyContract: ERC20ProxyContract;
 
-       let stakers: string[];
+    let stakers: string[];
     let makers: string[];
     let delegators: string[];
-
 
     // wrappers
     let stakingWrapper: StakingWrapper;
@@ -69,7 +67,6 @@ describe('End-To-End Simulations', () => {
         makers = accounts.slice(4, 10);
         users = [...users, ...users]; // maybe this'll work? Not sure lol.
 
-
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -89,64 +86,59 @@ describe('End-To-End Simulations', () => {
     describe('Simulations', () => {
         it('Should successfully simulate (no delegators / no shadow balances)', async () => {
             // @TODO - get computations more accurate
-           const simulationParams = {
-               users,
-               numberOfPools: 3,
-               poolOperatorShares: [100, 100, 100],
+            const simulationParams = {
+                users,
+                numberOfPools: 3,
+                poolOperatorShares: [100, 100, 100],
                 stakeByPoolOperator: [
                     stakingWrapper.toBaseUnitAmount(42),
                     stakingWrapper.toBaseUnitAmount(84),
                     stakingWrapper.toBaseUnitAmount(97),
                 ],
-               numberOfMakers: 6,
-               numberOfMakersPerPool: [1, 2, 3],
-               protocolFeesByMaker: [
-                   // pool 1
-                   stakingWrapper.toBaseUnitAmount(0.304958),
-                   // pool 2
-                   stakingWrapper.toBaseUnitAmount(3.2),
-                   stakingWrapper.toBaseUnitAmount(12.123258),
-                   // pool 3
-                   stakingWrapper.toBaseUnitAmount(23.577),
-                   stakingWrapper.toBaseUnitAmount(4.54522236),
-                   stakingWrapper.toBaseUnitAmount(0)
-               ],
-               numberOfDelegators: 0,
-               numberOfDelegatorsPerPool: [0, 0, 0],
-               stakeByDelegator: [],
-               delegateInNextEpoch: false,         // no shadow eth
-               withdrawByUndelegating: false,      // profits are withdrawn without undelegating
-               expectedFeesByPool: [
-                   stakingWrapper.toBaseUnitAmount(0.304958),
-                   stakingWrapper.toBaseUnitAmount(15.323258),
-                   stakingWrapper.toBaseUnitAmount(28.12222236),
-               ],
-               expectedPayoutByPool: [
-                   new BigNumber('4.75677'),   // 4.756772362932728793619590327361600155564384201215274334070
-                   new BigNumber('16.28130'),  // 16.28130500394935316563988584956596823402223838026190634525
-                   new BigNumber('20.31028'),  // 20.31028447343014834523983759032242063760612769662934308289
-               ],
-               expectedPayoutByPoolOperator: [
-                new BigNumber('4.75677'),   // 4.756772362932728793619590327361600155564384201215274334070
-                new BigNumber('16.28130'),  // 16.28130500394935316563988584956596823402223838026190634525
-                new BigNumber('20.31028'),  // 20.31028447343014834523983759032242063760612769662934308289
-               ],
-               expectedMembersPayoutByPool: [
-                   new BigNumber('0'),
-                   new BigNumber('0'),
-                   new BigNumber('0'),
-               ],
-               expectedPayoutByDelegator: [],
-               exchangeAddress: exchange,
-               
-           };
-           const simulator = new Simulation(stakingWrapper, simulationParams);
-           await simulator.runAsync();
-       });
+                numberOfMakers: 6,
+                numberOfMakersPerPool: [1, 2, 3],
+                protocolFeesByMaker: [
+                    // pool 1
+                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    // pool 2
+                    stakingWrapper.toBaseUnitAmount(3.2),
+                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    // pool 3
+                    stakingWrapper.toBaseUnitAmount(23.577),
+                    stakingWrapper.toBaseUnitAmount(4.54522236),
+                    stakingWrapper.toBaseUnitAmount(0),
+                ],
+                numberOfDelegators: 0,
+                numberOfDelegatorsPerPool: [0, 0, 0],
+                stakeByDelegator: [],
+                delegateInNextEpoch: false, // no shadow eth
+                withdrawByUndelegating: false, // profits are withdrawn without undelegating
+                expectedFeesByPool: [
+                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    stakingWrapper.toBaseUnitAmount(15.323258),
+                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                ],
+                expectedPayoutByPool: [
+                    new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
+                    new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                    new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
+                ],
+                expectedPayoutByPoolOperator: [
+                    new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
+                    new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                    new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
+                ],
+                expectedMembersPayoutByPool: [new BigNumber('0'), new BigNumber('0'), new BigNumber('0')],
+                expectedPayoutByDelegator: [],
+                exchangeAddress: exchange,
+            };
+            const simulator = new Simulation(stakingWrapper, simulationParams);
+            await simulator.runAsync();
+        });
 
-       it('Should successfully simulate (delegators withdraw by undeleating / no shadow balances)', async () => {
-        // @TODO - get computations more accurate
-        /*
+        it('Should successfully simulate (delegators withdraw by undeleating / no shadow balances)', async () => {
+            // @TODO - get computations more accurate
+            /*
 \           // the expected payouts were computed by hand
             // @TODO - get computations more accurate
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
@@ -158,70 +150,70 @@ describe('End-To-End Simulations', () => {
                 Cumulative Stake = 405
                 Total Rewards = 43.75043836
             */
-        const simulationParams = {
-            users,
-            numberOfPools: 3,
-            poolOperatorShares: [39, 59, 43],
-            stakeByPoolOperator: [
-                stakingWrapper.toBaseUnitAmount(42),
-                stakingWrapper.toBaseUnitAmount(84),
-                stakingWrapper.toBaseUnitAmount(97),
-            ],
-            numberOfMakers: 6,
-            numberOfMakersPerPool: [1, 2, 3],
-            protocolFeesByMaker: [
-                // pool 1
-                stakingWrapper.toBaseUnitAmount(0.304958),
-                // pool 2
-                stakingWrapper.toBaseUnitAmount(3.2),
-                stakingWrapper.toBaseUnitAmount(12.123258),
-                // pool 3
-                stakingWrapper.toBaseUnitAmount(23.577),
-                stakingWrapper.toBaseUnitAmount(4.54522236),
-                stakingWrapper.toBaseUnitAmount(0)
-            ],
-            numberOfDelegators: 3,
-            numberOfDelegatorsPerPool: [0, 0, 3],
-            stakeByDelegator: [
-                stakingWrapper.toBaseUnitAmount(17),
-                stakingWrapper.toBaseUnitAmount(75),
-                stakingWrapper.toBaseUnitAmount(90),
-            ],
-            delegateInNextEpoch: false,         // delegated stake is included in payout computation + no shadow ether
-            withdrawByUndelegating: false,      // profits are withdrawn without undelegating
-            expectedFeesByPool: [
-                stakingWrapper.toBaseUnitAmount(0.304958),
-                stakingWrapper.toBaseUnitAmount(15.323258),
-                stakingWrapper.toBaseUnitAmount(28.12222236),
-            ],
-            expectedPayoutByPool: [
-                new BigNumber('2.89303'),   // 2.8930364057678784829875695710382241749912199174798475
-                new BigNumber('9.90218'),   // 9.9021783083174087034787071054543342142019746753770943 
-                new BigNumber('28.16463'),  // 28.164631904035798614670299155719067954180760345463798
-            ],
-            expectedPayoutByPoolOperator: [
-                new BigNumber('1.12828'),   // 0.39 * 2.89303
-                new BigNumber('5.84228'),   // 0.59 * 9.90218
-                new BigNumber('12.11079')   // 0.43 * 28.16463
-            ],
-            expectedMembersPayoutByPool: [
-                new BigNumber('1.76475'),   // (1 - 0.39) * 2.89303
-                new BigNumber('4.05989'),   // (1 - 0.59) * 9.90218
-                new BigNumber('16.05383'),  // (1 - 0.43) * 28.16463
-            ],
-            expectedPayoutByDelegator: [
-                // note that the on-chain values may be slightly different due to rounding down on each entry
-                // there is a carry over between calls, which we account for here. the result is that delegators
-                // who withdraw later on will scoop up any rounding spillover from those who have already withdrawn.
-                new BigNumber('1.49953'),   // (17 / 182) * 16.05383
-                new BigNumber('6.61559'),   // (75 / 182) * 16.05383
-                new BigNumber('7.93871'),   // (90 / 182) * 16.05383
-            ],
-            exchangeAddress: exchange,
-        };
-        const simulator = new Simulation(stakingWrapper, simulationParams);
-        await simulator.runAsync();
-    });
+            const simulationParams = {
+                users,
+                numberOfPools: 3,
+                poolOperatorShares: [39, 59, 43],
+                stakeByPoolOperator: [
+                    stakingWrapper.toBaseUnitAmount(42),
+                    stakingWrapper.toBaseUnitAmount(84),
+                    stakingWrapper.toBaseUnitAmount(97),
+                ],
+                numberOfMakers: 6,
+                numberOfMakersPerPool: [1, 2, 3],
+                protocolFeesByMaker: [
+                    // pool 1
+                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    // pool 2
+                    stakingWrapper.toBaseUnitAmount(3.2),
+                    stakingWrapper.toBaseUnitAmount(12.123258),
+                    // pool 3
+                    stakingWrapper.toBaseUnitAmount(23.577),
+                    stakingWrapper.toBaseUnitAmount(4.54522236),
+                    stakingWrapper.toBaseUnitAmount(0),
+                ],
+                numberOfDelegators: 3,
+                numberOfDelegatorsPerPool: [0, 0, 3],
+                stakeByDelegator: [
+                    stakingWrapper.toBaseUnitAmount(17),
+                    stakingWrapper.toBaseUnitAmount(75),
+                    stakingWrapper.toBaseUnitAmount(90),
+                ],
+                delegateInNextEpoch: false, // delegated stake is included in payout computation + no shadow ether
+                withdrawByUndelegating: false, // profits are withdrawn without undelegating
+                expectedFeesByPool: [
+                    stakingWrapper.toBaseUnitAmount(0.304958),
+                    stakingWrapper.toBaseUnitAmount(15.323258),
+                    stakingWrapper.toBaseUnitAmount(28.12222236),
+                ],
+                expectedPayoutByPool: [
+                    new BigNumber('2.89303'), // 2.8930364057678784829875695710382241749912199174798475
+                    new BigNumber('9.90218'), // 9.9021783083174087034787071054543342142019746753770943
+                    new BigNumber('28.16463'), // 28.164631904035798614670299155719067954180760345463798
+                ],
+                expectedPayoutByPoolOperator: [
+                    new BigNumber('1.12828'), // 0.39 * 2.89303
+                    new BigNumber('5.84228'), // 0.59 * 9.90218
+                    new BigNumber('12.11079'), // 0.43 * 28.16463
+                ],
+                expectedMembersPayoutByPool: [
+                    new BigNumber('1.76475'), // (1 - 0.39) * 2.89303
+                    new BigNumber('4.05989'), // (1 - 0.59) * 9.90218
+                    new BigNumber('16.05383'), // (1 - 0.43) * 28.16463
+                ],
+                expectedPayoutByDelegator: [
+                    // note that the on-chain values may be slightly different due to rounding down on each entry
+                    // there is a carry over between calls, which we account for here. the result is that delegators
+                    // who withdraw later on will scoop up any rounding spillover from those who have already withdrawn.
+                    new BigNumber('1.49953'), // (17 / 182) * 16.05383
+                    new BigNumber('6.61559'), // (75 / 182) * 16.05383
+                    new BigNumber('7.93871'), // (90 / 182) * 16.05383
+                ],
+                exchangeAddress: exchange,
+            };
+            const simulator = new Simulation(stakingWrapper, simulationParams);
+            await simulator.runAsync();
+        });
 
         it('Should successfully simulate (delegators withdraw by undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
             // @TODO - get computations more accurate
@@ -260,7 +252,7 @@ describe('End-To-End Simulations', () => {
                     // pool 3
                     stakingWrapper.toBaseUnitAmount(23.577),
                     stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0)
+                    stakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 3,
                 numberOfDelegatorsPerPool: [0, 0, 3],
@@ -269,30 +261,30 @@ describe('End-To-End Simulations', () => {
                     stakingWrapper.toBaseUnitAmount(75),
                     stakingWrapper.toBaseUnitAmount(90),
                 ],
-                delegateInNextEpoch: true,          // delegated stake is included in payout computation + forces shadow eth
-                withdrawByUndelegating: true,       // profits are withdrawn as result of undelegating
+                delegateInNextEpoch: true, // delegated stake is included in payout computation + forces shadow eth
+                withdrawByUndelegating: true, // profits are withdrawn as result of undelegating
                 expectedFeesByPool: [
                     stakingWrapper.toBaseUnitAmount(0.304958),
                     stakingWrapper.toBaseUnitAmount(15.323258),
                     stakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
-                    new BigNumber('4.75677'),   // 4.756772362932728793619590327361600155564384201215274334070
-                    new BigNumber('16.28130'),  // 16.28130500394935316563988584956596823402223838026190634525
-                    new BigNumber('20.31028'),  // 20.31028447343014834523983759032242063760612769662934308289
+                    new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
+                    new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                    new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
                 ],
                 expectedPayoutByPoolOperator: [
-                    new BigNumber('1.85514'),   // 0.39 * 4.75677
-                    new BigNumber('9.60597'),   // 0.59 * 16.28130
-                    new BigNumber('8.73342')    // 0.43 * 20.31028
+                    new BigNumber('1.85514'), // 0.39 * 4.75677
+                    new BigNumber('9.60597'), // 0.59 * 16.28130
+                    new BigNumber('8.73342'), // 0.43 * 20.31028
                 ],
                 expectedMembersPayoutByPool: [
-                    new BigNumber('2.90163'),   // (1 - 0.39) * 4.75677
-                    new BigNumber('6.67533'),   // (1 - 0.59) * 16.28130
-                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
+                    new BigNumber('2.90163'), // (1 - 0.39) * 4.75677
+                    new BigNumber('6.67533'), // (1 - 0.59) * 16.28130
+                    new BigNumber('11.57686'), // (1 - 0.43) * 20.31028
                 ],
                 expectedPayoutByDelegator: [
-                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
+                    new BigNumber('11.57686'), // (1 - 0.43) * 20.31028
                     new BigNumber(0),
                     new BigNumber(0),
                 ],
@@ -303,7 +295,7 @@ describe('End-To-End Simulations', () => {
         });
 
         it('Should successfully simulate (delegators withdraw without undelegating / includes shadow balances / delegators enter after reward payouts)', async () => {
-             // @TODO - get computations more accurate
+            // @TODO - get computations more accurate
             /*
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled) 
                 0    |  0.304958   | 42          | 0                     | 42
@@ -339,7 +331,7 @@ describe('End-To-End Simulations', () => {
                     // pool 3
                     stakingWrapper.toBaseUnitAmount(23.577),
                     stakingWrapper.toBaseUnitAmount(4.54522236),
-                    stakingWrapper.toBaseUnitAmount(0)
+                    stakingWrapper.toBaseUnitAmount(0),
                 ],
                 numberOfDelegators: 3,
                 numberOfDelegatorsPerPool: [0, 0, 3],
@@ -348,35 +340,34 @@ describe('End-To-End Simulations', () => {
                     stakingWrapper.toBaseUnitAmount(75),
                     stakingWrapper.toBaseUnitAmount(90),
                 ],
-                delegateInNextEpoch: true,          // delegated stake is included in payout computation + forces shadow eth
-                withdrawByUndelegating: false,      // profits are withdrawn without undelegating
+                delegateInNextEpoch: true, // delegated stake is included in payout computation + forces shadow eth
+                withdrawByUndelegating: false, // profits are withdrawn without undelegating
                 expectedFeesByPool: [
                     stakingWrapper.toBaseUnitAmount(0.304958),
                     stakingWrapper.toBaseUnitAmount(15.323258),
                     stakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
-                    new BigNumber('4.75677'),   // 4.756772362932728793619590327361600155564384201215274334070
-                    new BigNumber('16.28130'),  // 16.28130500394935316563988584956596823402223838026190634525
-                    new BigNumber('20.31028'),  // 20.31028447343014834523983759032242063760612769662934308289
+                    new BigNumber('4.75677'), // 4.756772362932728793619590327361600155564384201215274334070
+                    new BigNumber('16.28130'), // 16.28130500394935316563988584956596823402223838026190634525
+                    new BigNumber('20.31028'), // 20.31028447343014834523983759032242063760612769662934308289
                 ],
                 expectedPayoutByPoolOperator: [
-                    new BigNumber('1.85514'),   // 0.39 * 4.75677
-                    new BigNumber('9.60597'),   // 0.59 * 16.28130
-                    new BigNumber('8.73342')    // 0.43 * 20.31028
+                    new BigNumber('1.85514'), // 0.39 * 4.75677
+                    new BigNumber('9.60597'), // 0.59 * 16.28130
+                    new BigNumber('8.73342'), // 0.43 * 20.31028
                 ],
                 expectedMembersPayoutByPool: [
-                    new BigNumber('2.90163'),   // (1 - 0.39) * 4.75677
-                    new BigNumber('6.67533'),   // (1 - 0.59) * 16.28130
-                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
+                    new BigNumber('2.90163'), // (1 - 0.39) * 4.75677
+                    new BigNumber('6.67533'), // (1 - 0.59) * 16.28130
+                    new BigNumber('11.57686'), // (1 - 0.43) * 20.31028
                 ],
                 expectedPayoutByDelegator: [
-                    new BigNumber('11.57686'),  // (1 - 0.43) * 20.31028
+                    new BigNumber('11.57686'), // (1 - 0.43) * 20.31028
                     new BigNumber(0),
                     new BigNumber(0),
                 ],
                 exchangeAddress: exchange,
-                
             };
             const simulator = new Simulation(stakingWrapper, simulationParams);
             await simulator.runAsync();
@@ -387,7 +378,7 @@ describe('End-To-End Simulations', () => {
             const protocolFee = new BigNumber(1);
             await expectTransactionFailedAsync(
                 stakingWrapper.payProtocolFeeAsync(makerAddress, protocolFee, owner),
-                RevertReason.OnlyCallableByExchange
+                RevertReason.OnlyCallableByExchange,
             );
         });
     });
