@@ -67,12 +67,18 @@ contract MixinStake is
         external
     {
         address owner = msg.sender;
-         _syncTimelockedStake(owner);
+        _syncTimelockedStake(owner);
         require(
             getDeactivatedStake(owner) >= amount,
             "INSUFFICIENT_BALANCE"
         );
         _burnStake(owner, amount);
+    }
+
+    function forceTimelockSync(address owner)
+        external
+    {
+        _syncTimelockedStake(owner);
     }
 
     function activateStake(uint256 amount)
@@ -120,14 +126,6 @@ contract MixinStake is
         address payable owner = msg.sender;
         _undelegateStake(owner, poolId, amount);
     }
-
-    function forceTimelockSync(address owner)
-        external
-    {
-        _syncTimelockedStake(owner);
-    }
-
-    ///// PRIVATE HELPERS /////
 
     function _mintStake(address owner, uint256 amount)
         private
@@ -229,7 +227,7 @@ contract MixinStake is
         } else {
             // partial payout
             (payoutInRealAsset, payoutInShadowAsset) = LibRewardMath._computePartialPayout(
-                 amount,
+                amount,
                 _delegatedStakeToPoolByOwner,
                 _delegatedStakeByPoolId,
                 shadowRewardsInPoolByOwner[owner][poolId],

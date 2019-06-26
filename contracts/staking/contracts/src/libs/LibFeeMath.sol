@@ -21,10 +21,21 @@
 pragma solidity ^0.5.5;
 
 
-
 library LibFeeMath {
-    
-    function _nthRoot(uint256 base, uint256 n) internal pure returns (uint256 root) {
+
+    // @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
+    // @TODO Update these values for deployment
+    uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
+
+    uint256 constant internal TOKEN_MULTIPLIER = 1000000000000000000;
+
+    uint256 constant internal NTH_ROOT_OF_TOKEN_MULTIPLIER = 1000;
+
+    function _nthRoot(uint256 base, uint256 n)
+        internal
+        pure
+        returns (uint256 root)
+    {
         assembly {
             ///// Implements Newton's Approximation, derived from Newton's nth Root Algorithm /////
             ///// See https://en.wikipedia.org/wiki/Nth_root#nth_root_algorithm
@@ -80,6 +91,7 @@ library LibFeeMath {
                 
             // 5. Run Newton's nth Root Algorithm
             let delta := 1 // run at least once
+            // solhint-disable no-empty-blocks
             for {}
                 gt(delta, 0)
                 {}
@@ -103,7 +115,7 @@ library LibFeeMath {
             }
 
             // ganache core workaround (issue #430)
-            function exp2(b,p) -> z {
+            function exp2(b, p) -> z {
                 z := b
                 for {p := sub(p, 1)}
                     gt(p, 0)
@@ -129,13 +141,6 @@ library LibFeeMath {
         root = (scalar * numerator) / denominator;
     }
 
-    // N is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
-    // Currently set to 6. 
-    // @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
-    // @TODO Update this value for deployment
-    uint256 constant COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
-    uint256 constant TOKEN_MULTIPLIER = 1000000000000000000;
-    uint256 constant NTH_ROOT_OF_TOKEN_MULTIPLIER = 1000;
     function _nthRootFixedPointFixedN(
         uint256 base
     )
@@ -148,7 +153,6 @@ library LibFeeMath {
         return root;
     }
 
-
     // scalar gets multiplied by once at the beginning
     function _exp(uint256 numerator, uint256 scalar, uint256 denominator, uint256 power)
         internal
@@ -156,15 +160,11 @@ library LibFeeMath {
         returns (uint256 result)
     {
         result = (numerator * scalar) / denominator;
-        for(power = power - 1; power > 0; power -= 1) {
+        for (power = power - 1; power > 0; power -= 1) {
             result = (result * numerator) / denominator;
         }
         return result;
     }
-
-    uint256 constant fixedPointDecimals = 18;
-    uint256 constant scalar = 10**fixedPointDecimals;
-    uint256 constant halfScalar = 10**(fixedPointDecimals/2);
 
     // cobb-douglas using the nth root fixed point algorithm above
     // no limitation on alpha. We tend to get better rounding

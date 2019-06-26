@@ -26,7 +26,7 @@ contract StakingProxy is
     MixinStorage,
     IStakingProxy
 {
-    address constant NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
+    address constant internal NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
     constructor(address _stakingContract)
         public
@@ -34,6 +34,7 @@ contract StakingProxy is
         stakingContract = _stakingContract;
     }
 
+    // solhint-disable no-complex-fallback
     function ()
         external
         payable

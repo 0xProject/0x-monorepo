@@ -32,7 +32,7 @@ contract LibRewardsTest {
         uint256 totalAmountOfShadowAsset,
         uint256 totalAmountOfRealAsset
     )
-        internal
+        external
         returns (uint256)
     {
         return LibRewards._computePayoutDenominatedInRealAsset(
@@ -52,7 +52,7 @@ contract LibRewardsTest {
         uint256 totalAmountOfShadowAsset,
         uint256 totalAmountOfRealAsset
     )
-        internal
+        external
         returns (
             uint256 payoutInRealAsset,
             uint256 payoutInShadowAsset
@@ -84,5 +84,4 @@ contract LibRewardsTest {
             totalAmountOfRealAsset
         );
     }
-
 }

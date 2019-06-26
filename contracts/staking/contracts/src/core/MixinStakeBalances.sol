@@ -147,7 +147,7 @@ contract MixinStakeBalances is
             // shift n periods
             ownerTimelock.pending = ownerTimelock.total;
             isOutOfSync = true;
-        } else if(currentTimelockPeriod > ownerTimelock.lockedAt) {
+        } else if (currentTimelockPeriod > ownerTimelock.lockedAt) {
             // Timelock has expired - zero out
             ownerTimelock.lockedAt = 0;
             ownerTimelock.total = 0;

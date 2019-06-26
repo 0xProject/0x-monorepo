@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.9;
 
-
 import "./core/MixinExchange.sol";
 import "./core/MixinZrxVault.sol";
 import "./core/MixinRewardVault.sol";
@@ -47,6 +46,7 @@ contract Staking is
 {
 
     // this contract can receive ETH
+    // solhint-disable no-empty-blocks
     function ()
         external
         payable
