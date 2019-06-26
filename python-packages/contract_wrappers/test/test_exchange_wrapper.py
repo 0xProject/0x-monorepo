@@ -5,6 +5,7 @@ import random
 import pytest
 from eth_utils import remove_0x_prefix
 
+from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_wrappers import Exchange, TxParams
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
@@ -13,7 +14,10 @@ from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
 @pytest.fixture(scope="module")
 def exchange_wrapper(ganache_provider):
     """Get an Exchange wrapper instance."""
-    return Exchange(provider=ganache_provider)
+    return Exchange(
+        provider=ganache_provider,
+        contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
+    )
 
 
 def create_test_order(

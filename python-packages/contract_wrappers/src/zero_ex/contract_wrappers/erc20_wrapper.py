@@ -17,6 +17,7 @@ class ERC20Token(BaseContractWrapper):
     def __init__(
         self,
         provider: BaseProvider,
+        contract_address: str,
         account_address: str = None,
         private_key: str = None,
     ):
@@ -26,6 +27,7 @@ class ERC20Token(BaseContractWrapper):
         """
         super(ERC20Token, self).__init__(
             provider=provider,
+            contract_address=contract_address,
             account_address=account_address,
             private_key=private_key,
         )
@@ -41,7 +43,6 @@ class ERC20Token(BaseContractWrapper):
 
     def approve(
         self,
-        token_address: str,
         _spender: str,
         _value: int,
         tx_params: Optional[TxParams] = None,
@@ -58,29 +59,25 @@ class ERC20Token(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        token_address = self._validate_and_checksum_address(token_address)
         _spender = self._validate_and_checksum_address(_spender)
         # safeguard against fractional inputs
         _value = int(_value)
-
-        func = self._get_contract_instance(token_address).functions.approve(
-            _spender, _value
-        )
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.approve(_spender, _value)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def total_supply(self, token_address: str) -> int:
+    def total_supply(self) -> int:
         """Execute underlying, same-named contract method.
 
         Query total supply of token
 
         :returns: Total supply of token
         """
-        token_address = self._validate_and_checksum_address(token_address)
-
         func = self._get_contract_instance(
-            token_address
+            self._contract_address
         ).functions.totalSupply()
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
@@ -88,7 +85,6 @@ class ERC20Token(BaseContractWrapper):
 
     def transfer_from(
         self,
-        token_address: str,
         _from: str,
         _to: str,
         _value: int,
@@ -108,20 +104,18 @@ class ERC20Token(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        token_address = self._validate_and_checksum_address(token_address)
         _from = self._validate_and_checksum_address(_from)
         _to = self._validate_and_checksum_address(_to)
         # safeguard against fractional inputs
         _value = int(_value)
-
         func = self._get_contract_instance(
-            token_address
+            self._contract_address
         ).functions.transferFrom(_from, _to, _value)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def balance_of(self, token_address: str, _owner: str) -> int:
+    def balance_of(self, _owner: str) -> int:
         """Execute underlying, same-named contract method.
 
         Query the balance of owner
@@ -129,19 +123,16 @@ class ERC20Token(BaseContractWrapper):
         :param _owner: The address from which the balance will be retrieved
         :returns: Balance of owner
         """
-        token_address = self._validate_and_checksum_address(token_address)
         _owner = self._validate_and_checksum_address(_owner)
-
-        func = self._get_contract_instance(token_address).functions.balanceOf(
-            _owner
-        )
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.balanceOf(_owner)
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
         )
 
     def transfer(
         self,
-        token_address: str,
         _to: str,
         _value: int,
         tx_params: Optional[TxParams] = None,
@@ -158,32 +149,28 @@ class ERC20Token(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        token_address = self._validate_and_checksum_address(token_address)
         _to = self._validate_and_checksum_address(_to)
         # safeguard against fractional inputs
         _value = int(_value)
-
-        func = self._get_contract_instance(token_address).functions.transfer(
-            _to, _value
-        )
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.transfer(_to, _value)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def allowance(self, token_address: str, _owner: str, _spender: str) -> int:
+    def allowance(self, _owner: str, _spender: str) -> int:
         """Execute underlying, same-named contract method.
 
         :param _owner: The address of the account owning tokens
         :param _spender: The address of the account able to transfer the tokens
         :returns: Amount of remaining tokens allowed to spent
         """
-        token_address = self._validate_and_checksum_address(token_address)
         _owner = self._validate_and_checksum_address(_owner)
         _spender = self._validate_and_checksum_address(_spender)
-
-        func = self._get_contract_instance(token_address).functions.allowance(
-            _owner, _spender
-        )
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.allowance(_owner, _spender)
         return self._invoke_function_call(
             func=func, tx_params=None, view_only=True
         )

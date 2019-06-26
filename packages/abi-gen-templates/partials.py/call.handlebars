@@ -1,7 +1,6 @@
 
     def {{this.langLocalName}}(
-        self,
-        token_address: str,
+        self{{#if inputs}},{{/if}}
         {{> typed_params inputs=inputs}}
         {{^this.constant}}
         tx_params: Optional[TxParams] = None,
@@ -22,7 +21,6 @@
         :returns: transaction hash
         {{/if}}
         """
-        token_address = self._validate_and_checksum_address(token_address)
         {{#each this.inputs}}
         {{#if (equal type 'address')}}
         {{this.name}} = self._validate_and_checksum_address({{this.name}})
@@ -31,8 +29,9 @@
         {{this.name}} = int({{this.name}})
 {{/if}}
 {{/each}}
-
-        func = self._get_contract_instance(token_address).functions.{{this.name}}(
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.{{this.name}}(
             {{> params}}
         )
         return self._invoke_function_call(

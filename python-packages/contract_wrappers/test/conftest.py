@@ -40,24 +40,21 @@ def erc20_proxy_address():
 
 
 @pytest.fixture(scope="module")
-def weth_address():
-    """Get address of Wrapped Ether (WETH) token for the Ganache network."""
-    return NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
-
-
-@pytest.fixture(scope="module")
-def weth_asset_data(weth_address):  # pylint: disable=redefined-outer-name
+def weth_asset_data():  # pylint: disable=redefined-outer-name
     """Get 0x asset data for Wrapped Ether (WETH) token."""
-    return asset_data_utils.encode_erc20(weth_address)
+    return asset_data_utils.encode_erc20(
+        NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+    )
 
 
 @pytest.fixture(scope="module")
-def weth_instance(
-    web3_eth, weth_address
-):  # pylint: disable=redefined-outer-name
+def weth_instance(web3_eth):  # pylint: disable=redefined-outer-name
     """Get an instance of the WrapperEther contract."""
     return web3_eth.contract(
-        address=to_checksum_address(weth_address), abi=abi_by_name("WETH9")
+        address=to_checksum_address(
+            NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token
+        ),
+        abi=abi_by_name("WETH9"),
     )
 
 

@@ -316,7 +316,11 @@ book.  Now let's have the taker fill it:
 
 >>> from zero_ex.contract_wrappers import Exchange, TxParams
 >>> from zero_ex.order_utils import Order
->>> Exchange(eth_node).fill_order(
+>>> exchange = Exchange(
+...     provider=eth_node,
+...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
+... )
+>>> exchange.fill_order(
 ...     order=order,
 ...     taker_amount=order['makerAssetAmount']/2, # note the half fill
 ...     signature=order['signature'],
@@ -330,7 +334,7 @@ Cancelling
 Note that the above fill was partial: it only filled half of the order.  Now
 we'll have our maker cancel the remaining order:
 
->>> Exchange(eth_node).cancel_order(
+>>> exchange.cancel_order(
 ...     order=order,
 ...     tx_params=TxParams(from_=maker_address)
 ... )
