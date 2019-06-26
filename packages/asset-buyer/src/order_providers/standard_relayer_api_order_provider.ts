@@ -5,11 +5,11 @@ import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import {
-    AssetBuyerError,
     OrderProvider,
     OrderProviderRequest,
     OrderProviderResponse,
     SignedOrderWithRemainingFillableMakerAssetAmount,
+    SwapQuoterError,
 } from '../types';
 import { assert } from '../utils/assert';
 
@@ -73,7 +73,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         try {
             orderbook = await this._sraClient.getOrderbookAsync(orderbookRequest, requestOpts);
         } catch (err) {
-            throw new Error(AssetBuyerError.StandardRelayerApiError);
+            throw new Error(SwapQuoterError.StandardRelayerApiError);
         }
         const apiOrders = orderbook.asks.records;
         const orders = StandardRelayerAPIOrderProvider._getSignedOrderWithRemainingFillableMakerAssetAmountFromApi(
@@ -84,7 +84,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         };
     }
     /**
-     * Given a taker asset data string, return all availabled paired maker asset data strings.
+     * Given a taker asset data string, return all available paired maker asset data strings.
      * @param   takerAssetData   A string representing the taker asset data.
      * @return  An array of asset data strings that can be purchased using takerAssetData.
      */
@@ -101,10 +101,38 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
         try {
             response = await this._sraClient.getAssetPairsAsync(fullRequest);
         } catch (err) {
-            throw new Error(AssetBuyerError.StandardRelayerApiError);
+            throw new Error(SwapQuoterError.StandardRelayerApiError);
         }
         return _.map(response.records, item => {
             if (item.assetDataA.assetData === takerAssetData) {
+                return item.assetDataB.assetData;
+            } else {
+                return item.assetDataA.assetData;
+            }
+        });
+    }
+    /**
+     * Given a maker asset data string, return all availabled paired taker asset data strings.
+     * @param   makerAssetData   A string representing the maker asset data.
+     * @return  An array of asset data strings that can be used to purchased makerAssetData.
+     */
+    public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
+        // Return a maximum of 1000 asset datas
+        const maxPerPage = 1000;
+        const requestOpts = { networkId: this.networkId, perPage: maxPerPage };
+        const assetPairsRequest = { assetDataA: makerAssetData };
+        const fullRequest = {
+            ...requestOpts,
+            ...assetPairsRequest,
+        };
+        let response: AssetPairsResponse;
+        try {
+            response = await this._sraClient.getAssetPairsAsync(fullRequest);
+        } catch (err) {
+            throw new Error(SwapQuoterError.StandardRelayerApiError);
+        }
+        return _.map(response.records, item => {
+            if (item.assetDataA.assetData === makerAssetData) {
                 return item.assetDataB.assetData;
             } else {
                 return item.assetDataA.assetData;

@@ -7,14 +7,14 @@ import * as chai from 'chai';
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 
-import { AssetBuyer } from '../src';
+import { SwapQuoter } from '../src';
 import { constants } from '../src/constants';
 import { LiquidityForAssetData, OrderProvider, OrdersAndFillableAmounts } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
 import {
-    mockAvailableAssetDatas,
-    mockedAssetBuyerWithOrdersAndFillableAmounts,
+    mockAvailableMakerAssetDatas,
+    mockedSwapQuoterWithOrdersAndFillableAmounts,
     orderProviderMock,
 } from './utils/mocks';
 
@@ -22,7 +22,8 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 const FAKE_SRA_URL = 'https://fakeurl.com';
-const FAKE_ASSET_DATA = '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48';
+const FAKE_TAKER_ASSET_DATA = '0xf47261b00000000000000000000000001dc4c1cefef38a777b15aa20260a54e584b16c48';
+const FAKE_MAKER_ASSET_DATA = '0xf47261b00000000000000000000000009f5B0C7e1623793bF0620569b9749e79DF6D0bC5';
 const TOKEN_DECIMALS = 18;
 const DAI_ASSET_DATA = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359"';
 const WETH_ASSET_DATA = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
@@ -38,19 +39,23 @@ const expectLiquidityResult = async (
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     expectedLiquidityResult: LiquidityForAssetData,
 ) => {
-    const mockedAssetBuyer = mockedAssetBuyerWithOrdersAndFillableAmounts(
+    const mockedSwapQuoter = mockedSwapQuoterWithOrdersAndFillableAmounts(
         web3Provider,
         orderProvider,
-        FAKE_ASSET_DATA,
+        FAKE_MAKER_ASSET_DATA,
+        WETH_ASSET_DATA,
         ordersAndFillableAmounts,
     );
-    const liquidityResult = await mockedAssetBuyer.object.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
+    const liquidityResult = await mockedSwapQuoter.object.getLiquidityForMakerTakerAssetDataPairAsync(
+        FAKE_MAKER_ASSET_DATA,
+        WETH_ASSET_DATA,
+    );
     expect(liquidityResult).to.deep.equal(expectedLiquidityResult);
 };
 
 // tslint:disable:custom-no-magic-numbers
-describe('AssetBuyer', () => {
-    describe('getLiquidityForAssetDataAsync', () => {
+describe('SwapQuoter', () => {
+    describe('getLiquidityForMakerTakerAssetDataPairAsync', () => {
         const mockWeb3Provider = TypeMoq.Mock.ofType(Web3ProviderEngine);
         const mockOrderProvider = orderProviderMock();
 
@@ -65,37 +70,54 @@ describe('AssetBuyer', () => {
         });
 
         describe('validation', () => {
-            it('should ensure assetData is a string', async () => {
-                const assetBuyer = AssetBuyer.getAssetBuyerForStandardRelayerAPIUrl(
+            it('should ensure takerAssetData is a string', async () => {
+                const swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
                     mockWeb3Provider.object,
                     FAKE_SRA_URL,
                 );
 
-                expect(assetBuyer.getLiquidityForAssetDataAsync(false as any)).to.be.rejectedWith(
-                    'Expected assetData to be of type string, encountered: false',
+                expect(
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(FAKE_MAKER_ASSET_DATA, false as any),
+                ).to.be.rejectedWith('Expected takerAssetData to be of type string, encountered: false');
+            });
+            it('should ensure makerAssetData is a string', async () => {
+                const swapQuoter = SwapQuoter.getSwapQuoterForStandardRelayerAPIUrl(
+                    mockWeb3Provider.object,
+                    FAKE_SRA_URL,
                 );
+
+                expect(
+                    swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(false as any, FAKE_TAKER_ASSET_DATA),
+                ).to.be.rejectedWith('Expected makerAssetData to be of type string, encountered: false');
             });
         });
 
         describe('asset pair not supported', () => {
-            it('should return 0s when no asset pair not supported', async () => {
-                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, []);
+            it('should return 0s when no asset pair are supported', async () => {
+                mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, []);
 
-                const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
+                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                    FAKE_MAKER_ASSET_DATA,
+                    FAKE_TAKER_ASSET_DATA,
+                );
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
+                    makerTokensAvailableInBaseUnits: new BigNumber(0),
+                    takerTokensAvailableInBaseUnits: new BigNumber(0),
                 });
             });
-            it('should return 0s when only other asset pair supported', async () => {
-                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, [DAI_ASSET_DATA]);
 
-                const assetBuyer = new AssetBuyer(mockWeb3Provider.object, mockOrderProvider.object);
-                const liquidityResult = await assetBuyer.getLiquidityForAssetDataAsync(FAKE_ASSET_DATA);
+            it('should return 0s when only other asset pair supported', async () => {
+                mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, [DAI_ASSET_DATA]);
+
+                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
+                const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
+                    FAKE_MAKER_ASSET_DATA,
+                    FAKE_TAKER_ASSET_DATA,
+                );
                 expect(liquidityResult).to.deep.equal({
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
+                    makerTokensAvailableInBaseUnits: new BigNumber(0),
+                    takerTokensAvailableInBaseUnits: new BigNumber(0),
                 });
             });
         });
@@ -112,7 +134,7 @@ describe('AssetBuyer', () => {
             });
 
             beforeEach(() => {
-                mockAvailableAssetDatas(mockOrderProvider, FAKE_ASSET_DATA, [WETH_ASSET_DATA]);
+                mockAvailableMakerAssetDatas(mockOrderProvider, WETH_ASSET_DATA, [FAKE_MAKER_ASSET_DATA]);
             });
 
             it('should return 0s when no orders available', async () => {
@@ -121,8 +143,8 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: [],
                 };
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: new BigNumber(0),
-                    ethValueAvailableInWei: new BigNumber(0),
+                    makerTokensAvailableInBaseUnits: new BigNumber(0),
+                    takerTokensAvailableInBaseUnits: new BigNumber(0),
                 };
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
@@ -139,11 +161,12 @@ describe('AssetBuyer', () => {
                     remainingFillableMakerAssetAmounts: orders.map(o => o.makerAssetAmount),
                 };
 
-                const expectedTokensAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
-                const expectedEthValueAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
+                const expectedMakerTokensAvailable = orders[0].makerAssetAmount.plus(orders[1].makerAssetAmount);
+                const expectedTakerTokensAvailable = orders[0].takerAssetAmount.plus(orders[1].takerAssetAmount);
+
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: expectedTokensAvailable,
-                    ethValueAvailableInWei: expectedEthValueAvailable,
+                    makerTokensAvailableInBaseUnits: expectedMakerTokensAvailable,
+                    takerTokensAvailableInBaseUnits: expectedTakerTokensAvailable,
                 };
 
                 await expectLiquidityResult(
@@ -159,9 +182,10 @@ describe('AssetBuyer', () => {
                     orders: [sellTwoTokensFor1Weth],
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1)],
                 };
+
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(1),
-                    ethValueAvailableInWei: baseUnitAmount(0.5, WETH_DECIMALS),
+                    makerTokensAvailableInBaseUnits: baseUnitAmount(1),
+                    takerTokensAvailableInBaseUnits: baseUnitAmount(0.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
@@ -177,9 +201,10 @@ describe('AssetBuyer', () => {
                     orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(1), baseUnitAmount(3)],
                 };
+
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(4),
-                    ethValueAvailableInWei: baseUnitAmount(3.5, WETH_DECIMALS),
+                    makerTokensAvailableInBaseUnits: baseUnitAmount(4),
+                    takerTokensAvailableInBaseUnits: baseUnitAmount(3.5, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(
@@ -195,9 +220,10 @@ describe('AssetBuyer', () => {
                     orders: [sellTwoTokensFor1Weth, sellTenTokensFor10Weth],
                     remainingFillableMakerAssetAmounts: [baseUnitAmount(0), baseUnitAmount(0)],
                 };
+
                 const expectedResult = {
-                    tokensAvailableInBaseUnits: baseUnitAmount(0),
-                    ethValueAvailableInWei: baseUnitAmount(0, WETH_DECIMALS),
+                    makerTokensAvailableInBaseUnits: baseUnitAmount(0),
+                    takerTokensAvailableInBaseUnits: baseUnitAmount(0, WETH_DECIMALS),
                 };
 
                 await expectLiquidityResult(

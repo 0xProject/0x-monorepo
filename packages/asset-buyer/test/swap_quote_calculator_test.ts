@@ -5,8 +5,8 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { AssetBuyerError, OrdersAndFillableAmounts } from '../src/types';
-import { buyQuoteCalculator } from '../src/utils/buy_quote_calculator';
+import { OrdersAndFillableAmounts, SwapQuoterError } from '../src/types';
+import { swapQuoteCalculator } from '../src/utils/swap_quote_calculator';
 
 import { chaiSetup } from './utils/chai_setup';
 import { testHelpers } from './utils/test_helpers';
@@ -15,7 +15,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 
 // tslint:disable:custom-no-magic-numbers
-describe('buyQuoteCalculator', () => {
+describe('swapQuoteCalculator', () => {
     describe('#calculate', () => {
         let firstOrder: SignedOrder;
         let firstRemainingFillAmount: BigNumber;
@@ -71,11 +71,10 @@ describe('buyQuoteCalculator', () => {
             it('should throw if not enough maker asset liquidity (multiple orders)', () => {
                 // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         ordersAndFillableAmounts,
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(500),
-                        0,
                         0,
                         false,
                     );
@@ -85,11 +84,10 @@ describe('buyQuoteCalculator', () => {
             it('should throw if not enough maker asset liquidity (multiple orders with 20% slippage)', () => {
                 // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         ordersAndFillableAmounts,
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(500),
-                        0,
                         0.2,
                         false,
                     );
@@ -99,11 +97,10 @@ describe('buyQuoteCalculator', () => {
             it('should throw if not enough maker asset liquidity (multiple orders with 5% slippage)', () => {
                 // we have 400 makerAsset units available to fill but attempt to calculate a quote for 500 makerAsset units
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         ordersAndFillableAmounts,
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(600),
-                        0,
                         0.05,
                         false,
                     );
@@ -117,11 +114,10 @@ describe('buyQuoteCalculator', () => {
                 };
 
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         firstOrderAndFillableAmount,
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(201),
-                        0,
                         0,
                         false,
                     );
@@ -139,11 +135,10 @@ describe('buyQuoteCalculator', () => {
                     remainingFillableMakerAssetAmounts: [completelyFillableOrder.makerAssetAmount],
                 };
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         completelyFillableOrdersAndFillableAmount,
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(124),
-                        0,
                         0,
                         false,
                     );
@@ -157,11 +152,10 @@ describe('buyQuoteCalculator', () => {
                     takerFee: new BigNumber(0),
                 });
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         { orders: [smallOrder], remainingFillableMakerAssetAmounts: [smallOrder.makerAssetAmount] },
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(600),
-                        0,
                         0,
                         false,
                     );
@@ -175,11 +169,10 @@ describe('buyQuoteCalculator', () => {
                     takerFee: new BigNumber(0),
                 });
                 const errorFunction = () => {
-                    buyQuoteCalculator.calculate(
+                    swapQuoteCalculator.calculate(
                         { orders: [smallOrder], remainingFillableMakerAssetAmounts: [smallOrder.makerAssetAmount] },
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(600),
-                        0,
                         0.2,
                         false,
                     );
@@ -189,11 +182,10 @@ describe('buyQuoteCalculator', () => {
         });
         it('should not throw if order is fillable', () => {
             expect(() =>
-                buyQuoteCalculator.calculate(
+                swapQuoteCalculator.calculate(
                     ordersAndFillableAmounts,
                     allFeeOrdersAndFillableAmounts,
                     new BigNumber(300),
-                    0,
                     0,
                     false,
                 ),
@@ -202,94 +194,102 @@ describe('buyQuoteCalculator', () => {
         it('should throw if not enough ZRX liquidity', () => {
             // we request 300 makerAsset units but the ZRX order is only enough to fill the first order, which only has 200 makerAssetUnits available
             expect(() =>
-                buyQuoteCalculator.calculate(
+                swapQuoteCalculator.calculate(
                     ordersAndFillableAmounts,
                     smallFeeOrderAndFillableAmount,
                     new BigNumber(300),
                     0,
-                    0,
                     false,
                 ),
-            ).to.throw(AssetBuyerError.InsufficientZrxLiquidity);
+            ).to.throw(SwapQuoterError.InsufficientZrxLiquidity);
         });
-        it('calculates a correct buyQuote with no slippage', () => {
+        it('calculates a correct swapQuote with no slippage', () => {
             // we request 200 makerAsset units which can be filled using the first order
             // the first order requires a fee of 100 ZRX from the taker which can be filled by the feeOrder
             const assetBuyAmount = new BigNumber(200);
-            const feePercentage = 0.02;
             const slippagePercentage = 0;
-            const buyQuote = buyQuoteCalculator.calculate(
+            const swapQuote = swapQuoteCalculator.calculate(
                 ordersAndFillableAmounts,
                 smallFeeOrderAndFillableAmount,
                 assetBuyAmount,
-                feePercentage,
                 slippagePercentage,
                 false,
             );
             // test if orders are correct
-            expect(buyQuote.orders).to.deep.equal([ordersAndFillableAmounts.orders[0]]);
-            expect(buyQuote.feeOrders).to.deep.equal([smallFeeOrderAndFillableAmount.orders[0]]);
+            expect(swapQuote.orders).to.deep.equal([ordersAndFillableAmounts.orders[0]]);
+            expect(swapQuote.feeOrders).to.deep.equal([smallFeeOrderAndFillableAmount.orders[0]]);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedEthAmountForAsset = new BigNumber(50);
-            const expectedEthAmountForZrxFees = new BigNumber(100);
-            const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
-            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
-            const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
+            const expectedTakerAssetAmountForMakerAsset = new BigNumber(50);
+            const expectedTakerAssetAmountForZrxFees = new BigNumber(100);
+            const expectedTotalTakerAssetAmount = expectedTakerAssetAmountForMakerAsset.plus(
+                expectedTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForMakerAsset,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // because we have no slippage protection, minRate is equal to maxRate
-            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
-            // test if feePercentage gets passed through
-            expect(buyQuote.feePercentage).to.equal(feePercentage);
+            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForMakerAsset,
+            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
+                expectedTotalTakerAssetAmount,
+            );
         });
-        it('calculates a correct buyQuote with with slippage', () => {
+        it('calculates a correct swapQuote with with slippage', () => {
             // we request 200 makerAsset units which can be filled using the first order
             // however with 50% slippage we are protecting the buy with 100 extra makerAssetUnits
             // so we need enough orders to fill 300 makerAssetUnits
             // 300 makerAssetUnits can only be filled using both orders
             // the first order requires a fee of 100 ZRX from the taker which can be filled by the feeOrder
             const assetBuyAmount = new BigNumber(200);
-            const feePercentage = 0.02;
             const slippagePercentage = 0.5;
-            const buyQuote = buyQuoteCalculator.calculate(
+            const swapQuote = swapQuoteCalculator.calculate(
                 ordersAndFillableAmounts,
                 allFeeOrdersAndFillableAmounts,
                 assetBuyAmount,
-                feePercentage,
                 slippagePercentage,
                 false,
             );
             // test if orders are correct
-            expect(buyQuote.orders).to.deep.equal(ordersAndFillableAmounts.orders);
-            expect(buyQuote.feeOrders).to.deep.equal(allFeeOrdersAndFillableAmounts.orders);
+            expect(swapQuote.orders).to.deep.equal(ordersAndFillableAmounts.orders);
+            expect(swapQuote.feeOrders).to.deep.equal(allFeeOrdersAndFillableAmounts.orders);
             // test if rates are correct
             // 50 eth to fill the first order + 100 eth for fees
-            const expectedEthAmountForAsset = new BigNumber(50);
-            const expectedEthAmountForZrxFees = new BigNumber(100);
-            const expectedFillEthAmount = expectedEthAmountForAsset;
-            const expectedAffiliateFeeEthAmount = expectedEthAmountForAsset.multipliedBy(feePercentage);
-            const expectedFeeEthAmount = expectedAffiliateFeeEthAmount.plus(expectedEthAmountForZrxFees);
-            const expectedTotalEthAmount = expectedFillEthAmount.plus(expectedFeeEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedFillEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedFeeEthAmount);
-            expect(buyQuote.bestCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedTotalEthAmount);
+            const expectedTakerAssetAmountForMakerAsset = new BigNumber(50);
+            const expectedTakerAssetAmountForZrxFees = new BigNumber(100);
+            const expectedTotalTakerAssetAmount = expectedTakerAssetAmountForMakerAsset.plus(
+                expectedTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForMakerAsset,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
+                expectedTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // 100 eth to fill the first order + 208 eth for fees
-            const expectedWorstEthAmountForAsset = new BigNumber(100);
-            const expectedWorstEthAmountForZrxFees = new BigNumber(208);
-            const expectedWorstFillEthAmount = expectedWorstEthAmountForAsset;
-            const expectedWorstAffiliateFeeEthAmount = expectedWorstEthAmountForAsset.multipliedBy(feePercentage);
-            const expectedWorstFeeEthAmount = expectedWorstAffiliateFeeEthAmount.plus(expectedWorstEthAmountForZrxFees);
-            const expectedWorstTotalEthAmount = expectedWorstFillEthAmount.plus(expectedWorstFeeEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.assetEthAmount).to.bignumber.equal(expectedWorstFillEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.feeEthAmount).to.bignumber.equal(expectedWorstFeeEthAmount);
-            expect(buyQuote.worstCaseQuoteInfo.totalEthAmount).to.bignumber.equal(expectedWorstTotalEthAmount);
-            // test if feePercentage gets passed through
-            expect(buyQuote.feePercentage).to.equal(feePercentage);
+            const expectedWorstTakerAssetAmountForMakerAsset = new BigNumber(100);
+            const expectedWorstTakerAssetAmountForZrxFees = new BigNumber(208);
+            const expectedWorstTotalTakerAssetAmount = expectedWorstTakerAssetAmountForMakerAsset.plus(
+                expectedWorstTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
+                expectedWorstTakerAssetAmountForMakerAsset,
+            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
+                expectedWorstTakerAssetAmountForZrxFees,
+            );
+            expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
+                expectedWorstTotalTakerAssetAmount,
+            );
         });
     });
 });

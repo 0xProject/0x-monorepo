@@ -4,7 +4,7 @@
     "engines": {
         "node": ">=6.12"
     },
-    "description": "Convenience package for discovering and buying assets with Ether.",
+    "description": "Convenience package for discovering and buying assets on-chain and off-chain.",
     "main": "lib/src/index.js",
     "types": "lib/src/index.d.ts",
     "scripts": {
@@ -17,7 +17,7 @@
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
         "test:circleci": "yarn test:coverage",
-        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --exit",
+        "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "clean": "shx rm -rf lib test_temp",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
@@ -39,8 +39,12 @@
     "dependencies": {
         "@0x/assert": "^2.0.10",
         "@0x/connect": "^5.0.10",
+        "@0x/contract-addresses": "^2.3.3",
         "@0x/contract-wrappers": "^9.1.4",
+        "@0x/dev-utils": "^2.2.3",
+        "@0x/fill-scenarios": "^3.0.10",
         "@0x/json-schemas": "^3.0.10",
+        "@0x/migrations": "^4.1.6",
         "@0x/order-utils": "^8.1.1",
         "@0x/subproviders": "^4.1.0",
         "@0x/types": "^2.2.2",
