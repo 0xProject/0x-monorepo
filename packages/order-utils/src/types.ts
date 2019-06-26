@@ -34,6 +34,19 @@ export interface CreateOrderOpts {
  */
 export interface FindOrdersThatCoverMakerAssetFillAmountOpts {
     remainingFillableMakerAssetAmounts?: BigNumber[];
+    remainingFillableTakerAssetAmounts?: BigNumber[];
+    slippageBufferAmount?: BigNumber;
+}
+
+/**
+ * remainingFillableTakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
+ * You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.
+ * Defaults to `makerAssetAmount` values from the orders param.
+ * slippageBufferAmount: An additional amount of makerAsset to be covered by the result in case of trade collisions or partial fills.
+ * Defaults to 0
+ */
+export interface FindOrdersThatCoverTakerAssetFillAmountOpts {
+    remainingFillableMakerAssetAmounts?: BigNumber[];
     slippageBufferAmount?: BigNumber;
 }
 
