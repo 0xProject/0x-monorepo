@@ -8,16 +8,13 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
-
 
 import { DelegatorActor } from './actors/delegator_actor';
 import { StakerActor } from './actors/staker_actor';
 import { StakingWrapper } from './utils/staking_wrapper';
 
 chaiSetup.configure();
-const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('Staking & Delegating', () => {
@@ -26,10 +23,7 @@ describe('Staking & Delegating', () => {
     // tokens & addresses
     let accounts: string[];
     let owner: string;
-    let exchange: string;
     let stakers: string[];
-    let makers: string[];
-    let delegators: string[];
     let zrxTokenContract: DummyERC20TokenContract;
     let erc20ProxyContract: ERC20ProxyContract;
     // wrappers
@@ -46,9 +40,7 @@ describe('Staking & Delegating', () => {
         // create accounts
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
-        exchange = accounts[1];
         stakers = accounts.slice(2, 5);
-        makers = accounts.slice(4, 10);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -57,7 +49,7 @@ describe('Staking & Delegating', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

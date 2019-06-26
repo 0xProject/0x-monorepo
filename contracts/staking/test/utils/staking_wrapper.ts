@@ -3,9 +3,8 @@ import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contra
 import { constants as testUtilsConstants, LogDecoder, txDefaults } from '@0x/contracts-test-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignatureType } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
 import { Provider, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -22,8 +21,6 @@ import { ApprovalFactory } from './ApprovalFactory';
 import { constants } from './constants';
 import { SignedStakingPoolApproval } from './types';
 
-const expect = chai.expect;
-
 export class StakingWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
@@ -37,6 +34,33 @@ export class StakingWrapper {
     private _zrxVaultContractIfExists?: ZrxVaultContract;
     private _rewardVaultContractIfExists?: RewardVaultContract;
     private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
+    public static toBaseUnitAmount(amount: BigNumber | number): BigNumber {
+        const decimals = 18;
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
+        const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
+        return baseUnitAmount;
+    }
+    public static toFixedPoint(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFixedPoint = amountAsBigNumber.times(scalar);
+        return amountAsFixedPoint;
+    }
+    public static toFloatingPoint(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFloatingPoint = amountAsBigNumber.dividedBy(scalar);
+        return amountAsFloatingPoint;
+    }
+    public static trimFloat(amount: BigNumber | number, decimals: number): BigNumber {
+        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
+        const scalar = Math.pow(10, decimals);
+        const amountAsFloatingPoint = amountAsBigNumber
+            .multipliedBy(scalar)
+            .dividedToIntegerBy(1)
+            .dividedBy(scalar);
+        return amountAsFloatingPoint;
+    }
 
     constructor(
         provider: Provider,
@@ -74,7 +98,7 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._LibFeeMathTestContractIfExists as LibFeeMathTestContract;
     }
-    public async deployAndConfigureContracts(): Promise<void> {
+    public async deployAndConfigureContractsAsync(): Promise<void> {
         // deploy zrx vault
         const zrxAssetData = assetDataUtils.encodeERC20AssetData(this._zrxTokenContract.address);
         this._zrxVaultContractIfExists = await ZrxVaultContract.deployFrom0xArtifactAsync(
@@ -114,7 +138,7 @@ export class StakingWrapper {
             (this._stakingProxyContractIfExists).address,
         );
         // set zrx vault in staking contract
-        const setZrxVaultCalldata = await (this
+        const setZrxVaultCalldata = (this
             ._stakingContractIfExists).setZrxVault.getABIEncodedTransactionData(
             (this._zrxVaultContractIfExists).address,
         );
@@ -132,7 +156,7 @@ export class StakingWrapper {
             (this._stakingProxyContractIfExists).address,
         );
         // set reward vault in staking contract
-        const setRewardVaultCalldata = await (this
+        const setRewardVaultCalldata = (this
             ._stakingContractIfExists).setRewardVault.getABIEncodedTransactionData(
             (this._rewardVaultContractIfExists).address,
         );
@@ -325,12 +349,12 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async getMakerPoolId(makerAddress: string): Promise<string> {
+    public async getMakerPoolIdAsync(makerAddress: string): Promise<string> {
         const calldata = this.getStakingContract().getMakerPoolId.getABIEncodedTransactionData(makerAddress);
         const poolId = await this._callAsync(calldata);
         return poolId;
     }
-    public async getMakerAddressesForPool(poolId: string): Promise<string[]> {
+    public async getMakerAddressesForPoolAsync(poolId: string): Promise<string[]> {
         const calldata = this.getStakingContract().getMakerAddressesForPool.getABIEncodedTransactionData(poolId);
         const returndata = await this._callAsync(calldata);
         const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
@@ -340,7 +364,7 @@ export class StakingWrapper {
         poolId: string,
         makerAddress: string,
         makerSignature: string,
-    ): Promise<Boolean> {
+    ): Promise<boolean> {
         const calldata = this.getStakingContract().isValidMakerSignature.getABIEncodedTransactionData(
             poolId,
             makerAddress,
@@ -384,8 +408,8 @@ export class StakingWrapper {
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
-        console.log(
-            `finalization: gasUsed = ${txReceipt.gasUsed} / cumulativeGasUsed = ${txReceipt.cumulativeGasUsed}`,
+        logUtils.log(
+            `Finalization costed ${txReceipt.gasUsed} gas`,
         );
         return txReceipt;
     }
@@ -481,11 +505,11 @@ export class StakingWrapper {
         return value;
     }
     ///// EXCHANGES /////
-    public async isValidExchangeAddressAsync(exchangeAddress: string): Promise<Boolean> {
+    public async isValidExchangeAddressAsync(exchangeAddress: string): Promise<boolean> {
         const calldata = this.getStakingContract().isValidExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().isValidExchangeAddress.getABIDecodedReturnData(returnData);
-        return value;
+        const isValid = this.getStakingContract().isValidExchangeAddress.getABIDecodedReturnData(returnData);
+        return isValid;
     }
     public async addExchangeAddressAsync(exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().addExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
@@ -610,25 +634,25 @@ export class StakingWrapper {
         return txReceipt;
     }
     ///// ZRX VAULT /////
-    public async getZrxVaultBalance(holder: string): Promise<BigNumber> {
+    public async getZrxVaultBalanceAsync(holder: string): Promise<BigNumber> {
         const balance = await this.getZrxVaultContract().balanceOf.callAsync(holder);
         return balance;
     }
-    public async getZrxTokenBalance(holder: string): Promise<BigNumber> {
+    public async getZrxTokenBalanceAsync(holder: string): Promise<BigNumber> {
         const balance = await this._zrxTokenContract.balanceOf.callAsync(holder);
         return balance;
     }
-    public async getZrxTokenBalanceOfZrxVault(): Promise<BigNumber> {
+    public async getZrxTokenBalanceOfZrxVaultAsync(): Promise<BigNumber> {
         const balance = await this._zrxTokenContract.balanceOf.callAsync(this.getZrxVaultContract().address);
         return balance;
     }
     ///// MATH /////
-    public async nthRoot(value: BigNumber, n: BigNumber): Promise<BigNumber> {
+    public async nthRootAsync(value: BigNumber, n: BigNumber): Promise<BigNumber> {
         // const txReceipt = await this.getLibFeeMathTestContract().nthRoot.await(value, n);
         const output = await this.getLibFeeMathTestContract().nthRoot.callAsync(value, n);
         return output;
     }
-    public async nthRootFixedPoint(value: BigNumber, n: BigNumber): Promise<BigNumber> {
+    public async nthRootFixedPointAsync(value: BigNumber, n: BigNumber): Promise<BigNumber> {
         const output = await this.getLibFeeMathTestContract().nthRootFixedPoint.callAsync(value, n);
         return output;
     }
@@ -640,7 +664,7 @@ export class StakingWrapper {
         totalStake: BigNumber,
         alphaNumerator: BigNumber,
         alphaDenominator: BigNumber,
-    ) {
+    ): Promise<BigNumber> {
         const output = await this.getLibFeeMathTestContract().cobbDouglas.callAsync(
             totalRewards,
             ownerFees,
@@ -659,8 +683,8 @@ export class StakingWrapper {
         ownerStake: BigNumber,
         totalStake: BigNumber,
         alphaDenominator: BigNumber,
-    ) {
-        const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+    ): Promise<BigNumber> {
+        await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -685,8 +709,8 @@ export class StakingWrapper {
         ownerStake: BigNumber,
         totalStake: BigNumber,
         alphaDenominator: BigNumber,
-    ) {
-        const txReceipt = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
+    ): Promise<BigNumber> {
+        await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.awaitTransactionSuccessAsync(
             totalRewards,
             ownerFees,
             totalFees,
@@ -694,7 +718,6 @@ export class StakingWrapper {
             totalStake,
             alphaDenominator,
         );
-
         const output = await this.getLibFeeMathTestContract().cobbDouglasSimplifiedInverse.callAsync(
             totalRewards,
             ownerFees,
@@ -704,33 +727,6 @@ export class StakingWrapper {
             alphaDenominator,
         );
         return output;
-    }
-    public toBaseUnitAmount(amount: BigNumber | number): BigNumber {
-        const decimals = 18;
-        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
-        const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountAsBigNumber, decimals);
-        return baseUnitAmount;
-    }
-    public toFixedPoint(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
-        const scalar = Math.pow(10, decimals);
-        const amountAsFixedPoint = amountAsBigNumber.times(scalar);
-        return amountAsFixedPoint;
-    }
-    public toFloatingPoint(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
-        const scalar = Math.pow(10, decimals);
-        const amountAsFloatingPoint = amountAsBigNumber.dividedBy(scalar);
-        return amountAsFloatingPoint;
-    }
-    public trimFloat(amount: BigNumber | number, decimals: number): BigNumber {
-        const amountAsBigNumber = typeof amount === 'number' ? new BigNumber(amount) : amount;
-        const scalar = Math.pow(10, decimals);
-        const amountAsFloatingPoint = amountAsBigNumber
-            .multipliedBy(scalar)
-            .dividedToIntegerBy(1)
-            .dividedBy(scalar);
-        return amountAsFloatingPoint;
     }
     private async _executeTransactionAsync(
         calldata: string,
@@ -762,9 +758,10 @@ export class StakingWrapper {
         const returnValue = await this._web3Wrapper.callAsync(txData);
         return returnValue;
     }
-    private _validateDeployedOrThrow() {
+    private _validateDeployedOrThrow(): void {
         if (this._stakingContractIfExists === undefined) {
             throw new Error('Staking contracts are not deployed. Call `deployStakingContracts`');
         }
     }
 }
+// tslint:disable-line:max-file-line-count

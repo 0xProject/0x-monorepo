@@ -73,6 +73,8 @@
         "@0x/base-contract": "^5.1.0",
         "@0x/contracts-test-utils": "^3.1.6",
         "@0x/contracts-utils": "3.1.1",
+        "@0x/contracts-asset-proxy": "^2.1.1",
+        "@0x/contracts-erc20": "^2.2.0",
         "@0x/order-utils": "^7.2.0",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",

@@ -1,37 +1,31 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import {
-    expectTransactionFailedAsync,
-    provider,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
-
-
-import { Simulation } from './utils/Simulation';
-import { StakingWrapper } from './utils/staking_wrapper';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
-    constants,
     expectTransactionFailedAsync,
     provider,
-    txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
-rc20ProxyContract: ERC20ProxyContract;
 
-    let stakers: string[];
-    let makers: string[];
-    let delegators: string[];
-
+import { Simulation } from './utils/Simulation';
+import { StakingWrapper } from './utils/staking_wrapper';
+chaiSetup.configure();
+const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+// tslint:disable:no-unnecessary-type-assertion
+describe('End-To-End Simulations', () => {
+    // constants
+    const ZRX_TOKEN_DECIMALS = new BigNumber(18);
+    // tokens & addresses
+    let accounts: string[];
+    let owner: string;
+    let exchange: string;
+    let users: string[];
+    let zrxTokenContract: DummyERC20TokenContract;
+    let erc20ProxyContract: ERC20ProxyContract;
     // wrappers
     let stakingWrapper: StakingWrapper;
     let erc20Wrapper: ERC20Wrapper;
@@ -48,10 +42,7 @@ rc20ProxyContract: ERC20ProxyContract;
         owner = accounts[0];
         exchange = accounts[1];
         users = accounts.slice(2);
-
-        stakers = accounts.slice(2, 5);
-        makers = accounts.slice(4, 10);
-        users = [...users, ...users]; // maybe this'll work? Not sure lol.
+        users = [...users, ...users]; // @TODO figure out how to get more addresses from `web3Wrapper`
 
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
@@ -61,7 +52,7 @@ rc20ProxyContract: ERC20ProxyContract;
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

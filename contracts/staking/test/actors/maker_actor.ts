@@ -1,13 +1,10 @@
 import { SignatureType } from '@0x/types';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { StakingWrapper } from '../utils/staking_wrapper';
 import { SignedStakingPoolApproval } from '../utils/types';
 
 import { BaseActor } from './base_actor';
-
-const expect = chai.expect;
 
 export class MakerActor extends BaseActor {
     private readonly _ownerPrivateKeyIfExists?: Buffer;
