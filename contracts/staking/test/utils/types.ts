@@ -21,3 +21,9 @@ export interface StakerBalances {
     deactivatedStakeBalance: BigNumber;
     timelockedStakeBalance: BigNumber;
 }
+
+export interface DelegatorBalances extends StakerBalances {
+    delegatedStakeBalance: BigNumber;
+    stakeDelegatedToPoolByOwner: BigNumber[];
+    stakeDelegatedToPool: BigNumber[];
+}
