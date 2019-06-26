@@ -64,6 +64,15 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                addresses: string[],
+            ): string {
+            assert.isArray('addresses', addresses);
+            const self = this as any as EthBalanceCheckerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
@@ -119,15 +128,14 @@ export class EthBalanceCheckerContract extends BaseContract {
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
+        // HACK (xianny): handlebars cannot directly pass an array of objects unless the template statically enumerates all the properties of all the objects
+        return JSON.parse(`[{"constant":true,"inputs":[{"name":"addresses","type":"address[]"}],"name":"getEthBalances","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"}]`);
+    }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('EthBalanceChecker', EthBalanceCheckerContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-    }
-    // Returns the contract ABI
-    public static ABI(): ContractAbi {
-
-        // HACK (xianny): handlebars cannot directly pass an array
-        return JSON.parse(`[{"constant":true,"inputs":[{"name":"addresses","type":"address[]"}],"name":"getEthBalances","outputs":[{"name":"","type":"uint256[]"}],"payable":false,"stateMutability":"view","type":"function"}]`);
     }
 } 
 

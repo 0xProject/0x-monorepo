@@ -140,15 +140,14 @@ export class IValidatorContract extends BaseContract {
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
+        // HACK (xianny): handlebars cannot directly pass an array of objects unless the template statically enumerates all the properties of all the objects
+        return JSON.parse(`[{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"signerAddress","type":"address"},{"name":"signature","type":"bytes"}],"name":"isValidSignature","outputs":[{"name":"isValid","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}]`);
+    }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('IValidator', IValidatorContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-    }
-    // Returns the contract ABI
-    public static ABI(): ContractAbi {
-
-        // HACK (xianny): handlebars cannot directly pass an array
-        return JSON.parse(`[{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"signerAddress","type":"address"},{"name":"signature","type":"bytes"}],"name":"isValidSignature","outputs":[{"name":"isValid","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"}]`);
     }
 } 
 

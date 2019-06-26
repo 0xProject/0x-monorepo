@@ -109,15 +109,14 @@ export class {{contractName}}Contract extends BaseContract {
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
         return contractInstance;
     }
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
+        // HACK (xianny): handlebars cannot directly pass an array of objects unless the template statically enumerates all the properties of all the objects
+        return JSON.parse(`{{{ABI}}}`);
+    }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-    }
-    // Returns the contract ABI
-    public static ABI(): ContractAbi {
-
-        // HACK (xianny): handlebars cannot directly pass an array
-        return JSON.parse(`{{{ABI}}}`);
     }
 } 
 

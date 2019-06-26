@@ -19,6 +19,7 @@ export interface Method extends MethodAbi {
 
 export interface ContextData {
     contractName: string;
+    ABI: string;
     methods: Method[];
     events: EventAbi[];
 }

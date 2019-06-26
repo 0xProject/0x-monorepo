@@ -250,15 +250,14 @@ export class CoordinatorRegistryContract extends BaseContract {
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
+    // Returns the contract ABI
+    public static ABI(): ContractAbi {
+        // HACK (xianny): handlebars cannot directly pass an array of objects unless the template statically enumerates all the properties of all the objects
+        return JSON.parse(`[{"constant":false,"inputs":[{"name":"coordinatorEndpoint","type":"string"}],"name":"setCoordinatorEndpoint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"coordinatorOperator","type":"address"}],"name":"getCoordinatorEndpoint","outputs":[{"name":"coordinatorEndpoint","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"coordinatorOperator","type":"address"},{"indexed":false,"name":"coordinatorEndpoint","type":"string"}],"name":"CoordinatorEndpointSet","type":"event"}]`);
+    }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('CoordinatorRegistry', CoordinatorRegistryContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
-    }
-    // Returns the contract ABI
-    public static ABI(): ContractAbi {
-
-        // HACK (xianny): handlebars cannot directly pass an array
-        return JSON.parse(`[{"constant":false,"inputs":[{"name":"coordinatorEndpoint","type":"string"}],"name":"setCoordinatorEndpoint","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"coordinatorOperator","type":"address"}],"name":"getCoordinatorEndpoint","outputs":[{"name":"coordinatorEndpoint","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"coordinatorOperator","type":"address"},{"indexed":false,"name":"coordinatorEndpoint","type":"string"}],"name":"CoordinatorEndpointSet","type":"event"}]`);
     }
 } 
 
