@@ -136,7 +136,7 @@ export class SwapQuoter {
         makerAssetSwapAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<SwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
+        const { shouldForceOrderRefresh, slippagePercentage, operation } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
