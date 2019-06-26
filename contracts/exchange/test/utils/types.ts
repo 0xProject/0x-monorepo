@@ -24,5 +24,4 @@ export enum ExchangeFunctionName {
     CancelOrdersUpTo = 'cancelOrdersUpTo',
     PreSign = 'preSign',
     SetSignatureValidatorApproval = 'setSignatureValidatorApproval',
-    SetOrderValidatorApproval = 'setOrderValidatorApproval',
 }

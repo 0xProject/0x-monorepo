@@ -79,6 +79,46 @@ contract MixinSignatureValidator is
         );
     }
 
+    /// @dev Verifies that a hash has been signed by the given signer.
+    /// @param hash Any 32-byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given hash and signer.
+    function isValidHashSignature(
+        bytes32 hash,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid)
+    {
+        SignatureType signatureType = _readValidSignatureType(
+            hash,
+            signerAddress,
+            signature
+        );
+        // Only hash-compatible signature types can be handled by this
+        // function.
+        if (
+            signatureType == SignatureType.Validator ||
+            signatureType == SignatureType.EIP1271Wallet
+        ) {
+            _rrevert(SignatureError(
+                SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+        return _validateHashSignatureTypes(
+            signatureType,
+            hash,
+            signerAddress,
+            signature
+        );
+    }
+
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
     /// @param signerAddress Address that should have signed the given order.

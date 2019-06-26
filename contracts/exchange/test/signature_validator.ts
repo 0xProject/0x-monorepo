@@ -24,14 +24,14 @@ import {
     TestValidatorWalletContract,
 } from '../src';
 
-import { ValidatorWalletAction } from './utils';
+import { ValidatorWalletAction, ValidatorWalletDataType } from './utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('MixinSignatureValidator', () => {
+describe.only('MixinSignatureValidator', () => {
     const SIGNATURE_LENGTH = 65;
     let chainId: number;
     let signedOrder: SignedOrder;
@@ -73,17 +73,11 @@ describe('MixinSignatureValidator', () => {
         // Approve the validator for both signers.
         await Promise.all(
             [signerAddress, notSignerAddress].map(async (addr: string) => {
-                const tx1 = signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                return signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
                     validatorWallet.address,
                     true,
                     { from: addr },
                 );
-                const tx2 = signatureValidator.setOrderValidatorApproval.awaitTransactionSuccessAsync(
-                    validatorWallet.address,
-                    true,
-                    { from: addr },
-                );
-                return Promise.all([tx1, tx2]);
             }),
         );
 
@@ -244,7 +238,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 validatorWallet.address,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
@@ -258,7 +252,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 notSignerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.false();
         });
@@ -314,7 +308,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
@@ -329,7 +323,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 signerAddress,
                 ethUtil.bufferToHex(signature),
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.false();
         });
@@ -390,7 +384,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             const expectedError = new ExchangeRevertErrors.SignatureValidatorNotApprovedError(
                 signerAddress,
@@ -408,7 +402,7 @@ describe('MixinSignatureValidator', () => {
                 signedOrder,
                 validatorWallet.address,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
@@ -491,16 +485,18 @@ describe('MixinSignatureValidator', () => {
     describe('isValidHashSignature', () => {
         const validateCallAsync = async (
             order: SignedOrder,
-            validSigner: string,
+            expectedSignatureHex: string,
             signatureHex: string,
             validatorAction?: ValidatorWalletAction,
         ) => {
             const orderHashHex = orderHashUtils.getOrderHashHex(order);
+            const signatureHashHex = ethUtil.bufferToHex(ethUtil.sha3(expectedSignatureHex));
             if (validatorAction !== undefined) {
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.None,
                     validatorAction,
-                    validSigner,
+                    signatureHashHex,
                 );
             }
             return signatureValidator.isValidHashSignature.callAsync(orderHashHex, order.makerAddress, signatureHex);
@@ -510,8 +506,8 @@ describe('MixinSignatureValidator', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        it('should revert when SignatureType=OrderValidator', async () => {
-            const inappropriateSignatureHex = `0x${Buffer.from([SignatureType.OrderValidator]).toString('hex')}`;
+        it('should revert when SignatureType=Validator', async () => {
+            const inappropriateSignatureHex = `0x${Buffer.from([SignatureType.Validator]).toString('hex')}`;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InappropriateSignatureType,
@@ -570,16 +566,18 @@ describe('MixinSignatureValidator', () => {
     describe('isValidOrderSignature', () => {
         const validateCallAsync = async (
             order: SignedOrder,
-            validSigner: string,
+            expectedSignatureHex: string,
             signatureHex: string,
             validatorAction?: ValidatorWalletAction,
         ) => {
             const orderHashHex = orderHashUtils.getOrderHashHex(order);
+            const signatureHashHex = ethUtil.bufferToHex(ethUtil.sha3(expectedSignatureHex));
             if (validatorAction !== undefined) {
-                await validatorWallet.setValidateAction.awaitTransactionSuccessAsync(
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
                     orderHashHex,
+                    ValidatorWalletDataType.Order,
                     validatorAction,
-                    validSigner,
+                    signatureHashHex,
                 );
             }
             return signatureValidator.isValidOrderSignature.callAsync(order, order.makerAddress, signatureHex);
@@ -589,47 +587,47 @@ describe('MixinSignatureValidator', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        it('should return true when SignatureType=OrderValidator, signature is valid and validator is approved', async () => {
+        it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
                 ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.Validator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const isValidSignature = await validateCallAsync(
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=OrderValidator, signature is invalid and validator is approved', async () => {
+        it('should return false when SignatureType=Validator, signature is invalid and validator is approved', async () => {
             const signature = Buffer.concat([
                 crypto.randomBytes(SIGNATURE_LENGTH),
                 ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.Validator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const isValidSignature = await validateCallAsync(
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when `isValidOrderSignature` attempts to update state and SignatureType=OrderValidator', async () => {
+        it('should revert when `isValidOrderSignature` attempts to update state and SignatureType=Validator', async () => {
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
                 ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.Validator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
                 orderHashHex,
                 signedOrder.makerAddress,
                 validatorWallet.address,
@@ -640,15 +638,15 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when `isValidOrderSignature` reverts and SignatureType=OrderValidator', async () => {
+        it('should revert when `isValidOrderSignature` reverts and SignatureType=Validator', async () => {
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
                 ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.Validator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
                 orderHashHex,
                 signerAddress,
                 validatorWallet.address,
@@ -659,9 +657,9 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when SignatureType=OrderValidator, signature is valid and validator is not approved', async () => {
+        it('should throw when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await signatureValidator.setOrderValidatorApproval.awaitTransactionSuccessAsync(
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
                 validatorWallet.address,
                 false,
                 { from: signerAddress },
@@ -669,39 +667,39 @@ describe('MixinSignatureValidator', () => {
             const signature = Buffer.concat([
                 ethUtil.toBuffer(signedOrder.signature).slice(0, SIGNATURE_LENGTH),
                 ethUtil.toBuffer(validatorWallet.address),
-                ethUtil.toBuffer([SignatureType.OrderValidator]),
+                ethUtil.toBuffer([SignatureType.Validator]),
             ]);
             const signatureHex = ethUtil.bufferToHex(signature);
             const tx = validateCallAsync(
                 signedOrder,
                 signerAddress,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
-            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorNotApprovedError(
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorNotApprovedError(
                 signerAddress,
                 validatorWallet.address,
             );
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should return true when SignatureType=OrderWallet and signature is valid', async () => {
+        it('should return true when SignatureType=EIP1271Wallet and signature is valid', async () => {
             signedOrder.makerAddress = validatorWallet.address;
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
                 signedOrder,
                 validatorWallet.address,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=OrderWallet and signature is invalid', async () => {
+        it('should return false when SignatureType=EIP1271Wallet and signature is invalid', async () => {
             signedOrder.makerAddress = validatorWallet.address;
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
@@ -713,12 +711,12 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when validator attempts to update state and SignatureType=OrderWallet', async () => {
+        it('should revert when validator attempts to update state and SignatureType=EIP1271Wallet', async () => {
             signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderWalletError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
                 validatorWallet.address,
                 signatureHex,
@@ -733,12 +731,12 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when validator reverts and SignatureType=OrderWallet', async () => {
+        it('should revert when validator reverts and SignatureType=EIP1271Wallet', async () => {
             signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderWalletError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
                 validatorWallet.address,
                 signatureHex,
@@ -753,23 +751,23 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should return true when SignatureType=EIP1271OrderWallet and signature is valid', async () => {
+        it('should return true when SignatureType=EIP1271Wallet and signature is valid', async () => {
             signedOrder.makerAddress = validatorWallet.address;
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
                 signedOrder,
                 validatorWallet.address,
                 signatureHex,
-                ValidatorWalletAction.ValidateSignature,
+                ValidatorWalletAction.MatchSignatureHash,
             );
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=EIP1271OrderWallet and signature is invalid', async () => {
+        it('should return false when SignatureType=EIP1271Wallet and signature is invalid', async () => {
             signedOrder.makerAddress = validatorWallet.address;
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
             // Validate signature
             const isValidSignature = await validateCallAsync(
@@ -781,12 +779,12 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when validator attempts to update state and SignatureType=EIP1271OrderWallet', async () => {
+        it('should revert when validator attempts to update state and SignatureType=EIP1271Wallet', async () => {
             signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderWalletError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
                 validatorWallet.address,
                 signatureHex,
@@ -801,12 +799,12 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when validator reverts and SignatureType=EIP1271OrderWallet', async () => {
+        it('should revert when validator reverts and SignatureType=EIP1271Wallet', async () => {
             signedOrder.makerAddress = validatorWallet.address;
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271OrderWallet])]);
+            const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
             const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderWalletError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
                 validatorWallet.address,
                 signatureHex,
@@ -846,42 +844,6 @@ describe('MixinSignatureValidator', () => {
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is disapproved', async () => {
             const approval = false;
             const res = await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
-                validatorWallet.address,
-                approval,
-                {
-                    from: signerAddress,
-                },
-            );
-            expect(res.logs.length).to.equal(1);
-            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
-                TestSignatureValidatorSignatureValidatorApprovalEventArgs
-            >;
-            const logArgs = log.args;
-            expect(logArgs.signerAddress).to.equal(signerAddress);
-            expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
-            expect(logArgs.approved).to.equal(approval);
-        });
-        it('should emit a SignatureValidatorApprovalSet with correct args when an order validator is approved', async () => {
-            const approval = true;
-            const res = await signatureValidator.setOrderValidatorApproval.awaitTransactionSuccessAsync(
-                validatorWallet.address,
-                approval,
-                {
-                    from: signerAddress,
-                },
-            );
-            expect(res.logs.length).to.equal(1);
-            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
-                TestSignatureValidatorSignatureValidatorApprovalEventArgs
-            >;
-            const logArgs = log.args;
-            expect(logArgs.signerAddress).to.equal(signerAddress);
-            expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
-            expect(logArgs.approved).to.equal(approval);
-        });
-        it('should emit a SignatureValidatorApprovalSet with correct args when am order validator is disapproved', async () => {
-            const approval = false;
-            const res = await signatureValidator.setOrderValidatorApproval.awaitTransactionSuccessAsync(
                 validatorWallet.address,
                 approval,
                 {
