@@ -1,10 +1,5 @@
 import {
-    chaiSetup,
-    constants,
     expectTransactionFailedAsync,
-    provider,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -39,7 +34,7 @@ export class DelegatorActor extends StakerActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedDelegatorBalances = initDelegatorBalances;
+        const expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.zrxBalance = initDelegatorBalances.zrxBalance.minus(amount);
         expectedDelegatorBalances.stakeBalance = initDelegatorBalances.stakeBalance.plus(amount);
         expectedDelegatorBalances.stakeBalanceInVault = initDelegatorBalances.stakeBalanceInVault.plus(amount);
@@ -71,7 +66,7 @@ export class DelegatorActor extends StakerActor {
         // @TODO check receipt logs and return value via eth_call
         // check balances
         // check balances
-        let expectedDelegatorBalances = initDelegatorBalances;
+        const expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.plus(amount);
         expectedDelegatorBalances.withdrawableStakeBalance = expectedDelegatorBalances.withdrawableStakeBalance.minus(
             amount,
@@ -109,7 +104,7 @@ export class DelegatorActor extends StakerActor {
         const txReceipt = await txReceiptPromise;
         // @TODO check receipt logs and return value via eth_call
         // check balances
-        let expectedDelegatorBalances = initDelegatorBalances;
+        const expectedDelegatorBalances = initDelegatorBalances;
         expectedDelegatorBalances.activatedStakeBalance = initDelegatorBalances.activatedStakeBalance.minus(amount);
         expectedDelegatorBalances.timelockedStakeBalance = expectedDelegatorBalances.timelockedStakeBalance.plus(
             amount,
@@ -126,7 +121,7 @@ export class DelegatorActor extends StakerActor {
     }
     public async getBalancesAsync(maybePoolIds?: string[]): Promise<DelegatorBalances> {
         const stakerBalances = await super.getBalancesAsync();
-        let delegatorBalances = {
+        const delegatorBalances = {
             ...stakerBalances,
             delegatedStakeBalance: await this._stakingWrapper.getStakeDelegatedByOwnerAsync(this._owner),
             stakeDelegatedToPoolByOwner: Array(),

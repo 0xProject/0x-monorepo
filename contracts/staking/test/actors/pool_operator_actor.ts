@@ -1,21 +1,14 @@
 import {
-    chaiSetup,
-    constants,
     expectTransactionFailedAsync,
-    provider,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
+import { constants as stakingConstants } from '../utils/constants';
 import { StakingWrapper } from '../utils/staking_wrapper';
-import { DelegatorBalances, StakerBalances } from '../utils/types';
 
 import { BaseActor } from './base_actor';
-import { constants as stakingConstants } from '../utils/constants';
 
 const expect = chai.expect;
 
