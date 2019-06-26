@@ -22,6 +22,7 @@ import {
     constants,
     ERC20BalancesByOwner,
     getLatestBlockTimestampAsync,
+    hexConcat,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
     OrderStatus,
@@ -36,7 +37,6 @@ import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
-import ethUtil = require('ethereumjs-util');
 import * as _ from 'lodash';
 
 import { Erc1155Wrapper } from '../../erc1155/lib/src';
@@ -267,9 +267,13 @@ describe('Exchange core', () => {
                     constants.INITIAL_ERC20_BALANCE,
                 );
                 // Approve the validator.
-                await exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(validatorWallet.address, true, {
-                    from: makerAddress,
-                });
+                await exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                    validatorWallet.address,
+                    true,
+                    {
+                        from: makerAddress,
+                    },
+                );
                 signedOrder = await orderFactory.newSignedOrderAsync({
                     makerFee: constants.ZERO_AMOUNT,
                     takerFee: constants.ZERO_AMOUNT,
@@ -277,11 +281,8 @@ describe('Exchange core', () => {
             });
 
             it('should revert if `Validator` signature type rejects during a second fill', async () => {
-                const signature = Buffer.concat([
-                    ethUtil.toBuffer(validatorWallet.address),
-                    ethUtil.toBuffer([SignatureType.Validator]),
-                ]);
-                signedOrder.signature = ethUtil.bufferToHex(signature);
+                const signatureHex = hexConcat(validatorWallet.address, SignatureType.Validator);
+                signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
@@ -312,9 +313,9 @@ describe('Exchange core', () => {
             });
 
             it('should revert if `Wallet` signature type rejects during a second fill', async () => {
-                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.Wallet])]);
+                const signatureHex = hexConcat(SignatureType.Wallet);
                 signedOrder.makerAddress = validatorWallet.address;
-                signedOrder.signature = ethUtil.bufferToHex(signature);
+                signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(
@@ -345,9 +346,9 @@ describe('Exchange core', () => {
             });
 
             it('should revert if `EIP1271Wallet` signature type rejects during a second fill', async () => {
-                const signature = Buffer.concat([ethUtil.toBuffer([SignatureType.EIP1271Wallet])]);
+                const signatureHex = hexConcat(SignatureType.EIP1271Wallet);
                 signedOrder.makerAddress = validatorWallet.address;
-                signedOrder.signature = ethUtil.bufferToHex(signature);
+                signedOrder.signature = signatureHex;
                 const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
                 // Allow the signature check for the first fill.
                 await validatorWallet.prepare.awaitTransactionSuccessAsync(

@@ -196,10 +196,10 @@ contract TestValidatorWallet is
             view
             returns (bytes32 hash)
     {
-        // HACK(dorothy-zbornak): First we want the hash, which is the second
+        // First we want the hash, which is the second
         // encoded parameter. We will initially treat all fields as inline
         // `bytes32`s and ignore the first one to extract it.
-        (,hash) = abi.decode(data, (bytes32, bytes32));
+        (, hash) = abi.decode(data, (bytes32, bytes32));
         // Now we can figure out what the data type is from a previous call to
         // `prepare()`.
         DataType dataType = _hashDataTypes[hash];
