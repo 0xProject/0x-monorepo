@@ -49,22 +49,23 @@ export class Simulation {
         await this._stakingWrapper.skipToNextEpochAsync();
         // everyone has been paid out into the vault. check balances.
         await this._assertVaultBalancesAsync(this._p);
-        await this._withdrawRewardForOperators(this._p);
+        await this._withdrawRewardForOperatorsAsync(this._p);
         if (this._p.withdrawByUndelegating) {
-            await this._withdrawRewardForDelegators(this._p);
+            await this._withdrawRewardForDelegatorsAsync(this._p);
         } else {
-            await this._withdrawRewardForDelegatorsByUndelegating(this._p);
+            await this._withdrawRewardForDelegatorsByUndelegatingAsync(this._p);
         }
 
         // @TODO cleanup state and verify the staking contract is empty
     }
 
-    private async _withdrawRewardForDelegatorsByUndelegating(p: SimulationParams): Promise<void> {
+    private async _withdrawRewardForDelegatorsByUndelegatingAsync(p: SimulationParams): Promise<void> {
         let delegatorIdx = 0;
         let poolIdx = 0;
         for (const numberOfDelegatorsInPool of p.numberOfDelegatorsPerPool) {
             const poolId = this._poolIds[poolIdx];
-            for (const j in _.range(numberOfDelegatorsInPool)) {
+            // tslint:disable-next-line no-unused-variable
+            for (const j of _.range(numberOfDelegatorsInPool)) {
                 const delegator = this._delegators[delegatorIdx];
                 const delegatorAddress = delegator.getOwner();
                 const amountOfStakeDelegated = p.stakeByDelegator[delegatorIdx];
@@ -87,12 +88,13 @@ export class Simulation {
         }
     }
 
-    private async _withdrawRewardForDelegators(p: SimulationParams): Promise<void> {
+    private async _withdrawRewardForDelegatorsAsync(p: SimulationParams): Promise<void> {
         let delegatorIdx = 0;
         let poolIdx = 0;
         for (const numberOfDelegatorsInPool of p.numberOfDelegatorsPerPool) {
             const poolId = this._poolIds[poolIdx];
-            for (const j in _.range(numberOfDelegatorsInPool)) {
+            // tslint:disable-next-line no-unused-variable
+            for (const j of _.range(numberOfDelegatorsInPool)) {
                 const delegator = this._delegators[delegatorIdx];
                 const delegatorAddress = delegator.getOwner();
                 const initEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
@@ -115,7 +117,8 @@ export class Simulation {
     }
 
     private async _setupPoolsAsync(p: SimulationParams): Promise<void> {
-        for (const i in _.range(p.numberOfPools)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(p.numberOfPools)) {
             // create operator
             const poolOperatorAddress = this._userQueue.popFront();
             const poolOperator = new PoolOperatorActor(poolOperatorAddress, this._stakingWrapper);
@@ -134,7 +137,8 @@ export class Simulation {
 
     private async _setupMakersAsync(p: SimulationParams): Promise<void> {
         // create makers
-        for (const i in _.range(p.numberOfMakers)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(p.numberOfMakers)) {
             const makerAddress = this._userQueue.popFront();
             const maker = new MakerActor(makerAddress, this._stakingWrapper);
             this._makers.push(maker);
@@ -145,7 +149,8 @@ export class Simulation {
         for (const numberOfMakersInPool of p.numberOfMakersPerPool) {
             const poolId = this._poolIds[poolIdx];
             const poolOperator = this._poolOperators[poolIdx];
-            for (const j in _.range(numberOfMakersInPool)) {
+            // tslint:disable-next-line no-unused-variable
+            for (const j of _.range(numberOfMakersInPool)) {
                 const maker = this._makers[makerIdx];
                 const makerApproval = maker.signApprovalForStakingPool(poolId);
                 const makerAddress = maker.getOwner();
@@ -158,7 +163,8 @@ export class Simulation {
 
     private async _setupDelegatorsAsync(p: SimulationParams): Promise<void> {
         // create delegators
-        for (const i in _.range(p.numberOfDelegators)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(p.numberOfDelegators)) {
             const delegatorAddress = this._userQueue.popFront();
             const delegator = new DelegatorActor(delegatorAddress, this._stakingWrapper);
             this._delegators.push(delegator);
@@ -169,7 +175,8 @@ export class Simulation {
         let poolIdx = 0;
         for (const numberOfDelegatorsInPool of p.numberOfDelegatorsPerPool) {
             const poolId = this._poolIds[poolIdx];
-            for (const j in _.range(numberOfDelegatorsInPool)) {
+            // tslint:disable-next-line no-unused-variable
+            for (const j of _.range(numberOfDelegatorsInPool)) {
                 const delegator = this._delegators[delegatorIdx];
                 const amount = p.stakeByDelegator[delegatorIdx];
                 await delegator.depositAndDelegateAsync(poolId, amount);
@@ -181,7 +188,8 @@ export class Simulation {
 
     private async _payProtocolFeesAsync(p: SimulationParams): Promise<void> {
         // pay fees
-        for (const i in _.range(this._makers.length)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(this._makers.length)) {
             const maker = this._makers[i];
             const makerAddress = maker.getOwner();
             const feeAmount = p.protocolFeesByMaker[i];
@@ -189,7 +197,8 @@ export class Simulation {
         }
         // validate fees per pool
         let expectedTotalFeesThisEpoch = new BigNumber(0);
-        for (const i in _.range(this._poolIds.length)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(this._poolIds.length)) {
             const poolId = this._poolIds[i];
             const expectedFees = p.expectedFeesByPool[i];
             const fees = await this._stakingWrapper.getProtocolFeesThisEpochByPoolAsync(poolId);
@@ -202,7 +211,8 @@ export class Simulation {
     }
 
     private async _assertVaultBalancesAsync(p: SimulationParams): Promise<void> {
-        for (const i in _.range(p.numberOfPools)) {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(p.numberOfPools)) {
             // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
             //          update once more accurate.
             // check pool balance in vault
@@ -243,8 +253,9 @@ export class Simulation {
         }
     }
 
-    private async _withdrawRewardForOperators(p: SimulationParams): Promise<void> {
-        for (const i in _.range(p.numberOfPools)) {
+    private async _withdrawRewardForOperatorsAsync(p: SimulationParams): Promise<void> {
+        // tslint:disable-next-line no-unused-variable
+        for (const i of _.range(p.numberOfPools)) {
             // @TODO -  we trim balances in here because payouts are accurate only to 5 decimal places.
             //          update once more accurate.
             // check pool balance in vault

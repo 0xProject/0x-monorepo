@@ -12,7 +12,6 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-
 import { StakingWrapper } from './utils/staking_wrapper';
 
 chaiSetup.configure();
@@ -26,9 +25,6 @@ describe('Exchange Integrations', () => {
     let accounts: string[];
     let owner: string;
     let exchange: string;
-    let stakers: string[];
-    let makers: string[];
-    let delegators: string[];
     let zrxTokenContract: DummyERC20TokenContract;
     let erc20ProxyContract: ERC20ProxyContract;
     // wrappers
@@ -46,8 +42,6 @@ describe('Exchange Integrations', () => {
         accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         exchange = accounts[1];
-        stakers = accounts.slice(2, 5);
-        makers = accounts.slice(4, 10);
         // deploy erc20 proxy
         erc20Wrapper = new ERC20Wrapper(provider, accounts, owner);
         erc20ProxyContract = await erc20Wrapper.deployProxyAsync();
@@ -56,7 +50,7 @@ describe('Exchange Integrations', () => {
         await erc20Wrapper.setBalancesAndAllowancesAsync();
         // deploy staking contracts
         stakingWrapper = new StakingWrapper(provider, owner, erc20ProxyContract, zrxTokenContract, accounts);
-        await stakingWrapper.deployAndConfigureContracts();
+        await stakingWrapper.deployAndConfigureContractsAsync();
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
