@@ -4,6 +4,6 @@
         "outDir": "lib",
         "rootDir": "."
     },
-    "exclude": ["test/generated_test/**/*"],
+    "exclude": ["./test/generated-test/**/*"],
     "include": ["./src/**/*", "./test/*"]
 }

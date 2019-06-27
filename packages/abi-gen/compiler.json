@@ -1,6 +1,6 @@
 {
-    "artifactsDir": "./test/generated_test/generated-artifacts",
-    "contractsDir": "./test/generated_test/contracts",
+    "artifactsDir": "./test/generated-test/generated-artifacts",
+    "contractsDir": "./test/generated-test/contracts",
     "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {

@@ -2,8 +2,7 @@
     "extends": ["@0x/tslint-config"],
     "linterOptions": {
         "exclude": [
-            "./test/generated_test/generated-wrappers/**/*",
-            "./test/generated_test/generated-artifacts/**/*",
+            "./test/generated-test/generated-artifacts/**/*",
             "**/lib/**/*"
         ]
     }
