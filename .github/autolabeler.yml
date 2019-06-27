@@ -1,4 +1,4 @@
-python :snake:: ['python-packages']
+python 🐍: ['python-packages']
 contracts: ['contracts']
 @0x/sol-doc: ['packages/sol-doc']
 @0x/sol-resolver: ['packages/sol-resolver']
