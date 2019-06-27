@@ -24,7 +24,7 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
-import "./MixinRewardVault.sol";
+import "./MixinStakingPoolRewardVault.sol";
 import "./MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
 
@@ -34,7 +34,7 @@ contract MixinStake is
     MixinConstants,
     MixinStorage,
     MixinScheduler,
-    MixinRewardVault,
+    MixinStakingPoolRewardVault,
     MixinZrxVault,
     MixinStakeBalances
 {
@@ -178,7 +178,7 @@ contract MixinStake is
 
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
-        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
         uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
@@ -211,7 +211,7 @@ contract MixinStake is
 
         // get payout
         // TODO -- not full balance, just balance that belongs to delegators.
-        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
         if (_delegatedStakeToPoolByOwner == amount) {
@@ -240,7 +240,7 @@ contract MixinStake is
 
         // withdraw payout for delegator
         if (payoutInRealAsset > 0) {
-            _withdrawFromPoolInRewardVault(poolId, payoutInRealAsset);
+            _withdrawFromPoolInStakingPoolRewardVault(poolId, payoutInRealAsset);
             owner.transfer(payoutInRealAsset);
         }
     }

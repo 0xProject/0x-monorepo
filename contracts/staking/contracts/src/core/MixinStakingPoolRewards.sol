@@ -23,27 +23,28 @@ import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "./MixinStakeBalances.sol";
-import "./MixinRewardVault.sol";
+import "./MixinStakingPoolRewardVault.sol";
 import "./MixinStakingPool.sol";
 
 
-contract MixinRewards is
+contract MixinStakingPoolRewards is
     MixinConstants,
     MixinStorage,
-    MixinRewardVault,
+    MixinStakingPoolRewardVault,
     MixinStakeBalances,
     MixinStakingPool
 {
 
     using LibSafeMath for uint256;
 
-    /// @dev This mixin contains logic for managing the reward pool
+    /// @dev This mixin contains logic for managing the rewards belonging to a staking pool.
+    ///  
 
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
         onlyPoolOperator(poolId)
     {
-        _withdrawFromOperatorInRewardVault(poolId, amount);
+        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
     }
 
@@ -60,7 +61,7 @@ contract MixinRewards is
         shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
-        _withdrawFromPoolInRewardVault(poolId, amount);
+        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
         owner.transfer(amount);
     }
 
@@ -69,8 +70,8 @@ contract MixinRewards is
         onlyPoolOperator(poolId)
         returns (uint256)
     {
-        uint256 amount = getBalanceOfOperatorInRewardVault(poolId);
-        _withdrawFromOperatorInRewardVault(poolId, amount);
+        uint256 amount = getBalanceOfOperatorInStakingPoolRewardVault(poolId);
+        _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
 
         return amount;
@@ -86,7 +87,7 @@ contract MixinRewards is
         shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
-        _withdrawFromPoolInRewardVault(poolId, amount);
+        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
         owner.transfer(amount);
 
         return amount;
@@ -97,7 +98,7 @@ contract MixinRewards is
         view
         returns (uint256)
     {
-        return getBalanceInRewardVault(poolId);
+        return getBalanceInStakingPoolRewardVault(poolId);
     }
 
     function getRewardBalanceOfOperator(bytes32 poolId)
@@ -105,7 +106,7 @@ contract MixinRewards is
         view
         returns (uint256)
     {
-        return getBalanceOfOperatorInRewardVault(poolId);
+        return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
     }
 
     function getRewardBalanceOfPool(bytes32 poolId)
@@ -113,7 +114,7 @@ contract MixinRewards is
         view
         returns (uint256)
     {
-        return getBalanceOfPoolInRewardVault(poolId);
+        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
     }
 
     function computeRewardBalance(bytes32 poolId, address owner)
@@ -121,7 +122,7 @@ contract MixinRewards is
         view
         returns (uint256)
     {
-        uint256 poolBalance = getBalanceOfPoolInRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
         return LibRewardMath._computePayoutDenominatedInRealAsset(
             delegatedStakeToPoolByOwner[owner][poolId],
             delegatedStakeByPoolId[poolId],
