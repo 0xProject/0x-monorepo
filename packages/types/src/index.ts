@@ -342,6 +342,7 @@ export enum RevertReason {
     TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
     // Staking
     OnlyCallableByPoolOperator = 'ONLY_CALLABLE_BY_POOL_OPERATOR',
+    OnlyCallableByPoolOperatorOrMaker = 'ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER',
     MakerAddressAlreadyRegistered = 'MAKER_ADDRESS_ALREADY_REGISTERED',
     MakerAddressNotRegistered = 'MAKER_ADDRESS_NOT_REGISTERED',
     OnlyCallableByExchange = 'ONLY_CALLABLE_BY_EXCHANGE',
