@@ -50,5 +50,6 @@ interface IStructs {
     struct ActivePool {
         bytes32 poolId;
         uint256 feesCollected;
+        uint256 weightedStake;
     }
 }

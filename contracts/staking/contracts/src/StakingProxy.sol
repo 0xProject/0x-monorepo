@@ -31,6 +31,7 @@ contract StakingProxy is
     constructor(address _stakingContract)
         public
     {
+        owner = msg.sender;
         stakingContract = _stakingContract;
     }
 

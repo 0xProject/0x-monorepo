@@ -118,13 +118,13 @@ describe('End-To-End Simulations', () => {
             /*
 \           // the expected payouts were computed by hand
             // @TODO - get computations more accurate
-                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Scaled)
-                0    |  0.304958   | 42          | 0                     | 42
-                1    | 15.323258   | 84          | 0                     | 84
+                Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Weighted) | Payout
+                0    |  0.304958   | 42          | 0                     | 42                     | 3.0060373...
+                1    | 15.323258   | 84          | 0                     | 84                     | 
                 3    | 28.12222236 | 97          | 182                   | 260.8
                 ...
                 Cumulative Fees = 43.75043836
-                Cumulative Stake = 405
+                Cumulative Weighted Stake = 386.8
                 Total Rewards = 43.75043836
             */
             const simulationParams = {
@@ -164,27 +164,27 @@ describe('End-To-End Simulations', () => {
                     StakingWrapper.toBaseUnitAmount(28.12222236),
                 ],
                 expectedPayoutByPool: [
-                    new BigNumber('2.89303'), // 2.8930364057678784829875695710382241749912199174798475
-                    new BigNumber('9.90218'), // 9.9021783083174087034787071054543342142019746753770943
-                    new BigNumber('28.16463'), // 28.164631904035798614670299155719067954180760345463798
+                    new BigNumber('3.00603'), // 3.006037310109530277237724562632303034914024715508955780682
+                    new BigNumber('10.28895'), // 10.28895363598396754741643198605226143579652264694121578135
+                    new BigNumber('29.26472'), // 29.26473180250053106672049765968527817034954761113582833460
                 ],
                 expectedPayoutByPoolOperator: [
-                    new BigNumber('1.12828'), // 0.39 * 2.89303
-                    new BigNumber('5.84228'), // 0.59 * 9.90218
-                    new BigNumber('12.11079'), // 0.43 * 28.16463
+                    new BigNumber('1.17235'), // 0.39 * 3.00603
+                    new BigNumber('6.07048'), // 0.59 * 10.28895
+                    new BigNumber('12.58383'), // 0.43 * 29.26472
                 ],
                 expectedMembersPayoutByPool: [
-                    new BigNumber('1.76475'), // (1 - 0.39) * 2.89303
-                    new BigNumber('4.05989'), // (1 - 0.59) * 9.90218
-                    new BigNumber('16.05383'), // (1 - 0.43) * 28.16463
+                    new BigNumber('1.83368'), // (1 - 0.39) * 3.00603
+                    new BigNumber('4.21847'), // (1 - 0.59) * 10.28895
+                    new BigNumber('16.68089'), // (1 - 0.43) * 29.26472
                 ],
                 expectedPayoutByDelegator: [
                     // note that the on-chain values may be slightly different due to rounding down on each entry
                     // there is a carry over between calls, which we account for here. the result is that delegators
                     // who withdraw later on will scoop up any rounding spillover from those who have already withdrawn.
-                    new BigNumber('1.49953'), // (17 / 182) * 16.05383
-                    new BigNumber('6.61559'), // (75 / 182) * 16.05383
-                    new BigNumber('7.93871'), // (90 / 182) * 16.05383
+                    new BigNumber('1.55810'), // (17 / 182) * 16.6809
+                    new BigNumber('6.87399'), // (75 / 182) * 16.6809
+                    new BigNumber('8.24879'), // (90 / 182) * 16.6809
                 ],
                 exchangeAddress: exchange,
             };
@@ -201,7 +201,7 @@ describe('End-To-End Simulations', () => {
                 3    | 28.12222236 | 97          | 182                   | 260.8
                 ...
                 Cumulative Fees = 43.75043836
-                Cumulative Stake = 405
+                Cumulative Weighted Stake = 386.8
                 Total Rewards = 43.75043836
 
                 // In this case, there was already a pot of ETH in the delegator pool that nobody had claimed.
@@ -280,7 +280,7 @@ describe('End-To-End Simulations', () => {
                 3    | 28.12222236 | 97          | 182                   | 260.8
                 ...
                 Cumulative Fees = 43.75043836
-                Cumulative Stake = 405
+                Cumulative Weighted Stake = 386.8
                 Total Rewards = 43.75043836
 
                 // In this case, there was already a pot of ETH in the delegator pool that nobody had claimed.
