@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Moved MixinAuthorizable to `contracts-utils` pacakge",
+                "pr": "UPDATE Me"
+            }
+        ]
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {
