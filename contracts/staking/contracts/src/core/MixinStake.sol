@@ -25,7 +25,7 @@ import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
 import "./MixinRewardVault.sol";
-import "./MixinEpoch.sol";
+import "./MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
 
 
@@ -33,7 +33,7 @@ contract MixinStake is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
-    MixinEpoch,
+    MixinScheduler,
     MixinRewardVault,
     MixinZrxVault,
     MixinStakeBalances
