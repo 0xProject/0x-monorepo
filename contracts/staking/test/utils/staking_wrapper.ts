@@ -349,15 +349,15 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async getMakerPoolIdAsync(makerAddress: string): Promise<string> {
-        const calldata = this.getStakingContract().getMakerPoolId.getABIEncodedTransactionData(makerAddress);
+    public async getPoolIdOfMakerAsync(makerAddress: string): Promise<string> {
+        const calldata = this.getStakingContract().getPoolIdOfMaker.getABIEncodedTransactionData(makerAddress);
         const poolId = await this._callAsync(calldata);
         return poolId;
     }
-    public async getMakerAddressesForPoolAsync(poolId: string): Promise<string[]> {
-        const calldata = this.getStakingContract().getMakerAddressesForPool.getABIEncodedTransactionData(poolId);
+    public async getMakersForPoolAsync(poolId: string): Promise<string[]> {
+        const calldata = this.getStakingContract().getMakersForPool.getABIEncodedTransactionData(poolId);
         const returndata = await this._callAsync(calldata);
-        const makerAddresses = this.getStakingContract().getMakerAddressesForPool.getABIDecodedReturnData(returndata);
+        const makerAddresses = this.getStakingContract().getMakersForPool.getABIDecodedReturnData(returndata);
         return makerAddresses;
     }
     public async isValidMakerSignatureAsync(

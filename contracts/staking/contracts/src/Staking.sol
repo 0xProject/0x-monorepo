@@ -25,7 +25,7 @@ import "./core/MixinRewardVault.sol";
 import "./core/MixinScheduler.sol";
 import "./core/MixinStakeBalances.sol";
 import "./core/MixinStake.sol";
-import "./core/MixinPools.sol";
+import "./core/MixinStakingPool.sol";
 import "./core/MixinExchangeFees.sol";
 import "./core/MixinRewards.sol";
 
@@ -40,7 +40,7 @@ contract Staking is
     MixinZrxVault,
     MixinExchangeManager,
     MixinStakeBalances,
-    MixinPools,
+    MixinStakingPool,
     MixinRewards,
     MixinStake,
     MixinExchangeFees

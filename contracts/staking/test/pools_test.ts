@@ -118,8 +118,7 @@ describe('Staking Pool Management', () => {
             // remove maker from pool
             await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[0]);
             await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[1]);
-            // @TODO - this fails with `RuntimeError: VM Exception while processing transaction: revert` on Ganache
-            // await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[2]);
+            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[2]);
         });
         it('Should fail to add the same maker twice', async () => {
             // test parameters
@@ -260,7 +259,7 @@ describe('Staking Pool Management', () => {
             // try to remove the maker address from an address other than the operator
             await expectTransactionFailedAsync(
                 stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, notOperatorAddress),
-                RevertReason.OnlyCallableByPoolOperator,
+                RevertReason.OnlyCallableByPoolOperatorOrMaker,
             );
         });
     });

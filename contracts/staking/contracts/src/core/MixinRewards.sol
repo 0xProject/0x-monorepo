@@ -24,7 +24,7 @@ import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinRewardVault.sol";
-import "./MixinPools.sol";
+import "./MixinStakingPool.sol";
 
 
 contract MixinRewards is
@@ -32,12 +32,12 @@ contract MixinRewards is
     MixinStorage,
     MixinRewardVault,
     MixinStakeBalances,
-    MixinPools
+    MixinStakingPool
 {
 
     using LibSafeMath for uint256;
 
-    /// @dev This mixin contains logic for rewards 
+    /// @dev This mixin contains logic for managing the reward pool
 
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
