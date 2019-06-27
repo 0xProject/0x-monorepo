@@ -6,11 +6,15 @@ import * as _ from 'lodash';
 import { assert } from './assert';
 import { constants } from './constants';
 import {
+    orderCalculationUtils,
+} from './order_calculation_utils';
+import {
     FeeOrdersAndRemainingFeeAmount,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FindOrdersThatCoverTakerAssetFillAmountOpts,
-    OrdersAndRemainingFillAmount,
+    OrdersAndRemainingMakerFillAmount,
+    OrdersAndRemainingTakerFillAmount,
 } from './types';
 
 export const marketUtils = {
@@ -18,10 +22,61 @@ export const marketUtils = {
         orders: T[],
         takerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverTakerAssetFillAmountOpts,
-    ): OrdersAndRemainingFillAmount<T> {
+    ): OrdersAndRemainingTakerFillAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        
+        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
+        const remainingFillableTakerAssetAmounts = _.get(
+            opts,
+            'remainingFillableTakerAssetAmounts',
+            _.map(orders, order => order.takerAssetAmount),
+        ) as BigNumber[];
+        _.forEach(remainingFillableTakerAssetAmounts, (amount, index) =>
+            assert.isValidBaseUnitAmount(`remainingFillableTakerAssetAmount[${index}]`, amount),
+        );
+        assert.assert(
+            orders.length === remainingFillableTakerAssetAmounts.length,
+            'Expected orders.length to equal opts.remainingFillableMakerAssetAmounts.length',
+        );
+        // try to get slippageBufferAmount from opts, if it's not there, default to 0
+        const slippageBufferAmount = _.get(opts, 'slippageBufferAmount', constants.ZERO_AMOUNT) as BigNumber;
+        assert.isValidBaseUnitAmount('opts.slippageBufferAmount', slippageBufferAmount);
+        // calculate total amount of makerAsset needed to be filled
+        const totalFillAmount = takerAssetFillAmount.plus(slippageBufferAmount);
+        // iterate through the orders input from left to right until we have enough makerAsset to fill totalFillAmount
+        const result = _.reduce(
+            orders,
+            ({ resultOrders, remainingFillAmount, ordersRemainingFillableTakerAssetAmounts }, order, index) => {
+                if (remainingFillAmount.isLessThanOrEqualTo(constants.ZERO_AMOUNT)) {
+                    return {
+                        resultOrders,
+                        remainingFillAmount: constants.ZERO_AMOUNT,
+                        ordersRemainingFillableTakerAssetAmounts,
+                    };
+                } else {
+                    const takerAssetAmountAvailable = remainingFillableTakerAssetAmounts[index];
+                    const shouldIncludeOrder = takerAssetAmountAvailable.gt(constants.ZERO_AMOUNT);
+                    // if there is no makerAssetAmountAvailable do not append order to resultOrders
+                    // if we have exceeded the total amount we want to fill set remainingFillAmount to 0
+                    return {
+                        resultOrders: shouldIncludeOrder ? _.concat(resultOrders, order) : resultOrders,
+                        ordersRemainingFillableTakerAssetAmounts: shouldIncludeOrder
+                            ? _.concat(ordersRemainingFillableTakerAssetAmounts, takerAssetAmountAvailable)
+                            : ordersRemainingFillableTakerAssetAmounts,
+                        remainingFillAmount: BigNumber.max(
+                            constants.ZERO_AMOUNT,
+                            remainingFillAmount.minus(takerAssetAmountAvailable),
+                        ),
+                    };
+                }
+            },
+            {
+                resultOrders: [] as T[],
+                remainingFillAmount: totalFillAmount,
+                ordersRemainingFillableTakerAssetAmounts: [] as BigNumber[],
+            },
+        );
+        return result;
     },
     /**
      * Takes an array of orders and returns a subset of those orders that has enough makerAssetAmount
@@ -37,7 +92,7 @@ export const marketUtils = {
         orders: T[],
         makerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverMakerAssetFillAmountOpts,
-    ): OrdersAndRemainingFillAmount<T> {
+    ): OrdersAndRemainingMakerFillAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('makerAssetFillAmount', makerAssetFillAmount);
         // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
