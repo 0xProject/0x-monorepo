@@ -19,7 +19,6 @@
 pragma solidity ^0.5.5;
 
 import "../interfaces/IStakingEvents.sol";
-
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 
@@ -29,6 +28,9 @@ contract MixinExchange is
     MixinConstants,
     MixinStorage
 {
+
+    /// @dev This mixin contains logic for managing exchanges
+    /// 
 
     modifier onlyExchange() {
         require(
