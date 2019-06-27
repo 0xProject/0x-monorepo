@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
-import "../libs/LibSafeMath96Bit.sol";
+import "../libs/LibSafeMath96.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IRewardVault.sol";
 import "../immutable/MixinConstants.sol";
@@ -33,7 +33,7 @@ contract RewardVault is
     // @TODO -- ADD README's TO EACH DIRECTORY
 
     using LibSafeMath for uint256;
-    using LibSafeMath96Bit for uint96;
+    using LibSafeMath96 for uint96;
 
     // designed in such a way that it contains minimal logic (it is not upgradeable)
     // but has all the necessary information to compute withdrawals in the event of
