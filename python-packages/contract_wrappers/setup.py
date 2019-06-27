@@ -3,7 +3,7 @@
 """setuptools module for contract_wrappers package."""
 
 import subprocess  # nosec
-from shutil import copyfile, rmtree
+from shutil import copy, rmtree
 from os import environ, path
 from pathlib import Path
 from sys import argv
@@ -26,7 +26,7 @@ class PreInstallCommand(distutils.command.build_py.build_py):
     def run(self):
         """Copy files from TS build area to local src, & `black` them."""
         pkgdir = path.dirname(path.realpath(argv[0]))
-        copyfile(
+        copy(
             path.join(
                 pkgdir,
                 "..",
@@ -38,20 +38,13 @@ class PreInstallCommand(distutils.command.build_py.build_py):
                 "py",
                 "erc20_token.py",
             ),
-            path.join(
-                pkgdir,
-                "src",
-                "zero_ex",
-                "contract_wrappers",
-                "erc20_wrapper.py",
-            ),
+            path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
         )
         if find_spec("black") is None:
             subprocess.check_call("pip install black".split())  # nosec
         subprocess.check_call(  # nosec
             (
-                BLACK_COMMAND
-                + " src/zero_ex/contract_wrappers/erc20_wrapper.py"
+                BLACK_COMMAND + " src/zero_ex/contract_wrappers/erc20_token.py"
             ).split()
         )
 
