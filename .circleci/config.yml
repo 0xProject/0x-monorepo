@@ -294,10 +294,13 @@ jobs:
             - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       python -m ensurepip
                       cd python-packages
+                      pushd contract_wrappers; ./setup.py pre_install; popd
                       ./install
                       ./lint
     static-tests:
