@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
-import "../libs/LibSafeMath64Bit.sol";
+import "../libs/LibSafeMath64.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
@@ -31,7 +31,7 @@ contract MixinEpoch is
 {
 
     using LibSafeMath for uint256;
-    using LibSafeMath64Bit for uint64;
+    using LibSafeMath64 for uint64;
 
     /// @dev returns the current epoch in seconds
     function getEpochPeriodInSeconds()
