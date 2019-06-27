@@ -458,10 +458,10 @@ export class StakingWrapper {
         const value = this.getStakingContract().getCurrentTimelockPeriodStartEpoch.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getCurrentEpochEndTimeInSecondsAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getCurrentEpochEndTimeInSeconds.getABIEncodedTransactionData();
+    public async getCurrentEpochEarliestEndTimeInSecondsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getCurrentEpochEarliestEndTimeInSeconds.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getCurrentEpochEndTimeInSeconds.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getCurrentEpochEarliestEndTimeInSeconds.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getCurrentTimelockPeriodEndEpochAsync(): Promise<BigNumber> {

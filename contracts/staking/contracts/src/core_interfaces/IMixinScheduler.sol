@@ -19,8 +19,14 @@
 pragma solidity ^0.5.5;
 
 
-/// THIS CONTRACT IS AUTO-GENERATED FROM INTERFACES IN `./core_interfaces` ///
-contract IStaking {
+contract IMixinScheduler {
+
+    /// @dev This mixin contains logic for time-based scheduling.
+    /// All processes in the system are segmented into time intervals, called epochs.
+    /// Epochs have a fixed minimum time period that is configured when this contract is deployed.
+    /// The current epoch only changes by calling this contract, which can be invoked by anyone.
+    /// Epochs serve as the basis for all other time intervals, which provides a more stable
+    /// and consistent scheduling metric than time. Timelocks, for example, are measured in epochs.
 
     /// @dev Returns the current epoch.
     function getCurrentEpoch()
@@ -76,5 +82,4 @@ contract IStaking {
         public
         view
         returns (uint64);
-
 }
