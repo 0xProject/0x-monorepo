@@ -866,7 +866,7 @@
 
 "@0x/web3-wrapper@^4.0.1":
   version "4.0.2"
-  resolved "https://registry.npmjs.org/@0x/web3-wrapper/-/web3-wrapper-4.0.2.tgz#d4e0a4fa1217155e1aed4cd91086654fd99f2959"
+  resolved "https://registry.yarnpkg.com/@0x/web3-wrapper/-/web3-wrapper-4.0.2.tgz#d4e0a4fa1217155e1aed4cd91086654fd99f2959"
   dependencies:
     "@0x/assert" "^2.0.2"
     "@0x/json-schemas" "^3.0.2"

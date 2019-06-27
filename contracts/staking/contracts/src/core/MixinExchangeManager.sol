@@ -18,17 +18,17 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
+import "./MixinOwnable.sol";
 
 
 contract MixinExchangeManager is
-    Authorizable,
     IStakingEvents,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinOwnable
 {
 
     /// @dev This mixin contains logic for managing exchanges.
@@ -73,8 +73,9 @@ contract MixinExchangeManager is
         emit ExchangeRemoved(addr);
     }
 
-    /// @dev Returns true iff the address is a valid exchange
-    /// @param addr Address of exchange contract
+    /// @dev Returns true iff the address is a valid exchange.
+    /// @param addr Address of exchange contract.
+    /// @return True iff input address is a valid exchange.
     function isValidExchangeAddress(address addr)
         public
         view

@@ -28,6 +28,7 @@ contract IMixinScheduler {
     /// Epochs serve as the basis for all other time intervals, which provides a more stable
     /// and consistent scheduling metric than time. Timelocks, for example, are measured in epochs.
 
+/*
     /// @dev Returns the current epoch.
     function getCurrentEpoch()
         public
@@ -82,4 +83,5 @@ contract IMixinScheduler {
         public
         view
         returns (uint64);
+    */
 }

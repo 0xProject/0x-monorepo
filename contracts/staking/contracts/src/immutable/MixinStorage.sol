@@ -31,15 +31,14 @@ contract MixinStorage is
 
     // @TODO Add notes about which Mixin manages which state
 
+    // address of owner
+    address internal owner;
+
     // address of staking contract
     address internal stakingContract;
 
     // mapping from Owner to Amount Staked
     mapping (address => uint256) internal stakeByOwner;
-
-    // @TODO Think about merging these different states
-    // It would be nice if the sum of the different states had to equal `stakeByOwner`
-    // and it were all in a single variable (stakeByOwner in its own)
 
     // mapping from Owner to Amount of Instactive Stake
     mapping (address => uint256) internal activeStakeByOwner;
@@ -88,7 +87,7 @@ contract MixinStorage is
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
 
     // 
-    bytes32[] internal activePoolIdsThisEpoch;
+    bytes32[] internal activePoolsThisEpoch;
 
     // mapping from POol Id to Shadow Rewards
     mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
