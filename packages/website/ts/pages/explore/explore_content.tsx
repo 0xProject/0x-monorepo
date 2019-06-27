@@ -18,7 +18,8 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
     dydx: {
         name: 'dydx',
         label: 'dYdX',
-        description: 'Trustless margin trading and lending platform that sources liquidity from 0x\'s open orderbook relayers.',
+        description:
+            "Trustless margin trading and lending platform that sources liquidity from 0x's open orderbook relayers.",
         logo_url: '/images/explore/dydx.svg',
         logo_max_width: '160px',
         theme_color: '#282C32',
