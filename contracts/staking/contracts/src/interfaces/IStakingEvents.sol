@@ -13,12 +13,6 @@ interface IStakingEvents {
         uint256 amount
     );
 
-    event PoolCreated(
-        bytes32 poolId,
-        address operatorAddress,
-        uint8 operatorShare
-    );
-
     event ExchangeAdded(
         address exchangeAddress
     );
@@ -67,5 +61,32 @@ interface IStakingEvents {
     /// @param newOwner New owner of the contract
     event OwnershipTransferred(
         address newOwner
+    );
+
+
+    /// @dev Emitted by MixinStakingPool when a new pool is created.
+    /// @param poolId Unique id generated for pool.
+    /// @param operatorAddress Address of creator/operator of pool.
+    /// @param operatorShare The share of rewards given to the operator.
+    event StakingPoolCreated(
+        bytes32 poolId,
+        address operatorAddress,
+        uint8 operatorShare
+    );
+
+    /// @dev Emitted by MixinStakingPool when a new maker is added to a pool.
+    /// @param poolId Unique id of pool.
+    /// @param makerAddress Adress of maker added to pool.
+    event MakerAddedToStakingPool(
+        bytes32 poolId,
+        address makerAddress
+    );
+
+    /// @dev Emitted by MixinStakingPool when a maker is removed from a pool.
+    /// @param poolId Unique id of pool.
+    /// @param makerAddress Adress of maker added to pool.
+    event MakerRemovedFromStakingPool(
+        bytes32 poolId,
+        address makerAddress
     );
 }
