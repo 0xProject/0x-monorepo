@@ -72,18 +72,18 @@ contract MixinFees is
     }
 
     /// @dev Pays the rebates for to market making pool that was active this epoch,
-    ///      then updates the epoch and other time-based periods via the scheduler (see MixinScheduler).
-    ///      This is intentionally permissionless, and may be called by anyone.
+    /// then updates the epoch and other time-based periods via the scheduler (see MixinScheduler).
+    /// This is intentionally permissionless, and may be called by anyone.
     function finalizeFees()
         external
     {
-        // payout rewards
+        // distribute fees to market maker pools as a reward
         (uint256 totalActivePools,
         uint256 totalFeesCollected,
         uint256 totalWeightedStake,
         uint256 totalRewardsPaid,
         uint256 initialContractBalance,
-        uint256 finalContractBalance) = _payMakerRewards();
+        uint256 finalContractBalance) = _distributeFeesAmongMakerPools();
         emit RewardsPaid(
             totalActivePools,
             totalFeesCollected,
@@ -131,7 +131,7 @@ contract MixinFees is
     /// @return totalRewardsPaid Total rewards paid out across all active pools.
     /// @return initialContractBalance Balance of this contract before paying rewards.
     /// @return finalContractBalance Balance of this contract after paying rewards.
-    function _payMakerRewards()
+    function _distributeFeesAmongMakerPools()
         private
         returns (
             uint256 totalActivePools,
