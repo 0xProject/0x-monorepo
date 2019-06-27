@@ -42,24 +42,6 @@ contract IMatchOrders {
         public
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults);
 
-    /// @dev Match complementary orders that have a profitable spread.
-    ///      Each order is maximally filled at their respective price point, and
-    ///      the matcher receives a profit denominated in either the left maker asset,
-    ///      right maker asset, or a combination of both.
-    /// @param leftOrders Set of orders with the same maker / taker asset.
-    /// @param rightOrders Set of orders to match against `leftOrders`
-    /// @param leftSignatures Proof that left orders were created by the left makers.
-    /// @param rightSignatures Proof that right orders were created by the right makers.
-    /// @return batchMatchedFillResults Amounts filled and profit generated.
-    function batchMatchOrdersWithMaximalFill(
-        LibOrder.Order[] memory leftOrders,
-        LibOrder.Order[] memory rightOrders,
-        bytes[] memory leftSignatures,
-        bytes[] memory rightSignatures
-    )
-        public
-        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults);
-
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
