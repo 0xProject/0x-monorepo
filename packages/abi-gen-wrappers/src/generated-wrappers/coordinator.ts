@@ -85,6 +85,17 @@ export class CoordinatorContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getTransactionHash = {
         async callAsync(
@@ -137,6 +148,17 @@ export class CoordinatorContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getTransactionHash((uint256,address,bytes))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getCoordinatorApprovalHash = {
         async callAsync(
@@ -188,6 +210,17 @@ export class CoordinatorContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))', [approval
         ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public executeTransaction = {
@@ -373,6 +406,17 @@ export class CoordinatorContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         async callAsync(
@@ -418,6 +462,17 @@ export class CoordinatorContract extends BaseContract {
             const self = this as any as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_EXCHANGE_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('EIP712_EXCHANGE_DOMAIN_HASH()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public assertValidCoordinatorApprovals = {
@@ -495,6 +550,17 @@ export class CoordinatorContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public decodeOrdersFromFillData = {
         async callAsync(
@@ -547,6 +613,17 @@ export class CoordinatorContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('decodeOrdersFromFillData(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public EIP712_COORDINATOR_DOMAIN_HASH = {
         async callAsync(
@@ -592,6 +669,17 @@ export class CoordinatorContract extends BaseContract {
             const self = this as any as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_COORDINATOR_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as CoordinatorContract;
+            const abiEncoder = self._lookupAbiEncoder('EIP712_COORDINATOR_DOMAIN_HASH()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

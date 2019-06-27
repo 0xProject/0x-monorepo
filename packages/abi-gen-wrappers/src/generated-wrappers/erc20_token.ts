@@ -190,6 +190,17 @@ export class ERC20TokenContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public totalSupply = {
         async callAsync(
@@ -235,6 +246,17 @@ export class ERC20TokenContract extends BaseContract {
             const self = this as any as ERC20TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferFrom = {
@@ -392,6 +414,17 @@ export class ERC20TokenContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public balanceOf = {
         async callAsync(
@@ -443,6 +476,17 @@ export class ERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner
         ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transfer = {
@@ -586,6 +630,17 @@ export class ERC20TokenContract extends BaseContract {
         ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public allowance = {
         async callAsync(
@@ -643,6 +698,17 @@ export class ERC20TokenContract extends BaseContract {
         _spender
         ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as ERC20TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

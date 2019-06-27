@@ -10,8 +10,6 @@ import * as ERC20Proxy from '../generated-artifacts/ERC20Proxy.json';
 import * as ERC721Proxy from '../generated-artifacts/ERC721Proxy.json';
 import * as IAssetData from '../generated-artifacts/IAssetData.json';
 import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
-import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
-import * as LibAssetData from '../generated-artifacts/LibAssetData.json';
 import * as MultiAssetProxy from '../generated-artifacts/MultiAssetProxy.json';
 import * as StaticCallProxy from '../generated-artifacts/StaticCallProxy.json';
 import * as TestStaticCallTarget from '../generated-artifacts/TestStaticCallTarget.json';
@@ -23,7 +21,5 @@ export const artifacts = {
     StaticCallProxy: StaticCallProxy as ContractArtifact,
     IAssetData: IAssetData as ContractArtifact,
     IAssetProxy: IAssetProxy as ContractArtifact,
-    IAuthorizable: IAuthorizable as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
-    LibAssetData: LibAssetData as ContractArtifact,
 };
