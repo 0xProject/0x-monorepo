@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 
-library LibSafeMath96Bit {
+library LibSafeMath96 {
 
     /**
      * @dev Returns the addition of two unsigned integers, reverting on
