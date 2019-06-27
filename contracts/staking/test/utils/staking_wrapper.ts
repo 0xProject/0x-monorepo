@@ -25,7 +25,7 @@ export class StakingWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _provider: Provider;
     private readonly _logDecoder: LogDecoder;
-    private readonly _ownerAddres: string;
+    private readonly _ownerAddress: string;
     private readonly _erc20ProxyContract: ERC20ProxyContract;
     private readonly _zrxTokenContract: DummyERC20TokenContract;
     private readonly _accounts: string[];
@@ -73,7 +73,7 @@ export class StakingWrapper {
         this._provider = provider;
         const decoderArtifacts = _.merge(artifacts, erc20Artifacts);
         this._logDecoder = new LogDecoder(this._web3Wrapper, decoderArtifacts);
-        this._ownerAddres = ownerAddres;
+        this._ownerAddress = ownerAddres;
         this._erc20ProxyContract = erc20ProxyContract;
         this._zrxTokenContract = zrxTokenContract;
         this._accounts = accounts;
@@ -143,7 +143,7 @@ export class StakingWrapper {
             (this._zrxVaultContractIfExists).address,
         );
         const setZrxVaultTxData = {
-            from: this._ownerAddres,
+            from: this._ownerAddress,
             to: (this._stakingProxyContractIfExists).address,
             data: setZrxVaultCalldata,
         };
@@ -161,7 +161,7 @@ export class StakingWrapper {
             (this._rewardVaultContractIfExists).address,
         );
         const setRewardVaultTxData = {
-            from: this._ownerAddres,
+            from: this._ownerAddress,
             to: (this._stakingProxyContractIfExists).address,
             data: setRewardVaultCalldata,
         };
@@ -243,7 +243,7 @@ export class StakingWrapper {
     }
     public async forceTimelockSyncAsync(owner: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().forceTimelockSync.getABIEncodedTransactionData(owner);
-        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres);
+        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddress);
         return txReceipt;
     }
     ///// STAKE BALANCES /////
@@ -411,6 +411,7 @@ export class StakingWrapper {
         logUtils.log(
             `Finalization costed ${txReceipt.gasUsed} gas`,
         );
+        console.log(JSON.stringify(txReceipt.logs, null, 4));
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
@@ -511,14 +512,16 @@ export class StakingWrapper {
         const isValid = this.getStakingContract().isValidExchangeAddress.getABIDecodedReturnData(returnData);
         return isValid;
     }
-    public async addExchangeAddressAsync(exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async addExchangeAddressAsync(exchangeAddress: string, ownerAddressIfExists?: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().addExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
-        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres);
+        const ownerAddress = ownerAddressIfExists !== undefined ? ownerAddressIfExists : this._ownerAddress;
+        const txReceipt = await this._executeTransactionAsync(calldata, ownerAddress);
         return txReceipt;
     }
-    public async removeExchangeAddressAsync(exchangeAddress: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async removeExchangeAddressAsync(exchangeAddress: string, ownerAddressIfExists?: string): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().removeExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
-        const txReceipt = await this._executeTransactionAsync(calldata, this._ownerAddres);
+        const ownerAddress = ownerAddressIfExists !== undefined ? ownerAddressIfExists : this._ownerAddress;
+        const txReceipt = await this._executeTransactionAsync(calldata, ownerAddress);
         return txReceipt;
     }
     ///// REWARDS /////
@@ -735,7 +738,7 @@ export class StakingWrapper {
         includeLogs?: boolean,
     ): Promise<TransactionReceiptWithDecodedLogs> {
         const txData = {
-            from: from ? from : this._ownerAddres,
+            from: from ? from : this._ownerAddress,
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000,
@@ -750,7 +753,7 @@ export class StakingWrapper {
     }
     private async _callAsync(calldata: string, from?: string): Promise<any> {
         const txData = {
-            from: from ? from : this._ownerAddres,
+            from: from ? from : this._ownerAddress,
             to: this.getStakingProxyContract().address,
             data: calldata,
             gas: 3000000,

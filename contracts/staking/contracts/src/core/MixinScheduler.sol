@@ -24,9 +24,11 @@ import "../libs/LibSafeMath64.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStructs.sol";
+import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinScheduler is
+    IStakingEvents,
     MixinConstants,
     MixinStorage,
     IMixinScheduler
@@ -43,6 +45,7 @@ contract MixinScheduler is
     /// and consistent scheduling metric than time. Timelocks, for example, are measured in epochs.
 
     /// @dev Returns the current epoch.
+    /// @return Epoch.
     function getCurrentEpoch()
         public
         view
@@ -53,6 +56,7 @@ contract MixinScheduler is
 
     /// @dev Returns the current epoch period, measured in seconds.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
+    /// @return Time in seconds.
     function getEpochPeriodInSeconds()
         public
         pure
@@ -63,6 +67,7 @@ contract MixinScheduler is
 
     /// @dev Returns the start time in seconds of the current epoch.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
+    /// @return Time in seconds.
     function getCurrentEpochStartTimeInSeconds()
         public
         view
@@ -74,6 +79,7 @@ contract MixinScheduler is
     /// @dev Returns the earliest end time in seconds of this epoch.
     ///      The next epoch can begin once this time is reached.  
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
+    /// @return Time in seconds.
     function getCurrentEpochEarliestEndTimeInSeconds()
         public
         view
@@ -82,7 +88,8 @@ contract MixinScheduler is
         return getCurrentEpochStartTimeInSeconds()._add(getEpochPeriodInSeconds());
     }
 
-    /// @dev Returns the current timelock period
+    /// @dev Returns the current timelock period.
+    /// @return Timelock period.
     function getCurrentTimelockPeriod()
         public
         view
@@ -93,6 +100,7 @@ contract MixinScheduler is
 
     /// @dev Returns the length of a timelock period, measured in epochs.
     ///      Timelock period = [startEpoch..endEpoch)
+    /// @return Timelock period end.
     function getTimelockPeriodInEpochs()
         public
         pure
@@ -103,6 +111,7 @@ contract MixinScheduler is
 
     /// @dev Returns the epoch that the current timelock period started at.
     ///      Timelock period = [startEpoch..endEpoch)
+    /// @return Timelock period start.
     function getCurrentTimelockPeriodStartEpoch()
         public
         view
@@ -113,6 +122,7 @@ contract MixinScheduler is
 
     /// @dev Returns the epoch that the current timelock period will end.
     ///      Timelock period = [startEpoch..endEpoch)
+    /// @return Timelock period.
     function getCurrentTimelockPeriodEndEpoch()
         public
         view
@@ -128,7 +138,6 @@ contract MixinScheduler is
         internal
     {
         // get current timestamp
-        // solium-disable security/no-block-members
         // solhint-disable-next-line not-rely-on-time
         uint64 currentBlockTimestamp = block.timestamp._downcastToUint64();
 
@@ -142,11 +151,27 @@ contract MixinScheduler is
         uint64 nextEpoch = currentEpoch._add(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
+        uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds._add(getEpochPeriodInSeconds());
+        
+        // notify of epoch change
+        emit EpochChanged(
+            currentEpoch,
+            currentEpochStartTimeInSeconds,
+            earliestEndTimeInSeconds
+        );
 
         // increment timelock period, if needed
         if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
             currentTimelockPeriod = currentTimelockPeriod._add(1);
             currentTimelockPeriodStartEpoch = currentEpoch;
+            uint64 endEpoch = currentEpoch._add(getTimelockPeriodInEpochs());
+            
+            // notify
+            emit TimelockPeriodChanged(
+                currentTimelockPeriod,
+                currentTimelockPeriodStartEpoch,
+                endEpoch
+            );
         }
     }
 }
