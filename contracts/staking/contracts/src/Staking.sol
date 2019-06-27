@@ -26,7 +26,7 @@ import "./core/MixinScheduler.sol";
 import "./core/MixinStakeBalances.sol";
 import "./core/MixinStake.sol";
 import "./core/MixinPools.sol";
-import "./core/MixinFees.sol";
+import "./core/MixinExchangeFees.sol";
 import "./core/MixinRewards.sol";
 
 
@@ -43,7 +43,7 @@ contract Staking is
     MixinPools,
     MixinRewards,
     MixinStake,
-    MixinFees
+    MixinExchangeFees
 {
 
     // this contract can receive ETH

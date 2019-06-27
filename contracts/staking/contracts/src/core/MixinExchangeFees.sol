@@ -31,7 +31,7 @@ import "./MixinRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
-contract MixinFees is
+contract MixinExchangeFees is
     IStakingEvents,
     MixinConstants,
     MixinStorage,

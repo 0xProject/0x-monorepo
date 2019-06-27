@@ -47,7 +47,7 @@ interface IStakingEvents {
         uint64 endEpoch
     );
 
-    /// @dev Emitted by MixinFees when rewards are paid out.
+    /// @dev Emitted by MixinExchangeFees when rewards are paid out.
     /// @param totalActivePools Total active pools this epoch.
     /// @param totalFeesCollected Total fees collected this epoch, across all active pools.
     /// @param totalWeightedStake Total weighted stake attributed to each pool. Delegated stake is weighted less.
