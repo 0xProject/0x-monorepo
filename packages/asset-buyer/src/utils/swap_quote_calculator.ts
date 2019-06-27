@@ -4,7 +4,7 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
-import { OrdersAndFillableAmounts, SwapQuote, SwapQuoteInfo, SwapQuoteOperation, SwapQuoterError } from '../types';
+import { MarketBuySwapQuote, MarketBuySwapQuoteInfo, MarketSellSwapQuote, MarketSellSwapQuoteInfo, OrdersAndFillableAmounts, SwapQuoterError } from '../types';
 
 // Calculates a swap quote for orders
 export const swapQuoteCalculator = {
@@ -14,7 +14,7 @@ export const swapQuoteCalculator = {
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
-    ): SwapQuote {
+    ): MarketSellSwapQuote {
         const orders = ordersAndFillableAmounts.orders;
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const remainingFillableTakerAssetAmounts = remainingFillableMakerAssetAmounts.map((makerAssetAmount: BigNumber, index: number) => {
@@ -112,7 +112,6 @@ export const swapQuoteCalculator = {
             feeOrders: resultFeeOrders,
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
-            operation: SwapQuoteOperation.MarketBuy,
         };
     },
     calculateMarketBuySwapQuote(
@@ -121,7 +120,7 @@ export const swapQuoteCalculator = {
         makerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
-    ): SwapQuote {
+    ): MarketBuySwapQuote {
         const orders = ordersAndFillableAmounts.orders;
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const feeOrders = feeOrdersAndFillableAmounts.orders;
@@ -213,7 +212,6 @@ export const swapQuoteCalculator = {
             feeOrders: resultFeeOrders,
             bestCaseQuoteInfo,
             worstCaseQuoteInfo,
-            operation: SwapQuoteOperation.MarketBuy,
         };
     },
 };
@@ -223,7 +221,7 @@ function calculateMarketBuyQuoteInfo(
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
     makerAssetBuyAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
-): SwapQuoteInfo {
+): MarketBuySwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     let takerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
@@ -247,7 +245,6 @@ function calculateMarketBuyQuoteInfo(
     const totalTakerTokenAmount = takerTokenAmount.plus(feeTakerTokenAmount);
     return {
         takerTokenAmount,
-        makerTokenAmount: makerAssetBuyAmount,
         feeTakerTokenAmount,
         totalTakerTokenAmount,
     };
@@ -258,7 +255,7 @@ function calculateMarketSellQuoteInfo(
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
     takerAssetSellAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
-): SwapQuoteInfo {
+): MarketSellSwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     let makerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
@@ -281,7 +278,6 @@ function calculateMarketSellQuoteInfo(
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
     const totalTakerTokenAmount = takerAssetSellAmount.plus(feeTakerTokenAmount);
     return {
-        takerTokenAmount: takerAssetSellAmount,
         makerTokenAmount,
         feeTakerTokenAmount,
         totalTakerTokenAmount,
