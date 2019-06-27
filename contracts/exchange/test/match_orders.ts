@@ -1851,7 +1851,7 @@ describe('matchOrders', () => {
             }
         });
     });
-    describe.only('batchMatchOrders', () => {
+    describe('batchMatchOrders', () => {
         it('should fail if there are zero leftOrders', async () => {
             const leftOrders: SignedOrder[] = [];
             const rightOrders = [
