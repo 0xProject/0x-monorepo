@@ -62,4 +62,10 @@ interface IStakingEvents {
         uint256 initialContractBalance,
         uint256 finalContractBalance
     );
+
+    /// @dev Emitted by MixinOwnable when the contract's ownership changes
+    /// @param newOwner New owner of the contract
+    event OwnershipTransferred(
+        address newOwner
+    );
 }

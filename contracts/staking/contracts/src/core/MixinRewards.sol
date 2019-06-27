@@ -37,6 +37,8 @@ contract MixinRewards is
 
     using LibSafeMath for uint256;
 
+    /// @dev This mixin contains logic for rewards 
+
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
         onlyPoolOperator(poolId)
