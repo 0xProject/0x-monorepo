@@ -2,13 +2,24 @@ import { Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
+import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
-import { Button } from 'ts/components/button';
-import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
-import { Heading } from 'ts/components/text';
-import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
+import algoliasearch from 'algoliasearch/lite';
+// import Autocomplete from 'react-autocomplete';
+import Autosuggest from 'react-autosuggest';
+import {
+    Configure,
+    connectAutoComplete,
+    Highlight,
+    Index,
+    InstantSearch,
+} from 'react-instantsearch-dom';
+
+const searchClient = algoliasearch(
+  'VHMP18K2OO',
+  'e46d0171577e85fa5418c50b18f80ade',
+);
+// const index = searchClient.initIndex(['0x_tools_test']);
 
 interface Props {
     isHome?: boolean;
@@ -20,14 +31,32 @@ interface LinkConfig {
     shouldOpenInNewTab?: boolean;
 }
 
+const AutoComplete = connectAutoComplete(CustomAutoComplete);
+
 export const SearchInput: React.FunctionComponent<Props> = (props: Props) => (
     <>
+        <InstantSearch
+            searchClient={searchClient}
+            indexName="0x_tools_test"
+            root={{
+                Root: 'div',
+                props: {
+                    style: {
+                    },
+                },
+            }}
+        >
         <Wrapper isHome={props.isHome}>
+            <AutoComplete isHome={props.isHome} />
+            <Configure hitsPerPage={5} distinct />
+            <Index indexName="0x_tools_test" />
+            <Index indexName="0x_guides_test" />
             <Label>
                 <LabelText>Search query</LabelText>
-                <Input isHome={props.isHome} />
+                {/* <Input isHome={props.isHome} />*/}
             </Label>
         </Wrapper>
+        </InstantSearch>
     </>
 );
 
@@ -38,6 +67,7 @@ SearchInput.defaultProps = {
 const Wrapper = styled.div<Props>`
     width: 100%;
     max-width: 240px;
+    position: relative;
 
     ${props =>
         props.isHome &&
