@@ -18,20 +18,25 @@
 
 pragma solidity ^0.5.5;
 
+import "@0x/contracts-utils/contracts/src/Authorizable.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 
 
-contract MixinExchange is
+contract MixinExchangeManager is
+    Authorizable,
     IStakingEvents,
     MixinConstants,
     MixinStorage
 {
 
-    /// @dev This mixin contains logic for managing exchanges
-    /// 
+    /// @dev This mixin contains logic for managing exchanges.
+    /// Any exchange contract that connects to the staking contract
+    /// must be added here. When an exchange contract is deprecated
+    /// then it should be removed.
 
+    /// @dev Asserts that the call is coming from a valid exchange.
     modifier onlyExchange() {
         require(
             isValidExchangeAddress(msg.sender),
@@ -40,9 +45,11 @@ contract MixinExchange is
         _;
     }
 
+    /// @dev Adds a new exchange address
+    /// @param addr Address of exchange contract to add
     function addExchangeAddress(address addr)
         external
-        // @TODO - Only by 0x multi-sig
+        onlyOwner
     {
         require(
             !validExchanges[addr],
@@ -52,9 +59,11 @@ contract MixinExchange is
         emit ExchangeAdded(addr);
     }
 
+    /// @dev Removes an existing exchange address
+    /// @param addr Address of exchange contract to remove
     function removeExchangeAddress(address addr)
         external
-        // @TODO - Only by 0x multi-sig
+        onlyOwner
     {
         require(
             validExchanges[addr],
@@ -64,6 +73,8 @@ contract MixinExchange is
         emit ExchangeRemoved(addr);
     }
 
+    /// @dev Returns true iff the address is a valid exchange
+    /// @param addr Address of exchange contract
     function isValidExchangeAddress(address addr)
         public
         view
