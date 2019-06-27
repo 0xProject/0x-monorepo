@@ -82,6 +82,12 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public approve = {
         async sendTransactionAsync(
@@ -158,18 +164,6 @@ export class ZRXTokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _spender: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_spender', _spender);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ZRXTokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -208,6 +202,18 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _spender: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_spender', _spender);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [_spender,
+        _value
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public totalSupply = {
         async callAsync(
@@ -241,6 +247,12 @@ export class ZRXTokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transferFrom = {
@@ -328,21 +340,6 @@ export class ZRXTokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _from: string,
-            _to: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_from', _from);
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ZRXTokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
-    _to,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _from: string,
             _to: string,
@@ -384,6 +381,21 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _from: string,
+                _to: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_from', _from);
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [_from,
+        _to,
+        _value
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public decimals = {
         async callAsync(
@@ -417,6 +429,12 @@ export class ZRXTokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
+            return abiEncodedTransactionData;
         },
     };
     public balanceOf = {
@@ -455,6 +473,15 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                _owner: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public symbol = {
         async callAsync(
@@ -488,6 +515,12 @@ export class ZRXTokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
+            return abiEncodedTransactionData;
         },
     };
     public transfer = {
@@ -565,18 +598,6 @@ export class ZRXTokenContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            _to: string,
-            _value: BigNumber,
-        ): string {
-        assert.isString('_to', _to);
-        assert.isBigNumber('_value', _value);
-        const self = this as any as ZRXTokenContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
-    _value
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -614,6 +635,18 @@ export class ZRXTokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _to: string,
+                _value: BigNumber,
+            ): string {
+            assert.isString('_to', _to);
+            assert.isBigNumber('_value', _value);
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [_to,
+        _value
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public allowance = {
@@ -654,6 +687,18 @@ export class ZRXTokenContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                _owner: string,
+                _spender: string,
+            ): string {
+            assert.isString('_owner', _owner);
+            assert.isString('_spender', _spender);
+            const self = this as any as ZRXTokenContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [_owner,
+        _spender
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

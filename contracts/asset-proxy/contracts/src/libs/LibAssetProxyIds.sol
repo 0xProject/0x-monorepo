@@ -34,4 +34,7 @@ contract LibAssetProxyIds {
 
     // MultiAsset(uint256[],bytes[])
     bytes4 constant public MULTI_ASSET_PROXY_ID = 0x94cfcdd7;
+
+    // StaticCall(address,bytes,bytes32)
+    bytes4 constant public STATIC_CALL_PROXY_ID = 0xc339d10a;
 }

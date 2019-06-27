@@ -121,7 +121,7 @@ describe('ERC1155Proxy', () => {
                 }),
             );
         });
-        it('should have an id of 0x9645780d', async () => {
+        it('should have an id of 0xa7cb5fb7', async () => {
             const proxyId = await erc1155Proxy.getProxyId.callAsync();
             const expectedProxyId = AssetProxyId.ERC1155;
             expect(proxyId).to.equal(expectedProxyId);
@@ -1572,7 +1572,7 @@ describe('ERC1155Proxy', () => {
             // execute transfer
             await expectTransactionFailedAsync(
                 erc1155ProxyWrapper.transferFromRawAsync(badTxData, authorized),
-                RevertReason.InvalidAssetData,
+                RevertReason.InvalidAssetDataEnd,
             );
         });
         it('should revert if length of assetData, excluding the selector, is not a multiple of 32', async () => {
