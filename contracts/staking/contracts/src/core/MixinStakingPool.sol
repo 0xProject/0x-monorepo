@@ -111,7 +111,7 @@ contract MixinStakingPool is
         _createPoolInRewardVault(poolId, operatorShare);
 
         // notify
-        emit PoolCreated(poolId, operatorAddress, operatorShare);
+        emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
         return poolId;
     }
 
@@ -290,6 +290,12 @@ contract MixinStakingPool is
         );
         poolIdByMakerAddress[makerAddress] = poolId;
         makerAddressesByPoolId[poolId].push(makerAddress);
+
+        // notify
+        emit MakerAddedToStakingPool(
+            poolId,
+            makerAddress
+        );
     }
 
     /// @dev Unrecords a maker for a pool.
@@ -330,5 +336,11 @@ contract MixinStakingPool is
 
         // reset the pool id assigned to the maker.
         poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
+
+        // notify
+        emit MakerRemovedFromStakingPool(
+            poolId,
+            makerAddress
+        );
     }
 }
