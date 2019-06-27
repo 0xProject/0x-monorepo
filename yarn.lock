@@ -478,17 +478,17 @@
   dependencies:
     "@0x/base-contract" "^4.0.3"
 
-"@0x/asset-buyer@6.1.5", "@0x/asset-buyer@^6.1.5":
-  version "6.1.5"
-  resolved "https://registry.yarnpkg.com/@0x/asset-buyer/-/asset-buyer-6.1.5.tgz#bf2056ccd9e749034d993c4de259d2f1b572421e"
-  integrity sha512-8e2OTSEacyWnWiYtchKHeQ3mYq912dd8OL46Wekt7DMNYx85R1ExTHaTgoKEQAe4EDsETW41yBPT6DLXwMI/Tw==
+"@0x/asset-buyer@6.1.4":
+  version "6.1.4"
+  resolved "https://registry.yarnpkg.com/@0x/asset-buyer/-/asset-buyer-6.1.4.tgz#ea863b860fbae6f633846bdcf23cacbb345aefd1"
+  integrity sha512-pyBFvMz2coJ4USygm/8XPy+6X7NMDzlis/WVbWQ7agIbwfXPSE+AtAwJoZhifI3dkOc5oxgNS+NIFNbh+QemTw==
   dependencies:
     "@0x/assert" "^2.0.10"
-    "@0x/connect" "^5.0.10"
-    "@0x/contract-wrappers" "^9.1.4"
+    "@0x/connect" "^5.0.9"
+    "@0x/contract-wrappers" "^9.1.3"
     "@0x/json-schemas" "^3.0.10"
-    "@0x/order-utils" "^8.1.1"
-    "@0x/subproviders" "^4.1.0"
+    "@0x/order-utils" "^8.1.0"
+    "@0x/subproviders" "^4.0.6"
     "@0x/types" "^2.2.2"
     "@0x/typescript-typings" "^4.2.2"
     "@0x/utils" "^4.3.3"

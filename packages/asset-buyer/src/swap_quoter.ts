@@ -18,6 +18,7 @@ import {
     SwapQuoteRequestOpts,
     SwapQuoterError,
     SwapQuoterOpts,
+    SwapQuoteOperation,
 } from './types';
 
 import { assert } from './utils/assert';
@@ -133,7 +134,7 @@ export class SwapQuoter {
     public async getSwapQuoteAsync(
         makerAssetData: string,
         takerAssetData: string,
-        makerAssetSwapAmount: BigNumber,
+        assetSwapAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<SwapQuote> {
         const { shouldForceOrderRefresh, slippagePercentage, operation } = _.merge(
@@ -143,7 +144,7 @@ export class SwapQuoter {
         );
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assert.isBigNumber('makerAssetSwapAmount', makerAssetSwapAmount);
+        assert.isBigNumber('assetSwapAmount', assetSwapAmount);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
@@ -164,13 +165,24 @@ export class SwapQuoter {
                 }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }
-        const swapQuote = swapQuoteCalculator.calculate(
-            ordersAndFillableAmounts,
-            feeOrdersAndFillableAmounts,
-            makerAssetSwapAmount,
-            slippagePercentage,
-            isMakerAssetZrxToken,
-        );
+        let swapQuote: SwapQuote;
+        if (operation === SwapQuoteOperation.MarketBuy) {
+            swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
+                ordersAndFillableAmounts,
+                feeOrdersAndFillableAmounts,
+                assetSwapAmount,
+                slippagePercentage,
+                isMakerAssetZrxToken,
+            );
+        } else {
+            swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
+                ordersAndFillableAmounts,
+                feeOrdersAndFillableAmounts,
+                assetSwapAmount,
+                slippagePercentage,
+                isMakerAssetZrxToken,
+            );
+        }
         return swapQuote;
     }
     /**
@@ -186,15 +198,15 @@ export class SwapQuoter {
     public async getSwapQuoteForERC20TokenAddressAsync(
         makerTokenAddress: string,
         takerTokenAddress: string,
-        makerAssetSwapAmount: BigNumber,
+        assetSwapAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<SwapQuote> {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
-        assert.isBigNumber('makerAssetSwapAmount', makerAssetSwapAmount);
+        assert.isBigNumber('assetSwapAmount', assetSwapAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getSwapQuoteAsync(makerAssetData, takerAssetData, makerAssetSwapAmount, options);
+        const swapQuote = this.getSwapQuoteAsync(makerAssetData, takerAssetData, assetSwapAmount, options);
         return swapQuote;
     }
     /**
