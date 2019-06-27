@@ -11,7 +11,7 @@ import * as _ from 'lodash';
 import {
     artifacts,
     LibFeeMathTestContract,
-    RewardVaultContract,
+    StakingPoolRewardVaultContract,
     StakingContract,
     StakingProxyContract,
     ZrxVaultContract,
@@ -32,7 +32,7 @@ export class StakingWrapper {
     private _stakingContractIfExists?: StakingContract;
     private _stakingProxyContractIfExists?: StakingProxyContract;
     private _zrxVaultContractIfExists?: ZrxVaultContract;
-    private _rewardVaultContractIfExists?: RewardVaultContract;
+    private _rewardVaultContractIfExists?: StakingPoolRewardVaultContract;
     private _LibFeeMathTestContractIfExists?: LibFeeMathTestContract;
     public static toBaseUnitAmount(amount: BigNumber | number): BigNumber {
         const decimals = 18;
@@ -90,9 +90,9 @@ export class StakingWrapper {
         this._validateDeployedOrThrow();
         return this._zrxVaultContractIfExists as ZrxVaultContract;
     }
-    public getRewardVaultContract(): RewardVaultContract {
+    public getStakingPoolRewardVaultContract(): StakingPoolRewardVaultContract {
         this._validateDeployedOrThrow();
-        return this._rewardVaultContractIfExists as RewardVaultContract;
+        return this._rewardVaultContractIfExists as StakingPoolRewardVaultContract;
     }
     public getLibFeeMathTestContract(): LibFeeMathTestContract {
         this._validateDeployedOrThrow();
@@ -110,8 +110,8 @@ export class StakingWrapper {
             zrxAssetData,
         );
         // deploy reward vault
-        this._rewardVaultContractIfExists = await RewardVaultContract.deployFrom0xArtifactAsync(
-            artifacts.RewardVault,
+        this._rewardVaultContractIfExists = await StakingPoolRewardVaultContract.deployFrom0xArtifactAsync(
+            artifacts.StakingPoolRewardVault,
             this._provider,
             txDefaults,
         );
@@ -156,17 +156,17 @@ export class StakingWrapper {
             (this._stakingProxyContractIfExists).address,
         );
         // set reward vault in staking contract
-        const setRewardVaultCalldata = (this
-            ._stakingContractIfExists).setRewardVault.getABIEncodedTransactionData(
+        const setStakingPoolRewardVaultCalldata = (this
+            ._stakingContractIfExists).setStakingPoolRewardVault.getABIEncodedTransactionData(
             (this._rewardVaultContractIfExists).address,
         );
-        const setRewardVaultTxData = {
+        const setStakingPoolRewardVaultTxData = {
             from: this._ownerAddress,
             to: (this._stakingProxyContractIfExists).address,
-            data: setRewardVaultCalldata,
+            data: setStakingPoolRewardVaultCalldata,
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
-            await this._web3Wrapper.sendTransactionAsync(setRewardVaultTxData),
+            await this._web3Wrapper.sendTransactionAsync(setStakingPoolRewardVaultTxData),
         );
         // deploy libmath test
         this._LibFeeMathTestContractIfExists = await LibFeeMathTestContract.deployFrom0xArtifactAsync(
@@ -601,27 +601,27 @@ export class StakingWrapper {
         amount: BigNumber,
         stakingContractAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().depositFor.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingPoolRewardVaultContract().depositFor.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata, stakingContractAddress, amount);
         return txReceipt;
     }
     public async rewardVaultEnterCatastrophicFailureModeAsync(
         zeroExMultisigAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
+        const calldata = this.getStakingPoolRewardVaultContract().enterCatostrophicFailure.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, zeroExMultisigAddress);
         return txReceipt;
     }
     public async rewardVaultBalanceOfAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOf.callAsync(poolId);
+        const balance = await this.getStakingPoolRewardVaultContract().balanceOf.callAsync(poolId);
         return balance;
     }
     public async rewardVaultBalanceOfOperatorAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOfOperator.callAsync(poolId);
+        const balance = await this.getStakingPoolRewardVaultContract().balanceOfOperator.callAsync(poolId);
         return balance;
     }
     public async rewardVaultBalanceOfPoolAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getRewardVaultContract().balanceOfPool.callAsync(poolId);
+        const balance = await this.getStakingPoolRewardVaultContract().balanceOfPool.callAsync(poolId);
         return balance;
     }
     public async rewardVaultCreatePoolAsync(
@@ -629,7 +629,7 @@ export class StakingWrapper {
         poolOperatorShare: number,
         stakingContractAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getRewardVaultContract().createPool.getABIEncodedTransactionData(
+        const calldata = this.getStakingPoolRewardVaultContract().createPool.getABIEncodedTransactionData(
             poolId,
             poolOperatorShare,
         );

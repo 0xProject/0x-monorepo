@@ -26,14 +26,14 @@ import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinRewardVault.sol";
+import "./MixinStakingPoolRewardVault.sol";
 
 
 contract MixinStakingPool is
     IStakingEvents,
     MixinConstants,
     MixinStorage,
-    MixinRewardVault
+    MixinStakingPoolRewardVault
 {
 
     using LibSafeMath for uint256;
@@ -108,7 +108,7 @@ contract MixinStakingPool is
         poolById[poolId] = pool;
 
         // register pool in reward vault
-        _createPoolInRewardVault(poolId, operatorShare);
+        _createPoolInStakingPoolRewardVault(poolId, operatorShare);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);

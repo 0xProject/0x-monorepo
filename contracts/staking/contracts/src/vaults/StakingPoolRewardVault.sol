@@ -21,12 +21,12 @@ pragma solidity ^0.5.5;
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath96.sol";
 import "./MixinVaultCore.sol";
-import "../interfaces/IRewardVault.sol";
+import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinConstants.sol";
 
 
-contract RewardVault is
-    IRewardVault,
+contract StakingPoolRewardVault is
+    IStakingPoolRewardVault,
     MixinConstants,
     MixinVaultCore
 {

@@ -27,7 +27,7 @@ import "./MixinStakeBalances.sol";
 import "./MixinScheduler.sol";
 import "./MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
-import "./MixinRewardVault.sol";
+import "./MixinStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
 
 
@@ -36,7 +36,7 @@ contract MixinExchangeFees is
     MixinConstants,
     MixinStorage,
     MixinScheduler,
-    MixinRewardVault,
+    MixinStakingPoolRewardVault,
     MixinExchangeManager,
     MixinStakeBalances,
     MixinStakingPool
@@ -121,7 +121,7 @@ contract MixinExchangeFees is
     /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
     /// proportional to (i) the fee volume attributed to their pool over the epoch, and 
     /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
-    /// into the Reward Vault (see MixinRewardVault) where they can be withdraw by makers and
+    /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
     /// the members of their pool. There will be a small amount of ETH leftover in this contract
     /// after paying out the rebates; at present, this rolls over into the next epoch. Eventually,
     /// we plan to deposit this leftover into a DAO managed by the 0x community.
@@ -211,7 +211,7 @@ contract MixinExchangeFees is
             );
 
             // record reward in vault
-            _recordDepositInRewardVault(activePools[i].poolId, reward);
+            _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
             totalRewardsPaid = totalRewardsPaid._add(reward);
 
             // clear state for gas refunds
@@ -226,7 +226,7 @@ contract MixinExchangeFees is
             "MISCALCULATED_REWARDS"
         );
         if (totalRewardsPaid > 0) {
-            _depositIntoRewardVault(totalRewardsPaid);
+            _depositIntoStakingPoolRewardVault(totalRewardsPaid);
         }
         finalContractBalance = address(this).balance;
 
