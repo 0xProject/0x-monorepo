@@ -22,13 +22,10 @@ pragma experimental ABIEncoderV2;
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSignatureValidator.sol";
 import "../libs/LibEIP712Hash.sol";
-
 import "../interfaces/IStructs.sol";
 import "../interfaces/IStakingEvents.sol";
-
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-
 import "./MixinRewardVault.sol";
 
 
@@ -40,6 +37,10 @@ contract MixinPools is
 {
 
     using LibSafeMath for uint256;
+
+    /// @dev This mixin contains logic for pools.
+    /// A "pool" can be delegated to by any number of stakers.
+    /// A market maker can create a pool 
 
     modifier onlyPoolOperator(bytes32 poolId) {
         require(
