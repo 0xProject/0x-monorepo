@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Initial support for Python",
+                "pr": 1878
+            }
+        ]
+    },
+    {
         "version": "2.0.11",
         "changes": [
             {
