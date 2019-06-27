@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.9;
 
+import "./interfaces/IStaking.sol";
 import "./core/MixinExchange.sol";
 import "./core/MixinZrxVault.sol";
 import "./core/MixinRewardVault.sol";
@@ -30,7 +31,7 @@ import "./core/MixinRewards.sol";
 
 
 contract Staking is
-    IStakingEvents,
+    IStaking,
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,

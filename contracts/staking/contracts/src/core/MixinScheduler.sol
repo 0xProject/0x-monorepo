@@ -18,6 +18,7 @@
 
 pragma solidity ^0.5.5;
 
+import "../core_interfaces/IMixinScheduler.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath64.sol";
 import "../immutable/MixinConstants.sol";
@@ -27,7 +28,8 @@ import "../interfaces/IStructs.sol";
 
 contract MixinScheduler is
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    IMixinScheduler
 {
 
     using LibSafeMath for uint256;
@@ -132,7 +134,7 @@ contract MixinScheduler is
 
         // validate that we can increment the current epoch
         require(
-            getCurrentEpochEndTimeInSeconds() <= currentBlockTimestamp,
+            getCurrentEpochEarliestEndTimeInSeconds() <= currentBlockTimestamp,
             "BLOCK_TIMESTAMP_TOO_LOW"
         );
 
