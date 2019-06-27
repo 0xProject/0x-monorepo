@@ -82,6 +82,7 @@ describe('Exchange Integrations', () => {
                 stakingWrapper.removeExchangeAddressAsync(exchange),
                 RevertReason.ExchangeAddressNotRegistered,
             );
+            // @todo should not be able to add / remove an exchange if not contract owner.
         });
     });
 });

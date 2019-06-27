@@ -44,6 +44,19 @@ contract MixinFees is
 
     using LibSafeMath for uint256;
 
+    /// @dev This mixin contains the logic for 0x protocol fees.
+    /// Protocol fees are sent by 0x exchanges every time there is a trade.
+    /// If the maker has associated their address with a pool (see MixinPools.sol), then 
+    /// the fee will be attributed to their pool. At the end of an epoch the maker and
+    /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
+    /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
+    /// their delegators. Note that delegated stake (see MixinStake) is weighted less than
+    /// stake provided by directly by the maker; this is a disincentive for market makers to
+    /// monopolize a single pool that they all delegate to.
+
+    /// @dev Pays a protocol fee in ETH.
+    ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
+    /// @param makerAddress The address of the order's maker
     function payProtocolFee(address makerAddress)
         external
         payable
@@ -54,25 +67,37 @@ contract MixinFees is
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
         protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
         if (_feesCollectedThisEpoch == 0) {
-            activePoolIdsThisEpoch.push(poolId);
+            activePoolsThisEpoch.push(poolId);
         }
     }
 
+    /// @dev Pays the rebates for to market making pool that was active this epoch,
+    ///      then updates the epoch and other time-based periods via the scheduler (see MixinScheduler).
+    ///      This is intentionally permissionless, and may be called by anyone.
     function finalizeFees()
         external
     {
-        _payRebates();
+        // payout rewards
+        (uint256 totalActivePools,
+        uint256 totalFeesCollected,
+        uint256 totalWeightedStake,
+        uint256 totalRewardsPaid,
+        uint256 initialContractBalance,
+        uint256 finalContractBalance) = _payMakerRewards();
+        emit RewardsPaid(
+            totalActivePools,
+            totalFeesCollected,
+            totalWeightedStake,
+            totalRewardsPaid,
+            initialContractBalance,
+            finalContractBalance
+        );
+
         _goToNextEpoch();
     }
 
-    function getProtocolFeesThisEpochByPool(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return protocolFeesThisEpochByPool[poolId];
-    }
-
+    /// @dev Returns the total amount of fees collected thus far, in the current epoch.
+    /// @return Amount of fees.
     function getTotalProtocolFeesThisEpoch()
         public
         view
@@ -81,78 +106,137 @@ contract MixinFees is
         return address(this).balance;
     }
 
-    function _payRebates()
-        internal
+    /// @dev Returns the amount of fees attributed to the input pool.
+    /// @param poolId Pool Id to query.
+    /// @return Amount of fees.
+    function getProtocolFeesThisEpochByPool(bytes32 poolId)
+        public
+        view
+        returns (uint256)
     {
-        // Step 1 - compute total fees this epoch
-        uint256 numberOfActivePoolIds = activePoolIdsThisEpoch.length;
-        IStructs.ActivePool[] memory activePoolIds = new IStructs.ActivePool[](activePoolIdsThisEpoch.length);
-        uint256 totalFees = 0;
-        for (uint i = 0; i != numberOfActivePoolIds; i++) {
-            activePoolIds[i].poolId = activePoolIdsThisEpoch[i];
-            activePoolIds[i].feesCollected = protocolFeesThisEpochByPool[activePoolIds[i].poolId];
-            totalFees = totalFees._add(activePoolIds[i].feesCollected);
+        return protocolFeesThisEpochByPool[poolId];
+    }
+
+    /// @dev Pays rewards to market making pools that were active this epoch.
+    /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
+    /// proportional to (i) the fee volume attributed to their pool over the epoch, and 
+    /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
+    /// into the Reward Vault (see MixinRewardVault) where they can be withdraw by makers and
+    /// the members of their pool. There will be a small amount of ETH leftover in this contract
+    /// after paying out the rebates; at present, this rolls over into the next epoch. Eventually,
+    /// we plan to deposit this leftover into a DAO managed by the 0x community.
+    /// @return totalActivePools Total active pools this epoch.
+    /// @return totalFeesCollected Total fees collected this epoch, across all active pools.
+    /// @return totalWeightedStake Total weighted stake attributed to each pool. Delegated stake is weighted less.
+    /// @return totalRewardsPaid Total rewards paid out across all active pools.
+    /// @return initialContractBalance Balance of this contract before paying rewards.
+    /// @return finalContractBalance Balance of this contract after paying rewards.
+    function _payMakerRewards()
+        private
+        returns (
+            uint256 totalActivePools,
+            uint256 totalFeesCollected,
+            uint256 totalWeightedStake,
+            uint256 totalRewardsPaid,
+            uint256 initialContractBalance,
+            uint256 finalContractBalance
+        )
+    {
+        // initialize return values
+        totalActivePools = activePoolsThisEpoch.length;
+        totalFeesCollected = 0;
+        totalWeightedStake = 0;
+        totalRewardsPaid = 0;
+        initialContractBalance = address(this).balance;
+        finalContractBalance = initialContractBalance;
+
+        // sanity check - is there a balance to payout and were there any active pools?
+        if (initialContractBalance == 0 || totalActivePools == 0) {
+            return (
+                totalActivePools,
+                totalFeesCollected,
+                totalWeightedStake,
+                totalRewardsPaid,
+                initialContractBalance,
+                finalContractBalance
+            );
         }
-        uint256 totalRewards = address(this).balance;
-        uint256 totalStake = getActivatedStakeAcrossAllOwners();
 
-        emit EpochFinalized(
-            numberOfActivePoolIds,
-            totalRewards,
-            0
-        );
+        // step 1/3 - compute stats for active maker pools
+        IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](activePoolsThisEpoch.length);
+        for (uint i = 0; i != totalActivePools; i++) {
+            bytes32 poolId = activePoolsThisEpoch[i];
 
-        // no rebates available
-        // note that there is a case in cobb-douglas where if we weigh either fees or stake at 100%,
-        // then the other value doesn't matter. However, it's cheaper on gas to assume that there is some
-        // non-zero split.
-        if (totalRewards == 0 || totalFees == 0 || totalStake == 0) {
-            return;
-        }
-
-        // Step 2 - payout
-        uint256 totalRewardsRecordedInVault = 0;
-        for (uint i = 0; i != numberOfActivePoolIds; i++) {
-            uint256 stakeDelegatedToPool = getStakeDelegatedToPool(activePoolIds[i].poolId);
-            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getPoolOperator(activePoolIds[i].poolId));
-            uint256 scaledStake = stakeHeldByPoolOperator._add(
+            // compute weighted stake
+            uint256 stakeDelegatedToPool = getStakeDelegatedToPool(poolId);
+            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getPoolOperator(poolId));
+            uint256 weightedStake = stakeHeldByPoolOperator._add(
                 stakeDelegatedToPool
                 ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
                 ._div(100)
             );
 
+            // store pool stats
+            activePools[i].poolId = poolId;
+            activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
+            activePools[i].weightedStake = weightedStake;
+
+            // update cumulative amounts
+            totalFeesCollected = totalFeesCollected._add(activePools[i].feesCollected);
+            totalWeightedStake = totalWeightedStake._add(activePools[i].weightedStake);
+        }
+
+        // sanity check - this is a gas optimization that can be used because we assume a non-zero
+        // split between stake and fees generated in the cobb-douglas computation (see below).
+        if (totalFeesCollected == 0 || totalWeightedStake == 0) {
+            return (
+                totalActivePools,
+                totalFeesCollected,
+                totalWeightedStake,
+                totalRewardsPaid,
+                initialContractBalance,
+                finalContractBalance
+            );
+        }
+
+        // step 2/3 - record reward for each pool
+        for (uint i = 0; i != totalActivePools; i++) {
+            // compute reward using cobb-douglas formula
             uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
-                totalRewards,
-                activePoolIds[i].feesCollected,
-                totalFees,
-                scaledStake,
-                totalStake
+                initialContractBalance,
+                activePools[i].feesCollected,
+                totalFeesCollected,
+                activePools[i].weightedStake,
+                totalWeightedStake
             );
 
             // record reward in vault
-            _recordDepositInRewardVault(activePoolIds[i].poolId, reward);
-            totalRewardsRecordedInVault = totalRewardsRecordedInVault._add(reward);
+            _recordDepositInRewardVault(activePools[i].poolId, reward);
+            totalRewardsPaid = totalRewardsPaid._add(reward);
 
-            // clear state for refunds
-            protocolFeesThisEpochByPool[activePoolIds[i].poolId] = 0;
-            activePoolIdsThisEpoch[i] = 0;
+            // clear state for gas refunds
+            protocolFeesThisEpochByPool[activePools[i].poolId] = 0;
+            activePoolsThisEpoch[i] = 0;
         }
-        activePoolIdsThisEpoch.length = 0;
+        activePoolsThisEpoch.length = 0;
 
-        // Step 3 send total payout to vault
+        // step 3/3 send total payout to vault
         require(
-            totalRewardsRecordedInVault <= totalRewards,
+            totalRewardsPaid <= initialContractBalance,
             "MISCALCULATED_REWARDS"
         );
-        if (totalRewardsRecordedInVault > 0) {
-            _depositIntoRewardVault(totalRewardsRecordedInVault);
+        if (totalRewardsPaid > 0) {
+            _depositIntoRewardVault(totalRewardsPaid);
         }
+        finalContractBalance = address(this).balance;
 
-        // Notify finalization
-        emit EpochFinalized(
-            numberOfActivePoolIds,
-            totalRewards,
-            totalRewardsRecordedInVault
+        return (
+            totalActivePools,
+            totalFeesCollected,
+            totalWeightedStake,
+            totalRewardsPaid,
+            initialContractBalance,
+            finalContractBalance
         );
     }
 }
