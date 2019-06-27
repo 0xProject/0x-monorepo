@@ -56,7 +56,7 @@ contract LibMath is
                 target
             ));
         }
-        
+
         partialAmount = _safeDiv(
             _safeMul(numerator, target),
             denominator
@@ -94,7 +94,7 @@ contract LibMath is
                 target
             ));
         }
-        
+
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
@@ -132,7 +132,7 @@ contract LibMath is
         );
         return partialAmount;
     }
-    
+
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -163,7 +163,7 @@ contract LibMath is
         );
         return partialAmount;
     }
-    
+
     /// @dev Checks if rounding error >= 0.1% when rounding down.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -181,7 +181,7 @@ contract LibMath is
         if (denominator == 0) {
             _rrevert(DivisionByZeroError());
         }
-        
+
         // The absolute rounding error is the difference between the rounded
         // value and the ideal value. The relative rounding error is the
         // absolute rounding error divided by the absolute value of the
@@ -194,11 +194,11 @@ contract LibMath is
         // When the ideal value is zero, we require the absolute error to
         // be zero. Fortunately, this is always the case. The ideal value is
         // zero iff `numerator == 0` and/or `target == 0`. In this case the
-        // remainder and absolute error are also zero. 
+        // remainder and absolute error are also zero.
         if (target == 0 || numerator == 0) {
             return false;
         }
-        
+
         // Otherwise, we want the relative rounding error to be strictly
         // less than 0.1%.
         // The relative error is `remainder / (numerator * target)`.
@@ -216,7 +216,7 @@ contract LibMath is
         isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
         return isError;
     }
-    
+
     /// @dev Checks if rounding error >= 0.1% when rounding up.
     /// @param numerator Numerator.
     /// @param denominator Denominator.
@@ -234,7 +234,7 @@ contract LibMath is
         if (denominator == 0) {
             _rrevert(DivisionByZeroError());
         }
-        
+
         // See the comments in `isRoundingError`.
         if (target == 0 || numerator == 0) {
             // When either is zero, the ideal value and rounded value are zero

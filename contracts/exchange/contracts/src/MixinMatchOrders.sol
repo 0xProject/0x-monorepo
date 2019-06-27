@@ -56,20 +56,25 @@ contract MixinMatchOrders is
         require(leftOrders.length == leftSignatures.length, "Incompatible leftOrders and leftSignatures");
         require(rightOrders.length == rightSignatures.length, "Incompatible rightOrders and rightSignatures");
 
-        uint256 minLength = _min256(leftOrders.length, rightOrders.length);
+        // Without simulating all of the order matching, this program cannot know how many
+        // matches there will be. To ensure that batchMatchedFillResults has enough memory
+        // allocated for the left and the right side, we will allocate enough space for the
+        // maximum amount of matches (the maximum of the left and the right sides).
+        uint256 maxLength = _max256(leftOrders.length, rightOrders.length);
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
 
-        batchMatchedFillResults.left = new LibFillResults.FillResults[](minLength);
-        batchMatchedFillResults.right = new LibFillResults.FillResults[](minLength);
-
+        // Initialize initial variables
+        uint i;
         uint256 leftIdx = 0;
         uint256 rightIdx = 0;
-
         LibOrder.Order memory leftOrder = leftOrders[0];
         LibOrder.Order memory rightOrder = rightOrders[0];
         bytes memory leftSignature = leftSignatures[0];
         bytes memory rightSignature = rightSignatures[0];
 
-        for (uint i = 0;; i++) {
+
+        for (i = 0;; i++) {
             // Match the two orders that are pointed to by the left and right indices
             LibFillResults.MatchedFillResults memory matchResults = matchOrders(
                 leftOrder,
@@ -86,6 +91,7 @@ contract MixinMatchOrders is
                 matchResults.left.makerFeePaid;
             batchMatchedFillResults.profitInRightMakerAsset +=
                 matchResults.right.makerFeePaid;
+
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
@@ -110,6 +116,13 @@ contract MixinMatchOrders is
             }
         }
 
+        // Update the lengths of the fill results for batchMatchResults
+        assembly {
+            mstore(mload(batchMatchedFillResults), i)
+            mstore(mload(add(batchMatchedFillResults, 32)), i)
+        }
+
+        // Return the fill results from the batch match
         return batchMatchedFillResults;
     }
 

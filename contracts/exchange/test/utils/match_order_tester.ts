@@ -166,12 +166,17 @@ export class MatchOrderTester {
         expectedTransferAmounts: Array<Partial<MatchTransferAmounts>>,
         initialTokenBalances?: TokenBalances,
     ): Promise<BatchMatchResults> {
+        // Ensure that the provided input is valid.
+        expect(matchPairs.length).to.be.eq(expectedTransferAmounts.length);
+        expect(orders.leftOrders.length).to.be.eq(orders.leftOrdersTakerAssetFilledAmounts.length);
+        expect(orders.rightOrders.length).to.be.eq(orders.rightOrdersTakerAssetFilledAmounts.length);
+        // Ensure that the exchange is in the expected state.
         await assertBatchOrderStatesAsync(orders, this.exchangeWrapper);
-        // Get the token balances before executing `matchOrders()`.
+        // Get the token balances before executing `batchMatchOrders()`.
         const _initialTokenBalances = initialTokenBalances
             ? initialTokenBalances
             : await this._initialTokenBalancesPromise;
-        // Execute `matchOrders()`
+        // Execute `batchMatchOrders()`
         const transactionReceipt = await this._executeBatchMatchOrdersAsync(
             orders.leftOrders,
             orders.rightOrders,
@@ -190,6 +195,7 @@ export class MatchOrderTester {
             batchMatchResults,
             transactionReceipt,
             await this.getBalancesAsync(),
+            _initialTokenBalances,
             this.exchangeWrapper,
         );
         return batchMatchResults;
@@ -347,9 +353,9 @@ function simulateBatchMatchOrders(
         // replace the side's taker asset filled amount
         if (batchMatchResults.matches.length > 0) {
             if (lastLeftIdx === leftIdx) {
-                matchedOrders.leftOrderTakerAssetFilledAmount =
-                    getLastMatch(batchMatchResults)
-                        .orders.leftOrderTakerAssetFilledAmount;
+                matchedOrders.leftOrderTakerAssetFilledAmount = getLastMatch(
+                    batchMatchResults,
+                ).orders.leftOrderTakerAssetFilledAmount;
             } else {
                 batchMatchResults.filledAmounts.push([
                     orders.leftOrders[lastLeftIdx],
@@ -358,9 +364,9 @@ function simulateBatchMatchOrders(
                 ]);
             }
             if (lastRightIdx === rightIdx) {
-                matchedOrders.rightOrderTakerAssetFilledAmount =
-                    getLastMatch(batchMatchResults)
-                        .orders.rightOrderTakerAssetFilledAmount;
+                matchedOrders.rightOrderTakerAssetFilledAmount = getLastMatch(
+                    batchMatchResults,
+                ).orders.rightOrderTakerAssetFilledAmount;
             } else {
                 batchMatchResults.filledAmounts.push([
                     orders.rightOrders[lastRightIdx],
@@ -395,21 +401,6 @@ function simulateBatchMatchOrders(
         getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
         'right',
     ]);
-    // Write the remaining order's fill amounts in the batch match results
-    for (let j = lastLeftIdx + 1; j < orders.leftOrders.length; j++) {
-        batchMatchResults.filledAmounts.push([
-            orders.leftOrders[j],
-            orders.leftOrdersTakerAssetFilledAmounts[j] || ZERO,
-            'left',
-        ]);
-    }
-    for (let k = lastRightIdx + 1; k < orders.rightOrders.length; k++) {
-        batchMatchResults.filledAmounts.push([
-            orders.rightOrders[k],
-            orders.rightOrdersTakerAssetFilledAmounts[k] || ZERO,
-            'right',
-        ]);
-    }
     // Return the batch match results
     return batchMatchResults;
 }
@@ -604,6 +595,7 @@ async function assertBatchMatchResultsAsync(
     batchMatchResults: BatchMatchResults,
     transactionReceipt: TransactionReceiptWithDecodedLogs,
     actualTokenBalances: TokenBalances,
+    initialTokenBalances: TokenBalances,
     exchangeWrapper: ExchangeWrapper,
 ): Promise<void> {
     // Ensure that the batchMatchResults contain at least one match
@@ -614,7 +606,8 @@ async function assertBatchMatchResultsAsync(
         transactionReceipt,
     );
     // Check the token balances.
-    assertBalances(batchMatchResults.matches[batchMatchResults.matches.length - 1].balances, actualTokenBalances);
+    const newBalances = getUpdatedBalances(batchMatchResults, initialTokenBalances);
+    assertBalances(newBalances, actualTokenBalances);
     // Check the Exchange state.
     await assertPostBatchExchangeStateAsync(batchMatchResults, exchangeWrapper);
 }
@@ -861,7 +854,7 @@ async function assertOrderFilledAmountAsync(
 }
 
 /**
- * Retrive the current token balances of all known addresses.
+ * Retrieve the current token balances of all known addresses.
  * @param erc20Wrapper The ERC20Wrapper instance.
  * @param erc721Wrapper The ERC721Wrapper instance.
  * @param erc1155Wrapper The ERC1155ProxyWrapper instance.
@@ -925,5 +918,53 @@ function encodeTokenBalances(obj: any): any {
  */
 function getLastMatch(batchMatchResults: BatchMatchResults): MatchResults {
     return batchMatchResults.matches[batchMatchResults.matches.length - 1];
+}
+
+/**
+ * Get the token balances
+ * @param batchMatchResults The results of a batch order match
+ * @return The token balances results from after the batch
+ */
+function getUpdatedBalances(batchMatchResults: BatchMatchResults, initialTokenBalances: TokenBalances): TokenBalances {
+    return batchMatchResults.matches
+        .map(match => match.balances)
+        .reduce((totalBalances, balances) => aggregateBalances(totalBalances, balances, initialTokenBalances));
+}
+
+/**
+ * Takes a `totalBalances`, a `balances`, and an `initialBalances`, subtracts the `initialBalances
+ * from the `balances`, and then adds the result to `totalBalances`.
+ * @param totalBalances A set of balances to be updated with new results.
+ * @param balances A new set of results that deviate from the `initialBalances` by one matched
+ *                 order. Subtracting away the `initialBalances` leaves behind a diff of the
+ *                 matched orders effect on the `initialBalances`.
+ * @param initialBalances The token balances from before the call to `batchMatchOrders()`.
+ * @return The updated total balances using the derived balance difference.
+ */
+function aggregateBalances(
+    totalBalances: TokenBalances,
+    balances: TokenBalances,
+    initialBalances: TokenBalances,
+): TokenBalances {
+    // ERC20
+    for (const owner of _.keys(totalBalances.erc20)) {
+        for (const contract of _.keys(totalBalances.erc20[owner])) {
+            const difference = balances.erc20[owner][contract].minus(initialBalances.erc20[owner][contract]);
+            totalBalances.erc20[owner][contract] = totalBalances.erc20[owner][contract].plus(difference);
+        }
+    }
+    // ERC721
+    for (const owner of _.keys(totalBalances.erc721)) {
+        for (const contract of _.keys(totalBalances.erc721[owner])) {
+            totalBalances.erc721[owner][contract] = _.zipWith(
+                totalBalances.erc721[owner][contract],
+                balances.erc721[owner][contract],
+                initialBalances.erc721[owner][contract],
+                (a: BigNumber, b: BigNumber, c: BigNumber) => a.plus(b.minus(c)),
+            );
+        }
+    }
+    // TODO(jalextowle): Implement the same as the above for ERC1155
+    return totalBalances;
 }
 // tslint:disable-line:max-file-line-count
