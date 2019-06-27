@@ -15,6 +15,17 @@ import {
 } from 'ts/types';
 
 export const PROJECTS: { [s: string]: ExploreProject } = {
+    dydx: {
+        name: 'dydx',
+        label: 'dYdX',
+        description:
+            "Trustless margin trading and lending platform that sources liquidity from 0x's open orderbook relayers.",
+        logo_url: '/images/explore/dydx.svg',
+        logo_max_width: '160px',
+        theme_color: '#282C32',
+        url: 'https://trade.dydx.exchange/',
+        keywords: ['tokens'],
+    },
     paradex: {
         name: 'paradex',
         label: 'Paradex',
@@ -41,7 +52,7 @@ export const PROJECTS: { [s: string]: ExploreProject } = {
             'Popular open order book relayer for trading ERC-20 tokens wallet to wallet, headquartered in Denver.',
         logo_url: '/images/explore/radar_relay.svg',
         theme_color: '#262626',
-        url: 'https://radarrelay.com/',
+        url: 'https://app.radarrelay.com/',
         keywords: ['tokens'],
         instant: {
             orderSource: 'https://api.radarrelay.com/0x/v2/',
@@ -304,13 +315,14 @@ export const ORDERINGS: { [s: string]: ExploreTilesOrderingMetadata } = {
         ordering: ExploreTilesOrdering.Popular,
         type: ExploreTilesOrderingType.HardCodedByName,
         hardCoded: [
+            'dydx',
             'radar_relay',
-            'veil',
             'ethfinex',
+            'paradex',
+            'veil',
             'gods_unchained',
             'zeroex_tracker',
             'emoon',
-            'paradex',
             'boxswap',
             'imtoken',
             'pixura',
@@ -334,6 +346,7 @@ export const ORDERINGS: { [s: string]: ExploreTilesOrderingMetadata } = {
         ordering: ExploreTilesOrdering.RecentlyAdded,
         type: ExploreTilesOrderingType.HardCodedByName,
         hardCoded: [
+            'dydx',
             'fabrx',
             'ambo',
             'fordex',
