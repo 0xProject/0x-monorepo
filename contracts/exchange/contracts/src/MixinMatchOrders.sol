@@ -52,129 +52,28 @@ contract MixinMatchOrders is
         nonReentrant
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
-        // Ensure that the left and right orders have nonzero lengths.
-        if (leftOrders.length == 0) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS));
-        }
-        if (rightOrders.length == 0) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS));
-        }
-
-        // Ensure that the left and right arrays are compatible.
-        if (leftOrders.length != leftSignatures.length) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS));
-        }
-        if (rightOrders.length != rightSignatures.length) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS));
-        }
-
-        // Without simulating all of the order matching, this program cannot know how many
-        // matches there will be. To ensure that batchMatchedFillResults has enough memory
-        // allocated for the left and the right side, we will allocate enough space for the
-        // maximum amount of matches (the maximum of the left and the right sides).
-        uint256 maxLength = _max256(leftOrders.length, rightOrders.length);
-        batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
-        batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
-
-        // Initialize initial variables
-        uint matchCount;
-        uint256 leftIdx = 0;
-        uint256 rightIdx = 0;
-
-        // Keep local variables for orders, order info, and signatures for efficiency.
-        LibOrder.Order memory leftOrder = leftOrders[0];
-        LibOrder.Order memory rightOrder = rightOrders[0];
-        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
-        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
-
-        // Loop infinitely (until broken inside of the loop), but keep a counter of how
-        // many orders have been matched.
-        for (matchCount = 0;; matchCount++) {
-            // Match the two orders that are pointed to by the left and right indices
-            LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
-                leftOrder,
-                rightOrder,
-                leftSignatures[leftIdx],
-                rightSignatures[rightIdx]
-            );
-
-            // Update the orderInfo structs with the updated takerAssetFilledAmount
-            leftOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
-                leftOrderInfo.orderTakerAssetFilledAmount,
-                matchResults.left.takerAssetFilledAmount
-            );
-            rightOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
-                rightOrderInfo.orderTakerAssetFilledAmount,
-                matchResults.right.takerAssetFilledAmount
-            );
-
-            // Add the matchResults and the profit made during the match to the
-            // batchMatchedFillResults for this batch.
-            batchMatchedFillResults.left[matchCount] = matchResults.left;
-            batchMatchedFillResults.right[matchCount] = matchResults.right;
-            batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
-                batchMatchedFillResults.profitInLeftMakerAsset,
-                matchResults.leftMakerAssetSpreadAmount
-            );
-            batchMatchedFillResults.profitInRightMakerAsset = _safeAdd(
-                batchMatchedFillResults.profitInRightMakerAsset,
-                matchResults.rightMakerAssetSpreadAmount
-            );
-
-
-            // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
-            // or break out of the loop if there are no more leftOrders to match.
-            if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
-                if (++leftIdx == leftOrders.length) {
-                    break;
-                } else {
-                    leftOrder = leftOrders[leftIdx];
-                    leftOrderInfo = getOrderInfo(leftOrder);
-                }
-            }
-
-            // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
-            // or break out of the loop if there are no more rightOrders to match.
-            if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
-                if (++rightIdx == rightOrders.length) {
-                    break;
-                } else {
-                    rightOrder = rightOrders[rightIdx];
-                    rightOrderInfo = getOrderInfo(rightOrder);
-                }
-            }
-        }
-
-        // Update the lengths of the fill results for batchMatchResults
-        assembly {
-            mstore(mload(batchMatchedFillResults), matchCount)
-            mstore(mload(add(batchMatchedFillResults, 32)), matchCount)
-        }
-
-        // Return the fill results from the batch match
-        return batchMatchedFillResults;
+        return _batchMatchOrders(leftOrders, rightOrders, leftSignatures, rightSignatures, false);
     }
 
-    /// @dev Match two complementary orders that have a profitable spread.
-    ///      Each order is filled at their respective price point. However, the calculations are
-    ///      carried out as though the orders are both being filled at the right order's price point.
-    ///      The profit made by the left order goes to the taker (who matched the two orders).
-    /// @param leftOrder First order to match.
-    /// @param rightOrder Second order to match.
-    /// @param leftSignature Proof that order was created by the left maker.
-    /// @param rightSignature Proof that order was created by the right maker.
-    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
-    function matchOrders(
-        LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder,
-        bytes memory leftSignature,
-        bytes memory rightSignature
+    /// @dev Match complementary orders that have a profitable spread.
+    ///      Each order is maximally filled at their respective price point, and
+    ///      the matcher receives a profit denominated in either the left maker asset,
+    ///      right maker asset, or a combination of both.
+    /// @param leftOrders Set of orders with the same maker / taker asset.
+    /// @param rightOrders Set of orders to match against `leftOrders`
+    /// @param leftSignatures Proof that left orders were created by the left makers.
+    /// @param rightSignatures Proof that right orders were created by the right makers.
+    /// @return batchMatchedFillResults Amounts filled and profit generated.
+    function batchMatchOrdersWithMaximalFill(
+        LibOrder.Order[] memory leftOrders,
+        LibOrder.Order[] memory rightOrders,
+        bytes[] memory leftSignatures,
+        bytes[] memory rightSignatures
     )
         public
-        nonReentrant
-        returns (LibFillResults.MatchedFillResults memory)
+        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
-        return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature);
+        return _batchMatchOrders(leftOrders, rightOrders, leftSignatures, rightSignatures, true);
     }
 
     /// @dev Calculates fill amounts for the matched orders.
@@ -279,6 +178,164 @@ contract MixinMatchOrders is
         return matchedFillResults;
     }
 
+    /// @dev Match two complementary orders that have a profitable spread.
+    ///      Each order is filled at their respective price point. However, the calculations are
+    ///      carried out as though the orders are both being filled at the right order's price point.
+    ///      The profit made by the left order goes to the taker (who matched the two orders).
+    /// @param leftOrder First order to match.
+    /// @param rightOrder Second order to match.
+    /// @param leftSignature Proof that order was created by the left maker.
+    /// @param rightSignature Proof that order was created by the right maker.
+    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
+    function matchOrders(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        bytes memory leftSignature,
+        bytes memory rightSignature
+    )
+        public
+        nonReentrant
+        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
+    {
+        return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature, false);
+    }
+
+    /// @dev Match two complementary orders that have a profitable spread.
+    ///      Each order is maximally filled at their respective price point, and
+    ///      the matcher receives a profit denominated in either the left maker asset,
+    ///      right maker asset, or a combination of both.
+    /// @param leftOrder First order to match.
+    /// @param rightOrder Second order to match.
+    /// @param leftSignature Proof that order was created by the left maker.
+    /// @param rightSignature Proof that order was created by the right maker.
+    /// @return matchedFillResults Amounts filled by maker and taker of matched orders.
+    function matchOrdersWithMaximalFill(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        bytes memory leftSignature,
+        bytes memory rightSignature
+    )
+        public
+        nonReentrant
+        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
+    {
+        return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature, true);
+    }
+
+    function _batchMatchOrders(
+        LibOrder.Order[] memory leftOrders,
+        LibOrder.Order[] memory rightOrders,
+        bytes[] memory leftSignatures,
+        bytes[] memory rightSignatures,
+        bool withMaximalFill
+    )
+        internal
+        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
+    {
+        // Ensure that the left and right orders have nonzero lengths.
+        if (leftOrders.length == 0) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS));
+        }
+        if (rightOrders.length == 0) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS));
+        }
+
+        // Ensure that the left and right arrays are compatible.
+        if (leftOrders.length != leftSignatures.length) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS));
+        }
+        if (rightOrders.length != rightSignatures.length) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS));
+        }
+
+        // Without simulating all of the order matching, this program cannot know how many
+        // matches there will be. To ensure that batchMatchedFillResults has enough memory
+        // allocated for the left and the right side, we will allocate enough space for the
+        // maximum amount of matches (the maximum of the left and the right sides).
+        uint256 maxLength = _max256(leftOrders.length, rightOrders.length);
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
+
+        // Set up initial indices.
+        uint256 matchCount;
+        uint256 leftIdx = 0;
+        uint256 rightIdx = 0;
+
+        // Keep local variables for orders, order info, and signatures for efficiency.
+        LibOrder.Order memory leftOrder = leftOrders[0];
+        LibOrder.Order memory rightOrder = rightOrders[0];
+        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
+        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
+
+        // Loop infinitely (until broken inside of the loop), but keep a counter of how
+        // many orders have been matched.
+        for (matchCount = 0;; matchCount++) {
+            // Match the two orders that are pointed to by the left and right indices
+            LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
+                leftOrder,
+                rightOrder,
+                leftSignatures[leftIdx],
+                rightSignatures[rightIdx],
+                withMaximalFill
+            );
+
+            // Update the orderInfo structs with the updated takerAssetFilledAmount
+            leftOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
+                leftOrderInfo.orderTakerAssetFilledAmount,
+                matchResults.left.takerAssetFilledAmount
+            );
+            rightOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
+                rightOrderInfo.orderTakerAssetFilledAmount,
+                matchResults.right.takerAssetFilledAmount
+            );
+
+            // Add the matchResults and the profit made during the match to the
+            // batchMatchedFillResults for this batch.
+            batchMatchedFillResults.left[matchCount] = matchResults.left;
+            batchMatchedFillResults.right[matchCount] = matchResults.right;
+            batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
+                batchMatchedFillResults.profitInLeftMakerAsset,
+                matchResults.leftMakerAssetSpreadAmount
+            );
+            batchMatchedFillResults.profitInRightMakerAsset = _safeAdd(
+                batchMatchedFillResults.profitInRightMakerAsset,
+                matchResults.rightMakerAssetSpreadAmount
+            );
+
+
+            // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
+            // or break out of the loop if there are no more leftOrders to match.
+            if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
+                if (++leftIdx == leftOrders.length) {
+                    break;
+                } else {
+                    leftOrder = leftOrders[leftIdx];
+                    leftOrderInfo = getOrderInfo(leftOrder);
+                }
+            }
+
+            // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
+            // or break out of the loop if there are no more rightOrders to match.
+            if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
+                if (++rightIdx == rightOrders.length) {
+                    break;
+                } else {
+                    rightOrder = rightOrders[rightIdx];
+                    rightOrderInfo = getOrderInfo(rightOrder);
+                }
+            }
+        }
+
+        // Update the lengths of the fill results for batchMatchResults
+        assembly {
+            mstore(mload(batchMatchedFillResults), matchCount)
+            mstore(mload(add(batchMatchedFillResults, 32)), matchCount)
+        }
+
+        // Return the fill results from the batch match
+        return batchMatchedFillResults;
+    }
+
     function _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
@@ -312,12 +369,14 @@ contract MixinMatchOrders is
     /// @param rightOrder Second order to match.
     /// @param leftSignature Proof that order was created by the left maker.
     /// @param rightSignature Proof that order was created by the right maker.
+    /// @param withMaximalFill Indicates whether or not the maximal fill matching strategy should be used
     /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
     function _matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         bytes memory leftSignature,
-        bytes memory rightSignature
+        bytes memory rightSignature,
+        bool withMaximalFill
     )
         private
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
