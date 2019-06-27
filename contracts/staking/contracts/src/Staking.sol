@@ -21,7 +21,7 @@ pragma solidity ^0.5.9;
 import "./core/MixinExchange.sol";
 import "./core/MixinZrxVault.sol";
 import "./core/MixinRewardVault.sol";
-import "./core/MixinEpoch.sol";
+import "./core/MixinScheduler.sol";
 import "./core/MixinStakeBalances.sol";
 import "./core/MixinStake.sol";
 import "./core/MixinPools.sol";
@@ -34,7 +34,7 @@ contract Staking is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinEpoch,
+    MixinScheduler,
     MixinRewardVault,
     MixinZrxVault,
     MixinExchange,

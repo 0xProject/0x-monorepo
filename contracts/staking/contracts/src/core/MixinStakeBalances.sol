@@ -23,13 +23,13 @@ import "../libs/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinEpoch.sol";
+import "./MixinScheduler.sol";
 
 
 contract MixinStakeBalances is
     MixinConstants,
     MixinStorage,
-    MixinEpoch
+    MixinScheduler
 {
 
     using LibSafeMath for uint256;
