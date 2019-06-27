@@ -98,6 +98,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('name()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getApproved = {
         async callAsync(
@@ -146,6 +157,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getApproved(uint256)', [_tokenId]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public approve = {
@@ -284,6 +306,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferFrom = {
@@ -445,6 +478,17 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public mint = {
         async sendTransactionAsync(
@@ -579,6 +623,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public safeTransferFrom1 = {
@@ -740,6 +795,17 @@ export class DummyERC721TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public ownerOf = {
         async callAsync(
@@ -788,6 +854,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ownerOf(uint256)', [_tokenId]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public balanceOf = {
@@ -838,6 +915,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public owner = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
@@ -881,6 +969,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public symbol = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
@@ -923,6 +1022,17 @@ export class DummyERC721TokenContract extends BaseContract {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public burn = {
@@ -1058,6 +1168,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public setApprovalForAll = {
@@ -1200,6 +1321,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 _approved,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public safeTransferFrom2 = {
@@ -1371,6 +1503,17 @@ export class DummyERC721TokenContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public isApprovedForAll = {
         async callAsync(
@@ -1428,6 +1571,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 _operator.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferOwnership = {
@@ -1545,6 +1699,17 @@ export class DummyERC721TokenContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as DummyERC721TokenContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

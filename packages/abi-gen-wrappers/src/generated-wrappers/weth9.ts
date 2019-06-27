@@ -104,6 +104,17 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('name()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public approve = {
         async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
@@ -231,6 +242,17 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public totalSupply = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -273,6 +295,17 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferFrom = {
@@ -426,6 +459,17 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public withdraw = {
         async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
@@ -541,6 +585,17 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public decimals = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
@@ -583,6 +638,17 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): number
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('decimals()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public balanceOf = {
@@ -635,6 +701,17 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public symbol = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
@@ -677,6 +754,17 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): string
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transfer = {
@@ -805,6 +893,17 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public deposit = {
         async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
@@ -916,6 +1015,17 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): void
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public allowance = {
         async callAsync(
@@ -973,6 +1083,17 @@ export class WETH9Contract extends BaseContract {
                 index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedReturnData(
+            returnData: string
+        ): BigNumber
+         {
+            const self = this as any as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

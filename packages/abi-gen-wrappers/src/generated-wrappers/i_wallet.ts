@@ -81,6 +81,17 @@ export class IWalletContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedReturnData(
+            returnData: string
+        ): boolean
+         {
+            const self = this as any as IWalletContract;
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
+        >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

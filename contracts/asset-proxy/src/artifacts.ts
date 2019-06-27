@@ -32,5 +32,4 @@ export const artifacts = {
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     TestStaticCallTarget: TestStaticCallTarget as ContractArtifact,
-    LibAssetData: LibAssetData as ContractArtifact,
 };
