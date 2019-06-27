@@ -25,7 +25,7 @@ export const marketUtils = {
     ): OrdersAndRemainingTakerFillAmount<T> {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         assert.isValidBaseUnitAmount('takerAssetFillAmount', takerAssetFillAmount);
-        // try to get remainingFillableMakerAssetAmounts from opts, if it's not there, use makerAssetAmount values from orders
+        // try to get remainingFillableTakerAssetAmounts from opts, if it's not there, use takerAssetAmount values from orders
         const remainingFillableTakerAssetAmounts = _.get(
             opts,
             'remainingFillableTakerAssetAmounts',
