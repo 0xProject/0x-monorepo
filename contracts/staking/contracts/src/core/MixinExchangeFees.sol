@@ -25,7 +25,7 @@ import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinScheduler.sol";
-import "./MixinPools.sol";
+import "./MixinStakingPool.sol";
 import "./MixinExchangeManager.sol";
 import "./MixinRewardVault.sol";
 import "../interfaces/IStructs.sol";
@@ -39,14 +39,14 @@ contract MixinExchangeFees is
     MixinRewardVault,
     MixinExchangeManager,
     MixinStakeBalances,
-    MixinPools
+    MixinStakingPool
 {
 
     using LibSafeMath for uint256;
 
     /// @dev This mixin contains the logic for 0x protocol fees.
     /// Protocol fees are sent by 0x exchanges every time there is a trade.
-    /// If the maker has associated their address with a pool (see MixinPools.sol), then 
+    /// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
     /// the fee will be attributed to their pool. At the end of an epoch the maker and
     /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
     /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
@@ -63,7 +63,7 @@ contract MixinExchangeFees is
         onlyExchange
     {
         uint256 amount = msg.value;
-        bytes32 poolId = getMakerPoolId(makerAddress);
+        bytes32 poolId = getPoolIdOfMaker(makerAddress);
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
         protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
         if (_feesCollectedThisEpoch == 0) {
