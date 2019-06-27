@@ -171,7 +171,8 @@ export enum SwapQuoteOperation {
 export interface SwapQuote {
     takerAssetData: string;
     makerAssetData: string;
-    makerAssetFillAmount: BigNumber;
+    takerAssetFillAmount?: BigNumber;
+    makerAssetFillAmount?: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
@@ -190,6 +191,7 @@ export interface SwapQuoteWithAffiliateFee extends SwapQuote {
  */
 export interface SwapQuoteInfo {
     takerTokenAmount: BigNumber;
+    makerTokenAmount: BigNumber;
     feeTakerTokenAmount: BigNumber;
     totalTakerTokenAmount: BigNumber;
 }
