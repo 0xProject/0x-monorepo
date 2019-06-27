@@ -154,11 +154,6 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
  */
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
-export enum SwapQuoteOperation {
-    MarketSell = 'MARKET_SELL',
-    MarketBuy = 'MARKET_BUY',
-}
-
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -171,13 +166,22 @@ export enum SwapQuoteOperation {
 export interface SwapQuote {
     takerAssetData: string;
     makerAssetData: string;
-    takerAssetFillAmount?: BigNumber;
-    makerAssetFillAmount?: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
-    operation: SwapQuoteOperation;
+}
+
+export interface MarketSellSwapQuote extends SwapQuote {
+    takerAssetFillAmount: BigNumber;
+    bestCaseQuoteInfo: MarketSellSwapQuoteInfo;
+    worstCaseQuoteInfo: MarketSellSwapQuoteInfo;
+}
+
+export interface MarketBuySwapQuote extends SwapQuote {
+    makerAssetFillAmount: BigNumber;
+    bestCaseQuoteInfo: MarketBuySwapQuoteInfo;
+    worstCaseQuoteInfo: MarketBuySwapQuoteInfo;
 }
 
 export interface SwapQuoteWithAffiliateFee extends SwapQuote {
@@ -190,10 +194,16 @@ export interface SwapQuoteWithAffiliateFee extends SwapQuote {
  * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface SwapQuoteInfo {
-    takerTokenAmount: BigNumber;
-    makerTokenAmount: BigNumber;
     feeTakerTokenAmount: BigNumber;
     totalTakerTokenAmount: BigNumber;
+}
+
+export interface MarketSellSwapQuoteInfo extends SwapQuoteInfo {
+    makerTokenAmount: BigNumber;
+}
+
+export interface MarketBuySwapQuoteInfo extends SwapQuoteInfo {
+    takerTokenAmount: BigNumber;
 }
 
 /**
@@ -203,7 +213,6 @@ export interface SwapQuoteInfo {
 export interface SwapQuoteRequestOpts {
     shouldForceOrderRefresh: boolean;
     slippagePercentage: number;
-    operation: SwapQuoteOperation;
 }
 
 /*

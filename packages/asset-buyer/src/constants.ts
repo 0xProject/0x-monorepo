@@ -5,7 +5,6 @@ import {
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
     OrdersAndFillableAmounts,
-    SwapQuoteOperation,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
 } from './types';
@@ -30,7 +29,6 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     shouldForceOrderRefresh: false,
     slippagePercentage: 0.2, // 20% slippage protection,
-    operation: SwapQuoteOperation.MarketBuy,
 };
 
 const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
