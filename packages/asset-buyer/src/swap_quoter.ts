@@ -12,13 +12,14 @@ import { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 import {
     LiquidityForAssetData,
     LiquidityRequestOpts,
+    MarketBuySwapQuote,
+    MarketSellSwapQuote,
     OrderProvider,
     OrdersAndFillableAmounts,
     SwapQuote,
     SwapQuoteRequestOpts,
     SwapQuoterError,
     SwapQuoterOpts,
-    SwapQuoteOperation,
 } from './types';
 
 import { assert } from './utils/assert';
@@ -126,25 +127,25 @@ export class SwapQuoter {
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
      * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   takerAssetSellAmount     The amount of maker asset to swap for.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getSwapQuoteAsync(
+    public async getMarketSellSwapQuoteAsync(
         makerAssetData: string,
         takerAssetData: string,
-        assetSwapAmount: BigNumber,
+        takerAssetSellAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
-    ): Promise<SwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage, operation } = _.merge(
+    ): Promise<MarketSellSwapQuote> {
+        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
         );
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
-        assert.isBigNumber('assetSwapAmount', assetSwapAmount);
+        assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
         assert.isNumber('slippagePercentage', slippagePercentage);
         const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
@@ -165,24 +166,68 @@ export class SwapQuoter {
                 }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }
-        let swapQuote: SwapQuote;
-        if (operation === SwapQuoteOperation.MarketBuy) {
-            swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
+        const swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
                 ordersAndFillableAmounts,
                 feeOrdersAndFillableAmounts,
-                assetSwapAmount,
+                takerAssetSellAmount,
                 slippagePercentage,
                 isMakerAssetZrxToken,
             );
-        } else {
-            swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
-                ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
-                assetSwapAmount,
-                slippagePercentage,
-                isMakerAssetZrxToken,
+        return swapQuote;
+    }
+
+    /**
+     * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
+     * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
+     * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   options                  Options for the request. See type definition for more information.
+     *
+     * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
+     */
+    public async getMarketBuySwapQuoteAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+        makerAssetBuyAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<MarketBuySwapQuote> {
+        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
+            {},
+            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+            options,
+        );
+        assert.isString('makerAssetData', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
+        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
+        assert.isNumber('slippagePercentage', slippagePercentage);
+        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
+        // get the relevant orders for the makerAsset and fees
+        // if the requested assetData is ZRX, don't get the fee info
+        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
+            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
+            isMakerAssetZrxToken
+                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
+            shouldForceOrderRefresh,
+        ]);
+        if (ordersAndFillableAmounts.orders.length === 0) {
+            throw new Error(
+                `${
+                    SwapQuoterError.AssetUnavailable
+                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
             );
         }
+        const swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
+                ordersAndFillableAmounts,
+                feeOrdersAndFillableAmounts,
+                makerAssetBuyAmount,
+                slippagePercentage,
+                isMakerAssetZrxToken,
+            );
+
         return swapQuote;
     }
     /**
@@ -195,18 +240,43 @@ export class SwapQuoter {
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getSwapQuoteForERC20TokenAddressAsync(
+    public async getMarketBuySwapQuoteForERC20TokenAddressAsync(
         makerTokenAddress: string,
         takerTokenAddress: string,
-        assetSwapAmount: BigNumber,
+        makerAssetBuyAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<SwapQuote> {
         assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
         assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
-        assert.isBigNumber('assetSwapAmount', assetSwapAmount);
+        assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getSwapQuoteAsync(makerAssetData, takerAssetData, assetSwapAmount, options);
+        const swapQuote = this.getMarketBuySwapQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, options);
+        return swapQuote;
+    }
+
+    /**
+     * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
+     * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
+     * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   options                  Options for the request. See type definition for more information.
+     *
+     * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
+     */
+    public async getMarketSellSwapQuoteForERC20TokenAddressAsync(
+        makerTokenAddress: string,
+        takerTokenAddress: string,
+        takerAssetSellAmount: BigNumber,
+        options: Partial<SwapQuoteRequestOpts> = {},
+    ): Promise<SwapQuote> {
+        assert.isETHAddressHex('makerTokenAddress', makerTokenAddress);
+        assert.isETHAddressHex('takerTokenAddress', takerTokenAddress);
+        assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
+        const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
+        const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
+        const swapQuote = this.getMarketSellSwapQuoteAsync(makerAssetData, takerAssetData, takerAssetSellAmount, options);
         return swapQuote;
     }
     /**
