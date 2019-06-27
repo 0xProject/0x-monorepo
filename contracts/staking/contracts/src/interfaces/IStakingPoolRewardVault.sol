@@ -19,7 +19,7 @@
 pragma solidity ^0.5.5;
 
 
-interface IRewardVault {
+interface IStakingPoolRewardVault {
 
     function ()
         external

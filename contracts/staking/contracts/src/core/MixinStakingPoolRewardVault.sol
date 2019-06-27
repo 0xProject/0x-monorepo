@@ -18,22 +18,22 @@
 
 pragma solidity ^0.5.5;
 
-import "../interfaces/IRewardVault.sol";
+import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
 
 
-contract MixinRewardVault is
+contract MixinStakingPoolRewardVault is
     MixinStorage
 {
 
-    function setRewardVault(address payable _rewardVault)
+    function setStakingPoolRewardVault(address payable _rewardVault)
         external
         // onlyOwner
     {
-        rewardVault = IRewardVault(_rewardVault);
+        rewardVault = IStakingPoolRewardVault(_rewardVault);
     }
 
-    function getRewardVault()
+    function getStakingPoolRewardVault()
         public
         view
         returns (address)
@@ -41,7 +41,7 @@ contract MixinRewardVault is
         return address(rewardVault);
     }
 
-    function getBalanceInRewardVault(bytes32 poolId)
+    function getBalanceInStakingPoolRewardVault(bytes32 poolId)
         public
         view
         returns (uint256)
@@ -49,7 +49,7 @@ contract MixinRewardVault is
         return rewardVault.balanceOf(poolId);
     }
 
-    function getBalanceOfOperatorInRewardVault(bytes32 poolId)
+    function getBalanceOfOperatorInStakingPoolRewardVault(bytes32 poolId)
         public
         view
         returns (uint256)
@@ -57,7 +57,7 @@ contract MixinRewardVault is
         return rewardVault.balanceOfOperator(poolId);
     }
 
-    function getBalanceOfPoolInRewardVault(bytes32 poolId)
+    function getBalanceOfPoolInStakingPoolRewardVault(bytes32 poolId)
         public
         view
         returns (uint256)
@@ -65,7 +65,7 @@ contract MixinRewardVault is
         return rewardVault.balanceOfPool(poolId);
     }
 
-    function _createPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
+    function _createPoolInStakingPoolRewardVault(bytes32 poolId, uint8 operatorShare)
         internal
     {
         rewardVault.createPool(
@@ -74,26 +74,26 @@ contract MixinRewardVault is
         );
     }
 
-    function _withdrawFromPoolInRewardVault(bytes32 poolId, uint256 amount)
+    function _withdrawFromPoolInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
         rewardVault.withdrawFromPool(poolId, amount);
     }
 
-    function _withdrawFromOperatorInRewardVault(bytes32 poolId, uint256 amount)
+    function _withdrawFromOperatorInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
         rewardVault.withdrawFromOperator(poolId, amount);
     }
 
-    function _depositIntoRewardVault(uint256 amountInWei)
+    function _depositIntoStakingPoolRewardVault(uint256 amountInWei)
         internal
     {
         address payable rewardVaultAddress = address(uint160(address(rewardVault)));
         rewardVaultAddress.transfer(amountInWei);
     }
 
-    function _recordDepositInRewardVault(bytes32 poolId, uint256 amount)
+    function _recordDepositInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
         rewardVault.recordDepositFor(poolId, amount);
