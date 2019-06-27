@@ -64,7 +64,7 @@ contract MixinStakingPool is
 
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
-    modifier onlyPoolOperator(bytes32 poolId) {
+    modifier onlyStakingPoolOperator(bytes32 poolId) {
         require(
             msg.sender == getPoolOperator(poolId),
             "ONLY_CALLABLE_BY_POOL_OPERATOR"
@@ -76,7 +76,7 @@ contract MixinStakingPool is
     /// @dev Asserts that the sender is the operator of the input pool or the input maker.
     /// @param poolId Pool sender must be operator of.
     /// @param makerAddress Address of a maker in the pool.
-    modifier onlyPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
+    modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
         require(
             msg.sender == getPoolOperator(poolId) || msg.sender == makerAddress,
             "ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER"
@@ -125,16 +125,25 @@ contract MixinStakingPool is
         bytes calldata makerSignature
     )
         external
-        onlyPoolOperator(poolId)
+        onlyStakingPoolOperator(poolId)
     {
         // sanity check - did maker agree to join this pool?
         require(
             isValidMakerSignature(poolId, makerAddress, makerSignature),
             "INVALID_MAKER_SIGNATURE"
         );
+        require(
+            !isMakerAssignedToPool(makerAddress),
+            "MAKER_ADDRESS_ALREADY_REGISTERED"
+        );
+        poolIdByMakerAddress[makerAddress] = poolId;
+        makerAddressesByPoolId[poolId].push(makerAddress);
 
-        // maker has agreed, record their address
-        _recordMaker(poolId, makerAddress);
+        // notify
+        emit MakerAddedToStakingPool(
+            poolId,
+            makerAddress
+        );
     }
 
     /// @dev Adds a maker to a staking pool. Note that this is only callable by the pool operator or maker.
@@ -146,10 +155,44 @@ contract MixinStakingPool is
         bytes32 poolId,
         address makerAddress
     )
-        onlyPoolOperatorOrMaker(poolId, makerAddress)
+        onlyStakingPoolOperatorOrMaker(poolId, makerAddress)
         external
     {
-        _unrecordMaker(poolId, makerAddress);
+        require(
+            getPoolIdOfMaker(makerAddress) == poolId,
+            "MAKER_ADDRESS_NOT_REGISTERED"
+        );
+
+        // load list of makers for the input pool.
+        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
+        uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
+
+        // find index of maker to remove.
+        uint indexOfMakerAddress = 0;
+        for (; indexOfMakerAddress < makerAddressesByPoolIdLength; ++indexOfMakerAddress) {
+            if (makerAddressesByPoolIdPtr[indexOfMakerAddress] == makerAddress) {
+                break;
+            }
+        }
+
+        // remove the maker from the list of makers for this pool.
+        // (i) move maker at end of list to the slot occupied by the maker to remove, then
+        // (ii) zero out the slot at the end of the list and decrement the length.
+        uint256 indexOfLastMakerAddress = makerAddressesByPoolIdLength - 1;
+        if (indexOfMakerAddress != indexOfLastMakerAddress) {
+            makerAddressesByPoolIdPtr[indexOfMakerAddress] = makerAddressesByPoolIdPtr[indexOfLastMakerAddress];
+        }
+        makerAddressesByPoolIdPtr[indexOfLastMakerAddress] = NIL_ADDRESS;
+        makerAddressesByPoolIdPtr.length -= 1;
+
+        // reset the pool id assigned to the maker.
+        poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
+
+        // notify
+        emit MakerRemovedFromStakingPool(
+            poolId,
+            makerAddress
+        );
     }
 
     /// @dev Returns true iff the input signature is valid; meaning that the maker agrees to
@@ -273,74 +316,5 @@ contract MixinStakingPool is
         returns (bytes32)
     {
         return bytes32(uint256(poolId)._add(POOL_ID_INCREMENT_AMOUNT));
-    }
-
-    /// @dev Records a maker for a pool.
-    /// @param poolId Unique id of pool.
-    /// @param makerAddress Address of maker.
-    function _recordMaker(
-        bytes32 poolId,
-        address makerAddress
-    )
-        private
-    {
-        require(
-            !isMakerAssignedToPool(makerAddress),
-            "MAKER_ADDRESS_ALREADY_REGISTERED"
-        );
-        poolIdByMakerAddress[makerAddress] = poolId;
-        makerAddressesByPoolId[poolId].push(makerAddress);
-
-        // notify
-        emit MakerAddedToStakingPool(
-            poolId,
-            makerAddress
-        );
-    }
-
-    /// @dev Unrecords a maker for a pool.
-    /// @param poolId Unique id of pool.
-    /// @param makerAddress Address of maker.
-    function _unrecordMaker(
-        bytes32 poolId,
-        address makerAddress
-    )
-        private
-    {
-        require(
-            getPoolIdOfMaker(makerAddress) == poolId,
-            "MAKER_ADDRESS_NOT_REGISTERED"
-        );
-
-        // load list of makers for the input pool.
-        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
-        uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
-
-        // find index of maker to remove.
-        uint indexOfMakerAddress = 0;
-        for (; indexOfMakerAddress < makerAddressesByPoolIdLength; ++indexOfMakerAddress) {
-            if (makerAddressesByPoolIdPtr[indexOfMakerAddress] == makerAddress) {
-                break;
-            }
-        }
-
-        // remove the maker from the list of makers for this pool.
-        // (i) move maker at end of list to the slot occupied by the maker to remove, then
-        // (ii) zero out the slot at the end of the list and decrement the length.
-        uint256 indexOfLastMakerAddress = makerAddressesByPoolIdLength - 1;
-        if (indexOfMakerAddress != indexOfLastMakerAddress) {
-            makerAddressesByPoolIdPtr[indexOfMakerAddress] = makerAddressesByPoolIdPtr[indexOfLastMakerAddress];
-        }
-        makerAddressesByPoolIdPtr[indexOfLastMakerAddress] = NIL_ADDRESS;
-        makerAddressesByPoolIdPtr.length -= 1;
-
-        // reset the pool id assigned to the maker.
-        poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
-
-        // notify
-        emit MakerRemovedFromStakingPool(
-            poolId,
-            makerAddress
-        );
     }
 }
