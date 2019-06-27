@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "./interfaces/IStaking.sol";
-import "./core/MixinExchange.sol";
+import "./core/MixinExchangeManager.sol";
 import "./core/MixinZrxVault.sol";
 import "./core/MixinRewardVault.sol";
 import "./core/MixinScheduler.sol";
@@ -38,7 +38,7 @@ contract Staking is
     MixinScheduler,
     MixinRewardVault,
     MixinZrxVault,
-    MixinExchange,
+    MixinExchangeManager,
     MixinStakeBalances,
     MixinPools,
     MixinRewards,
