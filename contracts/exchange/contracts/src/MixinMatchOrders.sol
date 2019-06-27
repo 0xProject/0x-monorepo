@@ -48,6 +48,7 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        nonReentrant
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         // Ensure that the left and right arrays are compatible and have nonzero lengths
@@ -73,10 +74,11 @@ contract MixinMatchOrders is
         bytes memory leftSignature = leftSignatures[0];
         bytes memory rightSignature = rightSignatures[0];
 
-
+        // Loop infinitely (until broken inside of the loop), but keep a counter of how
+        // many orders have been matched.
         for (i = 0;; i++) {
             // Match the two orders that are pointed to by the left and right indices
-            LibFillResults.MatchedFillResults memory matchResults = matchOrders(
+            LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
                 leftOrder,
                 rightOrder,
                 leftSignature,
@@ -126,34 +128,6 @@ contract MixinMatchOrders is
         return batchMatchedFillResults;
     }
 
-    /// @dev Match complementary orders that have a profitable spread.
-    ///      Each order is maximally filled at their respective price point, and
-    ///      the matcher receives a profit denominated in either the left maker asset,
-    ///      right maker asset, or a combination of both.
-    /// @param leftOrders Set of orders with the same maker / taker asset.
-    /// @param rightOrders Set of orders to match against `leftOrders`
-    /// @param leftSignatures Proof that left orders were created by the left makers.
-    /// @param rightSignatures Proof that right orders were created by the right makers.
-    /// @return batchMatchedFillResults Amounts filled and profit generated.
-    function batchMatchOrdersWithMaximalFill(
-        LibOrder.Order[] memory leftOrders,
-        LibOrder.Order[] memory rightOrders,
-        bytes[] memory leftSignatures,
-        bytes[] memory rightSignatures
-    )
-        public
-        returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
-    {
-        // FIXME
-        LibFillResults.FillResults[] memory empty;
-        return LibFillResults.BatchMatchedFillResults({
-            left: empty,
-            right: empty,
-            profitInLeftMakerAsset: 0,
-            profitInRightMakerAsset: 0
-        });
-    }
-
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -173,85 +147,7 @@ contract MixinMatchOrders is
         nonReentrant
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
-        // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData
-        // by pointing these values to the same location in memory. This is cheaper than checking equality.
-        // If this assumption isn't true, the match will fail at signature validation.
-        rightOrder.makerAssetData = leftOrder.takerAssetData;
-        rightOrder.takerAssetData = leftOrder.makerAssetData;
-
-        // Get left & right order info
-        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
-        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
-
-        // Fetch taker address
-        address takerAddress = _getCurrentContextAddress();
-
-        // Either our context is valid or we revert
-        _assertFillableOrder(
-            leftOrder,
-            leftOrderInfo,
-            takerAddress,
-            leftSignature
-        );
-        _assertFillableOrder(
-            rightOrder,
-            rightOrderInfo,
-            takerAddress,
-            rightSignature
-        );
-        _assertValidMatch(leftOrder, rightOrder);
-
-        // Compute proportional fill amounts
-        matchedFillResults = calculateMatchedFillResults(
-            leftOrder,
-            rightOrder,
-            leftOrderInfo.orderTakerAssetFilledAmount,
-            rightOrderInfo.orderTakerAssetFilledAmount
-        );
-
-        // Validate fill contexts
-        _assertValidFill(
-            leftOrder,
-            leftOrderInfo,
-            matchedFillResults.left.takerAssetFilledAmount,
-            matchedFillResults.left.takerAssetFilledAmount,
-            matchedFillResults.left.makerAssetFilledAmount
-        );
-        _assertValidFill(
-            rightOrder,
-            rightOrderInfo,
-            matchedFillResults.right.takerAssetFilledAmount,
-            matchedFillResults.right.takerAssetFilledAmount,
-            matchedFillResults.right.makerAssetFilledAmount
-        );
-
-        // Update exchange state
-        _updateFilledState(
-            leftOrder,
-            takerAddress,
-            leftOrderInfo.orderHash,
-            leftOrderInfo.orderTakerAssetFilledAmount,
-            matchedFillResults.left
-        );
-        _updateFilledState(
-            rightOrder,
-            takerAddress,
-            rightOrderInfo.orderHash,
-            rightOrderInfo.orderTakerAssetFilledAmount,
-            matchedFillResults.right
-        );
-
-        // Settle matched orders. Succeeds or throws.
-        _settleMatchedOrders(
-            leftOrderInfo.orderHash,
-            rightOrderInfo.orderHash,
-            leftOrder,
-            rightOrder,
-            takerAddress,
-            matchedFillResults
-        );
-
-        return matchedFillResults;
+        return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature);
     }
 
     /// @dev Calculates fill amounts for the matched orders.
@@ -356,10 +252,7 @@ contract MixinMatchOrders is
         return matchedFillResults;
     }
 
-    /// @dev Validates context for matchOrders. Succeeds or throws.
-    /// @param leftOrder First order to match.
-    /// @param rightOrder Second order to match.
-    function _assertValidMatch(
+    _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
@@ -383,10 +276,14 @@ contract MixinMatchOrders is
         }
     }
 
+    /// @dev Determines whether or not an order has been fully filled and returns the result.
+    /// @param order The order that should be checked.
+    /// @param fillResults The results of the most recent fill -- used to determine whether
+    ///                    or not the order was fully filled.
+    /// @return A boolean reflecting whether or not the order was fully filled
     function _isFilled(
         LibOrder.Order memory order,
         LibFillResults.FillResults memory fillResults
-
     )
         internal
         view
@@ -396,6 +293,106 @@ contract MixinMatchOrders is
             return true;
         }
         return false;
+    }
+
+    /// @dev Match two complementary orders that have a profitable spread.
+    ///      Each order is filled at their respective price point. However, the calculations are
+    ///      carried out as though the orders are both being filled at the right order's price point.
+    ///      The profit made by the left order goes to the taker (who matched the two orders). This
+    ///      function is needed to allow for reentrant order matching (used by batchMatchOrders).
+    /// @param leftOrder First order to match.
+    /// @param rightOrder Second order to match.
+    /// @param leftSignature Proof that order was created by the left maker.
+    /// @param rightSignature Proof that order was created by the right maker.
+    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
+    function _matchOrders(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        bytes memory leftSignature,
+        bytes memory rightSignature
+    )
+        private
+        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
+    {
+        // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData
+        // by pointing these values to the same location in memory. This is cheaper than checking equality.
+        // If this assumption isn't true, the match will fail at signature validation.
+        rightOrder.makerAssetData = leftOrder.takerAssetData;
+        rightOrder.takerAssetData = leftOrder.makerAssetData;
+
+        // Get left & right order info
+        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
+        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
+
+        // Fetch taker address
+        address takerAddress = _getCurrentContextAddress();
+
+        // Either our context is valid or we revert
+        _assertFillableOrder(
+            leftOrder,
+            leftOrderInfo,
+            takerAddress,
+            leftSignature
+        );
+        _assertFillableOrder(
+            rightOrder,
+            rightOrderInfo,
+            takerAddress,
+            rightSignature
+        );
+        _assertValidMatch(leftOrder, rightOrder);
+
+        // Compute proportional fill amounts
+        matchedFillResults = _calculateMatchedFillResults(
+            leftOrder,
+            rightOrder,
+            leftOrderInfo.orderTakerAssetFilledAmount,
+            rightOrderInfo.orderTakerAssetFilledAmount
+        );
+
+        // Validate fill contexts
+        _assertValidFill(
+            leftOrder,
+            leftOrderInfo,
+            matchedFillResults.left.takerAssetFilledAmount,
+            matchedFillResults.left.takerAssetFilledAmount,
+            matchedFillResults.left.makerAssetFilledAmount
+        );
+        _assertValidFill(
+            rightOrder,
+            rightOrderInfo,
+            matchedFillResults.right.takerAssetFilledAmount,
+            matchedFillResults.right.takerAssetFilledAmount,
+            matchedFillResults.right.makerAssetFilledAmount
+        );
+
+        // Update exchange state
+        _updateFilledState(
+            leftOrder,
+            takerAddress,
+            leftOrderInfo.orderHash,
+            leftOrderInfo.orderTakerAssetFilledAmount,
+            matchedFillResults.left
+        );
+        _updateFilledState(
+            rightOrder,
+            takerAddress,
+            rightOrderInfo.orderHash,
+            rightOrderInfo.orderTakerAssetFilledAmount,
+            matchedFillResults.right
+        );
+
+        // Settle matched orders. Succeeds or throws.
+        _settleMatchedOrders(
+            leftOrderInfo.orderHash,
+            rightOrderInfo.orderHash,
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
+        );
+
+        return matchedFillResults;
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
