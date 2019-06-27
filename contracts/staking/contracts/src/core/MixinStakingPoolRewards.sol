@@ -75,7 +75,7 @@ contract MixinStakingPoolRewards is
 
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
-        onlyPoolOperator(poolId)
+        onlyStakingPoolOperator(poolId)
     {
         _withdrawFromOperatorInStakingPoolRewardVault(poolId, amount);
         poolById[poolId].operatorAddress.transfer(amount);
@@ -100,7 +100,7 @@ contract MixinStakingPoolRewards is
 
     function withdrawTotalOperatorReward(bytes32 poolId)
         external
-        onlyPoolOperator(poolId)
+        onlyStakingPoolOperator(poolId)
         returns (uint256)
     {
         uint256 amount = getBalanceOfOperatorInStakingPoolRewardVault(poolId);
