@@ -140,10 +140,10 @@ export class DocsHome extends React.Component<Props> {
                         <div>
                             <Heading size="default">Get Started</Heading>
                             {getStartedLinks.map((link, index) => (
-                                <>
+                                <React.Fragment key={`get-started-${index}`}>
                                     <Button color={colors.brandDark} href={link.url} isWithArrow={true}>{link.heading}</Button>
                                     <Paragraph color={colors.textDarkPrimary} isMuted={1}>{link.description}</Paragraph>
-                                </>
+                                </React.Fragment>
                             ))}
                         </div>
                         <div>
