@@ -3,7 +3,8 @@ import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
-import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
+import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteConsumerError, SwapQuoteInfo } from '../types';
+import { utils } from '../utils/utils';
 
 export const assert = {
     ...sharedAssert,
@@ -14,7 +15,13 @@ export const assert = {
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
-        sharedAssert.isBigNumber(`${variableName}.makerAssetFillAmount`, swapQuote.makerAssetFillAmount);
+        if (utils.isSwapQuoteMarketBuy(swapQuote)) {
+            sharedAssert.isBigNumber(`${variableName}.makerAssetFillAmount`, swapQuote.makerAssetFillAmount);
+        } else if (utils.isSwapQuoteMarketSell(swapQuote)) {
+            sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
+        } else {
+            throw new Error(SwapQuoteConsumerError.InvalidMarketSellOrMarketBuySwapQuote);
+        }
     },
     isValidForwarderSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {
         assert.isValidSwapQuote(variableName, swapQuote);
@@ -33,9 +40,15 @@ export const assert = {
         );
     },
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
-        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
         sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, swapQuoteInfo.feeTakerTokenAmount);
         sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, swapQuoteInfo.totalTakerTokenAmount);
+        if (utils.isSwapQuoteInfoMarketBuy(swapQuoteInfo)) {
+            sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
+        } else if (utils.isSwapQuoteInfoMarketSell(swapQuoteInfo)) {
+            sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
+        } else {
+            throw new Error(SwapQuoteConsumerError.InvalidMarketSellOrMarketBuySwapQuote);
+        }
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);

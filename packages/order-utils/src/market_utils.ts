@@ -5,9 +5,7 @@ import * as _ from 'lodash';
 
 import { assert } from './assert';
 import { constants } from './constants';
-import {
-    orderCalculationUtils,
-} from './order_calculation_utils';
+import { orderCalculationUtils } from './order_calculation_utils';
 import {
     FeeOrdersAndRemainingFeeAmount,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,

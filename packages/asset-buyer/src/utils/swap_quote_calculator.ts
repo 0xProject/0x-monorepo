@@ -4,7 +4,14 @@ import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
-import { MarketBuySwapQuote, MarketBuySwapQuoteInfo, MarketSellSwapQuote, MarketSellSwapQuoteInfo, OrdersAndFillableAmounts, SwapQuoterError } from '../types';
+import {
+    MarketBuySwapQuote,
+    MarketBuySwapQuoteInfo,
+    MarketSellSwapQuote,
+    MarketSellSwapQuoteInfo,
+    OrdersAndFillableAmounts,
+    SwapQuoterError,
+} from '../types';
 
 // Calculates a swap quote for orders
 export const swapQuoteCalculator = {
@@ -17,9 +24,11 @@ export const swapQuoteCalculator = {
     ): MarketSellSwapQuote {
         const orders = ordersAndFillableAmounts.orders;
         const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const remainingFillableTakerAssetAmounts = remainingFillableMakerAssetAmounts.map((makerAssetAmount: BigNumber, index: number) => {
-            return orderCalculationUtils.getTakerFillAmount(orders[index], makerAssetAmount);
-        });
+        const remainingFillableTakerAssetAmounts = remainingFillableMakerAssetAmounts.map(
+            (makerAssetAmount: BigNumber, index: number) => {
+                return orderCalculationUtils.getTakerFillAmount(orders[index], makerAssetAmount);
+            },
+        );
         const feeOrders = feeOrdersAndFillableAmounts.orders;
         const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
         const slippageBufferAmount = takerAssetFillAmount.multipliedBy(slippagePercentage).integerValue();
@@ -32,9 +41,12 @@ export const swapQuoteCalculator = {
             remainingFillableTakerAssetAmounts,
             slippageBufferAmount,
         });
-        const ordersRemainingFillableMakerAssetAmounts = _.map(ordersRemainingFillableTakerAssetAmounts, (takerAssetAmount: BigNumber, index: number) => {
-            return orderCalculationUtils.getMakerFillAmount(resultOrders[index], takerAssetAmount);
-        });
+        const ordersRemainingFillableMakerAssetAmounts = _.map(
+            ordersRemainingFillableTakerAssetAmounts,
+            (takerAssetAmount: BigNumber, index: number) => {
+                return orderCalculationUtils.getMakerFillAmount(resultOrders[index], takerAssetAmount);
+            },
+        );
         // if we do not have enough orders to cover the desired assetBuyAmount, throw
         if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
             // We needed the amount they requested to buy, plus the amount for slippage
@@ -260,7 +272,10 @@ function calculateMarketSellQuoteInfo(
     let makerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
     if (isMakerAssetZrxToken) {
-        makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(ordersAndFillableAmounts, takerAssetSellAmount);
+        makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(
+            ordersAndFillableAmounts,
+            takerAssetSellAmount,
+        );
     } else {
         // find eth and zrx amounts needed to buy
         const takerTokenAndZrxAmountToBuyAsset = findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset(
@@ -304,7 +319,10 @@ function findZrxTokenAmountFromSellingTakerTokenAmount(
         (acc, order, index) => {
             const { totalZrxTokenAmount, remainingTakerAssetFillAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
-            const remainingFillableTakerAssetAmount = orderCalculationUtils.getTakerFillAmount(order, remainingFillableMakerAssetAmount);
+            const remainingFillableTakerAssetAmount = orderCalculationUtils.getTakerFillAmount(
+                order,
+                remainingFillableMakerAssetAmount,
+            );
             const takerFillAmount = BigNumber.min(remainingTakerAssetFillAmount, remainingFillableTakerAssetAmount);
             const makerFillAmount = orderCalculationUtils.getMakerFillAmount(order, takerFillAmount);
             const feeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
@@ -400,7 +418,10 @@ function findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset(
         (acc, order, index) => {
             const { totalMakerTokenAmount, totalZrxAmount, remainingTakerAssetFillAmount } = acc;
             const remainingFillableMakerAssetAmount = remainingFillableMakerAssetAmounts[index];
-            const remainingFillableTakerAssetAmount = orderCalculationUtils.getTakerFillAmount(order, remainingFillableMakerAssetAmount);
+            const remainingFillableTakerAssetAmount = orderCalculationUtils.getTakerFillAmount(
+                order,
+                remainingFillableMakerAssetAmount,
+            );
             const takerFillAmount = BigNumber.min(acc.remainingTakerAssetFillAmount, remainingFillableTakerAssetAmount);
             const makerFillAmount = orderCalculationUtils.getMakerFillAmount(order, takerFillAmount);
             const takerFeeAmount = orderCalculationUtils.getTakerFeeAmount(order, takerFillAmount);
