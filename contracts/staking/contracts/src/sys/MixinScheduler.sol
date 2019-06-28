@@ -57,12 +57,12 @@ contract MixinScheduler is
     /// @dev Returns the current epoch period, measured in seconds.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
     /// @return Time in seconds.
-    function getEpochPeriodInSeconds()
+    function getEpochDurationInSeconds()
         public
         pure
         returns (uint64)
     {
-        return EPOCH_PERIOD_IN_SECONDS;
+        return EPOCH_DURATION_IN_SECONDS;
     }
 
     /// @dev Returns the start time in seconds of the current epoch.
@@ -85,7 +85,7 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return getCurrentEpochStartTimeInSeconds()._add(getEpochPeriodInSeconds());
+        return getCurrentEpochStartTimeInSeconds()._add(getEpochDurationInSeconds());
     }
 
     /// @dev Returns the current timelock period.
@@ -101,12 +101,12 @@ contract MixinScheduler is
     /// @dev Returns the length of a timelock period, measured in epochs.
     ///      Timelock period = [startEpoch..endEpoch)
     /// @return Timelock period end.
-    function getTimelockPeriodInEpochs()
+    function getTimelockDurationInEpochs()
         public
         pure
         returns (uint64)
     {
-        return TIMELOCK_PERIOD_IN_EPOCHS;
+        return TIMELOCK_DURATION_IN_EPOCHS;
     }
 
     /// @dev Returns the epoch that the current timelock period started at.
@@ -128,7 +128,7 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return getCurrentTimelockPeriodStartEpoch()._add(getTimelockPeriodInEpochs());
+        return getCurrentTimelockPeriodStartEpoch()._add(getTimelockDurationInEpochs());
     }
 
     /// @dev Moves to the next epoch, given the current epoch period has ended.
@@ -151,7 +151,7 @@ contract MixinScheduler is
         uint64 nextEpoch = currentEpoch._add(1);
         currentEpoch = nextEpoch;
         currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds._add(getEpochPeriodInSeconds());
+        uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds._add(getEpochDurationInSeconds());
         
         // notify of epoch change
         emit EpochChanged(
@@ -164,7 +164,7 @@ contract MixinScheduler is
         if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
             currentTimelockPeriod = currentTimelockPeriod._add(1);
             currentTimelockPeriodStartEpoch = currentEpoch;
-            uint64 endEpoch = currentEpoch._add(getTimelockPeriodInEpochs());
+            uint64 endEpoch = currentEpoch._add(getTimelockDurationInEpochs());
             
             // notify
             emit TimelockPeriodChanged(
