@@ -2,7 +2,7 @@
 
 import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
-import { AbiDefinition, ConstructorAbi, EventAbi, MethodAbi } from 'ethereum-types';
+import { AbiDefinition, ConstructorAbi, ContractAbi, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
@@ -74,6 +74,11 @@ function registerPartials(): void {
 Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
 Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
+
+// Check if 0 or false exists
+Handlebars.registerHelper('isDefined', (context: any): boolean  => {
+    return context !== undefined;
+});
 registerPartials();
 
 if (_.isEmpty(abiFileNames)) {
@@ -143,7 +148,7 @@ for (const abiFileName of abiFileNames) {
     const contextData = {
         contractName: namedContent.name,
         ctor,
-        ABI: JSON.stringify(ABI),
+        ABI: ABI as ContractAbi,
         methods: methodsData,
         events: eventAbis,
     };
