@@ -22,7 +22,7 @@ import "../libs/LibSafeMath.sol";
 import "../libs/LibRewardMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
-import "./MixinStakeBalances.sol";
+import "../stake/MixinStakeBalances.sol";
 import "./MixinStakingPoolRewardVault.sol";
 import "./MixinStakingPool.sol";
 

@@ -21,7 +21,7 @@ pragma solidity ^0.5.5;
 import "../interfaces/IStakingEvents.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinOwnable.sol";
+import "../sys/MixinOwnable.sol";
 
 
 contract MixinExchangeManager is
