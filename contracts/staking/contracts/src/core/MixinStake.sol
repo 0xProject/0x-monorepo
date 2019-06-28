@@ -178,7 +178,7 @@ contract MixinStake is
 
         // update delegator's share of reward pool
         // note that this uses the snapshot parameters
-        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
         uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
             amount,
             _delegatedStakeByPoolId,
@@ -210,8 +210,7 @@ contract MixinStake is
         delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._sub(amount);
 
         // get payout
-        // TODO -- not full balance, just balance that belongs to delegators.
-        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
         uint256 payoutInRealAsset;
         uint256 payoutInShadowAsset;
         if (_delegatedStakeToPoolByOwner == amount) {
@@ -240,7 +239,7 @@ contract MixinStake is
 
         // withdraw payout for delegator
         if (payoutInRealAsset > 0) {
-            _withdrawFromPoolInStakingPoolRewardVault(poolId, payoutInRealAsset);
+            _withdrawFromMemberInStakingPoolRewardVault(poolId, payoutInRealAsset);
             owner.transfer(payoutInRealAsset);
         }
     }
