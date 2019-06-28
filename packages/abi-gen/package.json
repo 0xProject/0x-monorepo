@@ -28,7 +28,7 @@
         "compile:sol": "sol-compiler",
         "watch:sol": "sol-compiler -w",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output ./test/generated-test/generated-wrappers --backend ethers",
-        "tmp_generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output ./tmp/generated-wrappers --backend ethers", 
+        "tmp_generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output ./tmp/generated-wrappers --backend ethers",
         "tmp_remove_contract_wrappers": "rm -rf ./tmp/generated-wrappers",
         "diff_contract_wrappers": "./diff.sh ./tmp/generated-wrappers ./test/generated-test/generated-wrappers",
         "coverage:report:text": "istanbul report text",
