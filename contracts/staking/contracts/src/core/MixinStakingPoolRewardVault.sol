@@ -85,7 +85,7 @@ contract MixinStakingPoolRewardVault is
         view
         returns (uint256)
     {
-        return rewardVault.balanceOfPool(poolId);
+        return rewardVault.balanceOfMembers(poolId);
     }
 
     /// @dev Registers a staking pool in the reward vault.
@@ -94,7 +94,7 @@ contract MixinStakingPoolRewardVault is
     function _registerStakingPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
         internal
     {
-        rewardVault.createStakingPool(
+        rewardVault.registerStakingPool(
             poolId,
             operatorShare
         );
@@ -106,7 +106,7 @@ contract MixinStakingPoolRewardVault is
     function _withdrawFromOperatorInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
-        rewardVault.withdrawFromOperator(poolId, amount);
+        rewardVault.withdrawForOperator(poolId, amount);
     }
 
     /// @dev Withdraws an amount in ETH of the reward for a pool member.
@@ -115,7 +115,7 @@ contract MixinStakingPoolRewardVault is
     function _withdrawFromMemberInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
-        rewardVault.withdrawFromPool(poolId, amount);
+        rewardVault.withdrawForMember(poolId, amount);
     }
 
     /// @dev Deposits an amount in ETH into the reward vault.

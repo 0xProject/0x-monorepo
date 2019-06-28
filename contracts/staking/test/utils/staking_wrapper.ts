@@ -620,16 +620,16 @@ export class StakingWrapper {
         const balance = await this.getStakingPoolRewardVaultContract().balanceOfOperator.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultBalanceOfPoolAsync(poolId: string): Promise<BigNumber> {
-        const balance = await this.getStakingPoolRewardVaultContract().balanceOfPool.callAsync(poolId);
+    public async rewardVaultBalanceOfMembersAsync(poolId: string): Promise<BigNumber> {
+        const balance = await this.getStakingPoolRewardVaultContract().balanceOfMembers.callAsync(poolId);
         return balance;
     }
-    public async rewardVaultCreatePoolAsync(
+    public async rewardVaultRegisterPoolAsync(
         poolId: string,
         poolOperatorShare: number,
         stakingContractAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingPoolRewardVaultContract().createStakingPool.getABIEncodedTransactionData(
+        const calldata = this.getStakingPoolRewardVaultContract().registerStakingPool.getABIEncodedTransactionData(
             poolId,
             poolOperatorShare,
         );
