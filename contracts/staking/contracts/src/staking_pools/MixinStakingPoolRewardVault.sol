@@ -21,7 +21,7 @@ pragma solidity ^0.5.5;
 import "../interfaces/IStakingEvents.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinOwnable.sol";
+import "../sys/MixinOwnable.sol";
 
 
 contract MixinStakingPoolRewardVault is

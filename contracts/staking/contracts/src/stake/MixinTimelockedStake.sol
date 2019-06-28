@@ -23,7 +23,7 @@ import "../libs/LibRewardMath.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
-import "./MixinScheduler.sol";
+import "../sys/MixinScheduler.sol";
 
 
 contract MixinTimelockedStake is

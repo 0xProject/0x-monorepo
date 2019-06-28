@@ -19,17 +19,17 @@
 pragma solidity ^0.5.9;
 
 import "./interfaces/IStaking.sol";
-import "./core/MixinExchangeManager.sol";
-import "./core/MixinZrxVault.sol";
-import "./core/MixinStakingPoolRewardVault.sol";
-import "./core/MixinScheduler.sol";
-import "./core/MixinStakeBalances.sol";
-import "./core/MixinTimelockedStake.sol";
-import "./core/MixinStake.sol";
-import "./core/MixinDelegatedStake.sol";
-import "./core/MixinStakingPool.sol";
-import "./core/MixinExchangeFees.sol";
-import "./core/MixinStakingPoolRewards.sol";
+import "./fees/MixinExchangeManager.sol";
+import "./stake/MixinZrxVault.sol";
+import "./staking_pools/MixinStakingPoolRewardVault.sol";
+import "./sys/MixinScheduler.sol";
+import "./stake/MixinStakeBalances.sol";
+import "./stake/MixinTimelockedStake.sol";
+import "./stake/MixinStake.sol";
+import "./stake/MixinDelegatedStake.sol";
+import "./staking_pools/MixinStakingPool.sol";
+import "./fees/MixinExchangeFees.sol";
+import "./staking_pools/MixinStakingPoolRewards.sol";
 
 
 contract Staking is

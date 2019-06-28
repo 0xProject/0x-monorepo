@@ -23,7 +23,7 @@ import "../libs/LibSafeMath.sol";
 import "../interfaces/IStructs.sol";
 import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
-import "./MixinScheduler.sol";
+import "../sys/MixinScheduler.sol";
 import "./MixinTimelockedStake.sol";
 
 

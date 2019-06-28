@@ -24,8 +24,8 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinZrxVault.sol";
-import "./MixinStakingPoolRewardVault.sol";
-import "./MixinScheduler.sol";
+import "../staking_pools/MixinStakingPoolRewardVault.sol";
+import "../sys/MixinScheduler.sol";
 import "./MixinStakeBalances.sol";
 import "./MixinTimelockedStake.sol";
 

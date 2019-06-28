@@ -25,7 +25,6 @@
     "contracts": [
         "src/Staking.sol",
         "src/StakingProxy.sol",
-        "src/core/MixinStake.sol",
         "src/libs/LibZrxToken.sol",
         "src/vaults/StakingPoolRewardVault.sol",
         "src/vaults/ZrxVault.sol",
