@@ -42,7 +42,7 @@ contract MixinStorage is
     mapping (address => uint256) internal stakeByOwner;
 
     // mapping from Owner to Amount of Instactive Stake
-    mapping (address => uint256) internal activeStakeByOwner;
+    mapping (address => uint256) internal activatedStakeByOwner;
 
     // mapping from Owner to Amount Timelocked
     mapping (address => IStructs.Timelock) internal timelockedStakeByOwner;

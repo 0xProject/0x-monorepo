@@ -37,8 +37,14 @@ contract MixinStakeBalances is
     MixinTimelockedStake
 {
 
+    /// @dev This mixin contains logic for querying stake balances.
+    /// **** Read MixinStake before continuing ****
+
     using LibSafeMath for uint256;
 
+    /// @dev Returns the total activated stake across all owners.
+    /// This stake is in the "Activated" OR "Activated & Delegated" states.
+    /// @return Total active stake.
     function getActivatedStakeAcrossAllOwners()
         public
         view
@@ -47,6 +53,10 @@ contract MixinStakeBalances is
         return totalActivatedStake;
     }
 
+    /// @dev Returns the total stake for a given owner.
+    /// This stake can be in any state.
+    /// @param owner to query.
+    /// @return Total active stake for owner.
     function getTotalStake(address owner)
         public
         view
@@ -55,14 +65,22 @@ contract MixinStakeBalances is
         return stakeByOwner[owner];
     }
 
+    /// @dev Returns the activated stake for a given owner.
+    /// This stake is in the "Activated" OR "Activated & Delegated" states.
+    /// @param owner to query.
+    /// @return Activated stake for owner.
     function getActivatedStake(address owner)
         public
         view
         returns (uint256)
     {
-        return activeStakeByOwner[owner];
+        return activatedStakeByOwner[owner];
     }
 
+    /// @dev Returns the deactivated stake for a given owner.
+    /// This stake is in the "Deactivated & Timelocked" OR "Deactivated & Withdrawable" states.
+    /// @param owner to query.
+    /// @return Deactivated stake for owner.
     function getDeactivatedStake(address owner)
         public
         view
@@ -71,14 +89,22 @@ contract MixinStakeBalances is
         return getTotalStake(owner)._sub(getActivatedStake(owner));
     }
 
+    /// @dev Returns the activated & undelegated stake for a given owner.
+    /// This stake is in the "Activated" state.
+    /// @param owner to query.
+    /// @return Activated stake for owner.
     function getActivatedAndUndelegatedStake(address owner)
         public
         view
         returns (uint256)
     {
-        return activeStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
+        return activatedStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
     }
 
+    /// @dev Returns the stake that can be activated for a given owner.
+    /// This stake is in the "Deactivated & Withdrawable" state.
+    /// @param owner to query.
+    /// @return Activatable stake for owner.
     function getActivatableStake(address owner)
         public
         view
@@ -87,6 +113,10 @@ contract MixinStakeBalances is
         return getDeactivatedStake(owner)._sub(getTimelockedStake(owner));
     }
 
+    /// @dev Returns the stake that can be withdrawn for a given owner.
+    /// This stake is in the "Deactivated & Withdrawable" state.
+    /// @param owner to query.
+    /// @return Withdrawable stake for owner.
     function getWithdrawableStake(address owner)
         public
         view
@@ -95,6 +125,10 @@ contract MixinStakeBalances is
         return getActivatableStake(owner);
     }
 
+    /// @dev Returns the stake delegated by a given owner.
+    /// This stake is in the "Activated & Delegated" state.
+    /// @param owner to query.
+    /// @return Delegated stake for owner.
     function getStakeDelegatedByOwner(address owner)
         public
         view
@@ -103,6 +137,10 @@ contract MixinStakeBalances is
         return delegatedStakeByOwner[owner];
     }
 
+    /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
+    /// This stake is in the "Activated & Delegated" state.
+    /// @param owner to query.
+    /// @return Stake delegaated to pool by owner.
     function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
         public
         view
@@ -111,6 +149,10 @@ contract MixinStakeBalances is
         return delegatedStakeToPoolByOwner[owner][poolId];
     }
 
+    /// @dev Returns the total stake delegated to a specific staking pool, across all members.
+    /// This stake is in the "Activated & Delegated" state.
+    /// @param owner to query.
+    /// @return Stake delegaated to pool by owner.
     function getStakeDelegatedToPool(bytes32 poolId)
         public
         view
@@ -119,6 +161,10 @@ contract MixinStakeBalances is
         return delegatedStakeByPoolId[poolId];
     }
 
+    /// @dev Returns the timelocked stake for a given owner.
+    /// This stake is in the "Deactivated & Timelocked" state.
+    /// @param owner to query.
+    /// @return Timelocked stake for owner.
     function getTimelockedStake(address owner)
         public
         view
@@ -128,6 +174,11 @@ contract MixinStakeBalances is
         return timelock.total;
     }
 
+    /// @dev Returns the starting Timelock Period of timelocked state for a given owner.
+    /// This stake is in the "Deactivated & Timelocked" state.
+    /// See MixinScheduling and MixinTimelock.
+    /// @param owner to query.
+    /// @return Start of timelock for owner's timelocked stake.
     function getTimelockStart(address owner)
         public
         view
