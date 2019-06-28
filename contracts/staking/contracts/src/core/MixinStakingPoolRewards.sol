@@ -77,7 +77,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        return getBalanceInStakingPoolRewardVault(poolId);
+        return getTotalBalanceInStakingPoolRewardVault(poolId);
     }
 
     /// @dev Returns the total shadow balance of a staking pool.
@@ -136,7 +136,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        return getBalanceOfMembersInStakingPoolRewardVault(poolId);
     }
 
     /// @dev Returns the shadow balance of a specific member of a staking pool.
@@ -160,7 +160,7 @@ contract MixinStakingPoolRewards is
         view
         returns (uint256)
     {
-        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
         return LibRewardMath._computePayoutDenominatedInRealAsset(
             delegatedStakeToPoolByOwner[member][poolId],
             delegatedStakeByPoolId[poolId],
@@ -189,7 +189,7 @@ contract MixinStakingPoolRewards is
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
         // perform withdrawal
-        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
+        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
         member.transfer(amount);
     }
 
@@ -209,7 +209,7 @@ contract MixinStakingPoolRewards is
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
         // perform withdrawal and return amount withdrawn
-        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
+        _withdrawFromMemberInStakingPoolRewardVault(poolId, amount);
         member.transfer(amount);
         return amount;
     }
