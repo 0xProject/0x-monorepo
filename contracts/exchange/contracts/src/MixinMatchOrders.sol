@@ -76,7 +76,7 @@ contract MixinMatchOrders is
 
         // Loop infinitely (until broken inside of the loop), but keep a counter of how
         // many orders have been matched.
-        for (i = 0;; i++) {
+        for (matchCount = 0;; matchCount++) {
             // Match the two orders that are pointed to by the left and right indices
             LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
                 leftOrder,
@@ -87,12 +87,13 @@ contract MixinMatchOrders is
 
             // Add the matchResults and the profit made during the match to the
             // batchMatchedFillResults for this batch.
-            batchMatchedFillResults.left[i] = matchResults.left;
-            batchMatchedFillResults.right[i] = matchResults.right;
-            batchMatchedFillResults.profitInLeftMakerAsset +=
-                matchResults.left.makerFeePaid;
-            batchMatchedFillResults.profitInRightMakerAsset +=
-                matchResults.right.makerFeePaid;
+            batchMatchedFillResults.left[matchCount] = matchResults.left;
+            batchMatchedFillResults.right[matchCount] = matchResults.right;
+            batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
+                batchMatchedFillResults.profitInLeftMakerAsset,
+                matchResults.leftMakerAssetSpreadAmount
+            );
+            // batchMatchedFillResults.profitInRightMakerAsset += 0; // Placeholder for ZEIP 40
 
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
@@ -120,8 +121,8 @@ contract MixinMatchOrders is
 
         // Update the lengths of the fill results for batchMatchResults
         assembly {
-            mstore(mload(batchMatchedFillResults), i)
-            mstore(mload(add(batchMatchedFillResults, 32)), i)
+            mstore(mload(batchMatchedFillResults), matchCount)
+            mstore(mload(add(batchMatchedFillResults, 32)), matchCount)
         }
 
         // Return the fill results from the batch match
@@ -289,7 +290,8 @@ contract MixinMatchOrders is
         view
         returns (bool)
     {
-        if (fillResults.takerAssetFilledAmount >= order.takerAssetAmount) {
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
+        if (OrderStatus(orderInfo.orderStatus) == OrderStatus.FULLY_FILLED) {
             return true;
         }
         return false;
