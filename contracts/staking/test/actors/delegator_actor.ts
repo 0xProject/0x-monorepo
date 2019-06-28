@@ -134,7 +134,7 @@ export class DelegatorActor extends StakerActor {
                 this._owner,
             );
             delegatorBalances.stakeDelegatedToPoolByOwner.push(stakeDelegatedToPoolByOwner);
-            const stakeDelegatedToPool = await this._stakingWrapper.getStakeDelegatedToPoolAsync(poolId);
+            const stakeDelegatedToPool = await this._stakingWrapper.getTotalStakeDelegatedToPoolAsync(poolId);
             delegatorBalances.stakeDelegatedToPool.push(stakeDelegatedToPool);
         }
         return delegatorBalances;

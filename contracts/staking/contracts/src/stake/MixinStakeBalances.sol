@@ -154,7 +154,7 @@ contract MixinStakeBalances is
     /// This stake is in the "Activated & Delegated" state.
     /// @param poolId Unique Id of pool.
     /// @return Total stake delegaated to pool.
-    function getStakeDelegatedToPool(bytes32 poolId)
+    function getTotalStakeDelegatedToPool(bytes32 poolId)
         public
         view
         returns (uint256)
