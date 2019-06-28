@@ -23,6 +23,7 @@ class {{contractName}}(BaseContractWrapper):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param contract_address: where the contract has been deployed
         :param private_key: If specified, transactions will be signed locally,
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
