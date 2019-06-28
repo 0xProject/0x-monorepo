@@ -63,7 +63,7 @@ contract MixinExchangeFees is
         onlyExchange
     {
         uint256 amount = msg.value;
-        bytes32 poolId = getPoolIdOfMaker(makerAddress);
+        bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
         uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
         protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
         if (_feesCollectedThisEpoch == 0) {
@@ -169,7 +169,7 @@ contract MixinExchangeFees is
 
             // compute weighted stake
             uint256 stakeDelegatedToPool = getStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getPoolOperator(poolId));
+            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getStakingPoolOperator(poolId));
             uint256 weightedStake = stakeHeldByPoolOperator._add(
                 stakeDelegatedToPool
                 ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)

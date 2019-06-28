@@ -124,7 +124,7 @@ export class Simulation {
             const poolOperator = new PoolOperatorActor(poolOperatorAddress, this._stakingWrapper);
             this._poolOperators.push(poolOperator);
             // create a pool id for this operator
-            const poolId = await poolOperator.createPoolAsync(p.poolOperatorShares[i]);
+            const poolId = await poolOperator.createStakingPoolAsync(p.poolOperatorShares[i]);
             this._poolIds.push(poolId);
             // each pool operator can also be a staker/delegator
             const poolOperatorAsDelegator = new DelegatorActor(poolOperatorAddress, this._stakingWrapper);
@@ -154,7 +154,7 @@ export class Simulation {
                 const maker = this._makers[makerIdx];
                 const makerApproval = maker.signApprovalForStakingPool(poolId);
                 const makerAddress = maker.getOwner();
-                await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
+                await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
                 makerIdx += 1;
             }
             poolIdx += 1;

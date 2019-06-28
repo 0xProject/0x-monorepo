@@ -53,13 +53,13 @@ contract MixinStakingPoolRewards is
     /// -- Member Balances --
     /// Terminology:
     ///     Real Balance - The reward balance in ETH of a member.
-    ///     Cumulative Real Balance - The sum total of reward balances in ETH across all members of a pool.
+    ///     Total Real Balance - The sum total of reward balances in ETH across all members of a pool.
     ///     Shadow Balance - The realized reward balance of a member.
-    ///     Cumulative Shadow Balance - The sum total of realized reward balances across all members of a pool.
+    ///     Total Shadow Balance - The sum total of realized reward balances across all members of a pool.
     /// How it works:
     /// 1. When a member delegates, their ownership of the pool increases; however, this new ownership applies
     ///    only to future rewards and must not change the rewards currently owned by other members. Thus, when a
-    ///    member delegates stake, we *increase* their Shadow Balance and the Cumulative Shadow Balance of the pool.
+    ///    member delegates stake, we *increase* their Shadow Balance and the Total Shadow Balance of the pool.
     ///
     /// 2. When a member withdraws a portion of their reward, their realized balance increases but their ownership
     ///    within the pool remains unchanged. Thus, we simultaneously *decrease* their Real Balance and 
@@ -67,11 +67,47 @@ contract MixinStakingPoolRewards is
     ///
     /// 3. When a member undelegates, the portion of their reward that corresponds to that stake is also withdrawn. Thus,
     ///    their realized balance *increases* while their ownership of the pool *decreases*. To reflect this, we 
-    ///    decrease their Shadow Balance, the Cumulative Shadow Balance, their Real Balance, and the Cumulative Real Balance.
+    ///    decrease their Shadow Balance, the Total Shadow Balance, their Real Balance, and the Total Real Balance.
 
     
-    
+    function getRewardBalance(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceInStakingPoolRewardVault(poolId);
+    }
 
+    function getRewardBalanceOfOperator(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
+    }
+
+    function getRewardBalanceOfPool(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
+    }
+
+    function computeRewardBalance(bytes32 poolId, address owner)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        return LibRewardMath._computePayoutDenominatedInRealAsset(
+            delegatedStakeToPoolByOwner[owner][poolId],
+            delegatedStakeByPoolId[poolId],
+            shadowRewardsInPoolByOwner[owner][poolId],
+            shadowRewardsByPoolId[poolId],
+            poolBalance
+        );
+    }
 
     function withdrawOperatorReward(bytes32 poolId, uint256 amount)
         external
@@ -126,44 +162,8 @@ contract MixinStakingPoolRewards is
         return amount;
     }
 
-    function getRewardBalance(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceInStakingPoolRewardVault(poolId);
-    }
 
-    function getRewardBalanceOfOperator(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
-    }
-
-    function getRewardBalanceOfPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
-    }
-
-    function computeRewardBalance(bytes32 poolId, address owner)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
-        return LibRewardMath._computePayoutDenominatedInRealAsset(
-            delegatedStakeToPoolByOwner[owner][poolId],
-            delegatedStakeByPoolId[poolId],
-            shadowRewardsInPoolByOwner[owner][poolId],
-            shadowRewardsByPoolId[poolId],
-            poolBalance
-        );
-    }
+    
 
     function getShadowBalanceByPoolId(bytes32 poolId)
         public
