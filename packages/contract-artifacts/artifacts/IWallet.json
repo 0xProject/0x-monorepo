@@ -13,6 +13,15 @@
                 "type": "function"
             }
         ],
+        "devdoc": {
+            "methods": {
+                "isValidSignature(bytes32,bytes)": {
+                    "details": "Verifies that a signature is valid.",
+                    "params": { "hash": "Message hash that is signed.", "signature": "Proof of signing." },
+                    "return": "Validity of order signature."
+                }
+            }
+        },
         "evm": { "bytecode": { "object": "0x" } }
     },
     "networks": {}

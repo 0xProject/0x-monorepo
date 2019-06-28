@@ -101,15 +101,10 @@
                 },
                 "balanceOf(address)": {
                     "details": "Query the balance of owner",
-                    "params": {
-                        "_owner": "The address from which the balance will be retrieved"
-                    },
+                    "params": { "_owner": "The address from which the balance will be retrieved" },
                     "return": "Balance of owner"
                 },
-                "totalSupply()": {
-                    "details": "Query total supply of token",
-                    "return": "Total supply of token"
-                },
+                "totalSupply()": { "details": "Query total supply of token", "return": "Total supply of token" },
                 "transfer(address,uint256)": {
                     "details": "send `value` token to `to` from `msg.sender`",
                     "params": {
