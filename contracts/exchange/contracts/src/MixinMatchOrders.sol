@@ -66,7 +66,7 @@ contract MixinMatchOrders is
         batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
 
         // Initialize initial variables
-        uint i;
+        uint256 matchCount;
         uint256 leftIdx = 0;
         uint256 rightIdx = 0;
         LibOrder.Order memory leftOrder = leftOrders[0];
