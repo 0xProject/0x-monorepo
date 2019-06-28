@@ -220,6 +220,15 @@ contract MixinStakingPoolRewards is
         );
     }
 
+    /// @dev A member joins a staking pool.
+    /// This function increments the shadow balance of the member, along
+    /// with the total shadow balance of the pool. This ensures that
+    /// any rewards belonging to existing members will not be diluted.
+    /// @param poolId Unique Id of pool to join.
+    /// @param member The member to join. 
+    /// @param amountOfStakeToDelegate The stake to be delegated by `member` upon joining.
+    /// @param totalStakeDelegatedToPool The amount of stake currently delegated to the pool.
+    ///                                  This does not include `amountOfStakeToDelegate`.
     function _joinStakingPool(
         bytes32 poolId,
         address payable member,
@@ -229,7 +238,6 @@ contract MixinStakingPoolRewards is
         internal
     {
         // update delegator's share of reward pool
-        // note that this uses the snapshot parameters
         uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
         uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
             amountOfStakeToDelegate,
@@ -237,12 +245,25 @@ contract MixinStakingPoolRewards is
             shadowRewardsByPoolId[poolId],
             poolBalance
         );
+
+        // the buy-in will be > 0 iff there exists a non-zero reward.
         if (buyIn > 0) {
             shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(buyIn);
             shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(buyIn);
         }
     }
 
+    /// @dev A member leaves a staking pool.
+    /// This function decrements the shadow balance of the member, along
+    /// with the total shadow balance of the pool. This ensures that
+    /// any rewards belonging to co-members will not be inflated.
+    /// @param poolId Unique Id of pool to leave.
+    /// @param member The member to leave. 
+    /// @param amountOfStakeToUndelegate The stake to be undelegated by `member` upon leaving.
+    /// @param totalStakeDelegatedToPoolByMember The amount of stake currently delegated to the pool by the member.
+    ///                                          This includes `amountOfStakeToUndelegate`.
+    /// @param totalStakeDelegatedToPool The total amount of stake currently delegated to the pool, across all members.
+    ///                                  This includes `amountOfStakeToUndelegate`.
     function _leaveStakingPool(
         bytes32 poolId,
         address payable member,
