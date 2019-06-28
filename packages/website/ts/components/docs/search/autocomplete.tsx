@@ -5,10 +5,7 @@ import styled, { css } from 'styled-components';
 
 // import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
-import {
-    Highlight,
-    Snippet,
-} from 'react-instantsearch-dom';
+import { Highlight, Snippet } from 'react-instantsearch-dom';
 
 interface Props {
     isHome?: boolean;
@@ -39,20 +36,20 @@ interface AutosuggestThemeClasses {
 }
 
 const theme: AutosuggestThemeClasses = {
-    container:                'react-autosuggest__container',
-    containerOpen:            'react-autosuggest__container--open',
-    input:                    'react-autosuggest__input',
-    inputOpen:                'react-autosuggest__input--open',
-    inputFocused:             'react-autosuggest__input--focused',
-    suggestionsContainer:     'react-autosuggest__suggestions-container',
+    container: 'react-autosuggest__container',
+    containerOpen: 'react-autosuggest__container--open',
+    input: 'react-autosuggest__input',
+    inputOpen: 'react-autosuggest__input--open',
+    inputFocused: 'react-autosuggest__input--focused',
+    suggestionsContainer: 'react-autosuggest__suggestions-container',
     suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
-    suggestionsList:          'react-autosuggest__suggestions-list',
-    suggestion:               'react-autosuggest__suggestion',
-    suggestionFirst:          'react-autosuggest__suggestion--first',
-    suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
-    sectionContainer:         'react-autosuggest__section-container',
-    sectionContainerFirst:    'react-autosuggest__section-container--first',
-    sectionTitle:             'react-autosuggest__section-title',
+    suggestionsList: 'react-autosuggest__suggestions-list',
+    suggestion: 'react-autosuggest__suggestion',
+    suggestionFirst: 'react-autosuggest__suggestion--first',
+    suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
+    sectionContainer: 'react-autosuggest__section-container',
+    sectionContainerFirst: 'react-autosuggest__section-container--first',
+    sectionTitle: 'react-autosuggest__section-title',
 };
 
 export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoCompleteState> {
@@ -111,7 +108,7 @@ export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoC
         this.props.refine('');
     }
 
-// tslint:disable-next-line: no-empty
+    // tslint:disable-next-line: no-empty
     private _onSuggestionHighlighted(): void {}
 
     private _getSuggestionValue(hit: HitProps): string {
@@ -119,14 +116,15 @@ export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoC
     }
 
     private _onSuggestionSelected(event: HitProps, { suggestion }: HitProps): void {
-// tslint:disable-next-line: no-console
+        // tslint:disable-next-line: no-console
         console.log(suggestion);
     }
 
     private _renderSuggestion(hit: HitProps): React.ReactNode {
         return (
             <HitWrapper>
-                <Highlight attribute="textContent" hit={hit} tagName="mark" />
+                <Highlight attribute="title" hit={hit} tagName="mark" />
+                <Snippet attribute="textContent" hit={hit} tagName="mark" />
             </HitWrapper>
         );
     }
@@ -142,13 +140,19 @@ export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoC
     private _getSectionSuggestions(section: HitProps): string {
         return section.hits;
     }
-
 }
 
 const SectionWrapper = styled.div`
-    color: #5C5C5C;
+    color: #5c5c5c;
     font-size: 0.777777778rem;
-    padding: 10px 20px;
+    padding: 19px 20px 0;
+    background: #eee;
+    min-width: 90px;
+    min-height: 52px;
+
+    &:not(:first-child) {
+        margin-top: 10px;
+    }
 `;
 
 const HitWrapper = styled.div`
@@ -162,16 +166,27 @@ const Wrapper = styled.div<Props>`
     .react-autosuggest__container {
     }
 
+    .react-autosuggest__section-container {
+        display: flex;
+    }
+
     .react-autosuggest__suggestions-container {
         position: absolute;
-        left: 0;
         right: 0;
         background-color: #fff;
         z-index: 10;
+        min-width: 420px;
+        width: 100%;
+        flex-grow: 1;
+    }
+
+    .react-autosuggest__suggestions-list {
+        flex-grow: 1;
     }
 
     .react-autosuggest__input {
-        background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E") transparent left center no-repeat;
+        background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E")
+            transparent left center no-repeat;
         font-size: 1.375rem;
         padding: 18px 18px 21px 35px;
         width: 100%;

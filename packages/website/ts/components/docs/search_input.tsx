@@ -7,18 +7,9 @@ import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 import algoliasearch from 'algoliasearch/lite';
 // import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
-import {
-    Configure,
-    connectAutoComplete,
-    Highlight,
-    Index,
-    InstantSearch,
-} from 'react-instantsearch-dom';
+import { Configure, connectAutoComplete, Highlight, Index, InstantSearch } from 'react-instantsearch-dom';
 
-const searchClient = algoliasearch(
-  'VHMP18K2OO',
-  'e46d0171577e85fa5418c50b18f80ade',
-);
+const searchClient = algoliasearch('VHMP18K2OO', 'e46d0171577e85fa5418c50b18f80ade');
 // const index = searchClient.initIndex(['0x_tools_test']);
 
 interface Props {
@@ -41,21 +32,20 @@ export const SearchInput: React.FunctionComponent<Props> = (props: Props) => (
             root={{
                 Root: 'div',
                 props: {
-                    style: {
-                    },
+                    style: {},
                 },
             }}
         >
-        <Wrapper isHome={props.isHome}>
-            <AutoComplete isHome={props.isHome} />
-            <Configure hitsPerPage={5} distinct />
-            <Index indexName="0x_tools_test" />
-            <Index indexName="0x_guides_test" />
-            <Label>
-                <LabelText>Search query</LabelText>
-                {/* <Input isHome={props.isHome} />*/}
-            </Label>
-        </Wrapper>
+            <Wrapper isHome={props.isHome}>
+                <AutoComplete isHome={props.isHome} />
+                <Configure hitsPerPage={5} distinct={true} />
+                <Index indexName="0x_tools_test" />
+                <Index indexName="0x_guides_test" />
+                <Label>
+                    <LabelText>Search query</LabelText>
+                    {/* <Input isHome={props.isHome} />*/}
+                </Label>
+            </Wrapper>
         </InstantSearch>
     </>
 );
@@ -90,7 +80,8 @@ const LabelText = styled.span`
 const Input = styled.input.attrs({
     placeholder: 'Search docs...',
 })<Props>`
-    background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E") transparent left center no-repeat;
+    background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E")
+        transparent left center no-repeat;
     font-size: 1.375rem;
     padding: 18px 18px 21px 35px;
     width: 100%;
