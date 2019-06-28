@@ -65,10 +65,10 @@ contract MixinStakingPoolRewardVault is
         return rewardVault.balanceOfPool(poolId);
     }
 
-    function _createPoolInStakingPoolRewardVault(bytes32 poolId, uint8 operatorShare)
+    function _registerStakingPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
         internal
     {
-        rewardVault.createPool(
+        rewardVault.createStakingPool(
             poolId,
             operatorShare
         );

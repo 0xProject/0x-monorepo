@@ -92,7 +92,7 @@ describe('Staking & Delegating', () => {
             const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
             const poolOperator = stakers[1];
             const operatorShare = 39;
-            const poolId = await stakingWrapper.createPoolAsync(poolOperator, operatorShare);
+            const poolId = await stakingWrapper.createStakingPoolAsync(poolOperator, operatorShare);
             // run test
             const delegator = new DelegatorActor(stakers[0], stakingWrapper);
             await delegator.depositAndDelegateAsync(poolId, amountToDelegate);

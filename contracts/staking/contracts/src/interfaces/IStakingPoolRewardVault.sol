@@ -42,7 +42,7 @@ interface IStakingPoolRewardVault {
     function withdrawFromPool(bytes32 poolId, uint256 amount)
         external;
 
-    function createPool(bytes32 poolId, uint8 poolOperatorShare)
+    function createStakingPool(bytes32 poolId, uint8 poolOperatorShare)
         external;
 
     function balanceOf(bytes32 poolId)

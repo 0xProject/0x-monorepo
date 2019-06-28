@@ -17,11 +17,11 @@ export class PoolOperatorActor extends BaseActor {
         super(owner, stakingWrapper);
     }
 
-    public async createPoolAsync(operatorShare: number, revertReason?: RevertReason): Promise<string> {
+    public async createStakingPoolAsync(operatorShare: number, revertReason?: RevertReason): Promise<string> {
         // query next pool id
-        const nextPoolId = await this._stakingWrapper.getNextPoolIdAsync();
+        const nextPoolId = await this._stakingWrapper.getNextStakingPoolIdAsync();
         // create pool
-        const poolIdPromise = this._stakingWrapper.createPoolAsync(this._owner, operatorShare);
+        const poolIdPromise = this._stakingWrapper.createStakingPoolAsync(this._owner, operatorShare);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(poolIdPromise, revertReason);
             return '';
@@ -31,14 +31,14 @@ export class PoolOperatorActor extends BaseActor {
         expect(poolId, 'pool id').to.be.bignumber.equal(nextPoolId);
         return poolId;
     }
-    public async addMakerToPoolAsync(
+    public async addMakerToStakingPoolAsync(
         poolId: string,
         makerAddress: string,
         makerSignature: string,
         revertReason?: RevertReason,
     ): Promise<void> {
         // add maker
-        const txReceiptPromise = this._stakingWrapper.addMakerToPoolAsync(
+        const txReceiptPromise = this._stakingWrapper.addMakerToStakingPoolAsync(
             poolId,
             makerAddress,
             makerSignature,
@@ -50,29 +50,29 @@ export class PoolOperatorActor extends BaseActor {
         }
         await txReceiptPromise;
         // check the pool id of the maker
-        const poolIdOfMaker = await this._stakingWrapper.getPoolIdOfMakerAsync(makerAddress);
+        const poolIdOfMaker = await this._stakingWrapper.getStakingPoolIdOfMakerAsync(makerAddress);
         expect(poolIdOfMaker, 'pool id of maker').to.be.equal(poolId);
         // check the list of makers for the pool
-        const makerAddressesForPool = await this._stakingWrapper.getMakersForPoolAsync(poolId);
+        const makerAddressesForPool = await this._stakingWrapper.getMakersForStakingPoolAsync(poolId);
         expect(makerAddressesForPool, 'maker addresses for pool').to.include(makerAddress);
     }
-    public async removeMakerFromPoolAsync(
+    public async removeMakerFromStakingPoolAsync(
         poolId: string,
         makerAddress: string,
         revertReason?: RevertReason,
     ): Promise<void> {
         // remove maker
-        const txReceiptPromise = this._stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, this._owner);
+        const txReceiptPromise = this._stakingWrapper.removeMakerFromStakingPoolAsync(poolId, makerAddress, this._owner);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
         }
         await txReceiptPromise;
         // check the pool id of the maker
-        const poolIdOfMakerAfterRemoving = await this._stakingWrapper.getPoolIdOfMakerAsync(makerAddress);
+        const poolIdOfMakerAfterRemoving = await this._stakingWrapper.getStakingPoolIdOfMakerAsync(makerAddress);
         expect(poolIdOfMakerAfterRemoving, 'pool id of maker').to.be.equal(stakingConstants.NIL_POOL_ID);
         // check the list of makers for the pool
-        const makerAddressesForPoolAfterRemoving = await this._stakingWrapper.getMakersForPoolAsync(poolId);
+        const makerAddressesForPoolAfterRemoving = await this._stakingWrapper.getMakersForStakingPoolAsync(poolId);
         expect(makerAddressesForPoolAfterRemoving, 'maker addresses for pool').to.not.include(makerAddress);
     }
 }

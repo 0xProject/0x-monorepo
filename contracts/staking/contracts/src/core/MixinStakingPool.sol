@@ -66,7 +66,7 @@ contract MixinStakingPool is
     /// @param poolId Pool sender must be operator of.
     modifier onlyStakingPoolOperator(bytes32 poolId) {
         require(
-            msg.sender == getPoolOperator(poolId),
+            msg.sender == getStakingPoolOperator(poolId),
             "ONLY_CALLABLE_BY_POOL_OPERATOR"
         );
 
@@ -78,7 +78,7 @@ contract MixinStakingPool is
     /// @param makerAddress Address of a maker in the pool.
     modifier onlyStakingPoolOperatorOrMaker(bytes32 poolId, address makerAddress) {
         require(
-            msg.sender == getPoolOperator(poolId) || msg.sender == makerAddress,
+            msg.sender == getStakingPoolOperator(poolId) || msg.sender == makerAddress,
             "ONLY_CALLABLE_BY_POOL_OPERATOR_OR_MAKER"
         );
 
@@ -89,7 +89,7 @@ contract MixinStakingPool is
     /// Note that an operator must be payable.
     /// @param operatorShare The percentage of any rewards owned by the operator.
     /// @return poolId The unique pool id generated for this pool.
-    function createPool(uint8 operatorShare)
+    function createStakingPool(uint8 operatorShare)
         external
         returns (bytes32 poolId)
     {
@@ -98,7 +98,7 @@ contract MixinStakingPool is
 
         // assign pool id and generate next id
         poolId = nextPoolId;
-        nextPoolId = _computeNextPoolId(poolId);
+        nextPoolId = _computeNextStakingPoolId(poolId);
 
         // store metadata about this pool
         IStructs.Pool memory pool = IStructs.Pool({
@@ -108,7 +108,7 @@ contract MixinStakingPool is
         poolById[poolId] = pool;
 
         // register pool in reward vault
-        _createPoolInStakingPoolRewardVault(poolId, operatorShare);
+        _createStakingPoolInStakingPoolRewardVault(poolId, operatorShare);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
@@ -119,7 +119,7 @@ contract MixinStakingPool is
     /// @param poolId Unique id of pool.
     /// @param makerAddress Address of maker.
     /// @param makerSignature Signature proving that maker has agreed to join the pool.
-    function addMakerToPool(
+    function addMakerToStakingPool(
         bytes32 poolId,
         address makerAddress,
         bytes calldata makerSignature
@@ -133,7 +133,7 @@ contract MixinStakingPool is
             "INVALID_MAKER_SIGNATURE"
         );
         require(
-            !isMakerAssignedToPool(makerAddress),
+            !isMakerAssignedToStakingPool(makerAddress),
             "MAKER_ADDRESS_ALREADY_REGISTERED"
         );
         poolIdByMakerAddress[makerAddress] = poolId;
@@ -151,7 +151,7 @@ contract MixinStakingPool is
     /// at the sole discretion of the pool operator.
     /// @param poolId Unique id of pool.
     /// @param makerAddress Address of maker.
-    function removeMakerFromPool(
+    function removeMakerFromStakingPool(
         bytes32 poolId,
         address makerAddress
     )
@@ -159,7 +159,7 @@ contract MixinStakingPool is
         external
     {
         require(
-            getPoolIdOfMaker(makerAddress) == poolId,
+            getStakingPoolIdOfMaker(makerAddress) == poolId,
             "MAKER_ADDRESS_NOT_REGISTERED"
         );
 
@@ -234,7 +234,7 @@ contract MixinStakingPool is
     }
 
     /// @dev Returns the pool id of an input maker.
-    function getPoolIdOfMaker(address makerAddress)
+    function getStakingPoolIdOfMaker(address makerAddress)
         public
         view
         returns (bytes32)
@@ -245,18 +245,18 @@ contract MixinStakingPool is
     /// @dev Returns true iff the maker is assigned to a staking pool.
     /// @param makerAddress Address of maker
     /// @return True iff assigned.
-    function isMakerAssignedToPool(address makerAddress)
+    function isMakerAssignedToStakingPool(address makerAddress)
         public
         view
         returns (bool)
     {
-        return getPoolIdOfMaker(makerAddress) != NIL_MAKER_ID;
+        return getStakingPoolIdOfMaker(makerAddress) != NIL_MAKER_ID;
     }
 
     /// @dev Returns the makers for a given pool.
     /// @param poolId Unique id of pool.
     /// @return _makerAddressesByPoolId Makers for pool.
-    function getMakersForPool(bytes32 poolId)
+    function getMakersForStakingPool(bytes32 poolId)
         public
         view
         returns (address[] memory _makerAddressesByPoolId)
@@ -276,7 +276,7 @@ contract MixinStakingPool is
 
     /// @dev Returns the unique id that will be assigned to the next pool that is created.
     /// @return Pool id.
-    function getNextPoolId()
+    function getNextStakingPoolId()
         public
         view
         returns (bytes32)
@@ -287,7 +287,7 @@ contract MixinStakingPool is
     /// @dev Returns the pool operator
     /// @param poolId Unique id of pool
     /// @return operatorAddress Operator of the pool
-    function getPoolOperator(bytes32 poolId)
+    function getStakingPoolOperator(bytes32 poolId)
         public
         view
         returns (address operatorAddress)
@@ -298,7 +298,7 @@ contract MixinStakingPool is
     /// @dev Convenience function for loading information on a pool.
     /// @param poolId Unique id of pool.
     /// @return pool Pool info.
-    function _getPool(bytes32 poolId)
+    function _getStakingPool(bytes32 poolId)
         internal
         view
         returns (IStructs.Pool memory pool)
@@ -310,7 +310,7 @@ contract MixinStakingPool is
     /// @dev Computes the unique id that comes after the input pool id.
     /// @param poolId Unique id of pool.
     /// @return Next pool id after input pool.
-    function _computeNextPoolId(bytes32 poolId)
+    function _computeNextStakingPoolId(bytes32 poolId)
         internal
         pure
         returns (bytes32)
