@@ -35,6 +35,10 @@ contract MixinTimelockedStake is
     MixinScheduler
 {
 
+    /// @dev This mixin contains logic for timelocking stake.
+    /// **** Read MixinStake before continuing ****
+    /// 
+
     using LibSafeMath for uint256;
 
     function forceTimelockSync(address owner)

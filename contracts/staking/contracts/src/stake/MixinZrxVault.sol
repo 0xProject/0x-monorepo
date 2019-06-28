@@ -20,17 +20,20 @@ pragma solidity ^0.5.5;
 
 import "../interfaces/IZrxVault.sol";
 import "../immutable/MixinStorage.sol";
+import "../sys/MixinOwnable.sol";
 
 
 contract MixinZrxVault is
+    IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinOwnable
 {
 
     function setZrxVault(address _zrxVault)
         external
-        // onlyOwner
+        onlyOwner
     {
         zrxVault = IZrxVault(_zrxVault);
     }
