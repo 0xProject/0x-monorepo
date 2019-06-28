@@ -179,7 +179,7 @@ export class Simulation {
             for (const j of _.range(numberOfDelegatorsInPool)) {
                 const delegator = this._delegators[delegatorIdx];
                 const amount = p.stakeByDelegator[delegatorIdx];
-                await delegator.depositAndDelegateAsync(poolId, amount);
+                await delegator.depositZrxAndDelegateToStakingPoolAsync(poolId, amount);
                 delegatorIdx += 1;
             }
             poolIdx += 1;

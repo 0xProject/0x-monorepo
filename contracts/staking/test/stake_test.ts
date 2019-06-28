@@ -95,7 +95,7 @@ describe('Staking & Delegating', () => {
             const poolId = await stakingWrapper.createStakingPoolAsync(poolOperator, operatorShare);
             // run test
             const delegator = new DelegatorActor(stakers[0], stakingWrapper);
-            await delegator.depositAndDelegateAsync(poolId, amountToDelegate);
+            await delegator.depositZrxAndDelegateToStakingPoolAsync(poolId, amountToDelegate);
             await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountToDeactivate);
             // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
             //        attempting to do so should revert.
