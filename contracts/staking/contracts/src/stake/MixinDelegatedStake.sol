@@ -103,7 +103,11 @@ contract MixinDelegatedStake is
     /// @param owner of Stake
     /// @param poolId Unique Id of staking pool to delegate stake to.
     /// @param amount of Stake to delegate.
-    function _delegateStake(address payable owner, bytes32 poolId, uint256 amount)
+    function _delegateStake(
+        address payable owner,
+        bytes32 poolId,
+        uint256 amount
+    )
         private
     {
         // take snapshot of parameters before any computation
@@ -129,8 +133,15 @@ contract MixinDelegatedStake is
         delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._add(amount);
     }
 
-    // question - should we then return the amount withdrawn?
-    function _undelegateStake(address payable owner, bytes32 poolId, uint256 amount)
+    /// @dev Undelegates stake of `owner` from the staking pool with id `poolId`
+    /// @param owner of Stake
+    /// @param poolId Unique Id of staking pool to undelegate stake from.
+    /// @param amount of Stake to undelegate.
+    function _undelegateStake(
+        address payable owner,
+        bytes32 poolId,
+        uint256 amount
+    )
         private
     {
         // take snapshot of parameters before any computation
