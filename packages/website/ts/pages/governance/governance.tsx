@@ -1,6 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Banner } from 'ts/components/banner';
@@ -11,26 +12,19 @@ import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { Countdown } from 'ts/pages/governance/countdown';
+import { Proposal, proposals } from 'ts/pages/governance/data';
 import { ModalVote } from 'ts/pages/governance/modal_vote';
 import { RatingBar } from 'ts/pages/governance/rating_bar';
 import { VoteInfo, VoteValue } from 'ts/pages/governance/vote_form';
 import { VoteStats } from 'ts/pages/governance/vote_stats';
 import { colors } from 'ts/style/colors';
+import { TallyInterface } from 'ts/types';
 import { configs } from 'ts/utils/configs';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 import { utils } from 'ts/utils/utils';
 
 interface LabelInterface {
     [key: number]: string;
-}
-
-export interface TallyInterface {
-    zeip?: string;
-    yes?: BigNumber;
-    no?: BigNumber;
-    blockNumber?: string;
-    totalVotes?: string;
-    totalBalance?: BigNumber;
 }
 
 interface State {
@@ -54,54 +48,20 @@ const riskLabels: LabelInterface = {
     3: 'High Risk',
 };
 
-const proposalData = {
-    zeipId: 23,
-    title: 'ZEIP-23: Trade Bundles of Assets',
-    summary: `This ZEIP introduces the MultiAssetProxy, which adds support for trading arbitrary bundles of assets to 0x protocol. Historically, only a single asset could be traded per each side of a trade. With the introduction of the MultiAssetProxy, users will be able to trade multiple ERC721 assets or even mix ERC721 and ERC20 assets within a single order.`,
-    url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
-    votingDeadline: 1551142800,
-    benefit: {
-        title: 'Benefit',
-        summary: `Supporting trades for bundles of assets has been one of the most commonly requested features since the launch of 0x v2. The idea for this feature originated from discussions with gaming and NFT related projects. However, this upgrade also provides utility to relayers for prediction markets or baskets of tokens. The MultiAssetProxy will enable brand new ways of trading.`,
-        rating: 3,
-        links: [
-            {
-                text: 'Technical detail',
-                url: 'https://github.com/0xProject/ZEIPs/issues/23',
-            },
-        ],
-    },
-    risks: {
-        title: 'Risk',
-        summary: `While the MultiAssetProxy’s code is relatively straightforward and has successfully undergone a full third-party audit, a bug within the code could result in the loss of user funds. Deploying the MultiAssetProxy is a hot upgrade that requires modifying the state of existing contracts within 0x protocol. The contracts being modified contain allowances to many users’ tokens. We encourage the community to verify the code, as well as the state changes.`,
-        rating: 2,
-        links: [
-            {
-                text: 'View Code',
-                url:
-                    'https://github.com/0xProject/0x-monorepo/blob/development/contracts/asset-proxy/contracts/src/MultiAssetProxy.sol#L25',
-            },
-            {
-                text: 'View Audit',
-                url: 'https://github.com/ConsenSys/0x-audit-report-2018-12',
-            },
-        ],
-    },
-};
-
-export class Governance extends React.Component {
+export class Governance extends React.Component<RouteComponentProps<any>> {
     public state: State = {
         isContactModalOpen: false,
         isVoteModalOpen: false,
         isWalletConnected: false,
         isVoteReceived: false,
         providerName: 'Metamask',
-        tally: {
-            totalBalance: new BigNumber(0),
-            yes: new BigNumber(0),
-            no: new BigNumber(0),
-        },
     };
+    private readonly _proposalData: Proposal;
+    constructor(props: RouteComponentProps<any>) {
+        super(props);
+        const zeipId = parseInt(props.match.params.zeip.split('-')[1], 10);
+        this._proposalData = proposals[zeipId];
+    }
     public componentDidMount(): void {
         // tslint:disable:no-floating-promises
         this._fetchVoteStatusAsync();
@@ -113,12 +73,12 @@ export class Governance extends React.Component {
                 <DocumentTitle {...documentConstants.VOTE} />
                 <Section maxWidth="1170px" isFlex={true}>
                     <Column width="55%" maxWidth="560px">
-                        <Countdown deadline={proposalData.votingDeadline} />
-                        <Heading size="medium">{proposalData.title}</Heading>
-                        <Paragraph>{proposalData.summary}</Paragraph>
+                        <Countdown deadline={this._proposalData.voteEndDate} />
+                        <Heading size="medium">{this._proposalData.title}</Heading>
+                        <Paragraph>{this._proposalData.summary}</Paragraph>
                         <Button
-                            href={proposalData.url}
-                            target={proposalData.url !== undefined ? '_blank' : undefined}
+                            href={this._proposalData.url}
+                            target={this._proposalData.url !== undefined ? '_blank' : undefined}
                             isWithArrow={true}
                             isAccentColor={true}
                         >
@@ -135,11 +95,11 @@ export class Governance extends React.Component {
 
                 <Section bgColor="dark" maxWidth="1170px">
                     <SectionWrap>
-                        <Heading>{proposalData.benefit.title}</Heading>
+                        <Heading>{this._proposalData.benefit.title}</Heading>
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
-                                <Paragraph>{proposalData.benefit.summary}</Paragraph>
-                                {_.map(proposalData.benefit.links, (link, index) => (
+                                <Paragraph>{this._proposalData.benefit.summary}</Paragraph>
+                                {_.map(this._proposalData.benefit.links, (link, index) => (
                                     <MoreLink
                                         href={link.url}
                                         target={link.url !== undefined ? '_blank' : undefined}
@@ -155,17 +115,17 @@ export class Governance extends React.Component {
                                 <RatingBar
                                     color={colors.brandLight}
                                     labels={benefitLabels}
-                                    rating={proposalData.benefit.rating}
+                                    rating={this._proposalData.benefit.rating}
                                 />
                             </Column>
                         </FlexWrap>
                     </SectionWrap>
                     <SectionWrap>
-                        <Heading>{proposalData.risks.title}</Heading>
+                        <Heading>{this._proposalData.risks.title}</Heading>
                         <FlexWrap>
                             <Column width="55%" maxWidth="560px">
-                                <Paragraph>{proposalData.risks.summary}</Paragraph>
-                                {_.map(proposalData.risks.links, (link, index) => (
+                                <Paragraph>{this._proposalData.risks.summary}</Paragraph>
+                                {_.map(this._proposalData.risks.links, (link, index) => (
                                     <MoreLink
                                         href={link.url}
                                         target={link.url !== undefined ? '_blank' : undefined}
@@ -178,7 +138,11 @@ export class Governance extends React.Component {
                                 ))}
                             </Column>
                             <Column width="30%" maxWidth="360px">
-                                <RatingBar color="#AE5400" labels={riskLabels} rating={proposalData.risks.rating} />
+                                <RatingBar
+                                    color="#AE5400"
+                                    labels={riskLabels}
+                                    rating={this._proposalData.risks.rating}
+                                />
                             </Column>
                         </FlexWrap>
                     </SectionWrap>
@@ -238,14 +202,12 @@ export class Governance extends React.Component {
             tally.no = tally.no.plus(userBalance);
         }
 
-        tally.totalBalance = tally.yes.plus(tally.no);
-
         this.setState({ ...this.state, isVoteReceived: true, tally });
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
             const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
-            const voteEndpoint = `${voteDomain}/v1/tally/${proposalData.zeipId}`;
+            const voteEndpoint = `${voteDomain}/v1/tally/${this._proposalData.zeipId}`;
             const response = await fetch(voteEndpoint, {
                 method: 'get',
                 mode: 'cors',
