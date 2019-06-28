@@ -70,6 +70,7 @@ export {
     ERC1155AssetData,
     SingleAssetData,
     MultiAssetData,
+    StaticCallAssetData,
     MultiAssetDataWithRecursiveDecoding,
     DutchAuctionDetails,
     Order,

@@ -153,33 +153,6 @@ export class ForwarderContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-            feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            feeSignatures: string[],
-            feePercentage: BigNumber,
-            feeRecipient: string,
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-        assert.isArray('signatures', signatures);
-        assert.isArray('feeOrders', feeOrders);
-        assert.isArray('feeSignatures', feeSignatures);
-        assert.isBigNumber('feePercentage', feePercentage);
-        assert.isString('feeRecipient', feeRecipient);
-        const self = this as any as ForwarderContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
-    makerAssetFillAmount,
-    signatures,
-    feeOrders,
-    feeSignatures,
-    feePercentage,
-    feeRecipient
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
@@ -232,6 +205,33 @@ export class ForwarderContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                makerAssetFillAmount: BigNumber,
+                signatures: string[],
+                feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                feeSignatures: string[],
+                feePercentage: BigNumber,
+                feeRecipient: string,
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+            assert.isArray('signatures', signatures);
+            assert.isArray('feeOrders', feeOrders);
+            assert.isArray('feeSignatures', feeSignatures);
+            assert.isBigNumber('feePercentage', feePercentage);
+            assert.isString('feeRecipient', feeRecipient);
+            const self = this as any as ForwarderContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+        makerAssetFillAmount,
+        signatures,
+        feeOrders,
+        feeSignatures,
+        feePercentage,
+        feeRecipient
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public withdrawAsset = {
@@ -309,18 +309,6 @@ export class ForwarderContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            assetData: string,
-            amount: BigNumber,
-        ): string {
-        assert.isString('assetData', assetData);
-        assert.isBigNumber('amount', amount);
-        const self = this as any as ForwarderContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
-    amount
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             assetData: string,
             amount: BigNumber,
@@ -359,6 +347,18 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                assetData: string,
+                amount: BigNumber,
+            ): string {
+            assert.isString('assetData', assetData);
+            assert.isBigNumber('amount', amount);
+            const self = this as any as ForwarderContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('withdrawAsset(bytes,uint256)', [assetData,
+        amount
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public owner = {
         async callAsync(
@@ -392,6 +392,12 @@ export class ForwarderContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ForwarderContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
+            return abiEncodedTransactionData;
         },
     };
     public marketSellOrdersWithEth = {
@@ -509,30 +515,6 @@ export class ForwarderContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            signatures: string[],
-            feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
-            feeSignatures: string[],
-            feePercentage: BigNumber,
-            feeRecipient: string,
-        ): string {
-        assert.isArray('orders', orders);
-        assert.isArray('signatures', signatures);
-        assert.isArray('feeOrders', feeOrders);
-        assert.isArray('feeSignatures', feeSignatures);
-        assert.isBigNumber('feePercentage', feePercentage);
-        assert.isString('feeRecipient', feeRecipient);
-        const self = this as any as ForwarderContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
-    signatures,
-    feeOrders,
-    feeSignatures,
-    feePercentage,
-    feeRecipient
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             signatures: string[],
@@ -582,6 +564,30 @@ export class ForwarderContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                signatures: string[],
+                feeOrders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                feeSignatures: string[],
+                feePercentage: BigNumber,
+                feeRecipient: string,
+            ): string {
+            assert.isArray('orders', orders);
+            assert.isArray('signatures', signatures);
+            assert.isArray('feeOrders', feeOrders);
+            assert.isArray('feeSignatures', feeSignatures);
+            assert.isBigNumber('feePercentage', feePercentage);
+            assert.isString('feeRecipient', feeRecipient);
+            const self = this as any as ForwarderContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)', [orders,
+        signatures,
+        feeOrders,
+        feeSignatures,
+        feePercentage,
+        feeRecipient
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
@@ -649,15 +655,6 @@ export class ForwarderContract extends BaseContract {
         const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
         return gas;
         },
-        getABIEncodedTransactionData(
-            newOwner: string,
-        ): string {
-        assert.isString('newOwner', newOwner);
-        const self = this as any as ForwarderContract;
-        const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
-    ]);
-        return abiEncodedTransactionData;
-        },
         async callAsync(
             newOwner: string,
             callData: Partial<CallData> = {},
@@ -692,6 +689,15 @@ export class ForwarderContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
+            assert.isString('newOwner', newOwner);
+            const self = this as any as ForwarderContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

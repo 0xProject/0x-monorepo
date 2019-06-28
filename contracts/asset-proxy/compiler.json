@@ -28,8 +28,10 @@
         "src/ERC721Proxy.sol",
         "src/MixinAuthorizable.sol",
         "src/MultiAssetProxy.sol",
+        "src/StaticCallProxy.sol",
         "src/interfaces/IAssetData.sol",
         "src/interfaces/IAssetProxy.sol",
-        "src/interfaces/IAuthorizable.sol"
+        "src/interfaces/IAuthorizable.sol",
+        "test/TestStaticCallTarget.sol"
     ]
 }

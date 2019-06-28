@@ -70,15 +70,5 @@ public {{this.tsName}} = {
     const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
     return gas;
     },
-    getABIEncodedTransactionData(
-    {{> typed_params inputs=inputs}}
-    ): string {
-    {{#each inputs}}
-    {{#assertionType name type}}{{/assertionType}}
-    {{/each}}
-    const self = this as any as {{contractName}}Contract;
-    const abiEncodedTransactionData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
-    return abiEncodedTransactionData;
-    },
     {{> callAsync}}
 };

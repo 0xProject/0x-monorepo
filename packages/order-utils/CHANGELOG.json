@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.2.0",
+        "changes": [
+            {
+                "note": "Add support for encoding/decoding StaticCallProxy assetData",
+                "pr": 1863
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "8.1.1",
         "changes": [

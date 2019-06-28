@@ -21,6 +21,10 @@
             {
                 "note": "Refactor `OrderValidationUtils` to calculate `fillableTakerAssetAmount`",
                 "pr": 1848
+            },
+            {
+                "note": "Add support for StaticCallProxy",
+                "pr": 1863
             }
         ]
     }
