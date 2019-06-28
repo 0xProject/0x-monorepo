@@ -17,7 +17,7 @@ export class DelegatorActor extends StakerActor {
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
-    public async depositAndDelegateAsync(
+    public async depositZrxAndDelegateToStakingPoolAsync(
         poolId: string,
         amount: BigNumber,
         revertReason?: RevertReason,
@@ -26,7 +26,7 @@ export class DelegatorActor extends StakerActor {
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // deposit stake
-        const txReceiptPromise = this._stakingWrapper.depositAndDelegateAsync(this._owner, poolId, amount);
+        const txReceiptPromise = this._stakingWrapper.depositZrxAndDelegateToStakingPoolAsync(this._owner, poolId, amount);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
