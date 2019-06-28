@@ -137,7 +137,7 @@ contract MixinStake is
             amount <= getActivatableStake(owner),
             "INSUFFICIENT_BALANCE"
         );
-        activeStakeByOwner[owner] = activeStakeByOwner[owner]._add(amount);
+        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._add(amount);
         totalActivatedStake = totalActivatedStake._add(amount);
     }
 
@@ -152,7 +152,7 @@ contract MixinStake is
             amount <= getActivatedStake(owner),
             "INSUFFICIENT_BALANCE"
         );
-        activeStakeByOwner[owner] = activeStakeByOwner[owner]._sub(amount);
+        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);
         totalActivatedStake = totalActivatedStake._sub(amount);
         _timelockStake(owner, amount);
     }
