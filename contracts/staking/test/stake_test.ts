@@ -66,7 +66,7 @@ describe('Staking & Delegating', () => {
             const amountToWithdraw = StakingWrapper.toBaseUnitAmount(1.5);
             // run test - this actor will validate its own state
             const staker = new StakerActor(stakers[0], stakingWrapper);
-            await staker.depositAndStakeAsync(amountToStake);
+            await staker.depositZrxAndMintActivatedStakeAsync(amountToStake);
             await staker.deactivateAndTimelockStakeAsync(amountToDeactivate);
             // note - we cannot re-activate this timelocked stake until at least one full timelock period has passed.
             //        attempting to do so should revert.
@@ -79,7 +79,7 @@ describe('Staking & Delegating', () => {
             await staker.forceTimelockSyncAsync();
             // now we can activate stake
             await staker.activateStakeAsync(amountToReactivate);
-            await staker.withdrawAsync(amountToWithdraw);
+            await staker.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);
         });
     });
 
@@ -108,7 +108,7 @@ describe('Staking & Delegating', () => {
             await delegator.forceTimelockSyncAsync();
             // now we can activate stake
             await delegator.activateAndDelegateStakeAsync(poolId, amountToReactivate);
-            await delegator.withdrawAsync(amountToWithdraw);
+            await delegator.burnDeactivatedStakeAndWithdrawZrxAsync(amountToWithdraw);
         });
     });
 });

@@ -180,13 +180,13 @@ export class StakingWrapper {
         return balance;
     }
     ///// STAKE /////
-    public async depositAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().deposit.getABIEncodedTransactionData(amount);
+    public async depositZrxAndMintDeactivatedStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().depositZrxAndMintDeactivatedStake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async depositAndStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().depositAndStake.getABIEncodedTransactionData(amount);
+    public async depositZrxAndMintActivatedStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().depositZrxAndMintActivatedStake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
@@ -236,8 +236,8 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
     }
-    public async withdrawAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdraw.getABIEncodedTransactionData(amount);
+    public async burnDeactivatedStakeAndWithdrawZrxAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().burnDeactivatedStakeAndWithdrawZrx.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
