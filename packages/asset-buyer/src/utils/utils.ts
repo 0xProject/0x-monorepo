@@ -4,6 +4,14 @@ import { AbiDefinition, ContractAbi, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
+import {
+    MarketBuySwapQuote,
+    MarketBuySwapQuoteInfo,
+    MarketSellSwapQuote,
+    MarketSellSwapQuoteInfo,
+    SwapQuote,
+    SwapQuoteInfo,
+} from '../types';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const utils = {
@@ -24,5 +32,17 @@ export const utils = {
                 }
             },
         ) as MethodAbi | undefined;
+    },
+    isSwapQuoteMarketBuy(quote: SwapQuote): quote is MarketBuySwapQuote {
+        return (quote as MarketSellSwapQuote).takerAssetFillAmount !== undefined;
+    },
+    isSwapQuoteMarketSell(quote: SwapQuote): quote is MarketSellSwapQuote {
+        return (quote as MarketBuySwapQuote).makerAssetFillAmount !== undefined;
+    },
+    isSwapQuoteInfoMarketBuy(quote: SwapQuoteInfo): quote is MarketBuySwapQuoteInfo {
+        return (quote as MarketBuySwapQuoteInfo).takerTokenAmount !== undefined;
+    },
+    isSwapQuoteInfoMarketSell(quote: SwapQuoteInfo): quote is MarketSellSwapQuoteInfo {
+        return (quote as MarketSellSwapQuoteInfo).makerTokenAmount !== undefined;
     },
 };

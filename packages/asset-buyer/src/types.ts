@@ -94,9 +94,22 @@ export interface ForwarderMarketBuySmartContractParams extends ExchangeMarketBuy
     feeRecipient: string;
 }
 
+export interface ForwarderMarketSellSmartContractParams extends ExchangeMarketSellSmartContractParams {
+    feeOrders: SignedOrder[];
+    feeSignatures: string[];
+    feePercentage: BigNumber;
+    feeRecipient: string;
+}
+
 export interface ExchangeMarketBuySmartContractParams {
     orders: SignedOrder[];
     makerAssetFillAmount: BigNumber;
+    signatures: string[];
+}
+
+export interface ExchangeMarketSellSmartContractParams {
+    orders: SignedOrder[];
+    takerAssetFillAmount: BigNumber;
     signatures: string[];
 }
 
@@ -236,6 +249,7 @@ export interface SwapQuoterOpts {
  * Possible error messages thrown by an SwapQuoterConsumer instance or associated static methods.
  */
 export enum SwapQuoteConsumerError {
+    InvalidMarketSellOrMarketBuySwapQuote = 'INVALID_MARKET_BUY_SELL_SWAP_QUOTE',
     InvalidForwarderSwapQuote = 'INVALID_FORWARDER_SWAP_QUOTE_PROVIDED',
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
