@@ -14,7 +14,8 @@ import { NewsletterSignup } from 'ts/components/docs/newsletter_signup';
 import { Note } from 'ts/components/docs/note';
 import { Resource } from 'ts/components/docs/resource/resource';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
-import { Filters } from 'ts/components/docs/sidebar/filters';
+import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
+import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
@@ -28,7 +29,6 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
-import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
 
 interface Props {
     location: Location;
@@ -58,6 +58,49 @@ const usefulLinks: StepLinkConfig[] = [
     },
 ];
 
+const filterGroups: FilterGroup[] = [
+    {
+        heading: 'Topic',
+        name: 'topic',
+        filters: [
+            {
+                value: 'Mesh',
+                label: 'Mesh',
+            },
+            {
+                value: 'Testing',
+                label: 'Testing',
+            },
+            {
+                value: 'Coordinator Model',
+                label: 'Coordinator Model',
+            },
+            {
+                value: 'Protocol developer',
+                label: 'Protocol developer',
+            },
+        ],
+    },
+    {
+        heading: 'Level',
+        name: 'level',
+        filters: [
+            {
+                value: 'Beginner',
+                label: 'Beginner',
+            },
+            {
+                value: 'Intermediate',
+                label: 'Intermediate',
+            },
+            {
+                value: 'Advanced',
+                label: 'Advanced',
+            },
+        ],
+    },
+];
+
 export class DocsPageTemplate extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
@@ -67,7 +110,7 @@ export class DocsPageTemplate extends React.Component<Props> {
                 <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                     <Columns>
                         <aside>
-                            <Filters />
+                            <Filters groups={filterGroups} />
                             <ChapterLinks />
                         </aside>
                         <article>
