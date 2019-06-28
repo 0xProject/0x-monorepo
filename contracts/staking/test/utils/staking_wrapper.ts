@@ -311,25 +311,25 @@ export class StakingWrapper {
         return value;
     }
     ///// POOLS /////
-    public async getNextPoolIdAsync(): Promise<string> {
-        const calldata = this.getStakingContract().getNextPoolId.getABIEncodedTransactionData();
+    public async getNextStakingPoolIdAsync(): Promise<string> {
+        const calldata = this.getStakingContract().getNextStakingPoolId.getABIEncodedTransactionData();
         const nextPoolId = await this._callAsync(calldata);
         return nextPoolId;
     }
-    public async createPoolAsync(operatorAddress: string, operatorShare: number): Promise<string> {
-        const calldata = this.getStakingContract().createPool.getABIEncodedTransactionData(operatorShare);
+    public async createStakingPoolAsync(operatorAddress: string, operatorShare: number): Promise<string> {
+        const calldata = this.getStakingContract().createStakingPool.getABIEncodedTransactionData(operatorShare);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
-        const createPoolLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[0]);
-        const poolId = (createPoolLog as any).args.poolId;
+        const createStakingPoolLog = this._logDecoder.decodeLogOrThrow(txReceipt.logs[0]);
+        const poolId = (createStakingPoolLog as any).args.poolId;
         return poolId;
     }
-    public async addMakerToPoolAsync(
+    public async addMakerToStakingPoolAsync(
         poolId: string,
         makerAddress: string,
         makerSignature: string,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().addMakerToPool.getABIEncodedTransactionData(
+        const calldata = this.getStakingContract().addMakerToStakingPool.getABIEncodedTransactionData(
             poolId,
             makerAddress,
             makerSignature,
@@ -337,27 +337,27 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async removeMakerFromPoolAsync(
+    public async removeMakerFromStakingPoolAsync(
         poolId: string,
         makerAddress: string,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().removeMakerFromPool.getABIEncodedTransactionData(
+        const calldata = this.getStakingContract().removeMakerFromStakingPool.getABIEncodedTransactionData(
             poolId,
             makerAddress,
         );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async getPoolIdOfMakerAsync(makerAddress: string): Promise<string> {
-        const calldata = this.getStakingContract().getPoolIdOfMaker.getABIEncodedTransactionData(makerAddress);
+    public async getStakingPoolIdOfMakerAsync(makerAddress: string): Promise<string> {
+        const calldata = this.getStakingContract().getStakingPoolIdOfMaker.getABIEncodedTransactionData(makerAddress);
         const poolId = await this._callAsync(calldata);
         return poolId;
     }
-    public async getMakersForPoolAsync(poolId: string): Promise<string[]> {
-        const calldata = this.getStakingContract().getMakersForPool.getABIEncodedTransactionData(poolId);
+    public async getMakersForStakingPoolAsync(poolId: string): Promise<string[]> {
+        const calldata = this.getStakingContract().getMakersForStakingPool.getABIEncodedTransactionData(poolId);
         const returndata = await this._callAsync(calldata);
-        const makerAddresses = this.getStakingContract().getMakersForPool.getABIDecodedReturnData(returndata);
+        const makerAddresses = this.getStakingContract().getMakersForStakingPool.getABIDecodedReturnData(returndata);
         return makerAddresses;
     }
     public async isValidMakerSignatureAsync(
@@ -629,7 +629,7 @@ export class StakingWrapper {
         poolOperatorShare: number,
         stakingContractAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingPoolRewardVaultContract().createPool.getABIEncodedTransactionData(
+        const calldata = this.getStakingPoolRewardVaultContract().createStakingPool.getABIEncodedTransactionData(
             poolId,
             poolOperatorShare,
         );
