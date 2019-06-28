@@ -42,6 +42,9 @@ contract StakingPoolRewardVault is
     /// allows withdrawals to be made. Once this vault is in catostrophic
     /// failure mode, it cannot be returned to normal mode; this prevents
     /// corruption of related state in the staking contract.
+    ///
+    /// When in Catastrophic Failure Mode, the Staking contract can still
+    /// perform withdrawals on behalf of its users.
 
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;

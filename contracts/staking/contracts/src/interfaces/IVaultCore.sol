@@ -18,13 +18,8 @@
 
 pragma solidity ^0.5.5;
 
-import "@0x/contracts-utils/contracts/src/Authorizable.sol";
-import "../interfaces/IVaultCore.sol";
 
-
-contract MixinVaultCore is
-    Authorizable,
-    IVaultCore
+interface IVaultCore
 {
 
     /// @dev This mixin contains core logic for vaults.
@@ -39,64 +34,27 @@ contract MixinVaultCore is
     /// a vault cannot be reset to normal mode; this prevents corruption of related
     /// state in the staking contract.
 
-    // Address of staking contract
-    address payable internal stakingContractAddress;
+    /// @dev Emitted when the Staking contract is changed.
+    /// @param stakingContractAddress Address of the new Staking contract.
+    event StakingContractChanged(
+        address stakingContractAddress
+    );
 
-    // True iff vault has been set to Catostrophic Failure Mode
-    bool internal isInCatostrophicFailure;
-
-    /// @dev Constructor.
-    constructor() public {
-        stakingContractAddress = 0x0000000000000000000000000000000000000000;
-        isInCatostrophicFailure = false;
-    }
-
-    /// @dev Asserts that the sender (`msg.sender`) is the staking contract.
-    modifier onlyStakingContract {
-        require(
-            msg.sender == stakingContractAddress,
-            "ONLY_CALLABLE_BY_STAKING_CONTRACT"
-        );
-        _;
-    }
-
-    /// @dev Asserts that this contract *is in* Catostrophic Failure Mode.
-    modifier onlyInCatostrophicFailure {
-        require(
-            isInCatostrophicFailure,
-            "ONLY_CALLABLE_IN_CATOSTROPHIC_FAILURE"
-        );
-        _;
-    }
-
-    /// @dev Asserts that this contract *is not in* Catostrophic Failure Mode.
-    modifier onlyNotInCatostrophicFailure {
-        require(
-            !isInCatostrophicFailure,
-            "ONLY_CALLABLE_NOT_IN_CATOSTROPHIC_FAILURE"
-        );
-        _;
-    }
+    /// @dev Emitted when the Staking contract is put into Catostrophic Failure Mode
+    /// @param sender Address of sender (`msg.sender`)
+    event InCatostrophicFailureMode(
+        address sender
+    );
 
     /// @dev Sets the address of the Staking Contract.
     /// Note that only the contract owner can call this function.
     /// @param _stakingContractAddress Address of Staking contract.
     function setStakingContract(address payable _stakingContractAddress)
-        external
-        onlyOwner
-    {
-        stakingContractAddress = _stakingContractAddress;
-        emit StakingContractChanged(stakingContractAddress);
-    }
+        external;
 
     /// @dev Vault enters into Catostrophic Failure Mode.
     /// *** WARNING - ONCE IN CATOSTROPHIC FAILURE MODE, YOU CAN NEVER GO BACK! ***
     /// Note that only the contract owner can call this function.
     function enterCatostrophicFailure()
-        external
-        onlyOwner
-    {
-        isInCatostrophicFailure = true;
-        emit InCatostrophicFailureMode(msg.sender);
-    }
+        external;
 }
