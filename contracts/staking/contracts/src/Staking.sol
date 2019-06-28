@@ -47,10 +47,10 @@ contract Staking is
     MixinStakeBalances,
     MixinStakingPool,
     MixinTimelockedStake,
-    MixinStake,
-    MixinDelegatedStake,
     MixinStakingPoolRewards,
-    MixinExchangeFees
+    MixinExchangeFees,
+    MixinStake,
+    MixinDelegatedStake
 {
 
     // this contract can receive ETH

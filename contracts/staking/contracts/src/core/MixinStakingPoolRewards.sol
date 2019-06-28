@@ -218,4 +218,73 @@ contract MixinStakingPoolRewards is
             poolBalance
         );
     }
+
+    function _joinStakingPool(
+        bytes32 poolId,
+        address payable member,
+        uint256 amountOfStakeToDelegate,
+        uint256 totalStakeDelegatedToPool
+    )
+        internal
+    {
+        // update delegator's share of reward pool
+        // note that this uses the snapshot parameters
+        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
+        uint256 buyIn = LibRewardMath._computeBuyInDenominatedInShadowAsset(
+            amountOfStakeToDelegate,
+            totalStakeDelegatedToPool,
+            shadowRewardsByPoolId[poolId],
+            poolBalance
+        );
+        if (buyIn > 0) {
+            shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(buyIn);
+            shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(buyIn);
+        }
+    }
+
+    function _leaveStakingPool(
+        bytes32 poolId,
+        address payable member,
+        uint256 amountOfStakeToUndelegate,
+        uint256 totalStakeDelegatedToPoolByMember,
+        uint256 totalStakeDelegatedToPool
+    )
+        internal
+    {
+         // get payout
+        uint256 poolBalance = getBalanceOfMembersInStakingPoolRewardVault(poolId);
+        uint256 payoutInRealAsset = 0;
+        uint256 payoutInShadowAsset = 0;
+        if (totalStakeDelegatedToPoolByMember == amountOfStakeToUndelegate) {
+            // full payout; this is computed separately to avoid extra computation and rounding.
+            payoutInShadowAsset = shadowRewardsInPoolByOwner[member][poolId];
+            payoutInRealAsset = LibRewardMath._computePayoutDenominatedInRealAsset(
+                amountOfStakeToUndelegate,
+                totalStakeDelegatedToPool,
+                payoutInShadowAsset,
+                shadowRewardsByPoolId[poolId],
+                poolBalance
+            );
+        } else {
+            // partial payout
+            (payoutInRealAsset, payoutInShadowAsset) = LibRewardMath._computePartialPayout(
+                amountOfStakeToUndelegate,
+                totalStakeDelegatedToPoolByMember,
+                totalStakeDelegatedToPool,
+                shadowRewardsInPoolByOwner[member][poolId],
+                shadowRewardsByPoolId[poolId],
+                poolBalance
+            );
+        }
+
+        // update shadow rewards
+        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._sub(payoutInShadowAsset);
+        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._sub(payoutInShadowAsset);
+
+        // withdraw payout for member
+        if (payoutInRealAsset > 0) {
+            _withdrawFromMemberInStakingPoolRewardVault(poolId, payoutInRealAsset);
+            member.transfer(payoutInRealAsset);
+        }
+    }
 }

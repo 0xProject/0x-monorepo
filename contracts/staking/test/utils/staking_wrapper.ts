@@ -190,12 +190,12 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async depositAndDelegateAsync(
+    public async depositZrxAndDelegateToStakingPoolAsync(
         owner: string,
         poolId: string,
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().depositAndDelegate.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().depositZrxAndDelegateToStakingPool.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
     }
