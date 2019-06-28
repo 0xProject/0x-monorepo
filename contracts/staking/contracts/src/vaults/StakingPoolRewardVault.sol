@@ -109,7 +109,7 @@ contract StakingPoolRewardVault is
         stakingContractAddress.transfer(amount);
     }
 
-    function createPool(bytes32 poolId, uint8 poolOperatorShare)
+    function createStakingPool(bytes32 poolId, uint8 poolOperatorShare)
         external
         onlyStakingContract
         onlyNotInCatostrophicFailure

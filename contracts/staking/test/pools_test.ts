@@ -69,11 +69,11 @@ describe('Staking Pool Management', () => {
             const operatorShare = 39;
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // check that the next pool id was incremented
             const expectedNextPoolId = '0x0000000000000000000000000000000200000000000000000000000000000000';
-            const nextPoolId = await stakingWrapper.getNextPoolIdAsync();
+            const nextPoolId = await stakingWrapper.getNextStakingPoolIdAsync();
             expect(nextPoolId).to.be.equal(expectedNextPoolId);
         });
         it('Should successfully add/remove a maker to a pool', async () => {
@@ -84,13 +84,13 @@ describe('Staking Pool Management', () => {
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingWrapper);
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
             // remove maker from pool
-            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddress);
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress);
         });
         it('Should successfully add/remove multipler makers to the same pool', async () => {
             // test parameters
@@ -104,7 +104,7 @@ describe('Staking Pool Management', () => {
                 new MakerActor(makerAddresses[2], stakingWrapper),
             ];
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add makers to pool
             const makerApprovals = [
@@ -112,13 +112,13 @@ describe('Staking Pool Management', () => {
                 makers[1].signApprovalForStakingPool(poolId),
                 makers[2].signApprovalForStakingPool(poolId),
             ];
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddresses[0], makerApprovals[0].signature);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddresses[1], makerApprovals[1].signature);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddresses[2], makerApprovals[2].signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddresses[0], makerApprovals[0].signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddresses[1], makerApprovals[1].signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddresses[2], makerApprovals[2].signature);
             // remove maker from pool
-            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[0]);
-            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[1]);
-            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddresses[2]);
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddresses[0]);
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddresses[1]);
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddresses[2]);
         });
         it('Should fail to add the same maker twice', async () => {
             // test parameters
@@ -128,13 +128,13 @@ describe('Staking Pool Management', () => {
             const makerAddress = users[1];
             const maker = new MakerActor(makerAddress, stakingWrapper);
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
             // add same maker to pool again
-            await poolOperator.addMakerToPoolAsync(
+            await poolOperator.addMakerToStakingPoolAsync(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
@@ -148,10 +148,10 @@ describe('Staking Pool Management', () => {
             const poolOperator = new PoolOperatorActor(operatorAddress, stakingWrapper);
             const makerAddress = users[1];
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // remove non-existent maker from pool
-            await poolOperator.removeMakerFromPoolAsync(poolId, makerAddress, RevertReason.MakerAddressNotRegistered);
+            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress, RevertReason.MakerAddressNotRegistered);
         });
         it('Should fail to add a maker who signed with the wrong private key', async () => {
             // test parameters
@@ -164,11 +164,11 @@ describe('Staking Pool Management', () => {
             );
             const maker = new MakerActor(makerAddress, stakingWrapper, badMakerPrivateKey);
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(
+            await poolOperator.addMakerToStakingPoolAsync(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
@@ -185,11 +185,11 @@ describe('Staking Pool Management', () => {
             const notStakingContractAddress = users[2];
             const maker = new MakerActor(makerAddress, stakingWrapper, forceMakerKeyLookup, notStakingContractAddress);
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(
+            await poolOperator.addMakerToStakingPoolAsync(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
@@ -213,11 +213,11 @@ describe('Staking Pool Management', () => {
                 badChainId,
             );
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(
+            await poolOperator.addMakerToStakingPoolAsync(
                 poolId,
                 makerAddress,
                 makerApproval.signature,
@@ -233,12 +233,12 @@ describe('Staking Pool Management', () => {
             const maker = new MakerActor(makerAddress, stakingWrapper);
             const notOperatorAddress = users[2];
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature, notOperatorAddress),
+                stakingWrapper.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, notOperatorAddress),
                 RevertReason.OnlyCallableByPoolOperator,
             );
         });
@@ -251,14 +251,14 @@ describe('Staking Pool Management', () => {
             const maker = new MakerActor(makerAddress, stakingWrapper);
             const notOperatorAddress = users[2];
             // create pool
-            const poolId = await poolOperator.createPoolAsync(operatorShare);
+            const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
-            await poolOperator.addMakerToPoolAsync(poolId, makerAddress, makerApproval.signature);
+            await poolOperator.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature);
             // try to remove the maker address from an address other than the operator
             await expectTransactionFailedAsync(
-                stakingWrapper.removeMakerFromPoolAsync(poolId, makerAddress, notOperatorAddress),
+                stakingWrapper.removeMakerFromStakingPoolAsync(poolId, makerAddress, notOperatorAddress),
                 RevertReason.OnlyCallableByPoolOperatorOrMaker,
             );
         });
