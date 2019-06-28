@@ -41,8 +41,9 @@ contract MixinExchangeFees is
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeBalances,
-    MixinStakingPool
+    MixinStakingPool,
+    MixinTimelockedStake,
+    MixinStakeBalances
 {
 
     /// @dev This mixin contains the logic for 0x protocol fees.
