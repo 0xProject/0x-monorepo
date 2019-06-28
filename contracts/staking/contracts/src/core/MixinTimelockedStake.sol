@@ -24,7 +24,6 @@ import "../immutable/MixinConstants.sol";
 import "../immutable/MixinStorage.sol";
 import "../interfaces/IStakingEvents.sol";
 import "./MixinScheduler.sol";
-import "./MixinStakeBalances.sol";
 
 
 contract MixinTimelockedStake is
@@ -33,8 +32,7 @@ contract MixinTimelockedStake is
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
-    MixinScheduler,
-    MixinStakeBalances
+    MixinScheduler
 {
 
     using LibSafeMath for uint256;
@@ -76,5 +74,29 @@ contract MixinTimelockedStake is
             return;
         }
         timelockedStakeByOwner[owner] = ownerTimelock;
+    }
+
+    function _getSynchronizedTimelock(address owner)
+        internal
+        view
+        returns (
+            IStructs.Timelock memory ownerTimelock,
+            bool isOutOfSync
+        )
+    {
+        uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
+        ownerTimelock = timelockedStakeByOwner[owner];
+        isOutOfSync = false;
+        if (currentTimelockPeriod == ownerTimelock.lockedAt._add(1)) {
+            // shift n periods
+            ownerTimelock.pending = ownerTimelock.total;
+            isOutOfSync = true;
+        } else if (currentTimelockPeriod > ownerTimelock.lockedAt) {
+            // Timelock has expired - zero out
+            ownerTimelock.lockedAt = 0;
+            ownerTimelock.total = 0;
+            ownerTimelock.pending = 0;
+        }
+        return (ownerTimelock, isOutOfSync);
     }
 }
