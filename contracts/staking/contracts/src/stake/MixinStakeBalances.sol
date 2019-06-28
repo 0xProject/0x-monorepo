@@ -140,6 +140,7 @@ contract MixinStakeBalances is
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
     /// This stake is in the "Activated & Delegated" state.
     /// @param owner to query.
+    /// @param poolId Unique Id of pool.
     /// @return Stake delegaated to pool by owner.
     function getStakeDelegatedToPoolByOwner(address owner, bytes32 poolId)
         public
@@ -151,8 +152,8 @@ contract MixinStakeBalances is
 
     /// @dev Returns the total stake delegated to a specific staking pool, across all members.
     /// This stake is in the "Activated & Delegated" state.
-    /// @param owner to query.
-    /// @return Stake delegaated to pool by owner.
+    /// @param poolId Unique Id of pool.
+    /// @return Total stake delegaated to pool.
     function getStakeDelegatedToPool(bytes32 poolId)
         public
         view
