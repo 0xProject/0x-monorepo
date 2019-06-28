@@ -30,7 +30,7 @@ contract IStaking {
 
     /// @dev Returns the current epoch period, measured in seconds.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    function getEpochPeriodInSeconds()
+    function getEpochDurationInSeconds()
         public
         pure
         returns (uint64);
@@ -58,7 +58,7 @@ contract IStaking {
 
     /// @dev Returns the length of a timelock period, measured in epochs.
     ///      Timelock period = [startEpoch..endEpoch)
-    function getTimelockPeriodInEpochs()
+    function getTimelockDurationInEpochs()
         public
         pure
         returns (uint64);

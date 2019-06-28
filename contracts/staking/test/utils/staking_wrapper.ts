@@ -415,8 +415,8 @@ export class StakingWrapper {
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         // increase timestamp of next block
-        const epochPeriodInSeconds = await this.getEpochPeriodInSecondsAsync();
-        await this._web3Wrapper.increaseTimeAsync(epochPeriodInSeconds.toNumber());
+        const epochDurationInSeconds = await this.getEpochDurationInSecondsAsync();
+        await this._web3Wrapper.increaseTimeAsync(epochDurationInSeconds.toNumber());
         // mine next block
         await this._web3Wrapper.mineBlockAsync();
         // increment epoch in contracts
@@ -434,16 +434,16 @@ export class StakingWrapper {
             await this.skipToNextEpochAsync();
         }
     }
-    public async getEpochPeriodInSecondsAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getEpochPeriodInSeconds.getABIEncodedTransactionData();
+    public async getEpochDurationInSecondsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getEpochDurationInSeconds.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getEpochPeriodInSeconds.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getEpochDurationInSeconds.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getTimelockPeriodInEpochsAsync(): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTimelockPeriodInEpochs.getABIEncodedTransactionData();
+    public async getTimelockDurationInEpochsAsync(): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTimelockDurationInEpochs.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getTimelockPeriodInEpochs.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTimelockDurationInEpochs.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getCurrentEpochStartTimeInSecondsAsync(): Promise<BigNumber> {
