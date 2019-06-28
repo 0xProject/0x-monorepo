@@ -26,6 +26,7 @@ import "../interfaces/IStructs.sol";
 
 // solhint-disable max-states-count
 contract MixinStorage is
+    MixinDeploymentConstants,
     MixinConstants
 {
 

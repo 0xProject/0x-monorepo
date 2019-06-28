@@ -30,12 +30,15 @@ import "./MixinStakeBalances.sol";
 
 
 contract MixinStake is
+    IMixinScheduler,
     IStakingEvents,
+    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
+    MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinZrxVault,
     MixinStakeBalances
 {
 

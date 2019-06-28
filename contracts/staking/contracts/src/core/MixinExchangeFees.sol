@@ -32,12 +32,15 @@ import "../interfaces/IStructs.sol";
 
 
 contract MixinExchangeFees is
+    IMixinScheduler,
     IStakingEvents,
+    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
+    MixinOwnable,
+    MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinExchangeManager,
     MixinStakeBalances,
     MixinStakingPool
 {

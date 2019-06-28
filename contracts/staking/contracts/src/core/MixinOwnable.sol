@@ -6,6 +6,8 @@ import "../immutable/MixinStorage.sol";
 
 contract MixinOwnable is
     IStakingEvents,
+    MixinDeploymentConstants,
+    MixinConstants,
     MixinStorage
 {
 
