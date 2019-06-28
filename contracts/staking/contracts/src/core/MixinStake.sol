@@ -40,8 +40,8 @@ contract MixinStake is
     MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeBalances,
-    MixinTimelockedStake
+    MixinTimelockedStake,
+    MixinStakeBalances
 {
 
     /// @dev This mixin contains logic for managing ZRX tokens and Stake.

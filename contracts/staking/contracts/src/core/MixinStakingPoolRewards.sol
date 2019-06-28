@@ -36,8 +36,9 @@ contract MixinStakingPoolRewards is
     MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeBalances,
-    MixinStakingPool
+    MixinStakingPool,
+    MixinTimelockedStake,
+    MixinStakeBalances
 {
 
     /// @dev This mixin contains logic for staking pool rewards.
