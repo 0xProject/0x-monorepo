@@ -11,7 +11,7 @@
                 "pr": 1863
             },
             {
-                "note": "Initial support for Python",
+                "note": "Initial Python wrapper templates",
                 "pr": 1878
             }
         ]
