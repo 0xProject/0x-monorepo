@@ -31,13 +31,20 @@ contract MixinZrxVault is
     MixinOwnable
 {
 
-    function setZrxVault(address _zrxVault)
+    /// @dev This mixin contains logic for managing and interfacing with the Zrx Vault.
+    /// (see vaults/ZrxVault.sol).
+
+    /// @dev Set the Zrx Vault.
+    /// @param zrxVaultAddress Address of the Zrx Vault.
+    function setZrxVault(address zrxVaultAddress)
         external
         onlyOwner
     {
-        zrxVault = IZrxVault(_zrxVault);
+        zrxVault = IZrxVault(zrxVaultAddress);
     }
 
+    /// @dev Return the current Zrx Vault
+    /// @return Zrx Vault
     function getZrxVault()
         public
         view
@@ -46,12 +53,18 @@ contract MixinZrxVault is
         return address(zrxVault);
     }
 
+    /// @dev Deposits Zrx Tokens from the `owner` into the vault.
+    /// @param owner of Zrx Tokens
+    /// @param amount of tokens to deposit.
     function _depositFromOwnerIntoZrxVault(address owner, uint256 amount)
         internal
     {
         zrxVault.depositFrom(owner, amount);
     }
 
+    /// @dev Withdraws Zrx Tokens from to `owner` from the vault.
+    /// @param owner of deposited Zrx Tokens
+    /// @param amount of tokens to withdraw.
     function _withdrawToOwnerFromZrxVault(address owner, uint256 amount)
         internal
     {
