@@ -44,12 +44,12 @@ contract Staking is
     MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeBalances,
     MixinStakingPool,
     MixinTimelockedStake,
+    MixinStakeBalances,
+    MixinStake,
     MixinStakingPoolRewards,
     MixinExchangeFees,
-    MixinStake,
     MixinDelegatedStake
 {
 

@@ -41,11 +41,11 @@ contract MixinDelegatedStake is
     MixinOwnable,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinStakeBalances,
     MixinStakingPool,
     MixinTimelockedStake,
-    MixinStakingPoolRewards,
-    MixinStake
+    MixinStakeBalances,
+    MixinStake,
+    MixinStakingPoolRewards
 {
 
     /// @dev This mixin contains logic for managing delegated stake.
