@@ -17,16 +17,16 @@ export class StakerActor extends BaseActor {
     constructor(owner: string, stakingWrapper: StakingWrapper) {
         super(owner, stakingWrapper);
     }
-    public async depositAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
-        await this._stakingWrapper.depositAsync(this._owner, amount);
+    public async depositZrxAndMintDeactivatedStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+        await this._stakingWrapper.depositZrxAndMintDeactivatedStakeAsync(this._owner, amount);
         throw new Error('Checks Unimplemented');
     }
-    public async depositAndStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async depositZrxAndMintActivatedStakeAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initStakerBalances = await this.getBalancesAsync();
         // deposit stake
-        const txReceiptPromise = this._stakingWrapper.depositAndStakeAsync(this._owner, amount);
+        const txReceiptPromise = this._stakingWrapper.depositZrxAndMintActivatedStakeAsync(this._owner, amount);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
@@ -81,12 +81,12 @@ export class StakerActor extends BaseActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async withdrawAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async burnDeactivatedStakeAndWithdrawZrxAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initStakerBalances = await this.getBalancesAsync();
         // withdraw stake
-        const txReceiptPromise = this._stakingWrapper.withdrawAsync(this._owner, amount);
+        const txReceiptPromise = this._stakingWrapper.burnDeactivatedStakeAndWithdrawZrxAsync(this._owner, amount);
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;

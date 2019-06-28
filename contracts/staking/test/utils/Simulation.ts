@@ -131,7 +131,7 @@ export class Simulation {
             this._poolOperatorsAsDelegators.push(poolOperatorAsDelegator);
             // add stake to the operator's pool
             const amountOfStake = p.stakeByPoolOperator[i];
-            await poolOperatorAsDelegator.depositAndStakeAsync(amountOfStake);
+            await poolOperatorAsDelegator.depositZrxAndMintActivatedStakeAsync(amountOfStake);
         }
     }
 
