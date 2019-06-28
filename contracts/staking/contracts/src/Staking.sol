@@ -31,18 +31,21 @@ import "./core/MixinStakingPoolRewards.sol";
 
 
 contract Staking is
+    IMixinScheduler,
     IStaking,
+    IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
+    MixinZrxVault,
+    MixinOwnable,
+    MixinExchangeManager,
     MixinScheduler,
     MixinStakingPoolRewardVault,
-    MixinZrxVault,
-    MixinExchangeManager,
     MixinStakeBalances,
     MixinStakingPool,
-    MixinStakingPoolRewards,
     MixinStake,
+    MixinStakingPoolRewards,
     MixinExchangeFees
 {
 

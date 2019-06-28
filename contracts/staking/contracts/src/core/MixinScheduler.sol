@@ -28,10 +28,11 @@ import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinScheduler is
+    IMixinScheduler,
     IStakingEvents,
+    MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage,
-    IMixinScheduler
+    MixinStorage
 {
 
     using LibSafeMath for uint256;

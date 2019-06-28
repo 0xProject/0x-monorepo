@@ -27,6 +27,9 @@ import "./MixinScheduler.sol";
 
 
 contract MixinStakeBalances is
+    IMixinScheduler,
+    IStakingEvents,
+    MixinDeploymentConstants,
     MixinConstants,
     MixinStorage,
     MixinScheduler
