@@ -1,9 +1,9 @@
 
     def {{this.langLocalName}}(
-        self{{#if inputs}},{{/if}}
+        self,
         {{> typed_params inputs=inputs}}
-        {{^this.constant}}
         tx_params: Optional[TxParams] = None,
+        {{^this.constant}}
         view_only: bool = False,
         {{/this.constant}}
     ) -> {{~> return_type outputs=outputs~}}:
@@ -36,6 +36,6 @@
         )
         return self._invoke_function_call(
             func=func,
-            tx_params={{#if this.constant}}None{{else}}tx_params{{/if}},
+            tx_params=tx_params,
             view_only={{#if this.constant}}True{{else}}view_only{{/if}}
         )
