@@ -65,15 +65,15 @@ describe('Staking Vaults', () => {
             const stakingContractAddress = stakingWrapper.getStakingContract().address;
             const notStakingContractAddress = poolOperator;
             // create pool in vault
-            await stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress);
+            await stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress);
             // should fail to create pool if it already exists
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, stakingContractAddress),
+                stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, stakingContractAddress),
                 RevertReason.PoolAlreadyExists,
             );
             // should fail to create a pool from an address other than the staking contract
             await expectTransactionFailedAsync(
-                stakingWrapper.rewardVaultCreatePoolAsync(poolId, operatorShare, notStakingContractAddress),
+                stakingWrapper.rewardVaultRegisterPoolAsync(poolId, operatorShare, notStakingContractAddress),
                 RevertReason.OnlyCallableByStakingContract,
             );
         });
