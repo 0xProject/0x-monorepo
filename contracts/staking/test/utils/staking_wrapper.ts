@@ -134,7 +134,7 @@ export class StakingWrapper {
         );
         // set staking proxy contract in zrx vault
         await (this
-            ._zrxVaultContractIfExists).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            ._zrxVaultContractIfExists).setStakingContract.awaitTransactionSuccessAsync(
             (this._stakingProxyContractIfExists).address,
         );
         // set zrx vault in staking contract
@@ -152,7 +152,7 @@ export class StakingWrapper {
         );
         // set staking proxy contract in reward vault
         await (this
-            ._rewardVaultContractIfExists).setStakingContractAddrsess.awaitTransactionSuccessAsync(
+            ._rewardVaultContractIfExists).setStakingContract.awaitTransactionSuccessAsync(
             (this._stakingProxyContractIfExists).address,
         );
         // set reward vault in staking contract
