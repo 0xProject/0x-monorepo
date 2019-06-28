@@ -26,6 +26,7 @@ import "./MixinVaultCore.sol";
 
 
 contract ZrxVault is
+    Authorizable,
     IZrxVault,
     MixinVaultCore
 {
