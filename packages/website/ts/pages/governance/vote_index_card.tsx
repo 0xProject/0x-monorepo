@@ -45,13 +45,16 @@ const getVoteOutcome = (tally?: TallyInterface): VoteOutcome | undefined => {
 
 const getDateString = (voteStartDate: moment.Moment, voteEndDate: moment.Moment): string => {
     const voteTime = getVoteTime(voteStartDate, voteEndDate);
+    const pstOffset = '-0800';
+    const endDate = voteEndDate.utcOffset(pstOffset);
+    const startDate = voteEndDate.utcOffset(pstOffset);
     if (voteTime === 'happening') {
-        return `Ends ${voteEndDate.format('MMMM Do YYYY, h:mm:ss a')}`;
+        return `Ends ${endDate.format('MMMM Do YYYY, h:mm a')} PST`;
     }
     if (voteTime === 'upcoming') {
-        return `Starting ${voteStartDate.format('MMMM Do YYYY, h:mm:ss a')}`;
+        return `Starting ${startDate.format('MMMM Do YYYY, h:mm a')} PST`;
     }
-    return `Ended ${voteEndDate.format('MMMM Do YYYY')}`;
+    return `Ended ${endDate.format('MMMM Do YYYY')}`;
 };
 
 export const VoteIndexCard: React.StatelessComponent<VoteIndexCardProps> = ({
