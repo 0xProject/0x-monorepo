@@ -8,8 +8,11 @@ import { constants } from '../constants';
 import {
     CalldataInfo,
     ForwarderMarketBuySmartContractParams,
+    ForwarderMarketSellSmartContractParams,
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
+    MarketBuySwapQuote,
+    MarketSellSwapQuote,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumer,
@@ -22,7 +25,8 @@ import { assetDataUtils } from '../utils/asset_data_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams> {
+export class ForwarderSwapQuoteConsumer
+    implements SwapQuoteConsumer<ForwarderMarketBuySmartContractParams | ForwarderMarketSellSmartContractParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -51,17 +55,35 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const consumableQuote = (quote as any) as (MarketBuySwapQuote | MarketSellSwapQuote);
+        const smartContractParamsInfo = await this.getSmartContractParamsOrThrowAsync(consumableQuote, opts);
+        const { to, methodAbi, ethAmount } = smartContractParamsInfo;
+
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-        const args = [
-            params.orders,
-            params.makerAssetFillAmount,
-            params.signatures,
-            params.feeOrders,
-            params.feeSignatures,
-            params.feePercentage,
-            params.feeRecipient,
-        ];
+
+        let args: any[];
+        if (utils.isSwapQuoteMarketBuy(consumableQuote)) {
+            const marketBuyParams = (smartContractParamsInfo.params as any) as ForwarderMarketBuySmartContractParams;
+            args = [
+                marketBuyParams.orders,
+                marketBuyParams.makerAssetFillAmount,
+                marketBuyParams.signatures,
+                marketBuyParams.feeOrders,
+                marketBuyParams.feeSignatures,
+                marketBuyParams.feePercentage,
+                marketBuyParams.feeRecipient,
+            ];
+        } else {
+            const marketSellParams = (smartContractParamsInfo.params as any) as ForwarderMarketSellSmartContractParams;
+            args = [
+                marketSellParams.orders,
+                marketSellParams.signatures,
+                marketSellParams.feeOrders,
+                marketSellParams.feeSignatures,
+                marketSellParams.feePercentage,
+                marketSellParams.feeRecipient,
+            ];
+        }
         const calldataHexString = abiEncoder.encode(args);
         return {
             calldataHexString,
@@ -79,7 +101,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
         opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
-    ): Promise<SmartContractParamsInfo<ForwarderMarketBuySmartContractParams>> {
+    ): Promise<
+        SmartContractParamsInfo<ForwarderMarketBuySmartContractParams | ForwarderMarketSellSmartContractParams>
+    > {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
         const { ethAmount, feeRecipient, feePercentage: unFormattedFeePercentage } = _.merge(
@@ -99,26 +123,51 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
             unFormattedFeePercentage,
         );
 
-        const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
+        const consumableQuoteWithAffiliateFee = (swapQuoteWithAffiliateFee as any) as (
+            | MarketBuySwapQuote
+            | MarketSellSwapQuote);
+
+        const { orders, feeOrders, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
 
         const signatures = _.map(orders, o => o.signature);
         const feeSignatures = _.map(feeOrders, o => o.signature);
 
         const feePercentage = utils.numberPercentageToEtherTokenAmountPercentage(unFormattedFeePercentage);
 
-        const params: ForwarderMarketBuySmartContractParams = {
-            orders,
-            makerAssetFillAmount,
-            signatures,
-            feeOrders,
-            feeSignatures,
-            feePercentage,
-            feeRecipient,
-        };
+        let params: ForwarderMarketBuySmartContractParams | ForwarderMarketSellSmartContractParams;
+        let methodName: string;
 
+        if (utils.isSwapQuoteMarketBuy(consumableQuoteWithAffiliateFee)) {
+            const { makerAssetFillAmount } = consumableQuoteWithAffiliateFee;
+
+            params = {
+                orders,
+                makerAssetFillAmount,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+            };
+
+            methodName = 'marketBuyOrdersWithEth';
+        } else {
+            const { takerAssetFillAmount } = consumableQuoteWithAffiliateFee;
+
+            params = {
+                orders,
+                takerAssetFillAmount,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+            };
+            methodName = 'marketSellOrdersWithEth';
+        }
         const methodAbi = utils.getMethodAbiFromContractAbi(
             this._contractWrappers.forwarder.abi,
-            'marketBuyOrdersWithEth',
+            methodName,
         ) as MethodAbi;
 
         return {
@@ -163,25 +212,47 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumer<ForwarderMa
 
         const swapQuoteWithAffiliateFee = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(quote, feePercentage);
 
-        const { orders, feeOrders, makerAssetFillAmount, worstCaseQuoteInfo } = swapQuoteWithAffiliateFee;
+        const consumableQuoteWithAffiliateFee = (swapQuoteWithAffiliateFee as any) as (
+            | MarketBuySwapQuote
+            | MarketSellSwapQuote);
+
+        const { orders, feeOrders, worstCaseQuoteInfo } = consumableQuoteWithAffiliateFee;
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
 
         try {
-            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
-                orders,
-                makerAssetFillAmount,
-                finalTakerAddress,
-                ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
-                feeOrders,
-                feePercentage,
-                feeRecipient,
-                {
-                    gasLimit,
-                    gasPrice,
-                    shouldValidate: true,
-                },
-            );
+            let txHash: string;
+            if (utils.isSwapQuoteMarketBuy(consumableQuoteWithAffiliateFee)) {
+                const { makerAssetFillAmount } = consumableQuoteWithAffiliateFee;
+                txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+                    orders,
+                    makerAssetFillAmount,
+                    finalTakerAddress,
+                    ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+                    feeOrders,
+                    feePercentage,
+                    feeRecipient,
+                    {
+                        gasLimit,
+                        gasPrice,
+                        shouldValidate: true,
+                    },
+                );
+            } else {
+                txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEthAsync(
+                    orders,
+                    finalTakerAddress,
+                    ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
+                    feeOrders,
+                    feePercentage,
+                    feeRecipient,
+                    {
+                        gasLimit,
+                        gasPrice,
+                        shouldValidate: true,
+                    },
+                );
+            }
             return txHash;
         } catch (err) {
             if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {

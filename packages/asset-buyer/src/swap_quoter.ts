@@ -167,12 +167,12 @@ export class SwapQuoter {
             );
         }
         const swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
-                ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
-                takerAssetSellAmount,
-                slippagePercentage,
-                isMakerAssetZrxToken,
-            );
+            ordersAndFillableAmounts,
+            feeOrdersAndFillableAmounts,
+            takerAssetSellAmount,
+            slippagePercentage,
+            isMakerAssetZrxToken,
+        );
         return swapQuote;
     }
 
@@ -221,12 +221,12 @@ export class SwapQuoter {
             );
         }
         const swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
-                ordersAndFillableAmounts,
-                feeOrdersAndFillableAmounts,
-                makerAssetBuyAmount,
-                slippagePercentage,
-                isMakerAssetZrxToken,
-            );
+            ordersAndFillableAmounts,
+            feeOrdersAndFillableAmounts,
+            makerAssetBuyAmount,
+            slippagePercentage,
+            isMakerAssetZrxToken,
+        );
 
         return swapQuote;
     }
@@ -276,7 +276,12 @@ export class SwapQuoter {
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketSellSwapQuoteAsync(makerAssetData, takerAssetData, takerAssetSellAmount, options);
+        const swapQuote = this.getMarketSellSwapQuoteAsync(
+            makerAssetData,
+            takerAssetData,
+            takerAssetSellAmount,
+            options,
+        );
         return swapQuote;
     }
     /**
