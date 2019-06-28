@@ -5,8 +5,8 @@ import styled, { withTheme } from 'styled-components';
 import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
+import { Difficulty, Level } from 'ts/components/docs/resource/level';
 import { Tag } from 'ts/components/docs/resource/tag';
-import { Level, Difficulty } from 'ts/components/docs/resource/level';
 
 export interface ResourceProps {
     heading?: string;
@@ -26,9 +26,9 @@ export const Resource: React.FunctionComponent<ResourceProps> = ({
     url,
     tags,
 }: ResourceProps) => (
-    <Wrapper href={url}>
+    <Wrapper>
         <Heading color={colors.brandDark} size="small" marginBottom="8px">
-            {heading}
+            <Link to={url}>{heading}</Link>
         </Heading>
         <Paragraph size="default" marginBottom="30px">
             {description}
@@ -51,7 +51,7 @@ Resource.defaultProps = {
     description: 'Get in touch here and we’ll be happy to help.',
 };
 
-const Wrapper = styled.a`
+const Wrapper = styled.div`
     border: 1px solid #d7e3db;
     padding: 25px 30px;
     margin-bottom: 1.111111111rem;

@@ -5,7 +5,6 @@ import styled, { keyframes } from 'styled-components';
 // import { Tabs } from 'react-tabs';
 import { Callout } from 'ts/components/docs/callout';
 import { Code } from 'ts/components/docs/code';
-import { Filters } from 'ts/components/docs/sidebar/filters';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
@@ -16,6 +15,7 @@ import { Note } from 'ts/components/docs/note';
 import { Resource } from 'ts/components/docs/resource/resource';
 import { SearchInput } from 'ts/components/docs/search_input';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
+import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
@@ -39,22 +39,46 @@ interface Props {
     };
 }
 
-const usefulLinks: StepLinkConfig[] = [
+const filterGroups: FilterGroup[] = [
     {
-        title: 'Core Concepts',
-        url: '/docs/core-concepts',
+        heading: 'Topic',
+        name: 'topic',
+        filters: [
+            {
+                value: 'Mesh',
+                label: 'Mesh',
+            },
+            {
+                value: 'Testing',
+                label: 'Testing',
+            },
+            {
+                value: 'Coordinator Model',
+                label: 'Coordinator Model',
+            },
+            {
+                value: 'Protocol developer',
+                label: 'Protocol developer',
+            },
+        ],
     },
     {
-        title: 'API Explorer',
-        url: '/docs/core-concepts',
-    },
-    {
-        title: 'Guides',
-        url: '/docs/get-started',
-    },
-    {
-        title: 'Tools',
-        url: '/docs/core-concepts',
+        heading: 'Level',
+        name: 'level',
+        filters: [
+            {
+                value: 'Beginner',
+                label: 'Beginner',
+            },
+            {
+                value: 'Intermediate',
+                label: 'Intermediate',
+            },
+            {
+                value: 'Advanced',
+                label: 'Advanced',
+            },
+        ],
     },
 ];
 
@@ -67,7 +91,7 @@ export class DocsGuides extends React.Component<Props> {
                 <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                     <Columns>
                         <aside>
-                            <Filters />
+                            <Filters groups={filterGroups} />
                         </aside>
                         <article>
                             <div>
@@ -75,26 +99,31 @@ export class DocsGuides extends React.Component<Props> {
                                     heading="0x Mesh - your gateway to networked liquidity"
                                     description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
                                     tags={[{ label: 'Relayer' }]}
+                                    url="/docs/guides/usage"
                                 />
                                 <Resource
                                     heading="0x Mesh - your gateway to networked liquidity"
                                     description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
                                     tags={[{ label: 'Relayer' }]}
+                                    url="/docs/guides/usage"
                                 />
                                 <Resource
                                     heading="0x Mesh - your gateway to networked liquidity"
                                     description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
                                     tags={[{ label: 'Relayer' }]}
+                                    url="/docs/guides/usage"
                                 />
                                 <Resource
                                     heading="0x Mesh - your gateway to networked liquidity"
                                     description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
                                     tags={[{ label: 'Relayer' }]}
+                                    url="/docs/guides/usage"
                                 />
                                 <Resource
                                     heading="0x Mesh - your gateway to networked liquidity"
                                     description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
                                     tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
+                                    url="/docs/guides/usage"
                                 />
                             </div>
                         </article>
@@ -107,8 +136,8 @@ export class DocsGuides extends React.Component<Props> {
 
 const Columns = styled.div<{ count?: number }>`
     display: grid;
-    grid-template-columns: 230px 1fr;
-    grid-column-gap: 118px;
+    grid-template-columns: 250px 1fr;
+    grid-column-gap: 98px;
     grid-row-gap: 30px;
 `;
 
