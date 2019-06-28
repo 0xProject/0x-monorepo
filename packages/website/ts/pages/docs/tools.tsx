@@ -107,8 +107,8 @@ export class DocsTools extends React.Component<Props> {
 
 const Columns = styled.div<{ count?: number }>`
     display: grid;
-    grid-template-columns: 230px 1fr;
-    grid-column-gap: 118px;
+    grid-template-columns: 250px 1fr;
+    grid-column-gap: 98px;
     grid-row-gap: 30px;
 `;
 
