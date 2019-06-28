@@ -23,6 +23,7 @@ import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinStorage.sol";
 import "./MixinOwnable.sol";
 
+
 contract MixinStakingPoolRewardVault is
     IStakingEvents,
     MixinDeploymentConstants,

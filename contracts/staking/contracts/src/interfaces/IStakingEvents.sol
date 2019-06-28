@@ -63,7 +63,6 @@ interface IStakingEvents {
         address newOwner
     );
 
-
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operatorAddress Address of creator/operator of pool.
