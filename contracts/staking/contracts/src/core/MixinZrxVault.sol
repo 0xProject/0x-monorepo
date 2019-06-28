@@ -23,6 +23,8 @@ import "../immutable/MixinStorage.sol";
 
 
 contract MixinZrxVault is
+    MixinDeploymentConstants,
+    MixinConstants,
     MixinStorage
 {
 
