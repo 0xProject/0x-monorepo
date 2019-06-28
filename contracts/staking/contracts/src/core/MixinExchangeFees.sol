@@ -45,8 +45,6 @@ contract MixinExchangeFees is
     MixinStakingPool
 {
 
-    using LibSafeMath for uint256;
-
     /// @dev This mixin contains the logic for 0x protocol fees.
     /// Protocol fees are sent by 0x exchanges every time there is a trade.
     /// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
@@ -57,9 +55,11 @@ contract MixinExchangeFees is
     /// stake provided by directly by the maker; this is a disincentive for market makers to
     /// monopolize a single pool that they all delegate to.
 
+    using LibSafeMath for uint256;
+
     /// @dev Pays a protocol fee in ETH.
     ///      Only a known 0x exchange can call this method. See (MixinExchangeManager).
-    /// @param makerAddress The address of the order's maker
+    /// @param makerAddress The address of the order's maker.
     function payProtocolFee(address makerAddress)
         external
         payable

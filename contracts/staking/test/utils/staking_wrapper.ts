@@ -11,8 +11,8 @@ import * as _ from 'lodash';
 import {
     artifacts,
     LibFeeMathTestContract,
-    StakingPoolRewardVaultContract,
     StakingContract,
+    StakingPoolRewardVaultContract,
     StakingProxyContract,
     ZrxVaultContract,
 } from '../../src';
@@ -411,7 +411,6 @@ export class StakingWrapper {
         logUtils.log(
             `Finalization costed ${txReceipt.gasUsed} gas`,
         );
-        console.log(JSON.stringify(txReceipt.logs, null, 4));
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
