@@ -69,8 +69,10 @@ contract MixinStakingPoolRewards is
     ///    their realized balance *increases* while their ownership of the pool *decreases*. To reflect this, we 
     ///    decrease their Shadow Balance, the Total Shadow Balance, their Real Balance, and the Total Real Balance.
 
-    
-    function getRewardBalance(bytes32 poolId)
+    /// @dev Returns the sum total reward balance in ETH of a staking pool, across all members and the pool operator.
+    /// @param poolId Unique id of pool.
+    /// @return Balance.
+    function getTotalRewardBalanceOfStakingPool(bytes32 poolId)
         external
         view
         returns (uint256)
@@ -78,7 +80,21 @@ contract MixinStakingPoolRewards is
         return getBalanceInStakingPoolRewardVault(poolId);
     }
 
-    function getRewardBalanceOfOperator(bytes32 poolId)
+    /// @dev Returns the total shadow balance of a staking pool.
+    /// @param poolId Unique id of pool.
+    /// @return Balance.
+    function getTotalShadowBalanceOfStakingPool(bytes32 poolId)
+        public
+        view
+        returns (uint256)
+    {
+        return shadowRewardsByPoolId[poolId];
+    }
+
+    /// @dev Returns the reward balance in ETH of the pool operator.
+    /// @param poolId Unique id of pool.
+    /// @return Balance.
+    function getRewardBalanceOfStakingPoolOperator(bytes32 poolId)
         external
         view
         returns (uint256)
@@ -86,30 +102,10 @@ contract MixinStakingPoolRewards is
         return getBalanceOfOperatorInStakingPoolRewardVault(poolId);
     }
 
-    function getRewardBalanceOfPool(bytes32 poolId)
-        external
-        view
-        returns (uint256)
-    {
-        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
-    }
-
-    function computeRewardBalance(bytes32 poolId, address owner)
-        public
-        view
-        returns (uint256)
-    {
-        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
-        return LibRewardMath._computePayoutDenominatedInRealAsset(
-            delegatedStakeToPoolByOwner[owner][poolId],
-            delegatedStakeByPoolId[poolId],
-            shadowRewardsInPoolByOwner[owner][poolId],
-            shadowRewardsByPoolId[poolId],
-            poolBalance
-        );
-    }
-
-    function withdrawOperatorReward(bytes32 poolId, uint256 amount)
+    /// @dev Withdraws an amount in ETH of the reward for the pool operator.
+    /// @param poolId Unique id of pool.
+    /// @param amount The amount to withdraw.
+    function withdrawRewardForStakingPoolOperator(bytes32 poolId, uint256 amount)
         external
         onlyStakingPoolOperator(poolId)
     {
@@ -117,24 +113,10 @@ contract MixinStakingPoolRewards is
         poolById[poolId].operatorAddress.transfer(amount);
     }
 
-    function withdrawReward(bytes32 poolId, uint256 amount)
-        external
-    {
-        address payable owner = msg.sender;
-        uint256 ownerBalance = computeRewardBalance(poolId, owner);
-        require(
-            amount <= ownerBalance,
-            "INVALID_AMOUNT"
-        );
-
-        shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
-        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
-
-        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
-        owner.transfer(amount);
-    }
-
-    function withdrawTotalOperatorReward(bytes32 poolId)
+    /// @dev Withdraws the total balance in ETH of the reward for the pool operator.
+    /// @param poolId Unique id of pool.
+    /// @return The amount withdrawn.
+    function withdrawTotalRewardForStakingPoolOperator(bytes32 poolId)
         external
         onlyStakingPoolOperator(poolId)
         returns (uint256)
@@ -146,38 +128,89 @@ contract MixinStakingPoolRewards is
         return amount;
     }
 
-    function withdrawTotalReward(bytes32 poolId)
+    /// @dev Returns the reward balance in ETH co-owned by the members of a pool.
+    /// @param poolId Unique id of pool.
+    /// @return Balance.
+    function getRewardBalanceOfStakingPoolMembers(bytes32 poolId)
+        external
+        view
+        returns (uint256)
+    {
+        return getBalanceOfPoolInStakingPoolRewardVault(poolId);
+    }
+
+    /// @dev Returns the shadow balance of a specific member of a staking pool.
+    /// @param poolId Unique id of pool.
+    /// @param member The member of the pool. 
+    /// @return Balance.
+    function getShadowBalanceOfStakingPoolMember(bytes32 poolId, address member)
+        public
+        view
+        returns (uint256)
+    {
+        return shadowRewardsInPoolByOwner[member][poolId];
+    }
+
+    /// @dev Computes the reward balance in ETH of a specific member of a pool.
+    /// @param poolId Unique id of pool.
+    /// @param member The member of the pool. 
+    /// @return Balance.
+    function computeRewardBalanceOfStakingPoolMember(bytes32 poolId, address member)
+        public
+        view
+        returns (uint256)
+    {
+        uint256 poolBalance = getBalanceOfPoolInStakingPoolRewardVault(poolId);
+        return LibRewardMath._computePayoutDenominatedInRealAsset(
+            delegatedStakeToPoolByOwner[member][poolId],
+            delegatedStakeByPoolId[poolId],
+            shadowRewardsInPoolByOwner[member][poolId],
+            shadowRewardsByPoolId[poolId],
+            poolBalance
+        );
+    }
+
+    /// @dev Withdraws an amount in ETH of the reward for a pool member.
+    /// @param poolId Unique id of pool.
+    /// @param amount The amount to withdraw.
+    function withdrawRewardForStakingPoolMember(bytes32 poolId, uint256 amount)
+        external
+    {
+        // sanity checks
+        address payable member = msg.sender;
+        uint256 memberBalance = computeRewardBalanceOfStakingPoolMember(poolId, member);
+        require(
+            amount <= memberBalance,
+            "INVALID_AMOUNT"
+        );
+
+        // update shadow rewards
+        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(amount);
+        shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
+
+        // perform withdrawal
+        _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
+        member.transfer(amount);
+    }
+
+    /// @dev Withdraws the total balance in ETH of the reward for a pool member.
+    /// @param poolId Unique id of pool.
+    /// @return The amount withdrawn.
+    function withdrawTotalRewardForStakingPoolMember(bytes32 poolId)
         external
         returns (uint256)
     {
-        address payable owner = msg.sender;
-        uint256 amount = computeRewardBalance(poolId, owner);
+        // sanity checks
+        address payable member = msg.sender;
+        uint256 amount = computeRewardBalanceOfStakingPoolMember(poolId, member);
 
-        shadowRewardsInPoolByOwner[owner][poolId] = shadowRewardsInPoolByOwner[owner][poolId]._add(amount);
+        // update shadow rewards
+        shadowRewardsInPoolByOwner[member][poolId] = shadowRewardsInPoolByOwner[member][poolId]._add(amount);
         shadowRewardsByPoolId[poolId] = shadowRewardsByPoolId[poolId]._add(amount);
 
+        // perform withdrawal and return amount withdrawn
         _withdrawFromPoolInStakingPoolRewardVault(poolId, amount);
-        owner.transfer(amount);
-
+        member.transfer(amount);
         return amount;
-    }
-
-
-    
-
-    function getShadowBalanceByPoolId(bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return shadowRewardsByPoolId[poolId];
-    }
-
-    function getShadowBalanceInPoolByOwner(address owner, bytes32 poolId)
-        public
-        view
-        returns (uint256)
-    {
-        return shadowRewardsInPoolByOwner[owner][poolId];
     }
 }

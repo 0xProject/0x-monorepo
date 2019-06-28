@@ -525,73 +525,73 @@ export class StakingWrapper {
         return txReceipt;
     }
     ///// REWARDS /////
-    public async getRewardBalanceAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getRewardBalance.getABIEncodedTransactionData(poolId);
+    public async getTotalRewardBalanceOfStakingPoolAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTotalRewardBalanceOfStakingPool.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getRewardBalance.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTotalRewardBalanceOfStakingPool.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getRewardBalanceOfOperatorAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getRewardBalanceOfOperator.getABIEncodedTransactionData(poolId);
+    public async getRewardBalanceOfStakingPoolOperatorAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getRewardBalanceOfOperator.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getRewardBalanceOfPoolAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getRewardBalanceOfPool.getABIEncodedTransactionData(poolId);
+    public async getRewardBalanceOfStakingPoolMembersAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getRewardBalanceOfPool.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async computeRewardBalanceAsync(poolId: string, owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().computeRewardBalance.getABIEncodedTransactionData(poolId, owner);
+    public async computeRewardBalanceOfStakingPoolMemberAsync(poolId: string, owner: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIEncodedTransactionData(poolId, owner);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().computeRewardBalance.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getShadowBalanceByPoolIdAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getShadowBalanceByPoolId.getABIEncodedTransactionData(poolId);
+    public async getTotalShadowBalanceOfStakingPoolAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getShadowBalanceByPoolId.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getShadowBalanceInPoolByOwnerAsync(owner: string, poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIEncodedTransactionData(
+    public async getShadowBalanceOfStakingPoolMemberAsync(owner: string, poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getShadowBalanceOfStakingPoolMember.getABIEncodedTransactionData(
             owner,
             poolId,
         );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getShadowBalanceInPoolByOwner.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getShadowBalanceOfStakingPoolMember.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async withdrawOperatorRewardAsync(
+    public async withdrawRewardForStakingPoolOperatorAsync(
         poolId: string,
         amount: BigNumber,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawOperatorReward.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().withdrawRewardForStakingPoolOperator.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async withdrawRewardAsync(
+    public async withdrawRewardForStakingPoolMemberAsync(
         poolId: string,
         amount: BigNumber,
         owner: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawReward.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().withdrawRewardForStakingPoolMember.getABIEncodedTransactionData(poolId, amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async withdrawTotalOperatorRewardAsync(
+    public async withdrawTotalRewardForStakingPoolOperatorAsync(
         poolId: string,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawTotalOperatorReward.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolOperator.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async withdrawTotalRewardAsync(poolId: string, owner: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawTotalReward.getABIEncodedTransactionData(poolId);
+    public async withdrawTotalRewardForStakingPoolMemberAsync(poolId: string, owner: string): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolMember.getABIEncodedTransactionData(poolId);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
