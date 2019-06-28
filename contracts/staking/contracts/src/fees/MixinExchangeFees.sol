@@ -23,12 +23,12 @@ import "../libs/LibFeeMath.sol";
 import "../immutable/MixinStorage.sol";
 import "../immutable/MixinConstants.sol";
 import "../interfaces/IStakingEvents.sol";
-import "./MixinStakeBalances.sol";
-import "./MixinScheduler.sol";
-import "./MixinStakingPool.sol";
-import "./MixinExchangeManager.sol";
-import "./MixinStakingPoolRewardVault.sol";
 import "../interfaces/IStructs.sol";
+import "../stake/MixinStakeBalances.sol";
+import "../sys/MixinScheduler.sol";
+import "../staking_pools/MixinStakingPool.sol";
+import "../staking_pools/MixinStakingPoolRewardVault.sol";
+import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
