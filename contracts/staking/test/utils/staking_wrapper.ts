@@ -304,10 +304,10 @@ export class StakingWrapper {
         const value = this.getStakingContract().getStakeDelegatedToPoolByOwner.getABIDecodedReturnData(returnData);
         return value;
     }
-    public async getStakeDelegatedToPoolAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getStakeDelegatedToPool.getABIEncodedTransactionData(poolId);
+    public async getTotalStakeDelegatedToPoolAsync(poolId: string): Promise<BigNumber> {
+        const calldata = this.getStakingContract().getTotalStakeDelegatedToPool.getABIEncodedTransactionData(poolId);
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getStakeDelegatedToPool.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getTotalStakeDelegatedToPool.getABIDecodedReturnData(returnData);
         return value;
     }
     ///// POOLS /////
