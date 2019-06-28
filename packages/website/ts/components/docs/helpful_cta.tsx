@@ -15,14 +15,12 @@ import { constants } from 'ts/utils/constants';
 
 export interface HelpfulCtaProps {
     heading?: string;
-    description?: string;
-    url?: string;
 }
 
-export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = (props: HelpfulCtaProps) => (
+export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = ({ heading }: HelpfulCtaProps) => (
     <>
         <Wrapper>
-            <Text>Was this page helpful</Text>
+            <Text>{heading}</Text>
             <Buttons>
                 <CtaButton color={colors.white}>Yes</CtaButton>
                 <CtaButton isTransparent={true} color={colors.brandLight} borderColor={colors.brandLight}>
@@ -34,8 +32,7 @@ export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = (props: Help
 );
 
 HelpfulCta.defaultProps = {
-    heading: 'Need some help?',
-    description: 'Get in touch here and we’ll be happy to help.',
+    heading: 'Was this page helpful?',
 };
 
 const Wrapper = styled.div`

@@ -10,13 +10,11 @@ export interface LinkProps {
 }
 
 export const StepLinks: React.FunctionComponent<LinkProps> = (props: LinkProps) => (
-    <>
-        <Wrapper>
-            {props.links.map((shortcut, index) => (
-                <StepLink key={`step-${index}`} {...shortcut} />
-            ))}
-        </Wrapper>
-    </>
+    <Wrapper>
+        {props.links.map((shortcut, index) => (
+            <StepLink key={`step-${index}`} {...shortcut} />
+        ))}
+    </Wrapper>
 );
 
 StepLinks.defaultProps = {
