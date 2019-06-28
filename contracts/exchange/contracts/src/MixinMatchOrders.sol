@@ -95,7 +95,6 @@ contract MixinMatchOrders is
             );
             // batchMatchedFillResults.profitInRightMakerAsset += 0; // Placeholder for ZEIP 40
 
-
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
             if (_isFilled(leftOrder, matchResults.left)) {
