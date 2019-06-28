@@ -38,8 +38,6 @@ contract MixinStakingPool is
     MixinStakingPoolRewardVault
 {
 
-    using LibSafeMath for uint256;
-
     /// @dev This mixin contains logic for staking pools.
     /// A pool has a single operator and any number of delegators (members).
     /// Any staker can create a pool, although at present it is only beneficial
@@ -63,6 +61,8 @@ contract MixinStakingPool is
     ///     The remaining is divided among members of your pool.
     /// 2. Add the addresses that you use to market make on 0x.
     /// 3. Leverage the staking power of others by convincing them to delegate to your pool.
+
+    using LibSafeMath for uint256;
 
     /// @dev Asserts that the sender is the operator of the input pool.
     /// @param poolId Pool sender must be operator of.
@@ -157,8 +157,8 @@ contract MixinStakingPool is
         bytes32 poolId,
         address makerAddress
     )
-        onlyStakingPoolOperatorOrMaker(poolId, makerAddress)
         external
+        onlyStakingPoolOperatorOrMaker(poolId, makerAddress)
     {
         require(
             getStakingPoolIdOfMaker(makerAddress) == poolId,

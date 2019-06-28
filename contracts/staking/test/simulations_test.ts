@@ -120,7 +120,7 @@ describe('End-To-End Simulations', () => {
             // @TODO - get computations more accurate
                 Pool | Total Fees  | Total Stake | Total Delegated Stake | Total Stake (Weighted) | Payout
                 0    |  0.304958   | 42          | 0                     | 42                     | 3.0060373...
-                1    | 15.323258   | 84          | 0                     | 84                     | 
+                1    | 15.323258   | 84          | 0                     | 84                     |
                 3    | 28.12222236 | 97          | 182                   | 260.8
                 ...
                 Cumulative Fees = 43.75043836
