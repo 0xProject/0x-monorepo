@@ -626,6 +626,20 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'signerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'data',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'getTransactionHash',
@@ -645,6 +659,24 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'approval',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'txOrigin',
+                                type: 'address',
+                            },
+                            {
+                                name: 'transactionHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'transactionSignature',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'approvalExpirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 name: 'getCoordinatorApprovalHash',
@@ -664,6 +696,20 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'signerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'data',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'txOrigin',
@@ -708,6 +754,20 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'signerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'data',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'txOrigin',
@@ -745,6 +805,56 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

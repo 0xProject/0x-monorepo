@@ -653,6 +653,56 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAddress',
@@ -664,10 +714,58 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                     {
                         name: 'traderInfo',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxAllowance',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -707,6 +805,56 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAddresses',
@@ -718,10 +866,58 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'ordersInfo',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                     {
                         name: 'tradersInfo',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxAllowance',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -734,6 +930,56 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAddresses',
@@ -745,6 +991,40 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxAllowance',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -807,6 +1087,56 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAddress',
@@ -818,6 +1148,40 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerZrxAllowance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxBalance',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerZrxAllowance',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

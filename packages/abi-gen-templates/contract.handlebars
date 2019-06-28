@@ -122,19 +122,13 @@ export class {{contractName}}Contract extends BaseContract {
                 anonymous: {{anonymous}},{{/if}}
                 inputs: [
                     {{#each inputs}}
-                    {
-                        name: '{{name}}',
-                        type: '{{type}}',
-                    },
+                    {{> abi_type this}}
                     {{/each}}
                 ],{{#this.name}}
                 name: '{{{this}}}',{{/this.name}}
                 outputs: [
                     {{#each outputs}}
-                    {
-                        name: '{{name}}',
-                        type: '{{type}}',
-                    },
+                    {{> abi_type this}}
                     {{/each}}
                 ],{{#if (isDefined this.payable)}}
                 payable: {{payable}},{{/if}}{{#this.stateMutability}}

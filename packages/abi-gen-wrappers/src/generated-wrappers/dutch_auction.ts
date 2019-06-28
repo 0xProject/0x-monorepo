@@ -579,6 +579,56 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'getAuctionDetails',
@@ -586,6 +636,32 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'auctionDetails',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'beginTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'endTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'beginAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'endAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'currentAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'currentTimeSeconds',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -598,10 +674,110 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'buyOrder',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'sellOrder',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'buySignature',
@@ -617,6 +793,56 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'left',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'makerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'makerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'right',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'makerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'makerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'leftMakerAssetSpreadAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

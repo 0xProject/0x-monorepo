@@ -4328,6 +4328,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -4343,6 +4393,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4396,10 +4464,110 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'leftOrder',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'rightOrder',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'leftSignature',
@@ -4415,6 +4583,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'left',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'makerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'makerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'right',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'makerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerAssetFilledAmount',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'makerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                    {
+                                        name: 'takerFeePaid',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'leftMakerAssetSpreadAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4427,6 +4645,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -4442,6 +4710,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4473,6 +4759,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'batchCancelOrders',
@@ -4487,6 +4823,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -4502,6 +4888,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4528,6 +4932,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -4543,6 +4997,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4593,6 +5065,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -4608,6 +5130,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4661,6 +5201,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -4676,6 +5266,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4688,6 +5296,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'getOrdersInfo',
@@ -4695,6 +5353,20 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4771,6 +5443,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'makerAssetFillAmount',
@@ -4786,6 +5508,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4798,6 +5538,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -4813,6 +5603,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4865,6 +5673,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'getOrderInfo',
@@ -4872,6 +5730,20 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'orderStatus',
+                                type: 'uint8',
+                            },
+                            {
+                                name: 'orderHash',
+                                type: 'bytes32',
+                            },
+                            {
+                                name: 'orderTakerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4884,6 +5756,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                 ],
                 name: 'cancelOrder',
@@ -4935,6 +5857,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -4950,6 +5922,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,
@@ -4976,6 +5966,56 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'makerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'takerAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'feeRecipientAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'senderAddress',
+                                type: 'address',
+                            },
+                            {
+                                name: 'makerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFee',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'expirationTimeSeconds',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'salt',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerAssetData',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'takerAssetData',
+                                type: 'bytes',
+                            },
+                        ],
                     },
                     {
                         name: 'makerAssetFillAmount',
@@ -4991,6 +6031,24 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+                        components: [
+                            {
+                                name: 'makerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerAssetFilledAmount',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'makerFeePaid',
+                                type: 'uint256',
+                            },
+                            {
+                                name: 'takerFeePaid',
+                                type: 'uint256',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

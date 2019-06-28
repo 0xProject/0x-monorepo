@@ -1,0 +1,11 @@
+{
+    name: '{{name}}',
+    type: '{{type}}',
+    {{#if components}}
+    components: [
+        {{#each components}}
+        {{> abi_type this}}
+        {{/each}}
+    ]
+    {{/if}}
+},
