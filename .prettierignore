@@ -25,6 +25,7 @@ lib
 /contracts/dev-utils/generated-wrappers
 /contracts/dev-utils/generated-artifacts
 /packages/abi-gen/test/generated-test/generated-artifacts
+/packages/abi-gen/test/generated-test/generated-wrappers
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts
