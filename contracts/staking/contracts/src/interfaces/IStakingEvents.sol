@@ -3,20 +3,30 @@ pragma solidity ^0.5.5;
 
 interface IStakingEvents {
 
+    /// @dev Emitted by MixinStake when new Stake is minted.
+    /// @param owner of Stake.
+    /// @param amount of Stake minted.
     event StakeMinted(
         address owner,
         uint256 amount
     );
 
+    /// @dev Emitted by MixinStake when Stake is burned.
+    /// @param owner of Stake.
+    /// @param amount of Stake burned.
     event StakeBurned(
         address owner,
         uint256 amount
     );
 
+    /// @dev Emitted by MixinExchangeManager when an exchange is added.
+    /// @param exchangeAddress Address of new exchange.
     event ExchangeAdded(
         address exchangeAddress
     );
 
+    /// @dev Emitted by MixinExchangeManager when an exchange is removed.
+    /// @param exchangeAddress Address of removed exchange.
     event ExchangeRemoved(
         address exchangeAddress
     );

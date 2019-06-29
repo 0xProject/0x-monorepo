@@ -20,16 +20,19 @@ pragma solidity ^0.5.5;
 
 import "./immutable/MixinStorage.sol";
 import "./interfaces/IStakingProxy.sol";
+import "./sys/MixinOwnable.sol";
 
 
 contract StakingProxy is
     IStakingProxy,
     MixinDeploymentConstants,
     MixinConstants,
-    MixinStorage
+    MixinStorage,
+    MixinOwnable
 {
-    address constant internal NIL_ADDRESS = 0x0000000000000000000000000000000000000000;
 
+    /// @dev Constructor.
+    /// @param _stakingContract Staking contract to delegate calls to.
     constructor(address _stakingContract)
         public
     {
@@ -37,6 +40,7 @@ contract StakingProxy is
         stakingContract = _stakingContract;
     }
 
+    /// @dev Delegates calls to the staking contract, if it is set.
     // solhint-disable no-complex-fallback
     function ()
         external
@@ -82,17 +86,24 @@ contract StakingProxy is
         }
     }
 
+    /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
+    /// Note that this is callable only by this contract's owner.
+    /// @param _stakingContract Address of staking contract.
     function attachStakingContract(address _stakingContract)
         external
-        //ownerOnly
+        onlyOwner
     {
         stakingContract = _stakingContract;
+        emit StakingContractAttachedToProxy(_stakingContract);
     }
 
+    /// @dev Detach the current staking contract.
+    /// Note that this is callable only by this contract's owner.
     function detachStakingContract()
         external
-        //ownerOnly
+        onlyOwner
     {
         stakingContract = NIL_ADDRESS;
+        emit StakingContractDetachedFromProxy();
     }
 }
