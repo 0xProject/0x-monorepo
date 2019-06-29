@@ -32,7 +32,6 @@ import "./MixinExchangeManager.sol";
 
 
 contract MixinExchangeFees is
-    IMixinScheduler,
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,

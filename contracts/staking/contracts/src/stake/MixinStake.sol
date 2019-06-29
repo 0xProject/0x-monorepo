@@ -31,7 +31,6 @@ import "./MixinTimelockedStake.sol";
 
 
 contract MixinStake is
-    IMixinScheduler,
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,

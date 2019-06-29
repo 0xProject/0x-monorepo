@@ -27,7 +27,6 @@ import "../sys/MixinScheduler.sol";
 
 
 contract MixinTimelockedStake is
-    IMixinScheduler,
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,

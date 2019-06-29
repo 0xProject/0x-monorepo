@@ -21,47 +21,25 @@ pragma solidity ^0.5.5;
 
 library LibSafeMath96 {
 
-    /**
-     * @dev Returns the addition of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `+` operator.
-     *
-     * Requirements:
-     * - Addition cannot overflow.
-     */
+    /// @dev Returns the addition of two unsigned integers, reverting on overflow.
+    /// Note that this reverts on overflow.
     function _add(uint96 a, uint96 b) internal pure returns (uint96) {
         uint96 c = a + b;
-        require(c >= a, "SafeMath: addition overflow");
-
+        require(c >= a, "OVERFLOW");
         return c;
     }
 
-    /**
-     * @dev Returns the subtraction of two unsigned integers, reverting on
-     * overflow (when the result is negative).
-     *
-     * Counterpart to Solidity's `-` operator.
-     *
-     * Requirements:
-     * - Subtraction cannot overflow.
-     */
+    /// @dev Returns the subtraction of two unsigned integers.
+    /// Note that this reverts on underflow.
     function _sub(uint96 a, uint96 b) internal pure returns (uint96) {
-        require(b <= a, "SafeMath: subtraction overflow");
+        require(b <= a, "UNDEROVERFLOW");
         uint96 c = a - b;
 
         return c;
     }
 
-    /**
-     * @dev Returns the multiplication of two unsigned integers, reverting on
-     * overflow.
-     *
-     * Counterpart to Solidity's `*` operator.
-     *
-     * Requirements:
-     * - Multiplication cannot overflow.
-     */
+    /// @dev Returns the multiplication of two unsigned integers, reverting on overflow.
+    /// Note that this reverts on overflow.
     function _mul(uint96 a, uint96 b) internal pure returns (uint96) {
         // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
         // benefit is lost if 'b' is also tested.
@@ -76,52 +54,24 @@ library LibSafeMath96 {
         return c;
     }
 
-    /**
-     * @dev Returns the integer division of two unsigned integers. Reverts on
-     * division by zero. The result is rounded towards zero.
-     *
-     * Counterpart to Solidity's `/` operator. Note: this function uses a
-     * `revert` opcode (which leaves remaining gas untouched) while Solidity
-     * uses an invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     * - The divisor cannot be zero.
-     */
+    /// @dev Returns the integer division of two unsigned integers.
+    /// Note that this reverts on division by zero. The result is rounded towards zero.
     function _div(uint96 a, uint96 b) internal pure returns (uint96) {
-        // Solidity only automatically asserts when dividing by 0
-        require(b > 0, "SafeMath: division by zero");
+        require(b > 0, "DIVISION_BY_ZERO");
         uint96 c = a / b;
-        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
-
         return c;
     }
 
-    /**
-     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
-     * Reverts when dividing by zero.
-     *
-     * Counterpart to Solidity's `%` operator. This function uses a `revert`
-     * opcode (which leaves remaining gas untouched) while Solidity uses an
-     * invalid opcode to revert (consuming all remaining gas).
-     *
-     * Requirements:
-     * - The divisor cannot be zero.
-     */
-    function _mod(uint96 a, uint96 b)
+    /// @dev Computes the percentage `numerator` is of `value`.
+    /// @param value The whole amount.
+    /// @param slice A slice of `value`.
+    /// @return The percentage `slice` is of `value`
+    function _computePercentageCeil(uint96 value, uint8 slice)
         internal
         pure
         returns (uint96)
     {
-        require(b != 0, "SafeMath: modulo by zero");
-        return a % b;
-    }
-
-    function _computePercentageCeil(uint96 value, uint8 numerator)
-        internal
-        pure
-        returns (uint96)
-    {
-        uint96 scaledNumerator = _mul(value, numerator);
+        uint96 scaledNumerator = _mul(value, slice);
         uint96 ceilScalar = uint96(99);
         uint96 denominator = uint96(100);
         return _div(

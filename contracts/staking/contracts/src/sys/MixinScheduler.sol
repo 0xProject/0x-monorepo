@@ -18,7 +18,6 @@
 
 pragma solidity ^0.5.5;
 
-import "../core_interfaces/IMixinScheduler.sol";
 import "../libs/LibSafeMath.sol";
 import "../libs/LibSafeMath64.sol";
 import "../immutable/MixinConstants.sol";
@@ -28,7 +27,6 @@ import "../interfaces/IStakingEvents.sol";
 
 
 contract MixinScheduler is
-    IMixinScheduler,
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,

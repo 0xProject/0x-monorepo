@@ -32,7 +32,6 @@ import "../staking_pools/MixinStakingPoolRewards.sol";
 
 
 contract MixinDelegatedStake is
-    IMixinScheduler,
     IStakingEvents,
     MixinDeploymentConstants,
     MixinConstants,
