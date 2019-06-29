@@ -1,10 +1,6 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import {
-    chaiSetup,
-    provider,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';

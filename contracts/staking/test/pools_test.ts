@@ -1,11 +1,6 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
-import {
-    chaiSetup,
-    expectTransactionFailedAsync,
-    provider,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, expectTransactionFailedAsync, provider, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -151,7 +146,11 @@ describe('Staking Pool Management', () => {
             const poolId = await poolOperator.createStakingPoolAsync(operatorShare);
             expect(poolId).to.be.equal(stakingConstants.INITIAL_POOL_ID);
             // remove non-existent maker from pool
-            await poolOperator.removeMakerFromStakingPoolAsync(poolId, makerAddress, RevertReason.MakerAddressNotRegistered);
+            await poolOperator.removeMakerFromStakingPoolAsync(
+                poolId,
+                makerAddress,
+                RevertReason.MakerAddressNotRegistered,
+            );
         });
         it('Should fail to add a maker who signed with the wrong private key', async () => {
             // test parameters
@@ -238,7 +237,12 @@ describe('Staking Pool Management', () => {
             // add maker to pool
             const makerApproval = maker.signApprovalForStakingPool(poolId);
             await expectTransactionFailedAsync(
-                stakingWrapper.addMakerToStakingPoolAsync(poolId, makerAddress, makerApproval.signature, notOperatorAddress),
+                stakingWrapper.addMakerToStakingPoolAsync(
+                    poolId,
+                    makerAddress,
+                    makerApproval.signature,
+                    notOperatorAddress,
+                ),
                 RevertReason.OnlyCallableByPoolOperator,
             );
         });
