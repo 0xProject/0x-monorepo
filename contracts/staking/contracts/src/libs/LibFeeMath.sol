@@ -23,14 +23,30 @@ pragma solidity ^0.5.5;
 
 library LibFeeMath {
 
-    // @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
-    // @TODO Update these values for deployment
+    /// @dev This library implements math helpers for fee computation.
+    /// *** READ MixinExchangeFees BEFORE CONTINUING ***
+    /// @TODO - Optimization / Precision / SafeMath.
+    /// @TODO Once better nth root - choose a value that is not a divisor of 18, like 7.
+    /// @TODO Update these values for deployment.
+    /// There may be better, more efficient ways of implementing these functions.
+    /// This works well enough to test the end-to-system, but it would be really
+    /// good to get some math experts in here to check out this code. We should also
+    /// look at existing projects, in case similar functionality exists and has been
+    /// audited by a third-party.
+
+    // Denominator of alpha in cobb-douglas function
     uint256 constant internal COBB_DOUGLAS_ALPHA_DENOMINATOR = 6;
 
+    // Reflects number of decimal places in a token amount
     uint256 constant internal TOKEN_MULTIPLIER = 1000000000000000000;
 
+    // The divisor for finding the nth root of token amounts.
     uint256 constant internal NTH_ROOT_OF_TOKEN_MULTIPLIER = 1000;
 
+    /// @dev Computes the nth root of a number.
+    /// @param base to compute the root.
+    /// @param n nth root.
+    /// @return nth root of base.
     function _nthRoot(uint256 base, uint256 n)
         internal
         pure
@@ -79,14 +95,6 @@ library LibFeeMath {
 
             // 4. Run Newton's Approximation to approximate the root
             let denominator := mul(n, exp2(x, sub(n, 1)))
-
-            // -- playing with turning root into fixed point to retain decimals --
-            //let numerator := y
-            //let fixedPointScaleFactor := exp2(10, 18)
-            //let fixedPointNumerator := mul(y, fixedPointScaleFactor)
-            //let fixedPointX := mul(x, fixedPointScaleFactor)
-            //let fixedPointRoot := add(fixedPointX, div(fixedPointNumerator, denominator))
- 
             root := add(x, div(y, denominator))
                 
             // 5. Run Newton's nth Root Algorithm
@@ -114,7 +122,7 @@ library LibFeeMath {
                 }
             }
 
-            // ganache core workaround (issue #430)
+            // @HACK(hysz) - ganache core workaround (issue #430)
             function exp2(b, p) -> z {
                 z := b
                 for {p := sub(p, 1)}
@@ -127,6 +135,10 @@ library LibFeeMath {
         }
     }
 
+    /// @dev Computes the nth root of a fixed point value.
+    /// @param base to compute the root.
+    /// @param n nth root.
+    /// @return nth root of base.
     function _nthRootFixedPoint(
         uint256 base,
         uint256 n
@@ -141,6 +153,10 @@ library LibFeeMath {
         root = (scalar * numerator) / denominator;
     }
 
+    /// @dev Computes the nth root of a fixed point value, where the 
+    /// number of decimal places is known before hand (hardcoded above).
+    /// @param base to compute the root.
+    /// @return nth root of base.
     function _nthRootFixedPointFixedN(
         uint256 base
     )
@@ -153,7 +169,12 @@ library LibFeeMath {
         return root;
     }
 
-    // scalar gets multiplied by once at the beginning
+    /// @dev Computes an exponent of a value in the form (ab)/c, minimizing loss of precision.
+    /// @param numerator of fraction
+    /// @param scalar to be multiplied by the numerator
+    /// @param denominator of fraction
+    /// @param power to raise value to
+    /// @return Exponent of input value.
     function _exp(uint256 numerator, uint256 scalar, uint256 denominator, uint256 power)
         internal
         pure
@@ -166,9 +187,17 @@ library LibFeeMath {
         return result;
     }
 
-    // cobb-douglas using the nth root fixed point algorithm above
-    // no limitation on alpha. We tend to get better rounding
-    // on the simplified versions below.
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note that in this function there is no limitation on alpha; we tend to get better rounding
+    /// on the simplified versions below.
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @param alphaNumerator Numerator of `alpha` in the cobb-dougles function.
+    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
+    /// @return Result of computing the cobb-douglas function.
     function _cobbDouglas(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -189,7 +218,15 @@ library LibFeeMath {
                 );
     }
 
-    // alpha = 1/x
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note - we assume that alpha = 1/x
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
+    /// @return Result of computing the cobb-douglas function.
     function _cobbDouglasSimplified(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -206,7 +243,15 @@ library LibFeeMath {
                 (_nthRootFixedPoint(totalFees * ownerStake, alphaDenominator) * totalStake);
     }
 
-    // (1 - alpha) = 1/x
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note - we assume that (1 - alpha) = 1/x
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @param alphaDenominator Denominator of `alpha` in the cobb-douglas function.
+    /// @return Result of computing the cobb-douglas function.
     function _cobbDouglasSimplifiedInverse(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -223,9 +268,14 @@ library LibFeeMath {
                 (_nthRootFixedPoint(totalStake * ownerFees, alphaDenominator) * totalFees);
     }
 
-    // alpha = 1/x, where x is known
-    // x is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
-    // Currently set to 6. 
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note - we assume that alpha = 1/x, where x is defined by `COBB_DOUGLAS_ALPHA_DENOMINATOR`
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @return Result of computing the cobb-douglas function.
     function _cobbDouglasSuperSimplified(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -241,9 +291,14 @@ library LibFeeMath {
                 (_nthRootFixedPointFixedN(totalFees * ownerStake) * totalStake);
     }
 
-    // (1 - alpha) = 1/x, where x is known
-    // x is defined in `MixinConstants.COBB_DOUGLAS_ALPHA_DENOMINATOR`
-    // Currently set to 6. 
+    /// @dev The cobb-douglas function used to compute fee-based rewards for staking pools in a given epoch.
+    /// Note - we assume that (1 - alpha) = 1/x, where x is defined by `COBB_DOUGLAS_ALPHA_DENOMINATOR`
+    /// @param totalRewards collected over an epoch.
+    /// @param ownerFees Fees attributed to the owner of the staking pool.
+    /// @param totalFees collected across all active staking pools in the epoch.
+    /// @param ownerStake Stake attributed to the owner of the staking pool.
+    /// @param totalStake collected across all active staking pools in the epoch.
+    /// @return Result of computing the cobb-douglas function.
     function _cobbDouglasSuperSimplifiedInverse(
         uint256 totalRewards,
         uint256 ownerFees,
@@ -258,6 +313,4 @@ library LibFeeMath {
         return  (_nthRootFixedPointFixedN(ownerStake * totalFees) * totalRewards * ownerFees) /
                 (_nthRootFixedPointFixedN(totalStake * ownerFees) * totalFees);
     }
-
-
 }
