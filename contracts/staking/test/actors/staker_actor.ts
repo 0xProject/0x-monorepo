@@ -1,6 +1,4 @@
-import {
-    expectTransactionFailedAsync,
-} from '@0x/contracts-test-utils';
+import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -81,7 +79,10 @@ export class StakerActor extends BaseActor {
         expectedStakerBalances.deactivatedStakeBalance = initStakerBalances.deactivatedStakeBalance.plus(amount);
         await this.assertBalancesAsync(expectedStakerBalances);
     }
-    public async burnDeactivatedStakeAndWithdrawZrxAsync(amount: BigNumber, revertReason?: RevertReason): Promise<void> {
+    public async burnDeactivatedStakeAndWithdrawZrxAsync(
+        amount: BigNumber,
+        revertReason?: RevertReason,
+    ): Promise<void> {
         // query init balances
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initStakerBalances = await this.getBalancesAsync();

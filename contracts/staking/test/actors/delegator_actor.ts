@@ -1,6 +1,4 @@
-import {
-    expectTransactionFailedAsync,
-} from '@0x/contracts-test-utils';
+import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -26,7 +24,11 @@ export class DelegatorActor extends StakerActor {
         const initZrxBalanceOfVault = await this._stakingWrapper.getZrxTokenBalanceOfZrxVaultAsync();
         const initDelegatorBalances = await this.getBalancesAsync([poolId]);
         // deposit stake
-        const txReceiptPromise = this._stakingWrapper.depositZrxAndDelegateToStakingPoolAsync(this._owner, poolId, amount);
+        const txReceiptPromise = this._stakingWrapper.depositZrxAndDelegateToStakingPoolAsync(
+            this._owner,
+            poolId,
+            amount,
+        );
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;

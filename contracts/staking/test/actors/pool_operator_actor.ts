@@ -1,6 +1,4 @@
-import {
-    expectTransactionFailedAsync,
-} from '@0x/contracts-test-utils';
+import { expectTransactionFailedAsync } from '@0x/contracts-test-utils';
 import { RevertReason } from '@0x/types';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -62,7 +60,11 @@ export class PoolOperatorActor extends BaseActor {
         revertReason?: RevertReason,
     ): Promise<void> {
         // remove maker
-        const txReceiptPromise = this._stakingWrapper.removeMakerFromStakingPoolAsync(poolId, makerAddress, this._owner);
+        const txReceiptPromise = this._stakingWrapper.removeMakerFromStakingPoolAsync(
+            poolId,
+            makerAddress,
+            this._owner,
+        );
         if (revertReason !== undefined) {
             await expectTransactionFailedAsync(txReceiptPromise, revertReason);
             return;
