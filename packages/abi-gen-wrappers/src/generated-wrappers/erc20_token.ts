@@ -192,8 +192,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
@@ -249,8 +249,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
@@ -416,8 +416,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
@@ -479,8 +479,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
@@ -632,8 +632,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
@@ -701,8 +701,8 @@ export class ERC20TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as ERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming

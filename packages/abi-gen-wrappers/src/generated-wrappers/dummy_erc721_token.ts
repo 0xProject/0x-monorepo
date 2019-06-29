@@ -104,8 +104,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
@@ -167,8 +167,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
             // tslint:disable boolean-naming
@@ -320,8 +320,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
@@ -487,8 +487,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
@@ -640,8 +640,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
             // tslint:disable boolean-naming
@@ -807,8 +807,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
@@ -870,8 +870,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
             // tslint:disable boolean-naming
@@ -933,8 +933,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
@@ -990,8 +990,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
@@ -1047,8 +1047,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
@@ -1200,8 +1200,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
             // tslint:disable boolean-naming
@@ -1353,8 +1353,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
             // tslint:disable boolean-naming
@@ -1534,8 +1534,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
             // tslint:disable boolean-naming
@@ -1603,8 +1603,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
             // tslint:disable boolean-naming
@@ -1742,8 +1742,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as DummyERC721TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming

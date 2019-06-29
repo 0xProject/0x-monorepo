@@ -87,8 +87,8 @@ export class IWalletContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as IWalletContract;
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
             // tslint:disable boolean-naming

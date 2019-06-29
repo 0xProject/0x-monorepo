@@ -169,8 +169,8 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
@@ -232,8 +232,8 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
             // tslint:disable boolean-naming

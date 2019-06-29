@@ -176,8 +176,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
@@ -239,8 +239,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
             // tslint:disable boolean-naming
@@ -378,8 +378,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
@@ -435,8 +435,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
@@ -588,8 +588,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
@@ -645,8 +645,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
@@ -708,8 +708,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
             // tslint:disable boolean-naming
@@ -765,8 +765,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string[]
-         {
+        ): (string[]
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
@@ -904,8 +904,8 @@ export class ERC721ProxyContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ERC721ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming

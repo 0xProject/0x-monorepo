@@ -241,8 +241,8 @@ export class ForwarderContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
-         {
+        ): ([{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
+        ) {
             const self = this as any as ForwarderContract;
             const abiEncoder = self._lookupAbiEncoder('marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)');
             // tslint:disable boolean-naming
@@ -394,8 +394,8 @@ export class ForwarderContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ForwarderContract;
             const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
             // tslint:disable boolean-naming
@@ -451,8 +451,8 @@ export class ForwarderContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as ForwarderContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
@@ -660,8 +660,8 @@ export class ForwarderContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
-         {
+        ): ([{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}, {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}]
+        ) {
             const self = this as any as ForwarderContract;
             const abiEncoder = self._lookupAbiEncoder('marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)');
             // tslint:disable boolean-naming
@@ -799,8 +799,8 @@ export class ForwarderContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as ForwarderContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming

@@ -110,8 +110,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
@@ -263,8 +263,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
@@ -320,8 +320,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
@@ -487,8 +487,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
@@ -626,8 +626,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
@@ -683,8 +683,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): number
-         {
+        ): (number
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('decimals()');
             // tslint:disable boolean-naming
@@ -746,8 +746,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
@@ -803,8 +803,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
@@ -956,8 +956,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
@@ -1081,8 +1081,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('deposit()');
             // tslint:disable boolean-naming
@@ -1150,8 +1150,8 @@ export class WETH9Contract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
