@@ -143,8 +143,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
-         {
+        ): ([{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}, {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}]
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
             // tslint:disable boolean-naming
@@ -212,8 +212,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [BigNumber, BigNumber]
-         {
+        ): ([BigNumber, BigNumber]
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
             // tslint:disable boolean-naming
@@ -340,8 +340,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
-         {
+        ): ([Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>, Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>]
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
             // tslint:disable boolean-naming
@@ -462,8 +462,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
-         {
+        ): (Array<{makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}>
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])');
             // tslint:disable boolean-naming
@@ -531,8 +531,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
             // tslint:disable boolean-naming
@@ -600,8 +600,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [BigNumber[], BigNumber[]]
-         {
+        ): ([BigNumber[], BigNumber[]]
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
             // tslint:disable boolean-naming
@@ -716,8 +716,8 @@ export class OrderValidatorContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): {makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
-         {
+        ): ({makerBalance: BigNumber;makerAllowance: BigNumber;takerBalance: BigNumber;takerAllowance: BigNumber;makerZrxBalance: BigNumber;makerZrxAllowance: BigNumber;takerZrxBalance: BigNumber;takerZrxAllowance: BigNumber}
+        ) {
             const self = this as any as OrderValidatorContract;
             const abiEncoder = self._lookupAbiEncoder('getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)');
             // tslint:disable boolean-naming

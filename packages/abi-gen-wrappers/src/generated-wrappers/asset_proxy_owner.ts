@@ -159,8 +159,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string
-         {
+        ): (string
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
             // tslint:disable boolean-naming
@@ -287,8 +287,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
             // tslint:disable boolean-naming
@@ -419,8 +419,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
             // tslint:disable boolean-naming
@@ -479,8 +479,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
             // tslint:disable boolean-naming
@@ -548,8 +548,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
             // tslint:disable boolean-naming
@@ -690,8 +690,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
             // tslint:disable boolean-naming
@@ -744,8 +744,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
             // tslint:disable boolean-naming
@@ -810,8 +810,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
             // tslint:disable boolean-naming
@@ -969,8 +969,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
             // tslint:disable boolean-naming
@@ -1095,8 +1095,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
             // tslint:disable boolean-naming
@@ -1155,8 +1155,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
             // tslint:disable boolean-naming
@@ -1290,8 +1290,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
             // tslint:disable boolean-naming
@@ -1352,8 +1352,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): boolean
-         {
+        ): (boolean
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
             // tslint:disable boolean-naming
@@ -1414,8 +1414,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
             // tslint:disable boolean-naming
@@ -1474,8 +1474,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): [string, BigNumber, string, boolean]
-         {
+        ): ([string, BigNumber, string, boolean]
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
             // tslint:disable boolean-naming
@@ -1528,8 +1528,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string[]
-         {
+        ): (string[]
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('getOwners()');
             // tslint:disable boolean-naming
@@ -1605,8 +1605,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber[]
-         {
+        ): (BigNumber[]
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
             // tslint:disable boolean-naming
@@ -1665,8 +1665,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): string[]
-         {
+        ): (string[]
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
             // tslint:disable boolean-naming
@@ -1719,8 +1719,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('transactionCount()');
             // tslint:disable boolean-naming
@@ -1849,8 +1849,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
             // tslint:disable boolean-naming
@@ -1981,8 +1981,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
             // tslint:disable boolean-naming
@@ -2152,8 +2152,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
             // tslint:disable boolean-naming
@@ -2212,8 +2212,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
             // tslint:disable boolean-naming
@@ -2266,8 +2266,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
             // tslint:disable boolean-naming
@@ -2320,8 +2320,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber
-         {
+        ): (BigNumber
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('required()');
             // tslint:disable boolean-naming
@@ -2469,8 +2469,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
             // tslint:disable boolean-naming
@@ -2601,8 +2601,8 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): void
-         {
+        ): (void
+        ) {
             const self = this as any as AssetProxyOwnerContract;
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
             // tslint:disable boolean-naming

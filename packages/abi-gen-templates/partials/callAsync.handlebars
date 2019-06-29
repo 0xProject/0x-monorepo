@@ -51,7 +51,7 @@ getABIEncodedTransactionData(
 },
 getABIDecodedReturnData(
     returnData: string
-): {{> return_type outputs=outputs}} {
+): ({{> return_type outputs=outputs ~}}) {
     const self = this as any as {{contractName}}Contract;
     const abiEncoder = self._lookupAbiEncoder('{{this.functionSignature}}');
     // tslint:disable boolean-naming

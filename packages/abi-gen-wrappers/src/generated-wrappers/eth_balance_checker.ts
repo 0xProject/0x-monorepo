@@ -77,8 +77,8 @@ export class EthBalanceCheckerContract extends BaseContract {
         },
         getABIDecodedReturnData(
             returnData: string
-        ): BigNumber[]
-         {
+        ): (BigNumber[]
+        ) {
             const self = this as any as EthBalanceCheckerContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
             // tslint:disable boolean-naming
