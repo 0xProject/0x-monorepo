@@ -30,8 +30,6 @@ contract MixinStorage is
     MixinConstants
 {
 
-    // @TODO Add notes about which Mixin manages which state
-
     // address of owner
     address internal owner;
 
@@ -87,7 +85,7 @@ contract MixinStorage is
     // fees collected this epoch
     mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
 
-    // 
+    // pools that were active in the current epoch
     bytes32[] internal activePoolsThisEpoch;
 
     // mapping from POol Id to Shadow Rewards

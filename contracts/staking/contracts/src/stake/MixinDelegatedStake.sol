@@ -155,7 +155,7 @@ contract MixinDelegatedStake is
             amount,
             _delegatedStakeToPoolByOwner,
             _delegatedStakeByPoolId
-       );
+        );
 
         // decrement how much stake the owner has delegated
         delegatedStakeByOwner[owner] = _delegatedStakeByOwner._sub(amount);

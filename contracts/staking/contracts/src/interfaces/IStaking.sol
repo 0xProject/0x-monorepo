@@ -19,62 +19,9 @@
 pragma solidity ^0.5.5;
 
 
-/// THIS CONTRACT IS AUTO-GENERATED FROM INTERFACES IN `./core_interfaces` ///
-contract IStaking {
+// solhint-disable no-empty-blocks
+interface IStaking {
 
-    /// @dev Returns the current epoch.
-    function getCurrentEpoch()
-        public
-        view
-        returns (uint64);
-
-    /// @dev Returns the current epoch period, measured in seconds.
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    function getEpochDurationInSeconds()
-        public
-        pure
-        returns (uint64);
-
-    /// @dev Returns the start time in seconds of the current epoch.
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    function getCurrentEpochStartTimeInSeconds()
-        public
-        view
-        returns (uint64);
-
-    /// @dev Returns the earliest end time in seconds of this epoch.
-    ///      The next epoch can begin once this time is reached.  
-    ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
-    function getCurrentEpochEarliestEndTimeInSeconds()
-        public
-        view
-        returns (uint64);
-
-    /// @dev Returns the current timelock period
-    function getCurrentTimelockPeriod()
-        public
-        view
-        returns (uint64);
-
-    /// @dev Returns the length of a timelock period, measured in epochs.
-    ///      Timelock period = [startEpoch..endEpoch)
-    function getTimelockDurationInEpochs()
-        public
-        pure
-        returns (uint64);
-
-    /// @dev Returns the epoch that the current timelock period started at.
-    ///      Timelock period = [startEpoch..endEpoch)
-    function getCurrentTimelockPeriodStartEpoch()
-        public
-        view
-        returns (uint64);
-
-    /// @dev Returns the epoch that the current timelock period will end.
-    ///      Timelock period = [startEpoch..endEpoch)
-    function getCurrentTimelockPeriodEndEpoch()
-        public
-        view
-        returns (uint64);
-
+    /// THIS INTERFACE IS LEFT INTENTIONALLY BLANK ///
+    /// @TODO Generate this file before deploying.
 }
