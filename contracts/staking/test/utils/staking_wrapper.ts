@@ -117,7 +117,7 @@ export class StakingWrapper {
         );
         // configure erc20 proxy to accept calls from zrx vault
         await this._erc20ProxyContract.addAuthorizedAddress.awaitTransactionSuccessAsync(
-            (this._zrxVaultContractIfExists).address,
+            this._zrxVaultContractIfExists.address,
         );
         // deploy staking contract
         this._stakingContractIfExists = await StakingContract.deployFrom0xArtifactAsync(
@@ -130,39 +130,35 @@ export class StakingWrapper {
             artifacts.StakingProxy,
             this._provider,
             txDefaults,
-            (this._stakingContractIfExists).address,
+            this._stakingContractIfExists.address,
         );
         // set staking proxy contract in zrx vault
-        await (this
-            ._zrxVaultContractIfExists).setStakingContract.awaitTransactionSuccessAsync(
-            (this._stakingProxyContractIfExists).address,
+        await this._zrxVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(
+            this._stakingProxyContractIfExists.address,
         );
         // set zrx vault in staking contract
-        const setZrxVaultCalldata = (this
-            ._stakingContractIfExists).setZrxVault.getABIEncodedTransactionData(
-            (this._zrxVaultContractIfExists).address,
+        const setZrxVaultCalldata = this._stakingContractIfExists.setZrxVault.getABIEncodedTransactionData(
+            this._zrxVaultContractIfExists.address,
         );
         const setZrxVaultTxData = {
             from: this._ownerAddress,
-            to: (this._stakingProxyContractIfExists).address,
+            to: this._stakingProxyContractIfExists.address,
             data: setZrxVaultCalldata,
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
             await this._web3Wrapper.sendTransactionAsync(setZrxVaultTxData),
         );
         // set staking proxy contract in reward vault
-        await (this
-            ._rewardVaultContractIfExists).setStakingContract.awaitTransactionSuccessAsync(
-            (this._stakingProxyContractIfExists).address,
+        await this._rewardVaultContractIfExists.setStakingContract.awaitTransactionSuccessAsync(
+            this._stakingProxyContractIfExists.address,
         );
         // set reward vault in staking contract
-        const setStakingPoolRewardVaultCalldata = (this
-            ._stakingContractIfExists).setStakingPoolRewardVault.getABIEncodedTransactionData(
-            (this._rewardVaultContractIfExists).address,
+        const setStakingPoolRewardVaultCalldata = this._stakingContractIfExists.setStakingPoolRewardVault.getABIEncodedTransactionData(
+            this._rewardVaultContractIfExists.address,
         );
         const setStakingPoolRewardVaultTxData = {
             from: this._ownerAddress,
-            to: (this._stakingProxyContractIfExists).address,
+            to: this._stakingProxyContractIfExists.address,
             data: setStakingPoolRewardVaultCalldata,
         };
         await this._web3Wrapper.awaitTransactionSuccessAsync(
@@ -180,12 +176,20 @@ export class StakingWrapper {
         return balance;
     }
     ///// STAKE /////
-    public async depositZrxAndMintDeactivatedStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().depositZrxAndMintDeactivatedStake.getABIEncodedTransactionData(amount);
+    public async depositZrxAndMintDeactivatedStakeAsync(
+        owner: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().depositZrxAndMintDeactivatedStake.getABIEncodedTransactionData(
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
-    public async depositZrxAndMintActivatedStakeAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
+    public async depositZrxAndMintActivatedStakeAsync(
+        owner: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().depositZrxAndMintActivatedStake.getABIEncodedTransactionData(amount);
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
@@ -195,7 +199,10 @@ export class StakingWrapper {
         poolId: string,
         amount: BigNumber,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().depositZrxAndDelegateToStakingPool.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().depositZrxAndDelegateToStakingPool.getABIEncodedTransactionData(
+            poolId,
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
     }
@@ -236,8 +243,13 @@ export class StakingWrapper {
         const txReceipt = await this._executeTransactionAsync(calldata, owner, new BigNumber(0), true);
         return txReceipt;
     }
-    public async burnDeactivatedStakeAndWithdrawZrxAsync(owner: string, amount: BigNumber): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().burnDeactivatedStakeAndWithdrawZrx.getABIEncodedTransactionData(amount);
+    public async burnDeactivatedStakeAndWithdrawZrxAsync(
+        owner: string,
+        amount: BigNumber,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().burnDeactivatedStakeAndWithdrawZrx.getABIEncodedTransactionData(
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
@@ -408,9 +420,7 @@ export class StakingWrapper {
     public async goToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().finalizeFees.getABIEncodedTransactionData();
         const txReceipt = await this._executeTransactionAsync(calldata, undefined, new BigNumber(0), true);
-        logUtils.log(
-            `Finalization costed ${txReceipt.gasUsed} gas`,
-        );
+        logUtils.log(`Finalization costed ${txReceipt.gasUsed} gas`);
         return txReceipt;
     }
     public async skipToNextEpochAsync(): Promise<TransactionReceiptWithDecodedLogs> {
@@ -461,7 +471,9 @@ export class StakingWrapper {
     public async getCurrentEpochEarliestEndTimeInSecondsAsync(): Promise<BigNumber> {
         const calldata = this.getStakingContract().getCurrentEpochEarliestEndTimeInSeconds.getABIEncodedTransactionData();
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getCurrentEpochEarliestEndTimeInSeconds.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getCurrentEpochEarliestEndTimeInSeconds.getABIDecodedReturnData(
+            returnData,
+        );
         return value;
     }
     public async getCurrentTimelockPeriodEndEpochAsync(): Promise<BigNumber> {
@@ -511,13 +523,19 @@ export class StakingWrapper {
         const isValid = this.getStakingContract().isValidExchangeAddress.getABIDecodedReturnData(returnData);
         return isValid;
     }
-    public async addExchangeAddressAsync(exchangeAddress: string, ownerAddressIfExists?: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async addExchangeAddressAsync(
+        exchangeAddress: string,
+        ownerAddressIfExists?: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().addExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
         const ownerAddress = ownerAddressIfExists !== undefined ? ownerAddressIfExists : this._ownerAddress;
         const txReceipt = await this._executeTransactionAsync(calldata, ownerAddress);
         return txReceipt;
     }
-    public async removeExchangeAddressAsync(exchangeAddress: string, ownerAddressIfExists?: string): Promise<TransactionReceiptWithDecodedLogs> {
+    public async removeExchangeAddressAsync(
+        exchangeAddress: string,
+        ownerAddressIfExists?: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
         const calldata = this.getStakingContract().removeExchangeAddress.getABIEncodedTransactionData(exchangeAddress);
         const ownerAddress = ownerAddressIfExists !== undefined ? ownerAddressIfExists : this._ownerAddress;
         const txReceipt = await this._executeTransactionAsync(calldata, ownerAddress);
@@ -525,31 +543,48 @@ export class StakingWrapper {
     }
     ///// REWARDS /////
     public async getTotalRewardBalanceOfStakingPoolAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTotalRewardBalanceOfStakingPool.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().getTotalRewardBalanceOfStakingPool.getABIEncodedTransactionData(
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getTotalRewardBalanceOfStakingPool.getABIDecodedReturnData(returnData);
         return value;
     }
     public async getRewardBalanceOfStakingPoolOperatorAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIEncodedTransactionData(
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getRewardBalanceOfStakingPoolOperator.getABIDecodedReturnData(
+            returnData,
+        );
         return value;
     }
     public async getRewardBalanceOfStakingPoolMembersAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIEncodedTransactionData(
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().getRewardBalanceOfStakingPoolMembers.getABIDecodedReturnData(
+            returnData,
+        );
         return value;
     }
     public async computeRewardBalanceOfStakingPoolMemberAsync(poolId: string, owner: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIEncodedTransactionData(poolId, owner);
+        const calldata = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIEncodedTransactionData(
+            poolId,
+            owner,
+        );
         const returnData = await this._callAsync(calldata);
-        const value = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIDecodedReturnData(returnData);
+        const value = this.getStakingContract().computeRewardBalanceOfStakingPoolMember.getABIDecodedReturnData(
+            returnData,
+        );
         return value;
     }
     public async getTotalShadowBalanceOfStakingPoolAsync(poolId: string): Promise<BigNumber> {
-        const calldata = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIEncodedTransactionData(
+            poolId,
+        );
         const returnData = await this._callAsync(calldata);
         const value = this.getStakingContract().getTotalShadowBalanceOfStakingPool.getABIDecodedReturnData(returnData);
         return value;
@@ -568,7 +603,10 @@ export class StakingWrapper {
         amount: BigNumber,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawRewardForStakingPoolOperator.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().withdrawRewardForStakingPoolOperator.getABIEncodedTransactionData(
+            poolId,
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
@@ -577,7 +615,10 @@ export class StakingWrapper {
         amount: BigNumber,
         owner: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawRewardForStakingPoolMember.getABIEncodedTransactionData(poolId, amount);
+        const calldata = this.getStakingContract().withdrawRewardForStakingPoolMember.getABIEncodedTransactionData(
+            poolId,
+            amount,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }
@@ -585,12 +626,19 @@ export class StakingWrapper {
         poolId: string,
         operatorAddress: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolOperator.getABIEncodedTransactionData(poolId);
+        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolOperator.getABIEncodedTransactionData(
+            poolId,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, operatorAddress);
         return txReceipt;
     }
-    public async withdrawTotalRewardForStakingPoolMemberAsync(poolId: string, owner: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolMember.getABIEncodedTransactionData(poolId);
+    public async withdrawTotalRewardForStakingPoolMemberAsync(
+        poolId: string,
+        owner: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const calldata = this.getStakingContract().withdrawTotalRewardForStakingPoolMember.getABIEncodedTransactionData(
+            poolId,
+        );
         const txReceipt = await this._executeTransactionAsync(calldata, owner);
         return txReceipt;
     }

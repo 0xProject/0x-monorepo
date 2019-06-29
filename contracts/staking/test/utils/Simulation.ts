@@ -59,7 +59,9 @@ export class Simulation {
         // @TODO cleanup state and verify the staking contract is empty
     }
 
-    private async _withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(p: SimulationParams): Promise<void> {
+    private async _withdrawRewardForStakingPoolMemberForDelegatorsByUndelegatingAsync(
+        p: SimulationParams,
+    ): Promise<void> {
         let delegatorIdx = 0;
         let poolIdx = 0;
         for (const numberOfDelegatorsInPool of p.numberOfDelegatorsPerPool) {
@@ -73,10 +75,7 @@ export class Simulation {
                 await delegator.deactivateAndTimelockDelegatedStakeAsync(poolId, amountOfStakeDelegated);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = StakingWrapper.trimFloat(
-                    StakingWrapper.toFloatingPoint(reward, 18),
-                    5,
-                );
+                const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
                 expect(
                     rewardTrimmed,
@@ -101,10 +100,7 @@ export class Simulation {
                 await this._stakingWrapper.withdrawTotalRewardForStakingPoolMemberAsync(poolId, delegatorAddress);
                 const finalEthBalance = await this._stakingWrapper.getEthBalanceAsync(delegatorAddress);
                 const reward = finalEthBalance.minus(initEthBalance);
-                const rewardTrimmed = StakingWrapper.trimFloat(
-                    StakingWrapper.toFloatingPoint(reward, 18),
-                    5,
-                );
+                const rewardTrimmed = StakingWrapper.trimFloat(StakingWrapper.toFloatingPoint(reward, 18), 5);
                 const expectedReward = p.expectedPayoutByDelegator[delegatorIdx];
                 expect(
                     rewardTrimmed,
@@ -228,7 +224,9 @@ export class Simulation {
                 `expected balance in vault for pool with id ${poolId}`,
             ).to.be.bignumber.equal(expectedRewardBalance);
             // check operator's balance
-            const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(poolId);
+            const poolOperatorVaultBalance = await this._stakingWrapper.getRewardBalanceOfStakingPoolOperatorAsync(
+                poolId,
+            );
             const poolOperatorVaultBalanceTrimmed = StakingWrapper.trimFloat(
                 StakingWrapper.toFloatingPoint(poolOperatorVaultBalance, 18),
                 5,
