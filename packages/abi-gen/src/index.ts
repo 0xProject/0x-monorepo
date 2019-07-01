@@ -111,7 +111,7 @@ if (args.language === 'TypeScript') {
 }
 registerPartials();
 
-function makeLangLocalName(methodName: string): string {
+function makeLanguageSpecificName(methodName: string): string {
     return args.language === 'Python' ? changeCase.snake(methodName) : methodName;
 }
 
@@ -180,13 +180,13 @@ for (const abiFileName of abiFileNames) {
             }
         });
         const functionSignature = new AbiEncoder.Method(methodAbi).getSignature();
-        const langLocalName: string = makeLangLocalName(sanitizedMethodAbis[methodAbiIndex].name);
+        const languageSpecificName: string = makeLanguageSpecificName(sanitizedMethodAbis[methodAbiIndex].name);
         // This will make templates simpler
         const methodData = {
             ...methodAbi,
             singleReturnValue: methodAbi.outputs.length === 1,
             hasReturnValue: methodAbi.outputs.length !== 0,
-            langLocalName,
+            languageSpecificName,
             functionSignature,
             devdoc: devdoc ? devdoc.methods[functionSignature] : undefined,
         };
@@ -195,11 +195,11 @@ for (const abiFileName of abiFileNames) {
 
     const eventAbis = ABI.filter((abi: AbiDefinition) => abi.type === ABI_TYPE_EVENT) as EventAbi[];
     const eventsData = _.map(eventAbis, (eventAbi, eventAbiIndex: number) => {
-        const langLocalName = makeLangLocalName(eventAbi.name);
+        const languageSpecificName = makeLanguageSpecificName(eventAbi.name);
 
         const eventData = {
             ...eventAbi,
-            langLocalName,
+            languageSpecificName,
         };
         return eventData;
     });
