@@ -242,6 +242,17 @@ library LibExchangeRichErrors {
         return INCOMPLETE_FILL_ERROR_SELECTOR;
     }
 
+    function BatchMatchOrdersError(BatchMatchOrdersErrorCodes errorCode)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        abi.encodeWithSelector(
+            BATCH_MATCH_ORDERS_ERROR_SELECTOR,
+            errorCode
+        );
+    }
+
     function SignatureError(
         IExchangeRichErrors.SignatureErrorCodes errorCode,
         bytes32 hash,
