@@ -38,18 +38,28 @@ export interface AbiEncoderByFunctionSignature {
  *      `awaitTransactionSuccessAsync()`.
  *      Maybe there's a better place for this.
  */
-export class PromiseWithTransactionHash<T> implements PromiseLike<T> {
+export class PromiseWithTransactionHash<T> implements Promise<T> {
     public readonly txHashPromise: Promise<string>;
     private readonly _promise: Promise<T>;
     constructor(txHashPromise: Promise<string>, promise: Promise<T>) {
         this.txHashPromise = txHashPromise;
         this._promise = promise;
     }
+    // tslint:disable:promise-function-async
+    // tslint:disable:async-suffix
     public then<TResult>(
-        onFulfilled?: (v: T) => TResult | PromiseLike<TResult>,
-        onRejected?: (reason: any) => PromiseLike<never>,
-    ): PromiseLike<TResult> {
+        onFulfilled?: (v: T) => TResult | Promise<TResult>,
+        onRejected?: (reason: any) => Promise<never>,
+    ): Promise<TResult> {
         return this._promise.then<TResult>(onFulfilled, onRejected);
+    }
+    public catch<TResult>(onRejected?: (reason: any) => Promise<TResult>): Promise<TResult | T> {
+        return this._promise.catch(onRejected);
+    }
+    // tslint:enable:promise-function-async
+    // tslint:enable:async-suffix
+    get [Symbol.toStringTag](): 'Promise' {
+        return this._promise[Symbol.toStringTag];
     }
 }
 

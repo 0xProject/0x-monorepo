@@ -75,18 +75,19 @@ describe('LibExchangeRichErrorDecoder', () => {
         const errorCode = ExchangeRevertErrors.SignatureErrorCode.Illegal;
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         const signer = addressUtils.generatePseudoRandomAddress();
+        const validator = addressUtils.generatePseudoRandomAddress();
         const signature = generateRandomBytes(SIGNATURE_LENGTH);
         const errorData = generateRandomBytes(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.SignatureError, [errorCode, orderHash, signer, signature]);
-        createDecodeTest(ExchangeRevertErrors.SignatureValidatorError, [orderHash, signer, signature, errorData]);
-        createDecodeTest(ExchangeRevertErrors.SignatureWalletError, [orderHash, signer, signature, errorData]);
-        createDecodeTest(ExchangeRevertErrors.SignatureOrderValidatorError, [orderHash, signer, signature, errorData]);
-        createDecodeTest(ExchangeRevertErrors.SignatureWalletOrderValidatorError, [
+        createDecodeTest(ExchangeRevertErrors.SignatureValidatorNotApprovedError, [signer, validator]);
+        createDecodeTest(ExchangeRevertErrors.SignatureValidatorError, [
             orderHash,
             signer,
+            validator,
             signature,
             errorData,
         ]);
+        createDecodeTest(ExchangeRevertErrors.SignatureWalletError, [orderHash, signer, signature, errorData]);
     })();
 
     (() => {

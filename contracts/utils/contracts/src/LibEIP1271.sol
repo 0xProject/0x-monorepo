@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,22 +17,10 @@
 */
 
 pragma solidity ^0.5.9;
-pragma experimental ABIEncoderV2;
-
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 
-contract IWallet {
+contract LibEIP1271 {
 
-    /// @dev Verifies that a signature is valid.
-    /// @param hash Message hash that is signed.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
-    function isValidSignature(
-        bytes32 hash,
-        bytes calldata signature
-    )
-        external
-        view
-        returns (bool isValid);
+    // Magic bytes returned by EIP1271 wallets on success.
+    bytes4 constant public EIP1271_MAGIC_VALUE = 0x20c13b0b;
 }

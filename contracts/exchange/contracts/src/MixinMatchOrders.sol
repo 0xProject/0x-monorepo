@@ -81,7 +81,7 @@ contract MixinMatchOrders is
         _assertValidMatch(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
-        matchedFillResults = _calculateMatchedFillResults(
+        matchedFillResults = calculateMatchedFillResults(
             leftOrder,
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,
@@ -133,33 +133,6 @@ contract MixinMatchOrders is
         return matchedFillResults;
     }
 
-    /// @dev Validates context for matchOrders. Succeeds or throws.
-    /// @param leftOrder First order to match.
-    /// @param rightOrder Second order to match.
-    function _assertValidMatch(
-        LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder
-    )
-        internal
-        view
-    {
-        // Make sure there is a profitable spread.
-        // There is a profitable spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
-        // than the profit per unit sold of the matched order (OrderB.TakerAmount/OrderB.MakerAmount).
-        // This is satisfied by the equations below:
-        // <leftOrder.makerAssetAmount> / <leftOrder.takerAssetAmount> >= <rightOrder.takerAssetAmount> / <rightOrder.makerAssetAmount>
-        // AND
-        // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
-        // These equations can be combined to get the following:
-        if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
-            _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
-            _rrevert(NegativeSpreadError(
-                getOrderHash(leftOrder),
-                getOrderHash(rightOrder)
-            ));
-        }
-    }
-
     /// @dev Calculates fill amounts for the matched orders.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -169,13 +142,13 @@ contract MixinMatchOrders is
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    function _calculateMatchedFillResults(
+    function calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
         uint256 rightOrderTakerAssetFilledAmount
     )
-        internal
+        public
         pure
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
@@ -260,6 +233,33 @@ contract MixinMatchOrders is
 
         // Return fill results
         return matchedFillResults;
+    }
+
+    /// @dev Validates context for matchOrders. Succeeds or throws.
+    /// @param leftOrder First order to match.
+    /// @param rightOrder Second order to match.
+    function _assertValidMatch(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder
+    )
+        internal
+        view
+    {
+        // Make sure there is a profitable spread.
+        // There is a profitable spread iff the cost per unit bought (OrderA.MakerAmount/OrderA.TakerAmount) for each order is greater
+        // than the profit per unit sold of the matched order (OrderB.TakerAmount/OrderB.MakerAmount).
+        // This is satisfied by the equations below:
+        // <leftOrder.makerAssetAmount> / <leftOrder.takerAssetAmount> >= <rightOrder.takerAssetAmount> / <rightOrder.makerAssetAmount>
+        // AND
+        // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
+        // These equations can be combined to get the following:
+        if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
+            _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+            _rrevert(NegativeSpreadError(
+                getOrderHash(leftOrder),
+                getOrderHash(rightOrder)
+            ));
+        }
     }
 
     /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.

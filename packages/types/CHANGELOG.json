@@ -41,6 +41,14 @@
             {
                 "note": "Add `TransfersSuccessful` revert reason and `OrderTransferResults` enum",
                 "pr": 1868
+            },
+            {
+                "note": "Consolidate all Validator `SignatureType`s to just `Validator`",
+                "pr": 1885
+            },
+            {
+                "note": "Add `EIP1271Wallet` to `SignatureType`",
+                "pr": 1885
             }
         ]
     },

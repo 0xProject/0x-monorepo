@@ -20,8 +20,8 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
-import "./interfaces/ISignatureValidator.sol";
 import "./interfaces/ITransactions.sol";
+import "./interfaces/ISignatureValidator.sol";
 import "./MixinExchangeRichErrors.sol";
 
 
@@ -113,7 +113,8 @@ contract MixinTransactions is
         address signerAddress = transaction.signerAddress;
         if (signerAddress != msg.sender) {
             // Validate signature
-            if (!isValidHashSignature(
+            if (!_isValidTransactionWithHashSignature(
+                    transaction,
                     transactionHash,
                     signerAddress,
                     signature)) {

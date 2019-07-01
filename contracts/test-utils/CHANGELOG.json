@@ -29,6 +29,10 @@
             {
                 "note": "Remove formatters",
                 "pr": 1834
+            },
+            {
+                "note": "Add `hexConcat()` in `hex_utils.ts`",
+                "pr": 1885
             }
         ]
     },

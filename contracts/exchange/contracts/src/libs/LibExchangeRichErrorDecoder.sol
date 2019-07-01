@@ -23,7 +23,7 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "../interfaces/IExchangeRichErrors.sol";
 
 
-contract LibExchangeRichErrorDecoder is 
+contract LibExchangeRichErrorDecoder is
     IExchangeRichErrors
 {
     /// @dev Decompose an ABI-encoded SignatureError.
@@ -59,6 +59,7 @@ contract LibExchangeRichErrorDecoder is
         returns (
             bytes32 hash,
             address signerAddress,
+            address validatorAddress,
             bytes memory signature,
             bytes memory errorData
         )
@@ -66,8 +67,26 @@ contract LibExchangeRichErrorDecoder is
         _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        signature = _readErrorParameterAsBytes(encoded, 2);
-        errorData = _readErrorParameterAsBytes(encoded, 3);
+        validatorAddress = _readErrorParameterAsAddress(encoded, 2);
+        signature = _readErrorParameterAsBytes(encoded, 3);
+        errorData = _readErrorParameterAsBytes(encoded, 4);
+    }
+
+    /// @dev Decompose an ABI-encoded SignatureValidatorNotApprovedError.
+    /// @param encoded ABI-encoded revert error.
+    /// @return signerAddress The expected signer of the hash.
+    /// @return validatorAddress The expected validator.
+    function decodeSignatureValidatorNotApprovedError(bytes memory encoded)
+        public
+        pure
+        returns (
+            address signerAddress,
+            address validatorAddress
+        )
+    {
+        _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR);
+        signerAddress = _readErrorParameterAsAddress(encoded, 0);
+        validatorAddress = _readErrorParameterAsAddress(encoded, 1);
     }
 
     /// @dev Decompose an ABI-encoded SignatureWalletError.
@@ -87,52 +106,6 @@ contract LibExchangeRichErrorDecoder is
         )
     {
         _assertSelectorBytes(encoded, SIGNATURE_WALLET_ERROR_SELECTOR);
-        hash = _readErrorParameterAsBytes32(encoded, 0);
-        signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        signature = _readErrorParameterAsBytes(encoded, 2);
-        errorData = _readErrorParameterAsBytes(encoded, 3);
-    }
-
-    /// @dev Decompose an ABI-encoded SignatureOrderValidatorError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return errorCode The error code.
-    /// @return signerAddress The expected signer of the hash.
-    /// @return signature The full signature bytes.
-    /// @return errorData The revert data thrown by the validator contract.
-    function decodeSignatureOrderValidatorError(bytes memory encoded)
-        public
-        pure
-        returns (
-            bytes32 hash,
-            address signerAddress,
-            bytes memory signature,
-            bytes memory errorData
-        )
-    {
-        _assertSelectorBytes(encoded, SIGNATURE_ORDER_VALIDATOR_ERROR_SELECTOR);
-        hash = _readErrorParameterAsBytes32(encoded, 0);
-        signerAddress = _readErrorParameterAsAddress(encoded, 1);
-        signature = _readErrorParameterAsBytes(encoded, 2);
-        errorData = _readErrorParameterAsBytes(encoded, 3);
-    }
-
-    /// @dev Decompose an ABI-encoded SignatureWalletOrderValidatorError.
-    /// @param encoded ABI-encoded revert error.
-    /// @return errorCode The error code.
-    /// @return signerAddress The expected signer of the hash.
-    /// @return signature The full signature bytes.
-    /// @return errorData The revert data thrown by the validator contract.
-    function decodeSignatureWalletOrderValidatorError(bytes memory encoded)
-        public
-        pure
-        returns (
-            bytes32 hash,
-            address signerAddress,
-            bytes memory signature,
-            bytes memory errorData
-        )
-    {
-        _assertSelectorBytes(encoded, SIGNATURE_WALLET_ORDER_VALIDATOR_ERROR_SELECTOR);
         hash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);

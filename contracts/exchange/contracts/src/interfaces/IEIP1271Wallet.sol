@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,24 +17,22 @@
 */
 
 pragma solidity ^0.5.9;
-pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
 
 
-contract IOrderValidator {
-
-    /// @dev Verifies that an order AND a signature is valid.
-    /// @param order The order.
-    /// @param orderHash The order hash.
-    /// @param signature Proof of signing.
-    /// @return Validity of order and signature.
-    function isValidOrderSignature(
-        LibOrder.Order calldata order,
-        bytes32 orderHash,
+contract IEIP1271Wallet is
+    LibEIP1271
+{
+    /// @dev Verifies that a signature is valid.
+    /// @param data Arbitrary data.
+    /// @param signature Signature of `data`.
+    /// @return magicValue .
+    function isValidSignature(
+        bytes calldata data,
         bytes calldata signature
     )
         external
         view
-        returns (bool isValid);
+        returns (bytes4 magicValue);
 }

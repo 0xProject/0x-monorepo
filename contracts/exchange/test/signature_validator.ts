@@ -2,52 +2,51 @@ import {
     addressUtils,
     chaiSetup,
     constants,
+    hexConcat,
     LogDecoder,
     OrderFactory,
+    orderUtils,
     provider,
+    TransactionFactory,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, ExchangeRevertErrors, orderHashUtils, signatureUtils } from '@0x/order-utils';
-import { SignatureType, SignedOrder } from '@0x/types';
+import {
+    assetDataUtils,
+    ExchangeRevertErrors,
+    orderHashUtils,
+    signatureUtils,
+    transactionHashUtils,
+} from '@0x/order-utils';
+import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import * as chai from 'chai';
+import * as crypto from 'crypto';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
 import {
     artifacts,
-    TestRevertReceiverContract,
     TestSignatureValidatorContract,
     TestSignatureValidatorSignatureValidatorApprovalEventArgs,
-    TestStaticCallReceiverContract,
-    ValidatorContract,
-    WalletContract,
+    TestValidatorWalletContract,
 } from '../src';
+
+import { ValidatorWalletAction, ValidatorWalletDataType } from './utils';
 
 chaiSetup.configure();
 const expect = chai.expect;
-
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
 describe('MixinSignatureValidator', () => {
     let chainId: number;
-    let signedOrder: SignedOrder;
-    let orderFactory: OrderFactory;
     let signatureValidator: TestSignatureValidatorContract;
-    let testWallet: WalletContract;
-    let testValidator: ValidatorContract;
-    let maliciousWallet: TestStaticCallReceiverContract;
-    let maliciousValidator: TestStaticCallReceiverContract;
-    let revertingWallet: TestRevertReceiverContract;
-    let revertingValidator: TestRevertReceiverContract;
-    let externalRevertReason: string;
+    let validatorWallet: TestValidatorWalletContract;
+    let validatorWalletRevertReason: string;
     let signerAddress: string;
     let signerPrivateKey: Buffer;
     let notSignerAddress: string;
-    let notSignerPrivateKey: Buffer;
-    let signatureValidatorLogDecoder: LogDecoder;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -58,8 +57,7 @@ describe('MixinSignatureValidator', () => {
     before(async () => {
         chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
-        const makerAddress = accounts[0];
-        signerAddress = makerAddress;
+        signerAddress = accounts[0];
         notSignerAddress = accounts[1];
         signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
             artifacts.TestSignatureValidator,
@@ -67,62 +65,26 @@ describe('MixinSignatureValidator', () => {
             txDefaults,
             new BigNumber(chainId),
         );
-        testWallet = await WalletContract.deployFrom0xArtifactAsync(
-            artifacts.Wallet,
+        validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
+            artifacts.TestValidatorWallet,
             provider,
             txDefaults,
-            signerAddress,
+            signatureValidator.address,
         );
-        testValidator = await ValidatorContract.deployFrom0xArtifactAsync(
-            artifacts.Validator,
-            provider,
-            txDefaults,
-            signerAddress,
-        );
-        maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
-            artifacts.TestStaticCallReceiver,
-            provider,
-            txDefaults,
-        );
-        revertingWallet = revertingValidator = await TestRevertReceiverContract.deployFrom0xArtifactAsync(
-            artifacts.TestRevertReceiver,
-            provider,
-            txDefaults,
-        );
-        externalRevertReason = await revertingWallet.REVERT_REASON.callAsync();
+        validatorWalletRevertReason = await validatorWallet.REVERT_REASON.callAsync();
 
-        signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
-        const approveValidator = async (validatorAddress: string) => {
-            type SendApproveTx = (address: string, approved: boolean, txData: { from: string }) => Promise<string>;
-            const sendTx = async (fn: { sendTransactionAsync: SendApproveTx }) => {
-                return web3Wrapper.awaitTransactionSuccessAsync(
-                    await fn.sendTransactionAsync(validatorAddress, true, { from: signerAddress }),
-                    constants.AWAIT_TRANSACTION_MINED_MS,
+        // Approve the validator for both signers.
+        await Promise.all(
+            [signerAddress, notSignerAddress].map(async (addr: string) => {
+                return signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                    validatorWallet.address,
+                    true,
+                    { from: addr },
                 );
-            };
-            await sendTx(signatureValidator.setSignatureValidatorApproval);
-            await sendTx(signatureValidator.setOrderValidatorApproval);
-        };
-        await approveValidator(testValidator.address);
-        await approveValidator(maliciousValidator.address);
-        await approveValidator(revertingValidator.address);
+            }),
+        );
 
-        const defaultOrderParams = {
-            ...constants.STATIC_ORDER_PARAMS,
-            makerAddress,
-            feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
-            makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            makerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            takerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
-            domain: {
-                verifyingContractAddress: signatureValidator.address,
-                chainId,
-            },
-        };
-        signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
-        notSignerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(notSignerAddress)];
-        orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
+        signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(signerAddress)];
     });
 
     beforeEach(async () => {
@@ -132,343 +94,252 @@ describe('MixinSignatureValidator', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    type ValidateCallAsync = (order: SignedOrder, signerAddress: string, ignatureHex: string) => Promise<any>;
+    const SIGNATURE_LENGTH = 65;
+    const generateRandomBytes = (count: number): string => ethUtil.bufferToHex(crypto.randomBytes(count));
+    const generateRandomSignature = (): string => generateRandomBytes(SIGNATURE_LENGTH);
+    const hashBytes = (bytesHex: string): string => ethUtil.bufferToHex(ethUtil.sha3(ethUtil.toBuffer(bytesHex)));
+    const signDataHex = (dataHex: string, privateKey: Buffer): string => {
+        const ecSignature = ethUtil.ecsign(ethUtil.toBuffer(dataHex), signerPrivateKey);
+        return hexConcat(ecSignature.v, ecSignature.r, ecSignature.s);
+    };
 
-    const createHashSignatureTests = (validateCallAsync: ValidateCallAsync) => {
+    type ValidateHashSignatureAsync = (
+        hashHex: string,
+        signerAddress: string,
+        signatureHex: string,
+        validatorAction?: ValidatorWalletAction,
+        validatorExpectedSignatureHex?: string,
+    ) => Promise<any>;
+
+    const createHashSignatureTests = (
+        getCurrentHashHex: (signerAddress?: string) => string,
+        validateAsync: ValidateHashSignatureAsync,
+    ) => {
         it('should revert when signature is empty', async () => {
+            const hashHex = getCurrentHashHex();
             const emptySignature = constants.NULL_BYTES;
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
-                orderHashHex,
-                signedOrder.makerAddress,
+                hashHex,
+                signerAddress,
                 emptySignature,
             );
-            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, emptySignature);
+            const tx = validateAsync(hashHex, signerAddress, emptySignature);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert when signature type is unsupported', async () => {
-            const unsupportedSignatureType = SignatureType.NSignatureTypes;
-            const unsupportedSignatureHex = `0x${Buffer.from([unsupportedSignatureType]).toString('hex')}`;
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(SignatureType.NSignatureTypes);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.Unsupported,
-                orderHashHex,
-                signedOrder.makerAddress,
-                unsupportedSignatureHex,
+                hashHex,
+                signerAddress,
+                signatureHex,
             );
-            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, unsupportedSignatureHex);
+            const tx = validateAsync(hashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert when SignatureType=Illegal', async () => {
-            const illegalSignatureHex = `0x${Buffer.from([SignatureType.Illegal]).toString('hex')}`;
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(SignatureType.Illegal);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.Illegal,
-                orderHashHex,
-                signedOrder.makerAddress,
-                illegalSignatureHex,
+                hashHex,
+                signerAddress,
+                signatureHex,
             );
-            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, illegalSignatureHex);
+            const tx = validateAsync(hashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return false when SignatureType=Invalid and signature has a length of zero', async () => {
-            const signatureHex = `0x${Buffer.from([SignatureType.Invalid]).toString('hex')}`;
-            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(SignatureType.Invalid);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
         it('should revert when SignatureType=Invalid and signature length is non-zero', async () => {
-            const fillerData = ethUtil.toBuffer('0xdeadbeef');
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Invalid}`);
-            const signatureBuffer = Buffer.concat([fillerData, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signatureBuffer);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat('0xdeadbeef', SignatureType.Invalid);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InvalidLength,
-                orderHashHex,
-                signedOrder.makerAddress,
+                hashHex,
+                signerAddress,
                 signatureHex,
             );
-            const tx = validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
+            const tx = validateAsync(hashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should return true when SignatureType=EIP712 and signature is valid', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.EIP712}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(signDataHex(hashHex, signerPrivateKey), SignatureType.EIP712);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
         it('should return false when SignatureType=EIP712 and signature is invalid', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.EIP712}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature.
-            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
-            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EIP712);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
         it('should return true when SignatureType=EthSign and signature is valid', async () => {
             // Create EthSign signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex);
-            const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
-            const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
-            // Create 0x signature from EthSign signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.EthSign}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
+            const hashHex = getCurrentHashHex();
+            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(hashHex);
+            const signatureHex = hexConcat(
+                signDataHex(orderHashWithEthSignPrefixHex, signerPrivateKey),
+                SignatureType.EthSign,
+            );
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
         it('should return false when SignatureType=EthSign and signature is invalid', async () => {
+            const hashHex = getCurrentHashHex();
             // Create EthSign signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashWithEthSignPrefixHex = signatureUtils.addSignedMessagePrefix(orderHashHex);
-            const orderHashWithEthSignPrefixBuffer = ethUtil.toBuffer(orderHashWithEthSignPrefixHex);
-            const ecSignature = ethUtil.ecsign(orderHashWithEthSignPrefixBuffer, signerPrivateKey);
-            // Create 0x signature from EthSign signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.EthSign}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature.
-            // This will fail because `signerAddress` signed the message, but we're passing in `notSignerAddress`
-            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EthSign);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
 
         it('should return true when SignatureType=Wallet and signature is valid', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
+            const hashHex = getCurrentHashHex(validatorWallet.address);
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, SignatureType.Wallet);
+            const isValidSignature = await validateAsync(
+                hashHex,
+                validatorWallet.address,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.true();
         });
 
         it('should return false when SignatureType=Wallet and signature is invalid', async () => {
-            // Create EIP712 signature using a private key that does not belong to the wallet owner.
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const notWalletOwnerPrivateKey = notSignerPrivateKey;
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, notWalletOwnerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+            const hashHex = getCurrentHashHex(validatorWallet.address);
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const notSignatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(notSignatureDataHex, SignatureType.Wallet);
             // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
+            const isValidSignature = await validateAsync(
+                hashHex,
+                validatorWallet.address,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when `isValidSignature` attempts to update state and SignatureType=Wallet', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should revert when validator attempts to update state and SignatureType=Wallet', async () => {
+            const hashHex = getCurrentHashHex(validatorWallet.address);
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.Wallet);
             const expectedError = new ExchangeRevertErrors.SignatureWalletError(
-                orderHashHex,
-                maliciousWallet.address,
+                hashHex,
+                validatorWallet.address,
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = validateCallAsync(signedOrder, maliciousWallet.address, signatureHex);
+            const tx = validateAsync(hashHex, validatorWallet.address, signatureHex, ValidatorWalletAction.UpdateState);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when `isValidSignature` reverts and SignatureType=Wallet', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.Wallet}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should revert when validator reverts and SignatureType=Wallet', async () => {
+            const hashHex = getCurrentHashHex(validatorWallet.address);
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.Wallet);
             const expectedError = new ExchangeRevertErrors.SignatureWalletError(
-                orderHashHex,
-                revertingWallet.address,
+                hashHex,
+                validatorWallet.address,
                 signatureHex,
-                new StringRevertError(externalRevertReason).encode(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
-            const tx = validateCallAsync(signedOrder, revertingWallet.address, signatureHex);
+            const tx = validateAsync(hashHex, validatorWallet.address, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
-            expect(isValidSignature).to.be.true();
-        });
-
-        it('should return false when SignatureType=Validator, signature is invalid and validator is approved', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // This will return false because the validator requires `signerAddress`
-            // to be the signer.
-            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
-            expect(isValidSignature).to.be.false();
-        });
-
-        it('should revert when `isValidSignature` attempts to update state and SignatureType=Validator', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${maliciousValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
-                orderHashHex,
-                signedOrder.makerAddress,
-                signatureHex,
-                constants.NULL_BYTES,
-            );
-            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should revert when `isValidSignature` reverts and SignatureType=Validator', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${revertingValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
-                orderHashHex,
-                signedOrder.makerAddress,
-                signatureHex,
-                new StringRevertError(externalRevertReason).encode(),
-            );
-            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should return false when SignatureType=Validator, signature is valid and validator is not approved', async () => {
-            // Set approval of signature validator to false
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                    testValidator.address,
-                    false,
-                    { from: signerAddress },
-                ),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
-            // Validate signature
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.Validator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
-            expect(isValidSignature).to.be.false();
         });
 
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {
-            // Presign hash
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.preSign.sendTransactionAsync(orderHashHex, { from: signedOrder.makerAddress }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            const hashHex = getCurrentHashHex();
+            // Presign the hash
+            await signatureValidator.preSign.awaitTransactionSuccessAsync(hashHex, { from: signerAddress });
             // Validate presigned signature
-            const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
+            const signatureHex = hexConcat(SignatureType.PreSigned);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.true();
         });
 
         it('should return false when SignatureType=Presigned and signer has not presigned hash', async () => {
-            const signature = ethUtil.toBuffer(`0x${SignatureType.PreSigned}`);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signedOrder.makerAddress, signatureHex);
+            const hashHex = getCurrentHashHex();
+            const signatureHex = hexConcat(SignatureType.PreSigned);
+            const isValidSignature = await validateAsync(hashHex, signerAddress, signatureHex);
             expect(isValidSignature).to.be.false();
         });
     };
 
     describe('isValidHashSignature', () => {
-        const validateCallAsync = async (order: SignedOrder, signer: string, signatureHex: string) => {
-            const orderHashHex = orderHashUtils.getOrderHashHex(order);
-            return signatureValidator.isValidHashSignature.callAsync(orderHashHex, signer, signatureHex);
-        };
+        let hashHex: string;
 
         beforeEach(async () => {
-            signedOrder = await orderFactory.newSignedOrderAsync();
+            hashHex = orderUtils.generatePseudoRandomOrderHash();
         });
 
-        it('should revert when SignatureType=OrderValidator', async () => {
-            const inappropriateSignatureHex = `0x${Buffer.from([SignatureType.OrderValidator]).toString('hex')}`;
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+        const validateAsync = async (
+            _hashHex: string,
+            _signerAddress: string,
+            signatureHex: string,
+            validatorAction?: ValidatorWalletAction,
+            validatorExpectedSignatureHex?: string,
+        ) => {
+            const expectedSignatureHashHex =
+                validatorExpectedSignatureHex === undefined
+                    ? constants.NULL_BYTES
+                    : hashBytes(validatorExpectedSignatureHex);
+            if (validatorAction !== undefined) {
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
+                    _hashHex,
+                    ValidatorWalletDataType.None,
+                    validatorAction,
+                    expectedSignatureHashHex,
+                );
+            }
+            return signatureValidator.isValidHashSignature.callAsync(_hashHex, _signerAddress, signatureHex);
+        };
+
+        it('should revert when SignatureType=Validator', async () => {
+            const signatureHex = hexConcat(SignatureType.Validator);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InappropriateSignatureType,
-                orderHashHex,
-                signedOrder.makerAddress,
-                inappropriateSignatureHex,
+                hashHex,
+                signerAddress,
+                signatureHex,
             );
-            const tx = validateCallAsync(signedOrder, signerAddress, inappropriateSignatureHex);
+            const tx = validateAsync(hashHex, signerAddress, signatureHex);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert when SignatureType=EIP1271Wallet', async () => {
+            const signatureHex = hexConcat(SignatureType.EIP1271Wallet);
+            const expectedError = new ExchangeRevertErrors.SignatureError(
+                ExchangeRevertErrors.SignatureErrorCode.InappropriateSignatureType,
+                hashHex,
+                signerAddress,
+                signatureHex,
+            );
+            const tx = validateAsync(hashHex, signerAddress, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -508,208 +379,471 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.true();
         });
 
-        createHashSignatureTests(validateCallAsync);
+        createHashSignatureTests((_signerAddress?: string) => hashHex, validateAsync);
     });
 
     describe('isValidOrderSignature', () => {
-        const validateCallAsync = async (order: SignedOrder, signer: string, signatureHex: string) => {
-            return signatureValidator.isValidOrderSignature.callAsync(order, signer, signatureHex);
-        };
+        let orderFactory: OrderFactory;
+        let signedOrder: SignedOrder;
+
+        before(async () => {
+            const makerAddress = signerAddress;
+            const defaultOrderParams = {
+                ...constants.STATIC_ORDER_PARAMS,
+                makerAddress,
+                feeRecipientAddress: addressUtils.generatePseudoRandomAddress(),
+                makerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+                makerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+                takerFeeAssetData: assetDataUtils.encodeERC20AssetData(addressUtils.generatePseudoRandomAddress()),
+                makerFee: constants.ZERO_AMOUNT,
+                takerFee: constants.ZERO_AMOUNT,
+                domain: {
+                    verifyingContractAddress: signatureValidator.address,
+                    chainId,
+                },
+            };
+            orderFactory = new OrderFactory(signerPrivateKey, defaultOrderParams);
+        });
 
         beforeEach(async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        it('should return true when SignatureType=OrderValidator, signature is valid and validator is approved', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
+        const validateAsync = async (
+            order: SignedOrder,
+            signatureHex: string,
+            validatorAction?: ValidatorWalletAction,
+            validatorExpectedSignatureHex?: string,
+        ) => {
+            const orderHashHex = orderHashUtils.getOrderHashHex(order);
+            const expectedSignatureHashHex =
+                validatorExpectedSignatureHex === undefined
+                    ? constants.NULL_BYTES
+                    : hashBytes(validatorExpectedSignatureHex);
+            if (validatorAction !== undefined) {
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
+                    orderHashHex,
+                    ValidatorWalletDataType.Order,
+                    validatorAction,
+                    expectedSignatureHashHex,
+                );
+            }
+            return signatureValidator.isValidOrderSignature.callAsync(order, order.makerAddress, signatureHex);
+        };
+
+        it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const isValidSignature = await validateAsync(
+                signedOrder,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=OrderValidator, signature is invalid and validator is approved', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            // This will return false because the validator requires `signerAddress`
-            // to be the signer.
-            const isValidSignature = await validateCallAsync(signedOrder, notSignerAddress, signatureHex);
+        it('should return false when SignatureType=Validator, signature is invalid and validator is approved', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const notSignatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(notSignatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const isValidSignature = await validateAsync(
+                signedOrder,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when `isValidOrderSignature` attempts to update state and SignatureType=OrderValidator', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${maliciousValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should revert when validator attempts to update state and SignatureType=Validator', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
                 orderHashHex,
                 signedOrder.makerAddress,
+                validatorWallet.address,
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.UpdateState);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when `isValidOrderSignature` reverts and SignatureType=OrderValidator', async () => {
-            const validatorAddress = ethUtil.toBuffer(`${revertingValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should revert when validator reverts and SignatureType=Validator', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.SignatureOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
                 orderHashHex,
                 signedOrder.makerAddress,
+                validatorWallet.address,
                 signatureHex,
-                new StringRevertError(externalRevertReason).encode(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
-            const tx = validateCallAsync(signedOrder, signerAddress, signatureHex);
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should return false when SignatureType=OrderValidator, signature is valid and validator is not approved', async () => {
+        it('should throw when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await signatureValidator.setOrderValidatorApproval.sendTransactionAsync(testValidator.address, false, {
-                    from: signerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                false,
+                { from: signedOrder.makerAddress },
             );
-            // Validate signature
-            const validatorAddress = ethUtil.toBuffer(`${testValidator.address}`);
-            const signatureType = ethUtil.toBuffer(`0x${SignatureType.OrderValidator}`);
-            const signature = Buffer.concat([validatorAddress, signatureType]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const isValidSignature = await validateCallAsync(signedOrder, signerAddress, signatureHex);
-            expect(isValidSignature).to.be.false();
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorNotApprovedError(
+                signedOrder.makerAddress,
+                validatorWallet.address,
+            );
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.Revert);
+            return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should return true when SignatureType=WalletOrderValidator and signature is valid', async () => {
-            // Create EIP712 signature
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.WalletOrderValidator}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should return true when SignatureType=EIP1271Wallet and signature is valid', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, SignatureType.EIP1271Wallet);
             // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
+            const isValidSignature = await validateAsync(
+                signedOrder,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.true();
         });
 
-        it('should return false when SignatureType=WalletOrderValidator and signature is invalid', async () => {
-            // Create EIP712 signature using a private key that does not belong to the wallet owner.
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const notWalletOwnerPrivateKey = notSignerPrivateKey;
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, notWalletOwnerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.WalletOrderValidator}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
+        it('should return false when SignatureType=EIP1271Wallet and signature is invalid', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const notSignatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(notSignatureDataHex, SignatureType.EIP1271Wallet);
             // Validate signature
-            const isValidSignature = await validateCallAsync(signedOrder, testWallet.address, signatureHex);
+            const isValidSignature = await validateAsync(
+                signedOrder,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
             expect(isValidSignature).to.be.false();
         });
 
-        it('should revert when `isValidSignature` attempts to update state and SignatureType=WalletOrderValidator', async () => {
-            // Create EIP712 signature
+        it('should revert when validator attempts to update state and SignatureType=EIP1271Wallet', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EIP1271Wallet);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.WalletOrderValidator}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureWalletOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
-                maliciousWallet.address,
+                validatorWallet.address,
                 signatureHex,
                 constants.NULL_BYTES,
             );
-            const tx = validateCallAsync(signedOrder, maliciousWallet.address, signatureHex);
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.UpdateState);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert when `isValidSignature` reverts and SignatureType=WalletOrderValidator', async () => {
-            // Create EIP712 signature
+        it('should revert when validator reverts and SignatureType=EIP1271Wallet', async () => {
+            signedOrder.makerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EIP1271Wallet);
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
-            const orderHashBuffer = ethUtil.toBuffer(orderHashHex);
-            const ecSignature = ethUtil.ecsign(orderHashBuffer, signerPrivateKey);
-            // Create 0x signature from EIP712 signature
-            const signature = Buffer.concat([
-                ethUtil.toBuffer(ecSignature.v),
-                ecSignature.r,
-                ecSignature.s,
-                ethUtil.toBuffer(`0x${SignatureType.WalletOrderValidator}`),
-            ]);
-            const signatureHex = ethUtil.bufferToHex(signature);
-            const expectedError = new ExchangeRevertErrors.SignatureWalletOrderValidatorError(
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
                 orderHashHex,
-                revertingWallet.address,
+                validatorWallet.address,
                 signatureHex,
-                new StringRevertError(externalRevertReason).encode(),
+                new StringRevertError(validatorWalletRevertReason).encode(),
             );
-            const tx = validateCallAsync(signedOrder, revertingWallet.address, signatureHex);
+            const tx = validateAsync(signedOrder, signatureHex, ValidatorWalletAction.Revert);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        createHashSignatureTests(validateCallAsync);
+        // Run hash-only signature type tests as well.
+        const validateOrderHashAsync = async (
+            hashHex: string,
+            _signerAddress: string,
+            signatureHex: string,
+            validatorAction?: ValidatorWalletAction,
+            validatorExpectedSignatureHex?: string,
+        ): Promise<any> => {
+            signedOrder.makerAddress = _signerAddress;
+            return validateAsync(signedOrder, signatureHex, validatorAction, validatorExpectedSignatureHex);
+        };
+        createHashSignatureTests((_signerAddress?: string) => {
+            signedOrder.makerAddress = _signerAddress === undefined ? signerAddress : _signerAddress;
+            return orderHashUtils.getOrderHashHex(signedOrder);
+        }, validateOrderHashAsync);
+    });
+
+    describe('isValidTransactionSignature', () => {
+        let transactionFactory: TransactionFactory;
+        let signedTransaction: SignedZeroExTransaction;
+        const TRANSACTION_DATA_LENGTH = 100;
+
+        before(async () => {
+            transactionFactory = new TransactionFactory(signerPrivateKey, signatureValidator.address, chainId);
+        });
+
+        beforeEach(async () => {
+            // We don't actually do anything with the transaction so we can just
+            // fill it with random data.
+            signedTransaction = await transactionFactory.newSignedTransactionAsync({
+                data: generateRandomBytes(TRANSACTION_DATA_LENGTH),
+            });
+        });
+
+        const validateAsync = async (
+            transaction: SignedZeroExTransaction,
+            signatureHex: string,
+            validatorAction?: ValidatorWalletAction,
+            validatorExpectedSignatureHex?: string,
+        ) => {
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(transaction);
+            const expectedSignatureHashHex =
+                validatorExpectedSignatureHex === undefined
+                    ? constants.NULL_BYTES
+                    : hashBytes(validatorExpectedSignatureHex);
+            if (validatorAction !== undefined) {
+                await validatorWallet.prepare.awaitTransactionSuccessAsync(
+                    transactionHashHex,
+                    ValidatorWalletDataType.ZeroExTransaction,
+                    validatorAction,
+                    expectedSignatureHashHex,
+                );
+            }
+            return signatureValidator.isValidTransactionSignature.callAsync(
+                transaction,
+                transaction.signerAddress,
+                signatureHex,
+            );
+        };
+
+        it('should return true when SignatureType=Validator, signature is valid and validator is approved', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const isValidSignature = await validateAsync(
+                signedTransaction,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
+            expect(isValidSignature).to.be.true();
+        });
+
+        it('should return false when SignatureType=Validator, signature is invalid and validator is approved', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const notSignatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(notSignatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const isValidSignature = await validateAsync(
+                signedTransaction,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
+            expect(isValidSignature).to.be.false();
+        });
+
+        it('should revert when validator attempts to update state and SignatureType=Validator', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
+                transactionHashHex,
+                signedTransaction.signerAddress,
+                validatorWallet.address,
+                signatureHex,
+                constants.NULL_BYTES,
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.UpdateState);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert when validator reverts and SignatureType=Validator', async () => {
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorError(
+                transactionHashHex,
+                signedTransaction.signerAddress,
+                validatorWallet.address,
+                signatureHex,
+                new StringRevertError(validatorWalletRevertReason).encode(),
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.Revert);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should throw when SignatureType=Validator, signature is valid and validator is not approved', async () => {
+            // Set approval of signature validator to false
+            await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                false,
+                { from: signedTransaction.signerAddress },
+            );
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, validatorWallet.address, SignatureType.Validator);
+            const expectedError = new ExchangeRevertErrors.SignatureValidatorNotApprovedError(
+                signedTransaction.signerAddress,
+                validatorWallet.address,
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.Revert);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should return true when SignatureType=EIP1271Wallet and signature is valid', async () => {
+            signedTransaction.signerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(signatureDataHex, SignatureType.EIP1271Wallet);
+            // Validate signature
+            const isValidSignature = await validateAsync(
+                signedTransaction,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
+            expect(isValidSignature).to.be.true();
+        });
+
+        it('should return false when SignatureType=EIP1271Wallet and signature is invalid', async () => {
+            signedTransaction.signerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureDataHex = generateRandomSignature();
+            const notSignatureDataHex = generateRandomSignature();
+            const signatureHex = hexConcat(notSignatureDataHex, SignatureType.EIP1271Wallet);
+            // Validate signature
+            const isValidSignature = await validateAsync(
+                signedTransaction,
+                signatureHex,
+                ValidatorWalletAction.MatchSignatureHash,
+                signatureDataHex,
+            );
+            expect(isValidSignature).to.be.false();
+        });
+
+        it('should revert when validator attempts to update state and SignatureType=EIP1271Wallet', async () => {
+            signedTransaction.signerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EIP1271Wallet);
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
+                transactionHashHex,
+                validatorWallet.address,
+                signatureHex,
+                constants.NULL_BYTES,
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.UpdateState);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should revert when validator reverts and SignatureType=EIP1271Wallet', async () => {
+            signedTransaction.signerAddress = validatorWallet.address;
+            // Doesn't have to contain a real signature since our wallet contract
+            // just does a hash comparison.
+            const signatureHex = hexConcat(generateRandomSignature(), SignatureType.EIP1271Wallet);
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const expectedError = new ExchangeRevertErrors.SignatureWalletError(
+                transactionHashHex,
+                validatorWallet.address,
+                signatureHex,
+                new StringRevertError(validatorWalletRevertReason).encode(),
+            );
+            const tx = validateAsync(signedTransaction, signatureHex, ValidatorWalletAction.Revert);
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        // Run hash-only signature type tests as well.
+        const validateOrderHashAsync = async (
+            hashHex: string,
+            _signerAddress: string,
+            signatureHex: string,
+            validatorAction?: ValidatorWalletAction,
+            validatorExpectedSignatureHex?: string,
+        ): Promise<any> => {
+            signedTransaction.signerAddress = _signerAddress;
+            return validateAsync(signedTransaction, signatureHex, validatorAction, validatorExpectedSignatureHex);
+        };
+        createHashSignatureTests((_signerAddress?: string) => {
+            signedTransaction.signerAddress = _signerAddress === undefined ? signerAddress : _signerAddress;
+            return transactionHashUtils.getTransactionHashHex(signedTransaction);
+        }, validateOrderHashAsync);
     });
 
     describe('setSignatureValidatorApproval', () => {
+        let signatureValidatorLogDecoder: LogDecoder;
+
+        before(async () => {
+            signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
+        });
+
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is approved', async () => {
             const approval = true;
-            const res = await signatureValidatorLogDecoder.getTxWithDecodedLogsAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                    testValidator.address,
-                    approval,
-                    {
-                        from: signerAddress,
-                    },
-                ),
+            const res = await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                approval,
+                {
+                    from: signerAddress,
+                },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
+                TestSignatureValidatorSignatureValidatorApprovalEventArgs
+            >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
-            expect(logArgs.validatorAddress).to.equal(testValidator.address);
+            expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
             expect(logArgs.approved).to.equal(approval);
         });
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is disapproved', async () => {
             const approval = false;
-            const res = await signatureValidatorLogDecoder.getTxWithDecodedLogsAsync(
-                await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                    testValidator.address,
-                    approval,
-                    {
-                        from: signerAddress,
-                    },
-                ),
+            const res = await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                validatorWallet.address,
+                approval,
+                {
+                    from: signerAddress,
+                },
             );
             expect(res.logs.length).to.equal(1);
-            const log = res.logs[0] as LogWithDecodedArgs<TestSignatureValidatorSignatureValidatorApprovalEventArgs>;
+            const log = signatureValidatorLogDecoder.decodeLogOrThrow(res.logs[0]) as LogWithDecodedArgs<
+                TestSignatureValidatorSignatureValidatorApprovalEventArgs
+            >;
             const logArgs = log.args;
             expect(logArgs.signerAddress).to.equal(signerAddress);
-            expect(logArgs.validatorAddress).to.equal(testValidator.address);
+            expect(logArgs.validatorAddress).to.equal(validatorWallet.address);
             expect(logArgs.approved).to.equal(approval);
         });
     });

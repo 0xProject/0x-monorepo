@@ -25,6 +25,10 @@
             {
                 "note": "Add `Error` -> `RevertError` functions",
                 "pr": 1819
+            },
+            {
+                "note": "Add `toStringTag` symbol to `RevertError`",
+                "pr": 1885
             }
         ]
     },

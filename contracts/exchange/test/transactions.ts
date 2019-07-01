@@ -620,51 +620,6 @@ describe('Exchange transactions', () => {
                 expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
             });
         });
-        describe('setOrderValidatorApproval', () => {
-            it('should approve a validator for the signer', async () => {
-                const shouldApprove = true;
-                const data = exchangeInstance.setOrderValidatorApproval.getABIEncodedTransactionData(
-                    validatorAddress,
-                    shouldApprove,
-                );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, senderAddress);
-                const validatorApprovalLogs = transactionReceipt.logs.filter(
-                    log =>
-                        (log as LogWithDecodedArgs<ExchangeSignatureValidatorApprovalEventArgs>).event ===
-                        'SignatureValidatorApproval',
-                );
-                expect(validatorApprovalLogs.length).to.eq(1);
-                const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
-                    ExchangeSignatureValidatorApprovalEventArgs
-                >).args;
-                expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
-                expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
-                expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
-            });
-            it('should approve a validator for the caller if called without a signature', async () => {
-                const shouldApprove = true;
-                const data = exchangeInstance.setOrderValidatorApproval.getABIEncodedTransactionData(
-                    validatorAddress,
-                    shouldApprove,
-                );
-                const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                transaction.signature = constants.NULL_BYTES;
-                const transactionReceipt = await exchangeWrapper.executeTransactionAsync(transaction, takerAddress);
-                const validatorApprovalLogs = transactionReceipt.logs.filter(
-                    log =>
-                        (log as LogWithDecodedArgs<ExchangeSignatureValidatorApprovalEventArgs>).event ===
-                        'SignatureValidatorApproval',
-                );
-                expect(validatorApprovalLogs.length).to.eq(1);
-                const validatorApprovalLogArgs = (validatorApprovalLogs[0] as LogWithDecodedArgs<
-                    ExchangeSignatureValidatorApprovalEventArgs
-                >).args;
-                expect(validatorApprovalLogArgs.signerAddress).to.eq(takerAddress);
-                expect(validatorApprovalLogArgs.validatorAddress).to.eq(validatorAddress);
-                expect(validatorApprovalLogArgs.approved).to.eq(shouldApprove);
-            });
-        });
         describe('batchExecuteTransactions', () => {
             it('should successfully call fillOrder via 2 transactions with different taker signatures', async () => {
                 const order1 = await orderFactory.newSignedOrderAsync();
@@ -1146,13 +1101,10 @@ describe('Exchange transactions', () => {
                         exchangeInstance.address,
                     );
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await exchangeInstance.setSignatureValidatorApproval.sendTransactionAsync(
-                            whitelistContract.address,
-                            isApproved,
-                            { from: takerAddress },
-                        ),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await exchangeInstance.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
+                        whitelistContract.address,
+                        isApproved,
+                        { from: takerAddress },
                     );
                 });
 
@@ -1206,18 +1158,16 @@ describe('Exchange transactions', () => {
 
                 it('should fill the order if maker and taker have been whitelisted', async () => {
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        makerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        takerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
                     const signedOrder = await orderFactory.newSignedOrderAsync({

@@ -48,4 +48,14 @@ contract ITransactions {
     )
         public
         returns (bytes[] memory);
+
+    /// @dev The current function will be called in the context of this address (either 0x transaction signer or `msg.sender`).
+    ///      If calling a fill function, this address will represent the taker.
+    ///      If calling a cancel function, this address will represent the maker.
+    /// @return Signer of 0x transaction if entry point is `executeTransaction`.
+    ///         `msg.sender` if entry point is any other function.
+    function _getCurrentContextAddress()
+        internal
+        view
+        returns (address);
 }

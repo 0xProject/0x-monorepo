@@ -20,22 +20,22 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 
 
 contract ISignatureValidator {
 
    // Allowed signature types.
     enum SignatureType {
-        Illegal,                // 0x00, default value
-        Invalid,                // 0x01
-        EIP712,                 // 0x02
-        EthSign,                // 0x03
-        Wallet,                 // 0x04
-        Validator,              // 0x05
-        PreSigned,              // 0x06
-        OrderValidator,         // 0x07
-        WalletOrderValidator,   // 0x08
-        NSignatureTypes         // 0x09, number of signature types. Always leave at end.
+        Illegal,                     // 0x00, default value
+        Invalid,                     // 0x01
+        EIP712,                      // 0x02
+        EthSign,                     // 0x03
+        Wallet,                      // 0x04
+        Validator,                   // 0x05
+        PreSigned,                   // 0x06
+        EIP1271Wallet,               // 0x07
+        NSignatureTypes              // 0x08, number of signature types. Always leave at end.
     }
 
     event SignatureValidatorApproval(
@@ -59,21 +59,11 @@ contract ISignatureValidator {
     )
         external;
 
-    /// @dev Approves/unnapproves an OrderValidator contract to verify signatures on signer's behalf
-    ///      using the `OrderValidator` signature type.
-    /// @param validatorAddress Address of Validator contract.
-    /// @param approval Approval or disapproval of  Validator contract.
-    function setOrderValidatorApproval(
-        address validatorAddress,
-        bool approval
-    )
-        external;
-
-    /// @dev Verifies that a signature for a hash is valid.
-    /// @param hash Message hash that is signed.
-    /// @param signerAddress Address of signer.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @dev Verifies that a hash has been signed by the given signer.
+    /// @param hash Any 32-byte hash.
+    /// @param signerAddress Address that should have signed the given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid `true` if the signature is valid for the given hash and signer.
     function isValidHashSignature(
         bytes32 hash,
         address signerAddress,
@@ -85,15 +75,79 @@ contract ISignatureValidator {
 
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
-    /// @param signerAddress Address of signer.
-    /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid true if the signature is valid for the given order and signer.
     function isValidOrderSignature(
         LibOrder.Order memory order,
         address signerAddress,
         bytes memory signature
     )
         public
+        view
+        returns (bool isValid);
+
+    /// @dev Verifies that a signature for a transaction is valid.
+    /// @param transaction The transaction.
+    /// @param signerAddress Address that should have signed the given order.
+    /// @param signature Proof that the order has been signed by signer.
+    /// @return isValid true if the signature is valid for the given transaction and signer.
+    function isValidTransactionSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        view
+        returns (bool isValid);
+
+    /// @dev Checks if a signature is of a type that should be verified for
+    /// every subsequent fill.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress The address of the signer.
+    /// @param signature The signature for `orderHash`.
+    /// @return needsRegularValidation True if the signature should be validated
+    ///                                for every operation.
+    function doesSignatureRequireRegularValidation(
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        public
+        pure
+        returns (bool needsRegularValidation);
+
+    /// @dev Verifies that an order, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param order The order.
+    /// @param orderHash The hash of the order.
+    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given order and signer.
+    function _isValidOrderWithHashSignature(
+        LibOrder.Order memory order,
+        bytes32 orderHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
+        view
+        returns (bool isValid);
+
+    /// @dev Verifies that a transaction, with provided order hash, has been signed
+    ///      by the given signer.
+    /// @param transaction The transaction.
+    /// @param transactionHash The hash of the transaction.
+    /// @param signerAddress Address that should have signed the.Signat given hash.
+    /// @param signature Proof that the hash has been signed by signer.
+    /// @return isValid True if the signature is valid for the given transaction and signer.
+    function _isValidTransactionWithHashSignature(
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
+        bytes32 transactionHash,
+        address signerAddress,
+        bytes memory signature
+    )
+        internal
         view
         returns (bool isValid);
 }

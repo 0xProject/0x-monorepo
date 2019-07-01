@@ -77,6 +77,38 @@
             {
                 "note": "Add `MixinTransferSimulator` contract for simulating multiple transfers on-chain",
                 "pr": 1868
+            },
+            {
+                "note": "Add `EIP1271Wallet` signature type",
+                "pr": 1885
+            },
+            {
+                "note": "Remove `WalletOrderValidator` and `OrderValidator` signature types",
+                "pr": 1885
+            },
+            {
+                "note": "Make the regular `Validator` signature type have EIP1271 behavior",
+                "pr": 1885
+            },
+            {
+                "note": "Always check signature types that are validated via contract (not just on first fill).",
+                "pr": 1885
+            },
+            {
+                "note": "Remove unecessary rich revert error types.",
+                "pr": 1885
+            },
+            {
+                "note": "Add `IEIP1271Wallet` interface",
+                "pr": 1885
+            },
+            {
+                "note": "Add `validatorAddress` field to `SignatureValidatorError` rich reverts",
+                "pr": 1885
+            },
+            {
+                "note": "Make `calculateMatchedFillResults` public",
+                "pr": 1885
             }
         ]
     },
