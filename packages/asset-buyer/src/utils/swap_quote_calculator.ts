@@ -272,10 +272,7 @@ function calculateMarketSellQuoteInfo(
     let makerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
     if (isMakerAssetZrxToken) {
-        makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(
-            ordersAndFillableAmounts,
-            takerTokenAmount,
-        );
+        makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(ordersAndFillableAmounts, takerTokenAmount);
     } else {
         // find eth and zrx amounts needed to buy
         const takerTokenAndZrxAmountToBuyAsset = findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset(
