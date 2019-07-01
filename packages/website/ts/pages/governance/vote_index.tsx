@@ -12,7 +12,7 @@ import { VoteIndexCard } from 'ts/pages/governance/vote_index_card';
 import { TallyInterface } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-const ZEIP_IDS = [23, 39, 24, 25];
+const ZEIP_IDS = Object.keys(proposals).map(idString => parseInt(idString, 10));
 const ZEIP_PROPOSALS: Proposal[] = ZEIP_IDS.map(id => proposals[id]).sort(
     (a, b) => b.voteStartDate.unix() - a.voteStartDate.unix(),
 );

@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import * as moment from 'moment';
 
-import { TallyInterface, VoteOutcome, ZeipId } from 'ts/types';
+import { TallyInterface, VoteOutcome } from 'ts/types';
 
 export interface ProposalLink {
     text: string;
@@ -16,7 +16,7 @@ export interface ProposalProperty {
 }
 
 export interface Proposal {
-    zeipId: ZeipId;
+    zeipId: number;
     title: string;
     summary: string;
     url: string;

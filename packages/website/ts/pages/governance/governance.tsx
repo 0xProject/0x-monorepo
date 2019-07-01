@@ -149,7 +149,7 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
                 </Section>
 
                 <Banner
-                    heading="Vote with ZRX on ZEIP-23"
+                    heading={`Vote with ZRX on ZEIP-${this._proposalData.zeipId}`}
                     subline="Use 0x Instant to quickly purchase ZRX for voting"
                     mainCta={{ text: 'Get ZRX', onClick: this._onLaunchInstantClick.bind(this) }}
                     secondaryCta={{ text: 'Vote', onClick: this._onOpenVoteModal.bind(this) }}

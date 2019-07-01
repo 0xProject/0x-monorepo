@@ -769,10 +769,9 @@ export interface Package {
 export type VoteOutcome = 'accepted' | 'rejected';
 export type VoteTime = 'upcoming' | 'happening';
 export type VoteStatus = VoteOutcome | VoteTime;
-export type ZeipId = 39 | 24 | 23 | 25;
 
 export interface TallyInterface {
-    zeipId?: ZeipId;
+    zeipId?: number;
     yes?: BigNumber;
     no?: BigNumber;
     blockNumber?: string;

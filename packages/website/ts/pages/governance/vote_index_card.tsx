@@ -8,11 +8,11 @@ import { Column, FlexWrap, Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
 import { getTotalBalancesString } from 'ts/pages/governance/vote_stats';
 import { VoteStatusText } from 'ts/pages/governance/vote_status_text';
-import { TallyInterface, VoteOutcome, VoteTime, ZeipId } from 'ts/types';
+import { TallyInterface, VoteOutcome, VoteTime } from 'ts/types';
 
 export interface VoteIndexCardProps {
     title: string;
-    zeipId: ZeipId;
+    zeipId: number;
     summary: string;
     voteStartDate: moment.Moment;
     voteEndDate: moment.Moment;
