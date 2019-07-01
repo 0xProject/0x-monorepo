@@ -3,6 +3,7 @@ import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 // import { Tabs } from 'react-tabs';
+import { MDXProvider } from '@mdx-js/react';
 import { match } from 'react-router-dom';
 import { Callout } from 'ts/components/docs/callout';
 import { Code } from 'ts/components/docs/code';
@@ -49,6 +50,7 @@ interface State {
 export class DocsView extends React.Component<Props, State> {
     public state = {
         Component: '',
+        mdxComponents: {},
     };
     public componentDidMount(): void {
         // tslint:disable-next-line: no-console
@@ -59,7 +61,7 @@ export class DocsView extends React.Component<Props, State> {
         console.log(this.props);
     }
     public render(): React.ReactNode {
-        const { Component } = this.state;
+        const { Component, mdxComponents } = this.state;
         return (
             <SiteWrap theme="light">
                 <DocumentTitle {...documentConstants.DOCS} />
@@ -69,7 +71,9 @@ export class DocsView extends React.Component<Props, State> {
                         <aside>
                             <ChapterLinks />
                         </aside>
-                        <article>{Component ? <Component /> : null}</article>
+                        <article>
+                            <MDXProvider components={mdxComponents}>{Component ? <Component /> : null}</MDXProvider>
+                        </article>
                     </Columns>
                 </Section>
             </SiteWrap>
