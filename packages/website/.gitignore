@@ -1,1 +1,6 @@
 .awcache
+.nvmrc
+
+# Custom SSL certificates for webpack
+server.key
+server.cert
