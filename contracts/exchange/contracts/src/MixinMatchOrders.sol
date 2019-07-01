@@ -89,14 +89,14 @@ contract MixinMatchOrders is
         );
 
         // Validate fill contexts
-        assertValidFill(
+        _assertValidFill(
             leftOrder,
             leftOrderInfo,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.takerAssetFilledAmount,
             matchedFillResults.left.makerAssetFilledAmount
         );
-        assertValidFill(
+        _assertValidFill(
             rightOrder,
             rightOrderInfo,
             matchedFillResults.right.takerAssetFilledAmount,

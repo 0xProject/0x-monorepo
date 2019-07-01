@@ -171,66 +171,6 @@ contract MixinExchangeCore is
         return orderInfo;
     }
 
-    /// @dev Validates context for fillOrder. Succeeds or throws.
-    /// @param order to be filled.
-    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
-    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
-    function assertValidFill(
-        Order memory order,
-        OrderInfo memory orderInfo,
-        uint256 takerAssetFillAmount,  // TODO: use FillResults
-        uint256 takerAssetFilledAmount,
-        uint256 makerAssetFilledAmount
-    )
-        public
-        pure
-    {
-        // Revert if fill amount is invalid
-        // TODO: reconsider necessity for v2.1
-        if (takerAssetFillAmount == 0) {
-            _rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
-        }
-
-        // Make sure taker does not pay more than desired amount
-        // NOTE: This assertion should never fail, it is here
-        //       as an extra defence against potential bugs.
-        if (takerAssetFilledAmount > takerAssetFillAmount) {
-            _rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
-        }
-
-        // Make sure order is not overfilled
-        // NOTE: This assertion should never fail, it is here
-        //       as an extra defence against potential bugs.
-        if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
-            > order.takerAssetAmount) {
-            _rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
-        }
-
-        // Make sure order is filled at acceptable price.
-        // The order has an implied price from the makers perspective:
-        //    order price = order.makerAssetAmount / order.takerAssetAmount
-        // i.e. the number of makerAsset maker is paying per takerAsset. The
-        // maker is guaranteed to get this price or a better (lower) one. The
-        // actual price maker is getting in this fill is:
-        //    fill price = makerAssetFilledAmount / takerAssetFilledAmount
-        // We need `fill price <= order price` for the fill to be fair to maker.
-        // This amounts to:
-        //     makerAssetFilledAmount        order.makerAssetAmount
-        //    ------------------------  <=  -----------------------
-        //     takerAssetFilledAmount        order.takerAssetAmount
-        // or, equivalently:
-        //     makerAssetFilledAmount * order.takerAssetAmount <=
-        //     order.makerAssetAmount * takerAssetFilledAmount
-        // NOTE: This assertion should never fail, it is here
-        //       as an extra defence against potential bugs.
-        if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
-            > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
-            _rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
-        }
-    }
-
     /// @dev Fills the input order.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -263,7 +203,7 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Validate context
-        assertValidFill(
+        _assertValidFill(
             order,
             orderInfo,
             takerAssetFillAmount,
@@ -429,6 +369,66 @@ contract MixinExchangeCore is
                     signature
                 ));
             }
+        }
+    }
+
+    /// @dev Validates context for fillOrder. Succeeds or throws.
+    /// @param order to be filled.
+    /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
+    /// @param takerAssetFillAmount Desired amount of order to fill by taker.
+    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
+    /// @param makerAssetFilledAmount Amount of makerAsset that will be transfered.
+    function _assertValidFill(
+        Order memory order,
+        OrderInfo memory orderInfo,
+        uint256 takerAssetFillAmount,  // TODO: use FillResults
+        uint256 takerAssetFilledAmount,
+        uint256 makerAssetFilledAmount
+    )
+        public
+        pure
+    {
+        // Revert if fill amount is invalid
+        // TODO: reconsider necessity for v2.1
+        if (takerAssetFillAmount == 0) {
+            _rrevert(FillError(FillErrorCodes.INVALID_TAKER_AMOUNT, orderInfo.orderHash));
+        }
+
+        // Make sure taker does not pay more than desired amount
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        if (takerAssetFilledAmount > takerAssetFillAmount) {
+            _rrevert(FillError(FillErrorCodes.TAKER_OVERPAY, orderInfo.orderHash));
+        }
+
+        // Make sure order is not overfilled
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
+            > order.takerAssetAmount) {
+            _rrevert(FillError(FillErrorCodes.OVERFILL, orderInfo.orderHash));
+        }
+
+        // Make sure order is filled at acceptable price.
+        // The order has an implied price from the makers perspective:
+        //    order price = order.makerAssetAmount / order.takerAssetAmount
+        // i.e. the number of makerAsset maker is paying per takerAsset. The
+        // maker is guaranteed to get this price or a better (lower) one. The
+        // actual price maker is getting in this fill is:
+        //    fill price = makerAssetFilledAmount / takerAssetFilledAmount
+        // We need `fill price <= order price` for the fill to be fair to maker.
+        // This amounts to:
+        //     makerAssetFilledAmount        order.makerAssetAmount
+        //    ------------------------  <=  -----------------------
+        //     takerAssetFilledAmount        order.takerAssetAmount
+        // or, equivalently:
+        //     makerAssetFilledAmount * order.takerAssetAmount <=
+        //     order.makerAssetAmount * takerAssetFilledAmount
+        // NOTE: This assertion should never fail, it is here
+        //       as an extra defence against potential bugs.
+        if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
+            > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
+            _rrevert(FillError(FillErrorCodes.INVALID_FILL_PRICE, orderInfo.orderHash));
         }
     }
 
