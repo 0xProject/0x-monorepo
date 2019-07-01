@@ -1,0 +1,11 @@
+[
+    {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Initial commit.  Functionality tested for ERC20Token wrapper",
+                "pr": 1878
+            }
+        ]
+    }
+]

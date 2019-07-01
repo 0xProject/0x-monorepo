@@ -23,6 +23,7 @@ packages/ethereum-types/ @LogvinovLeon
 packages/metacoin/ @LogvinovLeon
 packages/monorepo-scripts/ @fabioberger
 packages/order-utils/ @fabioberger @LogvinovLeon 
+packages/python-contract-wrappers/ @feuGeneA
 packages/sol-compiler/ @LogvinovLeon
 packages/sol-coverage/ @LogvinovLeon
 packages/sol-profiler/ @LogvinovLeon

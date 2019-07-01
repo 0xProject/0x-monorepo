@@ -16,13 +16,10 @@
         "fix": "tslint --fix --format stylish --project .",
         "pre_build": "yarn generate_contract_wrappers",
         "clean": "shx rm -rf lib src/generated-wrappers",
-        "generate_contract_wrappers": "yarn gen_ts && yarn gen_py",
-        "gen_ts": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers",
-        "gen_py": "abi-gen --abis  ${npm_package_config_abisForPython} --template ../../node_modules/@0x/abi-gen-templates/contract.py.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials.py/**/*.handlebars' --output src/generated-wrappers/py --backend ethers --language Python"
+        "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json",
-        "abisForPython": "../contract-artifacts/artifacts/ERC20Token.json"
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json"
     },
     "repository": {
         "type": "git",

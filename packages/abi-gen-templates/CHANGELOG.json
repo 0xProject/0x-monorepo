@@ -9,10 +9,6 @@
             {
                 "note": "Move `getABITransactionData` to `callAsync` template",
                 "pr": 1863
-            },
-            {
-                "note": "Initial Python wrapper templates",
-                "pr": 1878
             }
         ]
     },
