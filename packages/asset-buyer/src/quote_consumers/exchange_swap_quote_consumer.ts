@@ -23,7 +23,8 @@ import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams> {
+export class ExchangeSwapQuoteConsumer
+    implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -76,9 +77,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
     ): Promise<SmartContractParamsInfo<ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
-        const consumableQuote = (quote as any) as (
-            | MarketBuySwapQuote
-            | MarketSellSwapQuote);
+        const consumableQuote = (quote as any) as (MarketBuySwapQuote | MarketSellSwapQuote);
 
         const { orders } = consumableQuote;
 
@@ -139,9 +138,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
             assert.isBigNumber('gasPrice', gasPrice);
         }
 
-        const consumableQuote = (quote as any) as (
-            | MarketBuySwapQuote
-            | MarketSellSwapQuote);
+        const consumableQuote = (quote as any) as (MarketBuySwapQuote | MarketSellSwapQuote);
 
         const { orders } = consumableQuote;
 
