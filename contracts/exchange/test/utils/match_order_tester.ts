@@ -236,11 +236,7 @@ export class MatchOrderTester {
                 takerAddress,
             );
         } else {
-            transactionReceipt = await this._executeMatchOrdersAsync(
-                orders.leftOrder,
-                orders.rightOrder,
-                takerAddress,
-            );
+            transactionReceipt = await this._executeMatchOrdersAsync(orders.leftOrder, orders.rightOrder, takerAddress);
         }
         // Simulate the fill.
         const matchResults = simulateMatchOrders(

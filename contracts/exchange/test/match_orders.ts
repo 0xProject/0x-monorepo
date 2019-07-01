@@ -1943,7 +1943,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should transfer correct amounts when left order is fully filled and values pass isRoundingErrorCeil but fail isRoundingErrorFloor', async () => {
+        it('Should transfer correct amounts when left order is fully filled and values pass isRoundingErrorCeil and isRoundingErrorFloor', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
@@ -1968,7 +1968,7 @@ describe('matchOrders', () => {
                 denominator,
                 target,
             );
-            expect(isRoundingErrorCeil).to.be.true();
+            expect(isRoundingErrorCeil).to.be.false();
             const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
@@ -2129,10 +2129,6 @@ describe('matchOrders', () => {
                 makerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
                 takerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
             });
-            // Note:
-            //  The maker/taker fee percentage paid on the right order differs because
-            //  they received different sale prices. The right maker pays a
-            //  fee slightly lower than the right taker.
             const expectedTransferAmounts = {
                 // Left Maker
                 leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
@@ -2141,28 +2137,9 @@ describe('matchOrders', () => {
                 // Right Maker
                 rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
                 leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
-                    new BigNumber('33.3333333333333333'),
-                    16,
-                ), // 33.33%
-                // Taker
-                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
-                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
-                    new BigNumber('33.3333333333333333'),
-                    16,
-                ), // 33.33%
-            };
-            const expectedTransferAmounts = {
-                // Left Maker
-                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                // Right Maker
-                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
                 rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
                 // Taker
-                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(3, 0),
+                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
                 leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
                 rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(3333, 0), // 3333 rounded down to 3333
             };
