@@ -336,6 +336,37 @@ export class ExchangeWrapper {
         );
         return matchedFillResults;
     }
+    public async matchOrdersWithMaximalFillAsync(
+        signedOrderLeft: SignedOrder,
+        signedOrderRight: SignedOrder,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
+        const txHash = await this._exchange.matchOrdersWithMaximalFill.sendTransactionAsync(
+            params.left,
+            params.right,
+            params.leftSignature,
+            params.rightSignature,
+            { from },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async getMatchOrdersWithMaximalFillResultsAsync(
+        signedOrderLeft: SignedOrder,
+        signedOrderRight: SignedOrder,
+        from: string,
+    ): Promise<MatchedFillResults> {
+        const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
+        const matchedFillResults = await this._exchange.matchOrdersWithMaximalFill.callAsync(
+            params.left,
+            params.right,
+            params.leftSignature,
+            params.rightSignature,
+            { from },
+        );
+        return matchedFillResults;
+    }
     public async getFillOrderResultsAsync(
         signedOrder: SignedOrder,
         from: string,
