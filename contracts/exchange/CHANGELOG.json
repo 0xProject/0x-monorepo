@@ -107,7 +107,7 @@
                 "pr": 1885
             },
             {
-                "note": "Make `assertValidFill` and `calculateMatchedFillResults` public",
+                "note": "Make `calculateMatchedFillResults` public",
                 "pr": 1885
             }
         ]
