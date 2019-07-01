@@ -311,6 +311,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -378,6 +379,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -431,6 +433,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -481,6 +484,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -527,6 +531,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -573,6 +578,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -633,6 +639,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -695,6 +702,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -728,6 +736,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -763,6 +772,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -798,6 +808,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -833,6 +844,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
             // Construct second right order
             // Note: This order needs makerAssetAmount=90/takerAssetAmount=[anything <= 45] to fully fill the right order.
@@ -863,6 +875,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts2,
+                false,
                 await matchOrderTester.getBalancesAsync(),
             );
         });
@@ -899,6 +912,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
 
             // Create second left order
@@ -929,6 +943,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts2,
+                false,
                 await matchOrderTester.getBalancesAsync(),
             );
         });
@@ -966,6 +981,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1001,6 +1017,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1036,6 +1053,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1071,6 +1089,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1106,6 +1125,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1142,6 +1162,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1178,6 +1199,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1214,6 +1236,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1252,6 +1275,7 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 expectedTransferAmounts,
+                false,
             );
         });
 
@@ -1842,6 +1866,7 @@ describe('matchOrders', () => {
                             },
                             takerAddress,
                             expectedTransferAmounts,
+                            false,
                         );
                     } else {
                         const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
@@ -1851,7 +1876,309 @@ describe('matchOrders', () => {
             }
         });
     });
-    describe.only('batchMatchOrders', () => {
+    describe('matchOrdersWithMaximalFill', () => {
+        it('Should transfer correct amounts when right order is fully filled and values pass isRoundingErrorCeil but fail isRoundingErrorFloor', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(17, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(98, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error ceil & not rounding error floor
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the left maker will sell.
+            const numerator = signedOrderLeft.makerAssetAmount;
+            const denominator = signedOrderLeft.takerAssetAmount;
+            const target = signedOrderRight.makerAssetAmount;
+            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.true();
+            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the left maker received a slightly better sell price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the left maker received a slightly more favorable sell price, the fee
+            // paid by the left taker is slightly higher than that paid by the left maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('76.4705882352941176'),
+                    16,
+                ), // 76.47%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('76.5306122448979591'),
+                    16,
+                ), // 76.53%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+
+        it('Should transfer correct amounts when left order is fully filled and values pass isRoundingErrorCeil but fail isRoundingErrorFloor', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(196, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(28, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Assert is rounding error floor
+            // These assertions are taken from MixinMatchOrders::calculateMatchedFillResults
+            // The rounding error is derived computating how much the right maker will buy.
+            const numerator = signedOrderRight.makerAssetAmount;
+            const denominator = signedOrderRight.takerAssetAmount;
+            const target = signedOrderLeft.makerAssetAmount;
+            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorCeil).to.be.true();
+            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+                numerator,
+                denominator,
+                target,
+            );
+            expect(isRoundingErrorFloor).to.be.false();
+            // Match signedOrderLeft with signedOrderRight
+            // Note that the right maker received a slightly better purchase price.
+            // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
+            // Because the right maker received a slightly more favorable buy price, the fee
+            // paid by the right taker is slightly higher than that paid by the right maker.
+            // Fees can be thought of as a tax paid by the seller, derived from the sale price.
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
+                // Right Maker
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(105, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('53.5714285714285714'),
+                    16,
+                ), // 53.57%
+                // Taker
+                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('53.5714285714285714'),
+                    16,
+                ), // 53.57%
+            };
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+
+        it('Should transfer correct amounts when left order is fully filled', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(87, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(48, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('33.3333333333333333'),
+                    16,
+                ), // 33.33%
+                // Taker
+                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('33.3333333333333333'),
+                    16,
+                ), // 33.33%
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+
+        it('Should give left maker a better sell price when rounding', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(12, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(97, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+            });
+            // Note:
+            //  The maker/taker fee percentage paid on the left order differs because
+            //  they received different sale prices. The left maker pays a fee
+            //  slightly lower than the left taker.
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('91.6666666666666666'),
+                    16,
+                ), // 91.6%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(10, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('91.7525773195876288'),
+                    16,
+                ), // 91.75%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+
+        it('Should give right maker and right taker a favorable fee price when rounding', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20TakerAssetAddress),
+                takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(87, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(48, 0),
+                feeRecipientAddress: feeRecipientAddressRight,
+                makerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
+                takerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
+            });
+            // Note:
+            //  The maker/taker fee percentage paid on the right order differs because
+            //  they received different sale prices. The right maker pays a
+            //  fee slightly lower than the right taker.
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('33.3333333333333333'),
+                    16,
+                ), // 33.33%
+                // Taker
+                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(
+                    new BigNumber('33.3333333333333333'),
+                    16,
+                ), // 33.33%
+            };
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
+                // Right Maker
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(3333, 0), // 3333.3 repeating rounded down to 3333
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(3, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(3333, 0), // 3333 rounded down to 3333
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+    });
+    describe('batchMatchOrders', () => {
         it('should fail if there are zero leftOrders', async () => {
             const leftOrders: SignedOrder[] = [];
             const rightOrders = [

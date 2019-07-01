@@ -147,12 +147,13 @@ contract MixinMatchOrders is
         }
     }
 
+    // FIXME
     function _batchMatchOrders(
         LibOrder.Order[] memory leftOrders,
         LibOrder.Order[] memory rightOrders,
         bytes[] memory leftSignatures,
         bytes[] memory rightSignatures,
-        bool isWithMaximalFill
+        bool withMaximalFill
     )
         internal
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
@@ -185,7 +186,7 @@ contract MixinMatchOrders is
             LibFillResults.MatchedFillResults memory matchResults;
             // Match the two orders that are pointed to by the left and right indices. If specified, use the
             // matchOrdersWithMaximalFill function.
-            if (isWithMaximalFill) {
+            if (withMaximalFill) {
                 // Match the two orders that are pointed to by the left and right indices
                 matchResults = matchOrdersWithMaximalFill(
                     leftOrder,
@@ -298,14 +299,14 @@ contract MixinMatchOrders is
     /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
     /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
     /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
-    /// @param maximalFill A boolean indicating whether or not this calculation should use the maximal
+    /// @param withMaximalFill A boolean indicating whether or not this calculation should use the maximal
     ///                    fill strategy for order matching.
     function _calculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
         uint256 rightOrderTakerAssetFilledAmount,
-        bool maximalFill
+        bool withMaximalFill
     )
         internal
         pure
@@ -325,7 +326,7 @@ contract MixinMatchOrders is
             rightTakerAssetAmountRemaining
         );
 
-        if (maximalFill) {
+        if (withMaximalFill) {
             bool leftSpread;
             bool rightSpread;
             // FIXME -- Add good comments
@@ -350,15 +351,15 @@ contract MixinMatchOrders is
                 );
                 matchedFillResults.right.takerAssetFilledAmount = leftMakerAssetAmountRemaining;
                 matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
-                matchedFillResults.left.makerAssetFilledAmount = leftTakerAssetAmountRemaining;
+                matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
                 // FIXME(Add comment?)
                 rightSpread = true;
             } else {
                 // Case 3: The right and left orders are fully filled
-                matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
-                matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
                 matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
                 matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
+                matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
+                matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
                 // FIXME(Add comment?)
                 leftSpread = true;
                 rightSpread = true;
@@ -798,6 +799,14 @@ contract MixinMatchOrders is
             leftOrder.makerAddress,
             takerAddress,
             matchedFillResults.leftMakerAssetSpreadAmount
+        );
+
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightOrder.makerAssetData,
+            rightOrder.makerAddress,
+            takerAddress,
+            matchedFillResults.rightMakerAssetSpreadAmount
         );
 
         // Settle taker fees.

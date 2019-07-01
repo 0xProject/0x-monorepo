@@ -119,6 +119,7 @@ export class MatchOrderTester {
     public erc1155ProxyWrapper: ERC1155ProxyWrapper;
     public batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall;
     public matchOrdersCallAsync?: MatchOrdersAsyncCall;
+    public matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall;
     private readonly _initialTokenBalancesPromise: Promise<TokenBalances>;
 
     /**
@@ -139,12 +140,14 @@ export class MatchOrderTester {
         erc1155ProxyWrapper: ERC1155ProxyWrapper,
         matchOrdersCallAsync?: MatchOrdersAsyncCall,
         batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall,
+        matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall,
     ) {
         this.exchangeWrapper = exchangeWrapper;
         this.erc20Wrapper = erc20Wrapper;
         this.erc721Wrapper = erc721Wrapper;
         this.erc1155ProxyWrapper = erc1155ProxyWrapper;
         this.matchOrdersCallAsync = matchOrdersCallAsync;
+        this.matchOrdersWithMaximalFillCallAsync = matchOrdersWithMaximalFillCallAsync;
         this._initialTokenBalancesPromise = this.getBalancesAsync();
     }
 
@@ -208,12 +211,15 @@ export class MatchOrderTester {
      * @param expectedTransferAmounts Expected amounts transferred as a result of order matching.
      *                                Omitted fields are either set to 0 or their complementary
      *                                field.
+     * @param withMaximalFill A boolean that indicates whether the "maximal fill" order matching
+     *                        strategy should be used.
      * @return Results of `matchOrders()`.
      */
     public async matchOrdersAndAssertEffectsAsync(
         orders: MatchedOrders,
         takerAddress: string,
         expectedTransferAmounts: Partial<MatchTransferAmounts>,
+        withMaximalFill: boolean,
         initialTokenBalances?: TokenBalances,
     ): Promise<MatchResults> {
         await assertInitialOrderStatesAsync(orders, this.exchangeWrapper);
@@ -222,11 +228,20 @@ export class MatchOrderTester {
             ? initialTokenBalances
             : await this._initialTokenBalancesPromise;
         // Execute `matchOrders()`
-        const transactionReceipt = await this._executeMatchOrdersAsync(
-            orders.leftOrder,
-            orders.rightOrder,
-            takerAddress,
-        );
+        let transactionReceipt;
+        if (withMaximalFill) {
+            transactionReceipt = await this._executeMatchOrdersWithMaximalFillAsync(
+                orders.leftOrder,
+                orders.rightOrder,
+                takerAddress,
+            );
+        } else {
+            transactionReceipt = await this._executeMatchOrdersAsync(
+                orders.leftOrder,
+                orders.rightOrder,
+                takerAddress,
+            );
+        }
         // Simulate the fill.
         const matchResults = simulateMatchOrders(
             orders,
@@ -272,6 +287,18 @@ export class MatchOrderTester {
             this.matchOrdersCallAsync ||
             (async (_leftOrder: SignedOrder, _rightOrder: SignedOrder, _takerAddress: string) =>
                 this.exchangeWrapper.matchOrdersAsync(_leftOrder, _rightOrder, _takerAddress));
+        return caller(leftOrder, rightOrder, takerAddress);
+    }
+
+    private async _executeMatchOrdersWithMaximalFillAsync(
+        leftOrder: SignedOrder,
+        rightOrder: SignedOrder,
+        takerAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const caller =
+            this.matchOrdersWithMaximalFillCallAsync ||
+            (async (_leftOrder: SignedOrder, _rightOrder: SignedOrder, _takerAddress: string) =>
+                this.exchangeWrapper.matchOrdersWithMaximalFillAsync(_leftOrder, _rightOrder, _takerAddress));
         return caller(leftOrder, rightOrder, takerAddress);
     }
 }
@@ -730,7 +757,7 @@ function extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs
  * @param actualBalances Actual balances.
  */
 function assertBalances(expectedBalances: TokenBalances, actualBalances: TokenBalances): void {
-    expect(encodeTokenBalances(expectedBalances)).to.deep.equal(encodeTokenBalances(actualBalances));
+    expect(encodeTokenBalances(actualBalances)).to.deep.equal(encodeTokenBalances(expectedBalances));
 }
 
 /**
