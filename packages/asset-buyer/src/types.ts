@@ -77,6 +77,12 @@ export interface ExchangeMarketBuySmartContractParams {
     signatures: string[];
 }
 
+export interface ExchangeMarketSellSmartContractParams {
+    orders: SignedOrder[];
+    takerAssetFillAmount: BigNumber;
+    signatures: string[];
+}
+
 /**
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
@@ -99,18 +105,6 @@ export interface ForwarderMarketSellSmartContractParams extends ExchangeMarketSe
     feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
-}
-
-export interface ExchangeMarketBuySmartContractParams {
-    orders: SignedOrder[];
-    makerAssetFillAmount: BigNumber;
-    signatures: string[];
-}
-
-export interface ExchangeMarketSellSmartContractParams {
-    orders: SignedOrder[];
-    takerAssetFillAmount: BigNumber;
-    signatures: string[];
 }
 
 /**
@@ -187,14 +181,14 @@ export interface SwapQuote {
 
 export interface MarketSellSwapQuote extends SwapQuote {
     takerAssetFillAmount: BigNumber;
-    bestCaseQuoteInfo: MarketSellSwapQuoteInfo;
-    worstCaseQuoteInfo: MarketSellSwapQuoteInfo;
+    bestCaseQuoteInfo: SwapQuoteInfo;
+    worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
 export interface MarketBuySwapQuote extends SwapQuote {
     makerAssetFillAmount: BigNumber;
-    bestCaseQuoteInfo: MarketBuySwapQuoteInfo;
-    worstCaseQuoteInfo: MarketBuySwapQuoteInfo;
+    bestCaseQuoteInfo: SwapQuoteInfo;
+    worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
 export interface SwapQuoteWithAffiliateFee extends SwapQuote {
@@ -209,14 +203,8 @@ export interface SwapQuoteWithAffiliateFee extends SwapQuote {
 export interface SwapQuoteInfo {
     feeTakerTokenAmount: BigNumber;
     totalTakerTokenAmount: BigNumber;
-}
-
-export interface MarketSellSwapQuoteInfo extends SwapQuoteInfo {
-    makerTokenAmount: BigNumber;
-}
-
-export interface MarketBuySwapQuoteInfo extends SwapQuoteInfo {
     takerTokenAmount: BigNumber;
+    makerTokenAmount: BigNumber;
 }
 
 /**

@@ -32,6 +32,8 @@ export {
     SwapQuoteExecutionOpts,
     SwapQuoteInfo,
     SwapQuoteRequestOpts,
+    MarketBuySwapQuote,
+    MarketSellSwapQuote,
     LiquidityForAssetData,
     LiquidityRequestOpts,
     OrdersAndFillableAmounts,

@@ -6,10 +6,9 @@ import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
 import {
     MarketBuySwapQuote,
-    MarketBuySwapQuoteInfo,
     MarketSellSwapQuote,
-    MarketSellSwapQuoteInfo,
     OrdersAndFillableAmounts,
+    SwapQuoteInfo,
     SwapQuoterError,
 } from '../types';
 
@@ -231,19 +230,19 @@ export const swapQuoteCalculator = {
 function calculateMarketBuyQuoteInfo(
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
-    makerAssetBuyAmount: BigNumber,
+    makerTokenAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
-): MarketBuySwapQuoteInfo {
+): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     let takerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
     if (isMakerAssetZrxToken) {
-        takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerAssetBuyAmount);
+        takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
     } else {
         // find eth and zrx amounts needed to buy
         const takerTokenAndZrxAmountToBuyAsset = findTakerTokenAndZrxAmountNeededToBuyAsset(
             ordersAndFillableAmounts,
-            makerAssetBuyAmount,
+            makerTokenAmount,
         );
         takerTokenAmount = takerTokenAndZrxAmountToBuyAsset[0];
         const zrxAmountToBuyAsset = takerTokenAndZrxAmountToBuyAsset[1];
@@ -256,6 +255,7 @@ function calculateMarketBuyQuoteInfo(
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
     const totalTakerTokenAmount = takerTokenAmount.plus(feeTakerTokenAmount);
     return {
+        makerTokenAmount,
         takerTokenAmount,
         feeTakerTokenAmount,
         totalTakerTokenAmount,
@@ -265,22 +265,22 @@ function calculateMarketBuyQuoteInfo(
 function calculateMarketSellQuoteInfo(
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
-    takerAssetSellAmount: BigNumber,
+    takerTokenAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
-): MarketSellSwapQuoteInfo {
+): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
     let makerTokenAmount = constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
     if (isMakerAssetZrxToken) {
         makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(
             ordersAndFillableAmounts,
-            takerAssetSellAmount,
+            takerTokenAmount,
         );
     } else {
         // find eth and zrx amounts needed to buy
         const takerTokenAndZrxAmountToBuyAsset = findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset(
             ordersAndFillableAmounts,
-            takerAssetSellAmount,
+            takerTokenAmount,
         );
         makerTokenAmount = takerTokenAndZrxAmountToBuyAsset[0];
         const zrxAmountToSellAsset = takerTokenAndZrxAmountToBuyAsset[1];
@@ -291,9 +291,10 @@ function calculateMarketSellQuoteInfo(
     const feeTakerTokenAmount = zrxTakerTokenAmount;
 
     // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
-    const totalTakerTokenAmount = takerAssetSellAmount.plus(feeTakerTokenAmount);
+    const totalTakerTokenAmount = takerTokenAmount.plus(feeTakerTokenAmount);
     return {
         makerTokenAmount,
+        takerTokenAmount,
         feeTakerTokenAmount,
         totalTakerTokenAmount,
     };
