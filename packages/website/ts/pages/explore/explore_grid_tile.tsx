@@ -30,7 +30,7 @@ export const ExploreGridTile = (props: ExploreProject) => {
             )}
             <ExploreGridTileLink onClick={onClick} href={props.url} target="_blank">
                 <ExploreGridHeroWell color={props.theme_color}>
-                    <Image src={props.logo_url} height={'90px'} maxWidth={'100px'} />
+                    <Image src={props.logo_url} height={'90px'} maxWidth={props.logo_max_width || '100px'} />
                 </ExploreGridHeroWell>
                 <ExploreGridContentWell>
                     <Heading marginBottom={'0.5rem'} size={'small'}>

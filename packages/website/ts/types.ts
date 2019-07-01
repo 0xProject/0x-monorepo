@@ -255,6 +255,7 @@ export interface ExploreProject {
     url: string;
     keywords: string[];
     instant?: ExploreProjectInstantMetadata;
+    logo_max_width?: string;
     onInstantClick?(): void;
     onAnalytics?(action: ExploreAnalyticAction): void;
 }
