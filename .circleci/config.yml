@@ -221,7 +221,7 @@ jobs:
                   command: |
                       cd python-packages
                       python -m ensurepip
-                      pushd contract_wrappers; ./setup.py pre_install; popd
+                      ./pre_install
                       ./install
             - save_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
@@ -300,7 +300,7 @@ jobs:
                   command: |
                       python -m ensurepip
                       cd python-packages
-                      pushd contract_wrappers; ./setup.py pre_install; popd
+                      ./pre_install
                       ./install
                       ./lint
     static-tests:

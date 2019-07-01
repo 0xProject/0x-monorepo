@@ -98,6 +98,7 @@ contracts/dev-utils/generated-artifacts/
 /packages/abi-gen/test/generated-test/generated-artifacts
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
+python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
 # generated contract wrappers
 packages/abi-gen-wrappers/src/generated-wrappers/

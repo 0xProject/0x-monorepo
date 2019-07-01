@@ -3,7 +3,7 @@
 """setuptools module for contract_artifacts package."""
 
 import subprocess  # nosec
-from shutil import rmtree
+from shutil import copytree, rmtree
 from os import environ, path
 from sys import argv
 
@@ -11,6 +11,35 @@ from distutils.command.clean import clean
 import distutils.command.build_py
 from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
+
+
+class PreInstallCommand(distutils.command.build_py.build_py):
+    """Custom setuptools command class for pulling in artifacts."""
+
+    description = "Pull in the artifacts that live in the TypeScript package."
+
+    def run(self):
+        """Copy files from TS build area to local src, & `black` them."""
+        pkgdir = path.dirname(path.realpath(argv[0]))
+        rmtree(
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_artifacts", "artifacts"
+            ),
+            ignore_errors=True,
+        )
+        copytree(
+            path.join(
+                pkgdir,
+                "..",
+                "..",
+                "packages",
+                "contract-artifacts",
+                "artifacts",
+            ),
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_artifacts", "artifacts"
+            ),
+        )
 
 
 class LintCommand(distutils.command.build_py.build_py):
@@ -138,6 +167,7 @@ setup(
     author="F. Eugene Aumson",
     author_email="feuGeneA@users.noreply.github.com",
     cmdclass={
+        "pre_install": PreInstallCommand,
         "clean": CleanCommandExtension,
         "lint": LintCommand,
         "test": TestCommandExtension,
