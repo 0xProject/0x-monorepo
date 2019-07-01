@@ -311,11 +311,13 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                                     heading="RadarRelay SDK"
                                     description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
                                     tags={[{ label: 'Relayer' }]}
+                                    url="/docs"
                                 />
                                 <Resource
                                     heading="RadarRelay SDK"
                                     description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
                                     tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
+                                    url="/docs"
                                 />
                             </div>
                             <div>
