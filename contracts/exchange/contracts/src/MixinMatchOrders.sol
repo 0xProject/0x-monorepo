@@ -146,7 +146,7 @@ contract MixinMatchOrders is
     )
         public
         nonReentrant
-        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
+        returns (LibFillResults.MatchedFillResults memory)
     {
         return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature);
     }
