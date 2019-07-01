@@ -157,7 +157,7 @@ contract MixinSignatureValidator is
         returns (bool isValid)
     {
         bytes32 transactionHash = getTransactionHash(transaction);
-        return _isValidTransactionWithHashSignature(
+        isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,
             signerAddress,
@@ -186,7 +186,7 @@ contract MixinSignatureValidator is
             signerAddress,
             signature
         );
-        return
+        needsRegularValidation =
             signatureType == SignatureType.Wallet ||
             signatureType == SignatureType.Validator ||
             signatureType == SignatureType.EIP1271Wallet;
