@@ -385,7 +385,7 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount,
         uint256 makerAssetFilledAmount
     )
-        public
+        internal
         pure
     {
         // Revert if fill amount is invalid
