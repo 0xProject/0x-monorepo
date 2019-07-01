@@ -150,3 +150,16 @@ export interface FillResults {
     makerFeePaid: BigNumber;
     takerFeePaid: BigNumber;
 }
+
+export interface MatchedFillResults {
+    left: FillResults;
+    right: FillResults;
+    leftMakerAssetSpreadAmount: BigNumber;
+}
+
+export interface BatchMatchedFillResults {
+    left: FillResults[];
+    right: FillResults[];
+    profitInLeftMakerAsset: BigNumber;
+    profitInRightMakerAsset: BigNumber;
+}

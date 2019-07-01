@@ -1,7 +1,7 @@
 import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import { FillResults, LogDecoder, OrderInfo, orderUtils, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import { BatchMatchedFillResults, FillResults, LogDecoder, MatchedFillResults, OrderInfo, orderUtils, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -282,6 +282,21 @@ export class ExchangeWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
+    public async getBatchMatchOrdersResultsAsync(
+        signedOrdersLeft: SignedOrder[],
+        signedOrdersRight: SignedOrder[],
+        from: string,
+    ): Promise<BatchMatchedFillResults> {
+        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
+        const batchMatchedFillResults = await this._exchange.batchMatchOrders.callAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        return batchMatchedFillResults;
+    }
     public async matchOrdersAsync(
         signedOrderLeft: SignedOrder,
         signedOrderRight: SignedOrder,
@@ -297,6 +312,21 @@ export class ExchangeWrapper {
         );
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
+    }
+    public async getMatchOrdersResultsAsync(
+        signedOrderLeft: SignedOrder,
+        signedOrderRight: SignedOrder,
+        from: string,
+    ): Promise<MatchedFillResults> {
+        const params = orderUtils.createMatchOrders(signedOrderLeft, signedOrderRight);
+        const matchedFillResults = await this._exchange.matchOrders.callAsync(
+            params.left,
+            params.right,
+            params.leftSignature,
+            params.rightSignature,
+            { from },
+        );
+        return matchedFillResults;
     }
     public async getFillOrderResultsAsync(
         signedOrder: SignedOrder,
