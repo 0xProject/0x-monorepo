@@ -42,13 +42,8 @@ export const assert = {
     isValidSwapQuoteInfo(variableName: string, swapQuoteInfo: SwapQuoteInfo): void {
         sharedAssert.isBigNumber(`${variableName}.feeTakerTokenAmount`, swapQuoteInfo.feeTakerTokenAmount);
         sharedAssert.isBigNumber(`${variableName}.totalTakerTokenAmount`, swapQuoteInfo.totalTakerTokenAmount);
-        if (utils.isSwapQuoteInfoMarketBuy(swapQuoteInfo)) {
-            sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
-        } else if (utils.isSwapQuoteInfoMarketSell(swapQuoteInfo)) {
-            sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
-        } else {
-            throw new Error(SwapQuoteConsumerError.InvalidMarketSellOrMarketBuySwapQuote);
-        }
+        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
+        sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
     },
     isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
