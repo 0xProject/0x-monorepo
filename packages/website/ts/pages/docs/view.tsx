@@ -50,7 +50,12 @@ interface State {
 export class DocsView extends React.Component<Props, State> {
     public state = {
         Component: '',
-        mdxComponents: {},
+        mdxComponents: {
+            p: Paragraph,
+            h1: LargeHeading,
+            h2: H2,
+            h3: H3,
+        },
     };
     public componentDidMount(): void {
         // tslint:disable-next-line: no-console
@@ -82,8 +87,6 @@ export class DocsView extends React.Component<Props, State> {
     private async _addComponentAsync(name: string): Promise<void> {
         return import(`../../../md/new-docs/${name}.mdx`)
             .then(component => {
-                // tslint:disable-next-line: no-debugger
-                debugger;
                 this.setState({
                     Component: component.default,
                 });
@@ -123,4 +126,14 @@ const LargeHeading = styled(Heading).attrs({
 
 const LargeIntro = styled(Paragraph).attrs({
     size: 'medium',
+})``;
+
+const H2 = styled(Heading).attrs({
+    size: 'default',
+    asElement: 'h2',
+})``;
+
+const H3 = styled(Heading).attrs({
+    size: 'default',
+    asElement: 'h3',
 })``;
