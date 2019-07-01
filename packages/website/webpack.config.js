@@ -69,9 +69,15 @@ const config = {
             {
                 test: /\.mdx$/,
                 use: [
-                    'babel-loader',
-                    '@mdx-js/loader'
-                ]
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            plugins: ['syntax-object-rest-spread'],
+                            presets: ['env', 'react'],
+                        },
+                    },
+                    '@mdx-js/loader',
+                ],
             },
             {
                 test: /\.svg$/,
@@ -131,9 +137,7 @@ module.exports = (_env, argv) => {
     let plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
-        plugins.concat([
-            new BundleAnalyzerPlugin(),
-        ]);
+        plugins.concat([new BundleAnalyzerPlugin()]);
 
         // SSL certs
         if (fs.existsSync('./server.cert') && fs.existsSync('./server.key')) {
@@ -141,7 +145,7 @@ module.exports = (_env, argv) => {
                 ...config.devServer.https,
                 key: fs.readFileSync('./server.key'),
                 cert: fs.readFileSync('./server.cert'),
-            }
+            };
         }
     } else {
         config.mode = 'production';
