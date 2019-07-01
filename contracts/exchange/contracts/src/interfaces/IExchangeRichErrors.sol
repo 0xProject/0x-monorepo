@@ -8,6 +8,13 @@ contract IExchangeRichErrors {
         UNKNOWN_ASSET_PROXY
     }
 
+    enum BatchMatchOrdersErrorCodes {
+        ZERO_LEFT_ORDERS,
+        ZERO_RIGHT_ORDERS,
+        INCOMPATIBLE_LEFT_ORDERS,
+        INCOMPATIBLE_RIGHT_ORDERS
+    }
+
     enum FillErrorCodes {
         INVALID_TAKER_AMOUNT,
         TAKER_OVERPAY,

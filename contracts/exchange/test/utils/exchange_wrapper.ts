@@ -1,7 +1,15 @@
 import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import { BatchMatchedFillResults, FillResults, LogDecoder, MatchedFillResults, OrderInfo, orderUtils, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import {
+    BatchMatchedFillResults,
+    FillResults,
+    LogDecoder,
+    MatchedFillResults,
+    OrderInfo,
+    orderUtils,
+    Web3ProviderEngine,
+} from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
