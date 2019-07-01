@@ -51,11 +51,20 @@ contract MixinMatchOrders is
         nonReentrant
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
-        // Ensure that the left and right arrays are compatible and have nonzero lengths
-        require(leftOrders.length > 0, "Invalid number of left orders");
-        require(rightOrders.length > 0, "Invalid number of right orders");
-        require(leftOrders.length == leftSignatures.length, "Incompatible leftOrders and leftSignatures");
-        require(rightOrders.length == rightSignatures.length, "Incompatible rightOrders and rightSignatures");
+        // Ensure that the left and right arrays are compatible and have nonzero lengths.
+        // If these checks fail, revert with accurate RichRevert reasons.
+        if (leftOrders.length == 0) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS));
+        }
+        if (rightOrders.length == 0) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS));
+        }
+        if (leftOrders.length != leftSignatures.length) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS));
+        }
+        if (rightOrders.length != rightSignatures.length) {
+            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS));
+        }
 
         // Without simulating all of the order matching, this program cannot know how many
         // matches there will be. To ensure that batchMatchedFillResults has enough memory
@@ -97,7 +106,7 @@ contract MixinMatchOrders is
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
-            if (_isFilled(leftOrder, matchResults.left)) {
+            if (_isFilled(leftOrder)) {
                 if (++leftIdx == leftOrders.length) {
                     break;
                 } else {
@@ -108,7 +117,7 @@ contract MixinMatchOrders is
 
             // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
             // or break out of the loop if there are no more rightOrders to match.
-            if (_isFilled(rightOrder, matchResults.right)) {
+            if (_isFilled(rightOrder)) {
                 if (++rightIdx == rightOrders.length) {
                     break;
                 } else {
@@ -252,7 +261,7 @@ contract MixinMatchOrders is
         return matchedFillResults;
     }
 
-    _assertValidMatch(
+    function _assertValidMatch(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder
     )
@@ -278,13 +287,8 @@ contract MixinMatchOrders is
 
     /// @dev Determines whether or not an order has been fully filled and returns the result.
     /// @param order The order that should be checked.
-    /// @param fillResults The results of the most recent fill -- used to determine whether
-    ///                    or not the order was fully filled.
     /// @return A boolean reflecting whether or not the order was fully filled
-    function _isFilled(
-        LibOrder.Order memory order,
-        LibFillResults.FillResults memory fillResults
-    )
+    function _isFilled(LibOrder.Order memory order)
         internal
         view
         returns (bool)
@@ -344,7 +348,7 @@ contract MixinMatchOrders is
         _assertValidMatch(leftOrder, rightOrder);
 
         // Compute proportional fill amounts
-        matchedFillResults = _calculateMatchedFillResults(
+        matchedFillResults = calculateMatchedFillResults(
             leftOrder,
             rightOrder,
             leftOrderInfo.orderTakerAssetFilledAmount,

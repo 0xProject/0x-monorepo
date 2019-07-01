@@ -28,6 +28,17 @@ contract MixinExchangeRichErrors is
     IExchangeRichErrors
 {
     // solhint-disable func-name-mixedcase
+    function BatchMatchOrdersError(BatchMatchOrdersErrorCodes errorCode)
+        internal
+        pure
+        returns (bytes memory)
+    {
+        abi.encodeWithSelector(
+            BATCH_MATCH_ORDERS_ERROR_SELECTOR,
+            errorCode
+        );
+    }
+
     function SignatureError(
         SignatureErrorCodes errorCode,
         bytes32 hash,

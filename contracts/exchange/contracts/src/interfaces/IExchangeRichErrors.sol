@@ -8,6 +8,13 @@ contract IExchangeRichErrors {
         UNKNOWN_ASSET_PROXY
     }
 
+    enum BatchMatchOrdersErrorCodes {
+        ZERO_LEFT_ORDERS,
+        ZERO_RIGHT_ORDERS,
+        INCOMPATIBLE_LEFT_ORDERS,
+        INCOMPATIBLE_RIGHT_ORDERS
+    }
+
     enum FillErrorCodes {
         INVALID_TAKER_AMOUNT,
         TAKER_OVERPAY,
@@ -28,6 +35,10 @@ contract IExchangeRichErrors {
         ALREADY_EXECUTED,
         EXPIRED
     }
+
+    // bytes4(keccak256("BatchMatchOrdersError(uint8)"))
+    bytes4 internal constant BATCH_MATCH_ORDERS_ERROR_SELECTOR =
+        0xd4092f4f;
 
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
