@@ -76,6 +76,28 @@ contract MixinMatchOrders is
         return _batchMatchOrders(leftOrders, rightOrders, leftSignatures, rightSignatures, true);
     }
 
+    /// @dev Calculates fill amounts for the matched orders.
+    ///      Each order is filled at their respective price point. However, the calculations are
+    ///      carried out as though the orders are both being filled at the right order's price point.
+    ///      The profit made by the leftOrder order goes to the taker (who matched the two orders).
+    /// @param leftOrder First order to match.
+    /// @param rightOrder Second order to match.
+    /// @param leftOrderTakerAssetFilledAmount Amount of left order already filled.
+    /// @param rightOrderTakerAssetFilledAmount Amount of right order already filled.
+    /// @param matchedFillResults Amounts to fill and fees to pay by maker and taker of matched orders.
+    function calculateMatchedFillResults(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        uint256 leftOrderTakerAssetFilledAmount,
+        uint256 rightOrderTakerAssetFilledAmount
+    )
+        public
+        pure
+        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
+    {
+        return _calculateMatchedFillResults(leftOrder, rightOrder, leftOrderTakerAssetFilledAmount, rightOrderTakerAssetFilledAmount, false);
+    }
+
     /// @dev Match two complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
@@ -147,7 +169,16 @@ contract MixinMatchOrders is
         }
     }
 
-    // FIXME
+    /// @dev Match complementary orders that have a profitable spread.
+    ///      Each order is filled at their respective price point, and
+    ///      the matcher receives a profit denominated in the left maker asset.
+    /// @param leftOrders Set of orders with the same maker / taker asset.
+    /// @param rightOrders Set of orders to match against `leftOrders`
+    /// @param leftSignatures Proof that left orders were created by the left makers.
+    /// @param rightSignatures Proof that right orders were created by the right makers.
+    /// @param withMaximalFill A value that indicates whether or not the order matching
+    ///                        should be done with maximal fill.
+    /// @return batchMatchedFillResults Amounts filled and profit generated.
     function _batchMatchOrders(
         LibOrder.Order[] memory leftOrders,
         LibOrder.Order[] memory rightOrders,
@@ -188,18 +219,20 @@ contract MixinMatchOrders is
             // matchOrdersWithMaximalFill function.
             if (withMaximalFill) {
                 // Match the two orders that are pointed to by the left and right indices
-                matchResults = matchOrdersWithMaximalFill(
+                matchResults = _matchOrders(
                     leftOrder,
                     rightOrder,
                     leftSignature,
-                    rightSignature
+                    rightSignature,
+                    true
                 );
             } else {
-                matchResults = matchOrders(
+                matchResults = _matchOrders(
                     leftOrder,
                     rightOrder,
                     leftSignature,
-                    rightSignature
+                    rightSignature,
+                    false
                 );
             }
 
@@ -244,28 +277,6 @@ contract MixinMatchOrders is
 
         // Return the fill results from the batch match
         return batchMatchedFillResults;
-    }
-
-    /// @dev Match two complementary orders that have a profitable spread.
-    ///      Each order is filled at their respective price point. However, the calculations are
-    ///      carried out as though the orders are both being filled at the right order's price point.
-    ///      The profit made by the left order goes to the taker (who matched the two orders).
-    /// @param leftOrder First order to match.
-    /// @param rightOrder Second order to match.
-    /// @param leftSignature Proof that order was created by the left maker.
-    /// @param rightSignature Proof that order was created by the right maker.
-    /// @return matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
-    function matchOrders(
-        LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder,
-        bytes memory leftSignature,
-        bytes memory rightSignature
-    )
-        public
-        nonReentrant
-        returns (LibFillResults.MatchedFillResults memory matchedFillResults)
-    {
-        return _matchOrders(leftOrder, rightOrder, leftSignature, rightSignature);
     }
 
     /// @dev Calculates fill amounts for the matched orders.
@@ -326,33 +337,56 @@ contract MixinMatchOrders is
             rightTakerAssetAmountRemaining
         );
 
+        // Maximally fill the orders and pay out profits to the matcher in one or both of the maker assets.
         if (withMaximalFill) {
             bool leftSpread;
             bool rightSpread;
-            // FIXME -- Add good comments
+
+            // Calculate the maximum fill results for the maker and taker assets. At least one of the orders will be fully filled.
+            //
+            // The maximum that the left maker can possibly buy is the amount that the right order can sell.
+            // The maximum that the right maker can possibly buy is the amount that the left order can sell.
+            //
+            // If the left order is fully filled, profit will be paid out in the left maker asset. If the right order is fully filled,
+            // the profit will be out in the right maker asset.
+            //
+            // There are three cases to consider:
+            // Case 1.
+            //   If the left maker can buy more than the right maker can sell, then only the right order is fully filled.
+            // Case 2.
+            //   If the right maker can buy more than the left maker can sell, then only the right order is fully filled.
+            // Case 3.
+            //   If the right maker can sell the max of what the left maker can buy and the left maker can sell the max of
+            //   what the right maker can buy, then both orders are fully filled.
             if (leftTakerAssetAmountRemaining > rightMakerAssetAmountRemaining) {
                 // Case 1: Right order is fully filled with the profit paid in the left makerAsset
                 matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
                 matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
                 matchedFillResults.left.takerAssetFilledAmount = rightMakerAssetAmountRemaining;
+                // Round down to ensure the left maker's exchange rate does not exceed the price specified by the order.
+                // We favor the left maker when the exchange rate must be rounded and the profit is being paid in the
+                // left maker asset.
                 matchedFillResults.left.makerAssetFilledAmount = _safeGetPartialAmountFloor(
                     leftMakerAssetAmountRemaining,
                     leftTakerAssetAmountRemaining,
                     rightMakerAssetAmountRemaining
                 );
-                // FIXME(Add comment?)
+                // Indicate that the profit should be set to the spread denominated in the left maker asset.
                 leftSpread = true;
             } else if (rightTakerAssetAmountRemaining > leftMakerAssetAmountRemaining) {
-                // Case 2: Left order is fully filled with the profit paid in the right makerAsset
+                // Case 2: Left order is fully filled with the profit paid in the right makerAsset.
+                matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
+                matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
+                // Round down to ensure the right maker's exchange rate does not exceed the price specified by the order.
+                // We favor the right maker when the exchange rate must be rounded and the profit is being paid in the
+                // right maker asset.
                 matchedFillResults.right.makerAssetFilledAmount = _safeGetPartialAmountFloor(
                     rightMakerAssetAmountRemaining,
                     rightTakerAssetAmountRemaining,
                     leftMakerAssetAmountRemaining
                 );
                 matchedFillResults.right.takerAssetFilledAmount = leftMakerAssetAmountRemaining;
-                matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
-                matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
-                // FIXME(Add comment?)
+                // Indicate that the profit should be set to the spread denominated in the right maker asset.
                 rightSpread = true;
             } else {
                 // Case 3: The right and left orders are fully filled
@@ -360,12 +394,12 @@ contract MixinMatchOrders is
                 matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
                 matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
                 matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
-                // FIXME(Add comment?)
+                // Indicate that the profit should be set to the spread denominated in the left and the right maker assets.
                 leftSpread = true;
                 rightSpread = true;
             }
 
-            // Calculate amount given to taker in the left order's maker asset
+            // Calculate amount given to taker in the left order's maker asset if the left spread will be part of the profit.
             if (leftSpread) {
                 matchedFillResults.leftMakerAssetSpreadAmount = _safeSub(
                     matchedFillResults.left.makerAssetFilledAmount,
@@ -373,7 +407,7 @@ contract MixinMatchOrders is
                 );
             }
 
-            // Calculate amount given to taker in the right order's maker asset
+            // Calculate amount given to taker in the right order's maker asset if the right spread will be part of the profit.
             if (rightSpread) {
                 matchedFillResults.rightMakerAssetSpreadAmount = _safeSub(
                     matchedFillResults.right.makerAssetFilledAmount,
