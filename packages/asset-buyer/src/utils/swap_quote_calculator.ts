@@ -358,7 +358,6 @@ function findTakerTokenAmountNeededToBuyZrx(
                 order,
                 makerFillAmount,
             );
-            // TODO(dave4506) may remove if this is for affiliate fees (asset-buyer2.0)
             const extraFeeAmount = remainingFillableMakerAssetAmount.isGreaterThanOrEqualTo(adjustedMakerFillAmount)
                 ? constants.ZERO_AMOUNT
                 : adjustedMakerFillAmount.minus(makerFillAmount);
