@@ -122,7 +122,9 @@ render(
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
                                 <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
-                                <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
+                                {/* TODO: Uncomment the VoteIndex route */}
+                                <Redirect from={WebsitePaths.Vote} to={`${WebsitePaths.Vote}/zeip-23`} />
+                                {/* <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} /> */}
                                 <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
                                 <Route
                                     exact={true}

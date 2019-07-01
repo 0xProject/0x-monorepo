@@ -22,7 +22,6 @@ export interface Proposal {
     url: string;
     voteStartDate: moment.Moment;
     voteEndDate: moment.Moment;
-    outcome?: VoteOutcome;
     benefit: ProposalProperty;
     risks: ProposalProperty;
 }
@@ -39,7 +38,6 @@ export const proposals: Proposals = {
         url: 'https://blog.0xproject.com/zeip-23-trade-bundles-of-assets-fe69eb3ed960',
         voteStartDate: moment(1551042800, 'X'),
         voteEndDate: moment(1551142800, 'X'),
-        outcome: 'accepted',
         benefit: {
             title: 'Benefit',
             summary: `Supporting trades for bundles of assets has been one of the most commonly requested features since the launch of 0x v2. The idea for this feature originated from discussions with gaming and NFT related projects. However, this upgrade also provides utility to relayers for prediction markets or baskets of tokens. The MultiAssetProxy will enable brand new ways of trading.`,
