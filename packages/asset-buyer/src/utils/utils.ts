@@ -4,11 +4,7 @@ import { AbiDefinition, ContractAbi, MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import {
-    MarketBuySwapQuote,
-    MarketSellSwapQuote,
-    SwapQuote,
-} from '../types';
+import { MarketBuySwapQuote, MarketSellSwapQuote, SwapQuote } from '../types';
 
 // tslint:disable:no-unnecessary-type-assertion
 export const utils = {

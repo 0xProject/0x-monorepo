@@ -14,6 +14,7 @@ import { testHelpers } from './utils/test_helpers';
 chaiSetup.configure();
 const expect = chai.expect;
 
+// tslint:disable:max-file-line-count
 // tslint:disable:custom-no-magic-numbers
 describe('swapQuoteCalculator', () => {
     describe('#calculateMarketSellSwapQuote', () => {
@@ -222,12 +223,8 @@ describe('swapQuoteCalculator', () => {
             // 50 eth to fill the first order + 100 eth for fees
             const expectedMakerAssetAmountForTakerAsset = new BigNumber(200);
             const expectedTakerAssetAmountForZrxFees = new BigNumber(100);
-            const expectedTotalTakerAssetAmount = assetSellAmount.plus(
-                expectedTakerAssetAmountForZrxFees,
-            );
-            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
-                assetSellAmount,
-            );
+            const expectedTotalTakerAssetAmount = assetSellAmount.plus(expectedTakerAssetAmountForZrxFees);
+            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(assetSellAmount);
             expect(swapQuote.bestCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
@@ -236,9 +233,7 @@ describe('swapQuoteCalculator', () => {
             );
             expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // because we have no slippage protection, minRate is equal to maxRate
-            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
-                assetSellAmount,
-            );
+            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(assetSellAmount);
             expect(swapQuote.worstCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
@@ -271,12 +266,8 @@ describe('swapQuoteCalculator', () => {
             // 50 eth to fill the first order + 100 eth for fees
             const expectedMakerAssetAmountForTakerAsset = new BigNumber(200);
             const expectedTakerAssetAmountForZrxFees = new BigNumber(100);
-            const expectedTotalTakerAssetAmount = assetSellAmount.plus(
-                expectedTakerAssetAmountForZrxFees,
-            );
-            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
-                assetSellAmount,
-            );
+            const expectedTotalTakerAssetAmount = assetSellAmount.plus(expectedTakerAssetAmountForZrxFees);
+            expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(assetSellAmount);
             expect(swapQuote.bestCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
@@ -287,12 +278,8 @@ describe('swapQuoteCalculator', () => {
             // 100 eth to fill the first order + 208 eth for fees
             const expectedWorstMakerAssetAmountForTakerAsset = new BigNumber(100);
             const expectedWorstTakerAssetAmountForZrxFees = new BigNumber(99);
-            const expectedWorstTotalTakerAssetAmount = assetSellAmount.plus(
-                expectedWorstTakerAssetAmountForZrxFees,
-            );
-            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
-                assetSellAmount,
-            );
+            const expectedWorstTotalTakerAssetAmount = assetSellAmount.plus(expectedWorstTakerAssetAmountForZrxFees);
+            expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(assetSellAmount);
             expect(swapQuote.worstCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedWorstMakerAssetAmountForTakerAsset,
             );
