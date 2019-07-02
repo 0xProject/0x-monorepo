@@ -42,6 +42,7 @@ contract LibFillResults is
         FillResults left;                    // Amounts filled and fees paid of left order.
         FillResults right;                   // Amounts filled and fees paid of right order.
         uint256 leftMakerAssetSpreadAmount;  // Spread between price of left and right order, denominated in the left order's makerAsset, paid to taker.
+        uint256 rightMakerAssetSpreadAmount;  // Spread between price of right and left order, denominated in the right order's makerAsset, paid to taker.
     }
 
     /// @dev Adds properties of both FillResults instances.

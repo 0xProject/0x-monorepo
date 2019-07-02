@@ -51,14 +51,15 @@ contract MixinMatchOrders is
         nonReentrant
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
-        // Ensure that the left and right arrays are compatible and have nonzero lengths.
-        // If these checks fail, revert with accurate RichRevert reasons.
+        // Ensure that the left and right orders have nonzero lengths.
         if (leftOrders.length == 0) {
             _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS));
         }
         if (rightOrders.length == 0) {
             _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS));
         }
+
+        // Ensure that the left and right arrays are compatible.
         if (leftOrders.length != leftSignatures.length) {
             _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS));
         }
@@ -74,14 +75,16 @@ contract MixinMatchOrders is
         batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
         batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
 
-        // Initialize initial variables
+        // Set up initial indices.
         uint256 matchCount;
         uint256 leftIdx = 0;
         uint256 rightIdx = 0;
+
+        // Keep local variables for orders, order info, and signatures for efficiency.
         LibOrder.Order memory leftOrder = leftOrders[0];
         LibOrder.Order memory rightOrder = rightOrders[0];
-        bytes memory leftSignature = leftSignatures[0];
-        bytes memory rightSignature = rightSignatures[0];
+        LibOrder.OrderInfo memory leftOrderInfo = getOrderInfo(leftOrder);
+        LibOrder.OrderInfo memory rightOrderInfo = getOrderInfo(rightOrder);
 
         // Loop infinitely (until broken inside of the loop), but keep a counter of how
         // many orders have been matched.
@@ -90,8 +93,18 @@ contract MixinMatchOrders is
             LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
                 leftOrder,
                 rightOrder,
-                leftSignature,
-                rightSignature
+                leftSignatures[leftIdx],
+                rightSignatures[rightIdx]
+            );
+
+            // Update the orderInfo structs with the updated takerAssetFilledAmount
+            leftOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
+                leftOrderInfo.orderTakerAssetFilledAmount,
+                matchResults.left.takerAssetFilledAmount
+            );
+            rightOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
+                rightOrderInfo.orderTakerAssetFilledAmount,
+                matchResults.right.takerAssetFilledAmount
             );
 
             // Add the matchResults and the profit made during the match to the
@@ -102,27 +115,31 @@ contract MixinMatchOrders is
                 batchMatchedFillResults.profitInLeftMakerAsset,
                 matchResults.leftMakerAssetSpreadAmount
             );
-            // batchMatchedFillResults.profitInRightMakerAsset += 0; // Placeholder for ZEIP 40
+            batchMatchedFillResults.profitInRightMakerAsset = _safeAdd(
+                batchMatchedFillResults.profitInRightMakerAsset,
+                matchResults.rightMakerAssetSpreadAmount
+            );
+
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
-            if (_isFilled(leftOrder)) {
+            if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
                 if (++leftIdx == leftOrders.length) {
                     break;
                 } else {
                     leftOrder = leftOrders[leftIdx];
-                    leftSignature = leftSignatures[leftIdx];
+                    leftOrderInfo = getOrderInfo(leftOrder);
                 }
             }
 
             // If the rightOrder is filled, update the rightIdx, rightOrder, and rightSignature,
             // or break out of the loop if there are no more rightOrders to match.
-            if (_isFilled(rightOrder)) {
+            if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
                 if (++rightIdx == rightOrders.length) {
                     break;
                 } else {
                     rightOrder = rightOrders[rightIdx];
-                    rightSignature = rightSignatures[rightIdx];
+                    rightOrderInfo = getOrderInfo(rightOrder);
                 }
             }
         }
@@ -283,21 +300,6 @@ contract MixinMatchOrders is
                 getOrderHash(rightOrder)
             ));
         }
-    }
-
-    /// @dev Determines whether or not an order has been fully filled and returns the result.
-    /// @param order The order that should be checked.
-    /// @return A boolean reflecting whether or not the order was fully filled
-    function _isFilled(LibOrder.Order memory order)
-        internal
-        view
-        returns (bool)
-    {
-        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
-        if (OrderStatus(orderInfo.orderStatus) == OrderStatus.FULLY_FILLED) {
-            return true;
-        }
-        return false;
     }
 
     /// @dev Match two complementary orders that have a profitable spread.
