@@ -30,6 +30,7 @@ export { testWithReferenceFuncAsync } from './test_with_reference';
 export { hexConcat } from './hex_utils';
 export {
     BatchMatchedFillResults,
+    BatchMatchOrder,
     ContractName,
     ERC20BalancesByOwner,
     ERC1155FungibleHoldingsByOwner,

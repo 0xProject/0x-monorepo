@@ -3,6 +3,7 @@ import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import {
     BatchMatchedFillResults,
+    BatchMatchOrder,
     FillResults,
     LogDecoder,
     MatchedFillResults,
@@ -273,6 +274,20 @@ export class ExchangeWrapper {
     public async getOrdersInfoAsync(signedOrders: SignedOrder[]): Promise<OrderInfo[]> {
         const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
         return ordersInfo;
+    }
+    public async batchMatchOrdersRawAsync(
+        params: BatchMatchOrder,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.batchMatchOrders.sendTransactionAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
     }
     public async batchMatchOrdersAsync(
         signedOrdersLeft: SignedOrder[],
