@@ -32,6 +32,16 @@ declare module '*.mdx' {
     export default MDXComponent;
 }
 
+declare module '@mdx-js/react' {
+    import { ComponentType, StyleHTMLAttributes } from 'react';
+
+    interface MDXProps {
+        children: React.ReactNode;
+        components: { [key: string]: React.ReactNode };
+    }
+    export class MDXProvider extends React.Component<MDXProps> {}
+}
+
 declare module '*.svg' {
     import { PureComponent, SVGProps } from 'react';
     export default class extends PureComponent<SVGProps<SVGSVGElement>> {}
