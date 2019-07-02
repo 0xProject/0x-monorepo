@@ -18,7 +18,7 @@ export {
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
-export { ForwarderSwapQuoteConsumer } from './quote_consumers/forwarder_swap_quote_consumer';
+export { DynamicSwapQuoteConsumer as SwapQuoteConsumer } from './quote_consumers/dynamic_swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export { InsufficientAssetLiquidityError } from './errors';
 
@@ -29,7 +29,8 @@ export {
     SwapQuoterError,
     SwapQuoterOpts,
     SwapQuote,
-    SwapQuoteExecutionOpts,
+    DynamicSwapQuoteGetOutputOpts as SwapQuoteGetOutputOpts,
+    DynamicSwapQuoteExecutionOpts as SwapQuoteExecutionOpts,
     SwapQuoteInfo,
     SwapQuoteRequestOpts,
     MarketBuySwapQuote,
