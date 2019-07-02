@@ -1,4 +1,4 @@
-public {{this.languageSpecificName}} = {
+public {{languageSpecificName}} = {
     async sendTransactionAsync(
     {{> typed_params inputs=inputs}}
     txData?: Partial<TxData> | undefined,
@@ -15,7 +15,7 @@ public {{this.languageSpecificName}} = {
             data: encodedData,
         },
         self._web3Wrapper.getContractDefaults(),
-        self.{{this.languageSpecificName}}.estimateGasAsync.bind(
+        self.{{languageSpecificName}}.estimateGasAsync.bind(
             self,
             {{> params inputs=inputs}}
         ),
@@ -34,9 +34,9 @@ public {{this.languageSpecificName}} = {
     {{/each}}
     const self = this as any as {{contractName}}Contract;
     {{#if inputs}}
-    const txHashPromise = self.{{this.languageSpecificName}}.sendTransactionAsync({{> params input=inputs}}, txData);
+    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync({{> params input=inputs}}, txData);
     {{else}}
-    const txHashPromise = self.{{this.languageSpecificName}}.sendTransactionAsync(txData);
+    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync(txData);
     {{/if}}
     return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
         txHashPromise,
