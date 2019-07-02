@@ -95,6 +95,7 @@ contracts/erc1155/generated-artifacts/
 contracts/extensions/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
+/packages/abi-gen/test/generated-test/generated-artifacts
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 
