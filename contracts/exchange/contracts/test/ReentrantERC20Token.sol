@@ -238,6 +238,20 @@ contract ReentrantERC20Token is
         orders[1].makerAssetAmount = orders[0].takerAssetAmount;
     }
 
+    /// @dev Create two complementary test orders.
+    function _createBatchMatchedOrders()
+        internal
+        view
+        returns (LibOrder.Order[][] memory orders)
+    {
+
+        LibOrder.Order[] memory _orders = _createOrders(2);
+        orders[0][0] = _orders[0];
+        orders[0][1] = _orders[1];
+        orders[0][1].takerAssetAmount = orders[0][1].makerAssetAmount;
+        orders[0][1].makerAssetAmount = orders[0][0].takerAssetAmount;
+    }
+
     function _getTakerFillAmounts(
         LibOrder.Order[] memory orders
     )

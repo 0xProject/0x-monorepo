@@ -186,7 +186,7 @@ export class MatchOrderTester {
             takerAddress,
         );
         // Simulate the batch order match.
-        const batchMatchResults = simulateBatchMatchOrders(
+        const expectedBatchMatchResults = simulateBatchMatchOrders(
             orders,
             takerAddress,
             _initialTokenBalances,
@@ -195,13 +195,13 @@ export class MatchOrderTester {
         );
         // Validate the simulation against reality.
         await assertBatchMatchResultsAsync(
-            batchMatchResults,
+            expectedBatchMatchResults,
             transactionReceipt,
             await this.getBalancesAsync(),
             _initialTokenBalances,
             this.exchangeWrapper,
         );
-        return batchMatchResults;
+        return expectedBatchMatchResults;
     }
 
     /**

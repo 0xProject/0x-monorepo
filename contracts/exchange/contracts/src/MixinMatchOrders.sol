@@ -71,6 +71,7 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures
     )
         public
+        nonReentrant
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         return _batchMatchOrders(leftOrders, rightOrders, leftSignatures, rightSignatures, true);

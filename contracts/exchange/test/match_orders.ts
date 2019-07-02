@@ -11,7 +11,7 @@ import {
 import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
-import { chaiSetup, constants, OrderFactory, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
+import { chaiSetup, constants, OrderFactory, orderUtils, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
@@ -2181,6 +2181,78 @@ describe('matchOrders', () => {
             const rightOrders: SignedOrder[] = [];
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(ExchangeRevertErrors.BatchMatchOrdersErrorCodes.ZeroRightOrders);
             const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('should fail if there are a different number of left orders and signatures', async () => {
+            const leftOrders = [
+                await orderFactoryLeft.newSignedOrderAsync({
+                    makerAddress: makerAddressLeft,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    feeRecipientAddress: feeRecipientAddressLeft,
+                }),
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+            ];
+            const rightOrders = [
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+            ];
+            const params = orderUtils.createBatchMatchOrders(leftOrders, rightOrders);
+            // Set params left signatures to only include the first left signature
+            params.leftSignatures = [params.leftSignatures[0]];
+            const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(ExchangeRevertErrors.BatchMatchOrdersErrorCodes.IncompatibleLeftOrders);
+            const tx = exchangeWrapper.batchMatchOrdersRawAsync(params, takerAddress);
+            return expect(tx).to.revertWith(expectedError);
+        });
+        it('should fail if there are a different number of right orders and signatures', async () => {
+            const leftOrders = [
+                await orderFactoryLeft.newSignedOrderAsync({
+                    makerAddress: makerAddressLeft,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    feeRecipientAddress: feeRecipientAddressLeft,
+                }),
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+            ];
+            const rightOrders = [
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+            ];
+            const params = orderUtils.createBatchMatchOrders(leftOrders, rightOrders);
+            // Set params right signatures to only include the first right signature
+            params.rightSignatures = [params.rightSignatures[0]];
+            const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(ExchangeRevertErrors.BatchMatchOrdersErrorCodes.IncompatibleRightOrders);
+            const tx = exchangeWrapper.batchMatchOrdersRawAsync(params, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
         it('should correctly match two opposite orders', async () => {
