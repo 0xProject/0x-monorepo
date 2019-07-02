@@ -24,12 +24,15 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
-type SmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams | ForwarderMarketBuySmartContractParams | ForwarderMarketSellSmartContractParams;
+type SmartContractParams =
+    | ExchangeMarketBuySmartContractParams
+    | ExchangeMarketSellSmartContractParams
+    | ForwarderMarketBuySmartContractParams
+    | ForwarderMarketSellSmartContractParams;
 
 type ValidSwapQuoteConsumer = ExchangeSwapQuoteConsumer | ForwarderSwapQuoteConsumer;
 
-export class DynamicSwapQuoteConsumer
-    implements SwapQuoteConsumer<SmartContractParams> {
+export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContractParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -79,7 +82,10 @@ export class DynamicSwapQuoteConsumer
         return consumer.executeSwapQuoteOrThrowAsync(quote, opts);
     }
 
-    private async _getConsumerForSwapQuoteAsync(quote: SwapQuote, opts: Partial<DynamicSwapQuoteGetOutputOpts>): Promise<ValidSwapQuoteConsumer> {
+    private async _getConsumerForSwapQuoteAsync(
+        quote: SwapQuote,
+        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+    ): Promise<ValidSwapQuoteConsumer> {
         const wethAssetData = assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
@@ -87,10 +93,17 @@ export class DynamicSwapQuoteConsumer
             }
             const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.totalTakerTokenAmount;
             const takerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-            const takerEthAndWethBalance = await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(this.provider, this._contractWrappers, takerAddress);
+            const takerEthAndWethBalance = await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(
+                this.provider,
+                this._contractWrappers,
+                takerAddress,
+            );
             // TODO(david): when considering if there is enough Eth balance, should account for gas costs.
-            const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) => balance.isGreaterThanOrEqualTo(ethAmount));
-            if (isEnoughEthAndWethBalance[1]) { // should be more gas efficient to use exchange consumer, so if possible use it.
+            const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) =>
+                balance.isGreaterThanOrEqualTo(ethAmount),
+            );
+            if (isEnoughEthAndWethBalance[1]) {
+                // should be more gas efficient to use exchange consumer, so if possible use it.
                 return this._exchangeConsumer;
             } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
                 return this._forwarderConsumer;
