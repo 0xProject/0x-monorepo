@@ -307,7 +307,10 @@ export class SolDoc {
     }
     private _genDocSection(compiledContract: StandardContractOutput, contractName: string): DocSection {
         const docSection: DocSection = {
-            comment: compiledContract.devdoc === undefined ? '' : compiledContract.devdoc.title,
+            comment:
+                compiledContract.devdoc === undefined || compiledContract.devdoc.title === undefined
+                    ? ''
+                    : compiledContract.devdoc.title,
             constructors: [],
             methods: [],
             properties: [],

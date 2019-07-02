@@ -47,7 +47,7 @@ if (allArtifactPaths.length < pkgNames.length) {
 
 for (const _path of allArtifactPaths) {
     const fileName = _path.split('/').slice(-1)[0];
-    const targetPath = path.join(__dirname, '../artifacts', fileName);
+    const targetPath = path.join(__dirname, '../../artifacts', fileName);
     const targetPathPython = path.join(
         MONOREPO_ROOT,
         'python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts',

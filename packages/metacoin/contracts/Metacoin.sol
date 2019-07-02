@@ -20,6 +20,9 @@ contract Metacoin {
         balances[msg.sender] = 10000;
     }
 
+    /// @dev This is an example devdoc
+    /// @param transferData Transfer data to act on.
+    /// @return success True if successful, otherwise false
     function transfer(TransferData transferData) public returns (bool success) {
         if (balances[msg.sender] < transferData.amount) return false;
         balances[msg.sender] -= transferData.amount;
