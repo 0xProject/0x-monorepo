@@ -76,11 +76,19 @@ export class ChapterLinks extends React.Component<ChapterLinkProps, ChapterLinkS
             <Wrapper>
                 {groups.map(({ heading, name, filters }: Group, index) => (
                     <GroupWrapper key={`filter-group-${index}`}>
-                        <Link href="#index" hasChildren={filters.length > 0}>{heading}</Link>
+                        <Link href="#index" hasChildren={filters.length > 0}>
+                            {heading}
+                        </Link>
                         <Children>
-                        {filters.map(({ value, label }: FilterProps, index) => (
-                            <Sublink href={`#filter-${name}-${index}`} key={`filter-${name}-${index}`} data-level="2">{label}</Sublink>
-                        ))}
+                            {filters.map(({ value, label }: FilterProps, index) => (
+                                <Sublink
+                                    href={`#filter-${name}-${index}`}
+                                    key={`filter-${name}-${index}`}
+                                    data-level="2"
+                                >
+                                    {label}
+                                </Sublink>
+                            ))}
                         </Children>
                     </GroupWrapper>
                 ))}
@@ -102,7 +110,6 @@ const Link = styled.a<{ hasChildren?: boolean }>`
     color: ${colors.textDarkSecondary};
     display: block;
     font-size: 0.8333rem;
-
 `;
 
 const Sublink = styled(Link)`
@@ -122,6 +129,6 @@ const GroupHeading = styled(Heading)`
 `;
 
 const Children = styled.div`
-    border-left: 1px solid #E3E3E3;
+    border-left: 1px solid #e3e3e3;
     padding-left: 0.7rem;
 `;
