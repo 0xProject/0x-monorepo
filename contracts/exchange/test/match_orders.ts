@@ -1862,8 +1862,9 @@ describe('matchOrders', () => {
                     feeRecipientAddress: feeRecipientAddressRight,
                 }),
             ];
+            const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(ExchangeRevertErrors.BatchMatchOrdersErrorCodes.ZeroLeftOrders);
             const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
-            return expect(tx).to.be.rejected();
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should fail if there are zero rightOrders', async () => {
             const leftOrders = [
@@ -1875,8 +1876,9 @@ describe('matchOrders', () => {
                 }),
             ];
             const rightOrders: SignedOrder[] = [];
+            const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(ExchangeRevertErrors.BatchMatchOrdersErrorCodes.ZeroRightOrders);
             const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
-            return expect(tx).to.be.rejected();
+            return expect(tx).to.revertWith(expectedError);
         });
         it('should correctly match two opposite orders', async () => {
             const leftOrders = [
@@ -2077,6 +2079,54 @@ describe('matchOrders', () => {
                 },
                 takerAddress,
                 [[0, 0], [0, 1]],
+                expectedTransferAmounts,
+            );
+        });
+        it('should correctly match one left order to two right orders, where the last should not be touched  ', async () => {
+            const leftOrders = [
+                await orderFactoryLeft.newSignedOrderAsync({
+                    makerAddress: makerAddressLeft,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    feeRecipientAddress: feeRecipientAddressLeft,
+                }),
+            ];
+            const rightOrders = [
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+                await orderFactoryRight.newSignedOrderAsync({
+                    makerAddress: makerAddressRight,
+                    makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    feeRecipientAddress: feeRecipientAddressRight,
+                }),
+            ];
+            const expectedTransferAmounts = [
+                {
+                    // Left Maker
+                    leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
+                    leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                    // Right Maker
+                    rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                    rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                    // Taker
+                    leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                    rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                }
+            ];
+            await matchOrderTester.batchMatchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrders,
+                    rightOrders,
+                    leftOrdersTakerAssetFilledAmounts: [ZERO],
+                    rightOrdersTakerAssetFilledAmounts: [ZERO, ZERO],
+                },
+                takerAddress,
+                [[0, 0]],
                 expectedTransferAmounts,
             );
         });
