@@ -44,11 +44,13 @@ interface Props {
 }
 
 interface State {
+    title: string;
     Component: JSX.Element | string;
 }
 
 export class DocsView extends React.Component<Props, State> {
     public state = {
+        title: '',
         Component: '',
         mdxComponents: {
             p: Paragraph,
@@ -63,18 +65,20 @@ export class DocsView extends React.Component<Props, State> {
         this._addComponentAsync(this.props.match.params.page);
     }
     public componentDidUpdate(prevProps: Props, prevState: State): void {
-        console.log(this.props);
+        if (prevProps.match.params.page !== this.props.match.params.page) {
+            this._addComponentAsync(this.props.match.params.page);
+        }
     }
     public render(): React.ReactNode {
-        const { Component, mdxComponents } = this.state;
+        const { title, Component, mdxComponents } = this.state;
         return (
             <SiteWrap theme="light">
                 <DocumentTitle {...documentConstants.DOCS} />
-                <Hero isHome={false} title={`Page Template`} description="This a subheader for the page" />
+                <Hero isHome={false} title={title} />
                 <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                     <Columns>
                         <aside>
-                            <ChapterLinks />
+                            <h3>Sidebar</h3>
                         </aside>
                         <article>
                             <MDXProvider components={mdxComponents}>{Component ? <Component /> : null}</MDXProvider>
@@ -85,17 +89,19 @@ export class DocsView extends React.Component<Props, State> {
         );
     }
     private async _addComponentAsync(name: string): Promise<void> {
-        return import(`../../../md/new-docs/${name}.mdx`)
-            .then(component => {
-                this.setState({
-                    Component: component.default,
-                });
-            })
-            .catch(() => {
-                this.setState({
-                    Component: '',
-                });
+        const component = await import(`../../../md/new-docs/${name}.mdx`).catch(e => {
+            return null;
+        });
+        if (!component) {
+            this.setState({
+                Component: '',
             });
+        }
+
+        this.setState({
+            title: component.meta.title,
+            Component: component.default,
+        });
     }
 }
 
