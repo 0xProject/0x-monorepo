@@ -23,6 +23,7 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -59,6 +60,12 @@ export class AbiGenDummyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('simpleRequire()', []);
+            return abiEncodedTransactionData;
         },
     };
     public ecrecoverFn = {
@@ -106,6 +113,24 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                hash: string,
+                v: number|BigNumber,
+                r: string,
+                s: string,
+            ): string {
+            assert.isString('hash', hash);
+            assert.isNumberOrBigNumber('v', v);
+            assert.isString('r', r);
+            assert.isString('s', s);
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('ecrecoverFn(bytes32,uint8,bytes32,bytes32)', [hash,
+        v,
+        r,
+        s
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public revertWithConstant = {
         async callAsync(
@@ -139,6 +164,12 @@ export class AbiGenDummyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('revertWithConstant()', []);
+            return abiEncodedTransactionData;
         },
     };
     public simpleRevert = {
@@ -174,6 +205,12 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('simpleRevert()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public requireWithConstant = {
         async callAsync(
@@ -207,6 +244,12 @@ export class AbiGenDummyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('requireWithConstant()', []);
+            return abiEncodedTransactionData;
         },
     };
     public simplePureFunctionWithInput = {
@@ -245,6 +288,15 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                x: BigNumber,
+            ): string {
+            assert.isBigNumber('x', x);
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunctionWithInput(uint256)', [x
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public simplePureFunction = {
         async callAsync(
@@ -279,6 +331,12 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunction()', []);
+            return abiEncodedTransactionData;
+        },
     };
     public pureFunctionWithConstant = {
         async callAsync(
@@ -312,6 +370,12 @@ export class AbiGenDummyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('pureFunctionWithConstant()', []);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(

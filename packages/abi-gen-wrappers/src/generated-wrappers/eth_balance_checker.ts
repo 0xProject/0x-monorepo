@@ -64,6 +64,15 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                addresses: string[],
+            ): string {
+            assert.isArray('addresses', addresses);
+            const self = this as any as EthBalanceCheckerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,

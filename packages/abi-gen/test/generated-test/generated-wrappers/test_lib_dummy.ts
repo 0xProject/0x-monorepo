@@ -23,6 +23,7 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -63,6 +64,15 @@ export class TestLibDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        getABIEncodedTransactionData(
+                x: BigNumber,
+            ): string {
+            assert.isBigNumber('x', x);
+            const self = this as any as TestLibDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x
+        ]);
+            return abiEncodedTransactionData;
+        },
     };
     public publicAddOne = {
         async callAsync(
@@ -99,6 +109,15 @@ export class TestLibDummyContract extends BaseContract {
         >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
+        },
+        getABIEncodedTransactionData(
+                x: BigNumber,
+            ): string {
+            assert.isBigNumber('x', x);
+            const self = this as any as TestLibDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x
+        ]);
+            return abiEncodedTransactionData;
         },
     };
     public static async deployFrom0xArtifactAsync(
