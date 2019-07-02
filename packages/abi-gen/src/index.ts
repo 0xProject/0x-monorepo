@@ -76,9 +76,12 @@ Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils))
 Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 
 // Check if 0 or false exists
-Handlebars.registerHelper('isDefined', (context: any): boolean  => {
-    return context !== undefined;
-});
+Handlebars.registerHelper(
+    'isDefined',
+    (context: any): boolean => {
+        return context !== undefined;
+    },
+);
 registerPartials();
 
 if (_.isEmpty(abiFileNames)) {
