@@ -172,6 +172,7 @@ contract MixinMatchOrders is
     /// @dev Match complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point, and
     ///      the matcher receives a profit denominated in the left maker asset.
+    ///      This is the reentrant version of `batchMatchOrders` and `batchMatchOrdersWithMaximalFill`.
     /// @param leftOrders Set of orders with the same maker / taker asset.
     /// @param rightOrders Set of orders to match against `leftOrders`
     /// @param leftSignatures Proof that left orders were created by the left makers.
@@ -671,7 +672,8 @@ contract MixinMatchOrders is
     ///      Each order is filled at their respective price point. However, the calculations are
     ///      carried out as though the orders are both being filled at the right order's price point.
     ///      The profit made by the left order goes to the taker (who matched the two orders). This
-    ///      function is needed to allow for reentrant order matching (used by batchMatchOrders).
+    ///      function is needed to allow for reentrant order matching (used by `batchMatchOrders` and
+    ///      `batchMatchOrdersWithMaximalFill`).
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
     /// @param leftSignature Proof that order was created by the left maker.

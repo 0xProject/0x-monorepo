@@ -16,7 +16,7 @@ import { BigNumber, providerUtils, SafeMathRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, TestExchangeInternalsContract } from '../src';
+import { artifacts, TestExchangeInternalsContract, TestExchangeMathContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -53,10 +53,9 @@ const emptySignedOrder: SignedOrder = {
 
 const safeMathErrorForCall = new SafeMathRevertErrors.SafeMathError();
 
-describe('Exchange core internal functions', () => {
+describe('Exchange math internal functions', () => {
     let chainId: number;
-    let testExchange: TestExchangeInternalsContract;
-    let safeMathErrorForSendTransaction: Error | undefined;
+    let testExchange: TestExchangeMathContract;
     let divisionByZeroErrorForCall: Error | undefined;
     let roundingErrorForCall: Error | undefined;
 
@@ -71,15 +70,13 @@ describe('Exchange core internal functions', () => {
         emptyOrder.domain.chainId = chainId;
         emptySignedOrder.domain.chainId = chainId;
 
-        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
-            artifacts.TestExchangeInternals,
+        testExchange = await TestExchangeMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeMath,
             provider,
             txDefaults,
-            new BigNumber(chainId),
         );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
-        safeMathErrorForSendTransaction = safeMathErrorForCall;
         divisionByZeroErrorForCall = new LibMathRevertErrors.DivisionByZeroError();
         roundingErrorForCall = new LibMathRevertErrors.RoundingError();
     });
@@ -159,118 +156,6 @@ describe('Exchange core internal functions', () => {
         }
         return product.dividedToIntegerBy(denominator);
     }
-
-    describe('addFillResults', async () => {
-        function makeFillResults(value: BigNumber): FillResults {
-            return {
-                makerAssetFilledAmount: value,
-                takerAssetFilledAmount: value,
-                makerFeePaid: value,
-                takerFeePaid: value,
-            };
-        }
-        async function referenceAddFillResultsAsync(
-            totalValue: BigNumber,
-            singleValue: BigNumber,
-        ): Promise<FillResults> {
-            // Note(albrow): Here, each of totalFillResults and
-            // singleFillResults will consist of fields with the same values.
-            // This should be safe because none of the fields in a given
-            // FillResults are ever used together in a mathemetical operation.
-            // They are only used with the corresponding field from *the other*
-            // FillResults, which are different.
-            const totalFillResults = makeFillResults(totalValue);
-            const singleFillResults = makeFillResults(singleValue);
-            // HACK(albrow): _.mergeWith mutates the first argument! To
-            // workaround this we use _.cloneDeep.
-            return _.mergeWith(
-                _.cloneDeep(totalFillResults),
-                singleFillResults,
-                (totalVal: BigNumber, singleVal: BigNumber) => {
-                    const newTotal = totalVal.plus(singleVal);
-                    if (newTotal.isGreaterThan(MAX_UINT256)) {
-                        throw safeMathErrorForCall;
-                    }
-                    return newTotal;
-                },
-            );
-        }
-        async function testAddFillResultsAsync(totalValue: BigNumber, singleValue: BigNumber): Promise<FillResults> {
-            const totalFillResults = makeFillResults(totalValue);
-            const singleFillResults = makeFillResults(singleValue);
-            return testExchange.addFillResults.callAsync(totalFillResults, singleFillResults);
-        }
-        await testCombinatoriallyWithReferenceFuncAsync(
-            'addFillResults',
-            referenceAddFillResultsAsync,
-            testAddFillResultsAsync,
-            [uint256Values, uint256Values],
-        );
-    });
-
-    describe('calculateFillResults', async () => {
-        function makeOrder(
-            makerAssetAmount: BigNumber,
-            takerAssetAmount: BigNumber,
-            makerFee: BigNumber,
-            takerFee: BigNumber,
-        ): Order {
-            return {
-                ...emptyOrder,
-                makerAssetAmount,
-                takerAssetAmount,
-                makerFee,
-                takerFee,
-            };
-        }
-        async function referenceCalculateFillResultsAsync(
-            orderTakerAssetAmount: BigNumber,
-            takerAssetFilledAmount: BigNumber,
-            otherAmount: BigNumber,
-        ): Promise<FillResults> {
-            // Note(albrow): Here we are re-using the same value (otherAmount)
-            // for order.makerAssetAmount, order.makerFee, and order.takerFee.
-            // This should be safe because they are never used with each other
-            // in any mathematical operation in either the reference TypeScript
-            // implementation or the Solidity implementation of
-            // calculateFillResults.
-            const makerAssetFilledAmount = await referenceSafeGetPartialAmountFloorAsync(
-                takerAssetFilledAmount,
-                orderTakerAssetAmount,
-                otherAmount,
-            );
-            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-            const orderMakerAssetAmount = order.makerAssetAmount;
-            return {
-                makerAssetFilledAmount,
-                takerAssetFilledAmount,
-                makerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
-                    makerAssetFilledAmount,
-                    orderMakerAssetAmount,
-                    otherAmount,
-                ),
-                takerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
-                    takerAssetFilledAmount,
-                    orderTakerAssetAmount,
-                    otherAmount,
-                ),
-            };
-        }
-        async function testCalculateFillResultsAsync(
-            orderTakerAssetAmount: BigNumber,
-            takerAssetFilledAmount: BigNumber,
-            otherAmount: BigNumber,
-        ): Promise<FillResults> {
-            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
-            return testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount);
-        }
-        await testCombinatoriallyWithReferenceFuncAsync(
-            'calculateFillResults',
-            referenceCalculateFillResultsAsync,
-            testCalculateFillResultsAsync,
-            [uint256Values, uint256Values, uint256Values],
-        );
-    });
 
     describe('getPartialAmountFloor', async () => {
         async function referenceGetPartialAmountFloorAsync(
@@ -427,6 +312,198 @@ describe('Exchange core internal functions', () => {
             [uint256Values, uint256Values, uint256Values],
         );
     });
+});
+
+describe('Exchange core internal functions', () => {
+    let chainId: number;
+    let testExchange: TestExchangeInternalsContract;
+    let safeMathErrorForSendTransaction: Error | undefined;
+    let divisionByZeroErrorForCall: Error | undefined;
+    let roundingErrorForCall: Error | undefined;
+
+    before(async () => {
+        await blockchainLifecycle.startAsync();
+    });
+    after(async () => {
+        await blockchainLifecycle.revertAsync();
+    });
+    before(async () => {
+        chainId = await providerUtils.getChainIdAsync(provider);
+        emptyOrder.domain.chainId = chainId;
+        emptySignedOrder.domain.chainId = chainId;
+
+        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeInternals,
+            provider,
+            txDefaults,
+            new BigNumber(chainId),
+        );
+        divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
+        roundingErrorForCall = new Error(RevertReason.RoundingError);
+        safeMathErrorForSendTransaction = safeMathErrorForCall;
+        divisionByZeroErrorForCall = new LibMathRevertErrors.DivisionByZeroError();
+        roundingErrorForCall = new LibMathRevertErrors.RoundingError();
+    });
+    // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
+    // the blockchain state for any tests which modify it!
+
+    async function referenceIsRoundingErrorFloorAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<boolean> {
+        if (denominator.eq(0)) {
+            throw divisionByZeroErrorForCall;
+        }
+        if (numerator.eq(0)) {
+            return false;
+        }
+        if (target.eq(0)) {
+            return false;
+        }
+        const product = numerator.multipliedBy(target);
+        const remainder = product.mod(denominator);
+        const remainderTimes1000 = remainder.multipliedBy('1000');
+        const isError = remainderTimes1000.gte(product);
+        if (product.isGreaterThan(MAX_UINT256)) {
+            throw safeMathErrorForCall;
+        }
+        if (remainderTimes1000.isGreaterThan(MAX_UINT256)) {
+            throw safeMathErrorForCall;
+        }
+        return isError;
+    }
+
+    async function referenceSafeGetPartialAmountFloorAsync(
+        numerator: BigNumber,
+        denominator: BigNumber,
+        target: BigNumber,
+    ): Promise<BigNumber> {
+        if (denominator.eq(0)) {
+            throw divisionByZeroErrorForCall;
+        }
+        const isRoundingError = await referenceIsRoundingErrorFloorAsync(numerator, denominator, target);
+        if (isRoundingError) {
+            throw roundingErrorForCall;
+        }
+        const product = numerator.multipliedBy(target);
+        if (product.isGreaterThan(MAX_UINT256)) {
+            throw safeMathErrorForCall;
+        }
+        return product.dividedToIntegerBy(denominator);
+    }
+
+    describe('addFillResults', async () => {
+        function makeFillResults(value: BigNumber): FillResults {
+            return {
+                makerAssetFilledAmount: value,
+                takerAssetFilledAmount: value,
+                makerFeePaid: value,
+                takerFeePaid: value,
+            };
+        }
+        async function referenceAddFillResultsAsync(
+            totalValue: BigNumber,
+            singleValue: BigNumber,
+        ): Promise<FillResults> {
+            // Note(albrow): Here, each of totalFillResults and
+            // singleFillResults will consist of fields with the same values.
+            // This should be safe because none of the fields in a given
+            // FillResults are ever used together in a mathemetical operation.
+            // They are only used with the corresponding field from *the other*
+            // FillResults, which are different.
+            const totalFillResults = makeFillResults(totalValue);
+            const singleFillResults = makeFillResults(singleValue);
+            // HACK(albrow): _.mergeWith mutates the first argument! To
+            // workaround this we use _.cloneDeep.
+            return _.mergeWith(
+                _.cloneDeep(totalFillResults),
+                singleFillResults,
+                (totalVal: BigNumber, singleVal: BigNumber) => {
+                    const newTotal = totalVal.plus(singleVal);
+                    if (newTotal.isGreaterThan(MAX_UINT256)) {
+                        throw safeMathErrorForCall;
+                    }
+                    return newTotal;
+                },
+            );
+        }
+        async function testAddFillResultsAsync(totalValue: BigNumber, singleValue: BigNumber): Promise<FillResults> {
+            const totalFillResults = makeFillResults(totalValue);
+            const singleFillResults = makeFillResults(singleValue);
+            return testExchange.addFillResults.callAsync(totalFillResults, singleFillResults);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'addFillResults',
+            referenceAddFillResultsAsync,
+            testAddFillResultsAsync,
+            [uint256Values, uint256Values],
+        );
+    });
+
+    describe('calculateFillResults', async () => {
+        function makeOrder(
+            makerAssetAmount: BigNumber,
+            takerAssetAmount: BigNumber,
+            makerFee: BigNumber,
+            takerFee: BigNumber,
+        ): Order {
+            return {
+                ...emptyOrder,
+                makerAssetAmount,
+                takerAssetAmount,
+                makerFee,
+                takerFee,
+            };
+        }
+        async function referenceCalculateFillResultsAsync(
+            orderTakerAssetAmount: BigNumber,
+            takerAssetFilledAmount: BigNumber,
+            otherAmount: BigNumber,
+        ): Promise<FillResults> {
+            // Note(albrow): Here we are re-using the same value (otherAmount)
+            // for order.makerAssetAmount, order.makerFee, and order.takerFee.
+            // This should be safe because they are never used with each other
+            // in any mathematical operation in either the reference TypeScript
+            // implementation or the Solidity implementation of
+            // calculateFillResults.
+            const makerAssetFilledAmount = await referenceSafeGetPartialAmountFloorAsync(
+                takerAssetFilledAmount,
+                orderTakerAssetAmount,
+                otherAmount,
+            );
+            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
+            const orderMakerAssetAmount = order.makerAssetAmount;
+            return {
+                makerAssetFilledAmount,
+                takerAssetFilledAmount,
+                makerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
+                    makerAssetFilledAmount,
+                    orderMakerAssetAmount,
+                    otherAmount,
+                ),
+                takerFeePaid: await referenceSafeGetPartialAmountFloorAsync(
+                    takerAssetFilledAmount,
+                    orderTakerAssetAmount,
+                    otherAmount,
+                ),
+            };
+        }
+        async function testCalculateFillResultsAsync(
+            orderTakerAssetAmount: BigNumber,
+            takerAssetFilledAmount: BigNumber,
+            otherAmount: BigNumber,
+        ): Promise<FillResults> {
+            const order = makeOrder(otherAmount, orderTakerAssetAmount, otherAmount, otherAmount);
+            return testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount);
+        }
+        await testCombinatoriallyWithReferenceFuncAsync(
+            'calculateFillResults',
+            referenceCalculateFillResultsAsync,
+            testCalculateFillResultsAsync,
+            [uint256Values, uint256Values, uint256Values],
+        );
+    });
 
     describe('updateFilledState', async () => {
         // Note(albrow): Since updateFilledState modifies the state by calling
@@ -481,3 +558,4 @@ describe('Exchange core internal functions', () => {
         );
     });
 });
+// tslint:disable-line:max-file-line-count
