@@ -24,7 +24,11 @@ export const swapQuoteConsumerUtils = {
             }
         }
     },
-    async getEthAndWethBalanceAsync(provider: SupportedProvider, contractWrappers: ContractWrappers, takerAddress: string): Promise<[BigNumber, BigNumber]> {
+    async getEthAndWethBalanceAsync(
+        provider: SupportedProvider,
+        contractWrappers: ContractWrappers,
+        takerAddress: string,
+    ): Promise<[BigNumber, BigNumber]> {
         const web3Wrapper = new Web3Wrapper(provider);
         const wethAddress = contractWrappers.forwarder.etherTokenAddress;
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
@@ -32,7 +36,10 @@ export const swapQuoteConsumerUtils = {
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
-        return swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) && swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData);
+        return (
+            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) &&
+            swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData)
+        );
     },
     isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
         return _.every(orders, order => swapQuoteConsumerUtils.isValidForwarderSignedOrder(order, wethAssetData));
