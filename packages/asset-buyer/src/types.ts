@@ -153,6 +153,20 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
+export interface DynamicSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
+    takerAddress?: string;
+}
+
+/**
+ * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
+ */
+export interface DynamicSwapQuoteExecutionOpts extends DynamicSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
+
+/**
+ * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
+ * feeRecipient: address of the receiver of the feePercentage of taker asset
+ * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
+ */
 export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
     feePercentage: number;
     feeRecipient: string;
