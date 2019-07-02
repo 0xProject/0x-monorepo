@@ -2385,7 +2385,7 @@ describe('matchOrders', () => {
                 expectedTransferAmounts,
             );
         });
-        it('should correctly match one left order to two right orders, where the last should not be touched  ', async () => {
+        it('should correctly match one left order to two right orders, where the last should not be touched', async () => {
             const leftOrders = [
                 await orderFactoryLeft.newSignedOrderAsync({
                     makerAddress: makerAddressLeft,
@@ -2419,7 +2419,7 @@ describe('matchOrders', () => {
                     // Taker
                     leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
                     rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
-                }
+                },
             ];
             await matchOrderTester.batchMatchOrdersAndAssertEffectsAsync(
                 {
