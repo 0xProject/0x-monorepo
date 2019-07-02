@@ -1,7 +1,10 @@
+import { ContractWrappers } from '@0x/contract-wrappers';
+import { SignedOrder } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { SwapQuoteConsumerError, SwapQuoteExecutionOpts } from '../types';
+import { SwapQuote, SwapQuoteConsumerError, SwapQuoteExecutionOpts } from '../types';
 
 export const swapQuoteConsumerUtils = {
     async getTakerAddressOrThrowAsync(
@@ -20,5 +23,21 @@ export const swapQuoteConsumerUtils = {
                 throw new Error(SwapQuoteConsumerError.NoAddressAvailable);
             }
         }
+    },
+    async getEthAndWethBalanceAsync(provider: SupportedProvider, contractWrappers: ContractWrappers, takerAddress: string): Promise<[BigNumber, BigNumber]> {
+        const web3Wrapper = new Web3Wrapper(provider);
+        const wethAddress = contractWrappers.forwarder.etherTokenAddress;
+        const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
+        const wethBalance = await contractWrappers.erc20Token.getBalanceAsync(wethAddress, takerAddress);
+        return [ethBalance, wethBalance];
+    },
+    isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {
+        return swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.orders, wethAssetData) && swapQuoteConsumerUtils.isValidForwarderSignedOrders(swapQuote.feeOrders, wethAssetData);
+    },
+    isValidForwarderSignedOrders(orders: SignedOrder[], wethAssetData: string): boolean {
+        return _.every(orders, order => swapQuoteConsumerUtils.isValidForwarderSignedOrder(order, wethAssetData));
+    },
+    isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
+        return order.takerAssetData === wethAssetData;
     },
 };
