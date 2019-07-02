@@ -26,7 +26,7 @@ import {
     ExchangeContract,
     ExchangeWrapper,
     ReentrantERC20TokenContract,
-    TestExchangeInternalsContract,
+    TestExchangeMathContract,
 } from '../src';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
@@ -80,7 +80,7 @@ describe('matchOrders', () => {
 
     let matchOrderTester: MatchOrderTester;
 
-    let testExchange: TestExchangeInternalsContract;
+    let testExchangeMath: TestExchangeMathContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -232,11 +232,10 @@ describe('matchOrders', () => {
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
-        testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
-            artifacts.TestExchangeInternals,
+        testExchangeMath = await TestExchangeMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestExchangeMath,
             provider,
             txDefaults,
-            new BigNumber(chainId),
         );
         // Create match order tester
         matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
@@ -269,13 +268,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorCeil).to.be.true();
-            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
@@ -335,13 +334,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.takerAssetAmount;
             const denominator = signedOrderRight.makerAssetAmount;
             const target = signedOrderLeft.takerAssetAmount;
-            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorFloor).to.be.true();
-            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,
@@ -1897,13 +1896,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorCeil).to.be.true();
-            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
@@ -1963,13 +1962,13 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.makerAssetAmount;
             const denominator = signedOrderRight.takerAssetAmount;
             const target = signedOrderLeft.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchange.isRoundingErrorCeil.callAsync(
+            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
                 numerator,
                 denominator,
                 target,
             );
             expect(isRoundingErrorCeil).to.be.false();
-            const isRoundingErrorFloor = await testExchange.isRoundingErrorFloor.callAsync(
+            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
                 numerator,
                 denominator,
                 target,
