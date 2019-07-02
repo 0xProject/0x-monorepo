@@ -4,6 +4,13 @@ import * as _ from 'lodash';
 
 // tslint:disable:max-classes-per-file
 
+export enum BatchMatchOrdersErrorCodes {
+    ZeroLeftOrders,
+    ZeroRightOrders,
+    IncompatibleLeftOrders,
+    IncompatibleRightOrders,
+}
+
 export enum FillErrorCode {
     InvalidTakerAmount,
     TakerOverpay,
@@ -28,6 +35,12 @@ export enum TransactionErrorCode {
     NoReentrancy,
     AlreadyExecuted,
     Expired,
+}
+
+export class BatchMatchOrdersError extends RevertError {
+    constructor(error?: BatchMatchOrdersErrorCodes) {
+        super('BatchMatchOrdersError', 'BatchMatchOrdersError(uint8 error)', { error });
+    }
 }
 
 export class SignatureError extends RevertError {
@@ -200,6 +213,7 @@ export class IncompleteFillError extends RevertError {
 }
 
 const types = [
+    BatchMatchOrdersError,
     OrderStatusError,
     SignatureError,
     SignatureValidatorNotApprovedError,
