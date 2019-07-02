@@ -96,6 +96,7 @@ contracts/extensions/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
 /packages/abi-gen/test/generated-test/generated-artifacts
+/packages/abi-gen/test/generated-test/output
 packages/sol-tracing-utils/test/fixtures/artifacts/
 packages/metacoin/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
