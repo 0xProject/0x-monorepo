@@ -101,6 +101,9 @@ export interface ForwarderMarketBuySmartContractParams
     extends ExchangeMarketBuySmartContractParams,
         ForwarderSmartContractParamsBase {}
 
+// Temporary fix until typescript is upgraded to ^3.5
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
 export interface ForwarderMarketSellSmartContractParams
     extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
         ForwarderSmartContractParamsBase {}
