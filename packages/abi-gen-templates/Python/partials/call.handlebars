@@ -6,7 +6,7 @@
         {{^this.constant}}
         view_only: bool = False,
         {{/this.constant}}
-    ) -> {{~> return_type outputs=outputs~}}:
+    ) ->{{#if outputs}}{{~> return_type outputs=outputs~}}{{else}} None{{/if}}:
         """Execute underlying, same-named contract method.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}
         {{#each this.devdoc.params}}
