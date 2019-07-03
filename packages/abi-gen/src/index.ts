@@ -45,7 +45,7 @@ const args = yargs
         normalize: true,
     })
     .option('backend', {
-        describe: `The backing Ethereum library your app uses. Either 'web3' or 'ethers'. Ethers auto-converts small ints to numbers whereas Web3 doesn't.`,
+        describe: `The backing Ethereum library your app uses. For TypeScript, either 'web3' or 'ethers'. Ethers auto-converts small ints to numbers whereas Web3 doesn't. For Python, the only possibility is Web3.py`,
         type: 'string',
         choices: [ContractsBackend.Web3, ContractsBackend.Ethers],
         default: DEFAULT_BACKEND,
