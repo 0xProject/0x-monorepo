@@ -16,7 +16,7 @@ export const TutorialSteps: React.FunctionComponent<Props> = (props: Props) => (
 
 TutorialSteps.defaultProps = {};
 
-const Wrapper = styled.ul<WrapperProps>`
+const Wrapper = styled.ol<WrapperProps>`
     list-style-type: none;
     counter-reset: tutorialSteps;
     margin-bottom: 1.875rem;
@@ -26,7 +26,7 @@ const Wrapper = styled.ul<WrapperProps>`
         display: flex;
         align-items: center;
         counter-increment: tutorialSteps;
-        margin-bottom: 1rem;
+        margin-bottom: 0.8333rem;
         line-height: 1;
     }
 
