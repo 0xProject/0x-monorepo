@@ -3,7 +3,7 @@ import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketBuySwapQuote, MarketSellSwapQuote } from '../../src';
+import { MarketOperation, SwapQuote } from '../../src/types';
 
 const ZERO_BIG_NUMBER = new BigNumber(0);
 
@@ -25,11 +25,12 @@ export const getSignedOrdersWithNoFees = (
     );
 };
 
-export const getFullyFillableMarketBuySwapQuoteWithNoFees = (
+export const getFullyFillableSwapQuoteWithNoFees = (
     makerAssetData: string,
     takerAssetData: string,
     orders: SignedOrder[],
-): MarketBuySwapQuote => {
+    operation: MarketOperation,
+): SwapQuote => {
     const makerAssetFillAmount = _.reduce(
         orders,
         (a: BigNumber, c: SignedOrder) => a.plus(c.makerAssetAmount),
@@ -47,46 +48,26 @@ export const getFullyFillableMarketBuySwapQuoteWithNoFees = (
         totalTakerTokenAmount,
     };
 
-    return {
+    const quoteBase = {
         makerAssetData,
         takerAssetData,
         orders,
         feeOrders: [],
-        makerAssetFillAmount,
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
     };
-};
 
-export const getFullyFillableMarketSellSwapQuoteWithNoFees = (
-    makerAssetData: string,
-    takerAssetData: string,
-    orders: SignedOrder[],
-): MarketSellSwapQuote => {
-    const makerAssetFillAmount = _.reduce(
-        orders,
-        (a: BigNumber, c: SignedOrder) => a.plus(c.makerAssetAmount),
-        ZERO_BIG_NUMBER,
-    );
-    const totalTakerTokenAmount = _.reduce(
-        orders,
-        (a: BigNumber, c: SignedOrder) => a.plus(c.takerAssetAmount),
-        ZERO_BIG_NUMBER,
-    );
-    const quoteInfo = {
-        makerTokenAmount: makerAssetFillAmount,
-        takerTokenAmount: totalTakerTokenAmount,
-        feeTakerTokenAmount: ZERO_BIG_NUMBER,
-        totalTakerTokenAmount,
-    };
-
-    return {
-        makerAssetData,
-        takerAssetData,
-        orders,
-        feeOrders: [],
-        takerAssetFillAmount: totalTakerTokenAmount,
-        bestCaseQuoteInfo: quoteInfo,
-        worstCaseQuoteInfo: quoteInfo,
-    };
+    if (operation === 'marketBuy') {
+        return {
+            ...quoteBase,
+            type: 'marketBuy',
+            makerAssetFillAmount,
+        };
+    } else {
+        return {
+            ...quoteBase,
+            type: 'marketSell',
+            takerAssetFillAmount: totalTakerTokenAmount,
+        };
+    }
 };
