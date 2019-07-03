@@ -21,7 +21,7 @@ export const marketUtils = {
         takerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverTakerAssetFillAmountOpts,
     ): OrdersAndRemainingTakerFillAmount<T> {
-        return findOrdersThatCoverAssetFillAmount(
+        return findOrdersThatCoverAssetFillAmount<T>(
             orders,
             takerAssetFillAmount,
             'marketSell',
@@ -43,7 +43,7 @@ export const marketUtils = {
         makerAssetFillAmount: BigNumber,
         opts?: FindOrdersThatCoverMakerAssetFillAmountOpts,
     ): OrdersAndRemainingMakerFillAmount<T> {
-        return findOrdersThatCoverAssetFillAmount(
+        return findOrdersThatCoverAssetFillAmount<T>(
             orders,
             makerAssetFillAmount,
             'marketBuy',
@@ -132,11 +132,11 @@ function findOrdersThatCoverAssetFillAmount<T extends Order>(
     orders: T[],
     assetFillAmount: BigNumber,
     operation: MarketOperation,
-    opts?: FindOrdersThatCoverTakerAssetFillAmountOpts,
+    opts?: FindOrdersThatCoverTakerAssetFillAmountOpts | FindOrdersThatCoverMakerAssetFillAmountOpts,
 ): OrdersAndRemainingTakerFillAmount<T> | OrdersAndRemainingMakerFillAmount<T> {
-    const variablePrefix = operation === 'marketBuy' ? 'maker' : 'taker';
+    const variablePrefix = operation === 'marketBuy' ? 'Maker' : 'Taker';
     assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
-    assert.isValidBaseUnitAmount(`${variablePrefix}AssetFillAmount}`, assetFillAmount);
+    assert.isValidBaseUnitAmount('assetFillAmount', assetFillAmount);
     // try to get remainingFillableTakerAssetAmounts from opts, if it's not there, use takerAssetAmount values from orders
     const remainingFillableAssetAmounts = _.get(
         opts,
@@ -191,6 +191,7 @@ function findOrdersThatCoverAssetFillAmount<T extends Order>(
 
     const {
         ordersRemainingFillableAssetAmounts: resultOrdersRemainingFillableAssetAmounts,
+        // tslint:disable-next-line: trailing-comma
         ...ordersAndRemainingFillAmount
     } = result;
 
@@ -202,7 +203,7 @@ function findOrdersThatCoverAssetFillAmount<T extends Order>(
     } else {
         return {
             ...ordersAndRemainingFillAmount,
-            ordersRemainingFillableMakerAssetAmounts: resultOrdersRemainingFillableAssetAmounts,
+            ordersRemainingFillableTakerAssetAmounts: resultOrdersRemainingFillableAssetAmounts,
         };
     }
 }
