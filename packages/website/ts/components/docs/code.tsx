@@ -145,7 +145,7 @@ const customStyle = {
 
 export interface CodeProps {
     children: string;
-    language?: 'html | typescript | solidity | python';
+    lang?: 'html | typescript | solidity | python';
 }
 
 export interface CodeState {
@@ -154,7 +154,7 @@ export interface CodeState {
 
 export class Code extends React.Component<CodeProps, CodeState> {
     public static defaultProps = {
-        language: 'typescript',
+        lang: 'typescript',
     };
     public state: CodeState = {
         didCopyCode: false,
@@ -169,7 +169,7 @@ export class Code extends React.Component<CodeProps, CodeState> {
                     </CopyToClipboard>
                 </ButtonWrapper>
                 <SyntaxHighlighter
-                    language={this.props.language}
+                    language={this.props.lang}
                     style={customStyle}
                     showLineNumbers={false}
                     PreTag={CustomPre}
