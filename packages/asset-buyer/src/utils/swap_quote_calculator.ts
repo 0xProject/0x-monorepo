@@ -227,7 +227,10 @@ function calculateQuoteInfo(
                 ? findTakerTokenAndZrxAmountNeededToBuyAsset
                 : findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset;
         // find eth and zrx amounts needed to buy
-        const tokenAndZrxAmountToBuyAsset = findTokenAndZrxAmount(ordersAndFillableAmounts, makerTokenAmount);
+        const tokenAndZrxAmountToBuyAsset = findTokenAndZrxAmount(
+            ordersAndFillableAmounts,
+            marketOperation === 'marketBuy' ? makerTokenAmount : takerTokenAmount,
+        );
         if (marketOperation === 'marketBuy') {
             takerTokenAmount = tokenAndZrxAmountToBuyAsset[0];
         } else {
