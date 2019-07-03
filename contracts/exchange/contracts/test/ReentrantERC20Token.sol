@@ -47,6 +47,7 @@ contract ReentrantERC20Token is
         MARKET_BUY_ORDERS,
         MARKET_SELL_ORDERS,
         MATCH_ORDERS,
+        MATCH_ORDERS_WITH_MAXIMAL_FILL,
         CANCEL_ORDER,
         BATCH_CANCEL_ORDERS,
         CANCEL_ORDERS_UP_TO,
@@ -142,6 +143,26 @@ contract ReentrantERC20Token is
             bytes[] memory signatures = _createWalletSignatures(2);
             callData = abi.encodeWithSelector(
                 exchange.matchOrders.selector,
+                orders[0],
+                orders[1],
+                signatures[0],
+                signatures[1]
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS)) {
+            LibOrder.Order[2] memory orders = _createMatchedOrders();
+            bytes[] memory signatures = _createWalletSignatures(2);
+            callData = abi.encodeWithSelector(
+                exchange.matchOrders.selector,
+                orders[0],
+                orders[1],
+                signatures[0],
+                signatures[1]
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.MATCH_ORDERS_WITH_MAXIMAL_FILL)) {
+            LibOrder.Order[2] memory orders = _createMatchedOrders();
+            bytes[] memory signatures = _createWalletSignatures(2);
+            callData = abi.encodeWithSelector(
+                exchange.matchOrdersWithMaximalFill.selector,
                 orders[0],
                 orders[1],
                 signatures[0],
