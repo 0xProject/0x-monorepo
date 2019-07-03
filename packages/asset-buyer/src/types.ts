@@ -129,8 +129,6 @@ export interface SwapQuoteConsumerBase<T> {
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
 
-export type ValidSwapQuoteConsumer = ExchangeSwapQuoteConsumer | ForwarderSwapQuoteConsumer;
-
 /**
  * networkId: The networkId that the desired orders should be for.
  */
