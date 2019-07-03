@@ -1,8 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
-import { ForwarderSwapQuoteConsumer } from './quote_consumers/forwarder_swap_quote_consumer';
-import { ExchangeSwapQuoteConsumer } from './quote_consumers/exchange_swap_quote_consumer';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
