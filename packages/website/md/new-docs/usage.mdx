@@ -60,6 +60,11 @@ provider.addProvider(coverageSubprovider);
 provider.start();
 ```
 
+| Syntax    | Description |
+| --------- | ----------- |
+| Header    | Title       |
+| Paragraph | Text        |
+
 After your test suite is complete (e.g in the Mocha global `after` hook), you'll need to call:
 
 ```typescript
@@ -73,5 +78,23 @@ yarn add -D istanbul
 istanbul report html
 open coverage/index.html
 ```
+
+### Callouts
+
+<Callout text="This is' a pretty standard information callout" />
+<Callout text="This is an indication that something isn’t quite right" type="alert" />
+<Callout text="This is a success message" type="success" />
+
+### Lists
+
+1. First ordered list item
+2. Another item
+3. Actual numbers don't matter, just that it's a number
+4. And another item.
+
+-   First ordered list item
+-   Another item
+-   Actual numbers don't matter, just that it's a number
+-   And another item.
 
 Use [Ganache](https://github.com/trufflesuite/ganache-cli) as a backing node.

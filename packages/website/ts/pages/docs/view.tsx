@@ -57,6 +57,11 @@ export class DocsView extends React.Component<Props, State> {
             h1: LargeHeading,
             h2: H2,
             h3: H3,
+            ol: TutorialSteps,
+            ul: UnorderedList,
+            code: Code,
+            table: Table,
+            Callout,
         },
     };
     public componentDidMount(): void {
@@ -80,9 +85,11 @@ export class DocsView extends React.Component<Props, State> {
                         <aside>
                             <h3>Sidebar</h3>
                         </aside>
-                        <article>
+                        <ContentWrapper>
                             <MDXProvider components={mdxComponents}>{Component ? <Component /> : null}</MDXProvider>
-                        </article>
+                            <HelpCallout />
+                            <HelpfulCta />
+                        </ContentWrapper>
                     </Columns>
                 </Section>
             </SiteWrap>
@@ -110,6 +117,10 @@ const Columns = styled.div<{ count?: number }>`
     grid-template-columns: 230px 1fr;
     grid-column-gap: 118px;
     grid-row-gap: 30px;
+`;
+
+const ContentWrapper = styled.article`
+    min-height: 300px;
 `;
 
 Columns.defaultProps = {
