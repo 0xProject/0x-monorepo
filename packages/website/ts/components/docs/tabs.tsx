@@ -1,7 +1,12 @@
 import { ReactNode } from 'react';
 import styled from 'styled-components';
 
-import { Tab as ReactTab, TabList as ReactTabList, TabPanel as ReactTabPanel, Tabs as ReactTabs } from 'react-tabs';
+import {
+    Tab as OriginalTab,
+    TabList as OriginalTabList,
+    TabPanel as OriginalTabPanel,
+    Tabs as OriginalTabs,
+} from 'react-tabs';
 
 import { colors } from 'ts/style/colors';
 
@@ -10,11 +15,9 @@ interface ITabProps {
     selectedTabClassName?: string;
 }
 
-const activeClass = {
+export const Tabs = styled(OriginalTabs).attrs({
     selectedTabClassName: 'is-active',
-};
-
-export const Tabs = styled(ReactTabs).attrs(activeClass)<ITabProps>`
+})<ITabProps>`
     margin-bottom: 1.875rem;
 
     .is-active {
@@ -23,7 +26,9 @@ export const Tabs = styled(ReactTabs).attrs(activeClass)<ITabProps>`
     }
 `;
 
-export const TabPanel = styled(ReactTabPanel).attrs(activeClass)<ITabProps>`
+export const TabPanel = styled(OriginalTabPanel).attrs({
+    selectedClassName: 'is-active',
+})<ITabProps>`
     background-color: ${colors.backgroundLight};
     border-radius: 4px;
     display: none;
@@ -33,15 +38,15 @@ export const TabPanel = styled(ReactTabPanel).attrs(activeClass)<ITabProps>`
     }
 `;
 
-export const TabList = styled(ReactTabList)<ITabProps>`
+export const TabList = styled(OriginalTabList)<ITabProps>`
     display: flex;
 `;
 
-export const Tab = styled(ReactTab)<ITabProps>`
+export const Tab = styled(OriginalTab)<ITabProps>`
     background-color: transparent;
     border-radius: 4px 4px 0 0;
     cursor: pointer;
-    padding: 12px;
+    padding: 12px 12px 13px;
     font-size: 1rem;
     color: ${colors.textDarkSecondary};
     font-weight: 300;

@@ -9,10 +9,11 @@ import { zIndex } from 'ts/style/z_index';
 
 interface ICodeProps {
     children: string;
+    isRunnable?: boolean;
     lang?: 'html | typescript | solidity | python';
 }
 
-export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript' }) => {
+export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', isRunnable = false }) => {
     const [isCopied, setIsCopied] = useState<boolean>(false);
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
 
@@ -31,43 +32,88 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript' }) =>
                 style={style}
                 showLineNumbers={false}
                 PreTag={CustomPre}
+                wrapLines={true}
             >
                 {children}
             </SyntaxHighlighter>
+
+            {!isRunnable && (
+                <RunWrapper>
+                    <ButtonsWrapper>
+                        <RunButton bgColor={colors.brandDark} color="white">
+                            Run
+                        </RunButton>
+                        <RunButton bgColor="white" color={colors.brandDark}>
+                            Reset
+                        </RunButton>
+                    </ButtonsWrapper>
+                    <Result />
+                </RunWrapper>
+            )}
         </CodeWrapper>
     );
 };
+
+const GUTTER = '10px';
 
 const customStyle = {
     overflowX: 'scroll',
     padding: '20px',
 };
 
+const RunWrapper = styled.div`
+    display: flex;
+    padding: ${GUTTER};
+`;
+
+const ButtonsWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    margin-right: ${GUTTER};
+`;
+
+const RunButton = styled(Button)`
+    width: 112px;
+    height: 40px;
+    line-height: 0;
+
+    &:first-of-type {
+        margin-bottom: 4px;
+    }
+`;
+
+const Result = styled.div`
+    background: white;
+    border: 1px solid ${colors.brandDark};
+    border-radius: 4px;
+    width: 100%;
+    min-height: 100%;
+`;
+
 const CustomPre = styled.pre`
     border-radius: 4px;
+    background-color: white;
+
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+
+    &::-webkit-scrollbar {
+        /* WebKit */
+        width: 0;
+        height: 0;
+    }
 
     code {
-        background-color: inherit !important;
-        border-radius: 0px;
-        font-family: 'Roboto Mono', sans-serif;
         border: none;
+        font-family: 'Roboto Mono', sans-serif;
         font-size: 0.875rem;
         line-height: 1.25em;
     }
-
-    /* code:last-of-type {
-        position: relative;
-        top: 10px;
-        top: 0;
-        padding-top: 0;
-        display: inline-block;
-
-    } */
 `;
 
 const StyledButton = styled(Button)`
     border-radius: 4px;
-    background: #ffffff;
+    background: white;
     border: 1px solid #eaeaea;
     color: ${colors.brandDark};
     font-size: 15px;
@@ -86,6 +132,7 @@ const ButtonWrapper = styled.div`
 const CodeWrapper = styled.div`
     position: relative;
     max-width: 702px;
+    background-color: ${colors.backgroundLight};
 `;
 
 const style = {
