@@ -3,8 +3,7 @@ import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
-import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteConsumerError, SwapQuoteInfo } from '../types';
-import { utils } from '../utils/utils';
+import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
 
 export const assert = {
     ...sharedAssert,
@@ -15,12 +14,10 @@ export const assert = {
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
-        if (utils.isSwapQuoteMarketBuy(swapQuote)) {
+        if (swapQuote.type === 'marketBuy') {
             sharedAssert.isBigNumber(`${variableName}.makerAssetFillAmount`, swapQuote.makerAssetFillAmount);
-        } else if (utils.isSwapQuoteMarketSell(swapQuote)) {
-            sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
         } else {
-            throw new Error(SwapQuoteConsumerError.InvalidMarketSellOrMarketBuySwapQuote);
+            sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
         }
     },
     isValidForwarderSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {

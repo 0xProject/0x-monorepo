@@ -6,8 +6,10 @@ import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
 import {
     MarketBuySwapQuote,
+    MarketOperation,
     MarketSellSwapQuote,
     OrdersAndFillableAmounts,
+    SwapQuote,
     SwapQuoteInfo,
     SwapQuoterError,
 } from '../types';
@@ -21,109 +23,14 @@ export const swapQuoteCalculator = {
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
     ): MarketSellSwapQuote {
-        const orders = ordersAndFillableAmounts.orders;
-        const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const remainingFillableTakerAssetAmounts = remainingFillableMakerAssetAmounts.map(
-            (makerAssetAmount: BigNumber, index: number) => {
-                return orderCalculationUtils.getTakerFillAmount(orders[index], makerAssetAmount);
-            },
-        );
-        const feeOrders = feeOrdersAndFillableAmounts.orders;
-        const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const slippageBufferAmount = takerAssetFillAmount.multipliedBy(slippagePercentage).integerValue();
-        // find the orders that cover the desired assetBuyAmount (with slippage)
-        const {
-            resultOrders,
-            remainingFillAmount,
-            ordersRemainingFillableTakerAssetAmounts,
-        } = marketUtils.findOrdersThatCoverTakerAssetFillAmount(orders, takerAssetFillAmount, {
-            remainingFillableTakerAssetAmounts,
-            slippageBufferAmount,
-        });
-        const ordersRemainingFillableMakerAssetAmounts = _.map(
-            ordersRemainingFillableTakerAssetAmounts,
-            (takerAssetAmount: BigNumber, index: number) => {
-                return orderCalculationUtils.getMakerFillAmount(resultOrders[index], takerAssetAmount);
-            },
-        );
-        // if we do not have enough orders to cover the desired assetBuyAmount, throw
-        if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            // We needed the amount they requested to buy, plus the amount for slippage
-            const totalAmountRequested = takerAssetFillAmount.plus(slippageBufferAmount);
-            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
-            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
-            // in order to get the total amount needed considering slippage
-            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
-            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
-            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
-            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
-            const amountAvailableToFillConsideringSlippage = amountAbleToFill
-                .div(multiplierNeededWithSlippage)
-                .integerValue(BigNumber.ROUND_FLOOR);
-
-            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
-        }
-        // if we are not buying ZRX:
-        // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)
-        // TODO(bmillman): optimization
-        // update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
-        // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
-        let resultFeeOrders = [] as SignedOrder[];
-        let feeOrdersRemainingFillableMakerAssetAmounts = [] as BigNumber[];
-        if (!isMakerAssetZrxToken) {
-            const feeOrdersAndRemainingFeeAmount = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
-                resultOrders,
-                feeOrders,
-                {
-                    remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
-                    remainingFillableFeeAmounts,
-                },
-            );
-            // if we do not have enough feeOrders to cover the fees, throw
-            if (feeOrdersAndRemainingFeeAmount.remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
-                throw new Error(SwapQuoterError.InsufficientZrxLiquidity);
-            }
-            resultFeeOrders = feeOrdersAndRemainingFeeAmount.resultFeeOrders;
-            feeOrdersRemainingFillableMakerAssetAmounts =
-                feeOrdersAndRemainingFeeAmount.feeOrdersRemainingFillableMakerAssetAmounts;
-        }
-
-        // assetData information for the result
-        const takerAssetData = orders[0].takerAssetData;
-        const makerAssetData = orders[0].makerAssetData;
-
-        // compile the resulting trimmed set of orders for makerAsset and feeOrders that are needed for assetBuyAmount
-        const trimmedOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
-            orders: resultOrders,
-            remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
-        };
-        const trimmedFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
-            orders: resultFeeOrders,
-            remainingFillableMakerAssetAmounts: feeOrdersRemainingFillableMakerAssetAmounts,
-        };
-        const bestCaseQuoteInfo = calculateMarketSellQuoteInfo(
-            trimmedOrdersAndFillableAmounts,
-            trimmedFeeOrdersAndFillableAmounts,
+        return calculateSwapQuote(
+            ordersAndFillableAmounts,
+            feeOrdersAndFillableAmounts,
             takerAssetFillAmount,
+            slippagePercentage,
             isMakerAssetZrxToken,
-        );
-        // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
-        const worstCaseQuoteInfo = calculateMarketSellQuoteInfo(
-            reverseOrdersAndFillableAmounts(trimmedOrdersAndFillableAmounts),
-            reverseOrdersAndFillableAmounts(trimmedFeeOrdersAndFillableAmounts),
-            takerAssetFillAmount,
-            isMakerAssetZrxToken,
-        );
-
-        return {
-            takerAssetData,
-            makerAssetData,
-            takerAssetFillAmount,
-            orders: resultOrders,
-            feeOrders: resultFeeOrders,
-            bestCaseQuoteInfo,
-            worstCaseQuoteInfo,
-        };
+            'marketSell',
+        ) as MarketSellSwapQuote;
     },
     calculateMarketBuySwapQuote(
         ordersAndFillableAmounts: OrdersAndFillableAmounts,
@@ -132,120 +39,201 @@ export const swapQuoteCalculator = {
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
     ): MarketBuySwapQuote {
-        const orders = ordersAndFillableAmounts.orders;
-        const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const feeOrders = feeOrdersAndFillableAmounts.orders;
-        const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
-        const slippageBufferAmount = makerAssetFillAmount.multipliedBy(slippagePercentage).integerValue();
-        // find the orders that cover the desired assetBuyAmount (with slippage)
-        const {
-            resultOrders,
-            remainingFillAmount,
-            ordersRemainingFillableMakerAssetAmounts,
-        } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(orders, makerAssetFillAmount, {
-            remainingFillableMakerAssetAmounts,
-            slippageBufferAmount,
-        });
-        // if we do not have enough orders to cover the desired assetBuyAmount, throw
-        if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
-            // We needed the amount they requested to buy, plus the amount for slippage
-            const totalAmountRequested = makerAssetFillAmount.plus(slippageBufferAmount);
-            const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
-            // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
-            // in order to get the total amount needed considering slippage
-            // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
-            const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
-            // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
-            // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
-            const amountAvailableToFillConsideringSlippage = amountAbleToFill
-                .div(multiplierNeededWithSlippage)
-                .integerValue(BigNumber.ROUND_FLOOR);
-
-            throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
-        }
-        // if we are not buying ZRX:
-        // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)
-        // TODO(bmillman): optimization
-        // update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
-        // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
-        let resultFeeOrders = [] as SignedOrder[];
-        let feeOrdersRemainingFillableMakerAssetAmounts = [] as BigNumber[];
-        if (!isMakerAssetZrxToken) {
-            const feeOrdersAndRemainingFeeAmount = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
-                resultOrders,
-                feeOrders,
-                {
-                    remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
-                    remainingFillableFeeAmounts,
-                },
-            );
-            // if we do not have enough feeOrders to cover the fees, throw
-            if (feeOrdersAndRemainingFeeAmount.remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
-                throw new Error(SwapQuoterError.InsufficientZrxLiquidity);
-            }
-            resultFeeOrders = feeOrdersAndRemainingFeeAmount.resultFeeOrders;
-            feeOrdersRemainingFillableMakerAssetAmounts =
-                feeOrdersAndRemainingFeeAmount.feeOrdersRemainingFillableMakerAssetAmounts;
-        }
-
-        // assetData information for the result
-        const takerAssetData = orders[0].takerAssetData;
-        const makerAssetData = orders[0].makerAssetData;
-
-        // compile the resulting trimmed set of orders for makerAsset and feeOrders that are needed for assetBuyAmount
-        const trimmedOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
-            orders: resultOrders,
-            remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
-        };
-        const trimmedFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
-            orders: resultFeeOrders,
-            remainingFillableMakerAssetAmounts: feeOrdersRemainingFillableMakerAssetAmounts,
-        };
-        const bestCaseQuoteInfo = calculateMarketBuyQuoteInfo(
-            trimmedOrdersAndFillableAmounts,
-            trimmedFeeOrdersAndFillableAmounts,
+        return calculateSwapQuote(
+            ordersAndFillableAmounts,
+            feeOrdersAndFillableAmounts,
             makerAssetFillAmount,
+            slippagePercentage,
             isMakerAssetZrxToken,
-        );
-        // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
-        const worstCaseQuoteInfo = calculateMarketBuyQuoteInfo(
-            reverseOrdersAndFillableAmounts(trimmedOrdersAndFillableAmounts),
-            reverseOrdersAndFillableAmounts(trimmedFeeOrdersAndFillableAmounts),
-            makerAssetFillAmount,
-            isMakerAssetZrxToken,
-        );
-
-        return {
-            takerAssetData,
-            makerAssetData,
-            makerAssetFillAmount,
-            orders: resultOrders,
-            feeOrders: resultFeeOrders,
-            bestCaseQuoteInfo,
-            worstCaseQuoteInfo,
-        };
+            'marketBuy',
+        ) as MarketBuySwapQuote;
     },
 };
 
-function calculateMarketBuyQuoteInfo(
+function calculateSwapQuote(
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
-    makerTokenAmount: BigNumber,
+    assetFillAmount: BigNumber,
+    slippagePercentage: number,
     isMakerAssetZrxToken: boolean,
+    marketOperation: MarketOperation,
+): SwapQuote {
+    const orders = ordersAndFillableAmounts.orders;
+    const remainingFillableMakerAssetAmounts = ordersAndFillableAmounts.remainingFillableMakerAssetAmounts;
+    const remainingFillableTakerAssetAmounts = remainingFillableMakerAssetAmounts.map(
+        (makerAssetAmount: BigNumber, index: number) => {
+            return orderCalculationUtils.getTakerFillAmount(orders[index], makerAssetAmount);
+        },
+    );
+    const feeOrders = feeOrdersAndFillableAmounts.orders;
+    const remainingFillableFeeAmounts = feeOrdersAndFillableAmounts.remainingFillableMakerAssetAmounts;
+
+    const slippageBufferAmount = assetFillAmount.multipliedBy(slippagePercentage).integerValue();
+
+    let resultOrders: SignedOrder[];
+    let remainingFillAmount: BigNumber;
+    let ordersRemainingFillableMakerAssetAmounts: BigNumber[];
+
+    if (marketOperation === 'marketBuy') {
+        // find the orders that cover the desired assetBuyAmount (with slippage)
+        ({
+            resultOrders,
+            remainingFillAmount,
+            ordersRemainingFillableMakerAssetAmounts,
+        } = marketUtils.findOrdersThatCoverMakerAssetFillAmount(orders, assetFillAmount, {
+            remainingFillableMakerAssetAmounts,
+            slippageBufferAmount,
+        }));
+    } else {
+        let ordersRemainingFillableTakerAssetAmounts: BigNumber[];
+        // find the orders that cover the desired assetBuyAmount (with slippage)
+        ({
+            resultOrders,
+            remainingFillAmount,
+            ordersRemainingFillableTakerAssetAmounts,
+        } = marketUtils.findOrdersThatCoverTakerAssetFillAmount(orders, assetFillAmount, {
+            remainingFillableTakerAssetAmounts,
+            slippageBufferAmount,
+        }));
+
+        ordersRemainingFillableMakerAssetAmounts = _.map(
+            ordersRemainingFillableTakerAssetAmounts,
+            (takerAssetAmount: BigNumber, index: number) => {
+                return orderCalculationUtils.getMakerFillAmount(resultOrders[index], takerAssetAmount);
+            },
+        );
+    }
+
+    // if we do not have enough orders to cover the desired assetBuyAmount, throw
+    if (remainingFillAmount.gt(constants.ZERO_AMOUNT)) {
+        // We needed the amount they requested to buy, plus the amount for slippage
+        const totalAmountRequested = assetFillAmount.plus(slippageBufferAmount);
+        const amountAbleToFill = totalAmountRequested.minus(remainingFillAmount);
+        // multiplierNeededWithSlippage represents what we need to multiply the assetBuyAmount by
+        // in order to get the total amount needed considering slippage
+        // i.e. if slippagePercent was 0.2 (20%), multiplierNeededWithSlippage would be 1.2
+        const multiplierNeededWithSlippage = new BigNumber(1).plus(slippagePercentage);
+        // Given amountAvailableToFillConsideringSlippage * multiplierNeededWithSlippage = amountAbleToFill
+        // We divide amountUnableToFill by multiplierNeededWithSlippage to determine amountAvailableToFillConsideringSlippage
+        const amountAvailableToFillConsideringSlippage = amountAbleToFill
+            .div(multiplierNeededWithSlippage)
+            .integerValue(BigNumber.ROUND_FLOOR);
+
+        throw new InsufficientAssetLiquidityError(amountAvailableToFillConsideringSlippage);
+    }
+    // if we are not buying ZRX:
+    // given the orders calculated above, find the fee-orders that cover the desired assetBuyAmount (with slippage)
+    // TODO(bmillman): optimization
+    // update this logic to find the minimum amount of feeOrders to cover the worst case as opposed to
+    // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
+    let resultFeeOrders = [] as SignedOrder[];
+    let feeOrdersRemainingFillableMakerAssetAmounts = [] as BigNumber[];
+    if (!isMakerAssetZrxToken) {
+        const feeOrdersAndRemainingFeeAmount = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
+            resultOrders,
+            feeOrders,
+            {
+                remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
+                remainingFillableFeeAmounts,
+            },
+        );
+        // if we do not have enough feeOrders to cover the fees, throw
+        if (feeOrdersAndRemainingFeeAmount.remainingFeeAmount.gt(constants.ZERO_AMOUNT)) {
+            throw new Error(SwapQuoterError.InsufficientZrxLiquidity);
+        }
+        resultFeeOrders = feeOrdersAndRemainingFeeAmount.resultFeeOrders;
+        feeOrdersRemainingFillableMakerAssetAmounts =
+            feeOrdersAndRemainingFeeAmount.feeOrdersRemainingFillableMakerAssetAmounts;
+    }
+
+    // assetData information for the result
+    const takerAssetData = orders[0].takerAssetData;
+    const makerAssetData = orders[0].makerAssetData;
+
+    // compile the resulting trimmed set of orders for makerAsset and feeOrders that are needed for assetBuyAmount
+    const trimmedOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
+        orders: resultOrders,
+        remainingFillableMakerAssetAmounts: ordersRemainingFillableMakerAssetAmounts,
+    };
+    const trimmedFeeOrdersAndFillableAmounts: OrdersAndFillableAmounts = {
+        orders: resultFeeOrders,
+        remainingFillableMakerAssetAmounts: feeOrdersRemainingFillableMakerAssetAmounts,
+    };
+
+    const bestCaseQuoteInfo = calculateQuoteInfo(
+        trimmedOrdersAndFillableAmounts,
+        trimmedFeeOrdersAndFillableAmounts,
+        assetFillAmount,
+        isMakerAssetZrxToken,
+        marketOperation,
+    );
+    // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
+    const worstCaseQuoteInfo = calculateQuoteInfo(
+        reverseOrdersAndFillableAmounts(trimmedOrdersAndFillableAmounts),
+        reverseOrdersAndFillableAmounts(trimmedFeeOrdersAndFillableAmounts),
+        assetFillAmount,
+        isMakerAssetZrxToken,
+        marketOperation,
+    );
+
+    const quoteBase = {
+        takerAssetData,
+        makerAssetData,
+        orders: resultOrders,
+        feeOrders: resultFeeOrders,
+        bestCaseQuoteInfo,
+        worstCaseQuoteInfo,
+    };
+
+    if (marketOperation === 'marketBuy') {
+        return {
+            ...quoteBase,
+            type: 'marketBuy',
+            makerAssetFillAmount: assetFillAmount,
+        };
+    } else {
+        return {
+            ...quoteBase,
+            type: 'marketSell',
+            takerAssetFillAmount: assetFillAmount,
+        };
+    }
+}
+
+function calculateQuoteInfo(
+    ordersAndFillableAmounts: OrdersAndFillableAmounts,
+    feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
+    tokenAmount: BigNumber,
+    isMakerAssetZrxToken: boolean,
+    marketOperation: MarketOperation,
 ): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
-    let takerTokenAmount = constants.ZERO_AMOUNT;
+    let makerTokenAmount = marketOperation === 'marketBuy' ? tokenAmount : constants.ZERO_AMOUNT;
+    let takerTokenAmount = marketOperation === 'marketSell' ? tokenAmount : constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
+
     if (isMakerAssetZrxToken) {
-        takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
+        if (marketOperation === 'marketBuy') {
+            takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
+        } else {
+            makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(
+                ordersAndFillableAmounts,
+                takerTokenAmount,
+            );
+        }
     } else {
+        const findTokenAndZrxAmount =
+            marketOperation === 'marketBuy'
+                ? findTakerTokenAndZrxAmountNeededToBuyAsset
+                : findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset;
         // find eth and zrx amounts needed to buy
-        const takerTokenAndZrxAmountToBuyAsset = findTakerTokenAndZrxAmountNeededToBuyAsset(
-            ordersAndFillableAmounts,
-            makerTokenAmount,
-        );
-        takerTokenAmount = takerTokenAndZrxAmountToBuyAsset[0];
-        const zrxAmountToBuyAsset = takerTokenAndZrxAmountToBuyAsset[1];
+        const tokenAndZrxAmountToBuyAsset = findTokenAndZrxAmount(ordersAndFillableAmounts, makerTokenAmount);
+        if (marketOperation === 'marketBuy') {
+            takerTokenAmount = tokenAndZrxAmountToBuyAsset[0];
+        } else {
+            makerTokenAmount = tokenAndZrxAmountToBuyAsset[0];
+        }
+        const zrxAmountToBuyAsset = tokenAndZrxAmountToBuyAsset[1];
         // find eth amount needed to buy zrx
         zrxTakerTokenAmount = findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
@@ -261,42 +249,6 @@ function calculateMarketBuyQuoteInfo(
         totalTakerTokenAmount,
     };
 }
-
-function calculateMarketSellQuoteInfo(
-    ordersAndFillableAmounts: OrdersAndFillableAmounts,
-    feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
-    takerTokenAmount: BigNumber,
-    isMakerAssetZrxToken: boolean,
-): SwapQuoteInfo {
-    // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
-    let makerTokenAmount = constants.ZERO_AMOUNT;
-    let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
-    if (isMakerAssetZrxToken) {
-        makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(ordersAndFillableAmounts, takerTokenAmount);
-    } else {
-        // find eth and zrx amounts needed to buy
-        const takerTokenAndZrxAmountToBuyAsset = findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset(
-            ordersAndFillableAmounts,
-            takerTokenAmount,
-        );
-        makerTokenAmount = takerTokenAndZrxAmountToBuyAsset[0];
-        const zrxAmountToSellAsset = takerTokenAndZrxAmountToBuyAsset[1];
-        // find eth amount needed to buy zrx
-        zrxTakerTokenAmount = findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToSellAsset);
-    }
-
-    const feeTakerTokenAmount = zrxTakerTokenAmount;
-
-    // eth amount needed in total is the sum of the amount needed for the asset and the amount needed for fees
-    const totalTakerTokenAmount = takerTokenAmount.plus(feeTakerTokenAmount);
-    return {
-        makerTokenAmount,
-        takerTokenAmount,
-        feeTakerTokenAmount,
-        totalTakerTokenAmount,
-    };
-}
-
 // given an OrdersAndFillableAmounts, reverse the orders and remainingFillableMakerAssetAmounts properties
 function reverseOrdersAndFillableAmounts(ordersAndFillableAmounts: OrdersAndFillableAmounts): OrdersAndFillableAmounts {
     const ordersCopy = _.clone(ordersAndFillableAmounts.orders);
