@@ -118,6 +118,7 @@ export class MatchOrderTester {
     public erc721Wrapper: ERC721Wrapper;
     public erc1155ProxyWrapper: ERC1155ProxyWrapper;
     public batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall;
+    public batchMatchOrdersWithMaximalFillCallAsync?: BatchMatchOrdersAsyncCall;
     public matchOrdersCallAsync?: MatchOrdersAsyncCall;
     public matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall;
     private readonly _initialTokenBalancesPromise: Promise<TokenBalances>;
@@ -130,7 +131,11 @@ export class MatchOrderTester {
      * @param erc1155Wrapper Used to fetch ERC1155 token owners.
      * @param batchMatchOrdersCallAsync Optional, custom caller for
      *                             `ExchangeWrapper.batchMatchOrdersAsync()`.
+     * @param batchMatchOrdersWithMaximalFillCallAsync Optional, custom caller for
+     *                             `ExchangeWrapper.batchMatchOrdersAsync()`.
      * @param matchOrdersCallAsync Optional, custom caller for
+     *                             `ExchangeWrapper.matchOrdersAsync()`.
+     * @param matchOrdersWithMaximalFillCallAsync Optional, custom caller for
      *                             `ExchangeWrapper.matchOrdersAsync()`.
      */
     constructor(
@@ -138,14 +143,17 @@ export class MatchOrderTester {
         erc20Wrapper: ERC20Wrapper,
         erc721Wrapper: ERC721Wrapper,
         erc1155ProxyWrapper: ERC1155ProxyWrapper,
-        matchOrdersCallAsync?: MatchOrdersAsyncCall,
         batchMatchOrdersCallAsync?: BatchMatchOrdersAsyncCall,
+        batchMatchOrdersWithMaximalFillCallAsync?: BatchMatchOrdersAsyncCall,
+        matchOrdersCallAsync?: MatchOrdersAsyncCall,
         matchOrdersWithMaximalFillCallAsync?: MatchOrdersAsyncCall,
     ) {
         this.exchangeWrapper = exchangeWrapper;
         this.erc20Wrapper = erc20Wrapper;
         this.erc721Wrapper = erc721Wrapper;
         this.erc1155ProxyWrapper = erc1155ProxyWrapper;
+        this.batchMatchOrdersCallAsync = batchMatchOrdersCallAsync;
+        this.batchMatchOrdersWithMaximalFillCallAsync = batchMatchOrdersWithMaximalFillCallAsync;
         this.matchOrdersCallAsync = matchOrdersCallAsync;
         this.matchOrdersWithMaximalFillCallAsync = matchOrdersWithMaximalFillCallAsync;
         this._initialTokenBalancesPromise = this.getBalancesAsync();
@@ -160,6 +168,8 @@ export class MatchOrderTester {
      * @param expectedTransferAmounts Expected amounts transferred as a result of each round of
      *                                order matching. Omitted fields are either set to 0 or their
      *                                complementary field.
+     * @param withMaximalFill A boolean that indicates whether the "maximal fill" order matching
+     *                        strategy should be used.
      * @return Results of `batchMatchOrders()`.
      */
     public async batchMatchOrdersAndAssertEffectsAsync(
@@ -167,6 +177,7 @@ export class MatchOrderTester {
         takerAddress: string,
         matchPairs: Array<[number, number]>,
         expectedTransferAmounts: Array<Partial<MatchTransferAmounts>>,
+        withMaximalFill: boolean,
         initialTokenBalances?: TokenBalances,
     ): Promise<BatchMatchResults> {
         // Ensure that the provided input is valid.
@@ -180,11 +191,20 @@ export class MatchOrderTester {
             ? initialTokenBalances
             : await this._initialTokenBalancesPromise;
         // Execute `batchMatchOrders()`
-        const transactionReceipt = await this._executeBatchMatchOrdersAsync(
-            orders.leftOrders,
-            orders.rightOrders,
-            takerAddress,
-        );
+        let transactionReceipt;
+        if (withMaximalFill) {
+            transactionReceipt = await this._executeBatchMatchOrdersWithMaximalFillAsync(
+                orders.leftOrders,
+                orders.rightOrders,
+                takerAddress,
+            );
+        } else {
+            transactionReceipt = await this._executeBatchMatchOrdersAsync(
+                orders.leftOrders,
+                orders.rightOrders,
+                takerAddress,
+            );
+        }
         // Simulate the batch order match.
         const expectedBatchMatchResults = simulateBatchMatchOrders(
             orders,
@@ -271,6 +291,18 @@ export class MatchOrderTester {
             this.batchMatchOrdersCallAsync ||
             (async (_leftOrders: SignedOrder[], _rightOrders: SignedOrder[], _takerAddress: string) =>
                 this.exchangeWrapper.batchMatchOrdersAsync(_leftOrders, _rightOrders, _takerAddress));
+        return caller(leftOrders, rightOrders, takerAddress);
+    }
+
+    private async _executeBatchMatchOrdersWithMaximalFillAsync(
+        leftOrders: SignedOrder[],
+        rightOrders: SignedOrder[],
+        takerAddress: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const caller =
+            this.batchMatchOrdersWithMaximalFillCallAsync ||
+            (async (_leftOrders: SignedOrder[], _rightOrders: SignedOrder[], _takerAddress: string) =>
+                this.exchangeWrapper.batchMatchOrdersWithMaximalFillAsync(_leftOrders, _rightOrders, _takerAddress));
         return caller(leftOrders, rightOrders, takerAddress);
     }
 

@@ -275,10 +275,12 @@ export class ExchangeWrapper {
         const ordersInfo = (await this._exchange.getOrdersInfo.callAsync(signedOrders)) as OrderInfo[];
         return ordersInfo;
     }
-    public async batchMatchOrdersRawAsync(
-        params: BatchMatchOrder,
+    public async batchMatchOrdersAsync(
+        signedOrdersLeft: SignedOrder[],
+        signedOrdersRight: SignedOrder[],
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         const txHash = await this._exchange.batchMatchOrders.sendTransactionAsync(
             params.leftOrders,
             params.rightOrders,
@@ -289,12 +291,10 @@ export class ExchangeWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async batchMatchOrdersAsync(
-        signedOrdersLeft: SignedOrder[],
-        signedOrdersRight: SignedOrder[],
+    public async batchMatchOrdersRawAsync(
+        params: BatchMatchOrder,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         const txHash = await this._exchange.batchMatchOrders.sendTransactionAsync(
             params.leftOrders,
             params.rightOrders,
@@ -312,6 +312,51 @@ export class ExchangeWrapper {
     ): Promise<BatchMatchedFillResults> {
         const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
         const batchMatchedFillResults = await this._exchange.batchMatchOrders.callAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        return batchMatchedFillResults;
+    }
+    public async batchMatchOrdersWithMaximalFillAsync(
+        signedOrdersLeft: SignedOrder[],
+        signedOrdersRight: SignedOrder[],
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
+        const txHash = await this._exchange.batchMatchOrdersWithMaximalFill.sendTransactionAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async batchMatchOrdersWithMaximalFillRawAsync(
+        params: BatchMatchOrder,
+        from: string,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.batchMatchOrdersWithMaximalFill.sendTransactionAsync(
+            params.leftOrders,
+            params.rightOrders,
+            params.leftSignatures,
+            params.rightSignatures,
+            { from },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async getBatchMatchOrdersWithMaximalFillResultsAsync(
+        signedOrdersLeft: SignedOrder[],
+        signedOrdersRight: SignedOrder[],
+        from: string,
+    ): Promise<BatchMatchedFillResults> {
+        const params = orderUtils.createBatchMatchOrders(signedOrdersLeft, signedOrdersRight);
+        const batchMatchedFillResults = await this._exchange.batchMatchOrdersWithMaximalFill.callAsync(
             params.leftOrders,
             params.rightOrders,
             params.leftSignatures,
