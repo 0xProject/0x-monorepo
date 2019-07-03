@@ -12,9 +12,9 @@ packages/website/  @BMillman19 @fragosti @fabioberger @steveklebanoff
 # Dev tools & setup
 .circleci/ @LogvinovLeon
 packages/abi-gen/ @feuGeneA
-packages/base-contract/ @LogvinovLeon
+packages/base-contract/ @xianny
 packages/connect/ @fragosti 
-packages/abi-gen-templates/ @feuGeneA
+packages/abi-gen-templates/ @feuGeneA @xianny
 packages/contract-addresses/ @albrow
 packages/contract-artifacts/ @albrow
 packages/dev-utils/ @LogvinovLeon @fabioberger
