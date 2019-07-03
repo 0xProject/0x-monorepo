@@ -29,6 +29,10 @@ jobs:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo
+            - save_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
+                  paths:
+                      - ~/repo/packages/python-contract-wrappers/generated
     build-website:
         resource_class: medium+
         docker:
@@ -210,14 +214,17 @@ jobs:
             - run: sudo chown -R circleci:circleci /usr/local/bin
             - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                  key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       cd python-packages
                       python -m ensurepip
+                      ./pre_install
                       ./install
             - save_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                  key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
@@ -258,14 +265,14 @@ jobs:
             - run: sudo chown -R circleci:circleci /usr/local/bin
             - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                  key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       cd python-packages/order_utils
                       python -m ensurepip
                       python -m pip install .
             - save_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                  key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - '/usr/local/bin'
                       - '/usr/local/lib/python3.7/site-packages'
@@ -286,11 +293,14 @@ jobs:
             - run: sudo chown -R circleci:circleci /usr/local/bin
             - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
-                  key: deps9-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+                  key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
+            - restore_cache:
+                  key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
             - run:
                   command: |
                       python -m ensurepip
                       cd python-packages
+                      ./pre_install
                       ./install
                       ./lint
     static-tests:
@@ -419,6 +429,8 @@ workflows:
             - static-tests-python:
                   requires:
                       - test-python
-            - test-python
+            - test-python:
+                  requires:
+                      - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python

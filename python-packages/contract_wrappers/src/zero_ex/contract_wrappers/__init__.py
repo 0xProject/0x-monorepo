@@ -91,19 +91,24 @@ we need to tell the WETH token contract to let the 0x contracts transfer our
 balance:
 
 >>> from zero_ex.contract_wrappers import ERC20Token
->>> erc20_wrapper = ERC20Token(ganache)
+>>> zrx_wrapper = ERC20Token(
+...     provider=ganache,
+...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
+... )
+>>> weth_wrapper = ERC20Token(
+...     provider=ganache,
+...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
+... )
 
 >>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> tx = erc20_wrapper.approve(
-...     zrx_address,
+>>> tx = zrx_wrapper.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
 
->>> tx = erc20_wrapper.approve(
-...     weth_address,
+>>> tx = weth_wrapper.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=taker_address),
@@ -157,7 +162,10 @@ fill.  This example fills the order completely, but partial fills are possible
 too.
 
 >>> from zero_ex.contract_wrappers import Exchange
->>> exchange_contract = Exchange(ganache)
+>>> exchange_contract = Exchange(
+...     provider=ganache,
+...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
+... )
 >>> tx_hash = exchange_contract.fill_order(
 ...     order=order,
 ...     taker_amount=order["takerAssetAmount"],
@@ -288,5 +296,5 @@ HexBytes('0x...')
 """
 
 from .tx_params import TxParams
-from .erc20_wrapper import ERC20Token
+from .erc20_token import ERC20Token
 from .exchange_wrapper import Exchange

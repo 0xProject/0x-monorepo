@@ -32,18 +32,17 @@ class Exchange(BaseContractWrapper):
     def __init__(
         self,
         provider: BaseProvider,
-        account_address: str = None,
+        contract_address: str,
         private_key: str = None,
     ):
         """Get an instance of the 0x Exchange smart contract wrapper.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
-        :param account_address: str of account address
         :param private_key: str of private_key
         """
         super(Exchange, self).__init__(
             provider=provider,
-            account_address=account_address,
+            contract_address=contract_address,
             private_key=private_key,
         )
         self._web3_net = self._web3.net  # pylint: disable=no-member

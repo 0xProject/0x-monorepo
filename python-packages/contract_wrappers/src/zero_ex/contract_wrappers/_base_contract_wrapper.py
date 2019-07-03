@@ -15,24 +15,28 @@ class BaseContractWrapper:
     It provides functionality for instantiating a contract instance,
     calling view functions, and calling functions which require
     transactions.
-
-    :param provider: instance of :class:`web3.providers.base.BaseProvider`
-    :param account_address: default None, str of account address
-    :param private_key: default None, str of private_key
     """
 
     def __init__(
         self,
         provider: BaseProvider,
-        account_address: str = None,
+        contract_address: str,
         private_key: str = None,
     ):
-        """Create an instance of BaseContractWrapper."""
+        """Create an instance of BaseContractWrapper.
+
+        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param private_key: If specified, transactions will be signed locally,
+            via Web3.py's `eth.account.signTransaction()`:code:, before being
+            sent via `eth.sendRawTransaction()`:code:.
+        """
         self._provider = provider
-        self._account_address = account_address
         self._private_key = private_key
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
+        self._contract_address = self._validate_and_checksum_address(
+            contract_address
+        )
 
         self._can_send_tx = False
         if self._web3_eth.defaultAccount or self._web3_eth.accounts:
@@ -98,7 +102,6 @@ class BaseContractWrapper:
     # pylint: disable=too-many-arguments
     def execute_method(
         self,
-        address: str,
         abi: dict,
         method: str,
         args: Optional[Union[list, tuple]] = None,
@@ -107,7 +110,6 @@ class BaseContractWrapper:
     ) -> str:
         """Execute the method on a contract instance.
 
-        :param address: string of contract address
         :param abi: dict of contract ABI
         :param method: string name of method to call
         :param args: default None, list or tuple of arguments for the method
@@ -117,7 +119,9 @@ class BaseContractWrapper:
 
         :returns: str of transaction hash
         """
-        contract_instance = self._contract_instance(address=address, abi=abi)
+        contract_instance = self._contract_instance(
+            address=self._contract_address, abi=abi
+        )
         if args is None:
             args = []
         if hasattr(contract_instance.functions, method):
@@ -126,5 +130,7 @@ class BaseContractWrapper:
                 func=func, tx_params=tx_params, view_only=view_only
             )
         raise Exception(
-            "No method {} found on contract {}.".format(address, method)
+            "No method {} found on contract {}.".format(
+                self._contract_address, method
+            )
         )
