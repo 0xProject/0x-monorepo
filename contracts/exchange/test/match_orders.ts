@@ -2067,6 +2067,46 @@ describe('matchOrders', () => {
             );
         });
 
+        it('should fully fill both orders and pay out profit in both maker assets', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(4, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAddress: makerAddressRight,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(8, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(6, 0),
+            });
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightMakerAssetBoughtByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(4, 0), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(8, 0),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(6, 0), // 100%
+                // Taker
+                leftMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
+                rightMakerAssetReceivedByTakerAmount: Web3Wrapper.toBaseUnitAmount(4, 0),
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), //
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                true,
+            );
+        });
+
         it('Should give left maker a better sell price when rounding', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
