@@ -13,7 +13,6 @@ import {
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
-    ValidSwapQuoteConsumer,
 } from '../types';
 import { assert } from '../utils/assert';
 import { assetDataUtils } from '../utils/asset_data_utils';
@@ -75,7 +74,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     public async getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
         opts: Partial<DynamicSwapQuoteGetOutputOpts>,
-    ): Promise<ValidSwapQuoteConsumer> {
+    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
         const wethAssetData = assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
