@@ -1,20 +1,49 @@
-import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
+import React, { useState } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/button';
-import { Container } from 'ts/components/ui/container';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 
+interface ICodeProps {
+    children: string;
+    lang?: 'html | typescript | solidity | python';
+}
+
+export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript' }) => {
+    const [isCopied, setIsCopied] = useState<boolean>(false);
+    const copyButtonText = isCopied ? 'Copied!' : 'Copy';
+
+    const handleCopyClick = () => setIsCopied(true);
+
+    return (
+        <CodeWrapper>
+            <ButtonWrapper>
+                <CopyToClipboard text={children} onCopy={handleCopyClick}>
+                    <StyledButton>{copyButtonText}</StyledButton>
+                </CopyToClipboard>
+            </ButtonWrapper>
+            <SyntaxHighlighter
+                language={lang}
+                customStyle={customStyle}
+                style={style}
+                showLineNumbers={false}
+                PreTag={CustomPre}
+            >
+                {children}
+            </SyntaxHighlighter>
+        </CodeWrapper>
+    );
+};
+
+const customStyle = {
+    overflowX: 'scroll',
+    padding: '20px',
+};
+
 const CustomPre = styled.pre`
-    margin: 0px;
-    line-height: 24px;
-    overflow: scroll;
-    width: 100%;
-    height: 100%;
-    max-height: 800px;
     border-radius: 4px;
 
     code {
@@ -22,20 +51,44 @@ const CustomPre = styled.pre`
         border-radius: 0px;
         font-family: 'Roboto Mono', sans-serif;
         border: none;
+        font-size: 0.875rem;
+        line-height: 1.25em;
     }
 
-    code:last-of-type {
+    /* code:last-of-type {
         position: relative;
         top: 10px;
         top: 0;
         padding-top: 0;
         display: inline-block;
-        font-size: 0.875rem;
-        line-height: 1.25em;
-    }
+
+    } */
 `;
 
-const customStyle = {
+const StyledButton = styled(Button)`
+    border-radius: 4px;
+    background: #ffffff;
+    border: 1px solid #eaeaea;
+    color: ${colors.brandDark};
+    font-size: 15px;
+    font-weight: 300;
+    padding: 9px 12px 7px;
+`;
+
+const ButtonWrapper = styled.div`
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: ${zIndex.overlay - 1};
+    transform: translateY(calc(-100% + -13px));
+`;
+
+const CodeWrapper = styled.div`
+    position: relative;
+    max-width: 702px;
+`;
+
+const style = {
     'hljs-comment': {
         color: '#7e7887',
     },
@@ -142,67 +195,3 @@ const customStyle = {
         fontWeight: 'bold',
     },
 };
-
-export interface CodeProps {
-    children: string;
-    lang?: 'html | typescript | solidity | python';
-}
-
-export interface CodeState {
-    didCopyCode: boolean;
-}
-
-export class Code extends React.Component<CodeProps, CodeState> {
-    public static defaultProps = {
-        lang: 'typescript',
-    };
-    public state: CodeState = {
-        didCopyCode: false,
-    };
-    public render(): React.ReactNode {
-        const copyButtonText = this.state.didCopyCode ? 'Copied!' : 'Copy';
-        return (
-            <Wrapper>
-                <ButtonWrapper>
-                    <CopyToClipboard text={this.props.children} onCopy={this._handleCopyClick}>
-                        <StyledButton>{copyButtonText}</StyledButton>
-                    </CopyToClipboard>
-                </ButtonWrapper>
-                <SyntaxHighlighter
-                    language={this.props.lang}
-                    style={customStyle}
-                    showLineNumbers={false}
-                    PreTag={CustomPre}
-                >
-                    {this.props.children}
-                </SyntaxHighlighter>
-            </Wrapper>
-        );
-    }
-    private readonly _handleCopyClick = () => {
-        this.setState({ didCopyCode: true });
-    };
-}
-
-const StyledButton = styled(Button)`
-    border-radius: 4px;
-    background: #ffffff;
-    border: 1px solid #eaeaea;
-    color: ${colors.brandDark};
-    font-size: 15px;
-    font-weight: 300;
-    padding: 9px 12px 7px;
-`;
-
-const ButtonWrapper = styled.div`
-    position: absolute;
-    right: 0;
-    top: 0;
-    z-index: ${zIndex.overlay - 1};
-    transform: translateY(calc(-100% + -13px));
-`;
-
-const Wrapper = styled.div`
-    position: relative;
-    max-width: 702px;
-`;
