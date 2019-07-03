@@ -18,7 +18,7 @@ export {
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
-export { DynamicSwapQuoteConsumer as SwapQuoteConsumer } from './quote_consumers/dynamic_swap_quote_consumer';
+export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export { InsufficientAssetLiquidityError } from './errors';
 
