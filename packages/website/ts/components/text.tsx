@@ -18,6 +18,7 @@ interface HeadingProps extends BaseTextInterface {
     isMuted?: boolean | number;
     marginBottom?: string;
     color?: string;
+    children?: React.ReactNode | string;
 }
 
 interface ParagraphProps extends BaseTextInterface {
