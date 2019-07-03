@@ -1,6 +1,8 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
+import { ForwarderSwapQuoteConsumer } from './quote_consumers/forwarder_swap_quote_consumer';
+import { ExchangeSwapQuoteConsumer } from './quote_consumers/exchange_swap_quote_consumer';
 
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
@@ -110,6 +112,8 @@ export type ForwarderSmartContractParams =
     | ForwarderMarketBuySmartContractParams
     | ForwarderMarketSellSmartContractParams;
 
+export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartContractParams;
+
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
  * getCalldataOrThrow: Get CalldataInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
@@ -124,6 +128,8 @@ export interface SwapQuoteConsumerBase<T> {
     ): Promise<SmartContractParamsInfo<T>>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
 }
+
+export type ValidSwapQuoteConsumer = ExchangeSwapQuoteConsumer | ForwarderSwapQuoteConsumer;
 
 /**
  * networkId: The networkId that the desired orders should be for.
@@ -153,20 +159,6 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
-export interface DynamicSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
-    takerAddress?: string;
-}
-
-/**
- * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
- */
-export interface DynamicSwapQuoteExecutionOpts extends DynamicSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
-
-/**
- * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
- * feeRecipient: address of the receiver of the feePercentage of taker asset
- * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
- */
 export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
     feePercentage: number;
     feeRecipient: string;
@@ -179,6 +171,22 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
+
+/**
+ * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
+ * feeRecipient: address of the receiver of the feePercentage of taker asset
+ * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
+ */
+export interface DynamicSwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
+    takerAddress?: string;
+}
+
+/**
+ * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
+ */
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
+
+export interface DynamicSwapQuoteExecutionOpts extends DynamicSwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
