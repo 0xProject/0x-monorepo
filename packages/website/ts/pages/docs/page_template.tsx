@@ -200,9 +200,7 @@ export class DocsPageTemplate extends React.Component<Props> {
                                     </tr>
                                 </tbody>
                             </Table>
-                            <Heading asElement="h3" size="default">
-                                Code Snippet
-                            </Heading>
+                            <H3>Code Snippet</H3>
                             <Code>
                                 {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
 
@@ -212,9 +210,7 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
     from: senderAddress,
 });`}
                             </Code>
-                            <Heading asElement="h3" size="default">
-                                Tabbed Code Snippet
-                            </Heading>
+                            <H3>Tabbed Code Snippet</H3>
                             <Tabs>
                                 <TabList>
                                     <Tab>Typescript</Tab>
@@ -256,9 +252,7 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                                     </Code>
                                 </TabPanel>
                             </Tabs>
-                            <Heading asElement="h3" size="default">
-                                Subheading
-                            </Heading>
+                            <H3>Subheading</H3>
                             <Paragraph>
                                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat velit in nisl
                                 varius malesuada. Morbi at porttitor enim. Donec vel tristique dolor, quis convallis
@@ -378,4 +372,14 @@ const LargeHeading = styled(Heading).attrs({
 
 const LargeIntro = styled(Paragraph).attrs({
     size: 'medium',
+})``;
+
+const H2 = styled(Heading).attrs({
+    size: 'default',
+    asElement: 'h2',
+})``;
+
+const H3 = styled(Heading).attrs({
+    size: 'default',
+    asElement: 'h3',
 })``;
