@@ -11,10 +11,6 @@
                 "pr": 1876
             },
             {
-                "note": "Added solc's devdoc output to ERC20Token artifact",
-                "pr": 1878
-            },
-            {
                 "note": "Add compilerOutput.devdoc to all artifacts",
                 "pr": "1907"
             }
