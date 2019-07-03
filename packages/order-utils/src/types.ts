@@ -49,6 +49,8 @@ export interface FindOrdersThatCoverTakerAssetFillAmountOpts {
     slippageBufferAmount?: BigNumber;
 }
 
+export type MarketOperation = 'marketSell' | 'marketBuy';
+
 /**
  * remainingFillableMakerAssetAmount: An array of BigNumbers corresponding to the `orders` parameter.
  * You can use `OrderStateUtils` `@0x/order-utils` to perform blockchain lookups for these values.

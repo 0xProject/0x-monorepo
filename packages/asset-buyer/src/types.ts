@@ -66,46 +66,48 @@ export interface SmartContractParamsInfo<T> {
     methodAbi: MethodAbi;
 }
 
+export interface SmartContractParamsBase {
+    orders: SignedOrder[];
+    signatures: string[];
+}
+
+export type MarketOperation = 'marketBuy' | 'marketSell';
+
 /**
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
  * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
  */
-export interface ExchangeMarketBuySmartContractParams {
-    orders: SignedOrder[];
+export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
     makerAssetFillAmount: BigNumber;
-    signatures: string[];
+    type: 'marketBuy';
 }
 
-export interface ExchangeMarketSellSmartContractParams {
-    orders: SignedOrder[];
+export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
     takerAssetFillAmount: BigNumber;
-    signatures: string[];
+    type: 'marketSell';
 }
 
-/**
- * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
- * makerAssetFillAmount: The amount of makerAsset to swap for.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * feeSignatures: An array of signatures that attest that the maker of the fee orders in fact made the orders.
- * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
- * feeRecipient: address of the receiver of the feePercentage of taker asset
- */
-export interface ForwarderMarketBuySmartContractParams extends ExchangeMarketBuySmartContractParams {
+export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
+
+export interface ForwarderSmartContractParamsBase {
     feeOrders: SignedOrder[];
     feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
 }
 
-export interface ForwarderMarketSellSmartContractParams extends ExchangeMarketSellSmartContractParams {
-    feeOrders: SignedOrder[];
-    feeSignatures: string[];
-    feePercentage: BigNumber;
-    feeRecipient: string;
-}
+export interface ForwarderMarketBuySmartContractParams
+    extends ExchangeMarketBuySmartContractParams,
+        ForwarderSmartContractParamsBase {}
+
+export interface ForwarderMarketSellSmartContractParams
+    extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
+        ForwarderSmartContractParamsBase {}
+
+export type ForwarderSmartContractParams =
+    | ForwarderMarketBuySmartContractParams
+    | ForwarderMarketSellSmartContractParams;
 
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
@@ -113,7 +115,7 @@ export interface ForwarderMarketSellSmartContractParams extends ExchangeMarketSe
  * getSmartContractParamsOrThrow: Get SmartContractParamsInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
-export interface SwapQuoteConsumer<T> {
+export interface SwapQuoteConsumerBase<T> {
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
@@ -161,6 +163,8 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
  */
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
+export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
+
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -170,7 +174,7 @@ export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOu
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
-export interface SwapQuote {
+export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
     orders: SignedOrder[];
@@ -179,22 +183,25 @@ export interface SwapQuote {
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
-export interface MarketSellSwapQuote extends SwapQuote {
+export interface MarketSellSwapQuote extends SwapQuoteBase {
     takerAssetFillAmount: BigNumber;
-    bestCaseQuoteInfo: SwapQuoteInfo;
-    worstCaseQuoteInfo: SwapQuoteInfo;
+    type: 'marketSell';
 }
 
-export interface MarketBuySwapQuote extends SwapQuote {
+export interface MarketBuySwapQuote extends SwapQuoteBase {
     makerAssetFillAmount: BigNumber;
-    bestCaseQuoteInfo: SwapQuoteInfo;
-    worstCaseQuoteInfo: SwapQuoteInfo;
+    type: 'marketBuy';
 }
 
-export interface SwapQuoteWithAffiliateFee extends SwapQuote {
+export interface SwapQuoteWithAffiliateFeeBase {
     feePercentage: number;
 }
 
+export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote {}
+
+export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
+
+export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
 /**
  * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.
