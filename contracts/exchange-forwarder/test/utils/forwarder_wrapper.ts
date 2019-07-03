@@ -1,7 +1,7 @@
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import { artifacts as exchangeArtifacts } from '@0x/contracts-exchange';
-import { constants, formatters, LogDecoder, MarketSellOrders, Web3ProviderEngine } from '@0x/contracts-test-utils';
+import { constants, LogDecoder, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -40,24 +40,6 @@ export class ForwarderWrapper {
         });
         return wethAmount;
     }
-    private static _createOptimizedOrders(signedOrders: SignedOrder[]): MarketSellOrders {
-        _.forEach(signedOrders, (signedOrder, index) => {
-            signedOrder.takerAssetData = constants.NULL_BYTES;
-            if (index > 0) {
-                signedOrder.makerAssetData = constants.NULL_BYTES;
-            }
-        });
-        const params = formatters.createMarketSellOrders(signedOrders, constants.ZERO_AMOUNT);
-        return params;
-    }
-    private static _createOptimizedZrxOrders(signedOrders: SignedOrder[]): MarketSellOrders {
-        _.forEach(signedOrders, signedOrder => {
-            signedOrder.makerAssetData = constants.NULL_BYTES;
-            signedOrder.takerAssetData = constants.NULL_BYTES;
-        });
-        const params = formatters.createMarketSellOrders(signedOrders, constants.ZERO_AMOUNT);
-        return params;
-    }
     constructor(contractInstance: ForwarderContract, provider: Web3ProviderEngine) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -74,15 +56,13 @@ export class ForwarderWrapper {
         txData: TxDataPayable,
         opts: { feePercentage?: BigNumber; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = ForwarderWrapper._createOptimizedOrders(orders);
-        const feeParams = ForwarderWrapper._createOptimizedZrxOrders(feeOrders);
         const feePercentage = opts.feePercentage === undefined ? constants.ZERO_AMOUNT : opts.feePercentage;
         const feeRecipient = opts.feeRecipient === undefined ? constants.NULL_ADDRESS : opts.feeRecipient;
         const txHash = await this._forwarderContract.marketSellOrdersWithEth.sendTransactionAsync(
-            params.orders,
-            params.signatures,
-            feeParams.orders,
-            feeParams.signatures,
+            orders,
+            orders.map(signedOrder => signedOrder.signature),
+            feeOrders,
+            feeOrders.map(signedFeeOrder => signedFeeOrder.signature),
             feePercentage,
             feeRecipient,
             txData,
@@ -97,16 +77,14 @@ export class ForwarderWrapper {
         txData: TxDataPayable,
         opts: { feePercentage?: BigNumber; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const params = ForwarderWrapper._createOptimizedOrders(orders);
-        const feeParams = ForwarderWrapper._createOptimizedZrxOrders(feeOrders);
         const feePercentage = opts.feePercentage === undefined ? constants.ZERO_AMOUNT : opts.feePercentage;
         const feeRecipient = opts.feeRecipient === undefined ? constants.NULL_ADDRESS : opts.feeRecipient;
         const txHash = await this._forwarderContract.marketBuyOrdersWithEth.sendTransactionAsync(
-            params.orders,
+            orders,
             makerAssetFillAmount,
-            params.signatures,
-            feeParams.orders,
-            feeParams.signatures,
+            orders.map(signedOrder => signedOrder.signature),
+            feeOrders,
+            feeOrders.map(signedFeeOrder => signedFeeOrder.signature),
             feePercentage,
             feeRecipient,
             txData,

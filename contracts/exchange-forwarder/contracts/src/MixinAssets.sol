@@ -28,8 +28,8 @@ import "./interfaces/IAssets.sol";
 
 contract MixinAssets is
     Ownable,
-    LibConstants
-    IAssets,
+    LibConstants,
+    IAssets
 {
     using LibBytes for bytes;
 

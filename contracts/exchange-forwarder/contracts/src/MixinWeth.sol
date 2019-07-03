@@ -24,9 +24,9 @@ import "./libs/LibConstants.sol";
 
 contract MixinWeth is
     LibMath,
-    LibConstants,
+    LibConstants
 {
-    /// @dev Default payabale function, this allows us to withdraw WETH
+    /// @dev Default payable function, this allows us to withdraw WETH
     function ()
         external
         payable
