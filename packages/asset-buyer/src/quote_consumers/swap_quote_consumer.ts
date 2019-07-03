@@ -8,14 +8,12 @@ import {
     CalldataInfo,
     DynamicSwapQuoteExecutionOpts,
     DynamicSwapQuoteGetOutputOpts,
-    ExchangeMarketBuySmartContractParams,
-    ExchangeMarketSellSmartContractParams,
-    ForwarderMarketBuySmartContractParams,
-    ForwarderMarketSellSmartContractParams,
+    SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
-    SwapQuoteConsumer,
+    SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
+    ValidSwapQuoteConsumer,
 } from '../types';
 import { assert } from '../utils/assert';
 import { assetDataUtils } from '../utils/asset_data_utils';
@@ -24,15 +22,7 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
-type SmartContractParams =
-    | ExchangeMarketBuySmartContractParams
-    | ExchangeMarketSellSmartContractParams
-    | ForwarderMarketBuySmartContractParams
-    | ForwarderMarketSellSmartContractParams;
-
-type ValidSwapQuoteConsumer = ExchangeSwapQuoteConsumer | ForwarderSwapQuoteConsumer;
-
-export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContractParams> {
+export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -60,7 +50,7 @@ export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContract
         opts: Partial<DynamicSwapQuoteGetOutputOpts>,
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this.getConsumerForSwapQuoteAsync(quote, opts);
         return consumer.getCalldataOrThrowAsync(quote, opts);
     }
 
@@ -69,7 +59,7 @@ export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContract
         opts: Partial<DynamicSwapQuoteGetOutputOpts>,
     ): Promise<SmartContractParamsInfo<SmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this.getConsumerForSwapQuoteAsync(quote, opts);
         return consumer.getSmartContractParamsOrThrowAsync(quote, opts);
     }
 
@@ -78,11 +68,11 @@ export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContract
         opts: Partial<DynamicSwapQuoteExecutionOpts>,
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
-        const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
+        const consumer = await this.getConsumerForSwapQuoteAsync(quote, opts);
         return consumer.executeSwapQuoteOrThrowAsync(quote, opts);
     }
 
-    private async _getConsumerForSwapQuoteAsync(
+    public async getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
         opts: Partial<DynamicSwapQuoteGetOutputOpts>,
     ): Promise<ValidSwapQuoteConsumer> {
@@ -92,12 +82,12 @@ export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContract
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
             }
             const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.totalTakerTokenAmount;
-            const takerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
-            const takerEthAndWethBalance = await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(
+            const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(this.provider, opts);
+            const takerEthAndWethBalance = takerAddress !== undefined ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(
                 this.provider,
                 this._contractWrappers,
                 takerAddress,
-            );
+            ) : [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
             // TODO(david): when considering if there is enough Eth balance, should account for gas costs.
             const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) =>
                 balance.isGreaterThanOrEqualTo(ethAmount),
@@ -108,7 +98,7 @@ export class DynamicSwapQuoteConsumer implements SwapQuoteConsumer<SmartContract
             } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
                 return this._forwarderConsumer;
             }
-            // Note: Should we default to a consumer if takerAddress has not enough Eth or Weth?
+            // Note: defaulting to forwarderConsumer if takerAddress is null or not enough balance of either wEth or Eth
             return this._forwarderConsumer;
         } else {
             return this._exchangeConsumer;

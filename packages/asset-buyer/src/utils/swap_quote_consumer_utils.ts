@@ -11,6 +11,17 @@ export const swapQuoteConsumerUtils = {
         provider: SupportedProvider,
         opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
+        const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
+        if (takerAddress === undefined) {
+            throw new Error(SwapQuoteConsumerError.NoAddressAvailable);
+        } else {
+            return takerAddress;
+        }
+    },
+    async getTakerAddressAsync(
+        provider: SupportedProvider,
+        opts: Partial<SwapQuoteExecutionOpts>,
+    ): Promise<string | undefined> {
         if (opts.takerAddress !== undefined) {
             return opts.takerAddress;
         } else {
@@ -20,7 +31,7 @@ export const swapQuoteConsumerUtils = {
             if (firstAvailableAddress !== undefined) {
                 return firstAvailableAddress;
             } else {
-                throw new Error(SwapQuoteConsumerError.NoAddressAvailable);
+                return undefined;
             }
         }
     },
