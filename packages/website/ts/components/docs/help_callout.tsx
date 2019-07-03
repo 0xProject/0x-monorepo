@@ -41,10 +41,13 @@ export const HelpCallout: React.FunctionComponent<HelpCalloutProps> = (props: He
 
 HelpCallout.defaultProps = {
     heading: 'Need some help?',
-    description: 'Get in touch here and we’ll be happy to help.',
+    description: `Get in touch here and we’ll be happy to help.`,
+    url: 'https://discordapp.com/invite/d3FTX3M',
 };
 
-const Wrapper = styled.a<WrapperProps>`
+const Wrapper = styled.a.attrs<WrapperProps>({
+    target: '_blank',
+})`
     background-color: ${colors.backgroundLight};
     padding: 25px 30px;
     display: flex;
