@@ -61,7 +61,12 @@ export class DocsView extends React.Component<Props, State> {
             ul: UnorderedList,
             code: Code,
             table: Table,
+            hr: Separator,
             Callout,
+            Tabs,
+            TabList,
+            Tab,
+            TabPanel,
         },
     };
     public componentDidMount(): void {
