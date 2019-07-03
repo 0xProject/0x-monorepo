@@ -23,7 +23,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
-import { RevertReason } from '@0x/types';
+import { AssetProxyId, RevertReason } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -1329,7 +1329,7 @@ describe('Asset Transfer Proxies', () => {
                 const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721TokenA.address, erc721AFromTokenId);
                 const amounts = [erc20Amount, erc721Amount];
                 const nestedAssetData = [erc20AssetData, erc721AssetData];
-                const extraData = '0102030405060708';
+                const extraData = '0102030405060708090001020304050607080900010203040506070809000102';
                 const assetData = `${assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData)}${extraData}`;
                 const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
                     assetData,
@@ -1622,6 +1622,120 @@ describe('Asset Transfer Proxies', () => {
                         from: notAuthorized,
                     }),
                     RevertReason.SenderNotAuthorized,
+                );
+            });
+            it('should revert if asset data overflows beyond the bounds of calldata', async () => {
+                const inputAmount = new BigNumber(1);
+                const erc20Amount = new BigNumber(10);
+                const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+                const erc721Amount = new BigNumber(1);
+                const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721TokenA.address, erc721AFromTokenId);
+                const amounts = [erc20Amount, erc721Amount];
+                const nestedAssetData = [erc20AssetData, erc721AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                // append asset data to end of tx data with a length of 0x300 bytes, which will extend past actual calldata.
+                const offsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000080';
+                const invalidOffsetToAssetData = '00000000000000000000000000000000000000000000000000000000000002a0';
+                const newAssetData = '0000000000000000000000000000000000000000000000000000000000000304';
+                const badData = `${data.replace(offsetToAssetData, invalidOffsetToAssetData)}${newAssetData}`;
+                // execute transfer
+                await expectTransactionFailedAsync(
+                    web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data: badData,
+                        from: authorized,
+                    }),
+                    RevertReason.InvalidAssetDataEnd,
+                );
+            });
+            it('should revert if asset data resolves to a location beyond the bounds of calldata', async () => {
+                const inputAmount = new BigNumber(1);
+                const erc20Amount = new BigNumber(10);
+                const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+                const erc721Amount = new BigNumber(1);
+                const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721TokenA.address, erc721AFromTokenId);
+                const amounts = [erc20Amount, erc721Amount];
+                const nestedAssetData = [erc20AssetData, erc721AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const data = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                const offsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000080';
+                const invalidOffsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000400';
+                const badData = data.replace(offsetToAssetData, invalidOffsetToAssetData);
+                // execute transfer
+                // note that this triggers `InvalidAssetDataLength` because the length is zero, otherwise it would
+                // trigger `InvalidAssetDataEnd`.
+                await expectTransactionFailedAsync(
+                    web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data: badData,
+                        from: authorized,
+                    }),
+                    RevertReason.InvalidAssetDataLength,
+                );
+            });
+            it('should revert if length of assetData, excluding the selector, is not a multiple of 32', async () => {
+                // setup test parameters
+                const inputAmount = new BigNumber(1);
+                const erc20Amount = new BigNumber(10);
+                const erc20AssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
+                const erc721Amount = new BigNumber(1);
+                const erc721AssetData = assetDataUtils.encodeERC721AssetData(erc721TokenA.address, erc721AFromTokenId);
+                const amounts = [erc20Amount, erc721Amount];
+                const nestedAssetData = [erc20AssetData, erc721AssetData];
+                const assetData = assetDataUtils.encodeMultiAssetData(amounts, nestedAssetData);
+                const extraData = '01';
+                const assetDataWithExtraData = `${assetData}${extraData}`;
+                const badData = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetDataWithExtraData,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                // execute transfer
+                await expectTransactionFailedAsync(
+                    web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data: badData,
+                        from: authorized,
+                    }),
+                    RevertReason.InvalidAssetDataLength,
+                );
+            });
+            it('should revert if length of assetData is less than 132 bytes', async () => {
+                // setup test parameters
+                const inputAmount = new BigNumber(1);
+                // we'll construct asset data that has a 4 byte selector plus
+                // 96 byte payload. This results in asset data that is 100 bytes
+                // long and will trigger the `invalid length` error.
+                // we must be sure to use a # of bytes that is still %32
+                // so that we know the error is not triggered by another check in the code.
+                const zeros96Bytes = '0'.repeat(188);
+                const assetData131Bytes = `${AssetProxyId.MultiAsset}${zeros96Bytes}`;
+                const badData = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
+                    assetData131Bytes,
+                    fromAddress,
+                    toAddress,
+                    inputAmount,
+                );
+                // execute transfer
+                await expectTransactionFailedAsync(
+                    web3Wrapper.sendTransactionAsync({
+                        to: multiAssetProxy.address,
+                        data: badData,
+                        from: authorized,
+                    }),
+                    RevertReason.InvalidAssetDataLength,
                 );
             });
         });

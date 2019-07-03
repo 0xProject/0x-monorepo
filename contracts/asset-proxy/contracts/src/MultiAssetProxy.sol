@@ -92,6 +92,34 @@ contract MultiAssetProxy is
                 // Load offset to `assetData`
                 let assetDataOffset := calldataload(4)
 
+                // Load length in bytes of `assetData`
+                let assetDataLength := calldataload(add(assetDataOffset, 4))
+
+                // Assert that the length of asset data:
+                // 1. Must be at least 132 bytes (see table above)
+                // 2. Must be a multiple of 32 (excluding the 4-byte selector)
+                if or(lt(assetDataLength, 132), mod(sub(assetDataLength, 4), 32)) {
+                    // Revert with `Error("INVALID_ASSET_DATA_LENGTH")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000019494e56414c49445f41535345545f444154415f4c454e475448000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
+
+                // End of asset data in calldata
+                // +4 for selector
+                // +32 for length field
+                let assetDataEnd := add(assetDataOffset, add(assetDataLength, 36))
+                if gt(assetDataEnd, calldatasize()) {
+                    // Revert with `Error("INVALID_ASSET_DATA_END")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000016494e56414c49445f41535345545f444154415f454e44000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
+
                 // Asset data itself is encoded as follows:
                 //
                 // | Area     | Offset      | Length  | Contents                            |
