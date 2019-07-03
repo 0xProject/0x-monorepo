@@ -28,7 +28,7 @@ class LibDummy(BaseContractWrapper):
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
         """
-        super(LibDummy, self).__init__(
+        super().__init__(
             provider=provider,
             contract_address=contract_address,
             private_key=private_key,
