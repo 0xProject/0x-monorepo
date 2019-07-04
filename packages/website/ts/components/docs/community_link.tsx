@@ -6,12 +6,11 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
-export interface ICommunityLinkProps {
+interface ICommunityLinkProps {
     heading: string;
     icon: string;
     description?: string;
     url: string;
-    shouldOpenInNewTab?: boolean;
 }
 
 export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
