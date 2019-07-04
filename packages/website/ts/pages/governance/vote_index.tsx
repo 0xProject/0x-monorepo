@@ -49,7 +49,7 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
                             0x Protocol Governance
                         </Heading>
                         <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
-                            Level up your favorite trading infrastructure to support new markets and industries
+                            Vote on 0x Improvement Proposals (ZEIPs) using ZRX tokens
                         </Paragraph>
                     </Column>
                 </Section>
