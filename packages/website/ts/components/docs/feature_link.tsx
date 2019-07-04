@@ -14,7 +14,7 @@ interface IFeatureLinkProps {
 }
 
 export const FeatureLink: React.FC<IFeatureLinkProps> = props => (
-    <Wrapper href={props.url}>
+    <FeatureLinkWrapper href={props.url}>
         <Icon color={colors.brandLight} name={props.icon} size={60} margin={[0, 30, 0, 0]} />
         <Content>
             <Heading asElement="h3" size="small" marginBottom="6px">
@@ -32,10 +32,10 @@ export const FeatureLink: React.FC<IFeatureLinkProps> = props => (
                 fill="currentColor"
             />
         </svg>
-    </Wrapper>
+    </FeatureLinkWrapper>
 );
 
-const Wrapper = styled.a`
+const FeatureLinkWrapper = styled.a`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 30px;
