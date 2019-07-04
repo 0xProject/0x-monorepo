@@ -1,5 +1,11 @@
 import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { chaiSetup, ERC1155HoldingsByOwner, OrderStatus } from '@0x/contracts-test-utils';
+import {
+    BatchMatchedFillResults,
+    chaiSetup,
+    ERC1155HoldingsByOwner,
+    MatchedFillResults,
+    OrderStatus,
+} from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { AssetProxyId, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -191,14 +197,25 @@ export class MatchOrderTester {
             ? initialTokenBalances
             : await this._initialTokenBalancesPromise;
         // Execute `batchMatchOrders()`
+        let actualBatchMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
+            actualBatchMatchResults = await this.exchangeWrapper.getBatchMatchOrdersWithMaximalFillResultsAsync(
+                orders.leftOrders,
+                orders.rightOrders,
+                takerAddress,
+            );
             transactionReceipt = await this._executeBatchMatchOrdersWithMaximalFillAsync(
                 orders.leftOrders,
                 orders.rightOrders,
                 takerAddress,
             );
         } else {
+            actualBatchMatchResults = await this.exchangeWrapper.getBatchMatchOrdersResultsAsync(
+                orders.leftOrders,
+                orders.rightOrders,
+                takerAddress,
+            );
             transactionReceipt = await this._executeBatchMatchOrdersAsync(
                 orders.leftOrders,
                 orders.rightOrders,
@@ -213,6 +230,8 @@ export class MatchOrderTester {
             matchPairs,
             expectedTransferAmounts,
         );
+        const expectedResults = convertToBatchMatchResults(expectedBatchMatchResults);
+        expect(actualBatchMatchResults).to.be.eql(expectedResults);
         // Validate the simulation against reality.
         await assertBatchMatchResultsAsync(
             expectedBatchMatchResults,
@@ -248,31 +267,44 @@ export class MatchOrderTester {
             ? initialTokenBalances
             : await this._initialTokenBalancesPromise;
         // Execute `matchOrders()`
+        let actualMatchResults;
         let transactionReceipt;
         if (withMaximalFill) {
+            actualMatchResults = await this.exchangeWrapper.getMatchOrdersWithMaximalFillResultsAsync(
+                orders.leftOrder,
+                orders.rightOrder,
+                takerAddress,
+            );
             transactionReceipt = await this._executeMatchOrdersWithMaximalFillAsync(
                 orders.leftOrder,
                 orders.rightOrder,
                 takerAddress,
             );
         } else {
+            actualMatchResults = await this.exchangeWrapper.getMatchOrdersResultsAsync(
+                orders.leftOrder,
+                orders.rightOrder,
+                takerAddress,
+            );
             transactionReceipt = await this._executeMatchOrdersAsync(orders.leftOrder, orders.rightOrder, takerAddress);
         }
         // Simulate the fill.
-        const matchResults = simulateMatchOrders(
+        const expectedMatchResults = simulateMatchOrders(
             orders,
             takerAddress,
             _initialTokenBalances,
             toFullMatchTransferAmounts(expectedTransferAmounts),
         );
+        const expectedResults = convertToMatchResults(expectedMatchResults);
+        expect(actualMatchResults).to.be.eql(expectedResults);
         // Validate the simulation against reality.
         await assertMatchResultsAsync(
-            matchResults,
+            expectedMatchResults,
             transactionReceipt,
             await this.getBalancesAsync(),
             this.exchangeWrapper,
         );
-        return matchResults;
+        return expectedMatchResults;
     }
 
     /**
@@ -1021,5 +1053,96 @@ function aggregateBalances(
     }
     // TODO(jalextowle): Implement the same as the above for ERC1155
     return totalBalances;
+}
+
+/**
+ * Converts a BatchMatchResults object to the associated value that correspondes to a value that could be
+ * returned by `batchMatchOrders` or `batchMatchOrdersWithMaximalFill`.
+ * @param results The results object to convert
+ * @return The associated object that can be compared to the return value of `batchMatchOrders`
+ */
+function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFillResults {
+    // Initialize the results object
+    const batchMatchedFillResults: BatchMatchedFillResults = {
+        left: [],
+        right: [],
+        profitInLeftMakerAsset: ZERO,
+        profitInRightMakerAsset: ZERO,
+    };
+    // Create the batchMatchedFillResults by aggreagating the data from the simulations matches
+    for (const match of results.matches) {
+        expect(match.fills.length).to.be.eq(2);
+        // Include the matches results in the left fills of the batch match results.
+        batchMatchedFillResults.left.push({
+            makerAssetFilledAmount: match.fills[0].makerAssetFilledAmount,
+            takerAssetFilledAmount: match.fills[0].takerAssetFilledAmount,
+            makerFeePaid: match.fills[0].makerFeePaid,
+            takerFeePaid: match.fills[0].takerFeePaid,
+        });
+        // Include the matches results in the right fills of the batch match results.
+        batchMatchedFillResults.right.push({
+            makerAssetFilledAmount: match.fills[1].makerAssetFilledAmount,
+            takerAssetFilledAmount: match.fills[1].takerAssetFilledAmount,
+            makerFeePaid: match.fills[1].makerFeePaid,
+            takerFeePaid: match.fills[1].takerFeePaid,
+        });
+        const leftSpread = match.fills[0].makerAssetFilledAmount.minus(match.fills[1].takerAssetFilledAmount);
+        // If the left maker spread is positive for match, update the profitInLeftMakerAsset
+        if (leftSpread.isGreaterThan(ZERO)) {
+            batchMatchedFillResults.profitInLeftMakerAsset = batchMatchedFillResults.profitInLeftMakerAsset.plus(
+                leftSpread,
+            );
+        }
+        const rightSpread = match.fills[1].makerAssetFilledAmount.minus(match.fills[0].takerAssetFilledAmount);
+        // If the right maker spread is positive for match, update the profitInRightMakerAsset
+        if (rightSpread.isGreaterThan(ZERO)) {
+            batchMatchedFillResults.profitInRightMakerAsset = batchMatchedFillResults.profitInRightMakerAsset.plus(
+                rightSpread,
+            );
+        }
+    }
+    return batchMatchedFillResults;
+}
+
+/**
+ * Converts a MatchResults object to the associated value that correspondes to a value that could be
+ * returned by `matchOrders` or `matchOrdersWithMaximalFill`.
+ * @param results The results object to convert
+ * @return The associated object that can be compared to the return value of `matchOrders`
+ */
+function convertToMatchResults(result: MatchResults): MatchedFillResults {
+    // If the left spread is negative, set it to zero
+    let leftMakerAssetSpreadAmount = result.fills[0].makerAssetFilledAmount.minus(
+        result.fills[1].takerAssetFilledAmount,
+    );
+    if (leftMakerAssetSpreadAmount.isLessThanOrEqualTo(ZERO)) {
+        leftMakerAssetSpreadAmount = ZERO;
+    }
+
+    // If the right spread is negative, set it to zero
+    let rightMakerAssetSpreadAmount = result.fills[1].makerAssetFilledAmount.minus(
+        result.fills[0].takerAssetFilledAmount,
+    );
+    if (rightMakerAssetSpreadAmount.isLessThanOrEqualTo(ZERO)) {
+        rightMakerAssetSpreadAmount = ZERO;
+    }
+
+    const matchedFillResults: MatchedFillResults = {
+        left: {
+            makerAssetFilledAmount: result.fills[0].makerAssetFilledAmount,
+            takerAssetFilledAmount: result.fills[0].takerAssetFilledAmount,
+            makerFeePaid: result.fills[0].makerFeePaid,
+            takerFeePaid: result.fills[0].takerFeePaid,
+        },
+        right: {
+            makerAssetFilledAmount: result.fills[1].makerAssetFilledAmount,
+            takerAssetFilledAmount: result.fills[1].takerAssetFilledAmount,
+            makerFeePaid: result.fills[1].makerFeePaid,
+            takerFeePaid: result.fills[1].takerFeePaid,
+        },
+        leftMakerAssetSpreadAmount,
+        rightMakerAssetSpreadAmount,
+    };
+    return matchedFillResults;
 }
 // tslint:disable-line:max-file-line-count
