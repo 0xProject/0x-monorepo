@@ -1,10 +1,9 @@
-import { Link } from '@0x/react-shared';
-import _ from 'lodash';
-import * as React from 'react';
+import React from 'react';
+import Headroom from 'react-headroom';
 import MediaQuery from 'react-responsive';
 import styled, { css, withTheme } from 'styled-components';
 
-import Headroom from 'react-headroom';
+import { Link } from '@0x/react-shared';
 
 import { SearchInput } from 'ts/components/docs/search_input';
 import { Hamburger } from 'ts/components/hamburger';
@@ -12,17 +11,23 @@ import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
+
 import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 
-interface HeaderProps {
+interface IHeaderProps {
     location?: Location;
     isNavToggled?: boolean;
+    // theme: ThemeValuesInterface;
     toggleMobileNav?: () => void;
-    theme: ThemeValuesInterface;
 }
 
-interface NavItemProps {
+interface INavLinkProps {
+    link: INavItems;
+    key: string;
+}
+
+interface INavItems {
     url?: string;
     id?: string;
     text?: string;
@@ -30,11 +35,7 @@ interface NavItemProps {
     dropdownComponent?: React.FunctionComponent<any>;
 }
 
-interface DropdownWrapInterface {
-    width?: number;
-}
-
-const navItems: NavItemProps[] = [
+const navItems: INavItems[] = [
     {
         id: 'why',
         url: WebsitePaths.Why,
@@ -57,76 +58,63 @@ const navItems: NavItemProps[] = [
     },
 ];
 
-class HeaderBase extends React.Component<HeaderProps> {
-    public onUnpin = () => {
-        if (this.props.isNavToggled) {
-            this.props.toggleMobileNav();
+const HeaderBase: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }) => {
+    const onUnpin = () => {
+        if (isNavToggled) {
+            toggleMobileNav();
         }
     };
 
-    public render(): React.ReactNode {
-        const { isNavToggled, toggleMobileNav, theme } = this.props;
-
-        return (
-            <Headroom
-                onUnpin={this.onUnpin}
-                downTolerance={4}
-                upTolerance={10}
-                wrapperStyle={{ position: 'relative', zIndex: 2 }}
-            >
-                <StyledHeader isNavToggled={isNavToggled}>
-                    <HeaderWrap>
-                        <LogoWrap>
-                            <Link to={WebsitePaths.Home}>
-                                <Logo />
-                            </Link>
-                            <DocsLogo />
-                        </LogoWrap>
-
-                        <NavLinks>
-                            {_.map(navItems, (link, index) => (
-                                <NavItem key={`navlink-${index}`} link={link} />
-                            ))}
-                        </NavLinks>
-
-                        <MediaQuery minWidth={990}>
-                            <SearchInput isHome={false} />
-                        </MediaQuery>
-
-                        <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                        <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
-                    </HeaderWrap>
-                </StyledHeader>
-            </Headroom>
-        );
-    }
-}
-
-export const Header = withTheme(HeaderBase);
-
-const NavItem = (props: { link: NavItemProps; key: string }) => {
-    const { link } = props;
-    const Subnav = link.dropdownComponent;
-    const linkElement =
-        link.url === undefined ? (
-            <StyledAnchor href="#">{link.text}</StyledAnchor>
-        ) : (
-            <StyledNavLink to={link.url}>{link.text}</StyledNavLink>
-        );
-    return <LinkWrap>{linkElement}</LinkWrap>;
-};
-
-const DocsLogo = () => {
     return (
-        <DocsLogoWrap>
-            / <DocsLogoLink to={WebsitePaths.Docs}>Docs</DocsLogoLink>
-        </DocsLogoWrap>
+        <Headroom
+            onUnpin={onUnpin}
+            downTolerance={4}
+            upTolerance={10}
+            wrapperStyle={{ position: 'relative', zIndex: 2 }}
+        >
+            <StyledHeader isNavToggled={isNavToggled}>
+                <HeaderWrap>
+                    <LogoWrap>
+                        <Link to={WebsitePaths.Home}>
+                            <Logo />
+                        </Link>
+                        <DocsLogoWrap>
+                            / <DocsLogoLink to={WebsitePaths.Docs}>Docs</DocsLogoLink>
+                        </DocsLogoWrap>
+                    </LogoWrap>
+
+                    <NavLinks>
+                        {navItems.map((link, index) => (
+                            <NavItem key={`navlink-${index}`} link={link} />
+                        ))}
+                    </NavLinks>
+
+                    <MediaQuery minWidth={990}>
+                        <SearchInput isHome={false} />
+                    </MediaQuery>
+
+                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
+                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                </HeaderWrap>
+            </StyledHeader>
+        </Headroom>
     );
 };
 
-const StyledHeader = styled.header<HeaderProps>`
+export const Header = withTheme(HeaderBase);
+
+const NavItem: React.FC<INavLinkProps> = ({ link }) => {
+    const linkElement = link.url ? (
+        <StyledNavLink to={link.url}>{link.text}</StyledNavLink>
+    ) : (
+        <StyledAnchor href="#">{link.text}</StyledAnchor>
+    );
+    return <LinkWrap>{linkElement}</LinkWrap>;
+};
+
+const StyledHeader = styled.header<IHeaderProps>`
     padding: 30px;
-    background-color: ${props => colors.backgroundLight};
+    background-color: ${colors.backgroundLight};
 `;
 
 const DocsLogoWrap = styled.div`
@@ -136,15 +124,12 @@ const DocsLogoWrap = styled.div`
     font-size: 1.411764706rem;
     color: rgba(0, 0, 0, 0.5);
     margin-left: 0.875rem;
-
-    a {
-        display: block;
-    }
 `;
 
 const DocsLogoLink = styled(Link)`
     font-size: inherit;
     color: inherit;
+    display: block;
     margin-left: 0.625rem;
 `;
 
@@ -166,8 +151,8 @@ const LinkWrap = styled.li`
     }
 `;
 
-const linkStyles = css`
-    color: ${props => props.theme.textColor};
+const linkStyles = css<{ theme: ThemeValuesInterface }>`
+    color: ${({ theme }) => theme.textColor};
     opacity: 0.5;
     transition: opacity 0.35s;
     padding: 15px 0;
