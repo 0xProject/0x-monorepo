@@ -1,31 +1,89 @@
-import { utils as sharedUtils } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { Fragment } from 'react';
+import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
-import { SearchInput } from 'ts/components/docs/search_input';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { DocumentTitle } from 'ts/components/document_title';
-import { Section, SectionProps } from 'ts/components/newLayout';
+import { Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
+
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-interface Props {
-    location: Location;
-    theme: {
-        bgColor: string;
-        textColor: string;
-        linkColor: string;
-    };
-}
+export const DocsHome: React.FC = () => {
+    return (
+        <SiteWrap theme="light">
+            <DocumentTitle {...documentConstants.DOCS} />
+            <Hero isHome={true} title="0x Docs" />
+            <Section maxWidth="1150px" isPadded={false} padding="0">
+                <ShortcutsWrapper>
+                    {shortcuts.map((shortcut, index) => (
+                        <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
+                    ))}
+                </ShortcutsWrapper>
+                <Separator />
+                <GetStartedWrapper>
+                    <div>
+                        <Heading size="default">Get Started</Heading>
+                        {getStartedLinks.map((link, index) => (
+                            <Fragment key={`get-started-${index}`}>
+                                <Button color={colors.brandDark} href={link.url} isWithArrow={true}>
+                                    {link.heading}
+                                </Button>
+                                <Paragraph color={colors.textDarkPrimary} isMuted={1}>
+                                    {link.description}
+                                </Paragraph>
+                            </Fragment>
+                        ))}
+                    </div>
+                    <div>
+                        <Heading size="default">Useful Links</Heading>
+                        <StepLinks links={usefulLinks} />
+                    </div>
+                </GetStartedWrapper>
+                <Separator />
+                <CommunityWrapper>
+                    {communityShortcuts.map((shortcut, index) => (
+                        <CommunityLink key={`communityLink-${index}`} {...shortcut} />
+                    ))}
+                </CommunityWrapper>
+            </Section>
+        </SiteWrap>
+    );
+};
+
+const ShortcutsWrapper = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 30px;
+    grid-row-gap: 30px;
+`;
+
+const CommunityWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 30px;
+    grid-row-gap: 30px;
+`;
+
+const GetStartedWrapper = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 70px;
+    grid-row-gap: 30px;
+`;
+
+const Separator = styled.hr`
+    border-width: 0 0 1px;
+    border-color: #e4e4e4;
+    height: 0;
+    margin: 60px 0;
+`;
 
 const shortcuts: LinkProps[] = [
     {
@@ -120,78 +178,3 @@ const communityShortcuts: CommunityLinkProps[] = [
         url: '/docs/get-started',
     },
 ];
-
-export class DocsHome extends React.Component<Props> {
-    public state = {};
-    public componentDidMount(): void {}
-    public render(): React.ReactNode {
-        return (
-            <SiteWrap theme="light">
-                <DocumentTitle {...documentConstants.DOCS} />
-                <Hero isHome={true} title="0x Docs" />
-                <Section maxWidth={'1150px'} isPadded={false} padding="0 0">
-                    <ShortcutsWrapper>
-                        {shortcuts.map((shortcut, index) => (
-                            <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
-                        ))}
-                    </ShortcutsWrapper>
-                    <Separator />
-                    <Columns>
-                        <div>
-                            <Heading size="default">Get Started</Heading>
-                            {getStartedLinks.map((link, index) => (
-                                <React.Fragment key={`get-started-${index}`}>
-                                    <Button color={colors.brandDark} href={link.url} isWithArrow={true}>{link.heading}</Button>
-                                    <Paragraph color={colors.textDarkPrimary} isMuted={1}>{link.description}</Paragraph>
-                                </React.Fragment>
-                            ))}
-                        </div>
-                        <div>
-                            <Heading size="default">Useful Links</Heading>
-                            <StepLinks links={usefulLinks} />
-                        </div>
-                    </Columns>
-                    <Separator />
-                    <CommunityWrapper>
-                        {communityShortcuts.map((shortcut, index) => (
-                            <CommunityLink key={`communityLink-${index}`} {...shortcut} />
-                        ))}
-                    </CommunityWrapper>
-                </Section>
-            </SiteWrap>
-        );
-    }
-}
-
-const ShortcutsWrapper = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-`;
-
-const CommunityWrapper = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-`;
-
-const Columns = styled.div<{ count?: number }>`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 70px;
-    grid-row-gap: 30px;
-`;
-
-Columns.defaultProps = {
-    count: 2,
-};
-
-const Separator = styled.hr`
-    border-width: 0 0 1px;
-    border-color: #e4e4e4;
-    height: 0;
-    margin-top: 60px;
-    margin-bottom: 60px;
-`;
