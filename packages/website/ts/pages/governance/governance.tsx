@@ -206,7 +206,7 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
-            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
+            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${this._proposalData.zeipId}`;
             const response = await fetch(voteEndpoint, {
                 method: 'get',

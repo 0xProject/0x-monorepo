@@ -10,7 +10,9 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { Proposal, proposals } from 'ts/pages/governance/data';
 import { VoteIndexCard } from 'ts/pages/governance/vote_index_card';
 import { TallyInterface } from 'ts/types';
+import { configs } from 'ts/utils/configs';
 import { documentConstants } from 'ts/utils/document_meta_constants';
+import { utils } from 'ts/utils/utils';
 
 const ZEIP_IDS = Object.keys(proposals).map(idString => parseInt(idString, 10));
 const ZEIP_PROPOSALS: Proposal[] = ZEIP_IDS.map(id => proposals[id]).sort(
@@ -60,26 +62,49 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
             </SiteWrap>
         );
     }
+    private async _fetchVoteStatusAsync(zeipId: number): Promise<TallyInterface> {
+        try {
+            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : `https://${configs.DOMAIN_VOTE}/staging`;
+            const voteEndpoint = `${voteDomain}/v1/tally/${zeipId}`;
+            const response = await fetch(voteEndpoint, {
+                method: 'get',
+                mode: 'cors',
+                credentials: 'same-origin',
+                headers: {
+                    'content-type': 'application/json; charset=utf-8',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Request failed');
+            }
+
+            const responseData = await response.json();
+            let { no, yes } = responseData;
+            yes = new BigNumber(yes);
+            no = new BigNumber(no);
+            const totalBalance = yes.plus(no);
+            const tally = {
+                ...responseData,
+                yes: new BigNumber(yes),
+                no: new BigNumber(no),
+                totalBalance,
+            };
+            return tally;
+        } catch (e) {
+            // Empty block
+            return {
+                yes: new BigNumber(0),
+                no: new BigNumber(0),
+            };
+        }
+    }
 
     private async _fetchTallysAsync(): Promise<void> {
-        // TODO: Real implementation
-        const getRandomInt = (max: string): BigNumber => {
-            return new BigNumber(max).times(Math.random());
-        };
-        const bigNumber = '100000000000000000000000000';
-        const generateRandomTally = (): TallyInterface => ({
-            yes: getRandomInt(bigNumber),
-            no: getRandomInt(bigNumber),
-        });
-        setTimeout(() => {
-            const tallys = {
-                23: generateRandomTally(),
-                39: generateRandomTally(),
-                24: generateRandomTally(),
-                25: generateRandomTally(),
-            };
-            this.setState({ tallys });
-        }, 1000);
+        const tallyResponses = await Promise.all(ZEIP_IDS.map(async zeipId => this._fetchVoteStatusAsync(zeipId)));
+        const tallys: {[key: number]: TallyInterface} = {};
+        ZEIP_IDS.map((zeipId, i) => tallys[zeipId] = tallyResponses[i]);
+        this.setState({ tallys });
     }
 }
 

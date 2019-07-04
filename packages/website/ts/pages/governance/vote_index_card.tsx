@@ -47,7 +47,7 @@ const getDateString = (voteStartDate: moment.Moment, voteEndDate: moment.Moment)
     const voteTime = getVoteTime(voteStartDate, voteEndDate);
     const pstOffset = '-0800';
     const endDate = voteEndDate.utcOffset(pstOffset);
-    const startDate = voteEndDate.utcOffset(pstOffset);
+    const startDate = voteStartDate.utcOffset(pstOffset);
     if (voteTime === 'happening') {
         return `Ends ${endDate.format('MMMM Do YYYY, h:mm a')} PST`;
     }
