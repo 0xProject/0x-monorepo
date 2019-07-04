@@ -101,6 +101,14 @@ const filterGroups: FilterGroup[] = [
     },
 ];
 
+const codeSample = `import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
+
+const exchange = new ExchangeContract(provider, networkId);
+
+const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
+    from: senderAddress,
+});`;
+
 export class DocsPageTemplate extends React.Component<Props> {
     public render(): React.ReactNode {
         return (
@@ -200,16 +208,7 @@ export class DocsPageTemplate extends React.Component<Props> {
                                     </tr>
                                 </tbody>
                             </Table>
-                            <H3>Code Snippet</H3>
-                            <Code>
-                                {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
 
-const exchange = new ExchangeContract(provider, networkId);
-
-const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-    from: senderAddress,
-});`}
-                            </Code>
                             <H3>Tabbed Code Snippet</H3>
                             <Tabs>
                                 <TabList>
@@ -219,37 +218,32 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                                 </TabList>
 
                                 <TabPanel>
-                                    <Code>
-                                        {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
-
-const exchange = new ExchangeContract(provider, networkId);
-
-const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-    from: senderAddress,
-});`}
-                                    </Code>
+                                    <Code>{codeSample}</Code>
                                 </TabPanel>
                                 <TabPanel>
-                                    <Code>
-                                        {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
-
-const exchange = new ExchangeContract(provider, networkId);
-
-const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-    from: senderAddress,
-});`}
-                                    </Code>
+                                    <Code>{codeSample}</Code>
                                 </TabPanel>
                                 <TabPanel>
-                                    <Code>
-                                        {`import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
+                                    <Code>{codeSample}</Code>
+                                </TabPanel>
+                            </Tabs>
 
-const exchange = new ExchangeContract(provider, networkId);
+                            <H3>Runnable Code Snippet</H3>
+                            <Tabs>
+                                <TabList>
+                                    <Tab>Typescript</Tab>
+                                    <Tab>Python</Tab>
+                                    <Tab>Solidity</Tab>
+                                </TabList>
 
-const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-    from: senderAddress,
-});`}
-                                    </Code>
+                                <TabPanel>
+                                    <Code isRunnable={true}>{codeSample}</Code>
+                                </TabPanel>
+                                <TabPanel>
+                                    <Code>{codeSample}</Code>
+                                </TabPanel>
+                                <TabPanel>
+                                    <Code>{codeSample}</Code>
                                 </TabPanel>
                             </Tabs>
                             <H3>Subheading</H3>
@@ -284,12 +278,6 @@ const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsyn
                                 <li>List items</li>
                                 <li>List items</li>
                             </UnorderedList>
-                            <Heading asElement="h2" size="default">
-                                Tabbed Code Snippet
-                            </Heading>
-                            <Heading asElement="h2" size="default">
-                                Run Code Snippet
-                            </Heading>
                             <Heading asElement="h2" size="default">
                                 Next Steps
                             </Heading>

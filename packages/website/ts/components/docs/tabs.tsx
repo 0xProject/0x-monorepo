@@ -43,11 +43,10 @@ export const TabList = styled(OriginalTabList)<ITabProps>`
 `;
 
 export const Tab = styled(OriginalTab)<ITabProps>`
-    background-color: transparent;
     border-radius: 4px 4px 0 0;
     cursor: pointer;
-    padding: 12px 12px 13px;
-    font-size: 1rem;
-    color: ${colors.textDarkSecondary};
+    padding: 12px;
+    font-size: 16px;
     font-weight: 300;
+    color: ${colors.textDarkSecondary};
 `;

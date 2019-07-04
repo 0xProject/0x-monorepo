@@ -3,9 +3,10 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/button';
+import { CodeRun } from 'ts/components/docs/code_run';
+
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-import { zIndex } from 'ts/style/z_index';
 
 interface ICodeProps {
     children: string;
@@ -17,122 +18,82 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', isRu
     const [isCopied, setIsCopied] = useState<boolean>(false);
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
 
-    const handleCopyClick = () => setIsCopied(true);
+    const handleCopyClick = () => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 500);
+    };
+
+    const customStyle = {
+        overflowX: 'scroll',
+        padding: isRunnable ? '20px' : '10px',
+        backgroundColor: isRunnable ? 'white' : 'none',
+    };
 
     return (
         <CodeWrapper>
-            <ButtonWrapper>
-                <CopyToClipboard text={children} onCopy={handleCopyClick}>
-                    <StyledButton>{copyButtonText}</StyledButton>
-                </CopyToClipboard>
-            </ButtonWrapper>
+            <CopyToClipboard text={children} onCopy={handleCopyClick}>
+                <CopyButton>{copyButtonText}</CopyButton>
+            </CopyToClipboard>
             <SyntaxHighlighter
                 language={lang}
                 customStyle={customStyle}
                 style={style}
                 showLineNumbers={false}
-                PreTag={CustomPre}
+                CodeTag={CodeTag}
+                PreTag={PreTag}
                 wrapLines={true}
             >
                 {children}
             </SyntaxHighlighter>
 
-            {!isRunnable && (
-                <RunWrapper>
-                    <ButtonsWrapper>
-                        <RunButton bgColor={colors.brandDark} color="white">
-                            Run
-                        </RunButton>
-                        <RunButton bgColor="white" color={colors.brandDark}>
-                            Reset
-                        </RunButton>
-                    </ButtonsWrapper>
-                    <Result />
-                </RunWrapper>
-            )}
+            {isRunnable && <CodeRun />}
         </CodeWrapper>
     );
 };
 
 const GUTTER = '10px';
+const BORDER_RADIUS = '4px';
 
-const customStyle = {
-    overflowX: 'scroll',
-    padding: '20px',
-};
-
-const RunWrapper = styled.div`
-    display: flex;
+const CodeWrapper = styled.div`
+    position: relative;
+    max-width: 700px;
     padding: ${GUTTER};
+    background-color: ${colors.backgroundLight};
+    border-radius: 0 ${BORDER_RADIUS} ${BORDER_RADIUS};
 `;
 
-const ButtonsWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-right: ${GUTTER};
-`;
-
-const RunButton = styled(Button)`
-    width: 112px;
-    height: 40px;
-    line-height: 0;
-
-    &:first-of-type {
-        margin-bottom: 4px;
-    }
-`;
-
-const Result = styled.div`
-    background: white;
-    border: 1px solid ${colors.brandDark};
-    border-radius: 4px;
-    width: 100%;
-    min-height: 100%;
-`;
-
-const CustomPre = styled.pre`
-    border-radius: 4px;
-    background-color: white;
+const PreTag = styled.pre`
+    border: 1px solid ${colors.backgroundLight};
+    border-radius: ${BORDER_RADIUS};
 
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE 10+ */
 
     &::-webkit-scrollbar {
-        /* WebKit */
         width: 0;
         height: 0;
     }
-
-    code {
-        border: none;
-        font-family: 'Roboto Mono', sans-serif;
-        font-size: 0.875rem;
-        line-height: 1.25em;
-    }
 `;
 
-const StyledButton = styled(Button)`
-    border-radius: 4px;
-    background: white;
-    border: 1px solid #eaeaea;
-    color: ${colors.brandDark};
-    font-size: 15px;
-    font-weight: 300;
-    padding: 9px 12px 7px;
+const CodeTag = styled.code`
+    border: none;
+    font-family: 'Roboto Mono', sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.25em;
 `;
 
-const ButtonWrapper = styled.div`
+const CopyButton = styled(Button)`
     position: absolute;
     right: 0;
-    top: 0;
-    z-index: ${zIndex.overlay - 1};
-    transform: translateY(calc(-100% + -13px));
-`;
-
-const CodeWrapper = styled.div`
-    position: relative;
-    max-width: 702px;
-    background-color: ${colors.backgroundLight};
+    top: -48px;
+    height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 300;
+    background: white;
+    border: 1px solid ${colors.beigeWhite};
+    border-radius: ${BORDER_RADIUS};
+    color: ${colors.brandDark};
 `;
 
 const style = {
