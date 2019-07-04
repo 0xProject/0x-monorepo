@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 // import { Tabs } from 'react-tabs';
-import { Callout } from 'ts/components/docs/callout';
+import { Notification } from 'ts/components/docs/notification';
 import { Code } from 'ts/components/docs/code';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { FeatureLink } from 'ts/components/docs/feature_link';
@@ -127,9 +127,9 @@ export class DocsPageTemplate extends React.Component<Props> {
                             <Heading asElement="h2" size="default">
                                 Notifications
                             </Heading>
-                            <Callout text="This is' a pretty standard information callout" />
-                            <Callout text="This is an indication that something isn’t quite right" type="alert" />
-                            <Callout text="This is a success message" type="success" />
+                            <Notification text="This is' a pretty standard information callout" />
+                            <Notification text="This is an indication that something isn’t quite right" type="alert" />
+                            <Notification text="This is a success message" type="success" />
                             <Heading asElement="h2" size="default">
                                 Tutorial Steps
                             </Heading>

@@ -5,7 +5,7 @@ import styled, { keyframes } from 'styled-components';
 // import { Tabs } from 'react-tabs';
 import { MDXProvider } from '@mdx-js/react';
 import { match } from 'react-router-dom';
-import { Callout } from 'ts/components/docs/callout';
+import { Notification } from 'ts/components/docs/notification';
 import { Code } from 'ts/components/docs/code';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { FeatureLink } from 'ts/components/docs/feature_link';
@@ -62,7 +62,7 @@ export class DocsView extends React.Component<Props, State> {
             code: Code,
             table: Table,
             hr: Separator,
-            Callout,
+            Notification,
             Tabs,
             TabList,
             Tab,
