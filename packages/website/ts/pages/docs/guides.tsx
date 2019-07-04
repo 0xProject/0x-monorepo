@@ -3,7 +3,7 @@ import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 // import { Tabs } from 'react-tabs';
-import { Callout } from 'ts/components/docs/callout';
+import { Notification } from 'ts/components/docs/notification';
 import { Code } from 'ts/components/docs/code';
 import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
 import { FeatureLink } from 'ts/components/docs/feature_link';
