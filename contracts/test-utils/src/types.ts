@@ -155,6 +155,7 @@ export interface MatchedFillResults {
     left: FillResults;
     right: FillResults;
     leftMakerAssetSpreadAmount: BigNumber;
+    rightMakerAssetSpreadAmount: BigNumber;
 }
 
 export interface BatchMatchedFillResults {

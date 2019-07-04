@@ -265,6 +265,7 @@ contract MixinMatchOrders is
             // or break out of the loop if there are no more leftOrders to match.
             if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
                 if (++leftIdx == leftOrders.length) {
+                    matchCount++;
                     break;
                 } else {
                     leftOrder = leftOrders[leftIdx];
@@ -276,6 +277,7 @@ contract MixinMatchOrders is
             // or break out of the loop if there are no more rightOrders to match.
             if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
                 if (++rightIdx == rightOrders.length) {
+                    matchCount++;
                     break;
                 } else {
                     rightOrder = rightOrders[rightIdx];
