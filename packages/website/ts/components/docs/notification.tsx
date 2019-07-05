@@ -11,6 +11,27 @@ interface INotificationProps extends INotificationWrapperProps {
     text: string;
 }
 
+export const Notification: React.FC<INotificationProps> = ({ type = 'standard', text }) => (
+    <NotificationWrapper type={type}>
+        {themeSettings[type].icon}
+        <NotificationText>{text}</NotificationText>
+    </NotificationWrapper>
+);
+
+const NotificationWrapper = styled.div<INotificationWrapperProps>`
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    color: ${colors.textDarkPrimary};
+    background-color: ${({ type }) => themeSettings[type].bgColor};
+`;
+
+const NotificationText = styled.span`
+    font-size: 1rem;
+    margin-left: 1rem;
+`;
+
 const themeSettings = {
     success: {
         bgColor: 'rgba(0, 174, 153, 0.1)',
@@ -73,24 +94,3 @@ const themeSettings = {
         ),
     },
 };
-
-export const Notification: React.FC<INotificationProps> = ({ type = 'standard', text }) => (
-    <NotificationWrapper type={type}>
-        {themeSettings[type].icon}
-        <NotificationText>{text}</NotificationText>
-    </NotificationWrapper>
-);
-
-const NotificationWrapper = styled.div<INotificationWrapperProps>`
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    color: ${colors.textDarkPrimary};
-    background-color: ${({ type }) => themeSettings[type].bgColor};
-`;
-
-const NotificationText = styled.span`
-    font-size: 1rem;
-    margin-left: 1rem;
-`;
