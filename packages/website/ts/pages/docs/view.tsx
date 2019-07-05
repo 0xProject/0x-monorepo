@@ -1,35 +1,23 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { keyframes } from 'styled-components';
-
-// import { Tabs } from 'react-tabs';
-import { MDXProvider } from '@mdx-js/react';
+import React from 'react';
 import { match } from 'react-router-dom';
-import { Notification } from 'ts/components/docs/notification';
+import styled from 'styled-components';
+
+import { MDXProvider } from '@mdx-js/react';
+
 import { Code } from 'ts/components/docs/code';
-import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
-import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
-import { NewsletterSignup } from 'ts/components/docs/newsletter_signup';
-import { Note } from 'ts/components/docs/note';
-import { Resource } from 'ts/components/docs/resource/resource';
-import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
-import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
-import { Filters } from 'ts/components/docs/sidebar/filters';
+import { Notification } from 'ts/components/docs/notification';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
-import { StepLinkConfig } from 'ts/components/docs/step_link';
-import { StepLinks } from 'ts/components/docs/step_links';
 import { Table } from 'ts/components/docs/table';
 import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
 import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
-import { Section, SectionProps } from 'ts/components/newLayout';
+import { Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
-import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
+
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
 interface Props {
@@ -117,7 +105,7 @@ export class DocsView extends React.Component<Props, State> {
     }
 }
 
-const Columns = styled.div<{ count?: number }>`
+const Columns = styled.div`
     display: grid;
     grid-template-columns: 230px 1fr;
     grid-column-gap: 118px;
@@ -127,10 +115,6 @@ const Columns = styled.div<{ count?: number }>`
 const ContentWrapper = styled.article`
     min-height: 300px;
 `;
-
-Columns.defaultProps = {
-    count: 2,
-};
 
 const Separator = styled.hr`
     border-width: 0 0 1px;
@@ -145,10 +129,6 @@ const LargeHeading = styled(Heading).attrs({
 })`
     font-size: 2.125rem !important;
 `;
-
-const LargeIntro = styled(Paragraph).attrs({
-    size: 'medium',
-})``;
 
 const H2 = styled(Heading).attrs({
     size: 'default',
