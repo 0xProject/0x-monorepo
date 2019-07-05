@@ -1,24 +1,17 @@
-import { Link } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
-import { SearchInput } from 'ts/components/docs/search_input';
-import { Icon } from 'ts/components/icon';
-import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
-export interface HelpfulCtaProps {
+export interface IHelpfulCtaProps {
     heading?: string;
 }
 
-export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = ({ heading }: HelpfulCtaProps) => (
-    <>
+export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ heading }) => {
+    // @TODO: add was this helpful logic
+    return (
         <Wrapper>
             <Text>{heading}</Text>
             <Buttons>
@@ -28,8 +21,8 @@ export const HelpfulCta: React.FunctionComponent<HelpfulCtaProps> = ({ heading }
                 </CtaButton>
             </Buttons>
         </Wrapper>
-    </>
-);
+    );
+};
 
 HelpfulCta.defaultProps = {
     heading: 'Was this page helpful?',
