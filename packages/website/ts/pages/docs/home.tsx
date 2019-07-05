@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
-import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
+import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
@@ -89,7 +89,7 @@ const Separator = styled.hr`
     margin: 60px 0;
 `;
 
-const shortcuts: LinkProps[] = [
+const shortcuts: IShortcutLinkProps[] = [
     {
         heading: 'Core Concepts',
         description: 'Understand the fundamentals of 0x development',
@@ -135,7 +135,7 @@ const usefulLinks: StepLinkConfig[] = [
     },
 ];
 
-const getStartedLinks: LinkProps[] = [
+const getStartedLinks: IShortcutLinkProps[] = [
     {
         heading: 'Launch an exchange in 30 seconds',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
