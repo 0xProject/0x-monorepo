@@ -1,7 +1,7 @@
 import React from 'react';
 import Headroom from 'react-headroom';
 import MediaQuery from 'react-responsive';
-import styled, { css, withTheme } from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { Link } from '@0x/react-shared';
 
@@ -18,7 +18,6 @@ import { WebsitePaths } from 'ts/types';
 interface IHeaderProps {
     location?: Location;
     isNavToggled?: boolean;
-    // theme: ThemeValuesInterface;
     toggleMobileNav?: () => void;
 }
 
@@ -58,7 +57,7 @@ const navItems: INavItems[] = [
     },
 ];
 
-const HeaderBase: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }) => {
+export const Header: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }) => {
     const onUnpin = () => {
         if (isNavToggled) {
             toggleMobileNav();
@@ -100,8 +99,6 @@ const HeaderBase: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }) =
         </Headroom>
     );
 };
-
-export const Header = withTheme(HeaderBase);
 
 const NavItem: React.FC<INavLinkProps> = ({ link }) => {
     const linkElement = link.url ? (

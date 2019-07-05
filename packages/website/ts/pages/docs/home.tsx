@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
-import { CommunityLink, CommunityLinkProps } from 'ts/components/docs/community_link';
+import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
 import { LinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
@@ -158,7 +158,7 @@ const getStartedLinks: LinkProps[] = [
     },
 ];
 
-const communityShortcuts: CommunityLinkProps[] = [
+const communityShortcuts: ICommunityLinkProps[] = [
     {
         heading: 'Discord',
         description: 'Chat with the 0x community',
