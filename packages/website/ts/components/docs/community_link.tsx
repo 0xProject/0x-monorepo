@@ -6,7 +6,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
-interface ICommunityLinkProps {
+export interface ICommunityLinkProps {
     heading: string;
     icon: string;
     description?: string;
