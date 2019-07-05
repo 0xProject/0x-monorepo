@@ -1,42 +1,28 @@
-import { Link } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
-import { Button } from 'ts/components/button';
-import { SearchInput } from 'ts/components/docs/search_input';
 import { Icon } from 'ts/components/icon';
-import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
-export interface HelpCalloutProps {
+export interface IHelpCalloutProps {
     heading?: string;
     description?: string;
     url?: string;
 }
 
-interface WrapperProps {
-    isHome?: boolean;
-}
-
-export const HelpCallout: React.FunctionComponent<HelpCalloutProps> = (props: HelpCalloutProps) => (
-    <>
-        <Wrapper href={props.url}>
-            <Icon color={colors.brandLight} name="help" size={38} margin={[0, 30, 0, 0]} />
-            <div>
-                <Heading size="small" marginBottom="8px">
-                    {props.heading}
-                </Heading>
-                <Paragraph size="default" marginBottom="0">
-                    {props.description}
-                </Paragraph>
-            </div>
-        </Wrapper>
-    </>
+export const HelpCallout: React.FC<IHelpCalloutProps> = props => (
+    <HelpCalloutWrapper href={props.url}>
+        <Icon color={colors.brandLight} name="help" size={38} margin={[0, 30, 0, 0]} />
+        <div>
+            <Heading size="small" marginBottom="8px">
+                {props.heading}
+            </Heading>
+            <Paragraph size="default" marginBottom="0">
+                {props.description}
+            </Paragraph>
+        </div>
+    </HelpCalloutWrapper>
 );
 
 HelpCallout.defaultProps = {
@@ -45,12 +31,12 @@ HelpCallout.defaultProps = {
     url: 'https://discordapp.com/invite/d3FTX3M',
 };
 
-const Wrapper = styled.a.attrs<WrapperProps>({
+const HelpCalloutWrapper = styled.a.attrs({
     target: '_blank',
 })`
-    background-color: ${colors.backgroundLight};
-    padding: 25px 30px;
     display: flex;
     align-items: center;
+    padding: 25px 30px;
     margin-bottom: 1.875rem;
+    background-color: ${colors.backgroundLight};
 `;
