@@ -32,9 +32,9 @@ export const DocsHome: React.FC = () => {
                         <Heading size="default">Get Started</Heading>
                         {getStartedLinks.map((link, index) => (
                             <Fragment key={`get-started-${index}`}>
-                                <Button color={colors.brandDark} href={link.url} isWithArrow={true}>
+                                <GetStartedButton color={colors.brandDark} href={link.url} isWithArrow={true}>
                                     {link.heading}
-                                </Button>
+                                </GetStartedButton>
                                 <Paragraph color={colors.textDarkPrimary} isMuted={1}>
                                     {link.description}
                                 </Paragraph>
@@ -76,6 +76,10 @@ const GetStartedWrapper = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 70px;
     grid-row-gap: 30px;
+`;
+
+const GetStartedButton = styled(Button)`
+    margin-bottom: 12px;
 `;
 
 const Separator = styled.hr`
