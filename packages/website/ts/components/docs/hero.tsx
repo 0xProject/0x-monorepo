@@ -1,52 +1,38 @@
-import { Link } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
-import { Button } from 'ts/components/button';
 import { SearchInput } from 'ts/components/docs/search_input';
-import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
-import { constants } from 'ts/utils/constants';
 
-interface Props {
+interface IHeroProps {
     isHome?: boolean;
     title?: string;
     description?: string;
 }
 
-interface LinkConfig {
-    label: string;
-    url: string;
-    shouldOpenInNewTab?: boolean;
-}
-
-export const Hero: React.FunctionComponent<Props> = (props: Props) => (
-    <>
-        <Wrapper isHome={props.isHome}>
-            <Heading size="large" isCentered={true} marginBottom={props.isHome || props.description ? '30px' : '0'}>
-                {props.title}
+export const Hero: React.FC<IHeroProps> = ({ description, isHome, title }) => {
+    return (
+        <HeroWrapper isHome={isHome}>
+            <Heading size="large" isCentered={true} marginBottom={isHome || description ? '30px' : '0'}>
+                {title}
             </Heading>
-            {props.description && <Paragraph isCentered={true}>{props.description}</Paragraph>}
-            {props.isHome && <SearchInput isHome={true} />}
-        </Wrapper>
-    </>
-);
+            {description && <Paragraph isCentered={true}>{description}</Paragraph>}
+            {isHome && <SearchInput isHome={true} />}
+        </HeroWrapper>
+    );
+};
 
 Hero.defaultProps = {
     isHome: false,
 };
 
-const Wrapper = styled.div<Props>`
+const HeroWrapper = styled.div<{ isHome: boolean }>`
     background-color: ${colors.backgroundLight};
     padding-top: ${props => props.isHome && `63px`};
     padding-bottom: 80px;
     margin-bottom: 60px;
-    min-height: 15rem;
-    min-height: ${props => (props.isHome ? '21.875rem' : '13.222rem')};
+    min-height: ${({ isHome }) => (isHome ? '21.875rem' : '13.222rem')};
     display: flex;
     flex-direction: column;
     justify-content: center;
