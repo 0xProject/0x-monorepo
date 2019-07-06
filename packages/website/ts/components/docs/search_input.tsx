@@ -15,7 +15,7 @@ interface ISearchInputProps {
 
 const AutoComplete = connectAutoComplete(CustomAutoComplete);
 
-export const SearchInput: React.FC<ISearchInputProps> = props => (
+export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
     <InstantSearch
         searchClient={searchClient}
         indexName="0x_tools_test"
@@ -26,22 +26,18 @@ export const SearchInput: React.FC<ISearchInputProps> = props => (
             },
         }}
     >
-        <Wrapper isHome={props.isHome}>
-            <AutoComplete isHome={props.isHome} />
+        <Wrapper isHome={isHome}>
+            <AutoComplete isHome={isHome} />
             <Configure hitsPerPage={5} distinct={true} />
             <Index indexName="0x_tools_test" />
             <Index indexName="0x_guides_test" />
             <Label>
                 <LabelText>Search query</LabelText>
-                {/* <Input isHome={props.isHome} />*/}
+                {/* <Input isHome={isHome} />*/}
             </Label>
         </Wrapper>
     </InstantSearch>
 );
-
-SearchInput.defaultProps = {
-    isHome: false,
-};
 
 const Wrapper = styled.div<ISearchInputProps>`
     width: 100%;
