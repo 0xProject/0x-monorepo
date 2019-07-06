@@ -73,7 +73,8 @@ contract IMatchOrders {
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftOrderTakerAssetFilledAmount,
-        uint256 rightOrderTakerAssetFilledAmount
+        uint256 rightOrderTakerAssetFilledAmount,
+        bool shouldMaximallyFillOrders
     )
         public
         pure
