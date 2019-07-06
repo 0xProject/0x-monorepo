@@ -1,7 +1,5 @@
-import { Link } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { css } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
 // import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
