@@ -9,7 +9,7 @@ export interface INoteProps {
     description?: string;
 }
 
-export const Note: React.FunctionComponent<INoteProps> = props => (
+export const Note: React.FC<INoteProps> = props => (
     <NoteWrapper>
         <NoteHeading marginBottom="6px">{props.heading}</NoteHeading>
         <NoteDescription>{props.description}</NoteDescription>

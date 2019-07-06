@@ -12,15 +12,15 @@ export interface IHelpfulCtaProps {
 export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ heading }) => {
     // @TODO: add was this helpful logic
     return (
-        <Wrapper>
-            <Text>{heading}</Text>
-            <Buttons>
+        <HelpfulCtaWrapper>
+            <CtaText>{heading}</CtaText>
+            <CtaButtons>
                 <CtaButton color={colors.white}>Yes</CtaButton>
                 <CtaButton isTransparent={true} color={colors.brandLight} borderColor={colors.brandLight}>
                     No
                 </CtaButton>
-            </Buttons>
-        </Wrapper>
+            </CtaButtons>
+        </HelpfulCtaWrapper>
     );
 };
 
@@ -28,13 +28,13 @@ HelpfulCta.defaultProps = {
     heading: 'Was this page helpful?',
 };
 
-const Wrapper = styled.div`
+const HelpfulCtaWrapper = styled.div`
     display: flex;
     align-items: center;
     margin-bottom: 1.875rem;
 `;
 
-const Text = styled(Paragraph)`
+const CtaText = styled(Paragraph)`
     color: ${colors.textDarkPrimary};
     font-size: 1.111111111rem;
     font-weight: 400;
@@ -42,7 +42,7 @@ const Text = styled(Paragraph)`
     opacity: 1;
 `;
 
-const Buttons = styled.div`
+const CtaButtons = styled.div`
     display: flex;
     align-items: center;
     margin-left: 40px;

@@ -29,7 +29,7 @@ Hero.defaultProps = {
 
 const HeroWrapper = styled.div<{ isHome: boolean }>`
     background-color: ${colors.backgroundLight};
-    padding-top: ${props => props.isHome && `63px`};
+    padding-top: ${({ isHome }) => isHome && `63px`};
     padding-bottom: 80px;
     margin-bottom: 60px;
     min-height: ${({ isHome }) => (isHome ? '21.875rem' : '13.222rem')};
