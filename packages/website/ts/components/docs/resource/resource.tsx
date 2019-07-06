@@ -1,31 +1,27 @@
+import React from 'react';
+import styled from 'styled-components';
+
 import { Link } from '@0x/react-shared';
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
-import { Heading, Paragraph } from 'ts/components/text';
-import { colors } from 'ts/style/colors';
 
 import { Difficulty, Level } from 'ts/components/docs/resource/level';
 import { Tag } from 'ts/components/docs/resource/tag';
+import { Heading, Paragraph } from 'ts/components/text';
 
-export interface ResourceProps {
+import { colors } from 'ts/style/colors';
+
+export interface IResourceProps {
     heading?: string;
     description?: string;
     url?: string;
-    tags: TagProps[];
+    tags: ITagProps[];
 }
 
-interface TagProps {
+interface ITagProps {
     label: React.ReactNode;
     isInverted?: boolean;
 }
 
-export const Resource: React.FunctionComponent<ResourceProps> = ({
-    heading,
-    description,
-    url,
-    tags,
-}: ResourceProps) => (
+export const Resource: React.FC<IResourceProps> = ({ heading, description, url, tags }) => (
     <Wrapper>
         <Heading color={colors.brandDark} size="small" marginBottom="8px">
             <Link to={url}>{heading}</Link>
