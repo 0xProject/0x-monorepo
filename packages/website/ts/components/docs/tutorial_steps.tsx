@@ -1,32 +1,23 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
-export interface Props {
+interface ITutorialStepsProps {
     children: React.ReactNode;
 }
 
-interface WrapperProps {}
+export const TutorialSteps: React.FC<ITutorialStepsProps> = ({ children }) => <Wrapper>{children}</Wrapper>;
 
-export const TutorialSteps: React.FunctionComponent<Props> = (props: Props) => (
-    <>
-        <Wrapper>{props.children}</Wrapper>
-    </>
-);
-
-TutorialSteps.defaultProps = {};
-
-const Wrapper = styled.ol<WrapperProps>`
+const Wrapper = styled.ol`
     list-style-type: none;
     counter-reset: tutorialSteps;
     margin-bottom: 1.875rem;
 
     li {
-        font-size: 1rem;
         display: flex;
         align-items: center;
         counter-increment: tutorialSteps;
         margin-bottom: 0.8333rem;
+        font-size: 1rem;
         line-height: 1;
     }
 
@@ -35,9 +26,9 @@ const Wrapper = styled.ol<WrapperProps>`
         background-color: rgba(0, 174, 153, 0.1);
         content: counter(tutorialSteps);
         display: flex;
+        align-items: center;
         justify-content: center;
         font-feature-settings: 'tnum' on, 'lnum' on;
-        align-items: center;
         width: 30px;
         height: 30px;
         margin-right: 1rem;
