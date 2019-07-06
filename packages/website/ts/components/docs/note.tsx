@@ -20,8 +20,6 @@ const NoteWrapper = styled.div`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 20px 14px;
-    display: flex;
-    align-items: center;
     float: right;
     max-width: 300px;
     margin-left: 30px;
@@ -36,6 +34,6 @@ const NoteHeading = styled(Heading).attrs({ color: colors.brandDark, asElement: 
 const NoteDescription = styled(Paragraph)`
     font-size: 0.888888889rem;
     margin-bottom: 0;
-    line-height: 1.25;
+    line-height: 1.4;
     opacity: 1;
 `;
