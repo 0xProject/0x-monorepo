@@ -1,13 +1,6 @@
-import React from 'react';
 import styled from 'styled-components';
 
-interface ITutorialStepsProps {
-    children: React.ReactNode;
-}
-
-export const TutorialSteps: React.FC<ITutorialStepsProps> = ({ children }) => <Wrapper>{children}</Wrapper>;
-
-const Wrapper = styled.ol`
+export const TutorialSteps = styled.ol`
     list-style-type: none;
     counter-reset: tutorialSteps;
     margin-bottom: 1.875rem;

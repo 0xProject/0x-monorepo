@@ -1,15 +1,8 @@
-import React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
 
-export interface ITableProps {
-    children: React.ReactNode;
-}
-
-export const Table: React.FC<ITableProps> = ({ children }) => <TableWrapper>{children}</TableWrapper>;
-
-const TableWrapper = styled.table`
+export const Table = styled.table`
     border: 1px solid #cfcfcf;
     margin-bottom: 1.875rem;
     width: 100%;
