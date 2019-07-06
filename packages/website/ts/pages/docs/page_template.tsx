@@ -13,7 +13,7 @@ import { Resource } from 'ts/components/docs/resource/resource';
 import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
 import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
-import { StepLinkConfig } from 'ts/components/docs/step_link';
+import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { Table } from 'ts/components/docs/table';
 import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
@@ -266,7 +266,7 @@ const H3 = styled(Heading).attrs({
     asElement: 'h3',
 })``;
 
-const usefulLinks: StepLinkConfig[] = [
+const usefulLinks: IStepLinkConfig[] = [
     {
         title: 'Core Concepts',
         url: '/docs/core-concepts',
