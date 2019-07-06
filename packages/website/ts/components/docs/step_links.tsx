@@ -1,27 +1,23 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
 
-import { StepLink, StepLinkConfig } from 'ts/components/docs/step_link';
+import { IStepLinkConfig, StepLink } from 'ts/components/docs/step_link';
+
 import { colors } from 'ts/style/colors';
 
-export interface LinkProps {
-    links: StepLinkConfig[];
+export interface ILinkProps {
+    links: IStepLinkConfig[];
 }
 
-export const StepLinks: React.FunctionComponent<LinkProps> = (props: LinkProps) => (
-    <Wrapper>
-        {props.links.map((shortcut, index) => (
-            <StepLink key={`step-${index}`} {...shortcut} />
+export const StepLinks: React.FC<ILinkProps> = ({ links }) => (
+    <StepLinksWrapper>
+        {links.map((link, index) => (
+            <StepLink key={`step-${index}`} {...link} />
         ))}
-    </Wrapper>
+    </StepLinksWrapper>
 );
 
-StepLinks.defaultProps = {
-    links: [],
-};
-
-const Wrapper = styled.div`
+const StepLinksWrapper = styled.div`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     margin-bottom: 1.875rem;

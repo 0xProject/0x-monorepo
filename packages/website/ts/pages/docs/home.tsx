@@ -4,9 +4,9 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
-import { ShortcutLink, IShortcutLinkProps } from 'ts/components/docs/shortcut_link';
+import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
-import { StepLinkConfig } from 'ts/components/docs/step_link';
+import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
@@ -116,7 +116,7 @@ const shortcuts: IShortcutLinkProps[] = [
     },
 ];
 
-const usefulLinks: StepLinkConfig[] = [
+const usefulLinks: IStepLinkConfig[] = [
     {
         title: 'Core Concepts',
         url: '/docs/core-concepts',
