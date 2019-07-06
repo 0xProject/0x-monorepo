@@ -30,17 +30,17 @@ const difficulties = {
     },
 };
 
-export const Level: React.FunctionComponent<LevelProps> = ({ difficulty }: LevelProps) => {
+export const Level: React.FC<LevelProps> = ({ difficulty }) => {
     const info = difficulties[difficulty];
     return (
-        <Wrapper>
+        <LevelWrapper>
             <DifficultyLabel>{info.label}</DifficultyLabel>
             <RatingBar rating={info.rating} />
-        </Wrapper>
+        </LevelWrapper>
     );
 };
 
-const Wrapper = styled.div`
+const LevelWrapper = styled.div`
     display: flex;
     align-items: center;
 `;
