@@ -1,21 +1,15 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-import styled, { withTheme } from 'styled-components';
+import React from 'react';
+import styled from 'styled-components';
+
 import { colors } from 'ts/style/colors';
 
-export interface Props {
+export interface ITableProps {
     children: React.ReactNode;
 }
 
-export const Table: React.FunctionComponent<Props> = (props: Props) => (
-    <>
-        <Wrapper>{props.children}</Wrapper>
-    </>
-);
+export const Table: React.FC<ITableProps> = ({ children }) => <TableWrapper>{children}</TableWrapper>;
 
-Table.defaultProps = {};
-
-const Wrapper = styled.table`
+const TableWrapper = styled.table`
     border: 1px solid #cfcfcf;
     margin-bottom: 1.875rem;
     width: 100%;
