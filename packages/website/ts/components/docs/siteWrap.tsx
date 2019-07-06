@@ -1,23 +1,20 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
-
-import { colors } from 'ts/style/colors';
 
 import { Header } from 'ts/components/docs/header';
 import { Footer } from 'ts/components/footer';
+
 import { GlobalStyles } from 'ts/constants/globalStyle';
 
-interface Props {
+import { colors } from 'ts/style/colors';
+
+interface ISiteWrapProps {
     theme?: 'dark' | 'light' | 'gray';
     isFullScreen?: boolean;
     children: any;
 }
 
-interface State {
-    isMobileNavOpen: boolean;
-}
-
-interface MainProps {
+interface IMainProps {
     isNavToggled: boolean;
     isFullScreen?: boolean;
 }
@@ -45,6 +42,48 @@ export interface ThemeValuesInterface {
 export interface ThemeInterface {
     [key: string]: ThemeValuesInterface;
 }
+
+export const SiteWrap: React.FC<ISiteWrapProps> = props => {
+    const { children, theme = 'dark', isFullScreen } = props;
+    const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+
+    useEffect(() => {
+        document.documentElement.style.overflowY = 'auto';
+        window.scrollTo(0, 0);
+    }, []);
+
+    const toggleMobileNav = () => setIsMobileNavOpen(!isMobileNavOpen);
+
+    return (
+        <ThemeProvider theme={GLOBAL_THEMES[theme]}>
+            <>
+                <GlobalStyles />
+
+                <Header isNavToggled={isMobileNavOpen} toggleMobileNav={toggleMobileNav} />
+
+                <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>
+                    {children}
+                </Main>
+
+                <Footer />
+            </>
+        </ThemeProvider>
+    );
+};
+
+const Main = styled.main<IMainProps>`
+    transition: transform 0.5s, opacity 0.5s;
+    opacity: ${props => props.isNavToggled && '0.5'};
+    padding-bottom: 70px;
+
+    ${props =>
+        props.isFullScreen &&
+        `
+        display: flex;
+        align-items: center;
+        min-height: calc(100vh - 108px - 381px);
+    `}
+`;
 
 const GLOBAL_THEMES: ThemeInterface = {
     dark: {
@@ -102,58 +141,3 @@ const GLOBAL_THEMES: ThemeInterface = {
         footerColor: '#FFFFFF',
     },
 };
-
-export class SiteWrap extends React.Component<Props, State> {
-    public state = {
-        isMobileNavOpen: false,
-    };
-
-    public componentDidMount(): void {
-        document.documentElement.style.overflowY = 'auto';
-        window.scrollTo(0, 0);
-    }
-
-    public toggleMobileNav = () => {
-        this.setState({
-            isMobileNavOpen: !this.state.isMobileNavOpen,
-        });
-    };
-
-    public render(): React.ReactNode {
-        const { children, theme = 'dark', isFullScreen } = this.props;
-        const { isMobileNavOpen } = this.state;
-        const currentTheme = GLOBAL_THEMES[theme];
-
-        return (
-            <>
-                <ThemeProvider theme={currentTheme}>
-                    <>
-                        <GlobalStyles />
-
-                        <Header isNavToggled={isMobileNavOpen} toggleMobileNav={this.toggleMobileNav} />
-
-                        <Main isNavToggled={isMobileNavOpen} isFullScreen={isFullScreen}>
-                            {children}
-                        </Main>
-
-                        <Footer />
-                    </>
-                </ThemeProvider>
-            </>
-        );
-    }
-}
-
-const Main = styled.main<MainProps>`
-    transition: transform 0.5s, opacity 0.5s;
-    opacity: ${props => props.isNavToggled && '0.5'};
-    padding-bottom: 70px;
-
-    ${props =>
-        props.isFullScreen &&
-        `
-        display: flex;
-        align-items: center;
-        min-height: calc(100vh - 108px - 381px);
-    `}
-`;
