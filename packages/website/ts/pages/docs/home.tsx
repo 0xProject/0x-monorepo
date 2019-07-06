@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Button } from 'ts/components/button';
 import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
 import { Hero } from 'ts/components/docs/hero';
-import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
+import { ShortcutLink, IShortcutLinkProps } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { StepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
