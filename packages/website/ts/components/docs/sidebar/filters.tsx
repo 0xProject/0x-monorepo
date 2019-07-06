@@ -1,62 +1,51 @@
-import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import React from 'react';
 
-import { Button } from 'ts/components/button';
 import { Filter } from 'ts/components/docs/sidebar/filter';
 import { Heading } from 'ts/components/text';
-import { Container } from 'ts/components/ui/container';
+
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-import { zIndex } from 'ts/style/z_index';
 
-export interface FiltersProps {
+export interface IFiltersProps {
     groups: FilterGroup[];
 }
-
-export interface FiltersState {}
 
 export interface FilterGroup {
     heading: string;
     name: string;
-    filters: FilterProps[];
+    filters: IFilterProps[];
 }
 
-interface FilterProps {
+interface IFilterProps {
     value: string;
     label: string;
 }
 
-export class Filters extends React.Component<FiltersProps, FiltersState> {
-    public static defaultProps = {};
-    public state: FiltersState = {};
-    public render(): React.ReactNode {
-        const { groups } = this.props;
-        return (
-            <Wrapper>
-                {groups.map(({ heading, name, filters }: FilterGroup, index) => (
-                    <GroupWrapper key={`filter-group-${index}`}>
-                        <GroupHeading asElement="h3">{heading}</GroupHeading>
-                        {filters.map(({ value, label }: FilterProps, index) => (
-                            <Filter key={`filter-${name}-${index}`} name={name} value={value} label={label} />
-                        ))}
-                    </GroupWrapper>
-                ))}
-            </Wrapper>
-        );
-    }
-}
+export const Filters: React.FC<IFiltersProps> = ({ groups }) => {
+    return (
+        <FiltersWrapper>
+            {groups.map(({ heading, name, filters }: FilterGroup, groupIndex) => (
+                <FiltersGroupWrapper key={`filter-group-${groupIndex}`}>
+                    <FilterGroupHeading asElement="h3">{heading}</FilterGroupHeading>
+                    {filters.map(({ value, label }: IFilterProps, filterIndex) => (
+                        <Filter key={`filter-${name}-${filterIndex}`} name={name} value={value} label={label} />
+                    ))}
+                </FiltersGroupWrapper>
+            ))}
+        </FiltersWrapper>
+    );
+};
 
-const Wrapper = styled.div`
+const FiltersWrapper = styled.div`
     position: relative;
     max-width: 702px;
 `;
 
-const GroupWrapper = styled.div`
+const FiltersGroupWrapper = styled.div`
     margin-bottom: 2.22em;
 `;
 
-const GroupHeading = styled(Heading)`
+const FilterGroupHeading = styled(Heading)`
     color: ${colors.textDarkPrimary};
     font-size: 1rem !important;
     font-weight: 400 !important;

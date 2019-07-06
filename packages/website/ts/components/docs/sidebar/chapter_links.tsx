@@ -1,31 +1,20 @@
-import * as React from 'react';
-import * as CopyToClipboard from 'react-copy-to-clipboard';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import React from 'react';
 
-import { Button } from 'ts/components/button';
-import { Filter } from 'ts/components/docs/sidebar/filter';
-import { Heading } from 'ts/components/text';
-import { Container } from 'ts/components/ui/container';
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
-import { zIndex } from 'ts/style/z_index';
 
-export interface ChapterLinkProps {}
-
-export interface ChapterLinkState {}
-
-interface Group {
+interface IGroupProps {
     heading: string;
     name: string;
-    filters: FilterProps[];
+    filters: IFilterProps[];
 }
 
-interface FilterProps {
+interface IFilterProps {
     value: string;
     label: string;
 }
 
-const groups: Group[] = [
+const groups: IGroupProps[] = [
     {
         heading: 'Topic',
         name: 'topic',
@@ -68,51 +57,47 @@ const groups: Group[] = [
     },
 ];
 
-export class ChapterLinks extends React.Component<ChapterLinkProps, ChapterLinkState> {
-    public static defaultProps = {};
-    public state: ChapterLinkState = {};
-    public render(): React.ReactNode {
-        return (
-            <Wrapper>
-                {groups.map(({ heading, name, filters }: Group, index) => (
-                    <GroupWrapper key={`filter-group-${index}`}>
-                        <Link href="#index" hasChildren={filters.length > 0}>
-                            {heading}
-                        </Link>
-                        <Children>
-                            {filters.map(({ value, label }: FilterProps, index) => (
-                                <Sublink
-                                    href={`#filter-${name}-${index}`}
-                                    key={`filter-${name}-${index}`}
-                                    data-level="2"
-                                >
-                                    {label}
-                                </Sublink>
-                            ))}
-                        </Children>
-                    </GroupWrapper>
-                ))}
-            </Wrapper>
-        );
-    }
-}
+export const ChapterLinks: React.FC = () => {
+    return (
+        <ChapterLinksWrapper>
+            {groups.map(({ heading, name, filters }: IGroupProps, groupIndex) => (
+                <ChapterGroupWrapper key={`filter-group-${groupIndex}`}>
+                    <ChapterLink href="#index" hasChildren={filters.length > 0}>
+                        {heading}
+                    </ChapterLink>
+                    <ChapterChildren>
+                        {filters.map(({ value, label }: IFilterProps, filterIndex) => (
+                            <ChapterSublink
+                                href={`#filter-${name}-${filterIndex}`}
+                                key={`filter-${name}-${filterIndex}`}
+                                data-level="2"
+                            >
+                                {label}
+                            </ChapterSublink>
+                        ))}
+                    </ChapterChildren>
+                </ChapterGroupWrapper>
+            ))}
+        </ChapterLinksWrapper>
+    );
+};
 
-const Wrapper = styled.ul`
+const ChapterLinksWrapper = styled.ul`
     position: relative;
 `;
 
-const GroupWrapper = styled.li`
+const ChapterGroupWrapper = styled.li`
     margin-bottom: 1.111em;
 `;
 
-const Link = styled.a<{ hasChildren?: boolean }>`
+const ChapterLink = styled.a<{ hasChildren?: boolean }>`
     margin-bottom: ${props => props.hasChildren && '1rem'};
     color: ${colors.textDarkSecondary};
     display: block;
     font-size: 0.8333rem;
 `;
 
-const Sublink = styled(Link)`
+const ChapterSublink = styled(ChapterLink)`
     font-size: 0.7222rem;
     line-height: 1.45;
 
@@ -121,14 +106,14 @@ const Sublink = styled(Link)`
     }
 `;
 
-const GroupHeading = styled(Heading)`
-    color: ${colors.textDarkPrimary};
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    margin-bottom: 1em !important;
-`;
+// const ChapterGroupWrapper = styled(Heading)`
+//     color: ${colors.textDarkPrimary};
+//     font-size: 1rem !important;
+//     font-weight: 400 !important;
+//     margin-bottom: 1em !important;
+// `;
 
-const Children = styled.div`
+const ChapterChildren = styled.div`
     border-left: 1px solid #e3e3e3;
     padding-left: 0.7rem;
 `;
