@@ -6,7 +6,7 @@ import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
-import { NewsletterSignup } from 'ts/components/docs/newsletter_signup';
+import { NewsletterWidget } from 'ts/components/docs/newsletter_widget';
 import { Note } from 'ts/components/docs/note';
 import { Notification } from 'ts/components/docs/notification';
 import { Resource } from 'ts/components/docs/resource/resource';
@@ -195,7 +195,6 @@ export const DocsPageTemplate: React.FC = () => {
                         </Heading>
                         <StepLinks links={usefulLinks} />
                         <HelpCallout />
-                        <NewsletterSignup />
                         <HelpfulCta />
                         <div>
                             <Heading asElement="h2" size="default">
@@ -237,6 +236,7 @@ export const DocsPageTemplate: React.FC = () => {
                                 url="#"
                             />
                         </div>
+                        <NewsletterWidget />
                     </article>
                 </Columns>
             </Section>
