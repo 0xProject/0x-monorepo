@@ -1112,19 +1112,19 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
  */
 function convertToMatchResults(result: MatchResults): MatchedFillResults {
     // If the left spread is negative, set it to zero
-    let leftMakerAssetSpreadAmount = result.fills[0].makerAssetFilledAmount.minus(
+    let profitInLeftMakerAsset = result.fills[0].makerAssetFilledAmount.minus(
         result.fills[1].takerAssetFilledAmount,
     );
-    if (leftMakerAssetSpreadAmount.isLessThanOrEqualTo(ZERO)) {
-        leftMakerAssetSpreadAmount = ZERO;
+    if (profitInLeftMakerAsset.isLessThanOrEqualTo(ZERO)) {
+        profitInLeftMakerAsset = ZERO;
     }
 
     // If the right spread is negative, set it to zero
-    let rightMakerAssetSpreadAmount = result.fills[1].makerAssetFilledAmount.minus(
+    let profitInRightMakerAsset = result.fills[1].makerAssetFilledAmount.minus(
         result.fills[0].takerAssetFilledAmount,
     );
-    if (rightMakerAssetSpreadAmount.isLessThanOrEqualTo(ZERO)) {
-        rightMakerAssetSpreadAmount = ZERO;
+    if (profitInRightMakerAsset.isLessThanOrEqualTo(ZERO)) {
+        profitInRightMakerAsset = ZERO;
     }
 
     const matchedFillResults: MatchedFillResults = {
@@ -1140,8 +1140,8 @@ function convertToMatchResults(result: MatchResults): MatchedFillResults {
             makerFeePaid: result.fills[1].makerFeePaid,
             takerFeePaid: result.fills[1].takerFeePaid,
         },
-        leftMakerAssetSpreadAmount,
-        rightMakerAssetSpreadAmount,
+        profitInLeftMakerAsset,
+        profitInRightMakerAsset,
     };
     return matchedFillResults;
 }

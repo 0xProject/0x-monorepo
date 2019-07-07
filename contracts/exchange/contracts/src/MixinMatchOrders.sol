@@ -189,7 +189,7 @@ contract MixinMatchOrders is
 
             // Calculate amount given to taker in the left order's maker asset if the left spread will be part of the profit.
             if (doesLeftMakerAssetProfitExist) {
-                matchedFillResults.leftMakerAssetSpreadAmount = _safeSub(
+                matchedFillResults.profitInLeftMakerAsset = _safeSub(
                     matchedFillResults.left.makerAssetFilledAmount,
                     matchedFillResults.right.takerAssetFilledAmount
                 );
@@ -197,7 +197,7 @@ contract MixinMatchOrders is
 
             // Calculate amount given to taker in the right order's maker asset if the right spread will be part of the profit.
             if (doesRightMakerAssetProfitExist) {
-                matchedFillResults.rightMakerAssetSpreadAmount = _safeSub(
+                matchedFillResults.profitInRightMakerAsset = _safeSub(
                     matchedFillResults.right.makerAssetFilledAmount,
                     matchedFillResults.left.takerAssetFilledAmount
                 );
@@ -239,7 +239,7 @@ contract MixinMatchOrders is
             }
 
             // Calculate amount given to taker
-            matchedFillResults.leftMakerAssetSpreadAmount = _safeSub(
+            matchedFillResults.profitInLeftMakerAsset = _safeSub(
                 matchedFillResults.left.makerAssetFilledAmount,
                 matchedFillResults.right.takerAssetFilledAmount
             );
@@ -396,8 +396,8 @@ contract MixinMatchOrders is
         // Without simulating all of the order matching, this program cannot know how many
         // matches there will be. To ensure that batchMatchedFillResults has enough memory
         // allocated for the left and the right side, we will allocate enough space for the
-        // maximum amount of matches (the maximum of the left and the right sides).
-        uint256 maxLength = _max256(leftOrders.length, rightOrders.length);
+        // maximum amount of matches (the left side length added to the right side length).
+        uint256 maxLength = leftOrders.length + rightOrders.length;
         batchMatchedFillResults.left = new LibFillResults.FillResults[](maxLength);
         batchMatchedFillResults.right = new LibFillResults.FillResults[](maxLength);
 
@@ -414,7 +414,7 @@ contract MixinMatchOrders is
 
         // Loop infinitely (until broken inside of the loop), but keep a counter of how
         // many orders have been matched.
-        for (matchCount = 0;; matchCount++) {
+        for (matchCount = 0;;) {
             // Match the two orders that are pointed to by the left and right indices
             LibFillResults.MatchedFillResults memory matchResults = _matchOrders(
                 leftOrder,
@@ -440,18 +440,20 @@ contract MixinMatchOrders is
             batchMatchedFillResults.right[matchCount] = matchResults.right;
             batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
                 batchMatchedFillResults.profitInLeftMakerAsset,
-                matchResults.leftMakerAssetSpreadAmount
+                matchResults.profitInLeftMakerAsset
             );
             batchMatchedFillResults.profitInRightMakerAsset = _safeAdd(
                 batchMatchedFillResults.profitInRightMakerAsset,
-                matchResults.rightMakerAssetSpreadAmount
+                matchResults.profitInRightMakerAsset
             );
+
+            // Increment the number of matches
+            matchCount++;
 
             // If the leftOrder is filled, update the leftIdx, leftOrder, and leftSignature,
             // or break out of the loop if there are no more leftOrders to match.
             if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
                 if (++leftIdx == leftOrders.length) {
-                    matchCount++;
                     break;
                 } else {
                     leftOrder = leftOrders[leftIdx];
@@ -463,7 +465,6 @@ contract MixinMatchOrders is
             // or break out of the loop if there are no more rightOrders to match.
             if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
                 if (++rightIdx == rightOrders.length) {
-                    matchCount++;
                     break;
                 } else {
                     rightOrder = rightOrders[rightIdx];
@@ -648,7 +649,7 @@ contract MixinMatchOrders is
             leftOrder.makerAssetData,
             leftOrder.makerAddress,
             takerAddress,
-            matchedFillResults.leftMakerAssetSpreadAmount
+            matchedFillResults.profitInLeftMakerAsset
         );
 
         _dispatchTransferFrom(
@@ -656,7 +657,7 @@ contract MixinMatchOrders is
             rightOrder.makerAssetData,
             rightOrder.makerAddress,
             takerAddress,
-            matchedFillResults.rightMakerAssetSpreadAmount
+            matchedFillResults.profitInRightMakerAsset
         );
 
         // Settle taker fees.
