@@ -1112,17 +1112,13 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
  */
 function convertToMatchResults(result: MatchResults): MatchedFillResults {
     // If the left spread is negative, set it to zero
-    let profitInLeftMakerAsset = result.fills[0].makerAssetFilledAmount.minus(
-        result.fills[1].takerAssetFilledAmount,
-    );
+    let profitInLeftMakerAsset = result.fills[0].makerAssetFilledAmount.minus(result.fills[1].takerAssetFilledAmount);
     if (profitInLeftMakerAsset.isLessThanOrEqualTo(ZERO)) {
         profitInLeftMakerAsset = ZERO;
     }
 
     // If the right spread is negative, set it to zero
-    let profitInRightMakerAsset = result.fills[1].makerAssetFilledAmount.minus(
-        result.fills[0].takerAssetFilledAmount,
-    );
+    let profitInRightMakerAsset = result.fills[1].makerAssetFilledAmount.minus(result.fills[0].takerAssetFilledAmount);
     if (profitInRightMakerAsset.isLessThanOrEqualTo(ZERO)) {
         profitInRightMakerAsset = ZERO;
     }
