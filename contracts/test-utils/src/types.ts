@@ -154,8 +154,8 @@ export interface FillResults {
 export interface MatchedFillResults {
     left: FillResults;
     right: FillResults;
-    leftMakerAssetSpreadAmount: BigNumber;
-    rightMakerAssetSpreadAmount: BigNumber;
+    profitInLeftMakerAsset: BigNumber;
+    profitInRightMakerAsset: BigNumber;
 }
 
 export interface BatchMatchedFillResults {
