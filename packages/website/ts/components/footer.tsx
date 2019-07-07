@@ -76,6 +76,7 @@ export const Footer: React.StatelessComponent = () => (
             <FooterColumn width="35%">
                 <Logo />
                 <NewsletterForm />
+                <Text>Subscribe to our newsletter for updates in the 0x ecosystem</Text>
             </FooterColumn>
 
             <FooterColumn width="55%">
@@ -169,4 +170,12 @@ const Link = styled(SmartLink)`
     &:hover {
         opacity: 0.8;
     }
+`;
+
+const Text = styled.p`
+    color: #656565;
+    font-size: 0.833333333rem;
+    font-weight: 300;
+    line-height: 1.2em;
+    margin-top: 15px;
 `;
