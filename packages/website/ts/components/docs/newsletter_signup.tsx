@@ -64,7 +64,6 @@ const Input = styled.input`
     background-color: transparent;
     border: 0;
     border-bottom: 1px solid #cfcfcf;
-    font-family: 'Roboto Mono', sans-serif;
     font-size: 1.1rem;
     font-weight: 300;
     width: 100%;

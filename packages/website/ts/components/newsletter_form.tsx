@@ -156,7 +156,7 @@ const SubmitButton = styled.button`
     outline: 0;
 
     &:focus-within {
-        //background-color: #eee;
+        background-color: #eee;
     }
 `;
 

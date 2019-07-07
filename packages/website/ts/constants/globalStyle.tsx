@@ -86,6 +86,10 @@ const GlobalStyles = withTheme(
         overflow: hidden;
     }
 
+    input {
+        font-family: 'Formular Mono', sans-serif;
+    }
+
     img, svg {
         max-width: 100%;
         object-fit: contain;
