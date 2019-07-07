@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled, { withTheme } from 'styled-components';
 
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
