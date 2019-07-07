@@ -63,10 +63,9 @@ const InputWrapper = styled.div`
 const Input = styled.input`
     background-color: transparent;
     border: 0;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
     border-bottom: 1px solid #cfcfcf;
-    font-size: 1.25rem;
+    font-family: 'Roboto Mono', sans-serif;
+    font-size: 1.1rem;
     font-weight: 300;
     width: 100%;
     outline: none;
