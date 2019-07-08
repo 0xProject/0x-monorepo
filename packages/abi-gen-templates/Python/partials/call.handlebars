@@ -1,0 +1,41 @@
+
+    def {{this.languageSpecificName}}(
+        self,
+        {{> typed_params inputs=inputs}}
+        tx_params: Optional[TxParams] = None,
+        {{^this.constant}}
+        view_only: bool = False,
+        {{/this.constant}}
+    ) ->{{#if outputs}}{{~> return_type outputs=outputs~}}{{else}} None{{/if}}:
+        """Execute underlying, same-named contract method.
+{{sanitizeDevdocDetails this.name this.devdoc.details 8}}
+        {{#each this.devdoc.params}}
+        :param {{@key}}: {{this}}
+        {{/each}}
+        {{#if this.constant}}
+        {{#if this.devdoc.return}}:returns: {{this.devdoc.return}}{{/if}}
+        {{else}}
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
+
+        :returns: transaction hash
+        {{/if}}
+        """
+        {{#each this.inputs}}
+        {{#if (equal type 'address')}}
+        {{this.name}} = self._validate_and_checksum_address({{this.name}})
+        {{else if (equal type 'uint256')}}
+        # safeguard against fractional inputs
+        {{this.name}} = int({{this.name}})
+{{/if}}
+{{/each}}
+        func = self._get_contract_instance(
+            self._contract_address
+        ).functions.{{this.name}}(
+            {{> params}}
+        )
+        return self._invoke_function_call(
+            func=func,
+            tx_params=tx_params,
+            view_only={{#if this.constant}}True{{else}}view_only{{/if}}
+        )

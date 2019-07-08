@@ -13,7 +13,7 @@ export enum ContractsBackend {
 export interface Method extends MethodAbi {
     singleReturnValue: boolean;
     hasReturnValue: boolean;
-    tsName: string;
+    languageSpecificName: string;
     functionSignature: string;
 }
 

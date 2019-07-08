@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.13",
+        "changes": [
+            {
+                "note": "Confirm devdoc components exist before using them",
+                "pr": 1878
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "2.0.12",
         "changes": [

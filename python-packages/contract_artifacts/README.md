@@ -16,6 +16,12 @@ We welcome improvements and fixes from the wider community! To report bugs withi
 
 Please read our [contribution guidelines](../../CONTRIBUTING.md) before getting started.
 
+### Pull in artifacts from TypeScript build environment
+
+```bash
+./setup.py pre_install
+```
+
 ### Install Code and Dependencies
 
 ```bash

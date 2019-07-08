@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+"""Run setup.py command `pre_install` for all packages that have one."""
+
+from os import chdir, path
+import subprocess
+
+PACKAGES = [
+    "contract_wrappers",
+    "contract_artifacts",
+]
+
+for package in PACKAGES:
+    print(f"Running command `pre_install` in package {package}")
+    chdir(package)
+    subprocess.check_call(
+        (
+            path.join(".", "setup.py") + " pre_install"
+        ).split()
+    )
+    chdir("..")
