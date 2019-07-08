@@ -22,7 +22,7 @@ const NotificationWrapper = styled.div<INotificationWrapperProps>`
     display: flex;
     align-items: center;
     padding: 1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1.875rem;
     color: ${colors.textDarkPrimary};
     background-color: ${({ type }) => themeSettings[type].bgColor};
 `;

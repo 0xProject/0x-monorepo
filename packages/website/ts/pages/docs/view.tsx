@@ -115,6 +115,7 @@ const LargeHeading = styled(Heading).attrs({
     asElement: 'h1',
 })`
     font-size: 2.125rem !important;
+    margin-bottom: 1.875rem;
 `;
 
 const H2 = styled(Heading).attrs({

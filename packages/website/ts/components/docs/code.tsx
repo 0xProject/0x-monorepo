@@ -10,13 +10,16 @@ import { styled } from 'ts/style/theme';
 
 interface ICodeProps {
     children: string;
-    isRunnable?: boolean;
     lang?: 'html | typescript | solidity | python';
+    run?: boolean;
 }
 
-export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', isRunnable = false }) => {
+export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run }) => {
     const [isCopied, setIsCopied] = useState<boolean>(false);
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
+    const isRunnable = run;
+    console.log('lang', lang);
+    console.log('run', run);
 
     const handleCopyClick = () => {
         setIsCopied(true);
@@ -34,13 +37,14 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', isRu
             <CopyToClipboard text={children} onCopy={handleCopyClick}>
                 <CopyButton>{copyButtonText}</CopyButton>
             </CopyToClipboard>
+
             <SyntaxHighlighter
                 language={lang}
                 customStyle={customStyle}
                 style={style}
-                showLineNumbers={false}
                 CodeTag={CodeTag}
                 PreTag={PreTag}
+                showLineNumbers={false}
                 wrapLines={true}
             >
                 {children}
@@ -57,6 +61,7 @@ const BORDER_RADIUS = '4px';
 const CodeWrapper = styled.div`
     position: relative;
     max-width: 700px;
+    margin-bottom: 1.875rem;
     padding: ${GUTTER};
     background-color: ${colors.backgroundLight};
     border-radius: 0 ${BORDER_RADIUS} ${BORDER_RADIUS};
@@ -78,8 +83,12 @@ const PreTag = styled.pre`
 const CodeTag = styled.code`
     border: none;
     font-family: 'Roboto Mono', sans-serif;
-    font-size: 0.875rem;
-    line-height: 1.25em;
+
+    span {
+        font-size: 14px;
+        line-height: 20px;
+        display: flex;
+    }
 `;
 
 const CopyButton = styled(Button)`

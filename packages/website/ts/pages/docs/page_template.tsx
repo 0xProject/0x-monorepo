@@ -150,7 +150,7 @@ export const DocsPageTemplate: React.FC = () => {
                             </TabList>
 
                             <TabPanel>
-                                <Code isRunnable={true}>{codeSample}</Code>
+                                <Code run>{codeSample}</Code>
                             </TabPanel>
                             <TabPanel>
                                 <Code>{codeSample}</Code>
@@ -328,10 +328,7 @@ const filterGroups: FilterGroup[] = [
     },
 ];
 
-const codeSample = `import { provider, networkId, signerAddress, salt, signature, senderAddress } from '@0x/browser-examples';
-
-const exchange = new ExchangeContract(provider, networkId);
-
-const txnReceipt = await exchange.executeTransaction.awaitTransactionSuccessAsync(salt, signerAddress, data, signature, {
-    from: senderAddress,
-});`;
+const codeSample = `import { TruffleArtifactAdapter } from '@0x/sol-coverage';
+const projectRoot = '.';
+const solcVersion = '0.5.0';
+const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`;

@@ -31,6 +31,13 @@ const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
 ```
 
+```python run
+import { TruffleArtifactAdapter } from '@0x/sol-coverage';
+const projectRoot = '.';
+const solcVersion = '0.5.0';
+const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
+```
+
 Because truffle artifacts don't have all the data we need - we actually will recompile your contracts under the hood. That's why you don't need to pass an `artifactsPath`.
 
 ### Other framework/toolset
@@ -108,3 +115,7 @@ And some content
 ---
 
 Use [Ganache](https://github.com/trufflesuite/ganache-cli) as a backing node.
+
+```
+
+```
