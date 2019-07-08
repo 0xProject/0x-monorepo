@@ -428,14 +428,159 @@ export class AbiGenDummyContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`AbiGenDummy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new AbiGenDummyContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new AbiGenDummyContract(txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('AbiGenDummy', abi, address, supportedProvider, txDefaults);
-        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+
+
+    /**
+     * @returns      The contract ABI
+     */
+    public static ABI(): ContractAbi {
+        const abi = [
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'simpleRequire',
+                outputs: [
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                    {
+                        name: 'hash',
+                        type: 'bytes32',
+                        
+                    },
+                    {
+                        name: 'v',
+                        type: 'uint8',
+                        
+                    },
+                    {
+                        name: 'r',
+                        type: 'bytes32',
+                        
+                    },
+                    {
+                        name: 's',
+                        type: 'bytes32',
+                        
+                    },
+                ],
+                name: 'ecrecoverFn',
+                outputs: [
+                    {
+                        name: 'signerAddress',
+                        type: 'address',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'revertWithConstant',
+                outputs: [
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'simpleRevert',
+                outputs: [
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'requireWithConstant',
+                outputs: [
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                    {
+                        name: 'x',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                name: 'simplePureFunctionWithInput',
+                outputs: [
+                    {
+                        name: 'sum',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'simplePureFunction',
+                outputs: [
+                    {
+                        name: 'result',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                ],
+                name: 'pureFunctionWithConstant',
+                outputs: [
+                    {
+                        name: 'someConstant',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+        ] as ContractAbi;
+        return abi;
     }
-} // tslint:disable:max-file-line-count
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('AbiGenDummy', AbiGenDummyContract.ABI(), address, supportedProvider, txDefaults);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+    }
+} 
+
+// tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
 // tslint:enable:trailing-comma whitespace no-trailing-whitespace

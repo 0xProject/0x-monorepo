@@ -223,6 +223,7 @@ for (const abiFileName of abiFileNames) {
         contractName: namedContent.name,
         ctor,
         ABI: ABI as ContractAbi,
+        ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
     };
