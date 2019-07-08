@@ -166,19 +166,19 @@ const communityShortcuts: ICommunityLinkProps[] = [
     {
         heading: 'Discord',
         description: 'Chat with the 0x community',
-        icon: '0x-coreConcepts',
+        icon: 'chat',
         url: '/docs/core-concepts',
     },
     {
         heading: 'Forum',
         description: 'Nerd out with 0x researchers',
-        icon: 'apiExplorer',
+        icon: 'forum',
         url: '/docs/core-concepts',
     },
     {
         heading: 'GitHub',
         description: 'Contribute to development',
-        icon: 'getStarted',
+        icon: 'github',
         url: '/docs/get-started',
     },
 ];
