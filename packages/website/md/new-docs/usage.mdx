@@ -24,14 +24,14 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
 
 If your project is using [Truffle](https://truffleframework.com/), we've written a `TruffleArtifactsAdapter`for you.
 
-```typescript
+```
 import { TruffleArtifactAdapter } from '@0x/sol-coverage';
 const projectRoot = '.';
 const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
 ```
 
-```python run
+```python canRun
 import { TruffleArtifactAdapter } from '@0x/sol-coverage';
 const projectRoot = '.';
 const solcVersion = '0.5.0';
