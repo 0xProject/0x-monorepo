@@ -93,14 +93,15 @@ const CodeTag = styled.code`
     }
 `;
 
-const CopyButton = styled(Button)`
+const CopyButton = styled(Button).attrs({
+    isTransparent: true,
+})`
     float: right;
     height: 32px;
     padding: 0 12px;
     margin-bottom: 13px;
     font-size: 14px;
     font-weight: 300;
-    background: white;
     border: 1px solid ${colors.beigeWhite};
     border-radius: ${BORDER_RADIUS};
     color: ${colors.brandDark};

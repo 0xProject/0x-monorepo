@@ -44,7 +44,9 @@ const RunButton = styled(ActionButton)`
     margin-bottom: 4px;
 `;
 
-const ResetButton = styled(ActionButton)`
+const ResetButton = styled(ActionButton).attrs({
+    isTransparent: true,
+})`
     background-color: white;
     color: ${colors.brandDark};
 `;
