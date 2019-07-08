@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import Loadable from 'react-loadable';
 import styled from 'styled-components';
 
@@ -13,7 +13,7 @@ interface IconProps extends PaddingInterface {
     size?: 'small' | 'medium' | 'large' | 'hero' | 'natural' | number;
 }
 
-export const Icon: React.FunctionComponent<IconProps> = props => {
+export const Icon: React.FC<IconProps> = props => {
     if (props.name && !props.component) {
         const IconSVG = Loadable({
             loader: async () => import(/* webpackChunkName: "icon" */ `ts/icons/illustrations/${props.name}.svg`),
