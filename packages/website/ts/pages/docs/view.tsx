@@ -4,6 +4,8 @@ import styled from 'styled-components';
 
 import { MDXProvider } from '@mdx-js/react';
 
+import CircularProgress from 'material-ui/CircularProgress';
+
 import { Code } from 'ts/components/docs/code';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
@@ -33,31 +35,36 @@ interface IDocsViewProps {
 
 interface IDocsViewState {
     title: string;
-    Component: JSX.Element | string;
+    Component: React.ReactNode;
 }
+
+const Loader = () => <CircularProgress size={80} thickness={5} />;
 
 export const DocsView: React.FC<IDocsViewProps> = props => {
     const [state, setState] = useState<IDocsViewState>({
-        title: 'Loading',
-        Component: Separator,
+        title: 'Loading...',
+        Component: Loader,
     });
 
     const { title, Component } = state;
+    const { page } = props.match.params;
+
+    console.log('props', props);
 
     useEffect(() => {
         // tslint:disable-next-line: no-console
-        console.log(props.match.params.page);
-        void addComponentAsync(props.match.params.page);
-    }, [props.match.params.page]);
+        console.log(page);
+        void loadPageAsync(page);
+    }, [page]);
 
-    const addComponentAsync = async (name: string) => {
-        const component = await import(`../../../md/new-docs/${name}.mdx`);
-        // if (component) {
-        //     setState({
-        //         title: component.meta.title,
-        //         Component: component.default,
-        //     });
-        // }
+    const loadPageAsync = async (fileName: string) => {
+        const component = await import(`../../../md/new-docs/${fileName}.mdx`);
+        if (component) {
+            setState({
+                title: component.meta.title,
+                Component: component.default,
+            });
+        }
         // @TODO: add error handling, loading
     };
 
@@ -76,8 +83,8 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                                 // @ts-ignore */}
                             <Component />
                         </MDXProvider>
-                        <HelpCallout />
-                        <HelpfulCta />
+                        {/* <HelpCallout />
+                        <HelpfulCta /> */}
                     </ContentWrapper>
                 </Columns>
             </Section>
