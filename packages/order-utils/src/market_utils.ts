@@ -1,5 +1,5 @@
 import { schemas } from '@0x/json-schemas';
-import { Order } from '@0x/types';
+import { MarketOperation, Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
@@ -10,7 +10,6 @@ import {
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FindOrdersThatCoverTakerAssetFillAmountOpts,
-    MarketOperation,
     OrdersAndRemainingMakerFillAmount,
     OrdersAndRemainingTakerFillAmount,
 } from './types';

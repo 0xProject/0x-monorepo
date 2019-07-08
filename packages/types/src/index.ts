@@ -41,6 +41,8 @@ export interface SignedOrder extends Order {
     signature: string;
 }
 
+export type MarketOperation = 'marketBuy' | 'marketSell';
+
 /**
  * ZeroExTransaction for use with 0x Exchange executeTransaction
  */
