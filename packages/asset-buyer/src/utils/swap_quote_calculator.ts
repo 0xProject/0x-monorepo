@@ -1,6 +1,6 @@
 import { marketUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
-import { BigNumber } from '@0x/utils';
 import { MarketOperation } from '@0x/types';
+import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
