@@ -33,25 +33,27 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run 
     };
 
     return (
-        <CodeWrapper>
+        <>
             <CopyToClipboard text={children} onCopy={handleCopyClick}>
                 <CopyButton>{copyButtonText}</CopyButton>
             </CopyToClipboard>
 
-            <SyntaxHighlighter
-                language={lang}
-                customStyle={customStyle}
-                style={style}
-                CodeTag={CodeTag}
-                PreTag={PreTag}
-                showLineNumbers={false}
-                wrapLines={true}
-            >
-                {children}
-            </SyntaxHighlighter>
+            <CodeWrapper>
+                <SyntaxHighlighter
+                    language={lang}
+                    customStyle={customStyle}
+                    style={style}
+                    CodeTag={CodeTag}
+                    PreTag={PreTag}
+                    showLineNumbers={false}
+                    wrapLines={true}
+                >
+                    {children}
+                </SyntaxHighlighter>
 
-            {isRunnable && <CodeRun />}
-        </CodeWrapper>
+                {isRunnable && <CodeRun />}
+            </CodeWrapper>
+        </>
     );
 };
 
@@ -59,7 +61,7 @@ const GUTTER = '10px';
 const BORDER_RADIUS = '4px';
 
 const CodeWrapper = styled.div`
-    position: relative;
+    clear: both;
     max-width: 700px;
     margin-bottom: 1.875rem;
     padding: ${GUTTER};
@@ -92,11 +94,10 @@ const CodeTag = styled.code`
 `;
 
 const CopyButton = styled(Button)`
-    position: absolute;
-    right: 0;
-    top: -48px;
+    float: right;
     height: 32px;
     padding: 0 12px;
+    margin-bottom: 13px;
     font-size: 14px;
     font-weight: 300;
     background: white;

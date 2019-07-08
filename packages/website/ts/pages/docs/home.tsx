@@ -93,7 +93,7 @@ const shortcuts: IShortcutLinkProps[] = [
     {
         heading: 'Core Concepts',
         description: 'Understand the fundamentals of 0x development',
-        icon: '0x-coreConcepts',
+        icon: 'coreConcepts',
         url: '/docs/core-concepts',
     },
     {
@@ -139,14 +139,14 @@ const getStartedLinks: IShortcutLinkProps[] = [
     {
         heading: 'Launch an exchange in 30 seconds',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
-        icon: '0x-coreConcepts',
+        icon: 'coreConcepts',
         url: '/docs/core-concepts',
     },
     {
         heading: 'Tap into contract-fillable liquidity',
         description: 'Source contract-fillable liquidity at the best prices from 0x.',
         icon: 'apiExplorer',
-        url: '/docs/core-concepts',
+        url: '/docs/api-explorer',
     },
     {
         heading: 'Launch your in-game marketplace',

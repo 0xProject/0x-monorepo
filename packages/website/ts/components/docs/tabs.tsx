@@ -19,17 +19,12 @@ export const Tabs = styled(OriginalTabs).attrs({
     selectedTabClassName: 'is-active',
 })<ITabProps>`
     margin-bottom: 1.875rem;
-
-    .is-active {
-        background-color: ${colors.backgroundLight};
-        color: ${colors.brandDark};
-    }
+    position: relative;
 `;
 
 export const TabPanel = styled(OriginalTabPanel).attrs({
     selectedClassName: 'is-active',
 })<ITabProps>`
-    background-color: ${colors.backgroundLight};
     border-radius: 4px;
     display: none;
 
@@ -40,6 +35,8 @@ export const TabPanel = styled(OriginalTabPanel).attrs({
 
 export const TabList = styled(OriginalTabList)<ITabProps>`
     display: flex;
+    position: absolute;
+    top: 5px;
 `;
 
 export const Tab = styled(OriginalTab)<ITabProps>`
@@ -49,4 +46,9 @@ export const Tab = styled(OriginalTab)<ITabProps>`
     font-size: 16px;
     font-weight: 300;
     color: ${colors.textDarkSecondary};
+
+    &.is-active {
+        background-color: ${colors.backgroundLight};
+        color: ${colors.brandDark};
+    }
 `;
