@@ -150,7 +150,7 @@ export const DocsPageTemplate: React.FC = () => {
                             </TabList>
 
                             <TabPanel>
-                                <Code run>{codeSample}</Code>
+                                <Code canRun>{codeSample}</Code>
                             </TabPanel>
                             <TabPanel>
                                 <Code>{codeSample}</Code>

@@ -10,16 +10,16 @@ import { styled } from 'ts/style/theme';
 
 interface ICodeProps {
     children: string;
-    lang?: 'html | typescript | solidity | python';
-    run?: boolean;
+    className?: string;
+    canRun?: boolean;
 }
 
-export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run }) => {
+export const Code: React.FC<ICodeProps> = ({ children, className = 'language-typescript', canRun = false }) => {
     const [isCopied, setIsCopied] = useState<boolean>(false);
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
-    const isRunnable = run;
-    console.log('lang', lang);
-    console.log('run', run);
+
+    // Passing in LANGUAGE to code in mdx results in classname 'language-<LANGUAGE>'
+    const language = className.replace('language-', '');
 
     const handleCopyClick = () => {
         setIsCopied(true);
@@ -28,8 +28,8 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run 
 
     const customStyle = {
         overflowX: 'scroll',
-        padding: isRunnable ? '20px' : '10px',
-        backgroundColor: isRunnable ? 'white' : 'none',
+        padding: canRun ? '20px' : '10px',
+        backgroundColor: canRun ? 'white' : 'none',
     };
 
     return (
@@ -40,7 +40,7 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run 
 
             <CodeWrapper>
                 <SyntaxHighlighter
-                    language={lang}
+                    language={language}
                     customStyle={customStyle}
                     style={style}
                     CodeTag={CodeTag}
@@ -51,7 +51,7 @@ export const Code: React.FC<ICodeProps> = ({ children, lang = 'typescript', run 
                     {children}
                 </SyntaxHighlighter>
 
-                {isRunnable && <CodeRun />}
+                {canRun && <CodeRun />}
             </CodeWrapper>
         </>
     );
