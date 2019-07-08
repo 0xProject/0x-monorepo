@@ -46,7 +46,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/team/brandonm.jpg',
         name: 'Brandon Millman',
-        title: 'Senior Engineer',
+        title: 'Engineering Manager',
     },
     {
         imageUrl: '/images/team/toms.jpg',
@@ -71,7 +71,7 @@ const team: TeamMember[] = [
     {
         imageUrl: '/images/team/zack.jpg',
         name: 'Zack Skelly',
-        title: 'Lead Recruiter',
+        title: 'Head of Talent',
     },
     {
         imageUrl: '/images/team/remcoB.jpg',
@@ -182,6 +182,11 @@ const team: TeamMember[] = [
         imageUrl: '/images/team/alexk.jpg',
         name: 'Alex Kroeger',
         title: 'Data Scientist',
+    },
+    {
+        imageUrl: '/images/team/theog.jpg',
+        name: 'Theo Gonella',
+        title: 'Product Manager',
     },
 ];
 
