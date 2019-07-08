@@ -2,9 +2,23 @@ import { ContractWrappers } from '@0x/contract-wrappers';
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
+import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { SwapQuote, SwapQuoteConsumerError, SwapQuoteExecutionOpts } from '../types';
+import { constants } from '../constants';
+import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
+import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
+import {
+    DynamicSwapQuoteGetOutputOpts,
+    SmartContractParams,
+    SwapQuote,
+    SwapQuoteConsumerBase,
+    SwapQuoteConsumerError,
+    SwapQuoteExecutionOpts,
+} from '../types';
+
+import { assert } from './assert';
+import { assetDataUtils } from './asset_data_utils';
 
 export const swapQuoteConsumerUtils = {
     async getTakerAddressOrThrowAsync(
@@ -57,5 +71,40 @@ export const swapQuoteConsumerUtils = {
     },
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
+    },
+    async getConsumerForSwapQuoteAsync(
+        quote: SwapQuote,
+        contractWrappers: ContractWrappers,
+        provider: Provider,
+        exchangeConsumer: ExchangeSwapQuoteConsumer,
+        forwarderConsumer: ForwarderSwapQuoteConsumer,
+        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
+        const wethAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
+        if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
+            if (opts.takerAddress !== undefined) {
+                assert.isETHAddressHex('takerAddress', opts.takerAddress);
+            }
+            const ethAmount = opts.ethAmount || quote.worstCaseQuoteInfo.totalTakerTokenAmount;
+            const takerAddress = await swapQuoteConsumerUtils.getTakerAddressAsync(provider, opts);
+            const takerEthAndWethBalance =
+                takerAddress !== undefined
+                    ? await swapQuoteConsumerUtils.getEthAndWethBalanceAsync(provider, contractWrappers, takerAddress)
+                    : [constants.ZERO_AMOUNT, constants.ZERO_AMOUNT];
+            // TODO(david): when considering if there is enough Eth balance, should account for gas costs.
+            const isEnoughEthAndWethBalance = _.map(takerEthAndWethBalance, (balance: BigNumber) =>
+                balance.isGreaterThanOrEqualTo(ethAmount),
+            );
+            if (isEnoughEthAndWethBalance[1]) {
+                // should be more gas efficient to use exchange consumer, so if possible use it.
+                return exchangeConsumer;
+            } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
+                return forwarderConsumer;
+            }
+            // Note: defaulting to forwarderConsumer if takerAddress is null or not enough balance of either wEth or Eth
+            return forwarderConsumer;
+        } else {
+            return exchangeConsumer;
+        }
     },
 };
