@@ -1,9 +1,9 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { SignedOrder } from '@0x/types';
+import { SignedOrder, MarketOperation } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { MarketOperation, SwapQuote } from '../../src/types';
+import { SwapQuote } from '../../src/types';
 
 const ZERO_BIG_NUMBER = new BigNumber(0);
 

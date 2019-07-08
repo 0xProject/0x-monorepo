@@ -1,7 +1,7 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { SignedOrder } from '@0x/order-utils';
-import { ObjectMap } from '@0x/types';
+import { MarketOperation, ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -138,42 +138,8 @@ export class SwapQuoter {
         takerAssetSellAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<MarketSellSwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
-            options,
-        );
-        assert.isString('makerAssetData', makerAssetData);
-        assert.isString('takerAssetData', takerAssetData);
-        assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
-        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
-        assert.isNumber('slippagePercentage', slippagePercentage);
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
-        // get the relevant orders for the makerAsset and fees
-        // if the requested assetData is ZRX, don't get the fee info
-        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
-            isMakerAssetZrxToken
-                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
-            shouldForceOrderRefresh,
-        ]);
-        if (ordersAndFillableAmounts.orders.length === 0) {
-            throw new Error(
-                `${
-                    SwapQuoterError.AssetUnavailable
-                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
-            );
-        }
-        const swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
-            ordersAndFillableAmounts,
-            feeOrdersAndFillableAmounts,
-            takerAssetSellAmount,
-            slippagePercentage,
-            isMakerAssetZrxToken,
-        );
-        return swapQuote;
+        assert.isBigNumber('makerAssetBuyAmount', takerAssetSellAmount);
+        return await this._getSwapQuoteAsync(makerAssetData, takerAssetData, takerAssetSellAmount, 'marketSell', options) as MarketSellSwapQuote;
     }
 
     /**
@@ -192,43 +158,8 @@ export class SwapQuoter {
         makerAssetBuyAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<MarketBuySwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
-            {},
-            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
-            options,
-        );
-        assert.isString('makerAssetData', makerAssetData);
-        assert.isString('takerAssetData', takerAssetData);
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
-        assert.isNumber('slippagePercentage', slippagePercentage);
-        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
-        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
-        // get the relevant orders for the makerAsset and fees
-        // if the requested assetData is ZRX, don't get the fee info
-        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
-            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
-            isMakerAssetZrxToken
-                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
-                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
-            shouldForceOrderRefresh,
-        ]);
-        if (ordersAndFillableAmounts.orders.length === 0) {
-            throw new Error(
-                `${
-                    SwapQuoterError.AssetUnavailable
-                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
-            );
-        }
-        const swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
-            ordersAndFillableAmounts,
-            feeOrdersAndFillableAmounts,
-            makerAssetBuyAmount,
-            slippagePercentage,
-            isMakerAssetZrxToken,
-        );
-
-        return swapQuote;
+        return await this._getSwapQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, 'marketBuy', options) as MarketBuySwapQuote;
     }
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
@@ -430,5 +361,63 @@ export class SwapQuoter {
      */
     private _getZrxTokenAssetDataOrThrow(): string {
         return this._contractWrappers.exchange.getZRXAssetData();
+    }
+
+    private async _getSwapQuoteAsync(
+        makerAssetData: string,
+        takerAssetData: string,
+        assetFillAmount: BigNumber,
+        marketOperation: MarketOperation,
+        options: Partial<SwapQuoteRequestOpts>): Promise<SwapQuote> {
+        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
+            {},
+            constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+            options,
+        );
+        assert.isString('makerAssetData', makerAssetData);
+        assert.isString('takerAssetData', takerAssetData);
+        assert.isBoolean('shouldForceOrderRefresh', shouldForceOrderRefresh);
+        assert.isNumber('slippagePercentage', slippagePercentage);
+        const zrxTokenAssetData = this._getZrxTokenAssetDataOrThrow();
+        const isMakerAssetZrxToken = makerAssetData === zrxTokenAssetData;
+        // get the relevant orders for the makerAsset and fees
+        // if the requested assetData is ZRX, don't get the fee info
+        const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
+            this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
+            isMakerAssetZrxToken
+                ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
+                : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
+            shouldForceOrderRefresh,
+        ]);
+
+        if (ordersAndFillableAmounts.orders.length === 0) {
+            throw new Error(
+                `${
+                    SwapQuoterError.AssetUnavailable
+                }: For makerAssetdata ${makerAssetData} and takerAssetdata ${takerAssetData}`,
+            );
+        }
+
+        let swapQuote: SwapQuote;
+
+        if (marketOperation === 'marketBuy') {
+            swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
+                ordersAndFillableAmounts,
+                feeOrdersAndFillableAmounts,
+                assetFillAmount,
+                slippagePercentage,
+                isMakerAssetZrxToken,
+            );
+        } else {
+            swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
+                ordersAndFillableAmounts,
+                feeOrdersAndFillableAmounts,
+                assetFillAmount,
+                slippagePercentage,
+                isMakerAssetZrxToken,
+            );
+        }
+
+        return swapQuote;
     }
 }
