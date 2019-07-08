@@ -171,7 +171,6 @@ export class DutchAuctionWrapper extends ContractWrapper {
             return this._dutchAuctionContractIfExists;
         }
         const contractInstance = new DutchAuctionContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

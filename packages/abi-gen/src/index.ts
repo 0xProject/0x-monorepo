@@ -4,7 +4,7 @@ import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import * as changeCase from 'change-case';
 import * as cliFormat from 'cli-format';
-import { AbiDefinition, ConstructorAbi, DevdocOutput, EventAbi, MethodAbi } from 'ethereum-types';
+import { AbiDefinition, ConstructorAbi, ContractAbi, DevdocOutput, EventAbi, MethodAbi } from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
@@ -79,11 +79,21 @@ function registerPartials(): void {
     }
 }
 
-if (args.language === 'TypeScript') {
+function registerTypeScriptHelpers(): void {
     Handlebars.registerHelper('parameterType', utils.solTypeToTsType.bind(utils, ParamKind.Input, args.backend));
     Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
     Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
-} else if (args.language === 'Python') {
+
+    // Check if 0 or false exists
+    Handlebars.registerHelper(
+        'isDefined',
+        (context: any): boolean => {
+            return context !== undefined;
+        },
+    );
+}
+
+function registerPythonHelpers(): void {
     Handlebars.registerHelper('equal', (lhs, rhs, options) => {
         return lhs === rhs;
     });
@@ -108,6 +118,11 @@ if (args.language === 'TypeScript') {
             );
         },
     );
+}
+if (args.language === 'TypeScript') {
+    registerTypeScriptHelpers();
+} else if (args.language === 'Python') {
+    registerPythonHelpers();
 }
 registerPartials();
 
@@ -207,7 +222,8 @@ for (const abiFileName of abiFileNames) {
     const contextData = {
         contractName: namedContent.name,
         ctor,
-        ABI: JSON.stringify(ABI),
+        ABI: ABI as ContractAbi,
+        ABIString: JSON.stringify(ABI),
         methods: methodsData,
         events: eventsData,
     };

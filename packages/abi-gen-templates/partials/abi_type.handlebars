@@ -1,0 +1,12 @@
+{
+    name: '{{name}}',
+    type: '{{type}}',
+    {{#if (isDefined indexed)}}indexed: {{indexed}},{{/if}}
+    {{#if components}}
+    components: [
+        {{#each components}}
+        {{> abi_type this}}
+        {{/each}}
+    ]
+    {{/if}}
+},

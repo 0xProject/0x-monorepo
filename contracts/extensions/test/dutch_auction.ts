@@ -109,11 +109,7 @@ describe(ContractName.DutchAuction, () => {
             txDefaults,
             exchangeInstance.address,
         );
-        dutchAuctionContract = new DutchAuctionContract(
-            dutchAuctionInstance.abi,
-            dutchAuctionInstance.address,
-            provider,
-        );
+        dutchAuctionContract = new DutchAuctionContract(dutchAuctionInstance.address, provider);
         dutchAuctionTestWrapper = new DutchAuctionTestWrapper(dutchAuctionInstance, provider);
 
         defaultMakerAssetAddress = erc20TokenA.address;

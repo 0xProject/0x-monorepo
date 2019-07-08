@@ -170,14 +170,68 @@ export class TestLibDummyContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`TestLibDummy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new TestLibDummyContract(abi, txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new TestLibDummyContract(txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-    constructor(abi: ContractAbi, address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('TestLibDummy', abi, address, supportedProvider, txDefaults);
-        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', 'abi', '_web3Wrapper']);
+
+
+    /**
+     * @returns      The contract ABI
+     */
+    public static ABI(): ContractAbi {
+        const abi = [
+            { 
+                constant: true,
+                inputs: [
+                    {
+                        name: 'x',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                name: 'publicAddConstant',
+                outputs: [
+                    {
+                        name: 'result',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            { 
+                constant: true,
+                inputs: [
+                    {
+                        name: 'x',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                name: 'publicAddOne',
+                outputs: [
+                    {
+                        name: 'result',
+                        type: 'uint256',
+                        
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+        ] as ContractAbi;
+        return abi;
     }
-} // tslint:disable:max-file-line-count
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
+        super('TestLibDummy', TestLibDummyContract.ABI(), address, supportedProvider, txDefaults);
+        classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+    }
+} 
+
+// tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
 // tslint:enable:trailing-comma whitespace no-trailing-whitespace

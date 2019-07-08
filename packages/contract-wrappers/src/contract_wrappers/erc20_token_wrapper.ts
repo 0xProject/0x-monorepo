@@ -431,7 +431,6 @@ export class ERC20TokenWrapper extends ContractWrapper {
             return tokenContract;
         }
         const contractInstance = new ERC20TokenContract(
-            this.abi,
             normalizedTokenAddress,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

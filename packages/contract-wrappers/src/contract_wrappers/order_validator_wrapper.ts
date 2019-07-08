@@ -174,7 +174,6 @@ export class OrderValidatorWrapper extends ContractWrapper {
             return this._orderValidatorContractIfExists;
         }
         const contractInstance = new OrderValidatorContract(
-            this.abi,
             this.address,
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),

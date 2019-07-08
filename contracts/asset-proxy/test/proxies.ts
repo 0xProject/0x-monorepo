@@ -44,16 +44,8 @@ import {
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-const assetProxyInterface = new IAssetProxyContract(
-    artifacts.IAssetProxy.compilerOutput.abi,
-    constants.NULL_ADDRESS,
-    provider,
-);
-const assetDataInterface = new IAssetDataContract(
-    artifacts.IAssetData.compilerOutput.abi,
-    constants.NULL_ADDRESS,
-    provider,
-);
+const assetProxyInterface = new IAssetProxyContract(constants.NULL_ADDRESS, provider);
+const assetDataInterface = new IAssetDataContract(constants.NULL_ADDRESS, provider);
 
 // tslint:disable:no-unnecessary-type-assertion
 describe('Asset Transfer Proxies', () => {

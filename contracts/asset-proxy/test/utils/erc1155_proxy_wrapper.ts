@@ -36,11 +36,7 @@ export class ERC1155ProxyWrapper {
         const allArtifacts = _.merge(artifacts, erc1155Artifacts);
         this._logDecoder = new LogDecoder(this._web3Wrapper, allArtifacts);
         this._dummyTokenWrappers = [];
-        this._assetProxyInterface = new IAssetProxyContract(
-            artifacts.IAssetProxy.compilerOutput.abi,
-            constants.NULL_ADDRESS,
-            provider,
-        );
+        this._assetProxyInterface = new IAssetProxyContract(constants.NULL_ADDRESS, provider);
         this._tokenOwnerAddresses = tokenOwnerAddresses;
         this._contractOwnerAddress = contractOwnerAddress;
         this._fungibleTokenIds = [];

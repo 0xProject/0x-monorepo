@@ -31,7 +31,6 @@
     "dependencies": {
         "@0x/abi-gen-wrappers": "^4.3.0",
         "@0x/base-contract": "^5.1.0",
-        "@0x/contract-artifacts": "^1.5.1",
         "@0x/order-utils": "^8.1.1",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",

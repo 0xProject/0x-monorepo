@@ -15,6 +15,7 @@
         "lint": "tslint --format stylish --project .",
         "fix": "tslint --fix --format stylish --project .",
         "pre_build": "yarn generate_contract_wrappers",
+        "prettier": "prettier --write src/**/* --config ../../.prettierrc",
         "clean": "shx rm -rf lib src/generated-wrappers",
         "generate_contract_wrappers": "abi-gen --abis  ${npm_package_config_abis} --template ../../node_modules/@0x/abi-gen-templates/contract.handlebars --partials '../../node_modules/@0x/abi-gen-templates/partials/**/*.handlebars' --output src/generated-wrappers --backend ethers"
     },
@@ -46,6 +47,7 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.1.0",
+        "@0x/contract-addresses": "^2.3.3",
         "@0x/contract-artifacts": "^1.5.1"
     },
     "publishConfig": {

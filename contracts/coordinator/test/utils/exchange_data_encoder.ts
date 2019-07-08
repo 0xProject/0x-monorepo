@@ -1,4 +1,4 @@
-import { artifacts, IExchangeContract } from '@0x/contracts-exchange';
+import { IExchangeContract } from '@0x/contracts-exchange';
 import { constants as devConstants, provider } from '@0x/contracts-test-utils';
 import { SignedOrder } from '@0x/types';
 
@@ -6,11 +6,7 @@ import { constants } from './index';
 
 export const exchangeDataEncoder = {
     encodeOrdersToExchangeData(fnName: string, orders: SignedOrder[]): string {
-        const exchangeInstance = new IExchangeContract(
-            artifacts.IExchange.compilerOutput.abi,
-            devConstants.NULL_ADDRESS,
-            provider,
-        );
+        const exchangeInstance = new IExchangeContract(devConstants.NULL_ADDRESS, provider);
         let data;
         if (constants.SINGLE_FILL_FN_NAMES.indexOf(fnName) !== -1) {
             data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(

@@ -1,5 +1,4 @@
 import { CoordinatorRegistryContract } from '@0x/abi-gen-wrappers';
-import { CoordinatorRegistry } from '@0x/contract-artifacts';
 import { constants } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
 import { BlockchainLifecycle } from '@0x/dev-utils';
@@ -162,11 +161,7 @@ describe('CoordinatorWrapper', () => {
         });
 
         // setup coordinator registry
-        coordinatorRegistryInstance = new CoordinatorRegistryContract(
-            CoordinatorRegistry.compilerOutput.abi,
-            contractAddresses.coordinatorRegistry,
-            provider,
-        );
+        coordinatorRegistryInstance = new CoordinatorRegistryContract(contractAddresses.coordinatorRegistry, provider);
 
         // register coordinator server
         await web3Wrapper.awaitTransactionSuccessAsync(
