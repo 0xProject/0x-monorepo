@@ -1,12 +1,12 @@
 import { marketUtils, orderCalculationUtils, SignedOrder } from '@0x/order-utils';
 import { BigNumber } from '@0x/utils';
+import { MarketOperation } from '@0x/types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
 import { InsufficientAssetLiquidityError } from '../errors';
 import {
     MarketBuySwapQuote,
-    MarketOperation,
     MarketSellSwapQuote,
     OrdersAndFillableAmounts,
     SwapQuote,
