@@ -66,39 +66,49 @@ export interface SmartContractParamsInfo<T> {
     methodAbi: MethodAbi;
 }
 
-/**
- * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
- * makerAssetFillAmount: The amount of makerAsset to swap for.
- * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
- */
-export interface ExchangeMarketBuySmartContractParams {
+export interface SmartContractParamsBase {
     orders: SignedOrder[];
-    makerAssetFillAmount: BigNumber;
     signatures: string[];
 }
 
 /**
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
- * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
- * feeSignatures: An array of signatures that attest that the maker of the fee orders in fact made the orders.
- * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
- * feeRecipient: address of the receiver of the feePercentage of taker asset
  */
-export interface ForwarderMarketBuySmartContractParams extends ExchangeMarketBuySmartContractParams {
+export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
+    makerAssetFillAmount: BigNumber;
+    type: 'marketBuy';
+}
+
+export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
+    takerAssetFillAmount: BigNumber;
+    type: 'marketSell';
+}
+
+export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
+
+export interface ForwarderSmartContractParamsBase {
     feeOrders: SignedOrder[];
     feeSignatures: string[];
     feePercentage: BigNumber;
     feeRecipient: string;
 }
 
-export interface ExchangeMarketBuySmartContractParams {
-    orders: SignedOrder[];
-    makerAssetFillAmount: BigNumber;
-    signatures: string[];
-}
+export interface ForwarderMarketBuySmartContractParams
+    extends ExchangeMarketBuySmartContractParams,
+        ForwarderSmartContractParamsBase {}
+
+// Temporary fix until typescript is upgraded to ^3.5
+type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
+
+export interface ForwarderMarketSellSmartContractParams
+    extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
+        ForwarderSmartContractParamsBase {}
+
+export type ForwarderSmartContractParams =
+    | ForwarderMarketBuySmartContractParams
+    | ForwarderMarketSellSmartContractParams;
 
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
@@ -106,7 +116,7 @@ export interface ExchangeMarketBuySmartContractParams {
  * getSmartContractParamsOrThrow: Get SmartContractParamsInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
-export interface SwapQuoteConsumer<T> {
+export interface SwapQuoteConsumerBase<T> {
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
@@ -154,6 +164,8 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
  */
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
 
+export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
+
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
@@ -163,29 +175,44 @@ export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOu
  * bestCaseQuoteInfo: Info about the best case price for the asset.
  * worstCaseQuoteInfo: Info about the worst case price for the asset.
  */
-export interface SwapQuote {
+export interface SwapQuoteBase {
     takerAssetData: string;
     makerAssetData: string;
-    makerAssetFillAmount: BigNumber;
     orders: SignedOrder[];
     feeOrders: SignedOrder[];
     bestCaseQuoteInfo: SwapQuoteInfo;
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
-export interface SwapQuoteWithAffiliateFee extends SwapQuote {
+export interface MarketSellSwapQuote extends SwapQuoteBase {
+    takerAssetFillAmount: BigNumber;
+    type: 'marketSell';
+}
+
+export interface MarketBuySwapQuote extends SwapQuoteBase {
+    makerAssetFillAmount: BigNumber;
+    type: 'marketBuy';
+}
+
+export interface SwapQuoteWithAffiliateFeeBase {
     feePercentage: number;
 }
 
+export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketSellSwapQuote {}
+
+export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
+
+export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
 /**
  * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.
  * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
  */
 export interface SwapQuoteInfo {
-    takerTokenAmount: BigNumber;
     feeTakerTokenAmount: BigNumber;
     totalTakerTokenAmount: BigNumber;
+    takerTokenAmount: BigNumber;
+    makerTokenAmount: BigNumber;
 }
 
 /**
@@ -218,6 +245,7 @@ export interface SwapQuoterOpts {
  * Possible error messages thrown by an SwapQuoterConsumer instance or associated static methods.
  */
 export enum SwapQuoteConsumerError {
+    InvalidMarketSellOrMarketBuySwapQuote = 'INVALID_MARKET_BUY_SELL_SWAP_QUOTE',
     InvalidForwarderSwapQuote = 'INVALID_FORWARDER_SWAP_QUOTE_PROVIDED',
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',

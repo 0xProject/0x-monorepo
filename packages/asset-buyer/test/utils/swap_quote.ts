@@ -1,9 +1,9 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { SwapQuote } from '../../src';
+import { SwapQuote } from '../../src/types';
 
 const ZERO_BIG_NUMBER = new BigNumber(0);
 
@@ -29,6 +29,7 @@ export const getFullyFillableSwapQuoteWithNoFees = (
     makerAssetData: string,
     takerAssetData: string,
     orders: SignedOrder[],
+    operation: MarketOperation,
 ): SwapQuote => {
     const makerAssetFillAmount = _.reduce(
         orders,
@@ -41,18 +42,32 @@ export const getFullyFillableSwapQuoteWithNoFees = (
         ZERO_BIG_NUMBER,
     );
     const quoteInfo = {
+        makerTokenAmount: makerAssetFillAmount,
         takerTokenAmount: totalTakerTokenAmount,
         feeTakerTokenAmount: ZERO_BIG_NUMBER,
         totalTakerTokenAmount,
     };
 
-    return {
+    const quoteBase = {
         makerAssetData,
         takerAssetData,
         orders,
         feeOrders: [],
-        makerAssetFillAmount,
         bestCaseQuoteInfo: quoteInfo,
         worstCaseQuoteInfo: quoteInfo,
     };
+
+    if (operation === 'marketBuy') {
+        return {
+            ...quoteBase,
+            type: 'marketBuy',
+            makerAssetFillAmount,
+        };
+    } else {
+        return {
+            ...quoteBase,
+            type: 'marketSell',
+            takerAssetFillAmount: totalTakerTokenAmount,
+        };
+    }
 };

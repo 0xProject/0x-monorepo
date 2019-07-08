@@ -7,10 +7,10 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    ExchangeMarketBuySmartContractParams,
+    ExchangeSmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
-    SwapQuoteConsumer,
+    SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
     SwapQuoteExecutionOpts,
@@ -20,7 +20,7 @@ import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMarketBuySmartContractParams> {
+export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<ExchangeSmartContractParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -44,9 +44,19 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { params, to, ethAmount, methodAbi } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const { to, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-        const args = [params.orders, params.makerAssetFillAmount, params.signatures];
+
+        const { orders, signatures } = params;
+        let args: any[];
+        if (params.type === 'marketBuy') {
+            const { makerAssetFillAmount } = params;
+            args = [orders, makerAssetFillAmount, signatures];
+        } else {
+            const { takerAssetFillAmount } = params;
+            args = [orders, takerAssetFillAmount, signatures];
+        }
         const calldataHexString = abiEncoder.encode(args);
         return {
             calldataHexString,
@@ -58,23 +68,44 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
 
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SmartContractParamsInfo<ExchangeMarketBuySmartContractParams>> {
+        _opts: Partial<SwapQuoteGetOutputOpts>,
+    ): Promise<SmartContractParamsInfo<ExchangeSmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { orders, makerAssetFillAmount } = quote;
+        const { orders } = quote;
 
         const signatures = _.map(orders, o => o.signature);
 
-        const params: ExchangeMarketBuySmartContractParams = {
-            orders,
-            signatures,
-            makerAssetFillAmount,
-        };
+        let params: ExchangeSmartContractParams;
+        let methodName: string;
+
+        if (quote.type === 'marketBuy') {
+            const { makerAssetFillAmount } = quote;
+
+            params = {
+                orders,
+                signatures,
+                makerAssetFillAmount,
+                type: 'marketBuy',
+            };
+
+            methodName = 'marketBuyOrders';
+        } else {
+            const { takerAssetFillAmount } = quote;
+
+            params = {
+                orders,
+                signatures,
+                takerAssetFillAmount,
+                type: 'marketSell',
+            };
+
+            methodName = 'marketSellOrders';
+        }
 
         const methodAbi = utils.getMethodAbiFromContractAbi(
             this._contractWrappers.exchange.abi,
-            'marketBuyOrdersNoThrow',
+            methodName,
         ) as MethodAbi;
 
         return {
@@ -102,21 +133,37 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumer<ExchangeMark
             assert.isBigNumber('gasPrice', gasPrice);
         }
 
-        const { orders, makerAssetFillAmount } = quote;
+        const { orders } = quote;
 
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
 
         try {
-            const txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
-                orders,
-                makerAssetFillAmount,
-                finalTakerAddress,
-                {
-                    gasLimit,
-                    gasPrice,
-                    shouldValidate: true,
-                },
-            );
+            let txHash: string;
+            if (quote.type === 'marketBuy') {
+                const { makerAssetFillAmount } = quote;
+                txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
+                    orders,
+                    makerAssetFillAmount,
+                    finalTakerAddress,
+                    {
+                        gasLimit,
+                        gasPrice,
+                        shouldValidate: true,
+                    },
+                );
+            } else {
+                const { takerAssetFillAmount } = quote;
+                txHash = await this._contractWrappers.exchange.marketSellOrdersNoThrowAsync(
+                    orders,
+                    takerAssetFillAmount,
+                    finalTakerAddress,
+                    {
+                        gasLimit,
+                        gasPrice,
+                        shouldValidate: true,
+                    },
+                );
+            }
             return txHash;
         } catch (err) {
             if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
