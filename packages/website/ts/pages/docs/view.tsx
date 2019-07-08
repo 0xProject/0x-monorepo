@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { match } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -20,7 +20,7 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-interface Props {
+interface IDocsViewProps {
     history: History;
     location: Location;
     match: match<any>;
@@ -31,79 +31,59 @@ interface Props {
     };
 }
 
-interface State {
+interface IDocsViewState {
     title: string;
     Component: JSX.Element | string;
 }
 
-export class DocsView extends React.Component<Props, State> {
-    public state = {
-        title: '',
-        Component: '',
-        mdxComponents: {
-            p: Paragraph,
-            h1: LargeHeading,
-            h2: H2,
-            h3: H3,
-            ol: TutorialSteps,
-            ul: UnorderedList,
-            code: Code,
-            table: Table,
-            hr: Separator,
-            Notification,
-            Tabs,
-            TabList,
-            Tab,
-            TabPanel,
-        },
-    };
-    public componentDidMount(): void {
-        // tslint:disable-next-line: no-console
-        console.log(this.props.match.params.page);
-        this._addComponentAsync(this.props.match.params.page);
-    }
-    public componentDidUpdate(prevProps: Props, prevState: State): void {
-        if (prevProps.match.params.page !== this.props.match.params.page) {
-            this._addComponentAsync(this.props.match.params.page);
-        }
-    }
-    public render(): React.ReactNode {
-        const { title, Component, mdxComponents } = this.state;
-        return (
-            <SiteWrap theme="light">
-                <DocumentTitle {...documentConstants.DOCS} />
-                <Hero isHome={false} title={title} />
-                <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
-                    <Columns>
-                        <aside>
-                            <h3>Sidebar</h3>
-                        </aside>
-                        <ContentWrapper>
-                            <MDXProvider components={mdxComponents}>{Component ? <Component /> : null}</MDXProvider>
-                            <HelpCallout />
-                            <HelpfulCta />
-                        </ContentWrapper>
-                    </Columns>
-                </Section>
-            </SiteWrap>
-        );
-    }
-    private async _addComponentAsync(name: string): Promise<void> {
-        const component = await import(`../../../md/new-docs/${name}.mdx`).catch(e => {
-            return null;
-        });
-        if (!component) {
-            this.setState({
-                Component: '',
-            });
-        }
+export const DocsView: React.FC<IDocsViewProps> = props => {
+    const [state, setState] = useState<IDocsViewState>({
+        title: 'Loading',
+        Component: Separator,
+    });
 
-        this.setState({
-            title: component.meta.title,
-            Component: component.default,
-        });
-    }
-}
+    const { title, Component } = state;
+
+    useEffect(() => {
+        // tslint:disable-next-line: no-console
+        console.log(props.match.params.page);
+        void addComponentAsync(props.match.params.page);
+    }, [props.match.params.page]);
+
+    const addComponentAsync = async (name: string) => {
+        const component = await import(`../../../md/new-docs/${name}.mdx`);
+        // if (component) {
+        //     setState({
+        //         title: component.meta.title,
+        //         Component: component.default,
+        //     });
+        // }
+        // @TODO: add error handling, loading
+    };
+
+    return (
+        <SiteWrap theme="light">
+            <DocumentTitle {...documentConstants.DOCS} />
+            <Hero isHome={false} title={title} />
+            <Section maxWidth="1030px" isPadded={false} padding="0 0">
+                <Columns>
+                    <aside>
+                        <h3>Sidebar</h3>
+                    </aside>
+                    <ContentWrapper>
+                        <MDXProvider components={mdxComponents}>
+                            {/*
+                                // @ts-ignore */}
+                            <Component />
+                        </MDXProvider>
+                        <HelpCallout />
+                        <HelpfulCta />
+                    </ContentWrapper>
+                </Columns>
+            </Section>
+        </SiteWrap>
+    );
+};
 
 const Columns = styled.div`
     display: grid;
@@ -139,3 +119,20 @@ const H3 = styled(Heading).attrs({
     size: 'default',
     asElement: 'h3',
 })``;
+
+const mdxComponents = {
+    p: Paragraph,
+    h1: LargeHeading,
+    h2: H2,
+    h3: H3,
+    ol: TutorialSteps,
+    ul: UnorderedList,
+    code: Code,
+    table: Table,
+    hr: Separator,
+    Notification,
+    Tabs,
+    TabList,
+    Tab,
+    TabPanel,
+};
