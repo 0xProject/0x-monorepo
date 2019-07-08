@@ -1,5 +1,5 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
-import { SignedOrder, MarketOperation } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 

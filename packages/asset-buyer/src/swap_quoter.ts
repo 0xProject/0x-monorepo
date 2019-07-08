@@ -139,7 +139,13 @@ export class SwapQuoter {
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<MarketSellSwapQuote> {
         assert.isBigNumber('makerAssetBuyAmount', takerAssetSellAmount);
-        return await this._getSwapQuoteAsync(makerAssetData, takerAssetData, takerAssetSellAmount, 'marketSell', options) as MarketSellSwapQuote;
+        return (await this._getSwapQuoteAsync(
+            makerAssetData,
+            takerAssetData,
+            takerAssetSellAmount,
+            'marketSell',
+            options,
+        )) as MarketSellSwapQuote;
     }
 
     /**
@@ -159,7 +165,13 @@ export class SwapQuoter {
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<MarketBuySwapQuote> {
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
-        return await this._getSwapQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, 'marketBuy', options) as MarketBuySwapQuote;
+        return (await this._getSwapQuoteAsync(
+            makerAssetData,
+            takerAssetData,
+            makerAssetBuyAmount,
+            'marketBuy',
+            options,
+        )) as MarketBuySwapQuote;
     }
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
@@ -368,7 +380,8 @@ export class SwapQuoter {
         takerAssetData: string,
         assetFillAmount: BigNumber,
         marketOperation: MarketOperation,
-        options: Partial<SwapQuoteRequestOpts>): Promise<SwapQuote> {
+        options: Partial<SwapQuoteRequestOpts>,
+    ): Promise<SwapQuote> {
         const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
