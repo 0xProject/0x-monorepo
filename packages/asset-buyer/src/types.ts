@@ -71,8 +71,6 @@ export interface SmartContractParamsBase {
     signatures: string[];
 }
 
-export type MarketOperation = 'marketBuy' | 'marketSell';
-
 /**
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
