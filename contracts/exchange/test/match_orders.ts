@@ -3305,6 +3305,7 @@ describe('matchOrders', () => {
                     leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
                     leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
                     // Right Maker
+                    leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
                     rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(50, 16), // 50%
                     // Taker
@@ -3316,6 +3317,7 @@ describe('matchOrders', () => {
                     leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
                     leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 50%
                     // Right Maker
+                    leftMakerAssetBoughtByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(2, 0),
                     rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
                     rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(50, 16), // 50%
                     // Taker
