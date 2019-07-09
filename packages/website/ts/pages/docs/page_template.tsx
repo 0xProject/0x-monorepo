@@ -159,6 +159,7 @@ export const DocsPageTemplate: React.FC = () => {
                                 <Code>{codeSample}</Code>
                             </TabPanel>
                         </Tabs>
+
                         <H3>Subheading</H3>
                         <Paragraph>
                             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec consequat velit in nisl

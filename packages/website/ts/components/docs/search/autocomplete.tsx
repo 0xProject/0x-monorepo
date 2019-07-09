@@ -199,7 +199,7 @@ const Wrapper = styled.div<Props>`
             border-bottom: 0;
             padding: 13px 21px 15px 52px;
             background-position: left 21px center;
-            font-size: 1.125rem;
+            font-size: 1rem;
         `};
 
         &:before {
