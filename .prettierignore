@@ -25,10 +25,8 @@ lib
 /contracts/dev-utils/generated-wrappers
 /contracts/dev-utils/generated-artifacts
 /packages/abi-gen/test-cli/fixtures/artifacts/
-/packages/abi-gen/test-cli/typescript/output
-/packages/abi-gen/test-cli/python/output
-/packages/abi-gen/test-cli/typescript/expected-output
-/packages/abi-gen/test-cli/python/expected-output
+/packages/abi-gen/test-cli/output
+/packages/abi-gen/test-cli/expected-output
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts
