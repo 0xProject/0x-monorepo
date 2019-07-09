@@ -35,8 +35,6 @@ export const Code: React.FC<ICodeProps> = ({ children, className = 'language-typ
 
     return (
         <>
-            <Tab>{language}</Tab>
-
             <CopyToClipboard text={children} onCopy={handleCopyClick}>
                 <CopyButton>{copyButtonText}</CopyButton>
             </CopyToClipboard>

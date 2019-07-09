@@ -15,7 +15,7 @@ import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
-import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
+import { CodeTabs, Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
 import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
@@ -143,6 +143,7 @@ const mdxComponents = {
     table: Table,
     ul: UnorderedList,
     Notification,
+    CodeTabs,
     Tabs,
     TabList,
     Tab,

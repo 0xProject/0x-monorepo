@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import {
@@ -11,9 +11,29 @@ import {
 import { colors } from 'ts/style/colors';
 
 interface ITabProps {
-    children: ReactNode;
+    children: React.ReactNode;
     selectedTabClassName?: string;
 }
+
+interface ICodeTabs {
+    children: React.ReactNode;
+    tabs: string[];
+}
+
+export const CodeTabs: React.FC<ICodeTabs> = ({ children, tabs }) => {
+    return (
+        <Tabs>
+            <TabList>
+                {tabs.map((tab, index) => (
+                    <Tab key={`tab-${index}`}>{tab}</Tab>
+                ))}
+            </TabList>
+            {React.Children.map(children, (child, index) => {
+                return <TabPanel key={`tabPanel-${index}`}>{child}</TabPanel>;
+            })}
+        </Tabs>
+    );
+};
 
 export const Tabs = styled(OriginalTabs).attrs({
     selectedTabClassName: 'is-active',
