@@ -8,13 +8,13 @@ interface INotificationWrapperProps {
 }
 
 interface INotificationProps extends INotificationWrapperProps {
-    text: string;
+    children: string;
 }
 
-export const Notification: React.FC<INotificationProps> = ({ type = 'standard', text }) => (
+export const Notification: React.FC<INotificationProps> = ({ children, type = 'standard' }) => (
     <NotificationWrapper type={type}>
         {themeSettings[type].icon}
-        <NotificationText>{text}</NotificationText>
+        <NotificationText>{children}</NotificationText>
     </NotificationWrapper>
 );
 

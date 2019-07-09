@@ -7,6 +7,7 @@ import { MDXProvider } from '@mdx-js/react';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import { Code } from 'ts/components/docs/code';
+import { CodeTabs } from 'ts/components/docs/code_tabs';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
@@ -15,7 +16,6 @@ import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
-import { CodeTabs } from 'ts/components/docs/tabs';
 import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';

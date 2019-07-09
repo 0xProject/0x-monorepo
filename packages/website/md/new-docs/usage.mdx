@@ -39,6 +39,7 @@ const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
 ```
 
 ```python canRun
+# this is a python comment
 import { TruffleArtifactAdapter } from '@0x/sol-coverage';
 const projectRoot = '.';
 const solcVersion = '0.5.0';
@@ -116,9 +117,9 @@ open coverage/index.html
 
 ### Notifications
 
-<Notification text="This is' a pretty standard notification" />
-<Notification text="This is an indication that something isn’t quite right" type="alert" />
-<Notification text="This is a success message" type="success" />
+<Notification>This is a standard notification</Notification>
+<Notification type="alert">Something isn’t quite right</Notification>
+<Notification type="success">This is a success message</Notification>
 
 ### Lists
 

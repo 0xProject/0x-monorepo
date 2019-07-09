@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { Code } from 'ts/components/docs/code';
+import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/code_tabs';
 import { FeatureLink } from 'ts/components/docs/feature_link';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
@@ -16,7 +17,6 @@ import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { Table } from 'ts/components/docs/table';
-import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
 import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
@@ -42,9 +42,9 @@ export const DocsPageTemplate: React.FC = () => {
                         <Heading asElement="h2" size="default">
                             Notifications
                         </Heading>
-                        <Notification text="This is' a pretty standard information callout" />
-                        <Notification text="This is an indication that something isn’t quite right" type="alert" />
-                        <Notification text="This is a success message" type="success" />
+                        <Notification>This is a standard information callout</Notification>
+                        <Notification type="alert">This is an indication that something isn’t quite right</Notification>
+                        <Notification type="success">This is a success message</Notification>
                         <Heading asElement="h2" size="default">
                             Tutorial Steps
                         </Heading>
