@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { match } from 'react-router-dom';
 import styled from 'styled-components';
 
+import { utils } from '@0x/react-shared';
+import _ from 'lodash';
+
 import { MDXProvider } from '@mdx-js/react';
 
 import CircularProgress from 'material-ui/CircularProgress';
@@ -24,6 +27,8 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
+import { colors } from 'ts/style/colors';
+
 interface IDocsViewProps {
     history: History;
     location: Location;
@@ -40,33 +45,28 @@ interface IDocsViewState {
     Component: React.ReactNode;
 }
 
-const Loader = () => <CircularProgress size={80} thickness={5} />;
-
 export const DocsView: React.FC<IDocsViewProps> = props => {
+    const { page } = props.match.params;
+
     const [state, setState] = useState<IDocsViewState>({
-        title: 'Loading...',
-        Component: Loader,
+        title: _.capitalize(utils.convertDashesToSpaces(page)),
+        Component: null,
     });
 
     const { title, Component } = state;
-    const { page } = props.match.params;
-
-    console.log('props', props);
 
     useEffect(() => {
-        // tslint:disable-next-line: no-console
-        console.log(page);
         void loadPageAsync(page);
     }, [page]);
 
     const loadPageAsync = async (fileName: string) => {
         const component = await import(`../../../md/new-docs/${fileName}.mdx`);
-        if (component) {
-            setState({
-                title: component.meta.title,
-                Component: component.default,
-            });
-        }
+        // if (component) {
+        //     setState({
+        //         title: component.meta.title,
+        //         Component: component.default,
+        //     });
+        // }
         // @TODO: add error handling, loading
     };
 
@@ -75,24 +75,37 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero isHome={false} title={title} />
             <Section maxWidth="1030px" isPadded={false} padding="0 0">
-                <Columns>
-                    <aside>
-                        <h3>Sidebar</h3>
-                    </aside>
-                    <ContentWrapper>
-                        <MDXProvider components={mdxComponents}>
-                            {/*
+                {Component ? (
+                    <Columns>
+                        <aside>
+                            <h3>Sidebar</h3>
+                        </aside>
+                        <ContentWrapper>
+                            <MDXProvider components={mdxComponents}>
+                                {/*
                                 // @ts-ignore */}
-                            <Component />
-                        </MDXProvider>
-                        {/* <HelpCallout />
+                                <Component />
+                            </MDXProvider>
+                            {/* <HelpCallout />
                         <HelpfulCta /> */}
-                    </ContentWrapper>
-                </Columns>
+                        </ContentWrapper>
+                    </Columns>
+                ) : (
+                    <LoaderWrapper>
+                        <CircularProgress size={80} thickness={5} color={colors.brandDark} />
+                    </LoaderWrapper>
+                )}
             </Section>
         </SiteWrap>
     );
 };
+
+const LoaderWrapper = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 300px;
+`;
 
 const Columns = styled.div`
     display: grid;

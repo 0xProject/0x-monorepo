@@ -67,7 +67,7 @@ export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoC
         const { value } = this.state;
 
         const inputProps = {
-            placeholder: 'Search docs...',
+            placeholder: 'Search docs',
             onChange: this._onChange.bind(this),
             value,
         };

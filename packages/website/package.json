@@ -85,7 +85,7 @@
         "react-router-dom": "^5.0.1",
         "react-scroll": "0xproject/react-scroll#pr-330-and-replace-state",
         "react-scrollable-anchor": "^0.6.1",
-        "react-syntax-highlighter": "^10.1.1",
+        "react-syntax-highlighter": "^11.0.1",
         "react-tabs": "^3.0.0",
         "react-tooltip": "^3.2.7",
         "react-typist": "^2.0.4",
