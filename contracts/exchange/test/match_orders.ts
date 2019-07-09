@@ -14,8 +14,8 @@ import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import { chaiSetup, constants, OrderFactory, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
-import { OrderStatus, RevertReason } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { OrderStatus } from '@0x/types';
+import { BigNumber, providerUtils, ReentrancyGuardRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
@@ -655,8 +655,9 @@ describe('matchOrders', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                     const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
-                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                    return expect(tx).to.revertWith(expectedError);
                 });
             });
         };

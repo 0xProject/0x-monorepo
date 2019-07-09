@@ -1,10 +1,4 @@
-import {
-    addressUtils,
-    chaiSetup,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { addressUtils, chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber, LibAddressArrayRevertErrors } from '@0x/utils';
 import * as chai from 'chai';

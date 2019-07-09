@@ -33,7 +33,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, LibMathRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
+import { BigNumber, providerUtils, ReentrancyGuardRevertErrors, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -246,8 +246,9 @@ describe('Exchange core', () => {
                         makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
                     });
                     await reentrantErc20Token.setReentrantFunction.awaitTransactionSuccessAsync(functionId);
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                     const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                    return expect(tx).to.revertWith(expectedError);
                 });
             });
         };
