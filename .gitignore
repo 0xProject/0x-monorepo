@@ -116,6 +116,10 @@ contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
 packages/metacoin/src/contract_wrappers
 
+# cli test output
+packages/abi-gen/test-cli/typescript/output
+packages/abi-gen/test-cli/python/output
+
 # solc-bin in sol-compiler
 packages/sol-compiler/solc_bin/
 

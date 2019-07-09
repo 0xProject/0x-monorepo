@@ -1,6 +1,6 @@
 {
-    "artifactsDir": "./test-cli/artifacts",
-    "contractsDir": "./test-cli/contracts",
+    "artifactsDir": "./test-cli/fixtures/artifacts",
+    "contractsDir": "./test-cli/fixtures/contracts",
     "useDockerisedSolc": false,
     "isOfflineMode": false,
     "compilerSettings": {

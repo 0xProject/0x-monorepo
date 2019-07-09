@@ -24,11 +24,11 @@ lib
 /contracts/exchange-forwarder/generated-artifacts
 /contracts/dev-utils/generated-wrappers
 /contracts/dev-utils/generated-artifacts
-/packages/abi-gen/test-cli/artifacts/
-/packages/abi-gen/test-cli/typescript/generated-wrappers
-/packages/abi-gen/test-cli/python/generated-wrappers
-/packages/abi-gen/test-cli/typescript/known-wrappers
-/packages/abi-gen/test-cli/python/known-wrappers
+/packages/abi-gen/test-cli/fixtures/artifacts/
+/packages/abi-gen/test-cli/typescript/output
+/packages/abi-gen/test-cli/python/output
+/packages/abi-gen/test-cli/typescript/expected-output
+/packages/abi-gen/test-cli/python/expected-output
 /packages/abi-gen-wrappers/src/generated-wrappers
 /packages/contract-artifacts/artifacts
 /python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts

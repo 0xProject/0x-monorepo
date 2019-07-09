@@ -5,6 +5,10 @@
         "outDir": "./typescript/lib",
         "rootDir": "."
     },
-    "files": ["./artifacts/AbiGenDummy.json", "./artifacts/LibDummy.json", "./artifacts/TestLibDummy.json"],
+    "files": [
+        "./fixtures/artifacts/AbiGenDummy.json",
+        "./fixtures/artifacts/LibDummy.json",
+        "./fixtures/artifacts/TestLibDummy.json"
+    ],
     "include": ["./typescript/**/*"]
 }
