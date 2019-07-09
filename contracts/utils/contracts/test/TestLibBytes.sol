@@ -22,8 +22,19 @@ import "../src/LibBytes.sol";
 
 
 contract TestLibBytes {
-    
+
     using LibBytes for bytes;
+
+    /// @dev Pops the last byte off of a byte array by modifying its length.
+    /// @param b Byte array that will be modified.
+    /// @return The byte that was popped off.
+    function publicPopLastByteStateful(bytes memory b)
+        public
+        returns (bytes memory, bytes1 result)
+    {
+        result = b.popLastByte();
+        return (b, result);
+    }
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
@@ -61,7 +72,7 @@ contract TestLibBytes {
         equal = lhs.equals(rhs);
         return equal;
     }
-    
+
     function publicEqualsPop1(bytes memory lhs, bytes memory rhs)
         public
         pure
@@ -236,7 +247,7 @@ contract TestLibBytes {
         b.writeBytesWithLength(index, input);
         return b;
     }
-    
+
     /// @dev Copies a block of memory from one location to another.
     /// @param mem Memory contents we want to apply memCopy to
     /// @param dest Destination offset into <mem>.

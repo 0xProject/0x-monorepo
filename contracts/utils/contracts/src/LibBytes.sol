@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 */
 
 pragma solidity ^0.5.9;
+
+import "./LibBytesRichErrors.sol";
 
 
 library LibBytes {
@@ -38,7 +40,7 @@ library LibBytes {
         }
         return memoryAddress;
     }
-    
+
     /// @dev Gets the memory address for the contents of a byte array.
     /// @param input Byte array to lookup.
     /// @return memoryAddress Memory address of the contents of the byte array.
@@ -121,7 +123,7 @@ library LibBytes {
                         source := add(source, 32)
                         dest := add(dest, 32)
                     }
-                    
+
                     // Write the last 32 bytes
                     mstore(dEnd, last)
                 }
@@ -152,7 +154,7 @@ library LibBytes {
                         sEnd := sub(sEnd, 32)
                         dEnd := sub(dEnd, 32)
                     }
-                    
+
                     // Write the first 32 bytes
                     mstore(dest, first)
                 }
@@ -174,15 +176,23 @@ library LibBytes {
         pure
         returns (bytes memory result)
     {
-        require(
-            from <= to,
-            "FROM_LESS_THAN_TO_REQUIRED"
-        );
-        require(
-            to <= b.length,
-            "TO_LESS_THAN_LENGTH_REQUIRED"
-        );
-        
+        // Ensure that the from and to positions are valid positions for a slice within
+        // the byte array that is being used.
+        if (from > to) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
+                from,
+                to
+            );
+        }
+        if (to > b.length) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
+                to,
+                b.length
+            );
+        }
+
         // Create a new bytes structure and copy contents
         result = new bytes(to - from);
         memCopy(
@@ -192,7 +202,7 @@ library LibBytes {
         );
         return result;
     }
-    
+
     /// @dev Returns a slice from a byte array without preserving the input.
     /// @param b The byte array to take a slice from. Will be destroyed in the process.
     /// @param from The starting index for the slice (inclusive).
@@ -208,15 +218,23 @@ library LibBytes {
         pure
         returns (bytes memory result)
     {
-        require(
-            from <= to,
-            "FROM_LESS_THAN_TO_REQUIRED"
-        );
-        require(
-            to <= b.length,
-            "TO_LESS_THAN_LENGTH_REQUIRED"
-        );
-        
+        // Ensure that the from and to positions are valid positions for a slice within
+        // the byte array that is being used.
+        if (from > to) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
+                from,
+                to
+            );
+        }
+        if (to > b.length) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
+                to,
+                b.length
+            );
+        }
+
         // Create a new bytes structure around [from, to) in-place.
         assembly {
             result := add(b, from)
@@ -233,10 +251,13 @@ library LibBytes {
         pure
         returns (bytes1 result)
     {
-        require(
-            b.length > 0,
-            "GREATER_THAN_ZERO_LENGTH_REQUIRED"
-        );
+        if (b.length == 0) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanZeroRequired,
+                b.length,
+                0
+            );
+        }
 
         // Store last byte.
         result = b[b.length - 1];
@@ -257,10 +278,13 @@ library LibBytes {
         pure
         returns (address result)
     {
-        require(
-            b.length >= 20,
-            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
-        );
+        if (b.length < 20) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                b.length,
+                20 // 20 is length of address
+            );
+        }
 
         // Store last 20 bytes.
         result = readAddress(b, b.length - 20);
@@ -303,10 +327,13 @@ library LibBytes {
         pure
         returns (address result)
     {
-        require(
-            b.length >= index + 20,  // 20 is length of address
-            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 20) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                b.length,
+                index + 20 // 20 is length of address
+            );
+        }
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -335,10 +362,13 @@ library LibBytes {
         internal
         pure
     {
-        require(
-            b.length >= index + 20,  // 20 is length of address
-            "GREATER_OR_EQUAL_TO_20_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 20) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                b.length,
+                index + 20 // 20 is length of address
+            );
+        }
 
         // Add offset to index:
         // 1. Arrays are prefixed by 32-byte length parameter (add 32 to index)
@@ -359,7 +389,7 @@ library LibBytes {
                 mload(add(b, index)),
                 0xffffffffffffffffffffffff0000000000000000000000000000000000000000
             )
-            
+
             // Make sure input address is clean.
             // (Solidity does not guarantee this)
             input := and(input, 0xffffffffffffffffffffffffffffffffffffffff)
@@ -381,10 +411,13 @@ library LibBytes {
         pure
         returns (bytes32 result)
     {
-        require(
-            b.length >= index + 32,
-            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 32) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                b.length,
+                index + 32
+            );
+        }
 
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;
@@ -408,10 +441,13 @@ library LibBytes {
         internal
         pure
     {
-        require(
-            b.length >= index + 32,
-            "GREATER_OR_EQUAL_TO_32_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 32) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                b.length,
+                index + 32
+            );
+        }
 
         // Arrays are prefixed by a 256 bit length parameter
         index += 32;
@@ -465,10 +501,13 @@ library LibBytes {
         pure
         returns (bytes4 result)
     {
-        require(
-            b.length >= index + 4,
-            "GREATER_OR_EQUAL_TO_4_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 4) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsFourRequired,
+                b.length,
+                index + 4
+            );
+        }
 
         // Arrays are prefixed by a 32 byte length field
         index += 32;
@@ -503,11 +542,15 @@ library LibBytes {
 
         // Assert length of <b> is valid, given
         // length of nested bytes
-        require(
-            b.length >= index + nestedBytesLength,
-            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
-        );
-        
+        if (b.length < index + nestedBytesLength) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors
+                    .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
+                b.length,
+                index + nestedBytesLength
+            );
+        }
+
         // Return a pointer to the byte array as it exists inside `b`
         assembly {
             result := add(b, index)
@@ -529,10 +572,14 @@ library LibBytes {
     {
         // Assert length of <b> is valid, given
         // length of input
-        require(
-            b.length >= index + 32 + input.length,  // 32 bytes to store length
-            "GREATER_OR_EQUAL_TO_NESTED_BYTES_LENGTH_REQUIRED"
-        );
+        if (b.length < index + 32 + input.length) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors
+                    .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
+                b.length,
+                index + 32 + input.length  // 32 bytes to store length
+            );
+        }
 
         // Copy <input> into <b>
         memCopy(
@@ -554,10 +601,14 @@ library LibBytes {
     {
         uint256 sourceLen = source.length;
         // Dest length must be >= source length, or some bytes would not be copied.
-        require(
-            dest.length >= sourceLen,
-            "GREATER_OR_EQUAL_TO_SOURCE_BYTES_LENGTH_REQUIRED"
-        );
+        if (dest.length < sourceLen) {
+            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+                LibBytesRichErrors
+                    .InvalidByteOperationErrorCodes.DestinationLengthGreaterThanOrEqualSourceLengthRequired,
+                dest.length,
+                sourceLen
+            );
+        }
         memCopy(
             dest.contentAddress(),
             source.contentAddress(),
