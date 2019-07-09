@@ -4,7 +4,6 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/button';
 import { CodeRun } from 'ts/components/docs/code_run';
-import { Tab, TabList, TabPanel, Tabs } from 'ts/components/docs/tabs';
 
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
