@@ -18,10 +18,12 @@
 
 pragma solidity ^0.5.9;
 
+import "./LibAddressArrayRichErrors.sol";
 import "./LibBytes.sol";
 
 
 library LibAddressArray {
+
 
     /// @dev Append a new address to an array of addresses.
     ///      The `addressArray` may need to be reallocated to make space
@@ -51,10 +53,12 @@ library LibAddressArray {
         //  `freeMemPtr` == `addressArrayEndPtr`: Nothing occupies memory after `addressArray`
         //  `freeMemPtr` > `addressArrayEndPtr`: Some value occupies memory after `addressArray`
         //  `freeMemPtr` < `addressArrayEndPtr`: Memory has not been managed properly.
-        require(
-            freeMemPtr >= addressArrayEndPtr,
-            "INVALID_FREE_MEMORY_PTR"
-        );
+        if (freeMemPtr < addressArrayEndPtr) {
+            LibAddressArrayRichErrors.MismanagedMemoryErrorRevert(
+                freeMemPtr,
+                addressArrayEndPtr
+            );
+        }
 
         // If free memory begins at the end of `addressArray`
         // then we can append `addressToAppend` directly.
