@@ -1,14 +1,12 @@
 import {
     addressUtils,
     chaiSetup,
-    expectContractCallFailedAsync,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, LibAddressArrayRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -54,10 +52,12 @@ describe('LibAddressArray', () => {
             const arr = _.times(3, () => addressUtils.generatePseudoRandomAddress());
             const addr = addressUtils.generatePseudoRandomAddress();
             const freeMemOffset = new BigNumber(-1);
-            return expectContractCallFailedAsync(
-                lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr),
-                RevertReason.InvalidFreeMemoryPtr,
+            const addressArrayEndPtr = new BigNumber(256);
+            const expectedError = new LibAddressArrayRevertErrors.MismanagedMemoryError(
+                addressArrayEndPtr.plus(freeMemOffset),
+                addressArrayEndPtr,
             );
+            return expect(lib.testAppendRealloc.callAsync(arr, freeMemOffset, addr)).to.revertWith(expectedError);
         });
 
         it('should keep the same memory address if free memory pointer does not move', async () => {
