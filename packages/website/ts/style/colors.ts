@@ -30,4 +30,3 @@ export const colors = {
     ...sharedColors,
     ...appColors,
 };
-console.log('sharedColors', sharedColors);

@@ -86,7 +86,7 @@
         "react-router-dom": "^5.0.1",
         "react-scroll": "https://github.com/0xProject/react-scroll.git#d2afc2729dc09980e4113d8c38a1b012ba180d81",
         "react-scrollable-anchor": "^0.6.1",
-        "react-syntax-highlighter": "^10.1.1",
+        "react-syntax-highlighter": "^11.0.1",
         "react-tabs": "^3.0.0",
         "react-tooltip": "^3.2.7",
         "react-transition-group": "^4.2.1",
