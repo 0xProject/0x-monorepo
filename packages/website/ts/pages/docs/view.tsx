@@ -92,7 +92,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                     </Columns>
                 ) : (
                     <LoaderWrapper>
-                        <CircularProgress size={80} thickness={5} color={colors.brandDark} />
+                        <CircularProgress size={40} thickness={5} color={colors.brandLight} />
                     </LoaderWrapper>
                 )}
             </Section>
