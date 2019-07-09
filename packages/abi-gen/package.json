@@ -69,7 +69,6 @@
         "handlebars": "^4.0.11",
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
-        "sleep": "^5.1.1",
         "tmp": "^0.0.33",
         "to-snake-case": "^1.0.0",
         "yargs": "^10.0.3"
@@ -87,7 +86,6 @@
         "@types/handlebars": "^4.0.36",
         "@types/mkdirp": "^0.5.2",
         "@types/node": "*",
-        "@types/sleep": "^0.0.7",
         "@types/tmp": "^0.0.33",
         "@types/yargs": "^11.0.0",
         "chai": "^4.0.1",
