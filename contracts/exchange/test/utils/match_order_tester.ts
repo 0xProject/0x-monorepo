@@ -3,6 +3,7 @@ import {
     BatchMatchedFillResults,
     chaiSetup,
     ERC1155HoldingsByOwner,
+    FillResults,
     MatchedFillResults,
     OrderStatus,
 } from '@0x/contracts-test-utils';
@@ -65,6 +66,8 @@ export interface MatchResults {
 export interface BatchMatchResults {
     matches: MatchResults[];
     filledAmounts: Array<[SignedOrder, BigNumber, string]>;
+    leftFilledResults: FillEventArgs[];
+    rightFilledResults: FillEventArgs[];
 }
 
 export interface ERC1155Holdings {
@@ -418,17 +421,23 @@ function simulateBatchMatchOrders(
     transferAmounts: Array<Partial<MatchTransferAmounts>>,
 ): BatchMatchResults {
     // Initialize variables
-    let lastLeftIdx = 0;
-    let lastRightIdx = 0;
+    let leftIdx = 0;
+    let rightIdx = 0;
+    let lastLeftIdx = -1;
+    let lastRightIdx = -1;
     let matchedOrders: MatchedOrders;
     const batchMatchResults: BatchMatchResults = {
         matches: [],
         filledAmounts: [],
+        leftFilledResults: [],
+        rightFilledResults: [],
     };
+
     // Loop over all of the matched pairs from the round
     for (let i = 0; i < matchPairs.length; i++) {
-        const leftIdx = matchPairs[i][0];
-        const rightIdx = matchPairs[i][1];
+        leftIdx = matchPairs[i][0];
+        rightIdx = matchPairs[i][1];
+
         // Construct a matched order out of the current left and right orders
         matchedOrders = {
             leftOrder: orders.leftOrders[leftIdx],
@@ -436,6 +445,7 @@ function simulateBatchMatchOrders(
             leftOrderTakerAssetFilledAmount: orders.leftOrdersTakerAssetFilledAmounts[leftIdx],
             rightOrderTakerAssetFilledAmount: orders.rightOrdersTakerAssetFilledAmounts[rightIdx],
         };
+
         // If there has been a match recorded and one or both of the side indices have not changed,
         // replace the side's taker asset filled amount
         if (batchMatchResults.matches.length > 0) {
@@ -462,8 +472,7 @@ function simulateBatchMatchOrders(
                 ]);
             }
         }
-        lastLeftIdx = leftIdx;
-        lastRightIdx = rightIdx;
+
         // Add the latest match to the batch match results
         batchMatchResults.matches.push(
             simulateMatchOrders(
@@ -473,7 +482,31 @@ function simulateBatchMatchOrders(
                 toFullMatchTransferAmounts(transferAmounts[i]),
             ),
         );
+
+        // Update the left and right fill results
+        if (lastLeftIdx === leftIdx) {
+            addFillResults(batchMatchResults.leftFilledResults[leftIdx], getLastMatch(batchMatchResults).fills[0]);
+        } else {
+            batchMatchResults.leftFilledResults.push({ ...getLastMatch(batchMatchResults).fills[0] });
+        }
+        if (lastRightIdx === rightIdx) {
+            addFillResults(batchMatchResults.rightFilledResults[rightIdx], getLastMatch(batchMatchResults).fills[1]);
+        } else {
+            batchMatchResults.rightFilledResults.push({ ...getLastMatch(batchMatchResults).fills[1] });
+        }
+
+        lastLeftIdx = leftIdx;
+        lastRightIdx = rightIdx;
     }
+
+    for (let i = leftIdx + 1; i < orders.leftOrders.length; i++) {
+        batchMatchResults.leftFilledResults.push(emptyFillEventArgs());
+    }
+
+    for (let i = rightIdx + 1; i < orders.rightOrders.length; i++) {
+        batchMatchResults.rightFilledResults.push(emptyFillEventArgs());
+    }
+
     // The two orders indexed by lastLeftIdx and lastRightIdx were potentially
     // filled; however, the TakerAssetFilledAmounts that pertain to these orders
     // will not have been added to batchMatchResults, so we need to write them
@@ -488,6 +521,7 @@ function simulateBatchMatchOrders(
         getLastMatch(batchMatchResults).orders.rightOrderTakerAssetFilledAmount || ZERO,
         'right',
     ]);
+
     // Return the batch match results
     return batchMatchResults;
 }
@@ -592,6 +626,7 @@ function simulateMatchOrders(
         orders.rightOrder.takerFeeAssetData,
         matchResults,
     );
+
     return matchResults;
 }
 
@@ -1019,6 +1054,23 @@ function getUpdatedBalances(batchMatchResults: BatchMatchResults, initialTokenBa
 }
 
 /**
+ * Add a new fill results object to a total fill results object destructively.
+ * @param total The total fill results that should be updated.
+ * @param fill The new fill results that should be used to accumulate.
+ */
+function addFillResults(total: FillEventArgs, fill: FillEventArgs): void {
+    // Ensure that the total and fill are compatibe fill events
+    expect(total.orderHash).to.be.eq(fill.orderHash);
+    expect(total.makerAddress).to.be.eq(fill.makerAddress);
+    expect(total.takerAddress).to.be.eq(fill.takerAddress);
+    // Add the fill results together
+    total.makerAssetFilledAmount = total.makerAssetFilledAmount.plus(fill.makerAssetFilledAmount);
+    total.takerAssetFilledAmount = total.takerAssetFilledAmount.plus(fill.takerAssetFilledAmount);
+    total.makerFeePaid = total.makerFeePaid.plus(fill.makerFeePaid);
+    total.takerFeePaid = total.takerFeePaid.plus(fill.takerFeePaid);
+}
+
+/**
  * Takes a `totalBalances`, a `balances`, and an `initialBalances`, subtracts the `initialBalances
  * from the `balances`, and then adds the result to `totalBalances`.
  * @param totalBalances A set of balances to be updated with new results.
@@ -1069,23 +1121,7 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
         profitInLeftMakerAsset: ZERO,
         profitInRightMakerAsset: ZERO,
     };
-    // Create the batchMatchedFillResults by aggreagating the data from the simulations matches
     for (const match of results.matches) {
-        expect(match.fills.length).to.be.eq(2);
-        // Include the matches results in the left fills of the batch match results.
-        batchMatchedFillResults.left.push({
-            makerAssetFilledAmount: match.fills[0].makerAssetFilledAmount,
-            takerAssetFilledAmount: match.fills[0].takerAssetFilledAmount,
-            makerFeePaid: match.fills[0].makerFeePaid,
-            takerFeePaid: match.fills[0].takerFeePaid,
-        });
-        // Include the matches results in the right fills of the batch match results.
-        batchMatchedFillResults.right.push({
-            makerAssetFilledAmount: match.fills[1].makerAssetFilledAmount,
-            takerAssetFilledAmount: match.fills[1].takerAssetFilledAmount,
-            makerFeePaid: match.fills[1].makerFeePaid,
-            takerFeePaid: match.fills[1].takerFeePaid,
-        });
         const leftSpread = match.fills[0].makerAssetFilledAmount.minus(match.fills[1].takerAssetFilledAmount);
         // If the left maker spread is positive for match, update the profitInLeftMakerAsset
         if (leftSpread.isGreaterThan(ZERO)) {
@@ -1100,6 +1136,12 @@ function convertToBatchMatchResults(results: BatchMatchResults): BatchMatchedFil
                 rightSpread,
             );
         }
+    }
+    for (const fill of results.leftFilledResults) {
+        batchMatchedFillResults.left.push(convertToFillResults(fill));
+    }
+    for (const fill of results.rightFilledResults) {
+        batchMatchedFillResults.right.push(convertToFillResults(fill));
     }
     return batchMatchedFillResults;
 }
@@ -1140,5 +1182,37 @@ function convertToMatchResults(result: MatchResults): MatchedFillResults {
         profitInRightMakerAsset,
     };
     return matchedFillResults;
+}
+
+/**
+ * Converts a fill event args object to the associated FillResults object.
+ * @param result The result to be converted to a FillResults object.
+ * @return The converted value.
+ */
+function convertToFillResults(result: FillEventArgs): FillResults {
+    const fillResults: FillResults = {
+        makerAssetFilledAmount: result.makerAssetFilledAmount,
+        takerAssetFilledAmount: result.takerAssetFilledAmount,
+        makerFeePaid: result.makerFeePaid,
+        takerFeePaid: result.takerFeePaid,
+    };
+    return fillResults;
+}
+
+/**
+ * Creates an empty FillEventArgs object.
+ * @return The empty FillEventArgs object.
+ */
+function emptyFillEventArgs(): FillEventArgs {
+    const empty: FillEventArgs = {
+        orderHash: '',
+        makerAddress: '',
+        takerAddress: '',
+        makerAssetFilledAmount: new BigNumber(0),
+        takerAssetFilledAmount: new BigNumber(0),
+        makerFeePaid: new BigNumber(0),
+        takerFeePaid: new BigNumber(0),
+    };
+    return empty;
 }
 // tslint:disable-line:max-file-line-count
