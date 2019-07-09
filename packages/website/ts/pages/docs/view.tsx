@@ -10,6 +10,8 @@ import { Code } from 'ts/components/docs/code';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
+import { InlineCode } from 'ts/components/docs/inline_code';
+import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
@@ -129,15 +131,17 @@ const H3 = styled(Heading).attrs({
 })``;
 
 const mdxComponents = {
-    p: Paragraph,
+    code: Code,
     h1: LargeHeading,
     h2: H2,
     h3: H3,
-    ol: TutorialSteps,
-    ul: UnorderedList,
-    code: Code,
-    table: Table,
     hr: Separator,
+    inlineCode: InlineCode,
+    a: InlineLink,
+    ol: TutorialSteps,
+    p: Paragraph,
+    table: Table,
+    ul: UnorderedList,
     Notification,
     Tabs,
     TabList,
