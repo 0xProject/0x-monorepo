@@ -25,6 +25,8 @@ const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDi
 If your project is using [Truffle](https://truffleframework.com/), we've written a `TruffleArtifactsAdapter`for you.
 
 ```
+/// @param salt Arbitrary number to ensure uniqueness of transaction hash.
+/// @param signerAddress Address of transaction signer.
 import { TruffleArtifactAdapter } from '@0x/sol-coverage';
 const projectRoot = '.';
 const solcVersion = '0.5.0';
@@ -70,6 +72,7 @@ provider.start();
 | Syntax    | Description |
 | --------- | ----------- |
 | Header    | Title       |
+| Code      | Text `Code` |
 | Paragraph | Text        |
 
 After your test suite is complete (e.g in the Mocha global `after` hook), you'll need to call:
