@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@
 
 pragma solidity ^0.5.9;
 
+import "./MixinReentrancyGuardRichErrors.sol";
 
-contract ReentrancyGuard {
 
+contract ReentrancyGuard is
+    MixinReentrancyGuardRichErrors
+{
     // Mutex counter.
     // Starts at 1 and increases whenever a nonReentrant function is called.
     uint256 private reentrancyGuardCounter = 1;
@@ -31,11 +34,10 @@ contract ReentrancyGuard {
         uint256 localCounter = ++reentrancyGuardCounter;
         // Call the function.
         _;
-        // If the counter value is different from what we remember,
-        // the function was called more than once.
-        require(
-            localCounter == reentrancyGuardCounter,
-            "REENTRANCY_ILLEGAL"
-        );
+        // If the counter value is different from what we remember, the function
+        // was called more than once and an illegal reentrancy occured.
+        if (localCounter != reentrancyGuardCounter) {
+            _rrevert(IllegalReentrancyError());
+        }
     }
 }

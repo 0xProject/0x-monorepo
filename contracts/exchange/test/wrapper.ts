@@ -15,8 +15,8 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
-import { OrderStatus, RevertReason, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils } from '@0x/utils';
+import { OrderStatus, SignedOrder } from '@0x/types';
+import { BigNumber, providerUtils, ReentrancyGuardRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -36,7 +36,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange wrappers', () => {
+describe.only('Exchange wrappers', () => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -170,8 +170,9 @@ describe('Exchange wrappers', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                     const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
-                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                    return expect(tx).to.revertWith(expectedError);
                 });
             }
         };
@@ -654,8 +655,9 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
+                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                         const tx = exchangeWrapper.batchFillOrdersAsync([signedOrder], takerAddress);
-                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                        return expect(tx).to.revertWith(expectedError);
                     });
                 }
             };
@@ -739,8 +741,9 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
+                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                         const tx = exchangeWrapper.batchFillOrKillOrdersAsync([signedOrder], takerAddress);
-                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                        return expect(tx).to.revertWith(expectedError);
                     });
                 }
             };
@@ -1007,10 +1010,11 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
+                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                         const tx = exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
                             takerAssetFillAmount: signedOrder.takerAssetAmount,
                         });
-                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                        return expect(tx).to.revertWith(expectedError);
                     });
                 }
             };
@@ -1384,10 +1388,11 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
+                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                         const tx = exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
                             makerAssetFillAmount: signedOrder.makerAssetAmount,
                         });
-                        return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                        return expect(tx).to.revertWith(expectedError);
                     });
                 }
             };

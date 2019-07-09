@@ -630,7 +630,7 @@ describe('LibBytes', () => {
             const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
                 LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
                 byteLen,
-                (new BigNumber(testBytes32)).plus(32),
+                new BigNumber(testBytes32).plus(32),
             );
             return expect(libBytes.publicReadBytesWithLength.callAsync(testBytes32, offset)).to.revertWith(
                 expectedError,
