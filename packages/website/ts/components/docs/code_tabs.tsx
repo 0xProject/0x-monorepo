@@ -15,12 +15,12 @@ interface ITabProps {
     selectedTabClassName?: string;
 }
 
-interface ICodeTabs {
+interface ICodeTabsProps {
     children: React.ReactNode;
     tabs: string[];
 }
 
-export const CodeTabs: React.FC<ICodeTabs> = ({ children, tabs }) => {
+export const CodeTabs: React.FC<ICodeTabsProps> = ({ children, tabs }) => {
     return (
         <Tabs>
             <TabList>
