@@ -18,12 +18,9 @@
 
 pragma solidity ^0.5.9;
 
-import "./RichErrors.sol";
 
+library LibReentrancyGuardRichErrors {
 
-contract MixinReentrancyGuardRichErrors is
-    RichErrors
-{
     // bytes4(keccak256("IllegalReentrancyError()"))
     bytes internal constant ILLEGAL_REENTRANCY_ERROR_SELECTOR_BYTES =
         hex"0c3b823f";

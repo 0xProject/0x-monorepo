@@ -20,10 +20,10 @@ pragma solidity ^0.5.9;
 
 import "./LibAddressArrayRichErrors.sol";
 import "./LibBytes.sol";
+import "./LibRichErrors.sol";
 
 
 library LibAddressArray {
-
 
     /// @dev Append a new address to an array of addresses.
     ///      The `addressArray` may need to be reallocated to make space
@@ -54,10 +54,10 @@ library LibAddressArray {
         //  `freeMemPtr` > `addressArrayEndPtr`: Some value occupies memory after `addressArray`
         //  `freeMemPtr` < `addressArrayEndPtr`: Memory has not been managed properly.
         if (freeMemPtr < addressArrayEndPtr) {
-            LibAddressArrayRichErrors.MismanagedMemoryErrorRevert(
+            LibRichErrors._rrevert(LibAddressArrayRichErrors.MismanagedMemoryError(
                 freeMemPtr,
                 addressArrayEndPtr
-            );
+            ));
         }
 
         // If free memory begins at the end of `addressArray`

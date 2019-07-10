@@ -18,12 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "./LibRichErrors.sol";
-
 
 library LibBytesRichErrors {
-
-    using LibRichErrors for *;
 
     enum InvalidByteOperationErrorCodes {
         FromLessThanOrEqualsToRequired,
@@ -41,19 +37,20 @@ library LibBytesRichErrors {
         0x28006595;
 
     // solhint-disable func-name-mixedcase
-    function InvalidByteOperationErrorRevert(
+    function InvalidByteOperationError(
         InvalidByteOperationErrorCodes errorCode,
         uint256 endpoint,
         uint256 required
     )
         internal
         pure
+        returns (bytes memory)
     {
-        abi.encodeWithSelector(
+        return abi.encodeWithSelector(
             INVALID_BYTE_OPERATION_ERROR_SELECTOR,
             errorCode,
             endpoint,
             required
-        )._rrevert();
+        );
     }
 }

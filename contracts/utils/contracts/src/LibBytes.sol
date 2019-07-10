@@ -19,6 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "./LibBytesRichErrors.sol";
+import "./LibRichErrors.sol";
 
 
 library LibBytes {
@@ -179,18 +180,18 @@ library LibBytes {
         // Ensure that the from and to positions are valid positions for a slice within
         // the byte array that is being used.
         if (from > to) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
                 from,
                 to
-            );
+            ));
         }
         if (to > b.length) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
                 to,
                 b.length
-            );
+            ));
         }
 
         // Create a new bytes structure and copy contents
@@ -221,18 +222,18 @@ library LibBytes {
         // Ensure that the from and to positions are valid positions for a slice within
         // the byte array that is being used.
         if (from > to) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
                 from,
                 to
-            );
+            ));
         }
         if (to > b.length) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
                 to,
                 b.length
-            );
+            ));
         }
 
         // Create a new bytes structure around [from, to) in-place.
@@ -252,11 +253,11 @@ library LibBytes {
         returns (bytes1 result)
     {
         if (b.length == 0) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanZeroRequired,
                 b.length,
                 0
-            );
+            ));
         }
 
         // Store last byte.
@@ -279,11 +280,11 @@ library LibBytes {
         returns (address result)
     {
         if (b.length < 20) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
                 b.length,
                 20 // 20 is length of address
-            );
+            ));
         }
 
         // Store last 20 bytes.
@@ -328,11 +329,11 @@ library LibBytes {
         returns (address result)
     {
         if (b.length < index + 20) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
                 b.length,
                 index + 20 // 20 is length of address
-            );
+            ));
         }
 
         // Add offset to index:
@@ -363,11 +364,11 @@ library LibBytes {
         pure
     {
         if (b.length < index + 20) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
                 b.length,
                 index + 20 // 20 is length of address
-            );
+            ));
         }
 
         // Add offset to index:
@@ -412,11 +413,11 @@ library LibBytes {
         returns (bytes32 result)
     {
         if (b.length < index + 32) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
                 b.length,
                 index + 32
-            );
+            ));
         }
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -442,11 +443,11 @@ library LibBytes {
         pure
     {
         if (b.length < index + 32) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
                 b.length,
                 index + 32
-            );
+            ));
         }
 
         // Arrays are prefixed by a 256 bit length parameter
@@ -502,11 +503,11 @@ library LibBytes {
         returns (bytes4 result)
     {
         if (b.length < index + 4) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsFourRequired,
                 b.length,
                 index + 4
-            );
+            ));
         }
 
         // Arrays are prefixed by a 32 byte length field
@@ -543,12 +544,12 @@ library LibBytes {
         // Assert length of <b> is valid, given
         // length of nested bytes
         if (b.length < index + nestedBytesLength) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors
                     .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
                 b.length,
                 index + nestedBytesLength
-            );
+            ));
         }
 
         // Return a pointer to the byte array as it exists inside `b`
@@ -573,12 +574,12 @@ library LibBytes {
         // Assert length of <b> is valid, given
         // length of input
         if (b.length < index + 32 + input.length) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors
                     .InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
                 b.length,
                 index + 32 + input.length  // 32 bytes to store length
-            );
+            ));
         }
 
         // Copy <input> into <b>
@@ -602,12 +603,12 @@ library LibBytes {
         uint256 sourceLen = source.length;
         // Dest length must be >= source length, or some bytes would not be copied.
         if (dest.length < sourceLen) {
-            LibBytesRichErrors.InvalidByteOperationErrorRevert(
+            LibRichErrors._rrevert(LibBytesRichErrors.InvalidByteOperationError(
                 LibBytesRichErrors
                     .InvalidByteOperationErrorCodes.DestinationLengthGreaterThanOrEqualSourceLengthRequired,
                 dest.length,
                 sourceLen
-            );
+            ));
         }
         memCopy(
             dest.contentAddress(),
