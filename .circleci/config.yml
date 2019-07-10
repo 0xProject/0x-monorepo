@@ -92,7 +92,26 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - run: yarn wsrun test:circleci @0x/contracts-test-utils @0x/abi-gen @0x/asset-buyer @0x/contract-artifacts @0x/assert @0x/base-contract @0x/connect @0x/contract-wrappers @0x/dev-utils @0x/json-schemas @0x/metacoin @0x/order-utils @0x/order-watcher @0x/sol-compiler @0x/sol-tracing-utils @0x/sol-doc @0x/subproviders @0x/web3-wrapper @0x/utils @0x/instant
+            - run: yarn wsrun test:circleci @0x/contracts-test-utils
+            - run: yarn wsrun test:circleci @0x/abi-gen
+            - run: yarn wsrun test:circleci @0x/asset-buyer
+            - run: yarn wsrun test:circleci @0x/contract-artifacts
+            - run: yarn wsrun test:circleci @0x/assert
+            - run: yarn wsrun test:circleci @0x/base-contract
+            - run: yarn wsrun test:circleci @0x/connect
+            - run: yarn wsrun test:circleci @0x/contract-wrappers
+            - run: yarn wsrun test:circleci @0x/dev-utils
+            - run: yarn wsrun test:circleci @0x/json-schemas
+            - run: yarn wsrun test:circleci @0x/metacoin
+            - run: yarn wsrun test:circleci @0x/order-utils
+            - run: yarn wsrun test:circleci @0x/order-watcher
+            - run: yarn wsrun test:circleci @0x/sol-compiler
+            - run: yarn wsrun test:circleci @0x/sol-tracing-utils
+            - run: yarn wsrun test:circleci @0x/sol-doc
+            - run: yarn wsrun test:circleci @0x/subproviders
+            - run: yarn wsrun test:circleci @0x/web3-wrapper
+            - run: yarn wsrun test:circleci @0x/utils
+            - run: yarn wsrun test:circleci @0x/instant
             - save_cache:
                   key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
