@@ -1,4 +1,4 @@
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents, IAssetProxyContract } from '@0x/abi-gen-wrappers';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
 import { Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -1207,25 +1207,22 @@ export class ExchangeWrapper extends ContractWrapper {
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
-        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const makerAssetData = signedOrder.makerAssetData;
-        const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
-        const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
-        const assetProxy = new IAssetProxyContract(assetProxyAddress, this._web3Wrapper.getProvider());
-
-        const result = await assetProxy.transferFrom.callAsync(
-            makerAssetData,
-            signedOrder.makerAddress,
-            toAddress,
-            makerAssetAmount,
-            {
-                from: this.address,
-            },
+        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
+            this._erc20TokenWrapper,
+            this._erc721TokenWrapper,
+            BlockParamLiteral.Latest,
         );
-        if (result !== undefined) {
-            throw new Error(`Error during maker transfer simulation: ${result}`);
-        }
+        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
+        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
+        const exchangeContract = await this._getExchangeContractAsync();
+        await OrderValidationUtils.validateMakerTransferThrowIfInvalidAsync(
+            exchangeTradeSimulator,
+            exchangeContract,
+            this._web3Wrapper.getProvider(),
+            signedOrder,
+            makerAssetAmount,
+            takerAddress,
+        );
     }
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed
