@@ -18,29 +18,26 @@
 
 pragma solidity ^0.5.9;
 
-import "./LibRichErrors.sol";
-
 
 library LibAddressArrayRichErrors {
-
-    using LibRichErrors for *;
 
     // bytes4(keccak256("MismanagedMemoryError(uint256,uint256)"))
     bytes4 internal constant MISMANAGED_MEMORY_ERROR_SELECTOR =
         0x5fc83722;
 
     // solhint-disable func-name-mixedcase
-    function MismanagedMemoryErrorRevert(
+    function MismanagedMemoryError(
         uint256 freeMemPtr,
         uint256 addressArrayEndPtr
     )
         internal
         pure
+        returns (bytes memory)
     {
-        abi.encodeWithSelector(
+        return abi.encodeWithSelector(
             MISMANAGED_MEMORY_ERROR_SELECTOR,
             freeMemPtr,
             addressArrayEndPtr
-        )._rrevert();
+        );
     }
 }

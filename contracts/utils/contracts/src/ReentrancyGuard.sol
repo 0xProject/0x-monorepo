@@ -18,12 +18,12 @@
 
 pragma solidity ^0.5.9;
 
-import "./MixinReentrancyGuardRichErrors.sol";
+import "./LibReentrancyGuardRichErrors.sol";
+import "./LibRichErrors.sol";
 
 
-contract ReentrancyGuard is
-    MixinReentrancyGuardRichErrors
-{
+contract ReentrancyGuard {
+
     // Mutex counter.
     // Starts at 1 and increases whenever a nonReentrant function is called.
     uint256 private reentrancyGuardCounter = 1;
@@ -37,7 +37,9 @@ contract ReentrancyGuard is
         // If the counter value is different from what we remember, the function
         // was called more than once and an illegal reentrancy occured.
         if (localCounter != reentrancyGuardCounter) {
-            _rrevert(IllegalReentrancyError());
+            LibRichErrors._rrevert(
+                LibReentrancyGuardRichErrors.IllegalReentrancyError()
+            );
         }
     }
 }
