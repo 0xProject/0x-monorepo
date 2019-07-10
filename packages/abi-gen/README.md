@@ -102,3 +102,27 @@ yarn clean
 ```bash
 yarn lint
 ```
+
+### CLI tests
+
+The files in `test-cli/` are used to test the CLI output against a set of dummy contracts.
+
+Compile dummy contracts and generate wrappers:
+
+```
+yarn test_cli:prebuild
+```
+
+Build generated wrappers and unit tests:
+
+```
+yarn test_cli:build
+```
+
+Run unit tests and check diffs of generated wrappers vs known wrappers:
+
+```
+yarn test_cli
+```
+
+Known-good wrappers have been previously committed and are kept in `test-cli/expected-output/{language}`. They are intended to provide sample output and should be kept in sync with the generating code. When making changes to this project or `@0x/abi-gen-templates`, run `yarn test_cli:prebuild` to generate fresh code into `test-cli/output/{language}`, and then manually copy it to `test-cli/expected-output/{language}`.

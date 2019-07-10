@@ -1,0 +1,14 @@
+{
+    "extends": "../../../tsconfig.json",
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "outDir": "./test_typescript/lib",
+        "rootDir": "."
+    },
+    "files": [
+        "./fixtures/artifacts/AbiGenDummy.json",
+        "./fixtures/artifacts/LibDummy.json",
+        "./fixtures/artifacts/TestLibDummy.json"
+    ],
+    "include": ["./output/typescript/**/*", "./test_typescript/**/*"]
+}

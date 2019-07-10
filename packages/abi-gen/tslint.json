@@ -1,6 +1,6 @@
 {
     "extends": ["@0x/tslint-config"],
     "linterOptions": {
-        "exclude": ["./test/generated-test/generated-artifacts/**/*", "**/lib/**/*"]
+        "exclude": ["./test-cli/fixtures/**/*", "**/lib/**/*"]
     }
 }

@@ -5,9 +5,9 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as AbiGenDummy from '../generated-artifacts/AbiGenDummy.json';
-import * as LibDummy from '../generated-artifacts/LibDummy.json';
-import * as TestLibDummy from '../generated-artifacts/TestLibDummy.json';
+import * as AbiGenDummy from '../../fixtures/artifacts/AbiGenDummy.json';
+import * as LibDummy from '../../fixtures/artifacts/LibDummy.json';
+import * as TestLibDummy from '../../fixtures/artifacts/TestLibDummy.json';
 export const artifacts = {
     AbiGenDummy: AbiGenDummy as ContractArtifact,
     LibDummy: LibDummy as ContractArtifact,
