@@ -3,7 +3,7 @@ import { match } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { utils } from '@0x/react-shared';
-import _ from 'lodash';
+import capitalize from 'lodash/capitalize';
 
 import { MDXProvider } from '@mdx-js/react';
 
@@ -41,19 +41,18 @@ interface IDocsViewProps {
 }
 
 interface IDocsViewState {
-    title: string;
     Component: React.ReactNode;
 }
 
 export const DocsView: React.FC<IDocsViewProps> = props => {
-    const { page } = props.match.params;
-
     const [state, setState] = useState<IDocsViewState>({
-        title: _.capitalize(utils.convertDashesToSpaces(page)),
         Component: null,
     });
 
-    const { title, Component } = state;
+    const { Component } = state;
+
+    const { page } = props.match.params;
+    const title = capitalize(utils.convertDashesToSpaces(page));
 
     useEffect(() => {
         void loadPageAsync(page);
@@ -61,20 +60,20 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
 
     const loadPageAsync = async (fileName: string) => {
         const component = await import(`../../../md/new-docs/${fileName}.mdx`);
-        // if (component) {
-        //     setState({
-        //         title: component.meta.title,
-        //         Component: component.default,
-        //     });
-        // }
+        if (component) {
+            setState({
+                // title: component.meta.title,
+                Component: component.default,
+            });
+        }
         // @TODO: add error handling, loading
     };
 
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title={title} />
-            <Section maxWidth="1030px" isPadded={false} padding="0 0">
+            <Hero title={title} />
+            <Section maxWidth="1030px" isPadded={false}>
                 {Component ? (
                     <Columns>
                         <aside>
