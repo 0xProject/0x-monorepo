@@ -247,7 +247,7 @@ library LibExchangeRichErrors {
         pure
         returns (bytes memory)
     {
-        abi.encodeWithSelector(
+        return abi.encodeWithSelector(
             BATCH_MATCH_ORDERS_ERROR_SELECTOR,
             errorCode
         );
