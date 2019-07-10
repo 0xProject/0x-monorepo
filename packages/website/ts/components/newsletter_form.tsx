@@ -142,7 +142,7 @@ const SuccessText = styled.p<IArrowProps>`
     font-size: 1rem;
     font-weight: 300;
     line-height: ${INPUT_HEIGHT};
-    animation: ${fadeIn} 0.3s ease-in-out;
+    animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
 const Arrow = styled.svg<IArrowProps>`
