@@ -85,8 +85,8 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                                 // @ts-ignore */}
                                 <Component />
                             </MDXProvider>
-                            {/* <HelpCallout />
-                        <HelpfulCta /> */}
+                            <HelpCallout />
+                            <HelpfulCta page={page} />
                         </ContentWrapper>
                     </Columns>
                 ) : (
