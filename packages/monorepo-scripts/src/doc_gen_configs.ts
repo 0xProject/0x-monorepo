@@ -56,6 +56,7 @@ export const docGenConfigs: DocGenConfigs = {
     IGNORED_EXCESSIVE_TYPES: [
         'NonceSubproviderErrors',
         'Web3WrapperErrors',
+        'AssetBuyerError',
         'ContractWrappersError',
         'TypedDataError',
         'SwapQuoterError',
