@@ -1712,18 +1712,18 @@ describe('Asset Transfer Proxies', () => {
                     RevertReason.InvalidAssetDataLength,
                 );
             });
-            it('should revert if length of assetData is less than 132 bytes', async () => {
+            it('should revert if length of assetData is less than 68 bytes', async () => {
                 // setup test parameters
                 const inputAmount = new BigNumber(1);
                 // we'll construct asset data that has a 4 byte selector plus
-                // 96 byte payload. This results in asset data that is 100 bytes
+                // 32 byte payload. This results in asset data that is 36 bytes
                 // long and will trigger the `invalid length` error.
                 // we must be sure to use a # of bytes that is still %32
                 // so that we know the error is not triggered by another check in the code.
-                const zeros96Bytes = '0'.repeat(188);
-                const assetData131Bytes = `${AssetProxyId.MultiAsset}${zeros96Bytes}`;
+                const zeros32Bytes = '0'.repeat(64);
+                const assetData36Bytes = `${AssetProxyId.MultiAsset}${zeros32Bytes}`;
                 const badData = assetProxyInterface.transferFrom.getABIEncodedTransactionData(
-                    assetData131Bytes,
+                    assetData36Bytes,
                     fromAddress,
                     toAddress,
                     inputAmount,
