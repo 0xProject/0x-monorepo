@@ -402,4 +402,15 @@ library LibFillResults {
 
         return matchedFillResults;
     }
+
+    function _addFillResultsDeductFees(FillResults memory totalFillResults, FillResults memory singleFillResults)
+        internal
+        pure
+    {
+        totalFillResults.makerAssetFilledAmount = _safeAdd(totalFillResults.makerAssetFilledAmount, singleFillResults.makerAssetFilledAmount);
+        totalFillResults.takerAssetFilledAmount = _safeAdd(totalFillResults.takerAssetFilledAmount, singleFillResults.takerAssetFilledAmount);
+
+        // The fee amount must be deducted from the amount transfered back to sender.
+        totalFillResults.makerAssetFilledAmount = _safeSub(totalFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid);
+    }
 }

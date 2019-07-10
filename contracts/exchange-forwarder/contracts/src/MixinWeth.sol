@@ -55,8 +55,7 @@ contract MixinWeth is
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     function _transferEthFeeAndRefund(
-        uint256 wethSoldExcludingFeeOrders,
-        uint256 wethSoldForZrx,
+        uint256 wethSold,
         uint256 feePercentage,
         address payable feeRecipient
     )
@@ -69,7 +68,6 @@ contract MixinWeth is
         );
 
         // Ensure that no extra WETH owned by this contract has been sold.
-        uint256 wethSold = _safeAdd(wethSoldExcludingFeeOrders, wethSoldForZrx);
         require(
             wethSold <= msg.value,
             "OVERSOLD_WETH"
@@ -82,7 +80,7 @@ contract MixinWeth is
         uint256 ethFee = _getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
-            wethSoldExcludingFeeOrders
+            wethSold
         );
 
         // Ensure fee is less than amount of WETH remaining.

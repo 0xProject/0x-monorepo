@@ -38,25 +38,19 @@ contract LibConstants {
      // solhint-disable var-name-mixedcase
     IExchange internal EXCHANGE;
     IEtherToken internal ETHER_TOKEN;
-    IERC20Token internal ZRX_TOKEN;
-    bytes internal ZRX_ASSET_DATA;
     bytes internal WETH_ASSET_DATA;
     // solhint-enable var-name-mixedcase
 
     constructor (
         address _exchange,
-        bytes memory _zrxAssetData,
         bytes memory _wethAssetData
     )
         public
     {
         EXCHANGE = IExchange(_exchange);
-        ZRX_ASSET_DATA = _zrxAssetData;
         WETH_ASSET_DATA = _wethAssetData;
 
         address etherToken = _wethAssetData.readAddress(16);
-        address zrxToken = _zrxAssetData.readAddress(16);
         ETHER_TOKEN = IEtherToken(etherToken);
-        ZRX_TOKEN = IERC20Token(zrxToken);
     }
 }
