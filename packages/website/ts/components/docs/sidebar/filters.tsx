@@ -36,9 +36,9 @@ export const Filters: React.FC<IFiltersProps> = ({ groups }) => {
     );
 };
 
-const FiltersWrapper = styled.div`
+const FiltersWrapper = styled.aside`
     position: relative;
-    max-width: 702px;
+    max-width: 700px;
 `;
 
 const FiltersGroupWrapper = styled.div`
