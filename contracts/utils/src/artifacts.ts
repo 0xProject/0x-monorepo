@@ -15,7 +15,6 @@ import * as LibEIP712 from '../generated-artifacts/LibEIP712.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
-import * as TestConstants from '../generated-artifacts/TestConstants.json';
 import * as TestLibAddress from '../generated-artifacts/TestLibAddress.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
@@ -35,7 +34,6 @@ export const artifacts = {
     SafeMath: SafeMath as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
-    TestConstants: TestConstants as ContractArtifact,
     TestLibAddress: TestLibAddress as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
