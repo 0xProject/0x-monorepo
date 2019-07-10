@@ -1,35 +1,43 @@
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 
+import { analytics } from 'ts/utils/analytics';
+
 import { Button } from 'ts/components/button';
 import { Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
 interface IHelpfulCtaProps {
+    page: string;
     question?: string;
-    reply?: string;
+    note?: string;
 }
 
-export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ reply, question }) => {
+export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ note, page, question }) => {
     const [isClicked, setIsClicked] = useState<boolean>(false);
 
-    const handleClick = () => {
+    const vote = (yesno: string) => {
+        analytics.track('was_this_helpful_feedback', { yesno, page });
         setIsClicked(true);
     };
+
+    // I am only creating these here bc of jsx-no-lambda tslint rule
+    const voteYes = () => vote('yes');
+    const voteNo = () => vote('no');
 
     return (
         <HelpfulCtaWrapper>
             {isClicked ? (
-                <CtaTextAnimated>{reply}</CtaTextAnimated>
+                <CtaTextAnimated>{note}</CtaTextAnimated>
             ) : (
                 <>
                     <CtaText>{question}</CtaText>
                     <CtaButtons>
-                        <CtaButton onClick={handleClick} color={colors.white}>
+                        <CtaButton onClick={voteYes} color={colors.white}>
                             Yes
                         </CtaButton>
                         <CtaButton
-                            onClick={handleClick}
+                            onClick={voteNo}
                             isTransparent={true}
                             color={colors.brandLight}
                             borderColor={colors.brandLight}
@@ -45,7 +53,7 @@ export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ reply, question }) => {
 
 HelpfulCta.defaultProps = {
     question: 'Was this page helpful?',
-    reply: 'Thank you for letting us know 🙏',
+    note: 'Thank you for letting us know 🙏',
 };
 
 const HelpfulCtaWrapper = styled.div`
@@ -58,7 +66,7 @@ const CtaText = styled(Paragraph)`
     color: ${colors.textDarkPrimary};
     font-size: 1.1rem;
     font-weight: 400;
-    line-height: 40px;
+    line-height: 40px; /* button line-height + button border */
     margin-bottom: 0;
     opacity: 1;
 `;
@@ -80,9 +88,8 @@ const CtaButtons = styled.div`
 `;
 
 const CtaButton = styled(Button)`
-    border: none;
     padding: 0 30px;
-    line-height: 40px;
+    line-height: 38px; /* +2 px for border */
     font-size: 1rem;
 
     & + & {

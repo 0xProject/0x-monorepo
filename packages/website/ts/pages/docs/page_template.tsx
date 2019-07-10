@@ -150,7 +150,7 @@ export const DocsPageTemplate: React.FC = () => {
                             </TabList>
 
                             <TabPanel>
-                                <Code canRun>{codeSample}</Code>
+                                <Code canRun={true}>{codeSample}</Code>
                             </TabPanel>
                             <TabPanel>
                                 <Code>{codeSample}</Code>
@@ -196,7 +196,7 @@ export const DocsPageTemplate: React.FC = () => {
                         </Heading>
                         <StepLinks links={usefulLinks} />
                         <HelpCallout />
-                        <HelpfulCta />
+                        <HelpfulCta page="test" />
                         <div>
                             <Heading asElement="h2" size="default">
                                 Resources
