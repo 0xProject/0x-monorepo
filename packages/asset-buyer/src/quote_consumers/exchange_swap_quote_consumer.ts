@@ -13,8 +13,8 @@ import {
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
-    SwapQuoteExecutionOpts,
-    SwapQuoteGetOutputOpts,
+    SwapQuoteExecutionOptsBase,
+    SwapQuoteGetOutputOptsBase,
 } from '../types';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
@@ -40,7 +40,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOptsBase>,
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
@@ -68,7 +68,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        _opts: Partial<SwapQuoteGetOutputOpts>,
+        _opts: Partial<SwapQuoteGetOutputOptsBase>,
     ): Promise<SmartContractParamsInfo<ExchangeSmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
 
@@ -117,7 +117,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOpts>,
+        opts: Partial<SwapQuoteExecutionOptsBase>,
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 

@@ -6,13 +6,13 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
-    DynamicSwapQuoteExecutionOpts,
-    DynamicSwapQuoteGetOutputOpts,
     SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
+    SwapQuoteExecutionOpts,
+    SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
@@ -45,7 +45,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -54,7 +54,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SmartContractParamsInfo<SmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -63,7 +63,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<DynamicSwapQuoteExecutionOpts>,
+        opts: Partial<SwapQuoteExecutionOpts>,
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -72,7 +72,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     private async _getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
-        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
         return swapQuoteConsumerUtils.getConsumerForSwapQuoteAsync(
             quote,

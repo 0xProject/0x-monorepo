@@ -42,6 +42,7 @@ export interface OrderProvider {
 /**
  * Represents the metadata to call a smart contract with calldata.
  * calldataHexString: The hexstring of the calldata.
+ * methodAbi: The ABI of the smart contract method to call.
  * to: The contract address to call.
  * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
  */
@@ -57,7 +58,7 @@ export interface CalldataInfo {
  * params: The metadata object containing all the input parameters of a smart contract call.
  * to: The contract address to call.
  * ethAmount: If provided, the eth amount in wei to send with the smart contract call.
- * methodAbi: The abi of the smart contract to call.
+ * methodAbi: The ABI of the smart contract method to call with params.
  */
 export interface SmartContractParamsInfo<T> {
     params: T;
@@ -66,28 +67,44 @@ export interface SmartContractParamsInfo<T> {
     methodAbi: MethodAbi;
 }
 
+/**
+ * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
+ * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ */
 export interface SmartContractParamsBase {
     orders: SignedOrder[];
     signatures: string[];
 }
 
 /**
- * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * makerAssetFillAmount: The amount of makerAsset to swap for.
- * signatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ * type: String specifiying which market operation will be performed with the provided parameters. (In this case a market buy operation)
  */
 export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
     makerAssetFillAmount: BigNumber;
     type: 'marketBuy';
 }
 
+/**
+ * takerAssetFillAmount: The amount of takerAsset swapped for makerAsset.
+ * type: String specifiying which market operation will be performed with the provided parameters. (In this case a market sell operation)
+ */
 export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
     takerAssetFillAmount: BigNumber;
     type: 'marketSell';
 }
 
+/**
+ * Represents all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
+ */
 export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
 
+/**
+ * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
+ * feeSignatures: An array of signatures that attest that the maker of the orders in fact made the orders.
+ * feePercentage: Optional affiliate fee percentage used to calculate the eth amount paid to fee recipient.
+ * feeRecipient: The address where affiliate fees are sent. Defaults to null address (0x000...000).
+ */
 export interface ForwarderSmartContractParamsBase {
     feeOrders: SignedOrder[];
     feeSignatures: string[];
@@ -106,10 +123,16 @@ export interface ForwarderMarketSellSmartContractParams
     extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
         ForwarderSmartContractParamsBase {}
 
+/**
+ * Represents all the parameters to interface with 0x forwarder extension contract marketSell and marketBuy functions.
+ */
 export type ForwarderSmartContractParams =
     | ForwarderMarketBuySmartContractParams
     | ForwarderMarketSellSmartContractParams;
 
+/**
+ * Object containing all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
+ */
 export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartContractParams;
 
 /**
@@ -119,12 +142,12 @@ export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartCo
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
 export interface SwapQuoteConsumerBase<T> {
-    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOpts>): Promise<CalldataInfo>;
+    getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOptsBase>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOptsBase>,
     ): Promise<SmartContractParamsInfo<T>>;
-    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOpts>): Promise<string>;
+    executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOptsBase>): Promise<string>;
 }
 
 /**
@@ -137,14 +160,14 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOpts {}
+export interface SwapQuoteGetOutputOptsBase {}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
  * gasLimit: The amount of gas to send with a transaction (in Gwei). Defaults to an eth_estimateGas rpc call.
  * gasPrice: Gas price in Wei to use for a transaction
  */
-export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
+export interface SwapQuoteExecutionOptsBase extends SwapQuoteGetOutputOptsBase {
     takerAddress?: string;
     gasLimit?: number;
     gasPrice?: BigNumber;
@@ -155,7 +178,7 @@ export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts {
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
-export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts {
+export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOptsBase {
     feePercentage: number;
     feeRecipient: string;
     ethAmount?: BigNumber;
@@ -164,7 +187,7 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOpts 
 /**
  * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
  */
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
 
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
@@ -173,16 +196,16 @@ export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
  * feeRecipient: address of the receiver of the feePercentage of taker asset
  * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
  */
-export interface DynamicSwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
+export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
     takerAddress?: string;
 }
 
 /**
  * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
  */
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOpts {}
+export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
 
-export interface DynamicSwapQuoteExecutionOpts extends DynamicSwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
+export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
