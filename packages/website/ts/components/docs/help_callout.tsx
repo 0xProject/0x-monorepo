@@ -15,7 +15,7 @@ export interface IHelpCalloutProps {
 
 export const HelpCallout: React.FC<IHelpCalloutProps> = props => (
     <HelpCalloutWrapper>
-        <Icon color={colors.brandLight} name="help" size={38} margin={[0, 30, 0, 0]} />
+        <Icon color={colors.brandDark} name="help" size={38} margin={[0, 30, 0, 0]} />
         <div>
             <Heading size="small" marginBottom="8px">
                 {props.heading}
