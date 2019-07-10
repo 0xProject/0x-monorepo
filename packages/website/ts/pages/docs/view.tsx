@@ -60,7 +60,10 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
 
     const loadPageAsync = async (fileName: string) => {
         const component = await import(`../../../md/new-docs/${fileName}.mdx`);
+
         if (component) {
+            console.log('component', component);
+            console.log('component.tableOfContents()', component.tableOfContents());
             setState({
                 // title: component.meta.title,
                 Component: component.default,

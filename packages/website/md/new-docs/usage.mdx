@@ -1,7 +1,3 @@
-export const meta = {
-    title: 'Sol-compiler Usage',
-};
-
 Sol-coverage uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with `ProviderEngine`, please read the [Web3 Provider explained](https://0x.org/wiki#Web3-Provider-Explained) wiki article.
 
 The CoverageSubprovider eavesdrops on the `eth_sendTransaction` and `eth_call` RPC calls and collects traces after each call using `debug_traceTransaction`. `eth_call`'s' don't generate traces - so we take a snapshot, re-submit it as a transaction, get the trace and then revert the snapshot.
