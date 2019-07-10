@@ -16,67 +16,57 @@ export const DocsTools: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title={`Tools`} />
-            <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
+            <Hero isHome={false} title="Tools" />
+            <Section maxWidth="1030px" isPadded={false}>
                 <Columns>
-                    <aside>
-                        <Filters groups={filterGroups} />
-                    </aside>
+                    <Filters groups={filterGroups} />
                     <article>
-                        <Heading asElement="h2" size="default">
-                            Featured Tools
-                        </Heading>
-                        <FeatureLink
-                            heading="0x Code Sandbox"
-                            description="A description could possibly go here but could be tight."
-                            icon="flexibleIntegration"
-                            url="https://0x.org"
-                        />
-                        <FeatureLink
-                            heading="RadarRelay SDK"
-                            description="A description could possibly go here but could be tight."
-                            icon="flexibleIntegration"
-                            url="https://0x.org"
-                        />
-                        <FeatureLink
-                            heading="RadarRelay SDK"
-                            description="A description could possibly go here but could be tight."
-                            icon="flexibleIntegration"
-                            url="https://0x.org"
-                        />
-                        <Heading asElement="h2" size="default">
-                            Docker Images
-                        </Heading>
+                        <FeaturedToolsWrapper>
+                            <Heading asElement="h2" size="default">
+                                Featured Tools
+                            </Heading>
+                            {featuredLinks.map((link, index) => (
+                                <FeatureLink
+                                    key={`featuredLink-${index}`}
+                                    heading={link.heading}
+                                    description={link.description}
+                                    icon={link.icon}
+                                    url={link.url}
+                                />
+                            ))}
+                        </FeaturedToolsWrapper>
 
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                            tags={[{ label: 'Relayer' }]}
-                            url="https://0x.org"
-                        />
+                        <ResourcesWrapper>
+                            <Heading asElement="h2" size="default">
+                                Docker Images
+                            </Heading>
 
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                            tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                            url="https://0x.org"
-                        />
-                        <Heading asElement="h2" size="default">
-                            TypeScript Libraries
-                        </Heading>
+                            {resources.map((resource, index) => (
+                                <Resource
+                                    key={`resource-${index}`}
+                                    heading={resource.heading}
+                                    description={resource.description}
+                                    tags={resource.tags}
+                                    url={resource.url}
+                                />
+                            ))}
+                        </ResourcesWrapper>
 
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                            tags={[{ label: 'Relayer' }]}
-                            url="https://0x.org"
-                        />
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                            tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                            url="https://0x.org"
-                        />
+                        <ResourcesWrapper>
+                            <Heading asElement="h2" size="default">
+                                TypeScript Libraries
+                            </Heading>
+
+                            {resources.map((resource, index) => (
+                                <Resource
+                                    key={`resource-${index}`}
+                                    heading={resource.heading}
+                                    description={resource.description}
+                                    tags={resource.tags}
+                                    url={resource.url}
+                                />
+                            ))}
+                        </ResourcesWrapper>
                     </article>
                 </Columns>
             </Section>
@@ -89,6 +79,14 @@ const Columns = styled.div`
     grid-template-columns: 250px 1fr;
     grid-column-gap: 98px;
     grid-row-gap: 30px;
+`;
+
+const FeaturedToolsWrapper = styled.div`
+    margin-bottom: 50px;
+`;
+
+const ResourcesWrapper = styled.div`
+    margin-bottom: 40px;
 `;
 
 const filterGroups: FilterGroup[] = [
@@ -171,5 +169,37 @@ const filterGroups: FilterGroup[] = [
                 label: 'Include Community Maintained',
             },
         ],
+    },
+];
+
+const featuredLinks = [
+    {
+        heading: '0x Code Sandbox',
+        description: 'A description could possibly go here but could be tight.',
+        icon: 'flexibleIntegration',
+        url: 'https://0x.org',
+    },
+    {
+        heading: '0x Code Sandbox',
+        description: 'A description could possibly go here but could be tight.',
+        icon: 'flexibleIntegration',
+        url: 'https://0x.org',
+    },
+];
+
+const resources = [
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity.',
+        tags: [{ label: 'Relayer' }],
+        url: 'https://0x.org',
+    },
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
+        tags: [{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }],
+        url: 'https://0x.org',
     },
 ];
