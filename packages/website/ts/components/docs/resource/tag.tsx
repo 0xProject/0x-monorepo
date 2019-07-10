@@ -7,9 +7,9 @@ interface ITagProps {
 }
 
 export const Tag = styled.div<ITagProps>`
-    background-color: ${isInverted => (isInverted ? colors.brandDark : 'rgba(0, 56, 49, 0.1)')};
+    background-color: ${({ isInverted }) => (isInverted ? colors.brandDark : colors.backgroundLight)};
+    color: ${({ isInverted }) => (isInverted ? colors.white : colors.brandDark)};
     border-radius: 4px;
-    color: ${isInverted => (isInverted ? colors.white : colors.brandDark)};
     font-size: 0.666666667rem;
     font-family: 'Formular Mono';
     font-weight: 400;
