@@ -13,41 +13,20 @@ export const DocsGuides: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title="Guides" />
+            <Hero title="Guides" />
             <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                 <Columns>
                     <Filters groups={filterGroups} />
                     <article>
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                            tags={[{ label: 'Relayer' }]}
-                            url="/docs/guides/usage"
-                        />
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                            tags={[{ label: 'Relayer' }]}
-                            url="/docs/guides/usage"
-                        />
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                            tags={[{ label: 'Relayer' }]}
-                            url="/docs/guides/usage"
-                        />
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                            tags={[{ label: 'Relayer' }]}
-                            url="/docs/guides/usage"
-                        />
-                        <Resource
-                            heading="0x Mesh - your gateway to networked liquidity"
-                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                            tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                            url="/docs/guides/usage"
-                        />
+                        {resources.map((resource, index) => (
+                            <Resource
+                                key={`resource-${index}`}
+                                heading={resource.heading}
+                                description={resource.description}
+                                tags={resource.tags}
+                                url={resource.url}
+                            />
+                        ))}
                     </article>
                 </Columns>
             </Section>
@@ -102,5 +81,22 @@ const filterGroups: FilterGroup[] = [
                 label: 'Advanced',
             },
         ],
+    },
+];
+
+const resources = [
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity.',
+        tags: [{ label: 'Relayer' }],
+        url: 'https://0x.org',
+    },
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
+        tags: [{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }],
+        url: 'https://0x.org',
     },
 ];

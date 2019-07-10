@@ -20,7 +20,7 @@ export const DocsHome: React.FC = () => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero isHome={true} title="0x Docs" />
-            <Section maxWidth="1150px" isPadded={false} padding="0">
+            <Section maxWidth="1150px" isPadded={false}>
                 <ShortcutsWrapper>
                     {shortcuts.map((shortcut, index) => (
                         <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
