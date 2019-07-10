@@ -23,85 +23,60 @@ export const DocsTools: React.FC = () => {
                         <Filters groups={filterGroups} />
                     </aside>
                     <article>
-                        <div>
-                            <Heading asElement="h2" size="default">
-                                Featured Tools
-                            </Heading>
-                            <FeatureLink
-                                heading="0x Code Sandbox"
-                                description="A description could possibly go here but could be tight."
-                                icon="flexibleIntegration"
-                                url="#"
-                            />
-                            <FeatureLink
-                                heading="RadarRelay SDK"
-                                description="A description could possibly go here but could be tight."
-                                icon="flexibleIntegration"
-                                url="#"
-                            />
-                            <FeatureLink
-                                heading="RadarRelay SDK"
-                                description="A description could possibly go here but could be tight."
-                                icon="flexibleIntegration"
-                                url="#"
-                            />
-                            <Heading asElement="h2" size="default">
-                                Docker Images
-                            </Heading>
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                            />
-                            <Heading asElement="h2" size="default">
-                                TypeScript Libraries
-                            </Heading>
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
-                                tags={[{ label: 'Relayer' }]}
-                            />
-                            <Resource
-                                heading="0x Mesh - your gateway to networked liquidity"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                            />
-                        </div>
+                        <Heading asElement="h2" size="default">
+                            Featured Tools
+                        </Heading>
+                        <FeatureLink
+                            heading="0x Code Sandbox"
+                            description="A description could possibly go here but could be tight."
+                            icon="flexibleIntegration"
+                            url="https://0x.org"
+                        />
+                        <FeatureLink
+                            heading="RadarRelay SDK"
+                            description="A description could possibly go here but could be tight."
+                            icon="flexibleIntegration"
+                            url="https://0x.org"
+                        />
+                        <FeatureLink
+                            heading="RadarRelay SDK"
+                            description="A description could possibly go here but could be tight."
+                            icon="flexibleIntegration"
+                            url="https://0x.org"
+                        />
+                        <Heading asElement="h2" size="default">
+                            Docker Images
+                        </Heading>
+
+                        <Resource
+                            heading="0x Mesh - your gateway to networked liquidity"
+                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
+                            tags={[{ label: 'Relayer' }]}
+                            url="https://0x.org"
+                        />
+
+                        <Resource
+                            heading="0x Mesh - your gateway to networked liquidity"
+                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
+                            tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
+                            url="https://0x.org"
+                        />
+                        <Heading asElement="h2" size="default">
+                            TypeScript Libraries
+                        </Heading>
+
+                        <Resource
+                            heading="0x Mesh - your gateway to networked liquidity"
+                            description="Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity."
+                            tags={[{ label: 'Relayer' }]}
+                            url="https://0x.org"
+                        />
+                        <Resource
+                            heading="0x Mesh - your gateway to networked liquidity"
+                            description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
+                            tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
+                            url="https://0x.org"
+                        />
                     </article>
                 </Columns>
             </Section>

@@ -12,7 +12,7 @@ import { colors } from 'ts/style/colors';
 export interface IResourceProps {
     heading?: string;
     description?: string;
-    url?: string;
+    url: string;
     tags: ITagProps[];
 }
 
@@ -42,15 +42,10 @@ export const Resource: React.FC<IResourceProps> = ({ heading, description, url, 
     </Wrapper>
 );
 
-Resource.defaultProps = {
-    heading: 'Need some help?',
-    description: 'Get in touch here and we’ll be happy to help.',
-};
-
 const Wrapper = styled.div`
     border: 1px solid #d7e3db;
     padding: 25px 30px;
-    margin-bottom: 1.111111111rem;
+    margin-bottom: 1.1rem;
     display: block;
 `;
 
