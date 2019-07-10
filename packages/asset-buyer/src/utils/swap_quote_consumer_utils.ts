@@ -9,12 +9,12 @@ import { constants } from '../constants';
 import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
 import {
-    DynamicSwapQuoteGetOutputOpts,
     SmartContractParams,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
+    SwapQuoteGetOutputOpts,
 } from '../types';
 
 import { assert } from './assert';
@@ -78,7 +78,7 @@ export const swapQuoteConsumerUtils = {
         provider: Provider,
         exchangeConsumer: ExchangeSwapQuoteConsumer,
         forwarderConsumer: ForwarderSwapQuoteConsumer,
-        opts: Partial<DynamicSwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
         const wethAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {

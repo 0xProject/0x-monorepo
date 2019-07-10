@@ -37,7 +37,7 @@ export const docGenConfigs: DocGenConfigs = {
     // factory method which instantiates an instance of a class, but we don't want users instantiating it themselves
     // and getting confused. Any class name in this list will not have it's constructor rendered in our docs.
     CLASSES_WITH_HIDDEN_CONSTRUCTORS: [
-        'AssetBuyer',
+        'SwapQuoter',
         'CoordinatorWrapper',
         'DutchAuctionWrapper',
         'ERC20ProxyWrapper',
@@ -58,7 +58,9 @@ export const docGenConfigs: DocGenConfigs = {
         'Web3WrapperErrors',
         'ContractWrappersError',
         'TypedDataError',
-        'AssetBuyerError',
+        'SwapQuoterError',
+        'SwapQuoteGetOutputOpts',
+        'SwapQuoteExecutionOpts',
         'ForwarderWrapperError',
         'CoordinatorServerError',
         'CoordinatorServerCancellationResponse',
