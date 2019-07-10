@@ -72,7 +72,7 @@ contract MixinWrapperFunctions is
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            IExchangeCore(0).fillOrder.selector,
+            IExchangeCore(address(0)).fillOrder.selector,
             order,
             takerAssetFillAmount,
             signature

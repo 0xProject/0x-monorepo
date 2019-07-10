@@ -32,7 +32,6 @@ import "./MixinSignatureValidator.sol";
 
 contract MixinExchangeCore is
     IExchangeCore,
-    IExchangeRichErrors,
     LibMath,
     LibFillResults,
     MixinAssetProxyDispatcher,
