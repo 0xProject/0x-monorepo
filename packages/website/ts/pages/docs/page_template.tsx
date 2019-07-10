@@ -29,8 +29,8 @@ export const DocsPageTemplate: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title={`Page Template`} description="This a subheader for the page" />
-            <Section maxWidth="1030px" isPadded={false} padding="0">
+            <Hero title={`Page Template`} description="This a subheader for the page" />
+            <Section maxWidth="1030px" isPadded={false}>
                 <Columns>
                     <aside>
                         <Filters groups={filterGroups} />

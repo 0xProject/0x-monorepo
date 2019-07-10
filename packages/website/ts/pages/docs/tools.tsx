@@ -16,7 +16,7 @@ export const DocsTools: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title="Tools" />
+            <Hero title="Tools" />
             <Section maxWidth="1030px" isPadded={false}>
                 <Columns>
                     <Filters groups={filterGroups} />
