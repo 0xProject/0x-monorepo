@@ -1,11 +1,12 @@
+const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const fs = require('fs');
-const homeDir = require('os').homedir();
+const mdxTableOfContents = require('mdx-table-of-contents');
+const remarkSlug = require('remark-slug');
 
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
@@ -76,7 +77,13 @@ const config = {
                             presets: ['env', 'react'],
                         },
                     },
-                    '@mdx-js/loader',
+                    {
+                        loader: '@mdx-js/loader',
+                        options: {
+                            remarkPlugins: [remarkSlug],
+                            compilers: [mdxTableOfContents],
+                        },
+                    },
                 ],
             },
             {
