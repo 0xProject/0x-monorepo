@@ -1,31 +1,51 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState } from 'react';
+import styled, { keyframes } from 'styled-components';
 
 import { Button } from 'ts/components/button';
 import { Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
-export interface IHelpfulCtaProps {
-    heading?: string;
+interface IHelpfulCtaProps {
+    question?: string;
+    reply?: string;
 }
 
-export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ heading }) => {
-    // @TODO: add was this helpful logic
+export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ reply, question }) => {
+    const [isClicked, setIsClicked] = useState<boolean>(false);
+
+    const handleClick = () => {
+        setIsClicked(true);
+    };
+
     return (
         <HelpfulCtaWrapper>
-            <CtaText>{heading}</CtaText>
-            <CtaButtons>
-                <CtaButton color={colors.white}>Yes</CtaButton>
-                <CtaButton isTransparent={true} color={colors.brandLight} borderColor={colors.brandLight}>
-                    No
-                </CtaButton>
-            </CtaButtons>
+            {isClicked ? (
+                <CtaTextAnimated>{reply}</CtaTextAnimated>
+            ) : (
+                <>
+                    <CtaText>{question}</CtaText>
+                    <CtaButtons>
+                        <CtaButton onClick={handleClick} color={colors.white}>
+                            Yes
+                        </CtaButton>
+                        <CtaButton
+                            onClick={handleClick}
+                            isTransparent={true}
+                            color={colors.brandLight}
+                            borderColor={colors.brandLight}
+                        >
+                            No
+                        </CtaButton>
+                    </CtaButtons>
+                </>
+            )}
         </HelpfulCtaWrapper>
     );
 };
 
 HelpfulCta.defaultProps = {
-    heading: 'Was this page helpful?',
+    question: 'Was this page helpful?',
+    reply: 'Thank you for letting us know 🙏',
 };
 
 const HelpfulCtaWrapper = styled.div`
@@ -36,10 +56,21 @@ const HelpfulCtaWrapper = styled.div`
 
 const CtaText = styled(Paragraph)`
     color: ${colors.textDarkPrimary};
-    font-size: 1.111111111rem;
+    font-size: 1.1rem;
     font-weight: 400;
+    line-height: 40px;
     margin-bottom: 0;
     opacity: 1;
+`;
+
+// prettier-ignore
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const CtaTextAnimated = styled(CtaText)`
+    animation: ${fadeIn} 0.5s ease-in-out;
 `;
 
 const CtaButtons = styled.div`
@@ -49,7 +80,9 @@ const CtaButtons = styled.div`
 `;
 
 const CtaButton = styled(Button)`
-    padding: 8px 30px 6px;
+    border: none;
+    padding: 0 30px;
+    line-height: 40px;
     font-size: 1rem;
 
     & + & {
