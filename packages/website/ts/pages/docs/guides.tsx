@@ -13,12 +13,10 @@ export const DocsGuides: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={false} title={`Guides`} />
+            <Hero isHome={false} title="Guides" />
             <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                 <Columns>
-                    <aside>
-                        <Filters groups={filterGroups} />
-                    </aside>
+                    <Filters groups={filterGroups} />
                     <article>
                         <Resource
                             heading="0x Mesh - your gateway to networked liquidity"
