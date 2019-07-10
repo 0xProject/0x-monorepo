@@ -1,5 +1,5 @@
 {
-    "name": "@0x/asset-buyer",
+    "name": "@0x/asset-swapper",
     "version": "6.1.5",
     "engines": {
         "node": ">=6.12"
