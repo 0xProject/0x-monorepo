@@ -60,20 +60,10 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-<<<<<<< HEAD
         getABIEncodedTransactionData(addresses: string[]): string {
             assert.isArray('addresses', addresses);
             const self = (this as any) as EthBalanceCheckerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
-=======
-        getABIEncodedTransactionData(
-                addresses: string[],
-            ): string {
-            assert.isArray('addresses', addresses);
-            const self = this as any as EthBalanceCheckerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses
-        ]);
->>>>>>> 70ce7fe82... light refactor
             return abiEncodedTransactionData;
         },
     };
