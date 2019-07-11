@@ -20,13 +20,14 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/ITransactions.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./LibExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
-    MixinExchangeRichErrors,
     LibZeroExTransaction,
     ISignatureValidator,
     ITransactions
@@ -87,24 +88,24 @@ contract MixinTransactions is
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= transaction.expirationTimeSeconds) {
-            _rrevert(TransactionError(
-                TransactionErrorCodes.EXPIRED,
+            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+                IExchangeRichErrors.TransactionErrorCodes.EXPIRED,
                 transactionHash
             ));
         }
 
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
-            _rrevert(TransactionError(
-                TransactionErrorCodes.NO_REENTRANCY,
+            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+                IExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
                 transactionHash
             ));
         }
 
         // Validate transaction has not been executed
         if (transactionsExecuted[transactionHash]) {
-            _rrevert(TransactionError(
-                TransactionErrorCodes.ALREADY_EXECUTED,
+            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+                IExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
             ));
         }
@@ -118,7 +119,7 @@ contract MixinTransactions is
                     transactionHash,
                     signerAddress,
                     signature)) {
-                _rrevert(TransactionSignatureError(
+                LibRichErrors._rrevert(LibExchangeRichErrors.TransactionSignatureError(
                     transactionHash,
                     signerAddress,
                     signature
@@ -133,7 +134,7 @@ contract MixinTransactions is
         transactionsExecuted[transactionHash] = true;
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
-            _rrevert(TransactionExecutionError(
+            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionExecutionError(
                 transactionHash,
                 returnData
             ));
