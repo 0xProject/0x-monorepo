@@ -88,4 +88,5 @@ contract AbiGenDummy
         return ecrecover(prefixedHash, v, r, s);
     }
 
+    event AnEvent(uint8 param);
 }
