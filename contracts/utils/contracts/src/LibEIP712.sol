@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 
-contract LibEIP712 {
+library LibEIP712 {
 
     // Hash of the EIP712 Domain Separator Schema
     // keccak256(abi.encodePacked(
@@ -30,14 +30,14 @@ contract LibEIP712 {
     //     "address verifyingContractAddress",
     //     ")"
     // ))
-    bytes32 constant public EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
+    bytes32 constant internal _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH = 0xb1b295f2c1ed6b459ddeb95701466e4e0b385527a6cfa3873ae72a63c08466b6;
     
     /// @dev Calculates a EIP712 domain separator.
     /// @param name The EIP712 domain name.
     /// @param version The EIP712 domain version.
     /// @param verifyingContractAddress The EIP712 verifying contract.
     /// @return EIP712 domain separator.
-    function _hashEIP712Domain(
+    function hashEIP712Domain(
         string memory name,
         string memory version,
         uint256 chainId,
@@ -47,11 +47,11 @@ contract LibEIP712 {
         pure
         returns (bytes32 result)
     {
-        bytes32 schemaHash = EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
+        bytes32 schemaHash = _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
 
         // Assembly for more efficient computing:
         // keccak256(abi.encodePacked(
-        //     EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
+        //     _EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH,
         //     keccak256(bytes(name)),
         //     keccak256(bytes(version)),
         //     chainId,
@@ -84,7 +84,7 @@ contract LibEIP712 {
     ///                         with getDomainHash().
     /// @param hashStruct The EIP712 hash struct.
     /// @return EIP712 hash applied to the given EIP712 Domain.
-    function _hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)
+    function hashEIP712Message(bytes32 eip712DomainHash, bytes32 hashStruct)
         internal
         pure
         returns (bytes32 result)
