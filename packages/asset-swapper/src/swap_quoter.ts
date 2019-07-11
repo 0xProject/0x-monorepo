@@ -203,7 +203,7 @@ export class SwapQuoter {
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
      * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   takerAssetSellAmount     The amount of taker asset to sell.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
