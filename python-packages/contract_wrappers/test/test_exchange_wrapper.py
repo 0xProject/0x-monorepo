@@ -78,7 +78,7 @@ def test_exchange_wrapper__fill_order(
 
     tx_hash = exchange_wrapper.fill_order(
         order=order,
-        taker_amount=order["takerAssetAmount"],
+        taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
         tx_params=TxParams(from_=taker),
     )
@@ -115,7 +115,7 @@ def test_exchange_wrapper__batch_fill_orders(
     taker_amounts = [order["takerAssetAmount"] for order in orders]
     tx_hash = exchange_wrapper.batch_fill_orders(
         orders=orders,
-        taker_amounts=taker_amounts,
+        taker_asset_fill_amounts=taker_amounts,
         signatures=order_signatures,
         tx_params=TxParams(from_=taker),
     )

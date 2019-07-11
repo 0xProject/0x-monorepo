@@ -57,7 +57,7 @@ class Exchange(BaseContractWrapper):
     def batch_fill_orders(
         self,
         orders: List[Order],
-        taker_amounts: List[int],
+        taker_asset_fill_amounts: List[int],
         signatures: List[str],
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
@@ -65,7 +65,7 @@ class Exchange(BaseContractWrapper):
         """Call `fillOrder` sequentially for orders, amounts and signatures.
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
-        :param taker_amounts: list of integer taker amounts in Wei
+        :param taker_asset_fill_amounts: list of integer taker amounts in Wei
         :param signatures: list of str|hexstr|bytes of order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
@@ -79,7 +79,8 @@ class Exchange(BaseContractWrapper):
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         # safeguard against fractional inputs
         normalized_fill_amounts = [
-            int(taker_fill_amount) for taker_fill_amount in taker_amounts
+            int(taker_fill_amount)
+            for taker_fill_amount in taker_asset_fill_amounts
         ]
         normalized_signatures = [
             bytes.fromhex(remove_0x_prefix(signature))
@@ -96,7 +97,7 @@ class Exchange(BaseContractWrapper):
     def fill_order(
         self,
         order: Order,
-        taker_amount: int,
+        taker_asset_fill_amount: int,
         signature: str,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
@@ -115,7 +116,8 @@ class Exchange(BaseContractWrapper):
         /v2/v2-specification.md#fillorder>`_.
 
         :param order: instance of :class:`zero_ex.order_utils.Order`
-        :param taker_amount: integer taker amount in Wei (1 Wei is 10e-18 ETH)
+        :param taker_asset_fill_amount: integer taker amount in Wei (1 Wei is
+            10e-18 ETH)
         :param signature: str or hexstr or bytes of order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
@@ -131,7 +133,7 @@ class Exchange(BaseContractWrapper):
             order["makerAddress"],
         )
         # safeguard against fractional inputs
-        taker_fill_amount = int(taker_amount)
+        taker_fill_amount = int(taker_asset_fill_amount)
         normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrder(
             order, taker_fill_amount, normalized_signature
@@ -144,7 +146,7 @@ class Exchange(BaseContractWrapper):
     def fill_or_kill_order(
         self,
         order: Order,
-        taker_amount: int,
+        taker_asset_fill_amount: int,
         signature: str,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
@@ -152,7 +154,8 @@ class Exchange(BaseContractWrapper):
         """Attemp to `fillOrder`, revert if fill is not exact amount.
 
         :param order: instance of :class:`zero_ex.order_utils.Order`
-        :param taker_amount: integer taker amount in Wei (1 Wei is 10e-18 ETH)
+        :param taker_asset_fill_amount: integer taker amount in Wei (1 Wei is
+            10e-18 ETH)
         :param signature: str or hexstr or bytes of order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
@@ -168,7 +171,7 @@ class Exchange(BaseContractWrapper):
             order["makerAddress"],
         )
         # safeguard against fractional inputs
-        taker_fill_amount = int(taker_amount)
+        taker_fill_amount = int(taker_asset_fill_amount)
         normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrKillOrder(
             order, taker_fill_amount, normalized_signature
@@ -181,7 +184,7 @@ class Exchange(BaseContractWrapper):
     def batch_fill_or_kill_orders(
         self,
         orders: List[Order],
-        taker_amounts: List[int],
+        taker_asset_fill_amounts: List[int],
         signatures: List[str],
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
@@ -189,7 +192,7 @@ class Exchange(BaseContractWrapper):
         """Call `fillOrKillOrder` sequentially for orders.
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
-        :param taker_amounts: list of integer taker amounts in Wei
+        :param taker_asset_fill_amounts: list of integer taker amounts in Wei
         :param signatures: list of str|hexstr|bytes of order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
@@ -203,7 +206,8 @@ class Exchange(BaseContractWrapper):
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         # safeguard against fractional inputs
         normalized_fill_amounts = [
-            int(taker_fill_amount) for taker_fill_amount in taker_amounts
+            int(taker_fill_amount)
+            for taker_fill_amount in taker_asset_fill_amounts
         ]
         normalized_signatures = [
             bytes.fromhex(remove_0x_prefix(signature))

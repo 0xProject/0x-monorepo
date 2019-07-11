@@ -168,7 +168,7 @@ too.
 ... )
 >>> tx_hash = exchange_contract.fill_order(
 ...     order=order,
-...     taker_amount=order["takerAssetAmount"],
+...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
 ...     tx_params=TxParams(from_=taker_address)
 ... )
@@ -289,7 +289,7 @@ Fill order_1 and order_2 together:
 
 >>> exchange_contract.batch_fill_orders(
 ...     orders=[order_1, order_2],
-...     taker_amounts=[1, 2],
+...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
 ...     tx_params=TxParams(from_=taker_address))
 HexBytes('0x...')

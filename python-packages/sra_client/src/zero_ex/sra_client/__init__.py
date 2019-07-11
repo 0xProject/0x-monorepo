@@ -322,7 +322,7 @@ book.  Now let's have the taker fill it:
 ... )
 >>> exchange.fill_order(
 ...     order=order,
-...     taker_amount=order['makerAssetAmount']/2, # note the half fill
+...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note: half fill
 ...     signature=order['signature'],
 ...     tx_params=TxParams(from_=taker_address)
 ... )
