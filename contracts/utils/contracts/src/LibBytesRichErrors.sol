@@ -39,7 +39,7 @@ library LibBytesRichErrors {
     // solhint-disable func-name-mixedcase
     function InvalidByteOperationError(
         InvalidByteOperationErrorCodes errorCode,
-        uint256 endpoint,
+        uint256 offset,
         uint256 required
     )
         internal
@@ -49,7 +49,7 @@ library LibBytesRichErrors {
         return abi.encodeWithSelector(
             INVALID_BYTE_OPERATION_ERROR_SELECTOR,
             errorCode,
-            endpoint,
+            offset,
             required
         );
     }

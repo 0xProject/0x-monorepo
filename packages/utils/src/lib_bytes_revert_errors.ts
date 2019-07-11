@@ -13,16 +13,12 @@ export enum InvalidByteOperationErrorCodes {
 }
 
 export class InvalidByteOperationError extends RevertError {
-    constructor(error?: InvalidByteOperationErrorCodes, endpoint?: BigNumber, required?: BigNumber) {
-        super(
-            'InvalidByteOperationError',
-            'InvalidByteOperationError(uint8 error, uint256 endpoint, uint256 required)',
-            {
-                error,
-                endpoint,
-                required,
-            },
-        );
+    constructor(error?: InvalidByteOperationErrorCodes, offset?: BigNumber, required?: BigNumber) {
+        super('InvalidByteOperationError', 'InvalidByteOperationError(uint8 error, uint256 offset, uint256 required)', {
+            error,
+            offset,
+            required,
+        });
     }
 }
 
