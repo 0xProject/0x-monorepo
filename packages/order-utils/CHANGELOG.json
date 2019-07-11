@@ -14,6 +14,10 @@
             {
                 "note": "Add support for encoding/decoding StaticCallProxy assetData",
                 "pr": 1863
+            },
+            {
+                "note": "Add support for encoding/decoding DutchAuction assetData",
+                "pr": 1943
             }
         ]
     },
