@@ -36,7 +36,7 @@ const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange wrappers', () => {
+describe.only('Exchange wrappers', () => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
