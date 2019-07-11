@@ -54,6 +54,45 @@ class Exchange(BaseContractWrapper):
         )
 
     # pylint: disable=too-many-arguments
+    def batch_fill_orders(
+        self,
+        orders: List[Order],
+        taker_amounts: List[int],
+        signatures: List[str],
+        tx_params: Optional[TxParams] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
+        """Call `fillOrder` sequentially for orders, amounts and signatures.
+
+        :param orders: list of instances of :class:`zero_ex.order_utils.Order`
+        :param taker_amounts: list of integer taker amounts in Wei
+        :param signatures: list of str|hexstr|bytes of order hash signature
+        :param tx_params: default None, :class:`TxParams` transaction params
+        :param view_only: default False, boolean of whether to transact or
+            view only
+
+        :returns: transaction hash
+        """
+        order_jsdicts = [
+            order_to_jsdict(order, self.address) for order in orders
+        ]
+        map(assert_valid, order_jsdicts, repeat("/orderSchema"))
+        # safeguard against fractional inputs
+        normalized_fill_amounts = [
+            int(taker_fill_amount) for taker_fill_amount in taker_amounts
+        ]
+        normalized_signatures = [
+            bytes.fromhex(remove_0x_prefix(signature))
+            for signature in signatures
+        ]
+        func = self._exchange.functions.batchFillOrders(
+            orders, normalized_fill_amounts, normalized_signatures
+        )
+        return self._invoke_function_call(
+            func=func, tx_params=tx_params, view_only=view_only
+        )
+
+    # pylint: disable=too-many-arguments
     def fill_order(
         self,
         order: Order,
@@ -96,45 +135,6 @@ class Exchange(BaseContractWrapper):
         normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrder(
             order, taker_fill_amount, normalized_signature
-        )
-        return self._invoke_function_call(
-            func=func, tx_params=tx_params, view_only=view_only
-        )
-
-    # pylint: disable=too-many-arguments
-    def batch_fill_orders(
-        self,
-        orders: List[Order],
-        taker_amounts: List[int],
-        signatures: List[str],
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[HexBytes, bytes]:
-        """Call `fillOrder` sequentially for orders, amounts and signatures.
-
-        :param orders: list of instances of :class:`zero_ex.order_utils.Order`
-        :param taker_amounts: list of integer taker amounts in Wei
-        :param signatures: list of str|hexstr|bytes of order hash signature
-        :param tx_params: default None, :class:`TxParams` transaction params
-        :param view_only: default False, boolean of whether to transact or
-            view only
-
-        :returns: transaction hash
-        """
-        order_jsdicts = [
-            order_to_jsdict(order, self.address) for order in orders
-        ]
-        map(assert_valid, order_jsdicts, repeat("/orderSchema"))
-        # safeguard against fractional inputs
-        normalized_fill_amounts = [
-            int(taker_fill_amount) for taker_fill_amount in taker_amounts
-        ]
-        normalized_signatures = [
-            bytes.fromhex(remove_0x_prefix(signature))
-            for signature in signatures
-        ]
-        func = self._exchange.functions.batchFillOrders(
-            orders, normalized_fill_amounts, normalized_signatures
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
@@ -216,44 +216,6 @@ class Exchange(BaseContractWrapper):
             func=func, tx_params=tx_params, view_only=view_only
         )
 
-    def cancel_order(
-        self,
-        order: Order,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[HexBytes, bytes]:
-        """Cancel an order.
-
-        See the specification docs for `cancelOrder
-        <https://github.com/0xProject/0x-protocol-specification/blob/master
-        /v2/v2-specification.md#cancelorder>`_.
-
-        :param order: instance of :class:`zero_ex.order_utils.Order`
-        :param tx_params: default None, :class:`TxParams` transaction params
-        :param view_only: default False, boolean of whether to transact or
-            view only
-
-        :returns: transaction hash
-        """
-        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
-        maker_address = self._validate_and_checksum_address(
-            order["makerAddress"]
-        )
-
-        if tx_params and tx_params.from_:
-            self._raise_if_maker_not_canceller(
-                maker_address,
-                self._validate_and_checksum_address(tx_params.from_),
-            )
-        elif self._web3_eth.defaultAccount:
-            self._raise_if_maker_not_canceller(
-                maker_address, self._web3_eth.defaultAccount
-            )
-        func = self._exchange.functions.cancelOrder(order)
-        return self._invoke_function_call(
-            func=func, tx_params=tx_params, view_only=view_only
-        )
-
     def batch_cancel_orders(
         self,
         orders: List[Order],
@@ -290,6 +252,44 @@ class Exchange(BaseContractWrapper):
                 repeat(self._web3_eth.defaultAccount),
             )
         func = self._exchange.functions.batchCancelOrders(orders)
+        return self._invoke_function_call(
+            func=func, tx_params=tx_params, view_only=view_only
+        )
+
+    def cancel_order(
+        self,
+        order: Order,
+        tx_params: Optional[TxParams] = None,
+        view_only: bool = False,
+    ) -> Union[HexBytes, bytes]:
+        """Cancel an order.
+
+        See the specification docs for `cancelOrder
+        <https://github.com/0xProject/0x-protocol-specification/blob/master
+        /v2/v2-specification.md#cancelorder>`_.
+
+        :param order: instance of :class:`zero_ex.order_utils.Order`
+        :param tx_params: default None, :class:`TxParams` transaction params
+        :param view_only: default False, boolean of whether to transact or
+            view only
+
+        :returns: transaction hash
+        """
+        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
+        maker_address = self._validate_and_checksum_address(
+            order["makerAddress"]
+        )
+
+        if tx_params and tx_params.from_:
+            self._raise_if_maker_not_canceller(
+                maker_address,
+                self._validate_and_checksum_address(tx_params.from_),
+            )
+        elif self._web3_eth.defaultAccount:
+            self._raise_if_maker_not_canceller(
+                maker_address, self._web3_eth.defaultAccount
+            )
+        func = self._exchange.functions.cancelOrder(order)
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
         )
