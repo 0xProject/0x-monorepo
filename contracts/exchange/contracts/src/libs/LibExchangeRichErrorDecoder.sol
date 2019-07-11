@@ -21,6 +21,7 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "../interfaces/IExchangeRichErrors.sol";
+import "../LibExchangeRichErrors.sol";
 
 
 contract LibExchangeRichErrorDecoder is
@@ -41,7 +42,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory signature
         )
     {
-        _assertSelectorBytes(encoded, SIGNATURE_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureErrorSelector());
         errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
         signerAddress = _readErrorParameterAsAddress(encoded, 2);
@@ -64,7 +65,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureValidatorErrorSelector());
         hash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
         validatorAddress = _readErrorParameterAsAddress(encoded, 2);
@@ -84,7 +85,7 @@ contract LibExchangeRichErrorDecoder is
             address validatorAddress
         )
     {
-        _assertSelectorBytes(encoded, SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureValidatorNotApprovedErrorSelector());
         signerAddress = _readErrorParameterAsAddress(encoded, 0);
         validatorAddress = _readErrorParameterAsAddress(encoded, 1);
     }
@@ -105,7 +106,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, SIGNATURE_WALLET_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureWalletErrorSelector());
         hash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
@@ -124,7 +125,7 @@ contract LibExchangeRichErrorDecoder is
             LibOrder.OrderStatus orderStatus
         )
     {
-        _assertSelectorBytes(encoded, ORDER_STATUS_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.OrderStatusErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
         orderStatus = LibOrder.OrderStatus(_readErrorParameterAsUint256(encoded, 1));
     }
@@ -141,7 +142,7 @@ contract LibExchangeRichErrorDecoder is
             address senderAddress
         )
     {
-        _assertSelectorBytes(encoded, INVALID_SENDER_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidSenderErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
         senderAddress = _readErrorParameterAsAddress(encoded, 1);
     }
@@ -158,7 +159,7 @@ contract LibExchangeRichErrorDecoder is
             address makerAddress
         )
     {
-        _assertSelectorBytes(encoded, INVALID_MAKER_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidMakerErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
         makerAddress = _readErrorParameterAsAddress(encoded, 1);
     }
@@ -175,7 +176,7 @@ contract LibExchangeRichErrorDecoder is
             address takerAddress
         )
     {
-        _assertSelectorBytes(encoded, INVALID_TAKER_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.InvalidTakerErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
         takerAddress = _readErrorParameterAsAddress(encoded, 1);
     }
@@ -192,7 +193,7 @@ contract LibExchangeRichErrorDecoder is
             bytes32 orderHash
         )
     {
-        _assertSelectorBytes(encoded, FILL_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.FillErrorSelector());
         errorCode = FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
@@ -211,7 +212,7 @@ contract LibExchangeRichErrorDecoder is
             uint256 currentEpoch
         )
     {
-        _assertSelectorBytes(encoded, ORDER_EPOCH_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.OrderEpochErrorSelector());
         makerAddress = _readErrorParameterAsAddress(encoded, 0);
         orderSenderAddress = _readErrorParameterAsAddress(encoded, 1);
         currentEpoch = _readErrorParameterAsUint256(encoded, 2);
@@ -225,7 +226,7 @@ contract LibExchangeRichErrorDecoder is
         pure
         returns (address assetProxyAddress)
     {
-        _assertSelectorBytes(encoded, ASSET_PROXY_EXISTS_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyExistsErrorSelector());
         assetProxyAddress = _readErrorParameterAsAddress(encoded, 0);
     }
 
@@ -243,7 +244,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory assetData
         )
     {
-        _assertSelectorBytes(encoded, ASSET_PROXY_DISPATCH_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyDispatchErrorSelector());
         errorCode = AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
         assetData = _readErrorParameterAsBytes(encoded, 2);
@@ -263,7 +264,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, ASSET_PROXY_TRANSFER_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyTransferErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
         assetData = _readErrorParameterAsBytes(encoded, 1);
         errorData = _readErrorParameterAsBytes(encoded, 2);
@@ -281,7 +282,7 @@ contract LibExchangeRichErrorDecoder is
             bytes32 rightOrderHash
         )
     {
-        _assertSelectorBytes(encoded, NEGATIVE_SPREAD_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.NegativeSpreadErrorSelector());
         leftOrderHash = _readErrorParameterAsBytes32(encoded, 0);
         rightOrderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
@@ -298,7 +299,7 @@ contract LibExchangeRichErrorDecoder is
             bytes32 transactionHash
         )
     {
-        _assertSelectorBytes(encoded, TRANSACTION_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionErrorSelector());
         errorCode = TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         transactionHash = _readErrorParameterAsBytes32(encoded, 1);
     }
@@ -317,7 +318,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory signature
         )
     {
-        _assertSelectorBytes(encoded, TRANSACTION_SIGNATURE_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionSignatureErrorSelector());
         transactionHash = _readErrorParameterAsBytes32(encoded, 0);
         signerAddress = _readErrorParameterAsAddress(encoded, 1);
         signature = _readErrorParameterAsBytes(encoded, 2);
@@ -335,7 +336,7 @@ contract LibExchangeRichErrorDecoder is
             bytes memory errorData
         )
     {
-        _assertSelectorBytes(encoded, TRANSACTION_EXECUTION_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionExecutionErrorSelector());
         transactionHash = _readErrorParameterAsBytes32(encoded, 0);
         errorData = _readErrorParameterAsBytes(encoded, 1);
     }
@@ -350,7 +351,7 @@ contract LibExchangeRichErrorDecoder is
             bytes32 orderHash
         )
     {
-        _assertSelectorBytes(encoded, INCOMPLETE_FILL_ERROR_SELECTOR);
+        _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteFillErrorSelector());
         orderHash = _readErrorParameterAsBytes32(encoded, 0);
     }
 
