@@ -38,13 +38,27 @@ class PreInstallCommand(distutils.command.build_py.build_py):
             ),
             path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
         )
+        copy(
+            path.join(
+                pkgdir,
+                "..",
+                "..",
+                "packages",
+                "python-contract-wrappers",
+                "generated",
+                "exchange.py",
+            ),
+            path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
+        )
         if find_spec("black") is None:
             subprocess.check_call("pip install black".split())  # nosec
-        subprocess.check_call(  # nosec
-            (
-                BLACK_COMMAND + " src/zero_ex/contract_wrappers/erc20_token.py"
-            ).split()
+        black_command = (
+            BLACK_COMMAND
+            + " src/zero_ex/contract_wrappers/erc20_token.py"
+            + " src/zero_ex/contract_wrappers/exchange.py"
         )
+        print(f"Running command `{black_command}`...")
+        subprocess.check_call(black_command.split())  # nosec
 
 
 class TestCommandExtension(TestCommand):

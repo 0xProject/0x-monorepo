@@ -7,12 +7,9 @@ from eth_utils import remove_0x_prefix
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_wrappers import Exchange, TxParams
+from zero_ex.contract_wrappers.exchange_types import Order
 from zero_ex.json_schemas import assert_valid
-from zero_ex.order_utils import (
-    generate_order_hash_hex,
-    Order,
-    sign_hash_to_bytes,
-)
+from zero_ex.order_utils import generate_order_hash_hex, sign_hash_to_bytes
 
 
 @pytest.fixture(scope="module")
@@ -32,20 +29,20 @@ def create_test_order(
     taker_asset_data,
 ):
     """Create a test order."""
-    order: Order = {
-        "makerAddress": maker_address.lower(),
-        "takerAddress": "0x0000000000000000000000000000000000000000",
-        "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-        "senderAddress": "0x0000000000000000000000000000000000000000",
-        "makerAssetAmount": maker_asset_amount,
-        "takerAssetAmount": taker_asset_amount,
-        "makerFee": 0,
-        "takerFee": 0,
-        "expirationTimeSeconds": 100000000000000,
-        "salt": random.randint(1, 1000000000),
-        "makerAssetData": maker_asset_data,
-        "takerAssetData": taker_asset_data,
-    }
+    order = Order(
+        makerAddress=maker_address.lower(),
+        takerAddress="0x0000000000000000000000000000000000000000",
+        feeRecipientAddress="0x0000000000000000000000000000000000000000",
+        senderAddress="0x0000000000000000000000000000000000000000",
+        makerAssetAmount=maker_asset_amount,
+        takerAssetAmount=taker_asset_amount,
+        makerFee=0,
+        takerFee=0,
+        expirationTimeSeconds=100000000000000,
+        salt=random.randint(1, 1000000000),
+        makerAssetData=maker_asset_data,
+        takerAssetData=taker_asset_data,
+    )
     return order
 
 

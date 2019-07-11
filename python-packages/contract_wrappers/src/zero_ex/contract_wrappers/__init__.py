@@ -117,8 +117,8 @@ balance:
 Constructing an order
 ---------------------
 
->>> from zero_ex.order_utils import asset_data_utils, Order
->>> from eth_utils import remove_0x_prefix
+>>> from zero_ex.contract_wrappers.exchange_types import Order
+>>> from zero_ex.order_utils import asset_data_utils
 >>> from datetime import datetime, timedelta
 >>> import random
 >>> order = Order(
