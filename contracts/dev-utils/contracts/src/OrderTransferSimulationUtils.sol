@@ -21,6 +21,7 @@ pragma experimental ABIEncoderV2;
 
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "@0x/contracts-exchange/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange/contracts/src/libs/LibExchangeRichErrorDecoder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
@@ -111,11 +112,11 @@ contract OrderTransferSimulationUtils is
         (, bytes memory returnData) = address(_EXCHANGE).call(simulateDispatchTransferFromCallsData);
 
         bytes4 selector = returnData.readBytes4(0);
-        if (selector == ASSET_PROXY_DISPATCH_ERROR_SELECTOR) {
+        if (selector == LibExchangeRichErrors.AssetProxyDispatchErrorSelector()) {
             // Decode AssetProxyDispatchError and return index of failed transfer
             (, bytes32 failedTransferIndex,) = decodeAssetProxyDispatchError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
-        } else if (selector == ASSET_PROXY_TRANSFER_ERROR_SELECTOR) {
+        } else if (selector == LibExchangeRichErrors.AssetProxyTransferErrorSelector()) {
             // Decode AssetProxyTransferError and return index of failed transfer
             (bytes32 failedTransferIndex, ,) = decodeAssetProxyTransferError(returnData);
             return OrderTransferResults(uint8(uint256(failedTransferIndex)));
