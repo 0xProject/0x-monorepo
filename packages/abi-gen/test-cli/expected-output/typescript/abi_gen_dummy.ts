@@ -71,6 +71,42 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    public acceptsAnArrayOfBytes = {
+        async callAsync(a: string[], callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.isArray('a', a);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('acceptsAnArrayOfBytes(bytes[])', [a]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(a: string[]): string {
+            assert.isArray('a', a);
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('acceptsAnArrayOfBytes(bytes[])', [a]);
+            return abiEncodedTransactionData;
+        },
+    };
     public ecrecoverFn = {
         async callAsync(
             hash: string,
@@ -125,6 +161,42 @@ export class AbiGenDummyContract extends BaseContract {
                 'ecrecoverFn(bytes32,uint8,bytes32,bytes32)',
                 [hash, v, r, s],
             );
+            return abiEncodedTransactionData;
+        },
+    };
+    public acceptsBytes = {
+        async callAsync(a: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.isString('a', a);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('acceptsBytes(bytes)', [a]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(a: string): string {
+            assert.isString('a', a);
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('acceptsBytes(bytes)', [a]);
             return abiEncodedTransactionData;
         },
     };
@@ -594,6 +666,20 @@ export class AbiGenDummyContract extends BaseContract {
                 constant: true,
                 inputs: [
                     {
+                        name: 'a',
+                        type: 'bytes[]',
+                    },
+                ],
+                name: 'acceptsAnArrayOfBytes',
+                outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
                         name: 'hash',
                         type: 'bytes32',
                     },
@@ -617,6 +703,20 @@ export class AbiGenDummyContract extends BaseContract {
                         type: 'address',
                     },
                 ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'a',
+                        type: 'bytes',
+                    },
+                ],
+                name: 'acceptsBytes',
+                outputs: [],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',

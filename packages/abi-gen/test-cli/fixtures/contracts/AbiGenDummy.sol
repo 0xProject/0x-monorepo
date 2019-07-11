@@ -92,6 +92,9 @@ contract AbiGenDummy
 
     event AnEvent(uint8 param);
 
+    function acceptsBytes(bytes memory a) public pure {}
+    function acceptsAnArrayOfBytes(bytes[] memory a) public pure {}
+
     struct Struct {
         bytes someBytes;
         uint32 anInteger;
