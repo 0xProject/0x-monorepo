@@ -24,12 +24,7 @@ lib
 /contracts/exchange-forwarder/generated-artifacts
 /contracts/dev-utils/generated-wrappers
 /contracts/dev-utils/generated-artifacts
-/packages/abi-gen/test-cli/fixtures/artifacts/
 /packages/abi-gen/test-cli/output
-/packages/abi-gen/test-cli/expected-output
-/packages/abi-gen-wrappers/src/generated-wrappers
-/packages/contract-artifacts/artifacts
-/python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts
 /packages/json-schemas/schemas
 /python-packages/json_schemas/src/zero_ex/json_schemas/schemas
 /packages/metacoin/src/contract_wrappers
