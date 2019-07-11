@@ -25,6 +25,8 @@ import "./interfaces/IExchangeRichErrors.sol";
 
 library LibExchangeRichErrors {
 
+    /*** Selector Getters ***/
+
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
         0x7e5a2318;
@@ -96,6 +98,153 @@ library LibExchangeRichErrors {
     // bytes4(keccak256("IncompleteFillError(bytes32)"))
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
         0x152aa60e;
+
+    // solhint-disable func-name-mixedcase
+    function SignatureErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return SIGNATURE_ERROR_SELECTOR;
+    }
+
+    function SignatureValidatorNotApprovedErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return SIGNATURE_VALIDATOR_NOT_APPROVED_ERROR_SELECTOR;
+    }
+
+    function SignatureValidatorErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return SIGNATURE_VALIDATOR_ERROR_SELECTOR;
+    }
+
+    function SignatureWalletErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return SIGNATURE_WALLET_ERROR_SELECTOR;
+    }
+
+    function OrderStatusErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return ORDER_STATUS_ERROR_SELECTOR;
+    }
+
+    function InvalidSenderErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return INVALID_SENDER_ERROR_SELECTOR;
+    }
+
+    function InvalidMakerErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return INVALID_MAKER_ERROR_SELECTOR;
+    }
+
+    function FillErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return FILL_ERROR_SELECTOR;
+    }
+
+    function InvalidTakerErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return INVALID_TAKER_ERROR_SELECTOR;
+    }
+
+    function OrderEpochErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return ORDER_EPOCH_ERROR_SELECTOR;
+    }
+
+    function AssetProxyExistsErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return ASSET_PROXY_EXISTS_ERROR_SELECTOR;
+    }
+
+    function AssetProxyDispatchErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return ASSET_PROXY_DISPATCH_ERROR_SELECTOR;
+    }
+
+    function AssetProxyTransferErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return ASSET_PROXY_TRANSFER_ERROR_SELECTOR;
+    }
+
+    function NegativeSpreadErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return NEGATIVE_SPREAD_ERROR_SELECTOR;
+    }
+
+    function TransactionErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return TRANSACTION_ERROR_SELECTOR;
+    }
+
+    function TransactionSignatureErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return TRANSACTION_SIGNATURE_ERROR_SELECTOR;
+    }
+
+    function TransactionExecutionErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return TRANSACTION_EXECUTION_ERROR_SELECTOR;
+    }
+
+    function IncompleteFillErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return INCOMPLETE_FILL_ERROR_SELECTOR;
+    }
+
+    /*** Rich Error Functions ***/
 
     // solhint-disable func-name-mixedcase
     function SignatureError(
