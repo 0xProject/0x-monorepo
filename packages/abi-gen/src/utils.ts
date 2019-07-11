@@ -1,6 +1,7 @@
 import { createHash } from 'crypto';
 
 import * as changeCase from 'change-case';
+import * as cliFormat from 'cli-format';
 import { AbiType, ConstructorAbi, DataItem } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -330,5 +331,23 @@ export const utils = {
             snakeCased = `_${snakeCased}`;
         }
         return snakeCased;
+    },
+    /**
+     * Python docstrings are used to generate documentation, and that
+     * transformation supports annotation of parameters, return types, etc, via
+     * re-Structured Text "interpreted text roles".  Per the pydocstyle linter,
+     * such annotations should be line-wrapped at 80 columns, with a hanging
+     * indent of 4 columns.  This function simply returns an accordingly
+     * wrapped and hanging-indented `role` string.
+     */
+    wrapPythonDocstringRole(docstring: string, indent: number): string {
+        const columnsPerIndent = 4;
+        const columnsPerRow = 80;
+        return cliFormat.wrap(docstring, {
+            paddingLeft: ' '.repeat(indent),
+            width: columnsPerRow,
+            ansi: false,
+            hangingIndent: ' '.repeat(columnsPerIndent),
+        });
     },
 };

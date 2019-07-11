@@ -122,11 +122,36 @@ function registerPythonHelpers(): void {
             return new Handlebars.SafeString(
                 `\n${cliFormat.wrap(devdocDetails || '', {
                     paddingLeft: ' '.repeat(indent),
-                    width: columnsPerRow - indent,
+                    width: columnsPerRow,
                     ansi: false,
                 })}\n`,
             );
         },
+    );
+    Handlebars.registerHelper(
+        'makeParameterDocstringRole',
+        (name: string, description: string, indent: number, options) => {
+            let docstring = `:param ${name}:`;
+            if (description && description.length > 0) {
+                docstring = `${docstring} ${description}`;
+            }
+            return new Handlebars.SafeString(utils.wrapPythonDocstringRole(docstring, indent));
+        },
+    );
+    Handlebars.registerHelper(
+        'makeReturnDocstringRole',
+        (description: string, indent: number, options) =>
+            new Handlebars.SafeString(utils.wrapPythonDocstringRole(`:returns: ${description}`, indent)),
+    );
+    Handlebars.registerHelper(
+        'makeEventParameterDocstringRole',
+        (eventName: string, indent: number, options) =>
+            new Handlebars.SafeString(
+                utils.wrapPythonDocstringRole(
+                    `:param tx_hash: hash of transaction emitting ${eventName} event`,
+                    indent,
+                ),
+            ),
     );
     Handlebars.registerHelper('tupleDefinitions', (abisJSON: string, options) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);

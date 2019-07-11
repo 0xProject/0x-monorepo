@@ -62,7 +62,8 @@ class TestLibDummy(BaseContractWrapper):
     ) -> int:
         """Execute underlying, same-named contract method.
 
-        
+        :param tx_params: transaction parameters
+
         """
         # safeguard against fractional inputs
         x = int(x)
@@ -84,7 +85,8 @@ class TestLibDummy(BaseContractWrapper):
     ) -> int:
         """Execute underlying, same-named contract method.
 
-        
+        :param tx_params: transaction parameters
+
         """
         # safeguard against fractional inputs
         x = int(x)

@@ -8,14 +8,13 @@
         {{/this.constant}}
     ) ->{{#if outputs}}{{~> return_type outputs=outputs~}}{{else}} None{{/if}}:
         """Execute underlying, same-named contract method.
-{{sanitizeDevdocDetails this.name this.devdoc.details 8}}
-        {{#each this.devdoc.params}}
-        :param {{toPythonIdentifier @key}}: {{this}}
-        {{/each}}
-        {{#if this.constant}}
-        {{#if this.devdoc.return}}:returns: {{this.devdoc.return}}{{/if}}
-        {{else}}
+{{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
+{{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
         :param tx_params: transaction parameters
+        {{#if this.constant~}}
+        {{#if this.devdoc.return}}
+{{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
+        {{else}}
         :param view_only: whether to use transact() or call()
 
         :returns: transaction hash
