@@ -297,4 +297,4 @@ HexBytes('0x...')
 
 from .tx_params import TxParams
 from .erc20_token import ERC20Token
-from .exchange_wrapper import Exchange
+from .exchange import Exchange
