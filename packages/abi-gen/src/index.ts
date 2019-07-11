@@ -98,8 +98,8 @@ function registerPythonHelpers(): void {
         return lhs === rhs;
     });
     Handlebars.registerHelper('safeString', (str, options) => new Handlebars.SafeString(str));
-    Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils, ParamKind.Input, args.backend));
-    Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils, ParamKind.Output, args.backend));
+    Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils));
+    Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils));
     Handlebars.registerHelper(
         'sanitizeDevdocDetails',
         (methodName: string, devdocDetails: string, indent: number, options) => {
