@@ -138,7 +138,7 @@ export class SwapQuoter {
         takerAssetSellAmount: BigNumber,
         options: Partial<SwapQuoteRequestOpts> = {},
     ): Promise<MarketSellSwapQuote> {
-        assert.isBigNumber('makerAssetBuyAmount', takerAssetSellAmount);
+        assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         return (await this._getSwapQuoteAsync(
             makerAssetData,
             takerAssetData,
