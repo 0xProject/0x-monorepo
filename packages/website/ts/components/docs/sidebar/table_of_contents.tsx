@@ -57,10 +57,40 @@ const groups: IGroupProps[] = [
     },
 ];
 
-export const ChapterLinks: React.FC = () => {
+interface ITableOfContentsProps {
+    contents: IContents[];
+}
+
+export interface IContents {
+    children: IContents[];
+    id: string;
+    level: number;
+    title: string;
+}
+
+const Level: React.FC<{ data: IContents[] }> = ({ data }) => {
     return (
         <ChapterLinksWrapper>
-            {groups.map(({ heading, name, filters }: IGroupProps, groupIndex) => (
+            {data.map((m, index) => {
+                return (
+                    <>
+                        <ChapterLink key={index} level={m.level}>
+                            <a href={`#${m.id}`}>{m.title}</a>
+                        </ChapterLink>
+                        {m.children.length > 0 && <Level data={m.children} />}
+                    </>
+                );
+            })}
+        </ChapterLinksWrapper>
+    );
+};
+
+export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents }) => {
+    console.log('contents', contents);
+    return (
+        <>
+            <Level data={contents} />
+            {/* {groups.map(({ heading, name, filters }: IGroupProps, groupIndex) => (
                 <ChapterGroupWrapper key={`filter-group-${groupIndex}`}>
                     <ChapterLink href="#index" hasChildren={filters.length > 0}>
                         {heading}
@@ -77,8 +107,8 @@ export const ChapterLinks: React.FC = () => {
                         ))}
                     </ChapterChildren>
                 </ChapterGroupWrapper>
-            ))}
-        </ChapterLinksWrapper>
+            ))} */}
+        </>
     );
 };
 
@@ -90,11 +120,21 @@ const ChapterGroupWrapper = styled.li`
     margin-bottom: 1.111em;
 `;
 
-const ChapterLink = styled.a<{ hasChildren?: boolean }>`
-    margin-bottom: ${props => props.hasChildren && '1rem'};
+const ChapterLink = styled.p<{ level: number }>`
+    padding-bottom: 1rem;
     color: ${colors.textDarkSecondary};
     display: block;
     font-size: 0.8333rem;
+
+    & + ul p {
+        border-left: 1px solid #e3e3e3;
+        padding-left: 0.7rem;
+        font-size: 0.7222rem;
+
+        &:last-of-type {
+            padding-bottom: 0;
+        }
+    }
 `;
 
 const ChapterSublink = styled(ChapterLink)`
