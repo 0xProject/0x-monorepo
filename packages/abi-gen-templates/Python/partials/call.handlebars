@@ -30,7 +30,7 @@
 {{/if}}
 {{/each}}
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.{{this.name}}(
             {{> params}}
         )

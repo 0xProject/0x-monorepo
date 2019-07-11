@@ -55,7 +55,7 @@ class TestLibDummy(BaseContractWrapper):
         # safeguard against fractional inputs
         x = int(x)
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.publicAddConstant(
             x
         )
@@ -77,7 +77,7 @@ class TestLibDummy(BaseContractWrapper):
         # safeguard against fractional inputs
         x = int(x)
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.publicAddOne(
             x
         )

@@ -52,7 +52,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.simpleRequire(
         )
         return self._invoke_function_call(
@@ -74,7 +74,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.ecrecoverFn(
             hash,
             v,
@@ -96,7 +96,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.revertWithConstant(
         )
         return self._invoke_function_call(
@@ -114,7 +114,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.simpleRevert(
         )
         return self._invoke_function_call(
@@ -132,7 +132,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.requireWithConstant(
         )
         return self._invoke_function_call(
@@ -153,7 +153,7 @@ class AbiGenDummy(BaseContractWrapper):
         # safeguard against fractional inputs
         x = int(x)
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.simplePureFunctionWithInput(
             x
         )
@@ -172,7 +172,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.simplePureFunction(
         )
         return self._invoke_function_call(
@@ -190,7 +190,7 @@ class AbiGenDummy(BaseContractWrapper):
         
         """
         func = self._get_contract_instance(
-            self._contract_address
+            self.contract_address
         ).functions.pureFunctionWithConstant(
         )
         return self._invoke_function_call(
