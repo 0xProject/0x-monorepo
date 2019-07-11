@@ -53,7 +53,7 @@ class Exchange(BaseContractWrapper):
         self,
         orders: List[Order],
         taker_asset_fill_amounts: List[int],
-        signatures: List[str],
+        signatures: List[bytes],
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
@@ -61,7 +61,7 @@ class Exchange(BaseContractWrapper):
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
         :param taker_asset_fill_amounts: list of integer taker amounts in Wei
-        :param signatures: list of str|hexstr|bytes of order hash signature
+        :param signatures: list of order hash signatures
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
@@ -78,7 +78,7 @@ class Exchange(BaseContractWrapper):
             for taker_fill_amount in taker_asset_fill_amounts
         ]
         normalized_signatures = [
-            bytes.fromhex(remove_0x_prefix(signature))
+            bytes.fromhex(signature.decode("utf-8"))
             for signature in signatures
         ]
         func = self._exchange.functions.batchFillOrders(
@@ -93,7 +93,7 @@ class Exchange(BaseContractWrapper):
         self,
         order: Order,
         taker_asset_fill_amount: int,
-        signature: str,
+        signature: bytes,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
@@ -113,7 +113,7 @@ class Exchange(BaseContractWrapper):
         :param order: instance of :class:`zero_ex.order_utils.Order`
         :param taker_asset_fill_amount: integer taker amount in Wei (1 Wei is
             10e-18 ETH)
-        :param signature: str or hexstr or bytes of order hash signature
+        :param signature: order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
@@ -126,12 +126,12 @@ class Exchange(BaseContractWrapper):
         is_valid_signature(
             self._provider,
             generate_order_hash_hex(order, self.contract_address),
-            signature,
+            "0x" + signature.decode("utf-8"),
             order["makerAddress"],
         )
         # safeguard against fractional inputs
         taker_fill_amount = int(taker_asset_fill_amount)
-        normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
+        normalized_signature = bytes.fromhex(signature.decode("utf-8"))
         func = self._exchange.functions.fillOrder(
             order, taker_fill_amount, normalized_signature
         )
@@ -144,7 +144,7 @@ class Exchange(BaseContractWrapper):
         self,
         order: Order,
         taker_asset_fill_amount: int,
-        signature: str,
+        signature: bytes,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
@@ -153,7 +153,7 @@ class Exchange(BaseContractWrapper):
         :param order: instance of :class:`zero_ex.order_utils.Order`
         :param taker_asset_fill_amount: integer taker amount in Wei (1 Wei is
             10e-18 ETH)
-        :param signature: str or hexstr or bytes of order hash signature
+        :param signature: order hash signature
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
@@ -166,14 +166,13 @@ class Exchange(BaseContractWrapper):
         is_valid_signature(
             self._provider,
             generate_order_hash_hex(order, self.contract_address),
-            signature,
+            "0x" + signature.decode("utf-8"),
             order["makerAddress"],
         )
         # safeguard against fractional inputs
         taker_fill_amount = int(taker_asset_fill_amount)
-        normalized_signature = bytes.fromhex(remove_0x_prefix(signature))
         func = self._exchange.functions.fillOrKillOrder(
-            order, taker_fill_amount, normalized_signature
+            order, taker_fill_amount, signature
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only
@@ -184,7 +183,7 @@ class Exchange(BaseContractWrapper):
         self,
         orders: List[Order],
         taker_asset_fill_amounts: List[int],
-        signatures: List[str],
+        signatures: List[bytes],
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
     ) -> Union[HexBytes, bytes]:
@@ -192,7 +191,7 @@ class Exchange(BaseContractWrapper):
 
         :param orders: list of instances of :class:`zero_ex.order_utils.Order`
         :param taker_asset_fill_amounts: list of integer taker amounts in Wei
-        :param signatures: list of str|hexstr|bytes of order hash signature
+        :param signatures: list of order hash signatures
         :param tx_params: default None, :class:`TxParams` transaction params
         :param view_only: default False, boolean of whether to transact or
             view only
@@ -208,12 +207,8 @@ class Exchange(BaseContractWrapper):
             int(taker_fill_amount)
             for taker_fill_amount in taker_asset_fill_amounts
         ]
-        normalized_signatures = [
-            bytes.fromhex(remove_0x_prefix(signature))
-            for signature in signatures
-        ]
         func = self._exchange.functions.batchFillOrKillOrders(
-            orders, normalized_fill_amounts, normalized_signatures
+            orders, normalized_fill_amounts, signatures
         )
         return self._invoke_function_call(
             func=func, tx_params=tx_params, view_only=view_only

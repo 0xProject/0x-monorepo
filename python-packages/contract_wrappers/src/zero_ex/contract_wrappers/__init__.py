@@ -143,8 +143,8 @@ For this order to be valid, our Maker must sign a hash of it:
 >>> from zero_ex.order_utils import generate_order_hash_hex
 >>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
 
->>> from zero_ex.order_utils import sign_hash
->>> maker_signature = sign_hash(
+>>> from zero_ex.order_utils import sign_hash_to_bytes
+>>> maker_signature = sign_hash_to_bytes(
 ...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
 ... )
 
@@ -258,7 +258,7 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_1 = sign_hash(
+>>> signature_1 = sign_hash_to_bytes(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
 ...     generate_order_hash_hex(order_1, exchange.contract_address)
@@ -279,7 +279,7 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_2 = sign_hash(
+>>> signature_2 = sign_hash_to_bytes(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
 ...     generate_order_hash_hex(order_2, exchange.contract_address)

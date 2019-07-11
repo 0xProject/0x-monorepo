@@ -636,3 +636,21 @@ def sign_hash(
         "Signature returned from web3 provider is in an unknown format."
         + " Attempted to parse as RSV and as VRS."
     )
+
+
+def sign_hash_to_bytes(
+    provider: BaseProvider, signer_address: str, hash_hex: str
+) -> bytes:
+    """Sign a message with the given hash, and return the signature.
+
+    >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
+    >>> sign_hash_to_bytes(
+    ...     provider,
+    ...     Web3(provider).personal.listAccounts[0],
+    ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
+    ... ).decode(encoding='utf_8')
+    '1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
+    """  # noqa: E501 (line too long)
+    return remove_0x_prefix(
+        sign_hash(provider, signer_address, hash_hex)
+    ).encode(encoding="utf_8")

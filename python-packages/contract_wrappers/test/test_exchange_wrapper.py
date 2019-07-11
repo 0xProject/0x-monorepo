@@ -8,7 +8,11 @@ from eth_utils import remove_0x_prefix
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_wrappers import Exchange, TxParams
 from zero_ex.json_schemas import assert_valid
-from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
+from zero_ex.order_utils import (
+    generate_order_hash_hex,
+    Order,
+    sign_hash_to_bytes,
+)
 
 
 @pytest.fixture(scope="module")
@@ -74,7 +78,7 @@ def test_exchange_wrapper__fill_order(
     order_hash = generate_order_hash_hex(
         order=order, exchange_address=exchange_address
     )
-    order_signature = sign_hash(ganache_provider, maker, order_hash)
+    order_signature = sign_hash_to_bytes(ganache_provider, maker, order_hash)
 
     tx_hash = exchange_wrapper.fill_order(
         order=order,
@@ -109,7 +113,7 @@ def test_exchange_wrapper__batch_fill_orders(
         for order in orders
     ]
     order_signatures = [
-        sign_hash(ganache_provider, maker, order_hash)
+        sign_hash_to_bytes(ganache_provider, maker, order_hash)
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
