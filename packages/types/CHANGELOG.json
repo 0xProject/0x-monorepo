@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Add MarketOperation type",
+                "pr": 1914
+            }
+        ]
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {
