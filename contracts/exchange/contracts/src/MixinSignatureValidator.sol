@@ -21,18 +21,19 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
+import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./LibExchangeRichErrors.sol";
 import "./MixinTransactions.sol";
 
 
 contract MixinSignatureValidator is
-    MixinExchangeRichErrors,
     ReentrancyGuard,
     LibEIP1271,
     LibOrder,
@@ -104,8 +105,8 @@ contract MixinSignatureValidator is
             signatureType == SignatureType.Validator ||
             signatureType == SignatureType.EIP1271Wallet
         ) {
-            _rrevert(SignatureError(
-                SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
                 signerAddress,
                 signature
@@ -308,8 +309,8 @@ contract MixinSignatureValidator is
         // a correctly formatted but incorrect signature.
         if (signatureType == SignatureType.Invalid) {
             if (signature.length != 1) {
-                _rrevert(SignatureError(
-                    SignatureErrorCodes.INVALID_LENGTH,
+                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -320,8 +321,8 @@ contract MixinSignatureValidator is
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
             if (signature.length != 66) {
-                _rrevert(SignatureError(
-                    SignatureErrorCodes.INVALID_LENGTH,
+                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -341,8 +342,8 @@ contract MixinSignatureValidator is
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
             if (signature.length != 66) {
-                _rrevert(SignatureError(
-                    SignatureErrorCodes.INVALID_LENGTH,
+                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -389,8 +390,8 @@ contract MixinSignatureValidator is
         returns (SignatureType signatureType)
     {
         if (signature.length == 0) {
-            _rrevert(SignatureError(
-                SignatureErrorCodes.INVALID_LENGTH,
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                 hash,
                 signerAddress,
                 signature
@@ -402,8 +403,8 @@ contract MixinSignatureValidator is
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
-            _rrevert(SignatureError(
-                SignatureErrorCodes.UNSUPPORTED,
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
                 hash,
                 signerAddress,
                 signature
@@ -416,8 +417,8 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
-            _rrevert(SignatureError(
-                SignatureErrorCodes.ILLEGAL,
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
                 hash,
                 signerAddress,
                 signature
@@ -471,7 +472,7 @@ contract MixinSignatureValidator is
             return returnData.readUint256(0) == 1;
         }
         // Static call to verifier failed.
-        _rrevert(SignatureWalletError(
+        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
             hash,
             walletAddress,
             signature,
@@ -525,7 +526,7 @@ contract MixinSignatureValidator is
             return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
-        _rrevert(SignatureWalletError(
+        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
             hash,
             walletAddress,
             signature,
@@ -561,7 +562,7 @@ contract MixinSignatureValidator is
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
         if (!allowedValidators[signerAddress][validatorAddress]) {
-            _rrevert(SignatureValidatorNotApprovedError(
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureValidatorNotApprovedError(
                 signerAddress,
                 validatorAddress
             ));
@@ -589,7 +590,7 @@ contract MixinSignatureValidator is
             return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
-        _rrevert(SignatureValidatorError(
+        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureValidatorError(
             hash,
             signerAddress,
             validatorAddress,
