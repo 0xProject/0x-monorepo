@@ -1,34 +1,26 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-import {
-    ForwarderSwapQuoteExecutionOpts,
-    ForwarderSwapQuoteGetOutputOpts,
-    OrdersAndFillableAmounts,
-    SwapQuoteRequestOpts,
-    SwapQuoterOpts,
-} from './types';
+import { AssetBuyerOpts, BuyQuoteExecutionOpts, BuyQuoteRequestOpts, OrdersAndFillableAmounts } from './types';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_NETWORK_ID = 1;
-const ONE_SECOND_MS = 1000;
 
-const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
+const DEFAULT_ASSET_BUYER_OPTS: AssetBuyerOpts = {
     networkId: MAINNET_NETWORK_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
-    expiryBufferMs: 120000, // 2 minutes
+    expiryBufferSeconds: 120, // 2 minutes
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: ForwarderSwapQuoteGetOutputOpts = {
+const DEFAULT_BUY_QUOTE_REQUEST_OPTS: BuyQuoteRequestOpts = {
     feePercentage: 0,
-    feeRecipient: NULL_ADDRESS,
+    shouldForceOrderRefresh: false,
+    slippagePercentage: 0.2, // 20% slippage protection
 };
 
-const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts = DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS;
-
-const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
-    shouldForceOrderRefresh: false,
-    slippagePercentage: 0.2, // 20% slippage protection,
+// Other default values are dynamically determined
+const DEFAULT_BUY_QUOTE_EXECUTION_OPTS: BuyQuoteExecutionOpts = {
+    feeRecipient: NULL_ADDRESS,
 };
 
 const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
@@ -41,11 +33,8 @@ export const constants = {
     NULL_ADDRESS,
     MAINNET_NETWORK_ID,
     ETHER_TOKEN_DECIMALS: 18,
-    ONE_AMOUNT: new BigNumber(1),
-    ONE_SECOND_MS,
-    DEFAULT_SWAP_QUOTER_OPTS,
-    DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS,
-    DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
-    DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
+    DEFAULT_ASSET_BUYER_OPTS,
+    DEFAULT_BUY_QUOTE_EXECUTION_OPTS,
+    DEFAULT_BUY_QUOTE_REQUEST_OPTS,
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
 };
