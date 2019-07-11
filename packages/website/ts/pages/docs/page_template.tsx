@@ -11,7 +11,6 @@ import { NewsletterWidget } from 'ts/components/docs/newsletter_widget';
 import { Note } from 'ts/components/docs/note';
 import { Notification } from 'ts/components/docs/notification';
 import { Resource } from 'ts/components/docs/resource/resource';
-import { ChapterLinks } from 'ts/components/docs/sidebar/chapter_links';
 import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
@@ -32,10 +31,7 @@ export const DocsPageTemplate: React.FC = () => {
             <Hero title={`Page Template`} description="This a subheader for the page" />
             <Section maxWidth="1030px" isPadded={false}>
                 <Columns>
-                    <aside>
-                        <Filters groups={filterGroups} />
-                        <ChapterLinks />
-                    </aside>
+                    <Filters groups={filterGroups} />
                     <article>
                         <LargeHeading>Large Heading</LargeHeading>
                         <LargeIntro>Larger introduction text</LargeIntro>
