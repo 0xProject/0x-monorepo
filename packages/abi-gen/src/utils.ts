@@ -1,3 +1,5 @@
+import { createHash } from 'crypto';
+
 import * as changeCase from 'change-case';
 import { AbiType, ConstructorAbi, DataItem } from 'ethereum-types';
 import * as fs from 'fs';
@@ -104,7 +106,7 @@ export const utils = {
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
             const arrayItemPyType = utils.solTypeToPyType(arrayItemSolType, components);
-            const arrayPyType = `Array[${arrayItemPyType}]`;
+            const arrayPyType = `List[${arrayItemPyType}]`;
             return arrayPyType;
         } else {
             const solTypeRegexToPyType = [
@@ -122,13 +124,7 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                const componentsType = _.map(components, component => {
-                    const componentValueType = utils.solTypeToPyType(component.type, component.components);
-                    const componentType = `'${component.name}': ${componentValueType}`;
-                    return componentType;
-                });
-                const pyType = `TypedDict('${solType}(${components})', {${componentsType.join(',')}}`;
-                return pyType;
+                return utils.makePythonTupleName(components as DataItem[]);
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
@@ -185,6 +181,34 @@ export const utils = {
                 throw err;
             }
         }
+    },
+    /**
+     * simply concatenate all of the names of the components, and convert that
+     * concatenation into PascalCase to conform to Python convention.
+     */
+    makePythonTupleName(tupleComponents: DataItem[]): string {
+        const lengthOfHashSuffix = 8;
+        return `Tuple0x${createHash('MD5')
+            .update(_.map(tupleComponents, component => component.name).join('_'))
+            .digest()
+            .toString('hex')
+            .substring(0, lengthOfHashSuffix)}`;
+    },
+    /**
+     * @returns a string that is a Python code snippet that's intended to be
+     * used as the second parameter to a TypedDict() insatnatiation; value
+     * looks like "{ 'python_dict_key': python_type, ... }".
+     */
+    makePythonTupleClassBody(tupleComponents: DataItem[]): string {
+        let toReturn: string = '';
+        for (const tupleComponent of tupleComponents) {
+            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(
+                tupleComponent.type,
+                tupleComponent.components,
+            )}`;
+        }
+        toReturn = `${toReturn}`;
+        return toReturn;
     },
     /**
      * used to generate Python-parseable identifier names for parameters to

@@ -196,6 +196,49 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    public nestedStructOutput = {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<{
+            innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+            description: string;
+        }> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('nestedStructOutput()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{
+                innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+                description: string;
+            }>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('nestedStructOutput()', []);
+            return abiEncodedTransactionData;
+        },
+    };
     public requireWithConstant = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -227,6 +270,52 @@ export class AbiGenDummyContract extends BaseContract {
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('requireWithConstant()', []);
+            return abiEncodedTransactionData;
+        },
+    };
+    public structInput = {
+        async callAsync(
+            s: { someBytes: string; anInteger: number | BigNumber; aDynamicArrayOfBytes: string[]; aString: string },
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('structInput((bytes,uint32,bytes[],string))', [s]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(s: {
+            someBytes: string;
+            anInteger: number | BigNumber;
+            aDynamicArrayOfBytes: string[];
+            aString: string;
+        }): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'structInput((bytes,uint32,bytes[],string))',
+                [s],
+            );
             return abiEncodedTransactionData;
         },
     };
@@ -297,6 +386,108 @@ export class AbiGenDummyContract extends BaseContract {
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunction()', []);
+            return abiEncodedTransactionData;
+        },
+    };
+    public nestedStructInput = {
+        async callAsync(
+            n: {
+                innerStruct: {
+                    someBytes: string;
+                    anInteger: number | BigNumber;
+                    aDynamicArrayOfBytes: string[];
+                    aString: string;
+                };
+                description: string;
+            },
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments(
+                'nestedStructInput(((bytes,uint32,bytes[],string),string))',
+                [n],
+            );
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(n: {
+            innerStruct: {
+                someBytes: string;
+                anInteger: number | BigNumber;
+                aDynamicArrayOfBytes: string[];
+                aString: string;
+            };
+            description: string;
+        }): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'nestedStructInput(((bytes,uint32,bytes[],string),string))',
+                [n],
+            );
+            return abiEncodedTransactionData;
+        },
+    };
+    public structOutput = {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('structOutput()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('structOutput()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{
+                someBytes: string;
+                anInteger: number;
+                aDynamicArrayOfBytes: string[];
+                aString: string;
+            }>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('structOutput()', []);
             return abiEncodedTransactionData;
         },
     };
@@ -451,7 +642,84 @@ export class AbiGenDummyContract extends BaseContract {
             {
                 constant: true,
                 inputs: [],
+                name: 'nestedStructOutput',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'tuple',
+
+                        components: [
+                            {
+                                name: 'innerStruct',
+                                type: 'tuple',
+
+                                components: [
+                                    {
+                                        name: 'someBytes',
+                                        type: 'bytes',
+                                    },
+                                    {
+                                        name: 'anInteger',
+                                        type: 'uint32',
+                                    },
+                                    {
+                                        name: 'aDynamicArrayOfBytes',
+                                        type: 'bytes[]',
+                                    },
+                                    {
+                                        name: 'aString',
+                                        type: 'string',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'description',
+                                type: 'string',
+                            },
+                        ],
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
                 name: 'requireWithConstant',
+                outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 's',
+                        type: 'tuple',
+
+                        components: [
+                            {
+                                name: 'someBytes',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'anInteger',
+                                type: 'uint32',
+                            },
+                            {
+                                name: 'aDynamicArrayOfBytes',
+                                type: 'bytes[]',
+                            },
+                            {
+                                name: 'aString',
+                                type: 'string',
+                            },
+                        ],
+                    },
+                ],
+                name: 'structInput',
                 outputs: [],
                 payable: false,
                 stateMutability: 'pure',
@@ -484,6 +752,83 @@ export class AbiGenDummyContract extends BaseContract {
                     {
                         name: 'result',
                         type: 'uint256',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'n',
+                        type: 'tuple',
+
+                        components: [
+                            {
+                                name: 'innerStruct',
+                                type: 'tuple',
+
+                                components: [
+                                    {
+                                        name: 'someBytes',
+                                        type: 'bytes',
+                                    },
+                                    {
+                                        name: 'anInteger',
+                                        type: 'uint32',
+                                    },
+                                    {
+                                        name: 'aDynamicArrayOfBytes',
+                                        type: 'bytes[]',
+                                    },
+                                    {
+                                        name: 'aString',
+                                        type: 'string',
+                                    },
+                                ],
+                            },
+                            {
+                                name: 'description',
+                                type: 'string',
+                            },
+                        ],
+                    },
+                ],
+                name: 'nestedStructInput',
+                outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'structOutput',
+                outputs: [
+                    {
+                        name: 's',
+                        type: 'tuple',
+
+                        components: [
+                            {
+                                name: 'someBytes',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'anInteger',
+                                type: 'uint32',
+                            },
+                            {
+                                name: 'aDynamicArrayOfBytes',
+                                type: 'bytes[]',
+                            },
+                            {
+                                name: 'aString',
+                                type: 'string',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

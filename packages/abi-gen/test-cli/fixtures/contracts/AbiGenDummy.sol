@@ -16,6 +16,8 @@
 
 */
 
+pragma experimental ABIEncoderV2;
+
 pragma solidity ^0.5.5;
 
 
@@ -89,4 +91,22 @@ contract AbiGenDummy
     }
 
     event AnEvent(uint8 param);
+
+    struct Struct {
+        bytes someBytes;
+        uint32 anInteger;
+        bytes[] aDynamicArrayOfBytes;
+        string aString;
+    }
+
+    function structInput(Struct memory s) public pure {}
+    function structOutput() public pure returns(Struct memory s) {}
+
+    struct NestedStruct {
+        Struct innerStruct;
+        string description;
+    }
+
+    function nestedStructInput(NestedStruct memory n) public pure {}
+    function nestedStructOutput() public pure returns(NestedStruct memory) {}
 }

@@ -1,14 +1,23 @@
 """Generated wrapper for LibDummy Solidity contract."""
 
 import json
-from typing import Optional, Tuple, Union
+from typing import (  # pylint: disable=unused-import
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
+from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
 from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper
 from zero_ex.contract_wrappers.tx_params import TxParams
+
+
+
 
 
 class LibDummy(BaseContractWrapper):

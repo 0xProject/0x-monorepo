@@ -4,6 +4,7 @@ export {
     CompilerOptions,
     CompilerSettings,
     DataItem,
+    TupleDataItem,
     DevdocOutput,
     ErrorSeverity,
     ErrorType,

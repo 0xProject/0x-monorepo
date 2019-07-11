@@ -131,6 +131,10 @@ export interface DataItem {
     components?: DataItem[];
 }
 
+export interface TupleDataItem extends DataItem {
+    components: DataItem[];
+}
+
 export enum OpCode {
     // 0s: Stop and Arithmetic Operations
     Stop = 'STOP',
