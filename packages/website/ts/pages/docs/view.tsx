@@ -17,6 +17,7 @@ import { Hero } from 'ts/components/docs/hero';
 import { InlineCode } from 'ts/components/docs/inline_code';
 import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
+import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
 import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
@@ -30,46 +31,42 @@ import { documentConstants } from 'ts/utils/document_meta_constants';
 import { colors } from 'ts/style/colors';
 
 interface IDocsViewProps {
-    history: History;
-    location: Location;
     match: match<any>;
-    theme: {
-        bgColor: string;
-        textColor: string;
-        linkColor: string;
-    };
 }
 
 interface IDocsViewState {
     Component: React.ReactNode;
+    contents: IContents[];
 }
 
 export const DocsView: React.FC<IDocsViewProps> = props => {
     const [state, setState] = useState<IDocsViewState>({
         Component: null,
+        contents: [],
     });
 
-    const { Component } = state;
+    const { Component, contents } = state;
 
     const { page } = props.match.params;
     const title = capitalize(utils.convertDashesToSpaces(page));
 
-    useEffect(() => {
-        void loadPageAsync(page);
-    }, [page]);
+    useEffect(
+        () => {
+            void loadPageAsync(page);
+        },
+        [page],
+    );
 
     const loadPageAsync = async (fileName: string) => {
         const component = await import(`../../../md/new-docs/${fileName}.mdx`);
 
         if (component) {
-            console.log('component', component);
-            console.log('component.tableOfContents()', component.tableOfContents());
             setState({
-                // title: component.meta.title,
                 Component: component.default,
+                contents: component.tableOfContents(),
             });
         }
-        // @TODO: add error handling, loading
+        // @TODO: add error handling if needed
     };
 
     return (
@@ -79,9 +76,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
             <Section maxWidth="1030px" isPadded={false}>
                 {Component ? (
                     <Columns>
-                        <aside>
-                            <h3>Sidebar</h3>
-                        </aside>
+                        <TableOfContents contents={contents} />
                         <ContentWrapper>
                             <MDXProvider components={mdxComponents}>
                                 {/*
