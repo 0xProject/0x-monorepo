@@ -91,24 +91,24 @@ we need to tell the WETH token contract to let the 0x contracts transfer our
 balance:
 
 >>> from zero_ex.contract_wrappers import ERC20Token
->>> zrx_wrapper = ERC20Token(
+>>> zrx_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
 ... )
->>> weth_wrapper = ERC20Token(
+>>> weth_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
 ... )
 
 >>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> tx = zrx_wrapper.approve(
+>>> tx = zrx_token.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
 
->>> tx = weth_wrapper.approve(
+>>> tx = weth_token.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=taker_address),
@@ -162,11 +162,11 @@ fill.  This example fills the order completely, but partial fills are possible
 too.
 
 >>> from zero_ex.contract_wrappers import Exchange
->>> exchange_contract = Exchange(
+>>> exchange = Exchange(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
 ... )
->>> tx_hash = exchange_contract.fill_order(
+>>> tx_hash = exchange.fill_order(
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
@@ -176,10 +176,10 @@ too.
 Once the transaction is mined, we can get the details of our exchange through
 the exchange wrapper:
 
->>> exchange_contract.get_fill_event(tx_hash)
+>>> exchange.get_fill_event(tx_hash)
 (AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Fill', ...}),)
 >>> from pprint import pprint
->>> pprint(exchange_contract.get_fill_event(tx_hash)[0].args.__dict__)
+>>> pprint(exchange.get_fill_event(tx_hash)[0].args.__dict__)
 {'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
  'makerAssetData': b...,
@@ -191,7 +191,7 @@ the exchange wrapper:
  'takerAssetData': b...,
  'takerAssetFilledAmount': 100000000000000000,
  'takerFeePaid': 0}
->>> exchange_contract.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
+>>> exchange.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
 100000000000000000
 
 Cancelling an order
@@ -217,23 +217,23 @@ A Maker can cancel an order that has yet to be filled.
 ...     )
 ... )
 
->>> tx_hash = exchange_contract.cancel_order(
+>>> tx_hash = exchange.cancel_order(
 ...     order=order, tx_params=TxParams(from_=maker_address)
 ... )
 
 Once the transaction is mined, we can get the details of the cancellation
 through the Exchange wrapper:
 
->>> exchange_contract.get_cancel_event(tx_hash)
+>>> exchange.get_cancel_event(tx_hash)
 (AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Cancel', ...}),)
->>> pprint(exchange_contract.get_cancel_event(tx_hash)[0].args.__dict__)
+>>> pprint(exchange.get_cancel_event(tx_hash)[0].args.__dict__)
 {'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
  'makerAssetData': b...,
  'orderHash': b...,
  'senderAddress': '0x...',
  'takerAssetData': b...}
->>> exchange_contract.get_cancel_event(tx_hash)[0].args.feeRecipientAddress
+>>> exchange.get_cancel_event(tx_hash)[0].args.feeRecipientAddress
 '0x0000000000000000000000000000000000000000'
 
 Batching orders
@@ -287,7 +287,7 @@ is an example where the taker fills two orders in one transaction:
 
 Fill order_1 and order_2 together:
 
->>> exchange_contract.batch_fill_orders(
+>>> exchange.batch_fill_orders(
 ...     orders=[order_1, order_2],
 ...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
