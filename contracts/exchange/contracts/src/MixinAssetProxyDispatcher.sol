@@ -19,14 +19,14 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
-import "@0x/contracts-utils/contracts/src/RichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./interfaces/IExchangeRichErrors.sol";
+import "./LibExchangeRichErrors.sol";
 
 
 contract MixinAssetProxyDispatcher is
-    MixinExchangeRichErrors,
     Ownable,
     IAssetProxyDispatcher
 {
@@ -44,7 +44,7 @@ contract MixinAssetProxyDispatcher is
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
         if (currentAssetProxy != address(0)) {
-            _rrevert(AssetProxyExistsError(currentAssetProxy));
+            LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyExistsError(currentAssetProxy));
         }
 
         // Add asset proxy and log registration.
@@ -85,8 +85,8 @@ contract MixinAssetProxyDispatcher is
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
-                _rrevert(AssetProxyDispatchError(
-                    AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
+                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
+                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,
                     assetData
                 ));
@@ -104,8 +104,8 @@ contract MixinAssetProxyDispatcher is
 
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
-                _rrevert(AssetProxyDispatchError(
-                    AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
+                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
+                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
                     orderHash,
                     assetData
                 ));
@@ -185,7 +185,7 @@ contract MixinAssetProxyDispatcher is
                     // at `cdStart`.
                     // The first 32 bytes are the length of the data.
                     mstore(cdStart, revertDataSize)
-                    // Copy the revert data immediately after the length. 
+                    // Copy the revert data immediately after the length.
                     returndatacopy(add(cdStart, 32), 0, revertDataSize)
                     // We need to move the free memory pointer because we
                     // still have solidity logic that executes after this assembly.
@@ -195,7 +195,7 @@ contract MixinAssetProxyDispatcher is
             }
 
             if (!didSucceed) {
-                _rrevert(AssetProxyTransferError(
+                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyTransferError(
                     orderHash,
                     assetData,
                     revertData
