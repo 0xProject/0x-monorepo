@@ -100,6 +100,7 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper('safeString', (str, options) => new Handlebars.SafeString(str));
     Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils));
     Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils));
+    Handlebars.registerHelper('toPythonIdentifier', utils.toPythonIdentifier.bind(utils));
     Handlebars.registerHelper(
         'sanitizeDevdocDetails',
         (methodName: string, devdocDetails: string, indent: number, options) => {

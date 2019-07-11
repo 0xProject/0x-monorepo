@@ -63,7 +63,7 @@ class AbiGenDummy(BaseContractWrapper):
 
     def ecrecover_fn(
         self,
-        hash: bytes,
+        _hash: bytes,
         v: int,
         r: bytes,
         s: bytes,
@@ -76,7 +76,7 @@ class AbiGenDummy(BaseContractWrapper):
         func = self._get_contract_instance(
             self.contract_address
         ).functions.ecrecoverFn(
-            hash,
+            _hash,
             v,
             r,
             s
