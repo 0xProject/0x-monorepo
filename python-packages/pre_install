@@ -8,6 +8,7 @@ import subprocess
 PACKAGES = [
     "contract_wrappers",
     "contract_artifacts",
+    "json_schemas",
 ]
 
 for package in PACKAGES:

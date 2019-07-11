@@ -1,5 +1,0 @@
-{
-    "id": "/ecSignatureParameterSchema",
-    "type": "string",
-    "pattern": "^0[xX][0-9A-Fa-f]{64}$"
-}
