@@ -1,3 +1,5 @@
+## Sol-coverage
+
 Sol-coverage uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with `ProviderEngine`, please read the [Web3 Provider explained](https://0x.org/wiki#Web3-Provider-Explained) wiki article.
 
 The CoverageSubprovider eavesdrops on the `eth_sendTransaction` and `eth_call` RPC calls and collects traces after each call using `debug_traceTransaction`. `eth_call`'s' don't generate traces - so we take a snapshot, re-submit it as a transaction, get the trace and then revert the snapshot.
@@ -6,7 +8,7 @@ Coverage subprovider needs some info about your contracts (`srcMap`, `bytecode`)
 
 In order to use `CoverageSubprovider` with your favorite framework you need to pass an `artifactsAdapter` to it.
 
-### Sol-compiler
+## Sol-compiler
 
 If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactAdapter` we've implemented for you.
 
@@ -16,7 +18,7 @@ import { SolCompilerArtifactAdapter } from '@0x/sol-coverage';
 const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);
 ```
 
-### Truffle
+## Truffle
 
 If your project is using [Truffle](https://truffleframework.com/), we've written a `TruffleArtifactsAdapter`for you.
 
@@ -70,7 +72,7 @@ class YourCustomArtifactsAdapter extends AbstractArtifactAdapter {...};
 const artifactAdapter = new YourCustomArtifactsAdapter(...);
 ```
 
-### Usage
+## Usage
 
 ```typescript
 import { CoverageSubprovider } from '@0x/sol-coverage';
@@ -106,7 +108,7 @@ istanbul report html
 open coverage/index.html
 ```
 
-### Notifications
+## Notifications
 
 <Notification>This is a standard notification</Notification>
 <Notification type="alert">Something isn’t quite right</Notification>
@@ -126,7 +128,7 @@ open coverage/index.html
 
 ### Tabs
 
-### Separator
+## Separator
 
 ---
 
