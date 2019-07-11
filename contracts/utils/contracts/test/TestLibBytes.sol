@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "../src/LibBytes.sol";
 
@@ -24,17 +24,6 @@ import "../src/LibBytes.sol";
 contract TestLibBytes {
 
     using LibBytes for bytes;
-
-    /// @dev Pops the last byte off of a byte array by modifying its length.
-    /// @param b Byte array that will be modified.
-    /// @return The byte that was popped off.
-    function publicPopLastByteStateful(bytes memory b)
-        public
-        returns (bytes memory, bytes1 result)
-    {
-        result = b.popLastByte();
-        return (b, result);
-    }
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
     /// @param b Byte array that will be modified.
