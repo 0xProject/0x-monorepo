@@ -3,12 +3,10 @@
 from typing import List, Optional, Tuple, Union
 from itertools import repeat
 
-from eth_utils import remove_0x_prefix
 from hexbytes import HexBytes
 from web3.providers.base import BaseProvider
 from web3.datastructures import AttributeDict
 
-from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import (
@@ -46,11 +44,8 @@ class Exchange(BaseContractWrapper):
             private_key=private_key,
         )
         self._web3_net = self._web3.net  # pylint: disable=no-member
-        self.address = NETWORK_TO_ADDRESSES[
-            NetworkId(int(self._web3_net.version))
-        ].exchange
         self._exchange = self._contract_instance(
-            address=self.address, abi=abi_by_name("Exchange")
+            address=self.contract_address, abi=abi_by_name("Exchange")
         )
 
     # pylint: disable=too-many-arguments
@@ -74,7 +69,7 @@ class Exchange(BaseContractWrapper):
         :returns: transaction hash
         """
         order_jsdicts = [
-            order_to_jsdict(order, self.address) for order in orders
+            order_to_jsdict(order, self.contract_address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         # safeguard against fractional inputs
@@ -125,10 +120,12 @@ class Exchange(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
+        assert_valid(
+            order_to_jsdict(order, self.contract_address), "/orderSchema"
+        )
         is_valid_signature(
             self._provider,
-            generate_order_hash_hex(order, self.address),
+            generate_order_hash_hex(order, self.contract_address),
             signature,
             order["makerAddress"],
         )
@@ -163,10 +160,12 @@ class Exchange(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
+        assert_valid(
+            order_to_jsdict(order, self.contract_address), "/orderSchema"
+        )
         is_valid_signature(
             self._provider,
-            generate_order_hash_hex(order, self.address),
+            generate_order_hash_hex(order, self.contract_address),
             signature,
             order["makerAddress"],
         )
@@ -201,7 +200,7 @@ class Exchange(BaseContractWrapper):
         :returns: transaction hash
         """
         order_jsdicts = [
-            order_to_jsdict(order, self.address) for order in orders
+            order_to_jsdict(order, self.contract_address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         # safeguard against fractional inputs
@@ -236,7 +235,7 @@ class Exchange(BaseContractWrapper):
         :returns: transaction hash
         """
         order_jsdicts = [
-            order_to_jsdict(order, self.address) for order in orders
+            order_to_jsdict(order, self.contract_address) for order in orders
         ]
         map(assert_valid, order_jsdicts, repeat("/orderSchema"))
         maker_addresses = [
@@ -279,7 +278,9 @@ class Exchange(BaseContractWrapper):
 
         :returns: transaction hash
         """
-        assert_valid(order_to_jsdict(order, self.address), "/orderSchema")
+        assert_valid(
+            order_to_jsdict(order, self.contract_address), "/orderSchema"
+        )
         maker_address = self._validate_and_checksum_address(
             order["makerAddress"]
         )

@@ -69,7 +69,7 @@ def test_exchange_wrapper__fill_order(
     """Test filling an order."""
     taker = accounts[0]
     maker = accounts[1]
-    exchange_address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.contract_address
     order = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     order_hash = generate_order_hash_hex(
         order=order, exchange_address=exchange_address
@@ -98,7 +98,7 @@ def test_exchange_wrapper__batch_fill_orders(
     """Test filling a batch of orders."""
     taker = accounts[0]
     maker = accounts[1]
-    exchange_address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.contract_address
     orders = []
     order_1 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     order_2 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)

@@ -261,7 +261,7 @@ is an example where the taker fills two orders in one transaction:
 >>> signature_1 = sign_hash(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_1, exchange_contract.address)
+...     generate_order_hash_hex(order_1, exchange.contract_address)
 ... )
 >>> order_2 = Order(
 ...     makerAddress=maker_address,
@@ -282,7 +282,7 @@ is an example where the taker fills two orders in one transaction:
 >>> signature_2 = sign_hash(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_2, exchange_contract.address)
+...     generate_order_hash_hex(order_2, exchange.contract_address)
 ... )
 
 Fill order_1 and order_2 together:
