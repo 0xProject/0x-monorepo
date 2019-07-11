@@ -1,0 +1,11 @@
+[
+    {
+        "version": "0.0.1",
+        "changes": [
+            {
+                "note": "Refactored asset-buyer into asset-swapper to support ERC<>ERC marketSell and marketBuy operations",
+                "pr": 1845
+            }
+        ]
+    }
+]

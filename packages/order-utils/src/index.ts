@@ -73,6 +73,8 @@ export {
     TransferType,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
+    FindOrdersThatCoverTakerAssetFillAmountOpts,
     FeeOrdersAndRemainingFeeAmount,
-    OrdersAndRemainingFillAmount,
+    OrdersAndRemainingTakerFillAmount,
+    OrdersAndRemainingMakerFillAmount,
 } from './types';
