@@ -1,5 +1,7 @@
 """Generated wrapper for {{contractName}} Solidity contract."""
 
+# pylint: disable=too-many-arguments
+
 import json
 from typing import (  # pylint: disable=unused-import
     List,
@@ -20,6 +22,7 @@ from zero_ex.contract_wrappers.tx_params import TxParams
 {{tupleDefinitions ABIString}}
 
 
+# pylint: disable=too-many-public-methods
 class {{contractName}}(BaseContractWrapper):
     """Wrapper class for {{contractName}} Solidity contract."""
 
@@ -64,3 +67,5 @@ class {{contractName}}(BaseContractWrapper):
         return json.loads(
             '{{{ABIString}}}'  # noqa: E501 (line-too-long)
         )
+
+# pylint: disable=too-many-lines

@@ -1,5 +1,7 @@
 """Generated wrapper for LibDummy Solidity contract."""
 
+# pylint: disable=too-many-arguments
+
 import json
 from typing import (  # pylint: disable=unused-import
     List,
@@ -20,6 +22,7 @@ from zero_ex.contract_wrappers.tx_params import TxParams
 
 
 
+# pylint: disable=too-many-public-methods
 class LibDummy(BaseContractWrapper):
     """Wrapper class for LibDummy Solidity contract."""
 
@@ -58,3 +61,5 @@ class LibDummy(BaseContractWrapper):
         return json.loads(
             '[]'  # noqa: E501 (line-too-long)
         )
+
+# pylint: disable=too-many-lines
