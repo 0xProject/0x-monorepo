@@ -25,8 +25,6 @@ import "./interfaces/IExchangeRichErrors.sol";
 
 library LibExchangeRichErrors {
 
-    /*** Selector Getters ***/
-
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
         0x7e5a2318;
@@ -244,9 +242,6 @@ library LibExchangeRichErrors {
         return INCOMPLETE_FILL_ERROR_SELECTOR;
     }
 
-    /*** Rich Error Functions ***/
-
-    // solhint-disable func-name-mixedcase
     function SignatureError(
         IExchangeRichErrors.SignatureErrorCodes errorCode,
         bytes32 hash,
