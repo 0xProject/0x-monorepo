@@ -42,11 +42,11 @@ export class SwapQuoter {
     private readonly _contractWrappers: ContractWrappers;
     // cache of orders along with the time last updated keyed by assetData
     private readonly _ordersEntryMap: ObjectMap<OrdersEntry> = {};
+
     /**
      * Instantiates a new SwapQuoter instance given existing liquidity in the form of orders and feeOrders.
      * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
      * @param   orders                  A non-empty array of objects that conform to SignedOrder. All orders must have the same makerAssetData and takerAssetData.
-     * @param   feeOrders               A array of objects that conform to SignedOrder. All orders must have the same makerAssetData (ZRX) and takerAssetData. Defaults to an empty array.
      * @param   options                 Initialization options for the SwapQuoter. See type definition for details.
      *
      * @return  An instance of SwapQuoter
@@ -62,6 +62,7 @@ export class SwapQuoter {
         const swapQuoter = new SwapQuoter(supportedProvider, orderProvider, options);
         return swapQuoter;
     }
+
     /**
      * Instantiates a new SwapQuoter instance given a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) endpoint
      * @param   supportedProvider       The Provider instance you would like to use for interacting with the Ethereum network.
@@ -127,7 +128,7 @@ export class SwapQuoter {
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
      * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   takerAssetSellAmount     The amount of maker asset to swap for.
+     * @param   takerAssetSellAmount     The amount of taker asset to swap for.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
@@ -153,7 +154,7 @@ export class SwapQuoter {
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
      * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   makerAssetBuyAmount     The amount of maker asset to swap for.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
@@ -178,7 +179,7 @@ export class SwapQuoter {
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
      * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   makerAssetSwapAmount     The amount of maker asset to swap for.
+     * @param   makerAssetBuyAmount     The amount of maker asset to swap for.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
@@ -227,6 +228,7 @@ export class SwapQuoter {
         );
         return swapQuote;
     }
+
     /**
      * Returns information about available liquidity for an asset
      * Does not factor in slippage or fees
@@ -309,7 +311,7 @@ export class SwapQuoter {
      * Grab orders from the map, if there is a miss or it is time to refresh, fetch and process the orders
      * @param   makerAssetData      The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
      * @param   takerAssetData      The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param shouldForceOrderRefresh  If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.
+     * @param   shouldForceOrderRefresh  If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs.
      */
     public async getOrdersAndFillableAmountsAsync(
         makerAssetData: string,
@@ -375,6 +377,9 @@ export class SwapQuoter {
         return this._contractWrappers.exchange.getZRXAssetData();
     }
 
+    /**
+     * General function for getting swap quote, conditionally uses different logic per specified marketOperation
+     */
     private async _getSwapQuoteAsync(
         makerAssetData: string,
         takerAssetData: string,
