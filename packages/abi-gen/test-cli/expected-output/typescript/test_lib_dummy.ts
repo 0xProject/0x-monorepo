@@ -23,18 +23,12 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class TestLibDummyContract extends BaseContract {
     public publicAddConstant = {
-        async callAsync(
-            x: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<BigNumber
-        > {
+        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -44,9 +38,8 @@ export class TestLibDummyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = this as any as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddConstant(uint256)', [x
-        ]);
+            const self = (this as any) as TestLibDummyContract;
+            const encodedData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -59,28 +52,19 @@ export class TestLibDummyContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(
-                x: BigNumber,
-            ): string {
+        getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
-            const self = this as any as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x
-        ]);
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
             return abiEncodedTransactionData;
         },
     };
     public publicAddOne = {
-        async callAsync(
-            x: BigNumber,
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<BigNumber
-        > {
+        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -90,9 +74,8 @@ export class TestLibDummyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = this as any as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddOne(uint256)', [x
-        ]);
+            const self = (this as any) as TestLibDummyContract;
+            const encodedData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -105,18 +88,14 @@ export class TestLibDummyContract extends BaseContract {
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(
-                x: BigNumber,
-            ): string {
+        getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
-            const self = this as any as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x
-        ]);
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
             return abiEncodedTransactionData;
         },
     };
@@ -136,7 +115,7 @@ export class TestLibDummyContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return TestLibDummyContract.deployAsync(bytecode, abi, provider, txDefaults, );
+        return TestLibDummyContract.deployAsync(bytecode, abi, provider, txDefaults);
     }
     public static async deployAsync(
         bytecode: string,
@@ -152,17 +131,13 @@ export class TestLibDummyContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
+            { data: txData },
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -175,19 +150,17 @@ export class TestLibDummyContract extends BaseContract {
         return contractInstance;
     }
 
-
     /**
      * @returns      The contract ABI
      */
     public static ABI(): ContractAbi {
         const abi = [
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
                         name: 'x',
                         type: 'uint256',
-                        
                     },
                 ],
                 name: 'publicAddConstant',
@@ -195,20 +168,18 @@ export class TestLibDummyContract extends BaseContract {
                     {
                         name: 'result',
                         type: 'uint256',
-                        
                     },
                 ],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',
             },
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
                         name: 'x',
                         type: 'uint256',
-                        
                     },
                 ],
                 name: 'publicAddOne',
@@ -216,7 +187,6 @@ export class TestLibDummyContract extends BaseContract {
                     {
                         name: 'result',
                         type: 'uint256',
-                        
                     },
                 ],
                 payable: false,
@@ -230,7 +200,7 @@ export class TestLibDummyContract extends BaseContract {
         super('TestLibDummy', TestLibDummyContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
-} 
+}
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
