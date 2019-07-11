@@ -1,13 +1,20 @@
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/RichErrors.sol";
-import "./interfaces/IMixinLibMathRichErrors.sol";
 
+library LibMathRichErrors {
 
-contract MixinLibMathRichErrors is
-    IMixinLibMathRichErrors,
-    RichErrors
-{
+    // bytes4(keccak256("DivisionByZeroError()"))
+    bytes internal constant DIVISION_BY_ZERO_ERROR =
+        hex"a791837c";
+
+    // bytes4(keccak256("DivisionByZeroError()"))
+    bytes4 internal constant DIVISION_BY_ZERO_ERROR_SELECTOR =
+        0xa791837c;
+
+    // bytes4(keccak256("RoundingError(uint256,uint256,uint256)"))
+    bytes4 internal constant ROUNDING_ERROR_SELECTOR =
+        0x339f3de2;
+
     // solhint-disable func-name-mixedcase
     function DivisionByZeroError()
         internal
