@@ -60,7 +60,7 @@
         "@0x/assert": "^2.0.10",
         "@0x/base-contract": "^5.1.0",
         "@0x/contract-addresses": "^2.3.3",
-        "@0x/contract-artifacts": "^1.5.1",
+        "@0x/contract-artifacts": "^2.0.0",
         "@0x/json-schemas": "^3.0.10",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
