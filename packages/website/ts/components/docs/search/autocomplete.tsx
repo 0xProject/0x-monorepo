@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 // import Autocomplete from 'react-autocomplete';
@@ -11,20 +11,16 @@ interface Props {
     isHome?: boolean;
 }
 
-interface ToolsHit {
-    objectID: string;
-    title: string;
-}
+// interface ToolsHit {
+//     objectID: string;
+//     title: string;
+// }
 
 interface AutoCompleteProps {
     isHome?: boolean;
-    hits: object[];
-    currentRefinement: string;
+    hits?: object[];
+    currentRefinement?: string;
     refine?: (value: string) => void;
-}
-
-interface AutoCompleteState {
-    value: string;
 }
 
 interface HitProps {
@@ -52,95 +48,79 @@ const theme: AutosuggestThemeClasses = {
     sectionTitle: 'react-autosuggest__section-title',
 };
 
-export class CustomAutoComplete extends React.Component<AutoCompleteProps, AutoCompleteState> {
-    public static defaultProps: AutoCompleteProps = {
-        isHome: false,
-        hits: [],
-        currentRefinement: '',
+export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
+    isHome = false,
+    hits = [],
+    currentRefinement = '',
+    refine,
+}) => {
+    const [value, setValue] = useState<string>('');
+
+    const onChange = (event: HitProps, { newValue }: HitProps): void => {
+        setValue(newValue);
     };
-    constructor(props: AutoCompleteProps) {
-        super(props);
-        this.state = {
-            value: '',
-        };
-    }
-    public render(): React.ReactNode {
-        const { hits, isHome } = this.props;
-        const { value } = this.state;
 
-        const inputProps = {
-            placeholder: 'Search docs',
-            onChange: this._onChange.bind(this),
-            value,
-        };
+    const onSuggestionsFetchRequested = ({ newValue }: HitProps): void => {
+        refine(newValue);
+    };
 
-        return (
-            <Wrapper isHome={isHome}>
-                <Autosuggest
-                    highlightFirstSuggestion={true}
-                    theme={theme}
-                    suggestions={hits}
-                    multiSection={true}
-                    onSuggestionSelected={this._onSuggestionSelected.bind(this)}
-                    onSuggestionsFetchRequested={this._onSuggestionsFetchRequested.bind(this)}
-                    onSuggestionHighlighted={this._onSuggestionHighlighted.bind(this)}
-                    onSuggestionsClearRequested={this._onSuggestionsClearRequested.bind(this)}
-                    getSuggestionValue={this._getSuggestionValue.bind(this)}
-                    renderSuggestion={this._renderSuggestion.bind(this)}
-                    inputProps={inputProps}
-                    renderSectionTitle={this._renderSectionTitle.bind(this)}
-                    getSectionSuggestions={this._getSectionSuggestions.bind(this)}
-                />
-            </Wrapper>
-        );
-    }
-    private _onChange(event: HitProps, { newValue }: HitProps): void {
-        this.setState({
-            value: newValue,
-        });
-    }
-
-    private _onSuggestionsFetchRequested({ value }: HitProps): void {
-        this.props.refine(value);
-    }
-
-    private _onSuggestionsClearRequested(): void {
-        this.props.refine('');
-    }
+    const onSuggestionsClearRequested = (): void => refine('');
 
     // tslint:disable-next-line: no-empty
-    private _onSuggestionHighlighted(): void {}
+    const onSuggestionHighlighted = (): void => {};
 
-    private _getSuggestionValue(hit: HitProps): string {
-        return hit.textContent;
-    }
+    const getSuggestionValue = (hit: HitProps): string => hit.textContent;
 
-    private _onSuggestionSelected(event: HitProps, { suggestion }: HitProps): void {
+    const onSuggestionSelected = (event: HitProps, { suggestion }: HitProps): void => {
         // tslint:disable-next-line: no-console
         console.log(suggestion);
-    }
+    };
 
-    private _renderSuggestion(hit: HitProps): React.ReactNode {
+    const renderSuggestion = (hit: HitProps): React.ReactNode => {
         return (
             <HitWrapper>
                 <Highlight attribute="title" hit={hit} tagName="mark" />
                 <Snippet attribute="textContent" hit={hit} tagName="mark" />
             </HitWrapper>
         );
-    }
+    };
 
-    private _renderSectionTitle(section: HitProps): React.ReactNode {
+    const renderSectionTitle = (section: HitProps): React.ReactNode => {
         const titles: { [key: string]: any } = {
             '0x_tools_test': 'Tools',
             '0x_guides_test': 'Guides',
         };
         return <SectionTitle>{titles[section.index]}</SectionTitle>;
-    }
+    };
 
-    private _getSectionSuggestions(section: HitProps): string {
-        return section.hits;
-    }
-}
+    const getSectionSuggestions = (section: HitProps): string => section.hits;
+
+    const inputProps = {
+        placeholder: 'Search docs',
+        onChange,
+        value,
+    };
+
+    return (
+        <Wrapper isHome={isHome}>
+            <Autosuggest
+                theme={theme}
+                suggestions={hits}
+                multiSection={true}
+                highlightFirstSuggestion={true}
+                onSuggestionSelected={onSuggestionSelected}
+                onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                onSuggestionHighlighted={onSuggestionHighlighted}
+                onSuggestionsClearRequested={onSuggestionsClearRequested}
+                getSuggestionValue={getSuggestionValue}
+                renderSuggestion={renderSuggestion}
+                inputProps={inputProps}
+                renderSectionTitle={renderSectionTitle}
+                getSectionSuggestions={getSectionSuggestions}
+            />
+        </Wrapper>
+    );
+};
 
 const SectionTitle = styled.p`
     color: ${colors.brandDark};
