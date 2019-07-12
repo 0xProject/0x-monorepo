@@ -1207,17 +1207,9 @@ export class ExchangeWrapper extends ContractWrapper {
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
-        const balanceAllowanceFetcher = new AssetBalanceAndProxyAllowanceFetcher(
-            this._erc20TokenWrapper,
-            this._erc721TokenWrapper,
-            BlockParamLiteral.Latest,
-        );
-        const balanceAllowanceStore = new BalanceAndProxyAllowanceLazyStore(balanceAllowanceFetcher);
-        const exchangeTradeSimulator = new ExchangeTransferSimulator(balanceAllowanceStore);
-        const exchangeContract = await this._getExchangeContractAsync();
+        const networkId = await this._web3Wrapper.getNetworkIdAsync();
         await OrderValidationUtils.validateMakerTransferThrowIfInvalidAsync(
-            exchangeTradeSimulator,
-            exchangeContract,
+            networkId,
             this._web3Wrapper.getProvider(),
             signedOrder,
             makerAssetAmount,

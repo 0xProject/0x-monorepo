@@ -1,4 +1,9 @@
-import { ExchangeContract, IAssetProxyContract } from '@0x/abi-gen-wrappers';
+import {
+    ExchangeContract,
+    getContractAddressesForNetworkOrThrow,
+    IAssetProxyContract,
+    NetworkId,
+} from '@0x/abi-gen-wrappers';
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -120,23 +125,16 @@ export class OrderValidationUtils {
      * @param takerAddress The address to transfer to, defaults to signedOrder.takerAddress
      */
     public static async validateMakerTransferThrowIfInvalidAsync(
-        exchangeTradeEmulator: ExchangeTransferSimulator,
-        exchangeContract: ExchangeContract,
+        networkId: NetworkId,
         supportedProvider: SupportedProvider,
         signedOrder: SignedOrder,
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
         const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
-        await exchangeTradeEmulator.transferFromAsync(
-            signedOrder.makerAssetData,
-            signedOrder.makerAddress,
-            toAddress,
-            makerAssetAmount,
-            TradeSide.Maker,
-            TransferType.Trade,
-        );
+        const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
         const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
+        const exchangeContract = new ExchangeContract(contractAddresses.exchange, supportedProvider);
         const assetProxyAddress = await exchangeContract.assetProxies.callAsync(makerAssetDataProxyId);
         const assetProxy = new IAssetProxyContract(assetProxyAddress, supportedProvider);
         const result = await assetProxy.transferFrom.callAsync(
