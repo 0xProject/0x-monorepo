@@ -21,6 +21,10 @@
             {
                 "note": "Add LibEIP1271.sol",
                 "pr": 1885
+            },
+            {
+                "note": "Updated RichErrors to the library pattern, and implemented RichErrors for all remaining reverts and requires",
+                "pr": 1913
             }
         ]
     },

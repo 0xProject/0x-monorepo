@@ -29,6 +29,10 @@
             {
                 "note": "Add `OrderTransferSimulationUtils` contract for simulating order transfers on-chain",
                 "pr": 1868
+            },
+            {
+                "note": "Updated to use the new rich error pattern from @0x/contracts-exchange",
+                "pr": 1913
             }
         ]
     }
