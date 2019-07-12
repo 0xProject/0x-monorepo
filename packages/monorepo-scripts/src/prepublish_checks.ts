@@ -153,7 +153,7 @@ async function checkPublishRequiredSetupAsync(updatedPublicPackages: Package[]):
         const isPackagePublished =
             (await npmUtils.getPackageRegistryJsonIfExistsAsync(pkg.packageJson.name)) !== undefined;
         const isPackageWritePermissionsGranted = writePermissions.includes(pkg.packageJson.name);
-        if (!isPackageWritePermissionsGranted && isPackagePublished) {
+        if (isPackagePublished && !isPackageWritePermissionsGranted) {
             unwriteablePkgs.push(pkg);
         }
     }
