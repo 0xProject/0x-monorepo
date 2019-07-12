@@ -96,6 +96,11 @@ contract MixinExchangeWrapper is
         uint256 remainingTakerAssetFillAmount = wethSellAmount;
 
         for (uint256 i = 0; i != ordersLength; i++) {
+            require(
+                orders[i].makerAssetData.equals(orders[0].makerAssetData),
+                "MAKER_ASSET_MISMATCH"
+            );
+
             // Attempt to sell the remaining amount of WETH
             FillResults memory singleFillResults = _fillOrderNoThrow(
                 orders[i],
@@ -105,18 +110,18 @@ contract MixinExchangeWrapper is
 
             // Update amounts filled and the remaining amount of WETH to sell
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                _addFillResultsDeductFees(totalFillResults, singleFillResults)
+                _addFillResultsDeductFees(totalFillResults, singleFillResults);
             } else {
                 _addFillResults(totalFillResults, singleFillResults);
                 remainingTakerAssetFillAmount = _safeSub(
                     remainingTakerAssetFillAmount,
                     singleFillResults.takerFeePaid
-                )
+                );
             }
             remainingTakerAssetFillAmount = _safeSub(
                 remainingTakerAssetFillAmount,
                 singleFillResults.takerAssetFilledAmount
-            )
+            );
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (totalFillResults.takerAssetFilledAmount >= wethSellAmount) {
@@ -145,6 +150,11 @@ contract MixinExchangeWrapper is
         uint256 makerAssetFilledAmount = 0;
 
         for (uint256 i = 0; i != ordersLength; i++) {
+            require(
+                orders[i].makerAssetData.equals(orders[0].makerAssetData),
+                "MAKER_ASSET_MISMATCH"
+            );
+
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
 
@@ -167,7 +177,7 @@ contract MixinExchangeWrapper is
 
             // Update amounts filled and fees paid by maker and taker
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                _addFillResultsDeductFees(totalFillResults, singleFillResults)
+                _addFillResultsDeductFees(totalFillResults, singleFillResults);
             } else {
                 _addFillResults(totalFillResults, singleFillResults);
             }

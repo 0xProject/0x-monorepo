@@ -50,6 +50,25 @@ contract MixinAssets is
         _transferAssetToSender(assetData, amount);
     }
 
+    function _approveMakerAssetProxy(bytes memory assetData)
+        internal
+    {
+        bytes4 proxyId = assetData.readBytes4(0);
+
+        address proxyAddress;
+        address assetAddress;
+        if (proxyId == ERC20_DATA_ID) {
+            proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+        } else if (proxyId == ERC721_DATA_ID) {
+            proxyAddress = EXCHANGE.getAssetProxy(ERC721_DATA_ID);
+        } else {
+            revert("UNSUPPORTED_ASSET_PROXY");
+        }
+
+        assetAddress = assetData.readAddress(16);
+        IERC20Token(assetAddress).approve(proxyAddress, MAX_UINT);
+    }
+
     /// @dev Transfers given amount of asset to sender.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of asset to transfer to sender.

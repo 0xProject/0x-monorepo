@@ -61,8 +61,6 @@ contract MixinForwarderCore is
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
@@ -85,6 +83,8 @@ contract MixinForwarderCore is
             _safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
             msg.value
         );
+
+        _approveMakerAssetProxy(orders[0].makerAssetData);
 
         // Market sell 95% of WETH.
         // ZRX fees are payed with this contract's balance.
@@ -115,8 +115,6 @@ contract MixinForwarderCore is
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
-    /// @param feeOrders Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
-    /// @param feeSignatures Proofs that feeOrders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
@@ -133,6 +131,8 @@ contract MixinForwarderCore is
     {
         // Convert ETH to WETH.
         _convertEthToWeth();
+
+        _approveMakerAssetProxy(orders[0].makerAssetData);
 
         // Attempt to purchase desired amount of makerAsset.
         // ZRX fees are payed with this contract's balance.

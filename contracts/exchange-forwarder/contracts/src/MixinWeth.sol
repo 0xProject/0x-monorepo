@@ -50,8 +50,7 @@ contract MixinWeth is
 
     /// @dev Transfers feePercentage of WETH spent on primary orders to feeRecipient.
     ///      Refunds any excess ETH to msg.sender.
-    /// @param wethSoldExcludingFeeOrders Amount of WETH sold when filling primary orders.
-    /// @param wethSoldForZrx Amount of WETH sold when purchasing ZRX required for primary order fees.
+    /// @param wethSold Amount of WETH sold when filling primary orders.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
     function _transferEthFeeAndRefund(
