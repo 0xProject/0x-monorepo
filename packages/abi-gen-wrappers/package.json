@@ -34,7 +34,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/abi-gen-wrappers/README.md",
     "devDependencies": {
         "@0x/abi-gen": "^2.0.10",
-        "@0x/abi-gen-templates": "^2.1.0",
+        "@0x/abi-gen-templates": "^2.2.0",
         "@0x/assert": "^2.0.10",
         "@0x/json-schemas": "^3.0.10",
         "@0x/tslint-config": "^3.0.1",
