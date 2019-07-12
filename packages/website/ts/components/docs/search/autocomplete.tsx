@@ -149,6 +149,12 @@ const Wrapper = styled.div<Props>`
             background-color: ${colors.white};
             border-color: #dbdfdd;
         }
+
+        ${({ isHome }) =>
+            !isHome &&
+            `
+            border: 1px solid green;
+        `};
     }
 
     .react-autosuggest__section-container {
@@ -160,14 +166,19 @@ const Wrapper = styled.div<Props>`
         right: 0;
         background-color: ${colors.white};
         z-index: 10;
-        min-width: 420px;
-        width: 100%;
+        width: 890px;
         flex-grow: 1;
 
         &--open {
             border: 1px solid #dbdfdd;
             border-top: none;
         }
+
+        ${({ isHome }) =>
+            !isHome &&
+            `
+            top: 50px;
+        `};
     }
 
     .react-autosuggest__suggestions-list {
@@ -192,6 +203,15 @@ const Wrapper = styled.div<Props>`
             padding: 13px 21px 15px 52px;
             background-position: left 21px center;
             font-size: 1rem;
+
+            &--focused,
+            &--open {
+                background-color: white;
+                width: 890px;
+                position: absolute;
+                right: 0;
+                top: 0;
+            }
         `};
 
         &--open {
