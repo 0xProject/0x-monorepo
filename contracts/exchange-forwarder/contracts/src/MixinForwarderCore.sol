@@ -88,7 +88,13 @@ contract MixinForwarderCore is
 
         // Market sell 95% of WETH.
         // ZRX fees are payed with this contract's balance.
-        orderFillResults = _marketSellWeth(
+        uint256 wethSpentAmount;
+        uint256 makerAssetAcquiredAmount;
+        (
+            orderFillResults,
+            wethSpentAmount,
+            makerAssetAcquiredAmount
+        ) = _marketSellWeth(
             orders,
             wethSellAmount,
             signatures
@@ -97,7 +103,7 @@ contract MixinForwarderCore is
         // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
         _transferEthFeeAndRefund(
-            orderFillResults.takerAssetFilledAmount,
+            wethSpentAmount,
             feePercentage,
             feeRecipient
         );
@@ -105,7 +111,7 @@ contract MixinForwarderCore is
         // Transfer purchased assets to msg.sender.
         _transferAssetToSender(
             orders[0].makerAssetData,
-            orderFillResults.makerAssetFilledAmount
+            makerAssetAcquiredAmount
         );
     }
 
@@ -136,7 +142,13 @@ contract MixinForwarderCore is
 
         // Attempt to purchase desired amount of makerAsset.
         // ZRX fees are payed with this contract's balance.
-        orderFillResults = _marketBuyExactAmountWithWeth(
+        uint256 wethSpentAmount;
+        uint256 makerAssetAcquiredAmount;
+        (
+            orderFillResults,
+            wethSpentAmount,
+            makerAssetAcquiredAmount
+        ) = _marketBuyExactAmountWithWeth(
             orders,
             makerAssetFillAmount,
             signatures
@@ -145,7 +157,7 @@ contract MixinForwarderCore is
         // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
         _transferEthFeeAndRefund(
-            orderFillResults.takerAssetFilledAmount,
+            wethSpentAmount,
             feePercentage,
             feeRecipient
         );
@@ -153,7 +165,7 @@ contract MixinForwarderCore is
         // Transfer purchased assets to msg.sender.
         _transferAssetToSender(
             orders[0].makerAssetData,
-            orderFillResults.makerAssetFilledAmount
+            makerAssetAcquiredAmount
         );
     }
 }

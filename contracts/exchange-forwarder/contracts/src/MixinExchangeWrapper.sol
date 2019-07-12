@@ -89,11 +89,13 @@ contract MixinExchangeWrapper is
         bytes[] memory signatures
     )
         internal
-        returns (FillResults memory totalFillResults)
+        returns (
+            FillResults memory totalFillResults,
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount
+        )
     {
         uint256 ordersLength = orders.length;
-        // The remaining amount of WETH to sell
-        uint256 remainingTakerAssetFillAmount = wethSellAmount;
 
         for (uint256 i = 0; i != ordersLength; i++) {
             require(
@@ -101,34 +103,62 @@ contract MixinExchangeWrapper is
                 "MAKER_ASSET_MISMATCH"
             );
 
-            // Attempt to sell the remaining amount of WETH
-            FillResults memory singleFillResults = _fillOrderNoThrow(
-                orders[i],
-                remainingTakerAssetFillAmount,
-                signatures[i]
+            // The remaining amount of WETH to sell
+            uint256 remainingTakerAssetFillAmount = _safeSub(
+                wethSellAmount,
+                wethSpentAmount
             );
+            FillResults memory singleFillResults;
 
             // Update amounts filled and the remaining amount of WETH to sell
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                _addFillResultsDeductFees(totalFillResults, singleFillResults);
-            } else {
-                _addFillResults(totalFillResults, singleFillResults);
-                remainingTakerAssetFillAmount = _safeSub(
+                // Attempt to sell the remaining amount of WETH
+                singleFillResults = _fillOrderNoThrow(
+                    orders[i],
                     remainingTakerAssetFillAmount,
-                    singleFillResults.takerFeePaid
+                    signatures[i]
+                );
+
+                makerAssetAcquiredAmount = _safeAdd(
+                    makerAssetAcquiredAmount,
+                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
+                );
+                wethSpentAmount = _safeAdd(
+                    wethSpentAmount,
+                    singleFillResults.takerAssetFilledAmount
+                );
+            } else {
+                // We first sell WETH as the takerAsset, then use it to pay the takerFee.
+                // This ensures that we reserve enough to pay the fee.
+                uint256 takerAssetFillAmount = _getPartialAmountCeil(
+                    orders[i].takerAssetAmount,
+                    _safeAdd(orders[i].takerAssetAmount, orders[i].takerFee),
+                    remainingTakerAssetFillAmount
+                );
+                singleFillResults = _fillOrderNoThrow(
+                    orders[i],
+                    takerAssetFillAmount,
+                    signatures[i]
+                );
+
+                wethSpentAmount = _safeAdd(
+                    wethSpentAmount,
+                    _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
+                );
+                makerAssetAcquiredAmount = _safeAdd(
+                    makerAssetAcquiredAmount,
+                    singleFillResults.makerAssetFilledAmount
                 );
             }
-            remainingTakerAssetFillAmount = _safeSub(
-                remainingTakerAssetFillAmount,
-                singleFillResults.takerAssetFilledAmount
-            );
+
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
-            if (totalFillResults.takerAssetFilledAmount >= wethSellAmount) {
+            if (wethSpentAmount >= wethSellAmount) {
                 break;
             }
         }
-        return totalFillResults;
+        return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
     }
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
@@ -144,10 +174,13 @@ contract MixinExchangeWrapper is
         bytes[] memory signatures
     )
         internal
-        returns (FillResults memory totalFillResults)
+        returns (
+            FillResults memory totalFillResults,
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount
+        )
     {
         uint256 ordersLength = orders.length;
-        uint256 makerAssetFilledAmount = 0;
 
         for (uint256 i = 0; i != ordersLength; i++) {
             require(
@@ -156,7 +189,7 @@ contract MixinExchangeWrapper is
             );
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, totalFillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, makerAssetAcquiredAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order.
@@ -177,22 +210,36 @@ contract MixinExchangeWrapper is
 
             // Update amounts filled and fees paid by maker and taker
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                _addFillResultsDeductFees(totalFillResults, singleFillResults);
+                makerAssetAcquiredAmount = _safeAdd(
+                    makerAssetAcquiredAmount,
+                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
+                );
+                wethSpentAmount = _safeAdd(
+                    wethSpentAmount,
+                    singleFillResults.takerAssetFilledAmount
+                );
             } else {
-                _addFillResults(totalFillResults, singleFillResults);
+                makerAssetAcquiredAmount = _safeAdd(
+                    makerAssetAcquiredAmount,
+                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
+                );
+                wethSpentAmount = _safeAdd(
+                    wethSpentAmount,
+                    singleFillResults.takerAssetFilledAmount
+                );
             }
+            _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            makerAssetFilledAmount = totalFillResults.makerAssetFilledAmount;
-            if (makerAssetFilledAmount >= makerAssetFillAmount) {
+            if (makerAssetAcquiredAmount >= makerAssetFillAmount) {
                 break;
             }
         }
 
         require(
-            makerAssetFilledAmount >= makerAssetFillAmount,
+            makerAssetAcquiredAmount >= makerAssetFillAmount,
             "COMPLETE_FILL_FAILED"
         );
-        return totalFillResults;
+        return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
     }
 }
