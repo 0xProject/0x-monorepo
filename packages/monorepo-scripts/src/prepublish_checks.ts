@@ -148,7 +148,14 @@ async function checkPublishRequiredSetupAsync(updatedPublicPackages: Package[]):
     const writePermissions = Object.keys(pkgPermissions).filter(pkgName => {
         return pkgPermissions[pkgName] === 'read-write';
     });
-    const unwriteablePkgs = updatedPublicPackages.filter(pkg => !writePermissions.includes(pkg.packageJson.name));
+    const unwriteablePkgs = [];
+    for (const pkg of updatedPublicPackages) {
+        const isPackagePublished = (await npmUtils.getPackageRegistryJsonIfExistsAsync(pkg.packageJson.name)) !== undefined;
+        const isPackageWritePermissionsGranted = writePermissions.includes(pkg.packageJson.name);
+        if (!isPackageWritePermissionsGranted && isPackagePublished) {
+            unwriteablePkgs.push(pkg);
+        }
+    }
     if (unwriteablePkgs.length > 0) {
         utils.log(`Missing write permissions for the following packages:`);
         unwriteablePkgs.forEach(pkg => {
