@@ -220,8 +220,6 @@ export enum DutchAuctionWrapperError {
     AssetDataMismatch = 'ASSET_DATA_MISMATCH',
 }
 
-export { DutchAuctionData } from '@0x/types';
-
 export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';
 
 export interface CoordinatorTransaction {

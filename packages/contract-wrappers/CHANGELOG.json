@@ -1,5 +1,13 @@
 [
     {
+        "version": "9.1.5",
+        "changes": [
+            {
+                "note": "Use assetDataUtils for encoding and decoding DutchAuctionData"
+            }
+        ]
+    },
+    {
         "timestamp": 1558712885,
         "version": "9.1.4",
         "changes": [

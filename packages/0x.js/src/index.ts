@@ -37,7 +37,6 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
-    DutchAuctionData,
 } from '@0x/contract-wrappers';
 
 export {
@@ -85,6 +84,7 @@ export {
     ExchangeContractErrs,
     Order,
     SignedOrder,
+    DutchAuctionData,
     ECSignature,
     OrderStateValid,
     OrderStateInvalid,
