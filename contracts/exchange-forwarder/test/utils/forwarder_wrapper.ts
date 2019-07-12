@@ -20,26 +20,6 @@ export class ForwarderWrapper {
         const newValue = value.times(numerator).dividedToIntegerBy(constants.PERCENTAGE_DENOMINATOR);
         return newValue;
     }
-    public static getWethForFeeOrders(feeAmount: BigNumber, feeOrders: SignedOrder[]): BigNumber {
-        let wethAmount = new BigNumber(0);
-        let remainingFeeAmount = feeAmount;
-        _.forEach(feeOrders, feeOrder => {
-            const feeAvailable = feeOrder.makerAssetAmount.minus(feeOrder.takerFee);
-            if (!remainingFeeAmount.isZero() && feeAvailable.gt(remainingFeeAmount)) {
-                wethAmount = wethAmount.plus(
-                    feeOrder.takerAssetAmount
-                        .times(remainingFeeAmount)
-                        .dividedBy(feeAvailable)
-                        .integerValue(BigNumber.ROUND_CEIL),
-                );
-                remainingFeeAmount = new BigNumber(0);
-            } else if (!remainingFeeAmount.isZero()) {
-                wethAmount = wethAmount.plus(feeOrder.takerAssetAmount);
-                remainingFeeAmount = remainingFeeAmount.minus(feeAvailable);
-            }
-        });
-        return wethAmount;
-    }
     constructor(contractInstance: ForwarderContract, provider: Web3ProviderEngine) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
@@ -52,7 +32,6 @@ export class ForwarderWrapper {
     }
     public async marketSellOrdersWithEthAsync(
         orders: SignedOrder[],
-        feeOrders: SignedOrder[],
         txData: TxDataPayable,
         opts: { feePercentage?: BigNumber; feeRecipient?: string } = {},
     ): Promise<TransactionReceiptWithDecodedLogs> {
@@ -61,8 +40,6 @@ export class ForwarderWrapper {
         const txHash = await this._forwarderContract.marketSellOrdersWithEth.sendTransactionAsync(
             orders,
             orders.map(signedOrder => signedOrder.signature),
-            feeOrders,
-            feeOrders.map(signedFeeOrder => signedFeeOrder.signature),
             feePercentage,
             feeRecipient,
             txData,
@@ -72,7 +49,6 @@ export class ForwarderWrapper {
     }
     public async marketBuyOrdersWithEthAsync(
         orders: SignedOrder[],
-        feeOrders: SignedOrder[],
         makerAssetFillAmount: BigNumber,
         txData: TxDataPayable,
         opts: { feePercentage?: BigNumber; feeRecipient?: string } = {},
@@ -83,8 +59,6 @@ export class ForwarderWrapper {
             orders,
             makerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),
-            feeOrders,
-            feeOrders.map(signedFeeOrder => signedFeeOrder.signature),
             feePercentage,
             feeRecipient,
             txData,
