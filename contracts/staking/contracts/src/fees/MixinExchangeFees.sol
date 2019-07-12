@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -42,12 +42,13 @@ contract MixinExchangeFees is
     MixinStakingPoolRewardVault,
     MixinStakingPool,
     MixinTimelockedStake,
-    MixinStakeBalances
+    MixinStakeBalances,
+    MixinPanic
 {
 
     /// @dev This mixin contains the logic for 0x protocol fees.
     /// Protocol fees are sent by 0x exchanges every time there is a trade.
-    /// If the maker has associated their address with a pool (see MixinStakingPool.sol), then 
+    /// If the maker has associated their address with a pool (see MixinStakingPool.sol), then
     /// the fee will be attributed to their pool. At the end of an epoch the maker and
     /// their pool will receive a rebate that is proportional to (i) the fee volume attributed
     /// to their pool over the epoch, and (ii) the amount of stake provided by the maker and
@@ -65,181 +66,226 @@ contract MixinExchangeFees is
         payable
         onlyExchange
     {
-        uint256 amount = msg.value;
+        require(
+            msg.value != 0,
+            "ZERO_PROTOCOL_FEE"
+        );
+
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        uint256 _feesCollectedThisEpoch = protocolFeesThisEpochByPool[poolId];
-        protocolFeesThisEpochByPool[poolId] = _feesCollectedThisEpoch._add(amount);
-        if (_feesCollectedThisEpoch == 0) {
-            activePoolsThisEpoch.push(poolId);
+        IStructs.ActivePool storage pool = _activePoolsByEpoch[currentEpoch % 2][poolId];
+        ActivePoolState poolState = pool.state;
+        uint256 feesCollected = 0;
+
+        if (poolState == IStructs.ActivePoolState.DEFAULT) {
+            // This pool wasn't active two epochs ago or has already been activated.
+            // If the pool wasn't active two epochs ago, `pool.feesCollected` will be zero.
+            feesCollected = pool.feesCollected;
+        } else if (poolState == IStructs.ActivePoolState.FINALIZED) {
+            // Recoup some gas by reseting these states.
+            pool.state = IStructs.ActivePoolState.DEFAULT; // 0
+            pool.weightedStake = 0;
+        } else {
+            // We should not have gotten here.
+            _assert(false);
+        }
+        if (feesCollected == 0) {
+            // Pool hasn't been activated for this epoch.
+            pool.feesCollected = msg.value;
+            emit StakingPoolActivated(currentEpoch, poolId);
+        } else {
+            pool.feesCollected = feesCollected._add(msg.value);
         }
     }
 
-    /// @dev Pays the rebates for to market making pool that was active this epoch,
-    /// then updates the epoch and other time-based periods via the scheduler (see MixinScheduler).
-    /// This is intentionally permissionless, and may be called by anyone.
-    function finalizeFees()
+    /// @dev Ends an epoch, marking all pools that were active during the current
+    ///      epoch ready for finalization through `preFinalizePools()` and `finalizePools()`,
+    ///      then advances the epoch.
+    ///      This will fail if all pools in the previous epoch have not been completely finalized.
+    ///      If there are were no active pools this epoch, the epoch will be immediately
+    ///      finalized.
+    function endEpoch()
         external
     {
-        // distribute fees to market maker pools as a reward
-        (uint256 totalActivePools,
-        uint256 totalFeesCollected,
-        uint256 totalWeightedStake,
-        uint256 totalRewardsPaid,
-        uint256 initialContractBalance,
-        uint256 finalContractBalance) = _distributeFeesAmongMakerPools();
-        emit RewardsPaid(
-            totalActivePools,
-            totalFeesCollected,
-            totalWeightedStake,
-            totalRewardsPaid,
-            initialContractBalance,
-            finalContractBalance
+        // Make sure that the last epoch was fully finalized.
+        require(
+            _unfinalizedPoolsRemaining == 0,
+            "LAST_EPOCH_NOT_FINALIZED"
         );
 
+        // Populate end-of-epoch state variables.
+        _unfinalizedRewardsAvailable = address(this).balance;
+        _unfinalizedPoolsRemaining = _numActivePools;
+        _numPreFinalizedPools = 0;
+        _unfinalizedTotalWeightedStake = 0;
+        _unfinalizedTotalFeesCollected = 0;
+
+        // Reset new epoch state variables.
+        _numActivePools = 0;
+
+        // If there are no pools to finalize, we can just finalize the epoch now.
+        if (_unfinalizedPoolsRemaining == 0) {
+            emit EpochFinalized(
+                currentEpoch,
+                0, // No rewards were paid out.
+                address(this).balance
+            );
+
+        }
         _goToNextEpoch();
     }
 
-    /// @dev Returns the total amount of fees collected thus far, in the current epoch.
-    /// @return Amount of fees.
-    function getTotalProtocolFeesThisEpoch()
-        public
-        view
-        returns (uint256)
+    /// @dev Prepares pools for finalization after a call to `endEpoch()`.
+    ///      Pools that weren't active in the last epoch or have already been
+    ///      pre-finalized will be ignored.
+    /// @param poolIds Array of active pool IDs to finalize.
+    /// @return poolsRemaining How many pools are remaining to be pre-finalized.
+    function preFinalizePools(bytes32[] calldata poolIds)
+        external
+        returns (uint256 poolsRemaining)
     {
-        return address(this).balance;
+        poolsRemaining = _unfinalizedPoolsRemaining._sub(_numPreFinalizedPools);
+        if (poolsRemaining == 0) {
+            // All pools already finalized.
+            return;
+        }
+
+        uint256 epoch = currentEpoch - 1;
+        mapping(bytes32 => ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
+        uint256 numPools = poolIds.length;
+        for (uint256 i = 0; i != numPools; i++) {
+            bytes32 poolId = poolIds[i];
+            ActivePool storage pool = pools[poolId];
+            if (pool.feesCollected == 0 || pool.state != IStructs.ActivePoolState.DEFAULT) {
+                // Pool is not eligible.
+                continue;
+            }
+            pool.state = IStructs.ActivePoolState.PRE_FINALIZED;
+            poolsRemaining -= 1;
+
+            // Computed weighted stake.
+            uint256 weightedStake = _getPoolWeightedStake(poolId)
+
+            pool.weightedStake = weightedStake;
+            _unfinalizedTotalWeightedStake = _unfinalizedTotalWeightedStake._add(weightedStake);
+            _unfinalizedTotalFeesCollected = _unfinalizedTotalFeesCollected._add(pool.feesCollected);
+        }
+        _numPreFinalizedPools = _unfinalizedPoolsRemaining._sub(poolsRemaining);
+        return poolsRemaining;
     }
 
-    /// @dev Returns the amount of fees attributed to the input pool.
+    /// @dev Finalizes pools, paying out their rewards.
+    ///      All active pools must first have been passed through `preFinalizePools()`.
+    /// @param poolIds Array of pre-finalized pool IDs to finalize.
+    /// @return poolsRemaining How many pools are remaining to be finalized.
+    function finalizePools(bytes32[] calldata poolIds)
+        external
+        returns (uint256 poolsRemaining)
+    {
+        poolsRemaining = _unfinalizedPoolsRemaining;
+        // Make sure we've pre-finalized all pools first.
+        require(
+            poolsRemaining != _numPreFinalizedPools,
+            "ALL_POOLS_MUST_BE_PREFINALIZED"
+        };
+        // If we have no more pools to finalize, stop.
+        if (poolsRemaining == 0) {
+            return;
+        }
+
+        uint256 epoch = currentEpoch - 1;
+        mapping(bytes32 => ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
+        uint256 totalRewardsToPay = 0;
+        uint256 numPools = poolIds.length;
+        uint256 __unfinalizedRewardsAvailable = _unfinalizedRewardsAvailable;
+        uint256 __unfinalizedTotalFeesCollected = _unfinalizedTotalFeesCollected;
+        uint256 __unfinalizedTotalWeightedStake = _unfinalizedTotalWeightedStake;
+        for (uint256 i = 0; i < numPools; i++) {
+            bytes32 poolId = poolIds[i];
+            ActivePool storage pool = pools[poolId];
+            _assert(pool.feesCollected != 0);
+            if (pool.state != IStructs.ActivePoolState.PRE_FINALIZED) {
+                // Pool is not eligible.
+                continue;
+            }
+            pool.state = IStructs.ActivePoolState.FINALIZED;
+            poolsRemaining -= 1;
+
+            uint256 poolWeightedStake = pool.weightedStake;
+            uint256 poolFeesCollected = pool.feesCollected;
+
+            // Compute reward for this pool.
+            uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
+                __unfinalizedRewardsAvailable,
+                poolFeesCollected,
+                __unfinalizedTotalFeesCollected,
+                poolWeightedStake,
+                __unfinalizedTotalWeightedStake
+            );
+
+            // Increase the amount we have to deposit into the reward vault
+            // at the end of this loop.
+            totalRewardsToPay = totalRewardsToPay._add(reward);
+            // Credit the pool in the reward vault.
+            _recordDepositInStakingPoolRewardVault(
+                poolId,
+                _getPoolOperatorShareOfReward(reward),
+                _getPoolMembersShareOfReward(reward)
+            );
+            emit RewardDeposited(
+                poolId,
+                epoch,
+                reward,
+                poolWeightedStake,
+                poolFeesCollected
+            );
+        }
+
+        // Depost the total rewards into the reward vault.
+        if (totalRewardsToPay != 0) {
+            rewardsPaidLastEpoch = rewardsPaidLastEpoch._add(totalRewardsToPay);
+            _depositIntoStakingPoolRewardVault(totalRewardsToPay);
+        }
+
+        // Keep `_unfinalizedPoolsRemaining` and `_numPreFinalizedPools` in sync.
+        _assert(poolsRemaining <= _unfinalizedPoolsRemaining);
+        _unfinalizedPoolsRemaining = _numPreFinalizedPools = poolsRemaining;
+
+        // If we've finalized all the pools, the epoch is finalized.
+        if (poolsRemaining == 0) {
+            _assert(rewardsPaidLastEpoch <= __unfinalizedRewardsAvailable);
+            emit EpochFinalized(
+                epoch,
+                rewardsPaidLastEpoch,
+                __unfinalizedRewardsAvailable._sub(rewardsPaidLastEpoch)
+            );
+        }
+    }
+
+    /// @dev Returns the amount of fees attributed to the given pool.
     /// @param poolId Pool Id to query.
     /// @return Amount of fees.
     function getProtocolFeesThisEpochByPool(bytes32 poolId)
-        public
+        external
         view
-        returns (uint256)
+        returns (uint256 feesCollected)
     {
-        return protocolFeesThisEpochByPool[poolId];
+        ActivePool storage pool = _activePoolsByEpoch[currentEpoch % 2][poolId];
+        feesCollected = pool.feesCollected;
     }
 
-    /// @dev Pays rewards to market making pools that were active this epoch.
-    /// Each pool receives a portion of the fees generated this epoch (see LibFeeMath) that is
-    /// proportional to (i) the fee volume attributed to their pool over the epoch, and 
-    /// (ii) the amount of stake provided by the maker and their delegators. Rebates are paid
-    /// into the Reward Vault (see MixinStakingPoolRewardVault) where they can be withdraw by makers and
-    /// the members of their pool. There will be a small amount of ETH leftover in this contract
-    /// after paying out the rebates; at present, this rolls over into the next epoch. Eventually,
-    /// we plan to deposit this leftover into a DAO managed by the 0x community.
-    /// @return totalActivePools Total active pools this epoch.
-    /// @return totalFeesCollected Total fees collected this epoch, across all active pools.
-    /// @return totalWeightedStake Total weighted stake attributed to each pool. Delegated stake is weighted less.
-    /// @return totalRewardsPaid Total rewards paid out across all active pools.
-    /// @return initialContractBalance Balance of this contract before paying rewards.
-    /// @return finalContractBalance Balance of this contract after paying rewards.
-    function _distributeFeesAmongMakerPools()
+    function _getPoolWeightedStake(bytes32 poolId)
         private
-        returns (
-            uint256 totalActivePools,
-            uint256 totalFeesCollected,
-            uint256 totalWeightedStake,
-            uint256 totalRewardsPaid,
-            uint256 initialContractBalance,
-            uint256 finalContractBalance
-        )
+        view
+        returns (uint256 weightedStake)
     {
-        // initialize return values
-        totalActivePools = activePoolsThisEpoch.length;
-        totalFeesCollected = 0;
-        totalWeightedStake = 0;
-        totalRewardsPaid = 0;
-        initialContractBalance = address(this).balance;
-        finalContractBalance = initialContractBalance;
-
-        // sanity check - is there a balance to payout and were there any active pools?
-        if (initialContractBalance == 0 || totalActivePools == 0) {
-            return (
-                totalActivePools,
-                totalFeesCollected,
-                totalWeightedStake,
-                totalRewardsPaid,
-                initialContractBalance,
-                finalContractBalance
-            );
-        }
-
-        // step 1/3 - compute stats for active maker pools
-        IStructs.ActivePool[] memory activePools = new IStructs.ActivePool[](activePoolsThisEpoch.length);
-        for (uint i = 0; i != totalActivePools; i++) {
-            bytes32 poolId = activePoolsThisEpoch[i];
-
-            // compute weighted stake
-            uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
-            uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(getStakingPoolOperator(poolId));
-            uint256 weightedStake = stakeHeldByPoolOperator._add(
-                totalStakeDelegatedToPool
-                ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
-                ._div(100)
-            );
-
-            // store pool stats
-            activePools[i].poolId = poolId;
-            activePools[i].feesCollected = protocolFeesThisEpochByPool[poolId];
-            activePools[i].weightedStake = weightedStake;
-
-            // update cumulative amounts
-            totalFeesCollected = totalFeesCollected._add(activePools[i].feesCollected);
-            totalWeightedStake = totalWeightedStake._add(activePools[i].weightedStake);
-        }
-
-        // sanity check - this is a gas optimization that can be used because we assume a non-zero
-        // split between stake and fees generated in the cobb-douglas computation (see below).
-        if (totalFeesCollected == 0 || totalWeightedStake == 0) {
-            return (
-                totalActivePools,
-                totalFeesCollected,
-                totalWeightedStake,
-                totalRewardsPaid,
-                initialContractBalance,
-                finalContractBalance
-            );
-        }
-
-        // step 2/3 - record reward for each pool
-        for (uint i = 0; i != totalActivePools; i++) {
-            // compute reward using cobb-douglas formula
-            uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
-                initialContractBalance,
-                activePools[i].feesCollected,
-                totalFeesCollected,
-                activePools[i].weightedStake,
-                totalWeightedStake
-            );
-
-            // record reward in vault
-            _recordDepositInStakingPoolRewardVault(activePools[i].poolId, reward);
-            totalRewardsPaid = totalRewardsPaid._add(reward);
-
-            // clear state for gas refunds
-            protocolFeesThisEpochByPool[activePools[i].poolId] = 0;
-            activePoolsThisEpoch[i] = 0;
-        }
-        activePoolsThisEpoch.length = 0;
-
-        // step 3/3 send total payout to vault
-        require(
-            totalRewardsPaid <= initialContractBalance,
-            "MISCALCULATED_REWARDS"
+        uint256 totalStakeDelegatedToPool = getTotalStakeDelegatedToPool(poolId);
+        uint256 stakeHeldByPoolOperator = getActivatedAndUndelegatedStake(
+            getStakingPoolOperator(poolId)
         );
-        if (totalRewardsPaid > 0) {
-            _depositIntoStakingPoolRewardVault(totalRewardsPaid);
-        }
-        finalContractBalance = address(this).balance;
-
-        return (
-            totalActivePools,
-            totalFeesCollected,
-            totalWeightedStake,
-            totalRewardsPaid,
-            initialContractBalance,
-            finalContractBalance
+        weightedStake = stakeHeldByPoolOperator._add(
+            totalStakeDelegatedToPool
+            ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
+            ._div(100)
         );
     }
 }

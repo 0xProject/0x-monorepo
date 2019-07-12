@@ -31,6 +31,16 @@ interface IStructs {
         NSignatureTypes     // 0x05, number of signature types. Always leave at end.
     }
 
+    /// @dev Life-cycle states of an active pool.
+    enum ActivePoolState {
+        // Waiting to be pre-finalized.
+        DEFAULT,
+        // Waiting to be finalized.
+        PRE_FINALIZED,
+        // Finalized.
+        FINALIZED
+    }
+
     /// @dev Required fields for a maker to approve a staking pool.
     /// @param poolId Unique Id of staking pool.
     /// @param makerAddress Address of maker who has approved the pool.
@@ -49,13 +59,13 @@ interface IStructs {
 
     /// @dev State for a pool that actively traded during the current epoch.
     /// (see MixinExchangeFees).
-    /// @param poolId Unique Id of staking pool.
     /// @param feesCollected Fees collected in ETH by this pool in the current epoch.
     /// @param weightedStake Amount of weighted stake currently held by the pool.
+    /// @param state The finalization state of this pool.
     struct ActivePool {
-        bytes32 poolId;
         uint256 feesCollected;
         uint256 weightedStake;
+        ActivePoolState state;
     }
 
     /// @dev Tracks timelocked stake (see MixinTimelockedStake).

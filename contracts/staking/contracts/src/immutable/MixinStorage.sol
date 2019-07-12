@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ contract MixinStorage is
     MixinDeploymentConstants,
     MixinConstants
 {
-
     // address of owner
     address internal owner;
 
@@ -82,11 +81,36 @@ contract MixinStorage is
     // current epoch start time
     uint64 internal currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
 
-    // fees collected this epoch
-    mapping (bytes32 => uint256) internal protocolFeesThisEpochByPool;
+    // State information for each active pool in an epoch.
+    // In this case, epoch is actually `epoch % 2` since we only need state
+    // for `currentEpoch` and `currentEpoch - 1`.
+    mapping(uint256 => mapping(bytes32 => ActivePool)) internal _activePoolsByEpoch;
 
-    // pools that were active in the current epoch
-    bytes32[] internal activePoolsThisEpoch;
+    // Number of pools activated in the current epoch.
+    uint256 internal _numActivePools;
+
+    // Rewards (ETH) available to the epoch being finalized (the previous epoch).
+    // This is simply the balance of the contract at the end of the epoch.
+    uint256 internal _unfinalizedRewardsAvailable;
+
+    // The number of active pools in the last epoch that have been pre-finalized
+    // by `preFinalizePools()`.
+    uint256 internal _numPreFinalizedPools;
+
+    // The number of active pools in the last epoch that have yet to be finalized
+    // through `finalizePools()`.
+    uint256 internal _unfinalizedPoolsRemaining;
+
+    // The total fees collected for the epoch being finalized.
+    // This gets computed iteratively by `preFinalizePools()`.
+    uint256 internal _unfinalizedTotalFeesCollected;
+
+    // The total fees collected for the epoch being finalized.
+    // This gets computed iteratively by `preFinalizePools()`.
+    uint256 internal _unfinalizedTotalWeightedStake;
+
+    // The total rewards paid in the last epoch.
+    uint256 internal _rewardsPaidLastEpoch;
 
     // mapping from POol Id to Shadow Rewards
     mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
