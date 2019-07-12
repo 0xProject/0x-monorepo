@@ -197,7 +197,7 @@ export const utils = {
     },
     /**
      * @returns a string that is a Python code snippet that's intended to be
-     * used as the second parameter to a TypedDict() insatnatiation; value
+     * used as the second parameter to a TypedDict() instantiation; value
      * looks like "{ 'python_dict_key': python_type, ... }".
      */
     makePythonTupleClassBody(tupleComponents: DataItem[]): string {
