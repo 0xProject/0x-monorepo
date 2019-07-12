@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 */
 
-pragma solidity ^0.5.5;
+pragma solidity ^0.5.9;
 
 import "../src/LibBytes.sol";
 
 
 contract TestLibBytes {
-    
+
     using LibBytes for bytes;
 
     /// @dev Pops the last byte off of a byte array by modifying its length.
@@ -61,7 +61,7 @@ contract TestLibBytes {
         equal = lhs.equals(rhs);
         return equal;
     }
-    
+
     function publicEqualsPop1(bytes memory lhs, bytes memory rhs)
         public
         pure
@@ -236,7 +236,7 @@ contract TestLibBytes {
         b.writeBytesWithLength(index, input);
         return b;
     }
-    
+
     /// @dev Copies a block of memory from one location to another.
     /// @param mem Memory contents we want to apply memCopy to
     /// @param dest Destination offset into <mem>.

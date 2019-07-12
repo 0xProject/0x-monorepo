@@ -1,4 +1,7 @@
+import * as LibAddressArrayRevertErrors from './lib_address_array_revert_errors';
+import * as LibBytesRevertErrors from './lib_bytes_revert_errors';
 import * as OwnableRevertErrors from './ownable_revert_errors';
+import * as ReentrancyGuardRevertErrors from './reentrancy_guard_revert_errors';
 import * as SafeMathRevertErrors from './safe_math_revert_errors';
 
 export { promisify } from './promisify';
@@ -28,4 +31,10 @@ export {
     AnyRevertError,
 } from './revert_error';
 
-export { OwnableRevertErrors, SafeMathRevertErrors };
+export {
+    LibAddressArrayRevertErrors,
+    LibBytesRevertErrors,
+    OwnableRevertErrors,
+    ReentrancyGuardRevertErrors,
+    SafeMathRevertErrors,
+};

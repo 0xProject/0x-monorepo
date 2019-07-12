@@ -1,16 +1,7 @@
-import {
-    chaiSetup,
-    constants,
-    expectContractCallFailedAsync,
-    provider,
-    txDefaults,
-    typeEncodingUtils,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, typeEncodingUtils, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { generatePseudoRandomSalt } from '@0x/order-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, LibBytesRevertErrors } from '@0x/utils';
 import BN = require('bn.js');
 import * as chai from 'chai';
 import ethUtil = require('ethereumjs-util');
@@ -106,10 +97,12 @@ describe('LibBytes', () => {
 
     describe('popLastByte', () => {
         it('should revert if length is 0', async () => {
-            return expectContractCallFailedAsync(
-                libBytes.publicPopLastByte.callAsync(constants.NULL_BYTES),
-                RevertReason.LibBytesGreaterThanZeroLengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanZeroRequired,
+                constants.ZERO_AMOUNT,
+                constants.ZERO_AMOUNT,
             );
+            return expect(libBytes.publicPopLastByte.callAsync(constants.NULL_BYTES)).to.revertWith(expectedError);
         });
         it('should pop the last byte from the input and return it when array holds more than 1 byte', async () => {
             const [newBytes, poppedByte] = await libBytes.publicPopLastByte.callAsync(byteArrayLongerThan32Bytes);
@@ -128,9 +121,14 @@ describe('LibBytes', () => {
 
     describe('popLast20Bytes', () => {
         it('should revert if length is less than 20', async () => {
-            return expectContractCallFailedAsync(
-                libBytes.publicPopLast20Bytes.callAsync(byteArrayShorterThan20Bytes),
-                RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
+            const byteLen = (byteArrayShorterThan20Bytes.length - 2) / 2;
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                new BigNumber(byteLen), // length of byteArrayShorterThan20Byte
+                new BigNumber(20),
+            );
+            return expect(libBytes.publicPopLast20Bytes.callAsync(byteArrayShorterThan20Bytes)).to.revertWith(
+                expectedError,
             );
         });
         it('should pop the last 20 bytes from the input and return it when array holds more than 20 bytes', async () => {
@@ -203,10 +201,16 @@ describe('LibBytes', () => {
 
     describe('deepCopyBytes', () => {
         it('should revert if dest is shorter than source', async () => {
-            return expectContractCallFailedAsync(
-                libBytes.publicDeepCopyBytes.callAsync(byteArrayShorterThan32Bytes, byteArrayLongerThan32Bytes),
-                RevertReason.LibBytesGreaterOrEqualToSourceBytesLengthRequired,
+            const endpointByteLen = (byteArrayShorterThan20Bytes.length - 2) / 2;
+            const requiredByteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.DestinationLengthGreaterThanOrEqualSourceLengthRequired,
+                new BigNumber(endpointByteLen), // length of byteArrayShorterThan20Byte
+                new BigNumber(requiredByteLen), // length of byteArrayShorterThan20Byte
             );
+            return expect(
+                libBytes.publicDeepCopyBytes.callAsync(byteArrayShorterThan32Bytes, byteArrayLongerThan32Bytes),
+            ).to.revertWith(expectedError);
         });
         it('should overwrite dest with source if source and dest have equal length', async () => {
             const zeroedByteArrayLongerThan32Bytes = `0x${_.repeat('0', byteArrayLongerThan32Bytes.length - 2)}`;
@@ -256,18 +260,22 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold an address', async () => {
             const shortByteArray = '0xabcdef';
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadAddress.callAsync(shortByteArray, offset),
-                RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                new BigNumber(3),
+                new BigNumber(20),
             );
+            return expect(libBytes.publicReadAddress.callAsync(shortByteArray, offset)).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold an address', async () => {
             const byteArray = testAddress;
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadAddress.callAsync(byteArray, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                new BigNumber(20),
+                new BigNumber(40),
             );
+            return expect(libBytes.publicReadAddress.callAsync(byteArray, badOffset)).to.revertWith(expectedError);
         });
     });
 
@@ -300,17 +308,26 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold an address', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteAddress.callAsync(byteArrayShorterThan20Bytes, offset, testAddress),
-                RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
+            const byteLen = ethUtil.toBuffer(byteArrayShorterThan20Bytes).byteLength;
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                new BigNumber(byteLen),
+                new BigNumber(20),
             );
+            return expect(
+                libBytes.publicWriteAddress.callAsync(byteArrayShorterThan20Bytes, offset, testAddress),
+            ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold an address', async () => {
             const byteArray = byteArrayLongerThan32Bytes;
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteAddress.callAsync(byteArray, badOffset, testAddress),
-                RevertReason.LibBytesGreaterOrEqualTo20LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsTwentyRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(20)),
+            );
+            return expect(libBytes.publicWriteAddress.callAsync(byteArray, badOffset, testAddress)).to.revertWith(
+                expectedError,
             );
         });
     });
@@ -332,17 +349,24 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold a bytes32', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const byteLen = new BigNumber((byteArrayShorterThan32Bytes.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                byteLen,
+                new BigNumber(32),
+            );
+            return expect(libBytes.publicReadBytes32.callAsync(byteArrayShorterThan32Bytes, offset)).to.revertWith(
+                expectedError,
             );
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytes32.callAsync(testBytes32, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
             );
+            return expect(libBytes.publicReadBytes32.callAsync(testBytes32, badOffset)).to.revertWith(expectedError);
         });
     });
 
@@ -375,17 +399,26 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold a bytes32', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteBytes32.callAsync(byteArrayShorterThan32Bytes, offset, testBytes32),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const byteLen = new BigNumber((byteArrayShorterThan32Bytes.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                byteLen,
+                new BigNumber(32),
             );
+            return expect(
+                libBytes.publicWriteBytes32.callAsync(byteArrayShorterThan32Bytes, offset, testBytes32),
+            ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes32', async () => {
             const byteArray = byteArrayLongerThan32Bytes;
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteBytes32.callAsync(byteArray, badOffset, testBytes32),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
+            );
+            return expect(libBytes.publicWriteBytes32.callAsync(byteArray, badOffset, testBytes32)).to.revertWith(
+                expectedError,
             );
         });
     });
@@ -411,9 +444,14 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold a uint256', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const byteLen = new BigNumber((byteArrayShorterThan32Bytes.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                byteLen,
+                new BigNumber(32),
+            );
+            return expect(libBytes.publicReadUint256.callAsync(byteArrayShorterThan32Bytes, offset)).to.revertWith(
+                expectedError,
             );
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold a uint256', async () => {
@@ -421,10 +459,12 @@ describe('LibBytes', () => {
             const testUint256AsBuffer = ethUtil.toBuffer(formattedTestUint256);
             const byteArray = ethUtil.bufferToHex(testUint256AsBuffer);
             const badOffset = new BigNumber(testUint256AsBuffer.byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadUint256.callAsync(byteArray, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
             );
+            return expect(libBytes.publicReadUint256.callAsync(byteArray, badOffset)).to.revertWith(expectedError);
         });
     });
 
@@ -461,17 +501,26 @@ describe('LibBytes', () => {
         });
         it('should fail if the byte array is too short to hold a uint256', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteUint256.callAsync(byteArrayShorterThan32Bytes, offset, testUint256),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const byteLen = new BigNumber((byteArrayShorterThan32Bytes.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                byteLen,
+                new BigNumber(32),
             );
+            return expect(
+                libBytes.publicWriteUint256.callAsync(byteArrayShorterThan32Bytes, offset, testUint256),
+            ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold a uint256', async () => {
             const byteArray = byteArrayLongerThan32Bytes;
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArray).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteUint256.callAsync(byteArray, badOffset, testUint256),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
+            );
+            return expect(libBytes.publicWriteUint256.callAsync(byteArray, badOffset, testUint256)).to.revertWith(
+                expectedError,
             );
         });
     });
@@ -480,10 +529,15 @@ describe('LibBytes', () => {
         // AssertionError: expected promise to be rejected with an error including 'revert' but it was fulfilled with '0x08c379a0'
         it('should revert if byte array has a length < 4', async () => {
             const byteArrayLessThan4Bytes = '0x010101';
+            const byteLen = (byteArrayLessThan4Bytes.length - 2) / 2;
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, offset),
-                RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsFourRequired,
+                new BigNumber(byteLen), // length of byteArrayLessThan4Bytes
+                new BigNumber(4),
+            );
+            return expect(libBytes.publicReadBytes4.callAsync(byteArrayLessThan4Bytes, offset)).to.revertWith(
+                expectedError,
             );
         });
         it('should return the first 4 bytes of a byte array of arbitrary length', async () => {
@@ -507,10 +561,13 @@ describe('LibBytes', () => {
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold a bytes4', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes4).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytes4.callAsync(testBytes4, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo4LengthRequired,
+            const byteLen = new BigNumber((testBytes4.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsFourRequired,
+                byteLen,
+                badOffset.plus(new BigNumber(4)),
             );
+            return expect(libBytes.publicReadBytes4.callAsync(testBytes4, badOffset)).to.revertWith(expectedError);
         });
     });
 
@@ -557,30 +614,48 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
             // The length of the nested array is 32 bytes. By storing less than 32 bytes, a length cannot be read.
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, offset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const byteLen = new BigNumber((byteArrayShorterThan32Bytes.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                byteLen,
+                new BigNumber(32),
             );
+            return expect(
+                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, offset),
+            ).to.revertWith(expectedError);
         });
         it('should fail if we store a nested byte array length, without a nested byte array', async () => {
             const offset = new BigNumber(0);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytesWithLength.callAsync(testBytes32, offset),
-                RevertReason.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
+            const byteLen = new BigNumber((testBytes32.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
+                byteLen,
+                new BigNumber(testBytes32).plus(32),
+            );
+            return expect(libBytes.publicReadBytesWithLength.callAsync(testBytes32, offset)).to.revertWith(
+                expectedError,
             );
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(byteArrayShorterThan32Bytes).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
             );
+            return expect(
+                libBytes.publicReadBytesWithLength.callAsync(byteArrayShorterThan32Bytes, badOffset),
+            ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the nested byte array', async () => {
             const badOffset = new BigNumber(ethUtil.toBuffer(testBytes32).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicReadBytesWithLength.callAsync(testBytes32, badOffset),
-                RevertReason.LibBytesGreaterOrEqualTo32LengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsThirtyTwoRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)),
+            );
+            return expect(libBytes.publicReadBytesWithLength.callAsync(testBytes32, badOffset)).to.revertWith(
+                expectedError,
             );
         });
     });
@@ -690,18 +765,28 @@ describe('LibBytes', () => {
         it('should fail if the byte array is too short to hold the length of a nested byte array', async () => {
             const offset = new BigNumber(0);
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(1));
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, offset, longData),
-                RevertReason.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
+            const inputLen = new BigNumber((longData.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
+                new BigNumber(1),
+                new BigNumber(32).plus(inputLen),
             );
+            return expect(
+                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, offset, longData),
+            ).to.revertWith(expectedError);
         });
         it('should fail if the length between the offset and end of the byte array is too short to hold the length of a nested byte array', async () => {
             const emptyByteArray = ethUtil.bufferToHex(new Buffer(shortTestBytesAsBuffer.byteLength));
             const badOffset = new BigNumber(ethUtil.toBuffer(shortTestBytesAsBuffer).byteLength);
-            return expectContractCallFailedAsync(
-                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, badOffset, shortData),
-                RevertReason.LibBytesGreaterOrEqualToNestedBytesLengthRequired,
+            const inputLen = new BigNumber((shortData.length - 2) / 2);
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.LengthGreaterThanOrEqualsNestedBytesLengthRequired,
+                badOffset,
+                badOffset.plus(new BigNumber(32)).plus(inputLen),
             );
+            return expect(
+                libBytes.publicWriteBytesWithLength.callAsync(emptyByteArray, badOffset, shortData),
+            ).to.revertWith(expectedError);
         });
     });
 
@@ -875,9 +960,13 @@ describe('LibBytes', () => {
         it('should revert if from > to', async () => {
             const from = new BigNumber(1);
             const to = new BigNumber(0);
-            expectContractCallFailedAsync(
-                libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to),
-                RevertReason.FromLessThanToRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
+                from,
+                to,
+            );
+            return expect(libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to)).to.revertWith(
+                expectedError,
             );
         });
         it('should return a byte array of length 0 if from == to', async () => {
@@ -896,12 +985,16 @@ describe('LibBytes', () => {
             expect(result).to.eq(constants.NULL_BYTES);
         });
         it('should revert if to > input.length', async () => {
-            const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
+            const byteLen: number = (byteArrayLongerThan32Bytes.length - 2) / 2;
             const from = new BigNumber(0);
             const to = new BigNumber(byteLen).plus(1);
-            expectContractCallFailedAsync(
-                libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to),
-                RevertReason.ToLessThanLengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
+                to,
+                new BigNumber(byteLen),
+            );
+            return expect(libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to)).to.revertWith(
+                expectedError,
             );
         });
         it('should slice a section of the input', async () => {
@@ -926,9 +1019,13 @@ describe('LibBytes', () => {
         it('should revert if from > to', async () => {
             const from = new BigNumber(1);
             const to = new BigNumber(0);
-            expectContractCallFailedAsync(
-                libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to),
-                RevertReason.FromLessThanToRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.FromLessThanOrEqualsToRequired,
+                from,
+                to,
+            );
+            return expect(libBytes.publicSlice.callAsync(byteArrayLongerThan32Bytes, from, to)).to.revertWith(
+                expectedError,
             );
         });
         it('should return a byte array of length 0 if from == to', async () => {
@@ -948,10 +1045,14 @@ describe('LibBytes', () => {
             const byteLen = (byteArrayLongerThan32Bytes.length - 2) / 2;
             const from = new BigNumber(0);
             const to = new BigNumber(byteLen).plus(1);
-            expectContractCallFailedAsync(
-                libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to),
-                RevertReason.ToLessThanLengthRequired,
+            const expectedError = new LibBytesRevertErrors.InvalidByteOperationError(
+                LibBytesRevertErrors.InvalidByteOperationErrorCodes.ToLessThanOrEqualsLengthRequired,
+                to,
+                new BigNumber(byteLen),
             );
+            return expect(
+                libBytes.publicSliceDestructive.callAsync(byteArrayLongerThan32Bytes, from, to),
+            ).to.revertWith(expectedError);
         });
         it('should slice a section of the input', async () => {
             const from = new BigNumber(1);

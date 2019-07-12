@@ -109,6 +109,10 @@
             {
                 "note": "Make `calculateMatchedFillResults` public",
                 "pr": 1885
+            },
+            {
+                "note": "Updated RichErrors to the library pattern",
+                "pr": 1913
             }
         ]
     },

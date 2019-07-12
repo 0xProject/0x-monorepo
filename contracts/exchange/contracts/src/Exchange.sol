@@ -49,6 +49,5 @@ contract Exchange is
         MixinAssetProxyDispatcher()
         MixinTransferSimulator()
         MixinWrapperFunctions()
-        MixinExchangeRichErrors()
     {}
 }

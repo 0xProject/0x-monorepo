@@ -14,20 +14,21 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-utils/contracts/src/RichErrors.sol";
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
-import "./MixinExchangeCore.sol";
+import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/IMatchOrders.sol";
 import "./interfaces/ITransactions.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./LibExchangeRichErrors.sol";
+import "./MixinExchangeCore.sol";
 
 
 contract MixinMatchOrders is
-    MixinExchangeRichErrors,
     MixinExchangeCore,
     IMatchOrders
 {
@@ -255,7 +256,7 @@ contract MixinMatchOrders is
         // These equations can be combined to get the following:
         if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
             _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
-            _rrevert(NegativeSpreadError(
+            LibRichErrors._rrevert(LibExchangeRichErrors.NegativeSpreadError(
                 getOrderHash(leftOrder),
                 getOrderHash(rightOrder)
             ));

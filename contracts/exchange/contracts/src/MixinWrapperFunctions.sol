@@ -20,20 +20,20 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "@0x/contracts-utils/contracts/src/RichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IExchangeCore.sol";
+import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/IWrapperFunctions.sol";
-import "./MixinExchangeRichErrors.sol";
+import "./LibExchangeRichErrors.sol";
 import "./MixinExchangeCore.sol";
 
 
 contract MixinWrapperFunctions is
     IWrapperFunctions,
-    MixinExchangeRichErrors,
     MixinExchangeCore
 {
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
@@ -445,7 +445,9 @@ contract MixinWrapperFunctions is
             signature
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
-            _rrevert(IncompleteFillError(getOrderInfo(order).orderHash));
+            LibRichErrors._rrevert(LibExchangeRichErrors.IncompleteFillError(
+                getOrderInfo(order).orderHash
+            ));
         }
         return fillResults;
     }

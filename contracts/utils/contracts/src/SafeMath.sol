@@ -1,11 +1,10 @@
 pragma solidity ^0.5.9;
 
-import "./MixinSafeMathRichErrors.sol";
+import "./LibRichErrors.sol";
+import "./LibSafeMathRichErrors.sol";
 
 
-contract SafeMath is
-    MixinSafeMathRichErrors
-{
+contract SafeMath {
 
     function _safeMul(uint256 a, uint256 b)
         internal
@@ -17,8 +16,8 @@ contract SafeMath is
         }
         uint256 c = a * b;
         if (c / a != b) {
-            _rrevert(SafeMathError(
-                SafeMathErrorCodes.UINT256_MULTIPLICATION_OVERFLOW,
+            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_MULTIPLICATION_OVERFLOW,
                 a,
                 b
             ));
@@ -41,8 +40,8 @@ contract SafeMath is
         returns (uint256)
     {
         if (b > a) {
-            _rrevert(SafeMathError(
-                SafeMathErrorCodes.UINT256_SUBTRACTION_UNDERFLOW,
+            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_SUBTRACTION_UNDERFLOW,
                 a,
                 b
             ));
@@ -57,8 +56,8 @@ contract SafeMath is
     {
         uint256 c = a + b;
         if (c < a) {
-            _rrevert(SafeMathError(
-                SafeMathErrorCodes.UINT256_ADDITION_OVERFLOW,
+            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_ADDITION_OVERFLOW,
                 a,
                 b
             ));
