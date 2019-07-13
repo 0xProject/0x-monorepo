@@ -134,6 +134,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
@@ -153,7 +157,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -161,8 +165,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(self, owner),
+                self.removeOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -174,7 +182,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.removeOwner.sendTransactionAsync(owner, txData);
+            const txHashPromise = self.removeOwner.sendTransactionAsync(owner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -190,7 +198,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -199,6 +207,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -213,7 +225,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -222,6 +234,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
@@ -233,7 +249,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [owner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [
+                owner.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -251,6 +269,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.revokeConfirmation.estimateGasAsync.bind(self, transactionId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -287,6 +309,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -314,6 +340,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
@@ -347,7 +377,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isOwner(address)', [index_0]);
+            const encodedData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -356,6 +386,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
@@ -367,7 +401,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isOwner(address)', [index_0]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()]);
             return abiEncodedTransactionData;
         },
     };
@@ -389,7 +423,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmations(uint256,address)', [index_0, index_1]);
+            const encodedData = self._strictEncodeArguments('confirmations(uint256,address)', [
+                index_0,
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -398,6 +435,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
@@ -412,7 +453,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('confirmations(uint256,address)', [
                 index_0,
-                index_1,
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -433,6 +474,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(self, transactionId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -474,6 +519,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -503,6 +552,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
@@ -541,6 +594,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
@@ -582,6 +639,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
@@ -611,7 +672,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract,
+                assetProxyContract.toLowerCase(),
                 isRegistered,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -621,8 +682,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract, isRegistered),
+                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract.toLowerCase(), isRegistered),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -637,7 +702,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const txHashPromise = self.registerAssetProxy.sendTransactionAsync(
-                assetProxyContract,
+                assetProxyContract.toLowerCase(),
                 isRegistered,
                 txData,
             );
@@ -662,7 +727,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract,
+                assetProxyContract.toLowerCase(),
                 isRegistered,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -673,6 +738,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -694,7 +763,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             }
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract,
+                assetProxyContract.toLowerCase(),
                 isRegistered,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -705,6 +774,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
@@ -718,7 +791,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isBoolean('isRegistered', isRegistered);
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract,
+                assetProxyContract.toLowerCase(),
                 isRegistered,
             ]);
             return abiEncodedTransactionData;
@@ -728,7 +801,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -736,8 +809,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(self, owner),
+                self.addOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -749,7 +826,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.addOwner.sendTransactionAsync(owner, txData);
+            const txHashPromise = self.addOwner.sendTransactionAsync(owner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -765,7 +842,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -774,6 +851,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -788,7 +869,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner]);
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -797,6 +878,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
@@ -808,7 +893,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
     };
@@ -837,6 +922,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
@@ -869,6 +958,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.changeTimeLock.estimateGasAsync.bind(self, _secondsTimeLocked),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -905,6 +998,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -932,6 +1029,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
@@ -965,7 +1066,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0]);
+            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -974,6 +1075,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
@@ -985,7 +1090,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [
+                index_0.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1014,6 +1121,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
@@ -1056,6 +1167,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
@@ -1091,6 +1206,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOwners()');
@@ -1141,6 +1260,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
@@ -1187,6 +1310,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
@@ -1222,6 +1349,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactionCount()');
@@ -1250,6 +1381,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.changeRequirement.estimateGasAsync.bind(self, _required),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1286,6 +1421,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1313,6 +1452,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
@@ -1342,6 +1485,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.confirmTransaction.estimateGasAsync.bind(self, transactionId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1378,6 +1525,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1405,6 +1556,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
@@ -1434,7 +1589,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination,
+                destination.toLowerCase(),
                 value,
                 data,
             ]);
@@ -1445,8 +1600,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(self, destination, value, data),
+                self.submitTransaction.estimateGasAsync.bind(self, destination.toLowerCase(), value, data),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1462,7 +1621,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isBigNumber('value', value);
             assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.submitTransaction.sendTransactionAsync(destination, value, data, txData);
+            const txHashPromise = self.submitTransaction.sendTransactionAsync(
+                destination.toLowerCase(),
+                value,
+                data,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -1486,7 +1650,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination,
+                destination.toLowerCase(),
                 value,
                 data,
             ]);
@@ -1498,6 +1662,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1521,7 +1689,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             }
             const self = (this as any) as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination,
+                destination.toLowerCase(),
                 value,
                 data,
             ]);
@@ -1533,6 +1701,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
@@ -1547,7 +1719,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('data', data);
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination,
+                destination.toLowerCase(),
                 value,
                 data,
             ]);
@@ -1579,6 +1751,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
@@ -1614,6 +1790,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
@@ -1648,6 +1828,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('required()');
@@ -1671,7 +1855,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner, newOwner]);
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
+                owner.toLowerCase(),
+                newOwner.toLowerCase(),
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1679,8 +1866,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(self, owner, newOwner),
+                self.replaceOwner.estimateGasAsync.bind(self, owner.toLowerCase(), newOwner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1694,7 +1885,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.replaceOwner.sendTransactionAsync(owner, newOwner, txData);
+            const txHashPromise = self.replaceOwner.sendTransactionAsync(
+                owner.toLowerCase(),
+                newOwner.toLowerCase(),
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -1711,7 +1906,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner, newOwner]);
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
+                owner.toLowerCase(),
+                newOwner.toLowerCase(),
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1720,6 +1918,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1740,7 +1942,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner, newOwner]);
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
+                owner.toLowerCase(),
+                newOwner.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1749,6 +1954,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
@@ -1762,8 +1971,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner,
-                newOwner,
+                owner.toLowerCase(),
+                newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -1782,6 +1991,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.executeTransaction.estimateGasAsync.bind(self, transactionId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1818,6 +2031,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1845,6 +2062,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
@@ -2462,10 +2683,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'assetProxyContract',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'isRegistered',
                         type: 'bool',
+                        indexed: false,
                     },
                 ],
                 name: 'AssetProxyRegistration',
@@ -2478,10 +2701,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                     {
                         name: 'confirmationTime',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'ConfirmationTimeSet',
@@ -2494,6 +2719,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'secondsTimeLocked',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'TimeLockChange',
@@ -2506,10 +2732,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Confirmation',
@@ -2522,10 +2750,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Revocation',
@@ -2538,6 +2768,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Submission',
@@ -2550,6 +2781,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Execution',
@@ -2562,6 +2794,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'ExecutionFailure',
@@ -2574,10 +2807,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Deposit',
@@ -2590,6 +2825,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'owner',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'OwnerAddition',
@@ -2602,6 +2838,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'owner',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'OwnerRemoval',
@@ -2614,6 +2851,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'required',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'RequirementChange',

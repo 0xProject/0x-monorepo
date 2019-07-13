@@ -74,7 +74,15 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [
+                    orders,
+                    makerAssetFillAmount,
+                    signatures,
+                    feeOrders,
+                    feeSignatures,
+                    feePercentage,
+                    feeRecipient.toLowerCase(),
+                ],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -91,9 +99,13 @@ export class ForwarderContract extends BaseContract {
                     feeOrders,
                     feeSignatures,
                     feePercentage,
-                    feeRecipient,
+                    feeRecipient.toLowerCase(),
                 ),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -150,7 +162,7 @@ export class ForwarderContract extends BaseContract {
                 feeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
+                feeRecipient.toLowerCase(),
                 txData,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -211,7 +223,15 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [
+                    orders,
+                    makerAssetFillAmount,
+                    signatures,
+                    feeOrders,
+                    feeSignatures,
+                    feePercentage,
+                    feeRecipient.toLowerCase(),
+                ],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -221,6 +241,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -294,7 +318,15 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [
+                    orders,
+                    makerAssetFillAmount,
+                    signatures,
+                    feeOrders,
+                    feeSignatures,
+                    feePercentage,
+                    feeRecipient.toLowerCase(),
+                ],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -304,6 +336,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -374,7 +410,15 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [
+                    orders,
+                    makerAssetFillAmount,
+                    signatures,
+                    feeOrders,
+                    feeSignatures,
+                    feePercentage,
+                    feeRecipient.toLowerCase(),
+                ],
             );
             return abiEncodedTransactionData;
         },
@@ -398,6 +442,10 @@ export class ForwarderContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.withdrawAsset.estimateGasAsync.bind(self, assetData, amount),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -441,6 +489,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -470,6 +522,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
@@ -509,6 +565,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
@@ -568,7 +628,7 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient.toLowerCase()],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -584,9 +644,13 @@ export class ForwarderContract extends BaseContract {
                     feeOrders,
                     feeSignatures,
                     feePercentage,
-                    feeRecipient,
+                    feeRecipient.toLowerCase(),
                 ),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -640,7 +704,7 @@ export class ForwarderContract extends BaseContract {
                 feeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
+                feeRecipient.toLowerCase(),
                 txData,
             );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
@@ -699,7 +763,7 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient.toLowerCase()],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -709,6 +773,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -780,7 +848,7 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const encodedData = self._strictEncodeArguments(
                 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient.toLowerCase()],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -790,6 +858,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -858,7 +930,7 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
-                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient],
+                [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient.toLowerCase()],
             );
             return abiEncodedTransactionData;
         },
@@ -867,7 +939,7 @@ export class ForwarderContract extends BaseContract {
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -875,8 +947,12 @@ export class ForwarderContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner),
+                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -888,7 +964,7 @@ export class ForwarderContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner, txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -904,7 +980,7 @@ export class ForwarderContract extends BaseContract {
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -913,6 +989,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -927,7 +1007,7 @@ export class ForwarderContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ForwarderContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -936,6 +1016,10 @@ export class ForwarderContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
@@ -947,7 +1031,9 @@ export class ForwarderContract extends BaseContract {
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
+                newOwner.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1031,6 +1117,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1093,6 +1180,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1162,6 +1250,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1184,6 +1273,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1246,6 +1336,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1304,6 +1395,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1373,6 +1465,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1395,6 +1488,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',

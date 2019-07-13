@@ -52,6 +52,10 @@ export class CoordinatorRegistryContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.setCoordinatorEndpoint.estimateGasAsync.bind(self, coordinatorEndpoint),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -88,6 +92,10 @@ export class CoordinatorRegistryContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -115,6 +123,10 @@ export class CoordinatorRegistryContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
@@ -148,7 +160,9 @@ export class CoordinatorRegistryContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as CoordinatorRegistryContract;
-            const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [coordinatorOperator]);
+            const encodedData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
+                coordinatorOperator.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -157,6 +171,10 @@ export class CoordinatorRegistryContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
@@ -169,7 +187,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             assert.isString('coordinatorOperator', coordinatorOperator);
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getCoordinatorEndpoint(address)', [
-                coordinatorOperator,
+                coordinatorOperator.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -280,10 +298,12 @@ export class CoordinatorRegistryContract extends BaseContract {
                     {
                         name: 'coordinatorOperator',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'coordinatorEndpoint',
                         type: 'string',
+                        indexed: false,
                     },
                 ],
                 name: 'CoordinatorEndpointSet',

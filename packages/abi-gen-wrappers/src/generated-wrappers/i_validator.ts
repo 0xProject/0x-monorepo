@@ -49,7 +49,7 @@ export class IValidatorContract extends BaseContract {
             const self = (this as any) as IValidatorContract;
             const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -60,6 +60,10 @@ export class IValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
@@ -75,7 +79,7 @@ export class IValidatorContract extends BaseContract {
             const self = (this as any) as IValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             return abiEncodedTransactionData;

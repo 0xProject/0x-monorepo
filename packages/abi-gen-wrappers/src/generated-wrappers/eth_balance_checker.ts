@@ -52,6 +52,10 @@ export class EthBalanceCheckerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');

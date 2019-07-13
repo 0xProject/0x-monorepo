@@ -73,7 +73,7 @@ export class OrderValidatorContract extends BaseContract {
             const self = (this as any) as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments(
                 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
-                [order, takerAddress],
+                [order, takerAddress.toLowerCase()],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -83,6 +83,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -128,7 +132,7 @@ export class OrderValidatorContract extends BaseContract {
             const self = (this as any) as OrderValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
-                [order, takerAddress],
+                [order, takerAddress.toLowerCase()],
             );
             return abiEncodedTransactionData;
         },
@@ -152,7 +156,7 @@ export class OrderValidatorContract extends BaseContract {
             }
             const self = (this as any) as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getBalanceAndAllowance(address,bytes)', [
-                target,
+                target.toLowerCase(),
                 assetData,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -163,6 +167,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
@@ -176,7 +184,7 @@ export class OrderValidatorContract extends BaseContract {
             assert.isString('assetData', assetData);
             const self = (this as any) as OrderValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getBalanceAndAllowance(address,bytes)', [
-                target,
+                target.toLowerCase(),
                 assetData,
             ]);
             return abiEncodedTransactionData;
@@ -239,6 +247,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -344,6 +356,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -410,7 +426,10 @@ export class OrderValidatorContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as OrderValidatorContract;
-            const encodedData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [token, tokenId]);
+            const encodedData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [
+                token.toLowerCase(),
+                tokenId,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -419,6 +438,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
@@ -432,7 +455,7 @@ export class OrderValidatorContract extends BaseContract {
             assert.isBigNumber('tokenId', tokenId);
             const self = (this as any) as OrderValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getERC721TokenOwner(address,uint256)', [
-                token,
+                token.toLowerCase(),
                 tokenId,
             ]);
             return abiEncodedTransactionData;
@@ -457,7 +480,7 @@ export class OrderValidatorContract extends BaseContract {
             }
             const self = (this as any) as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments('getBalancesAndAllowances(address,bytes[])', [
-                target,
+                target.toLowerCase(),
                 assetData,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -468,6 +491,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
@@ -481,7 +508,7 @@ export class OrderValidatorContract extends BaseContract {
             assert.isArray('assetData', assetData);
             const self = (this as any) as OrderValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getBalancesAndAllowances(address,bytes[])', [
-                target,
+                target.toLowerCase(),
                 assetData,
             ]);
             return abiEncodedTransactionData;
@@ -528,7 +555,7 @@ export class OrderValidatorContract extends BaseContract {
             const self = (this as any) as OrderValidatorContract;
             const encodedData = self._strictEncodeArguments(
                 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
-                [order, takerAddress],
+                [order, takerAddress.toLowerCase()],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -538,6 +565,10 @@ export class OrderValidatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -578,7 +609,7 @@ export class OrderValidatorContract extends BaseContract {
             const self = (this as any) as OrderValidatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
-                [order, takerAddress],
+                [order, takerAddress.toLowerCase()],
             );
             return abiEncodedTransactionData;
         },
@@ -653,6 +684,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -714,6 +746,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -732,6 +765,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerBalance',
@@ -805,6 +839,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -866,6 +901,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'ordersInfo',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -884,6 +920,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'tradersInfo',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerBalance',
@@ -930,6 +967,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -991,6 +1029,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerBalance',
@@ -1087,6 +1126,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1148,6 +1188,7 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerBalance',

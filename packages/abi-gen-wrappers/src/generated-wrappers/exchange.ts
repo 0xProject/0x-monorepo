@@ -107,6 +107,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('filled(bytes32)');
@@ -159,6 +163,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.batchFillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -240,6 +248,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -292,6 +304,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -361,6 +377,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('cancelled(bytes32)');
@@ -389,7 +409,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -399,8 +419,12 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.preSign.estimateGasAsync.bind(self, hash, signerAddress, signature),
+                self.preSign.estimateGasAsync.bind(self, hash, signerAddress.toLowerCase(), signature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -416,7 +440,12 @@ export class ExchangeContract extends BaseContract {
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.preSign.sendTransactionAsync(hash, signerAddress, signature, txData);
+            const txHashPromise = self.preSign.sendTransactionAsync(
+                hash,
+                signerAddress.toLowerCase(),
+                signature,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -441,7 +470,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -452,6 +481,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -476,7 +509,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -487,6 +520,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('preSign(bytes32,address,bytes)');
@@ -502,7 +539,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             return abiEncodedTransactionData;
@@ -558,6 +595,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.matchOrders.estimateGasAsync.bind(self, leftOrder, rightOrder, leftSignature, rightSignature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -666,6 +707,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -740,6 +785,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -842,6 +891,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.fillOrderNoThrow.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -921,6 +974,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -972,6 +1029,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -1036,6 +1097,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
@@ -1084,6 +1149,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.batchCancelOrders.estimateGasAsync.bind(self, orders),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1152,6 +1221,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1195,6 +1268,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -1267,6 +1344,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.batchFillOrKillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1348,6 +1429,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1400,6 +1485,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -1458,6 +1547,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.cancelOrdersUpTo.estimateGasAsync.bind(self, targetOrderEpoch),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1494,6 +1587,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1521,6 +1618,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('cancelOrdersUpTo(uint256)');
@@ -1575,6 +1676,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.batchFillOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1656,6 +1761,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1708,6 +1817,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -1777,6 +1890,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
@@ -1817,6 +1934,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(bytes32)');
@@ -1868,6 +1989,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.fillOrKillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1947,6 +2072,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1998,6 +2127,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -2051,7 +2184,7 @@ export class ExchangeContract extends BaseContract {
             assert.isBoolean('approval', approval);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
-                validatorAddress,
+                validatorAddress.toLowerCase(),
                 approval,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2061,8 +2194,16 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setSignatureValidatorApproval.estimateGasAsync.bind(self, validatorAddress, approval),
+                self.setSignatureValidatorApproval.estimateGasAsync.bind(
+                    self,
+                    validatorAddress.toLowerCase(),
+                    approval,
+                ),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2077,7 +2218,7 @@ export class ExchangeContract extends BaseContract {
             assert.isBoolean('approval', approval);
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.setSignatureValidatorApproval.sendTransactionAsync(
-                validatorAddress,
+                validatorAddress.toLowerCase(),
                 approval,
                 txData,
             );
@@ -2102,7 +2243,7 @@ export class ExchangeContract extends BaseContract {
             assert.isBoolean('approval', approval);
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
-                validatorAddress,
+                validatorAddress.toLowerCase(),
                 approval,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2113,6 +2254,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -2134,7 +2279,7 @@ export class ExchangeContract extends BaseContract {
             }
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
-                validatorAddress,
+                validatorAddress.toLowerCase(),
                 approval,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2145,6 +2290,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setSignatureValidatorApproval(address,bool)');
@@ -2159,7 +2308,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'setSignatureValidatorApproval(address,bool)',
-                [validatorAddress, approval],
+                [validatorAddress.toLowerCase(), approval],
             );
             return abiEncodedTransactionData;
         },
@@ -2182,7 +2331,10 @@ export class ExchangeContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('allowedValidators(address,address)', [index_0, index_1]);
+            const encodedData = self._strictEncodeArguments('allowedValidators(address,address)', [
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2191,6 +2343,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('allowedValidators(address,address)');
@@ -2204,8 +2360,8 @@ export class ExchangeContract extends BaseContract {
             assert.isString('index_1', index_1);
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('allowedValidators(address,address)', [
-                index_0,
-                index_1,
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -2247,6 +2403,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.marketSellOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2328,6 +2488,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -2380,6 +2544,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -2465,6 +2633,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -2520,7 +2692,10 @@ export class ExchangeContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('preSigned(bytes32,address)', [index_0, index_1]);
+            const encodedData = self._strictEncodeArguments('preSigned(bytes32,address)', [
+                index_0,
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2529,6 +2704,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('preSigned(bytes32,address)');
@@ -2543,7 +2722,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('preSigned(bytes32,address)', [
                 index_0,
-                index_1,
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -2568,6 +2747,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
@@ -2604,7 +2787,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -2615,6 +2798,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
@@ -2630,7 +2817,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
                 hash,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 signature,
             ]);
             return abiEncodedTransactionData;
@@ -2673,6 +2860,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.marketBuyOrdersNoThrow.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2754,6 +2945,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -2806,6 +3001,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -2886,6 +3085,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.fillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -2960,6 +3163,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -3011,6 +3218,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -3069,7 +3280,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
                 salt,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 data,
                 signature,
             ]);
@@ -3080,8 +3291,12 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(self, salt, signerAddress, data, signature),
+                self.executeTransaction.estimateGasAsync.bind(self, salt, signerAddress.toLowerCase(), data, signature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -3101,7 +3316,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(
                 salt,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 data,
                 signature,
                 txData,
@@ -3132,7 +3347,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
                 salt,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 data,
                 signature,
             ]);
@@ -3144,6 +3359,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -3170,7 +3389,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
                 salt,
-                signerAddress,
+                signerAddress.toLowerCase(),
                 data,
                 signature,
             ]);
@@ -3182,6 +3401,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256,address,bytes,bytes)');
@@ -3198,7 +3421,7 @@ export class ExchangeContract extends BaseContract {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'executeTransaction(uint256,address,bytes,bytes)',
-                [salt, signerAddress, data, signature],
+                [salt, signerAddress.toLowerCase(), data, signature],
             );
             return abiEncodedTransactionData;
         },
@@ -3207,7 +3430,7 @@ export class ExchangeContract extends BaseContract {
         async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy]);
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3215,8 +3438,12 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxy),
+                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxy.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -3228,7 +3455,7 @@ export class ExchangeContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy, txData);
+            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -3244,7 +3471,7 @@ export class ExchangeContract extends BaseContract {
         async estimateGasAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy]);
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3253,6 +3480,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -3271,7 +3502,7 @@ export class ExchangeContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy]);
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3280,6 +3511,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
@@ -3291,7 +3526,9 @@ export class ExchangeContract extends BaseContract {
         getABIEncodedTransactionData(assetProxy: string): string {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [
+                assetProxy.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -3335,6 +3572,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -3403,6 +3644,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.cancelOrder.estimateGasAsync.bind(self, order),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -3469,6 +3714,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -3511,6 +3760,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -3561,7 +3814,10 @@ export class ExchangeContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('orderEpoch(address,address)', [index_0, index_1]);
+            const encodedData = self._strictEncodeArguments('orderEpoch(address,address)', [
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3570,6 +3826,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('orderEpoch(address,address)');
@@ -3583,8 +3843,8 @@ export class ExchangeContract extends BaseContract {
             assert.isString('index_1', index_1);
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('orderEpoch(address,address)', [
-                index_0,
-                index_1,
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -3609,6 +3869,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('ZRX_ASSET_DATA()');
@@ -3660,6 +3924,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.marketSellOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -3741,6 +4009,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -3793,6 +4065,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -3857,6 +4133,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
@@ -3908,6 +4188,10 @@ export class ExchangeContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.marketBuyOrders.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -3989,6 +4273,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -4041,6 +4329,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -4105,6 +4397,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('currentContextAddress()');
@@ -4123,7 +4419,7 @@ export class ExchangeContract extends BaseContract {
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4131,8 +4427,12 @@ export class ExchangeContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner),
+                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -4144,7 +4444,7 @@ export class ExchangeContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner, txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -4160,7 +4460,7 @@ export class ExchangeContract extends BaseContract {
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4169,6 +4469,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -4183,7 +4487,7 @@ export class ExchangeContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4192,6 +4496,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
@@ -4203,7 +4511,9 @@ export class ExchangeContract extends BaseContract {
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
+                newOwner.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -4227,6 +4537,10 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('VERSION()');
@@ -4328,6 +4642,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4393,6 +4708,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4464,6 +4780,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'leftOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4518,6 +4835,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'rightOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4583,10 +4901,12 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4609,6 +4929,7 @@ export class ExchangeContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4645,6 +4966,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4710,6 +5032,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4759,6 +5082,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4823,6 +5147,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4888,6 +5213,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4932,6 +5258,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4997,6 +5324,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5065,6 +5393,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5130,6 +5459,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5201,6 +5531,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5266,6 +5597,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5296,6 +5628,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5353,6 +5686,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -5443,6 +5777,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5508,6 +5843,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5538,6 +5874,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5603,6 +5940,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5673,6 +6011,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5730,6 +6069,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -5756,6 +6096,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5857,6 +6198,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5922,6 +6264,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5966,6 +6309,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6031,6 +6375,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -6115,14 +6460,17 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'signerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'validatorAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'approved',
                         type: 'bool',
+                        indexed: false,
                     },
                 ],
                 name: 'SignatureValidatorApproval',
@@ -6135,46 +6483,57 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'feeRecipientAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'takerAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'makerAssetFilledAmount',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetFilledAmount',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'makerFeePaid',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'takerFeePaid',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'orderHash',
                         type: 'bytes32',
+                        indexed: true,
                     },
                     {
                         name: 'makerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                 ],
                 name: 'Fill',
@@ -6187,26 +6546,32 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'feeRecipientAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'orderHash',
                         type: 'bytes32',
+                        indexed: true,
                     },
                     {
                         name: 'makerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                 ],
                 name: 'Cancel',
@@ -6219,14 +6584,17 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'orderEpoch',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'CancelUpTo',
@@ -6239,10 +6607,12 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'id',
                         type: 'bytes4',
+                        indexed: false,
                     },
                     {
                         name: 'assetProxy',
                         type: 'address',
+                        indexed: false,
                     },
                 ],
                 name: 'AssetProxyRegistered',

@@ -31,7 +31,7 @@ export class IAssetProxyContract extends BaseContract {
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -39,8 +39,12 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.addAuthorizedAddress.estimateGasAsync.bind(self, target),
+                self.addAuthorizedAddress.estimateGasAsync.bind(self, target.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -52,7 +56,7 @@ export class IAssetProxyContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target, txData);
+            const txHashPromise = self.addAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -68,7 +72,7 @@ export class IAssetProxyContract extends BaseContract {
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -77,6 +81,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -91,7 +99,7 @@ export class IAssetProxyContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -100,6 +108,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
@@ -111,7 +123,9 @@ export class IAssetProxyContract extends BaseContract {
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [target]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('addAuthorizedAddress(address)', [
+                target.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -119,7 +133,7 @@ export class IAssetProxyContract extends BaseContract {
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -127,8 +141,12 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.removeAuthorizedAddress.estimateGasAsync.bind(self, target),
+                self.removeAuthorizedAddress.estimateGasAsync.bind(self, target.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -140,7 +158,7 @@ export class IAssetProxyContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target, txData);
+            const txHashPromise = self.removeAuthorizedAddress.sendTransactionAsync(target.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -156,7 +174,7 @@ export class IAssetProxyContract extends BaseContract {
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -165,6 +183,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -179,7 +201,7 @@ export class IAssetProxyContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target]);
+            const encodedData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -188,6 +210,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
@@ -199,7 +225,9 @@ export class IAssetProxyContract extends BaseContract {
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [target]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeAuthorizedAddress(address)', [
+                target.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -213,7 +241,7 @@ export class IAssetProxyContract extends BaseContract {
             assert.isBigNumber('index', index);
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target,
+                target.toLowerCase(),
                 index,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -223,8 +251,12 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(self, target, index),
+                self.removeAuthorizedAddressAtIndex.estimateGasAsync.bind(self, target.toLowerCase(), index),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -238,7 +270,11 @@ export class IAssetProxyContract extends BaseContract {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
             const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(target, index, txData);
+            const txHashPromise = self.removeAuthorizedAddressAtIndex.sendTransactionAsync(
+                target.toLowerCase(),
+                index,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -260,7 +296,7 @@ export class IAssetProxyContract extends BaseContract {
             assert.isBigNumber('index', index);
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target,
+                target.toLowerCase(),
                 index,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -271,6 +307,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -292,7 +332,7 @@ export class IAssetProxyContract extends BaseContract {
             }
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('removeAuthorizedAddressAtIndex(address,uint256)', [
-                target,
+                target.toLowerCase(),
                 index,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -303,6 +343,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
@@ -317,7 +361,7 @@ export class IAssetProxyContract extends BaseContract {
             const self = (this as any) as IAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'removeAuthorizedAddressAtIndex(address,uint256)',
-                [target, index],
+                [target.toLowerCase(), index],
             );
             return abiEncodedTransactionData;
         },
@@ -337,8 +381,8 @@ export class IAssetProxyContract extends BaseContract {
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
                 assetData,
-                from,
-                to,
+                from.toLowerCase(),
+                to.toLowerCase(),
                 amount,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -348,8 +392,12 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, assetData, from, to, amount),
+                self.transferFrom.estimateGasAsync.bind(self, assetData, from.toLowerCase(), to.toLowerCase(), amount),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -367,7 +415,13 @@ export class IAssetProxyContract extends BaseContract {
             assert.isString('to', to);
             assert.isBigNumber('amount', amount);
             const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(assetData, from, to, amount, txData);
+            const txHashPromise = self.transferFrom.sendTransactionAsync(
+                assetData,
+                from.toLowerCase(),
+                to.toLowerCase(),
+                amount,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -394,8 +448,8 @@ export class IAssetProxyContract extends BaseContract {
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
                 assetData,
-                from,
-                to,
+                from.toLowerCase(),
+                to.toLowerCase(),
                 amount,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -406,6 +460,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -432,8 +490,8 @@ export class IAssetProxyContract extends BaseContract {
             const self = (this as any) as IAssetProxyContract;
             const encodedData = self._strictEncodeArguments('transferFrom(bytes,address,address,uint256)', [
                 assetData,
-                from,
-                to,
+                from.toLowerCase(),
+                to.toLowerCase(),
                 amount,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -444,6 +502,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(bytes,address,address,uint256)');
@@ -460,7 +522,7 @@ export class IAssetProxyContract extends BaseContract {
             const self = (this as any) as IAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'transferFrom(bytes,address,address,uint256)',
-                [assetData, from, to, amount],
+                [assetData, from.toLowerCase(), to.toLowerCase(), amount],
             );
             return abiEncodedTransactionData;
         },
@@ -485,6 +547,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
@@ -519,6 +585,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
@@ -537,7 +607,7 @@ export class IAssetProxyContract extends BaseContract {
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -545,8 +615,12 @@ export class IAssetProxyContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner),
+                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -558,7 +632,7 @@ export class IAssetProxyContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner, txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -574,7 +648,7 @@ export class IAssetProxyContract extends BaseContract {
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -583,6 +657,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -597,7 +675,7 @@ export class IAssetProxyContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as IAssetProxyContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -606,6 +684,10 @@ export class IAssetProxyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
@@ -617,7 +699,9 @@ export class IAssetProxyContract extends BaseContract {
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
+                newOwner.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };

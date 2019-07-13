@@ -82,6 +82,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('name()');
@@ -101,7 +105,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -109,8 +113,12 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, guy, wad),
+                self.approve.estimateGasAsync.bind(self, guy.toLowerCase(), wad),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -124,7 +132,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.approve.sendTransactionAsync(guy, wad, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(guy.toLowerCase(), wad, txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -141,7 +149,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -150,6 +158,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -170,7 +182,7 @@ export class WETH9Contract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [guy.toLowerCase(), wad]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -179,6 +191,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
@@ -191,7 +207,10 @@ export class WETH9Contract extends BaseContract {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [guy, wad]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [
+                guy.toLowerCase(),
+                wad,
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -215,6 +234,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
@@ -240,7 +263,11 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src, dst, wad]);
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                src.toLowerCase(),
+                dst.toLowerCase(),
+                wad,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -248,8 +275,12 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, src, dst, wad),
+                self.transferFrom.estimateGasAsync.bind(self, src.toLowerCase(), dst.toLowerCase(), wad),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -265,7 +296,12 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(src, dst, wad, txData);
+            const txHashPromise = self.transferFrom.sendTransactionAsync(
+                src.toLowerCase(),
+                dst.toLowerCase(),
+                wad,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -288,7 +324,11 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src, dst, wad]);
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                src.toLowerCase(),
+                dst.toLowerCase(),
+                wad,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -297,6 +337,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -319,7 +363,11 @@ export class WETH9Contract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [src, dst, wad]);
+            const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
+                src.toLowerCase(),
+                dst.toLowerCase(),
+                wad,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -328,6 +376,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
@@ -342,8 +394,8 @@ export class WETH9Contract extends BaseContract {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                src,
-                dst,
+                src.toLowerCase(),
+                dst.toLowerCase(),
                 wad,
             ]);
             return abiEncodedTransactionData;
@@ -363,6 +415,10 @@ export class WETH9Contract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.withdraw.estimateGasAsync.bind(self, wad),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -399,6 +455,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -422,6 +482,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
@@ -457,6 +521,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decimals()');
@@ -487,7 +555,7 @@ export class WETH9Contract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0]);
+            const encodedData = self._strictEncodeArguments('balanceOf(address)', [index_0.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -496,6 +564,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
@@ -507,7 +579,9 @@ export class WETH9Contract extends BaseContract {
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [index_0]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [
+                index_0.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -531,6 +605,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('symbol()');
@@ -550,7 +628,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -558,8 +636,12 @@ export class WETH9Contract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transfer.estimateGasAsync.bind(self, dst, wad),
+                self.transfer.estimateGasAsync.bind(self, dst.toLowerCase(), wad),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -573,7 +655,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const txHashPromise = self.transfer.sendTransactionAsync(dst, wad, txData);
+            const txHashPromise = self.transfer.sendTransactionAsync(dst.toLowerCase(), wad, txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -590,7 +672,7 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -599,6 +681,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -619,7 +705,7 @@ export class WETH9Contract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
+            const encodedData = self._strictEncodeArguments('transfer(address,uint256)', [dst.toLowerCase(), wad]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -628,6 +714,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
@@ -640,7 +730,10 @@ export class WETH9Contract extends BaseContract {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [dst, wad]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('transfer(address,uint256)', [
+                dst.toLowerCase(),
+                wad,
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -657,6 +750,10 @@ export class WETH9Contract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.deposit.estimateGasAsync.bind(self),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -690,6 +787,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -712,6 +813,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('deposit()');
@@ -744,7 +849,10 @@ export class WETH9Contract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as WETH9Contract;
-            const encodedData = self._strictEncodeArguments('allowance(address,address)', [index_0, index_1]);
+            const encodedData = self._strictEncodeArguments('allowance(address,address)', [
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -753,6 +861,10 @@ export class WETH9Contract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (callDataWithDefaults.from !== undefined) {
+                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
+            }
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
@@ -766,8 +878,8 @@ export class WETH9Contract extends BaseContract {
             assert.isString('index_1', index_1);
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('allowance(address,address)', [
-                index_0,
-                index_1,
+                index_0.toLowerCase(),
+                index_1.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -1035,14 +1147,17 @@ export class WETH9Contract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_spender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Approval',
@@ -1055,14 +1170,17 @@ export class WETH9Contract extends BaseContract {
                     {
                         name: '_from',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_to',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Transfer',
@@ -1075,10 +1193,12 @@ export class WETH9Contract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Deposit',
@@ -1091,10 +1211,12 @@ export class WETH9Contract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Withdrawal',
