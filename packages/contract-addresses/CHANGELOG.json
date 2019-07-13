@@ -1,5 +1,13 @@
 [
     {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Update remaining Mainnet V2.1 contract addresses"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {

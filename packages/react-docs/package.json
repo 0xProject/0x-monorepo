@@ -28,7 +28,7 @@
         "@0x/dev-utils": "^2.2.4",
         "@0x/tslint-config": "^3.0.1",
         "@types/compare-versions": "^3.0.0",
-        "@types/styled-components": "4.0.0",
+        "@types/styled-components": "4.1.1",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
