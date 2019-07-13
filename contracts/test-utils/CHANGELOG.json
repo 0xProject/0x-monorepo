@@ -6,7 +6,8 @@
                 "note": "Fixed false positives in `expectTransactionFailedAsync` and `expectContractCallFailedAsync`",
                 "pr": 1852
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1558712885,

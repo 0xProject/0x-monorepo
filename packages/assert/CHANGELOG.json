@@ -6,7 +6,8 @@
                 "note": "Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber`",
                 "pr": 1823
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1557507213,

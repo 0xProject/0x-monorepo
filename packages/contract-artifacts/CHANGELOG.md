@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.0.1 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v2.0.0 - _July 12, 2019_
+
+    * Remove evm.bytecode.linkReferences from all artifacts. Remove evm.deployedBytecode and sourceTreeHashHex from Coordinator artifact. (#1842)
+    * Prune fields from EthBalanceChecker (#1876)
+    * Add compilerOutput.devdoc to all artifacts (#1907)
+
 ## v1.5.1 - _May 10, 2019_
 
     * Dependencies updated

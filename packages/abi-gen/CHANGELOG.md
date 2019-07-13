@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _July 13, 2019_
+
+    * Initial support for Python (#1878)
+
+## v2.0.11 - _Invalid date_
+
+    * Watch template files for changes (#1875)
+
 ## v2.0.10 - _May 10, 2019_
 
     * Dependencies updated

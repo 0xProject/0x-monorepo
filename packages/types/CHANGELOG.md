@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.0 - _July 13, 2019_
+
+    * Add MarketOperation type (#1914)
+
+## v2.3.0 - _Invalid date_
+
+    * Add StaticCallProxy types (#1863)
+    * Add `InvalidStaticCallDataOffset`, `TargetNotEven`, `UnexpectedStaticCallResult`, and `InvalidAssetDataEnd` to `RevertReason` enum (#1863)
+
 ## v2.2.2 - _April 11, 2019_
 
     * Dependencies updated

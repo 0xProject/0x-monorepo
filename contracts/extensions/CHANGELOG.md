@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.0.0 - _July 13, 2019_
+
+    * Move `OrderValidator` to contracts/dev-utils package as `OrderValidationUtils` (#1848)
+
 ## v3.1.5 - _May 24, 2019_
 
     * Dependencies updated

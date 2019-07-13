@@ -6,7 +6,8 @@
                 "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
                 "pr": 1848
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1558712885,

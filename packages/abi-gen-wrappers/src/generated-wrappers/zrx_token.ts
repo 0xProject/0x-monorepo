@@ -843,14 +843,17 @@ export class ZRXTokenContract extends BaseContract {
                     {
                         name: '_from',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_to',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Transfer',
@@ -863,14 +866,17 @@ export class ZRXTokenContract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_spender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Approval',

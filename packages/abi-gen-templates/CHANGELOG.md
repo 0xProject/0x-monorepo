@@ -5,6 +5,16 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _July 12, 2019_
+
+    * add parameter assertions to methods (#1823)
+    * Move `getABITransactionData` to `callAsync` template (#1863)
+    * Initial support for Python (#1878)
+
 ## v2.1.0 - _May 10, 2019_
 
     * add `awaitTransactionSuccessAsync()` to `tx.handlebars` (#1797)

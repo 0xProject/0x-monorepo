@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.0 - _July 13, 2019_
+
+    * Wrappers no longer require passing in the contract ABI at instantiation (#1883)
+    * Contract addresses now re-exported from @0x/contract-addresses (#1883)
+    * Update wrappers to include parameter assertions (#1823)
+    * Update wrappers to include `getABIEncodedTransactionData` for view and pure functions (#1863)
+
 ## v4.3.0 - _May 10, 2019_
 
     * Update wrapper functions to expose `awaitTransactionSuccessAsync()` methods (#1797)

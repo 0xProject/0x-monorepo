@@ -280,10 +280,12 @@ export class CoordinatorRegistryContract extends BaseContract {
                     {
                         name: 'coordinatorOperator',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'coordinatorEndpoint',
                         type: 'string',
+                        indexed: false,
                     },
                 ],
                 name: 'CoordinatorEndpointSet',

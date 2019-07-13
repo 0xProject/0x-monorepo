@@ -5,7 +5,8 @@
             {
                 "note": "Redeployed Mainnet Exchange and Asset Proxies"
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "version": "2.3.3",

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.0 - _July 13, 2019_
+
+    * Add new assertions: `isArray`, `isBlockParam` and `isNumberOrBigNumber` (#1823)
+
 ## v2.0.10 - _May 10, 2019_
 
     * Dependencies updated

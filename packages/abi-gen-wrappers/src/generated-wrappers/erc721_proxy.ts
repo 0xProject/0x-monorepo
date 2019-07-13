@@ -820,10 +820,12 @@ export class ERC721ProxyContract extends BaseContract {
                     {
                         name: 'target',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'caller',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'AuthorizedAddressAdded',
@@ -836,10 +838,12 @@ export class ERC721ProxyContract extends BaseContract {
                     {
                         name: 'target',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'caller',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'AuthorizedAddressRemoved',

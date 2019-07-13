@@ -6,7 +6,8 @@
                 "note": "Fix bug in Trezor subprovider causing Trezor response to not be hex encoded",
                 "pr": 1867
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "version": "4.1.0",

@@ -1047,10 +1047,12 @@ export class MultiAssetProxyContract extends BaseContract {
                     {
                         name: 'target',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'caller',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'AuthorizedAddressAdded',
@@ -1063,10 +1065,12 @@ export class MultiAssetProxyContract extends BaseContract {
                     {
                         name: 'target',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'caller',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'AuthorizedAddressRemoved',
@@ -1079,10 +1083,12 @@ export class MultiAssetProxyContract extends BaseContract {
                     {
                         name: 'id',
                         type: 'bytes4',
+                        indexed: false,
                     },
                     {
                         name: 'assetProxy',
                         type: 'address',
+                        indexed: false,
                     },
                 ],
                 name: 'AssetProxyRegistered',

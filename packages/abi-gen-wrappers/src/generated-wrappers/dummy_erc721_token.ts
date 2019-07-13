@@ -1621,14 +1621,17 @@ export class DummyERC721TokenContract extends BaseContract {
                     {
                         name: '_from',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_to',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_tokenId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Transfer',
@@ -1641,14 +1644,17 @@ export class DummyERC721TokenContract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_approved',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_tokenId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Approval',
@@ -1661,14 +1667,17 @@ export class DummyERC721TokenContract extends BaseContract {
                     {
                         name: '_owner',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_operator',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: '_approved',
                         type: 'bool',
+                        indexed: false,
                     },
                 ],
                 name: 'ApprovalForAll',

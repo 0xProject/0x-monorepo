@@ -4328,6 +4328,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4393,6 +4394,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4464,6 +4466,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'leftOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4518,6 +4521,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'rightOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4583,10 +4587,12 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4609,6 +4615,7 @@ export class ExchangeContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4645,6 +4652,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4710,6 +4718,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4759,6 +4768,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4823,6 +4833,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4888,6 +4899,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4932,6 +4944,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4997,6 +5010,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5065,6 +5079,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5130,6 +5145,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5201,6 +5217,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5266,6 +5283,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5296,6 +5314,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5353,6 +5372,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -5443,6 +5463,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5508,6 +5529,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5538,6 +5560,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5603,6 +5626,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5673,6 +5697,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5730,6 +5755,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -5756,6 +5782,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5857,6 +5884,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5922,6 +5950,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5966,6 +5995,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6031,6 +6061,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -6115,14 +6146,17 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'signerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'validatorAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'approved',
                         type: 'bool',
+                        indexed: false,
                     },
                 ],
                 name: 'SignatureValidatorApproval',
@@ -6135,46 +6169,57 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'feeRecipientAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'takerAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'makerAssetFilledAmount',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetFilledAmount',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'makerFeePaid',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'takerFeePaid',
                         type: 'uint256',
+                        indexed: false,
                     },
                     {
                         name: 'orderHash',
                         type: 'bytes32',
+                        indexed: true,
                     },
                     {
                         name: 'makerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                 ],
                 name: 'Fill',
@@ -6187,26 +6232,32 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'feeRecipientAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'orderHash',
                         type: 'bytes32',
+                        indexed: true,
                     },
                     {
                         name: 'makerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                     {
                         name: 'takerAssetData',
                         type: 'bytes',
+                        indexed: false,
                     },
                 ],
                 name: 'Cancel',
@@ -6219,14 +6270,17 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'makerAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'senderAddress',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'orderEpoch',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'CancelUpTo',
@@ -6239,10 +6293,12 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'id',
                         type: 'bytes4',
+                        indexed: false,
                     },
                     {
                         name: 'assetProxy',
                         type: 'address',
+                        indexed: false,
                     },
                 ],
                 name: 'AssetProxyRegistered',

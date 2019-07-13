@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.1.3 - _July 13, 2019_
+
+    * Made most fields in DevdocOutput optional, as they may not all be present just because devdoc is (#1878)
+
 ## v2.1.2 - _April 11, 2019_
 
     * Dependencies updated

@@ -2462,10 +2462,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'assetProxyContract',
                         type: 'address',
+                        indexed: false,
                     },
                     {
                         name: 'isRegistered',
                         type: 'bool',
+                        indexed: false,
                     },
                 ],
                 name: 'AssetProxyRegistration',
@@ -2478,10 +2480,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                     {
                         name: 'confirmationTime',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'ConfirmationTimeSet',
@@ -2494,6 +2498,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'secondsTimeLocked',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'TimeLockChange',
@@ -2506,10 +2511,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Confirmation',
@@ -2522,10 +2529,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Revocation',
@@ -2538,6 +2547,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Submission',
@@ -2550,6 +2560,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'Execution',
@@ -2562,6 +2573,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'transactionId',
                         type: 'uint256',
+                        indexed: true,
                     },
                 ],
                 name: 'ExecutionFailure',
@@ -2574,10 +2586,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'sender',
                         type: 'address',
+                        indexed: true,
                     },
                     {
                         name: 'value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'Deposit',
@@ -2590,6 +2604,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'owner',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'OwnerAddition',
@@ -2602,6 +2617,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'owner',
                         type: 'address',
+                        indexed: true,
                     },
                 ],
                 name: 'OwnerRemoval',
@@ -2614,6 +2630,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                     {
                         name: 'required',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
                 name: 'RequirementChange',
