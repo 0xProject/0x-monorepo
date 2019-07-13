@@ -1,4 +1,4 @@
-import { ExchangeContract, ExchangeEventArgs, ExchangeEvents, IAssetProxyContract } from '@0x/abi-gen-wrappers';
+import { ExchangeContract, ExchangeEventArgs, ExchangeEvents } from '@0x/abi-gen-wrappers';
 import { Exchange } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import {
@@ -1207,25 +1207,14 @@ export class ExchangeWrapper extends ContractWrapper {
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
-        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
-        const exchangeInstance = await this._getExchangeContractAsync();
-        const makerAssetData = signedOrder.makerAssetData;
-        const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
-        const assetProxyAddress = await exchangeInstance.assetProxies.callAsync(makerAssetDataProxyId);
-        const assetProxy = new IAssetProxyContract(assetProxyAddress, this._web3Wrapper.getProvider());
-
-        const result = await assetProxy.transferFrom.callAsync(
-            makerAssetData,
-            signedOrder.makerAddress,
-            toAddress,
+        const networkId = await this._web3Wrapper.getNetworkIdAsync();
+        await OrderValidationUtils.validateMakerTransferThrowIfInvalidAsync(
+            networkId,
+            this._web3Wrapper.getProvider(),
+            signedOrder,
             makerAssetAmount,
-            {
-                from: this.address,
-            },
+            takerAddress,
         );
-        if (result !== undefined) {
-            throw new Error(`Error during maker transfer simulation: ${result}`);
-        }
     }
     /**
      * Validate a call to FillOrder and throw if it wouldn't succeed

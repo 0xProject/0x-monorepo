@@ -1,15 +1,21 @@
+import {
+    ExchangeContract,
+    getContractAddressesForNetworkOrThrow,
+    IAssetProxyContract,
+    NetworkId,
+} from '@0x/abi-gen-wrappers';
 import { ExchangeContractErrs, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { TradeSide, TransferType, TypedDataError } from './types';
-
 import { AbstractOrderFilledCancelledFetcher } from './abstract/abstract_order_filled_cancelled_fetcher';
+import { assetDataUtils } from './asset_data_utils';
 import { constants } from './constants';
 import { ExchangeTransferSimulator } from './exchange_transfer_simulator';
 import { orderHashUtils } from './order_hash';
 import { signatureUtils } from './signature_utils';
+import { TradeSide, TransferType, TypedDataError } from './types';
 import { utils } from './utils';
 
 /**
@@ -42,6 +48,7 @@ export class OrderValidationUtils {
         const isError = errPercentageTimes1000000.gt(1000);
         return isError;
     }
+
     /**
      * Validate that the maker & taker have sufficient balances/allowances
      * to fill the supplied order to the fillTakerAssetAmount amount
@@ -106,6 +113,44 @@ export class OrderValidationUtils {
             TransferType.Fee,
         );
     }
+    // TODO(xianny): remove this method once the smart contracts have been refactored
+    // to return helpful revert reasons instead of ORDER_UNFILLABLE. Instruct devs
+    // to make "calls" to validate transfers
+    /**
+     * Validate the transfer from the maker to the taker. This is simulated on-chain
+     * via an eth_call. If this call fails, the asset is currently nontransferable.
+     * @param exchangeTradeEmulator ExchangeTradeEmulator to use
+     * @param signedOrder SignedOrder of interest
+     * @param makerAssetAmount Amount to transfer from the maker
+     * @param takerAddress The address to transfer to, defaults to signedOrder.takerAddress
+     */
+    public static async validateMakerTransferThrowIfInvalidAsync(
+        networkId: NetworkId,
+        supportedProvider: SupportedProvider,
+        signedOrder: SignedOrder,
+        makerAssetAmount: BigNumber,
+        takerAddress?: string,
+    ): Promise<void> {
+        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
+        const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
+        const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
+        const exchangeContract = new ExchangeContract(contractAddresses.exchange, supportedProvider);
+        const assetProxyAddress = await exchangeContract.assetProxies.callAsync(makerAssetDataProxyId);
+        const assetProxy = new IAssetProxyContract(assetProxyAddress, supportedProvider);
+        const result = await assetProxy.transferFrom.callAsync(
+            signedOrder.makerAssetData,
+            signedOrder.makerAddress,
+            toAddress,
+            makerAssetAmount,
+            {
+                from: exchangeContract.address,
+            },
+        );
+        if (result !== undefined) {
+            throw new Error(`Error during maker transfer simulation: ${result}`);
+        }
+    }
+
     private static _validateOrderNotExpiredOrThrow(expirationTimeSeconds: BigNumber): void {
         const currentUnixTimestampSec = utils.getCurrentUnixTimestampSec();
         if (expirationTimeSeconds.isLessThan(currentUnixTimestampSec)) {

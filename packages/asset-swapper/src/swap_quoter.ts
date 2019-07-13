@@ -133,7 +133,7 @@ export class SwapQuoter {
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getMarketSellSwapQuoteAsync(
+    public async getMarketSellSwapQuoteForAssetDataAsync(
         makerAssetData: string,
         takerAssetData: string,
         takerAssetSellAmount: BigNumber,
@@ -159,7 +159,7 @@ export class SwapQuoter {
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getMarketBuySwapQuoteAsync(
+    public async getMarketBuySwapQuoteForAssetDataAsync(
         makerAssetData: string,
         takerAssetData: string,
         makerAssetBuyAmount: BigNumber,
@@ -177,14 +177,14 @@ export class SwapQuoter {
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
-     * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   makerTokenAddress       The address of the maker asset
+     * @param   takerTokenAddress       The address of the taker asset
      * @param   makerAssetBuyAmount     The amount of maker asset to swap for.
-     * @param   options                  Options for the request. See type definition for more information.
+     * @param   options                 Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getMarketBuySwapQuoteForERC20TokenAddressAsync(
+    public async getMarketBuySwapQuoteAsync(
         makerTokenAddress: string,
         takerTokenAddress: string,
         makerAssetBuyAmount: BigNumber,
@@ -195,21 +195,26 @@ export class SwapQuoter {
         assert.isBigNumber('makerAssetBuyAmount', makerAssetBuyAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketBuySwapQuoteAsync(makerAssetData, takerAssetData, makerAssetBuyAmount, options);
+        const swapQuote = this.getMarketBuySwapQuoteForAssetDataAsync(
+            makerAssetData,
+            takerAssetData,
+            makerAssetBuyAmount,
+            options,
+        );
         return swapQuote;
     }
 
     /**
      * Get a `SwapQuote` containing all information relevant to fulfilling a swap between a desired ERC20 token address and ERC20 owned by a provided address.
      * You can then pass the `SwapQuote` to a `SwapQuoteConsumer` to execute a buy, or process SwapQuote for on-chain consumption.
-     * @param   makerAssetData           The makerAssetData of the desired asset to swap for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
-     * @param   takerAssetData           The takerAssetData of the asset to swap makerAssetData for (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
+     * @param   makerTokenAddress       The address of the maker asset
+     * @param   takerTokenAddress       The address of the taker asset
      * @param   takerAssetSellAmount     The amount of taker asset to sell.
      * @param   options                  Options for the request. See type definition for more information.
      *
      * @return  An object that conforms to SwapQuote that satisfies the request. See type definition for more information.
      */
-    public async getMarketSellSwapQuoteForERC20TokenAddressAsync(
+    public async getMarketSellSwapQuoteAsync(
         makerTokenAddress: string,
         takerTokenAddress: string,
         takerAssetSellAmount: BigNumber,
@@ -220,7 +225,7 @@ export class SwapQuoter {
         assert.isBigNumber('takerAssetSellAmount', takerAssetSellAmount);
         const makerAssetData = assetDataUtils.encodeERC20AssetData(makerTokenAddress);
         const takerAssetData = assetDataUtils.encodeERC20AssetData(takerTokenAddress);
-        const swapQuote = this.getMarketSellSwapQuoteAsync(
+        const swapQuote = this.getMarketSellSwapQuoteForAssetDataAsync(
             makerAssetData,
             takerAssetData,
             takerAssetSellAmount,
