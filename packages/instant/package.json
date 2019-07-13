@@ -1,6 +1,6 @@
 {
     "name": "@0x/instant",
-    "version": "1.0.25",
+    "version": "1.0.26",
     "engines": {
         "node": ">=6.12"
     },
@@ -46,7 +46,7 @@
         "@0x/assert": "^2.1.0",
         "@0x/asset-buyer": "6.1.4",
         "@0x/json-schemas": "^3.0.11",
-        "@0x/order-utils": "^8.2.0",
+        "@0x/order-utils": "^8.2.1",
         "@0x/subproviders": "^4.1.1",
         "@0x/types": "^2.4.0",
         "@0x/typescript-typings": "^4.2.3",

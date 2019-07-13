@@ -1,6 +1,6 @@
 {
     "name": "@0x/metacoin",
-    "version": "0.0.52",
+    "version": "0.0.53",
     "engines": {
         "node": ">=6.12"
     },
@@ -31,7 +31,7 @@
     "author": "",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/abi-gen": "^2.1.0",
+        "@0x/abi-gen": "^2.1.1",
         "@0x/abi-gen-templates": "^2.2.1",
         "@0x/base-contract": "^5.1.1",
         "@0x/sol-coverage": "^3.0.6",
@@ -51,7 +51,7 @@
         "run-s": "^0.0.0"
     },
     "devDependencies": {
-        "@0x/contracts-test-utils": "^3.1.8",
+        "@0x/contracts-test-utils": "^3.1.9",
         "@0x/dev-utils": "^2.2.4",
         "@0x/sol-compiler": "^3.1.9",
         "chai": "^4.0.1",

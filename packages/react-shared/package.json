@@ -1,6 +1,6 @@
 {
     "name": "@0x/react-shared",
-    "version": "2.0.13",
+    "version": "2.0.14",
     "engines": {
         "node": ">=6.12"
     },

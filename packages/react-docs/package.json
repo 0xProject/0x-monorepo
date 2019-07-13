@@ -1,6 +1,6 @@
 {
     "name": "@0x/react-docs",
-    "version": "2.0.13",
+    "version": "2.0.14",
     "engines": {
         "node": ">=6.12"
     },
@@ -35,7 +35,7 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/react-shared": "^2.0.13",
+        "@0x/react-shared": "^2.0.14",
         "@0x/types": "^2.4.0",
         "@0x/utils": "^4.4.0",
         "@types/lodash": "4.14.104",
