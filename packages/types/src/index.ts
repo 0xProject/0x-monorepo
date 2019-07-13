@@ -216,6 +216,12 @@ export interface MultiAssetDataWithRecursiveDecoding {
     nestedAssetData: SingleAssetData[];
 }
 
+export interface DutchAuctionData {
+    assetData: AssetData;
+    beginTimeSeconds: BigNumber;
+    beginAmount: BigNumber;
+}
+
 export type AssetData = SingleAssetData | MultiAssetData | MultiAssetDataWithRecursiveDecoding;
 
 // TODO: DRY. These should be extracted from contract code.

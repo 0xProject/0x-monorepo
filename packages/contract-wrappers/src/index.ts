@@ -58,7 +58,6 @@ export {
     OrderAndTraderInfo,
     TraderInfo,
     ValidateOrderFillableOpts,
-    DutchAuctionData,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
 } from './types';
@@ -73,6 +72,7 @@ export {
     StaticCallAssetData,
     MultiAssetDataWithRecursiveDecoding,
     DutchAuctionDetails,
+    DutchAuctionData,
     Order,
     SignedOrder,
     AssetProxyId,

@@ -2,17 +2,15 @@ import { DutchAuctionContract } from '@0x/abi-gen-wrappers';
 import { DutchAuction } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils } from '@0x/order-utils';
-import { DutchAuctionDetails, SignedOrder } from '@0x/types';
+import { DutchAuctionData, DutchAuctionDetails, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { ContractAbi } from 'ethereum-types';
-import * as ethAbi from 'ethereumjs-abi';
-import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
 import { txOptsSchema } from '../schemas/tx_opts_schema';
-import { DutchAuctionData, DutchAuctionWrapperError, OrderTransactionOpts } from '../types';
+import { DutchAuctionWrapperError, OrderTransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
@@ -36,14 +34,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
         beginTimeSeconds: BigNumber,
         beginAmount: BigNumber,
     ): string {
-        const assetDataBuffer = ethUtil.toBuffer(assetData);
-        const abiEncodedAuctionData = (ethAbi as any).rawEncode(
-            ['uint256', 'uint256'],
-            [beginTimeSeconds.toString(), beginAmount.toString()],
-        );
-        const abiEncodedAuctionDataBuffer = ethUtil.toBuffer(abiEncodedAuctionData);
-        const dutchAuctionDataBuffer = Buffer.concat([assetDataBuffer, abiEncodedAuctionDataBuffer]);
-        const dutchAuctionData = ethUtil.bufferToHex(dutchAuctionDataBuffer);
+        const dutchAuctionData = assetDataUtils.encodeDutchAuctionAssetData(assetData, beginTimeSeconds, beginAmount);
         return dutchAuctionData;
     }
     /**
@@ -54,30 +45,8 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * @return An object containing the auction asset, auction begin time and auction begin amount.
      */
     public static decodeDutchAuctionData(dutchAuctionData: string): DutchAuctionData {
-        const dutchAuctionDataBuffer = ethUtil.toBuffer(dutchAuctionData);
-        // Decode asset data
-        const dutchAuctionDataLengthInBytes = 64;
-        const assetDataBuffer = dutchAuctionDataBuffer.slice(
-            0,
-            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
-        );
-        const assetDataHex = ethUtil.bufferToHex(assetDataBuffer);
-        const assetData = assetDataUtils.decodeAssetDataOrThrow(assetDataHex);
-        // Decode auction details
-        const dutchAuctionDetailsBuffer = dutchAuctionDataBuffer.slice(
-            dutchAuctionDataBuffer.byteLength - dutchAuctionDataLengthInBytes,
-        );
-        const [beginTimeSecondsAsBN, beginAmountAsBN] = ethAbi.rawDecode(
-            ['uint256', 'uint256'],
-            dutchAuctionDetailsBuffer,
-        );
-        const beginTimeSeconds = new BigNumber(beginTimeSecondsAsBN.toString());
-        const beginAmount = new BigNumber(beginAmountAsBN.toString());
-        return {
-            assetData,
-            beginTimeSeconds,
-            beginAmount,
-        };
+        const decoded = assetDataUtils.decodeDutchAuctionData(dutchAuctionData);
+        return decoded;
     }
     /**
      * Instantiate DutchAuctionWrapper

@@ -1,14 +1,5 @@
 [
     {
-        "version": "8.3.0",
-        "changes": [
-            {
-                "note": "Add support for marketSell utils",
-                "pr": 1914
-            }
-        ]
-    },
-    {
         "version": "8.2.0",
         "changes": [
             {
@@ -16,8 +7,16 @@
                 "pr": 1863
             },
             {
+                "note": "Add support for marketSell utils",
+                "pr": 1914
+            },
+            {
+                "note": "Add support for encoding/decoding DutchAuction assetData",
+                "pr": 1943
+            },
+            {
                 "note": "Added `validateMakerTransferThrowIfInvalidAsync` to OrderValidationUtils",
-                "pr": "1937"
+                "pr": 1937
             }
         ]
     },
