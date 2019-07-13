@@ -1,5 +1,13 @@
 [
     {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Redeployed Mainnet Exchange and Asset Proxies"
+            }
+        ]
+    },
+    {
         "version": "2.3.3",
         "changes": [
             {
