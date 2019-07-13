@@ -481,7 +481,6 @@
 "@0x/abi-gen-wrappers@^4.1.0", "@0x/abi-gen-wrappers@^4.2.0":
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-4.3.0.tgz#b36616b129f44072474a7d5739299e4b1068e3d4"
-  integrity sha512-KnpoHbbqfidECl4hTGOvBaCj1N3LASHcdNO38yOMo1eO4B0H+kuyDVFjN3nbNt7lnXTPJ+DdaQpoDVQwySdEDQ==
   dependencies:
     "@0x/base-contract" "^5.1.0"
 
@@ -516,7 +515,6 @@
 "@0x/contract-addresses@^2.2.1", "@0x/contract-addresses@^2.3.0", "@0x/contract-addresses@^2.3.1":
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/@0x/contract-addresses/-/contract-addresses-2.3.3.tgz#8cf009e7668c2fccca416177c85f3f6612c724c6"
-  integrity sha512-0sPrFfwICq4E9Mar3xMFBSrTCckP2AR0t+3daNfaUmh+Z5yteP6gdnTbuYVjgyEGlvC71K0ohhsqd4IzXN7O5Q==
   dependencies:
     lodash "^4.17.11"
 
@@ -1866,13 +1864,6 @@
 "@types/solidity-parser-antlr@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@types/solidity-parser-antlr/-/solidity-parser-antlr-0.2.3.tgz#bb2d9c6511bf483afe4fc3e2714da8a924e59e3f"
-
-"@types/styled-components@4.0.0":
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.0.0.tgz#33b47071885003878a62689e0883aa2fc59f970a"
-  dependencies:
-    "@types/node" "*"
-    "@types/react" "*"
 
 "@types/styled-components@4.0.1":
   version "4.0.1"
@@ -8085,21 +8076,9 @@ got@^6.7.1:
     unzip-response "^2.0.1"
     url-parse-lax "^1.0.0"
 
-graceful-fs@^3.0.0:
-  version "3.0.11"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-3.0.11.tgz#7613c778a1afea62f25c630a086d7f3acbbdd818"
-  integrity sha1-dhPHeKGv6mLyXGMKCG1/Osu92Bg=
-  dependencies:
-    natives "^1.1.0"
-
-graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
+graceful-fs@4.1.15, graceful-fs@^3.0.0, graceful-fs@^4.0.0, graceful-fs@^4.1.10, graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@~1.2.0:
   version "4.1.15"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
-
-graceful-fs@~1.2.0:
-  version "1.2.3"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-1.2.3.tgz#15a4806a57547cb2d2dbf27f42e89a8c3451b364"
-  integrity sha1-FaSAaldUfLLS2/J/QuiajDRRs2Q=
+  resolved "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.1.15.tgz#ffb703e1066e8a0eeaa4c8b80ba9253eeefbfb00"
 
 "graceful-readlink@>= 1.0.0":
   version "1.0.1"
@@ -11558,11 +11537,6 @@ nanomatch@^1.2.9:
     regex-not "^1.0.0"
     snapdragon "^0.8.1"
     to-regex "^3.0.1"
-
-natives@^1.1.0:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/natives/-/natives-1.1.6.tgz#a603b4a498ab77173612b9ea1acdec4d980f00bb"
-  integrity sha512-6+TDFewD4yxY14ptjKaS63GVdtKiES1pTPyxn9Jb0rBqPMZ7VcCiooEhPNsr+mqHtMGxa/5c/HhcC4uPEUw/nA==
 
 natural-compare@^1.4.0:
   version "1.4.0"

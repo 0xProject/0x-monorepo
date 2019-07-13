@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.1 - _July 13, 2019_
+
+    * Update remaining Mainnet V2.1 contract addresses
+
 ## v3.0.0 - _July 13, 2019_
 
     * Redeployed Mainnet Exchange and Asset Proxies

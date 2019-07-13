@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v9.1.6 - _July 13, 2019_
+
+    * Dependencies updated
+
 ## v9.1.5 - _July 13, 2019_
 
     * Use assetDataUtils for encoding and decoding DutchAuctionData

@@ -5,7 +5,8 @@
             {
                 "note": "Update remaining Mainnet V2.1 contract addresses"
             }
-        ]
+        ],
+        "timestamp": 1563047529
     },
     {
         "version": "3.0.0",

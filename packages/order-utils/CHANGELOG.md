@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.2.1 - _July 13, 2019_
+
+    * Dependencies updated
+
 ## v8.2.0 - _July 13, 2019_
 
     * Add support for encoding/decoding StaticCallProxy assetData (#1863)

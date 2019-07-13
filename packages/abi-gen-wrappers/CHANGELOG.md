@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.1 - _July 13, 2019_
+
+    * Dependencies updated
+
 ## v5.0.0 - _July 13, 2019_
 
     * Wrappers no longer require passing in the contract ABI at instantiation (#1883)

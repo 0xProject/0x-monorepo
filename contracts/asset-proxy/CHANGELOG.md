@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.1 - _July 13, 2019_
+
+    * Dependencies updated
+
 ## v2.2.0 - _July 13, 2019_
 
     * Add `LibAssetProxyIds` contract (#1835)
