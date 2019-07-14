@@ -68,22 +68,30 @@ const ShortcutsWrapper = styled.div`
     }
 `;
 
-const CommunityWrapper = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-`;
-
 const GetStartedWrapper = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 70px;
     grid-row-gap: 30px;
+
+    @media (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const GetStartedButton = styled(Button)`
     margin-bottom: 12px;
+`;
+
+const CommunityWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 30px;
+    grid-row-gap: 30px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const Separator = styled.hr`

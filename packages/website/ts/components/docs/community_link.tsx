@@ -15,7 +15,7 @@ export interface ICommunityLinkProps {
 
 export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
     <Wrapper href={props.url}>
-        <Icon color={colors.brandLight} name={props.icon} size={100} margin={[0, 0, 24, 0]} />
+        <CommunityIcon color={colors.brandLight} name={props.icon} margin={[0, 0, 24, 0]} />
         <Heading size="small" marginBottom="8px">
             {props.heading}
         </Heading>
@@ -34,4 +34,11 @@ const Wrapper = styled.a`
     align-items: center;
     justify-content: center;
     text-align: center;
+`;
+
+const CommunityIcon = styled(Icon)`
+    @media (min-width: 900px) {
+        height: 100px;
+        width: 100px;
+    }
 `;
