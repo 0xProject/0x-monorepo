@@ -62,6 +62,10 @@ const ShortcutsWrapper = styled.div`
     grid-template-columns: 1fr 1fr;
     grid-column-gap: 30px;
     grid-row-gap: 30px;
+
+    @media (max-width: 500px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const CommunityWrapper = styled.div`
