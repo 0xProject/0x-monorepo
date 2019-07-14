@@ -31,13 +31,13 @@ export const DocsHome: React.FC = () => {
                     <div>
                         <Heading size="default">Get Started</Heading>
                         {getStartedLinks.map((link, index) => (
-                            <Fragment key={`get-started-${index}`}>
+                            <Fragment key={`getStarted-${index}`}>
                                 <GetStartedButton color={colors.brandDark} href={link.url} isWithArrow={true}>
                                     {link.heading}
                                 </GetStartedButton>
-                                <Paragraph color={colors.textDarkPrimary} isMuted={1}>
+                                <GetStartedParagraph color={colors.textDarkPrimary} isMuted={1}>
                                     {link.description}
-                                </Paragraph>
+                                </GetStartedParagraph>
                             </Fragment>
                         ))}
                     </div>
@@ -74,13 +74,28 @@ const GetStartedWrapper = styled.div`
     grid-column-gap: 70px;
     grid-row-gap: 30px;
 
-    @media (max-width: 500px) {
+    @media (max-width: 900px) {
+        grid-column-gap: 30px;
         grid-template-columns: 1fr;
     }
 `;
 
 const GetStartedButton = styled(Button)`
     margin-bottom: 12px;
+
+    @media (max-width: 500px) {
+        font-size: 16px !important;
+
+        svg {
+            display: none;
+        }
+    }
+`;
+
+const GetStartedParagraph = styled(Paragraph)`
+    @media (max-width: 500px) {
+        font-size: 14px;
+    }
 `;
 
 const CommunityWrapper = styled.div`
@@ -99,6 +114,10 @@ const Separator = styled.hr`
     border-color: #e4e4e4;
     height: 0;
     margin: 60px 0;
+
+    @media (max-width: 500px) {
+        margin: 30px 0;
+    }
 `;
 
 const shortcuts: IShortcutLinkProps[] = [
