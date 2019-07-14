@@ -12,7 +12,7 @@ export interface IStepLinkConfig {
 export const StepLink: React.FC<IStepLinkConfig> = props => (
     <StepLinkWrapper href={props.url}>
         <StepLinkText>{props.title}</StepLinkText>
-        <svg width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg height="14px" width="14px" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
                 fillRule="evenodd"
                 clipRule="evenodd"
@@ -38,8 +38,18 @@ const StepLinkWrapper = styled.a`
     & + & {
         border-top: 1px solid #dbdfdd;
     }
+
+    @media (max-width: 500px) {
+        svg {
+            transform: scale(0.85);
+        }
+    }
 `;
 
 const StepLinkText = styled.span`
     font-size: 1.25rem;
+
+    @media (max-width: 500px) {
+        font-size: 16px;
+    }
 `;
