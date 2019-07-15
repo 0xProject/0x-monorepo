@@ -248,8 +248,11 @@ export class SwapQuoter {
         takerAssetData: string,
         options: Partial<LiquidityRequestOpts> = {},
     ): Promise<LiquidityForAssetData> {
-        const shouldForceOrderRefresh =
-            options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
+        const { shouldForceOrderRefresh } = _.merge(
+            {},
+            constants.DEFAULT_LIQUIDITY_REQUEST_OPTS,
+            options,
+        );
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
