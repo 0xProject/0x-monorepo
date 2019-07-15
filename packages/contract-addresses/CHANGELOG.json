@@ -5,7 +5,8 @@
             {
                 "note": "Update OrderValidator testnet addresses"
             }
-        ]
+        ],
+        "timestamp": 1563193019
     },
     {
         "version": "3.0.1",
