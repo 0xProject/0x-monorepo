@@ -42,13 +42,7 @@ export const DocsTools: React.FC = () => {
                             </Heading>
 
                             {resources.map((resource, index) => (
-                                <Resource
-                                    key={`resource-${index}`}
-                                    heading={resource.heading}
-                                    description={resource.description}
-                                    tags={resource.tags}
-                                    url={resource.url}
-                                />
+                                <Resource key={`resource-${index}`} {...resource} />
                             ))}
                         </ResourcesWrapper>
 
@@ -58,13 +52,7 @@ export const DocsTools: React.FC = () => {
                             </Heading>
 
                             {resources.map((resource, index) => (
-                                <Resource
-                                    key={`resource-${index}`}
-                                    heading={resource.heading}
-                                    description={resource.description}
-                                    tags={resource.tags}
-                                    url={resource.url}
-                                />
+                                <Resource key={`resource-${index}`} {...resource} />
                             ))}
                         </ResourcesWrapper>
                     </article>
@@ -192,14 +180,15 @@ const resources = [
         heading: '0x Mesh - your gateway to networked liquidity',
         description:
             'Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity.',
-        tags: [{ label: 'Relayer' }],
+        tags: ['Relayer'],
         url: 'https://0x.org',
+        isCommunity: true,
     },
     {
         heading: '0x Mesh - your gateway to networked liquidity',
         description:
             'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
-        tags: [{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }],
+        tags: ['Api explorer', 'Relayer'],
         url: 'https://0x.org',
     },
 ];

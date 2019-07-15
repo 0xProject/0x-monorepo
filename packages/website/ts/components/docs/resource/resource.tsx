@@ -12,35 +12,34 @@ import { colors } from 'ts/style/colors';
 export interface IResourceProps {
     heading?: string;
     description?: string;
+    isCommunity?: boolean;
     url: string;
-    tags: ITagProps[];
+    tags: string[];
 }
 
-interface ITagProps {
-    label: React.ReactNode;
-    isInverted?: boolean;
-}
+export const Resource: React.FC<IResourceProps> = ({ heading, description, isCommunity, url, tags }) => {
+    console.log('isCommunity', isCommunity);
 
-export const Resource: React.FC<IResourceProps> = ({ heading, description, url, tags }) => (
-    <Wrapper>
-        <Heading color={colors.brandDark} size="small" marginBottom="8px">
-            <Link to={url}>{heading}</Link>
-        </Heading>
-        <Paragraph size="default" marginBottom="30px">
-            {description}
-        </Paragraph>
-        <Meta>
-            <Tags>
-                {tags.map(({ label, isInverted }, index) => (
-                    <Tag key={`tag-${index}`} isInverted={isInverted}>
-                        {label}
-                    </Tag>
-                ))}
-            </Tags>
-            <Level difficulty={Difficulty.Beginner} />
-        </Meta>
-    </Wrapper>
-);
+    return (
+        <Wrapper>
+            <Heading color={colors.brandDark} size="small" marginBottom="8px">
+                <Link to={url}>{heading}</Link>
+            </Heading>
+            <Paragraph size="default" marginBottom="30px">
+                {description}
+            </Paragraph>
+            <Meta>
+                <Tags>
+                    {isCommunity && <Tag isInverted={true}>community maintained</Tag>}
+                    {tags.map((label, index) => (
+                        <Tag key={`tag-${index}`}>{label}</Tag>
+                    ))}
+                </Tags>
+                <Level difficulty={Difficulty.Beginner} />
+            </Meta>
+        </Wrapper>
+    );
+};
 
 const Wrapper = styled.div`
     border: 1px solid #d7e3db;
