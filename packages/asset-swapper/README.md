@@ -1,6 +1,8 @@
 ## @0x/asset-swapper
 
-Convenience package for buying assets represented on the Ethereum blockchain using 0x.
+Convenience package for swapping assets represented on the Ethereum blockchain using 0x. The package helps to perform all the off-chain computations to execute a marketBuy or marketSell function execution with 0x exchange contracts, or 0x extension contracts. Given some liquidity (0x signed orders), it helps estimate the cost of buying or selling a certain asset (giving a range) and then provide varying consumable outputs to execute the buy or sell.
+
+Asset-swapper integrates with the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api)(in the future Mesh as well) and takes care of sourcing liquidity, order-pruning, and order-validation. The final result is a library that tells you what assets are available, provides a quote based on specified assets, and provide varying consumable metadata that can be used both on-chain in smart contracts or off-chain through web3 to swap a desired amount of ERC20 for another ERC20 asset.
 
 ## Installation
 
@@ -17,7 +19,8 @@ import { SwapQuoter } from '@0x/asset-swapper';
 or
 
 ```javascript
-var SwapQuoter = require('@0x/asset-buyer').SwapQuoter;
+var SwapQuoter = require('@0x/asset-swapper').SwapQuoter;
+var SwapQuoteConsumer = require('@0x/asset-swapper').SwapQuoteConsumer;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
