@@ -197,18 +197,9 @@ export const DocsPageTemplate: React.FC = () => {
                             <Heading asElement="h2" size="default">
                                 Resources
                             </Heading>
-                            <Resource
-                                heading="RadarRelay SDK"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Relayer' }]}
-                                url="/docs"
-                            />
-                            <Resource
-                                heading="RadarRelay SDK"
-                                description="The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs"
-                                tags={[{ label: 'Community Maintained', isInverted: true }, { label: 'Relayer' }]}
-                                url="/docs"
-                            />
+                            {resources.map((resource, index) => (
+                                <Resource key={`resource-${index}`} {...resource} />
+                            ))}
                         </div>
                         <div>
                             <Heading asElement="h2" size="default">
@@ -329,3 +320,21 @@ const codeSample = `import { TruffleArtifactAdapter } from '@0x/sol-coverage';
 const projectRoot = '.';
 const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);`;
+
+const resources = [
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'Learn about the 0x peer-to-peer network for sharing orders and how you can use it to tap into networked liquidity.',
+        tags: ['Relayer'],
+        url: 'https://0x.org',
+        isCommunity: true,
+    },
+    {
+        heading: '0x Mesh - your gateway to networked liquidity',
+        description:
+            'The Radar Relay SDK is a software development kit that simplifies the interactions with Radar Relay’s APIs',
+        tags: ['Api explorer', 'Relayer'],
+        url: 'https://0x.org',
+    },
+];
