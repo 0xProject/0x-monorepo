@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { colors } from 'ts/style/colors';
 
 export const UnorderedList = styled.ul`
     list-style-type: disc;
@@ -7,12 +6,11 @@ export const UnorderedList = styled.ul`
     padding-left: 1rem;
 
     li {
-        color: ${colors.textDarkSecondary};
+        color: ${({ theme }) => theme.paragraphColor};
         font-size: 1rem;
         font-weight: 300;
         line-height: 1.625em;
         margin-bottom: 1rem;
         line-height: 1;
-        opacity: 0.75;
     }
 `;
