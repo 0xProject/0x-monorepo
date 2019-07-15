@@ -19,7 +19,8 @@ import { SwapQuoter } from '@0x/asset-swapper';
 or
 
 ```javascript
-var SwapQuoter = require('@0x/asset-buyer').SwapQuoter;
+var SwapQuoter = require('@0x/asset-swapper').SwapQuoter;
+var SwapQuoteConsumer = require('@0x/asset-swapper').SwapQuoteConsumer;
 ```
 
 If your project is in [TypeScript](https://www.typescriptlang.org/), add the following to your `tsconfig.json`:
