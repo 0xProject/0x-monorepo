@@ -48,9 +48,9 @@ export class TestLibDummyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            if (callDataWithDefaults.from !== undefined) {
-                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
-            }
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
 
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
@@ -88,9 +88,9 @@ export class TestLibDummyContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            if (callDataWithDefaults.from !== undefined) {
-                callDataWithDefaults.from = callDataWithDefaults.from.toLowerCase();
-            }
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
 
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
