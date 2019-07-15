@@ -192,13 +192,40 @@ function registerPythonHelpers(): void {
         for (const pythonTupleName in tupleDefinitions) {
             if (tupleDefinitions[pythonTupleName]) {
                 tupleDeclarations.push(
-                    `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    A tuple found in an ABI may have been written in Solidity as a literal\n    tuple, or it may have been written as a parameter with a Solidity\n    \`struct\`:code: data type; there's no way to tell which, based solely on the\n    ABI, and the name of a Solidity \`struct\`:code: is not conveyed through the\n    ABI.  This class represents a tuple that appeared in a method definition.\n    Its name is derived from a hash of that tuple's field names, and every\n    method whose ABI refers to a tuple with that same list of field names will\n    have a generated wrapper method that refers to this class.\n    """${
+                    `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    A tuple found in an ABI may have been written in Solidity as a literal\n    tuple, or it may have been written as a parameter with a Solidity\n    \`struct\`:code: data type; there's no way to tell which, based solely on the\n    ABI, and the name of a Solidity \`struct\`:code: is not conveyed through the\n    ABI.  This class represents a tuple that appeared in a method definition.\n    Its name is derived from a hash of that tuple's field names, and every\n    method whose ABI refers to a tuple with that same list of field names will\n    have a generated wrapper method that refers to this class.\n\n    Any members of type \`bytes\`:code: should be encoded as UTF-8, which can be\n    accomplished via \`str.encode("utf_8")\`:code:\n    """${
                         tupleDefinitions[pythonTupleName]
                     }`,
                 );
             }
         }
         return new Handlebars.SafeString(tupleDeclarations.join('\n\n'));
+    });
+    Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string, options) => {
+        const abis: AbiDefinition[] = JSON.parse(abisJSON);
+        // see if any ABIs accept params of type bytes, and if so then emit
+        // explanatory documentation string.
+        for (const abi of abis) {
+            if (abi.hasOwnProperty('inputs')) {
+                // HACK(feuGeneA): using "as MethodAbi" below, but abi
+                // could just as well be ConstructorAbi, EventAbi, etc.  We
+                // just need to tell the TypeScript compiler that it's NOT
+                // FallbackAbi, or else it would complain, "Property
+                // 'inputs' does not exist on type 'AbiDefinition'.
+                // Property 'inputs' does not exist on type
+                // 'FallbackAbi'.", despite the enclosing if statement.
+                // tslint:disable:no-unnecessary-type-assertion
+                if ((abi as MethodAbi).inputs) {
+                    for (const input of (abi as MethodAbi).inputs) {
+                        if (input.type === 'bytes') {
+                            return new Handlebars.SafeString(
+                                '\n\n    All method parameters of type `bytes`:code: should be encoded as UTF-8,\n    which can be accomplished via `str.encode("utf_8")`:code:.\n    ',
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        return '';
     });
 }
 if (args.language === 'TypeScript') {

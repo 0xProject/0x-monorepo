@@ -30,6 +30,9 @@ class Tuple0xc9bdd2d5(TypedDict):
     Its name is derived from a hash of that tuple's field names, and every
     method whose ABI refers to a tuple with that same list of field names will
     have a generated wrapper method that refers to this class.
+
+    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
+    accomplished via `str.encode("utf_8")`:code:
     """
 
     innerStruct: Tuple0xcf8ad995
@@ -47,6 +50,9 @@ class Tuple0xcf8ad995(TypedDict):
     Its name is derived from a hash of that tuple's field names, and every
     method whose ABI refers to a tuple with that same list of field names will
     have a generated wrapper method that refers to this class.
+
+    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
+    accomplished via `str.encode("utf_8")`:code:
     """
 
     someBytes: bytes
@@ -60,7 +66,11 @@ class Tuple0xcf8ad995(TypedDict):
 
 # pylint: disable=too-many-public-methods
 class AbiGenDummy(BaseContractWrapper):
-    """Wrapper class for AbiGenDummy Solidity contract."""
+    """Wrapper class for AbiGenDummy Solidity contract.
+
+    All method parameters of type `bytes`:code: should be encoded as UTF-8,
+    which can be accomplished via `str.encode("utf_8")`:code:.
+    """
 
     def __init__(
         self,
