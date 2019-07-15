@@ -11,6 +11,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 
 import { Code } from 'ts/components/docs/code';
 import { CodeTabs } from 'ts/components/docs/code_tabs';
+import { H1, H2, H3, H4 } from 'ts/components/docs/headings';
 import { HelpCallout } from 'ts/components/docs/help_callout';
 import { HelpfulCta } from 'ts/components/docs/helpful_cta';
 import { Hero } from 'ts/components/docs/hero';
@@ -24,7 +25,7 @@ import { Table } from 'ts/components/docs/table';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
 // import { Section } from 'ts/components/newLayout';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Paragraph } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
@@ -129,28 +130,12 @@ const Separator = styled.hr`
     margin-bottom: 60px;
 `;
 
-const LargeHeading = styled(Heading).attrs({
-    asElement: 'h1',
-})`
-    font-size: 2.125rem !important;
-    margin-bottom: 1.875rem;
-`;
-
-const H2 = styled(Heading).attrs({
-    size: 'default',
-    asElement: 'h2',
-})``;
-
-const H3 = styled(Heading).attrs({
-    size: 'default',
-    asElement: 'h3',
-})``;
-
 const mdxComponents = {
     code: Code,
-    h1: LargeHeading,
+    h1: H1,
     h2: H2,
     h3: H3,
+    h4: H4,
     hr: Separator,
     inlineCode: InlineCode,
     a: InlineLink,
