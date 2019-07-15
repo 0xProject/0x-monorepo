@@ -210,6 +210,7 @@ jobs:
                   command: |
                       cd python-packages
                       ./cmd_pkgs_in_dep_order.py coverage run setup.py test
+                      ./build_docs
             - save_cache:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
