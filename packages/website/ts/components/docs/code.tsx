@@ -62,7 +62,7 @@ const BORDER_RADIUS = '4px';
 
 const CodeWrapper = styled.div`
     clear: both;
-    max-width: 700px;
+    max-width: 100%;
     margin-bottom: 1.875rem;
     padding: ${GUTTER};
     background-color: ${colors.backgroundLight};

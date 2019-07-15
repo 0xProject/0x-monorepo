@@ -17,13 +17,13 @@ import { Hero } from 'ts/components/docs/hero';
 import { InlineCode } from 'ts/components/docs/inline_code';
 import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
+import { OrderedList } from 'ts/components/docs/ordered_list';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
-import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
-import { Section } from 'ts/components/newLayout';
+// import { Section } from 'ts/components/newLayout';
 import { Heading, Paragraph } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
@@ -73,26 +73,25 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-            <Section maxWidth="1030px" isPadded={false}>
-                {Component ? (
-                    <Columns>
-                        <TableOfContents contents={contents} />
-                        <ContentWrapper>
-                            <MDXProvider components={mdxComponents}>
-                                {/*
+
+            {Component ? (
+                <Columns>
+                    <TableOfContents contents={contents} />
+                    <ContentWrapper>
+                        <MDXProvider components={mdxComponents}>
+                            {/*
                                 // @ts-ignore */}
-                                <Component />
-                            </MDXProvider>
-                            <HelpCallout />
-                            <HelpfulCta page={page} />
-                        </ContentWrapper>
-                    </Columns>
-                ) : (
-                    <LoaderWrapper>
-                        <CircularProgress size={40} thickness={2} color={colors.brandLight} />
-                    </LoaderWrapper>
-                )}
-            </Section>
+                            <Component />
+                        </MDXProvider>
+                        <HelpCallout />
+                        <HelpfulCta page={page} />
+                    </ContentWrapper>
+                </Columns>
+            ) : (
+                <LoaderWrapper>
+                    <CircularProgress size={40} thickness={2} color={colors.brandLight} />
+                </LoaderWrapper>
+            )}
         </SiteWrap>
     );
 };
@@ -109,10 +108,17 @@ const Columns = styled.div`
     grid-template-columns: 230px 1fr;
     grid-column-gap: 118px;
     grid-row-gap: 30px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+        grid-column-gap: 0;
+    }
 `;
 
 const ContentWrapper = styled.article`
     min-height: 300px;
+    max-width: 100vw;
+    width: 100%;
 `;
 
 const Separator = styled.hr`
@@ -148,7 +154,7 @@ const mdxComponents = {
     hr: Separator,
     inlineCode: InlineCode,
     a: InlineLink,
-    ol: TutorialSteps,
+    ol: OrderedList,
     p: Paragraph,
     table: Table,
     ul: UnorderedList,

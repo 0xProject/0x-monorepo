@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const TutorialSteps = styled.ol`
+export const OrderedList = styled.ol`
     list-style-type: none;
     counter-reset: tutorialSteps;
     margin-bottom: 1.875rem;
