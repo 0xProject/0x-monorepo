@@ -24,7 +24,7 @@ import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
-// import { Section } from 'ts/components/newLayout';
+import { Section } from 'ts/components/newLayout';
 import { Paragraph } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
@@ -74,7 +74,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-
+            <Section maxWidth="1130px">
             {Component ? (
                 <Columns>
                     <TableOfContents contents={contents} />
@@ -93,6 +93,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                     <CircularProgress size={40} thickness={2} color={colors.brandLight} />
                 </LoaderWrapper>
             )}
+            </Section>
         </SiteWrap>
     );
 };
