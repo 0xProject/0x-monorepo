@@ -19,19 +19,32 @@ export interface IContents {
 export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents }) => {
     console.log('contents', contents);
     return (
+        <ContentListWrapper>
+            <Contents contents={contents} />
+        </ContentListWrapper>
+    );
+};
+
+const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
+    return (
         <ContentList>
             {contents.map(content => {
                 const { children, id, title } = content;
                 return (
                     <li key={id}>
                         <ContentLink to={id}>{title}</ContentLink>
-                        {children.length > 0 && <TableOfContents contents={children} />}
+                        {children.length > 0 && <Contents contents={children} />}
                     </li>
                 );
             })}
         </ContentList>
     );
 };
+
+const ContentListWrapper = styled.aside`
+    position: sticky;
+    top: 154px; /* To make space for the header when clicking on links */
+`;
 
 const ContentList = styled.ul`
     ul {
@@ -48,6 +61,14 @@ const ContentList = styled.ul`
 const ContentLink = styled(Link)`
     display: block;
     font-size: 0.8333rem;
-    color: ${colors.textDarkSecondary};
     margin-bottom: 1rem;
+
+    span {
+        color: ${({ theme }) => theme.paragraphColor};
+        transition: color 250ms ease-in-out;
+    }
+
+    &.scroll-link-active span {
+        color: ${colors.brandDark};
+    }
 `;
