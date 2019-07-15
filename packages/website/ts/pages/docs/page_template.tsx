@@ -10,13 +10,13 @@ import { Hero } from 'ts/components/docs/hero';
 import { NewsletterWidget } from 'ts/components/docs/newsletter_widget';
 import { Note } from 'ts/components/docs/note';
 import { Notification } from 'ts/components/docs/notification';
+import { OrderedList } from 'ts/components/docs/ordered_list';
 import { Resource } from 'ts/components/docs/resource/resource';
 import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { Table } from 'ts/components/docs/table';
-import { TutorialSteps } from 'ts/components/docs/tutorial_steps';
 import { UnorderedList } from 'ts/components/docs/unordered_list';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
@@ -44,11 +44,11 @@ export const DocsPageTemplate: React.FC = () => {
                         <Heading asElement="h2" size="default">
                             Tutorial Steps
                         </Heading>
-                        <TutorialSteps>
+                        <OrderedList>
                             <li>Step 1</li>
                             <li>Step 2</li>
                             <li>Step 3</li>
-                        </TutorialSteps>
+                        </OrderedList>
                         <Heading asElement="h2" size="default">
                             Standard Heading
                         </Heading>
