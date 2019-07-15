@@ -17,7 +17,7 @@ export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ note, page, question })
     const [isClicked, setIsClicked] = useState<boolean>(false);
 
     const vote = (yesno: string) => {
-        // analytics.track('was_this_helpful_feedback', { yesno, page });
+        analytics.track('was_this_helpful_feedback', { yesno, page });
         setIsClicked(true);
     };
 
