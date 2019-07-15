@@ -14,7 +14,11 @@ interface IHeroProps {
 export const Hero: React.FC<IHeroProps> = ({ description, isHome, title }) => {
     return (
         <HeroWrapper isHome={isHome}>
-            <Heading size="large" isCentered={true} marginBottom={isHome || description ? '30px' : '0'}>
+            <Heading
+                size={isHome ? 'large' : 'medium'}
+                isCentered={true}
+                marginBottom={isHome || description ? '30px' : '0'}
+            >
                 {title}
             </Heading>
             {description && <Paragraph isCentered={true}>{description}</Paragraph>}
