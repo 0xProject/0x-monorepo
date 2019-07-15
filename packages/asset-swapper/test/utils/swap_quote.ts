@@ -57,16 +57,16 @@ export const getFullyFillableSwapQuoteWithNoFees = (
         worstCaseQuoteInfo: quoteInfo,
     };
 
-    if (operation === 'marketBuy') {
+    if (operation === MarketOperation.Buy) {
         return {
             ...quoteBase,
-            type: 'marketBuy',
+            type: MarketOperation.Buy,
             makerAssetFillAmount,
         };
     } else {
         return {
             ...quoteBase,
-            type: 'marketSell',
+            type: MarketOperation.Sell,
             takerAssetFillAmount: totalTakerTokenAmount,
         };
     }

@@ -144,7 +144,7 @@ export class SwapQuoter {
             makerAssetData,
             takerAssetData,
             takerAssetSellAmount,
-            'marketSell',
+            MarketOperation.Sell,
             options,
         )) as MarketSellSwapQuote;
     }
@@ -170,7 +170,7 @@ export class SwapQuoter {
             makerAssetData,
             takerAssetData,
             makerAssetBuyAmount,
-            'marketBuy',
+            MarketOperation.Buy,
             options,
         )) as MarketBuySwapQuote;
     }
@@ -423,7 +423,7 @@ export class SwapQuoter {
 
         let swapQuote: SwapQuote;
 
-        if (marketOperation === 'marketBuy') {
+        if (marketOperation === MarketOperation.Buy) {
             swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
                 ordersAndFillableAmounts,
                 feeOrdersAndFillableAmounts,
