@@ -4,6 +4,7 @@ import { BigNumber } from '@0x/utils';
 import {
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
+    LiquidityRequestOpts,
     OrdersAndFillableAmounts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
@@ -37,6 +38,10 @@ const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
     remainingFillableMakerAssetAmounts: [] as BigNumber[],
 };
 
+const DEFAULT_LIQUIDITY_REQUEST_OPTS: LiquidityRequestOpts = {
+    shouldForceOrderRefresh: false,
+};
+
 export const constants = {
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
@@ -50,4 +55,5 @@ export const constants = {
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
     DEFAULT_PER_PAGE,
+    DEFAULT_LIQUIDITY_REQUEST_OPTS,
 };
