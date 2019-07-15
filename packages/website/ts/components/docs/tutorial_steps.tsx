@@ -7,11 +7,10 @@ export const TutorialSteps = styled.ol`
 
     li {
         display: flex;
-        align-items: center;
         counter-increment: tutorialSteps;
         margin-bottom: 0.8333rem;
         font-size: 1rem;
-        line-height: 1;
+        line-height: 30px;
     }
 
     li:before {
@@ -21,7 +20,7 @@ export const TutorialSteps = styled.ol`
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 30px;
+        min-width: 30px;
         height: 30px;
         margin-right: 1rem;
     }
