@@ -29,6 +29,7 @@ const NotificationWrapper = styled.div<INotificationWrapperProps>`
 
 const NotificationText = styled.span`
     font-size: 1rem;
+    line-height: 26px;
     margin-left: 1rem;
 `;
 
