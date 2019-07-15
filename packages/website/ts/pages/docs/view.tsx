@@ -75,24 +75,24 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
             <Section maxWidth="1130px">
-            {Component ? (
-                <Columns>
-                    <TableOfContents contents={contents} />
-                    <ContentWrapper>
-                        <MDXProvider components={mdxComponents}>
-                            {/*
+                {Component ? (
+                    <Columns>
+                        <TableOfContents contents={contents} />
+                        <ContentWrapper>
+                            <MDXProvider components={mdxComponents}>
+                                {/*
                                 // @ts-ignore */}
-                            <Component />
-                        </MDXProvider>
-                        <HelpCallout />
-                        <HelpfulCta page={page} />
-                    </ContentWrapper>
-                </Columns>
-            ) : (
-                <LoaderWrapper>
-                    <CircularProgress size={40} thickness={2} color={colors.brandLight} />
-                </LoaderWrapper>
-            )}
+                                <Component />
+                            </MDXProvider>
+                            <HelpCallout />
+                            <HelpfulCta page={page} />
+                        </ContentWrapper>
+                    </Columns>
+                ) : (
+                    <LoaderWrapper>
+                        <CircularProgress size={40} thickness={2} color={colors.brandLight} />
+                    </LoaderWrapper>
+                )}
             </Section>
         </SiteWrap>
     );
