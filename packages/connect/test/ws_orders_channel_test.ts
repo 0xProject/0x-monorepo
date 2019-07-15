@@ -23,8 +23,8 @@ describe('WebSocketOrdersChannel', () => {
     Sinon.stub(openClient, 'send').callsFake(_.noop.bind(_));
     const openOrdersChannel = new WebSocketOrdersChannel(openClient, emptyOrdersChannelHandler);
     const subscriptionOpts = {
-        baseAssetData: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-        quoteAssetData: '0xef7fff64389b814a946f3e92105513705ca6b990',
+        makerAssetProxyId: '0xf47261b0',
+        takerAssetAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
         limit: 100,
     };
     describe('#subscribe', () => {
