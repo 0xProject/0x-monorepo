@@ -74,29 +74,33 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-            <Section maxWidth="1130px">
-                {Component ? (
-                    <Columns>
+            {Component ? (
+                <Columns>
+                    <DocsViewWrapper>
                         <TableOfContents contents={contents} />
-                        <ContentWrapper>
-                            <MDXProvider components={mdxComponents}>
-                                {/*
+                    </DocsViewWrapper>
+                    <ContentWrapper>
+                        <MDXProvider components={mdxComponents}>
+                            {/*
                                 // @ts-ignore */}
-                                <Component />
-                            </MDXProvider>
-                            <HelpCallout />
-                            <HelpfulCta page={page} />
-                        </ContentWrapper>
-                    </Columns>
-                ) : (
-                    <LoaderWrapper>
-                        <CircularProgress size={40} thickness={2} color={colors.brandLight} />
-                    </LoaderWrapper>
-                )}
-            </Section>
+                            <Component />
+                        </MDXProvider>
+                        <HelpCallout />
+                        <HelpfulCta page={page} />
+                    </ContentWrapper>
+                </Columns>
+            ) : (
+                <LoaderWrapper>
+                    <CircularProgress size={40} thickness={2} color={colors.brandLight} />
+                </LoaderWrapper>
+            )}
         </SiteWrap>
     );
 };
+
+const DocsViewWrapper = styled.div`
+    position: relative;
+`;
 
 const LoaderWrapper = styled.div`
     display: flex;
