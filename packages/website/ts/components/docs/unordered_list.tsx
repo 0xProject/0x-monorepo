@@ -11,6 +11,6 @@ export const UnorderedList = styled.ul`
         font-weight: 300;
         line-height: 1.625em;
         margin-bottom: 1rem;
-        line-height: 1;
+        line-height: 26px;
     }
 `;
