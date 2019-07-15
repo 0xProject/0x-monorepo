@@ -25,6 +25,10 @@ const NotificationWrapper = styled.div<INotificationWrapperProps>`
     margin-bottom: 1.875rem;
     color: ${colors.textDarkPrimary};
     background-color: ${({ type }) => themeSettings[type].bgColor};
+
+    svg {
+        min-width: 28px;
+    }
 `;
 
 const NotificationText = styled.span`
