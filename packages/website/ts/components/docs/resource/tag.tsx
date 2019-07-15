@@ -1,8 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { Icon } from 'ts/components/icon';
-
 import { colors } from 'ts/style/colors';
 
 interface ITagText {
