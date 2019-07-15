@@ -1,6 +1,6 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
@@ -14,7 +14,7 @@ export const assert = {
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
-        if (swapQuote.type === 'marketBuy') {
+        if (swapQuote.type === MarketOperation.Buy) {
             sharedAssert.isBigNumber(`${variableName}.makerAssetFillAmount`, swapQuote.makerAssetFillAmount);
         } else {
             sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
