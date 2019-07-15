@@ -1,6 +1,6 @@
 {
     "name": "@0x/metacoin",
-    "version": "0.0.53",
+    "version": "0.0.54",
     "engines": {
         "node": ">=6.12"
     },
@@ -51,7 +51,7 @@
         "run-s": "^0.0.0"
     },
     "devDependencies": {
-        "@0x/contracts-test-utils": "^3.1.9",
+        "@0x/contracts-test-utils": "^3.1.10",
         "@0x/dev-utils": "^2.2.4",
         "@0x/sol-compiler": "^3.1.9",
         "chai": "^4.0.1",

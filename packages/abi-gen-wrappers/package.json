@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen-wrappers",
-    "version": "5.0.1",
+    "version": "5.0.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -48,7 +48,7 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.1.1",
-        "@0x/contract-addresses": "^3.0.1",
+        "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.1"
     },
     "publishConfig": {

@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "4.1.8",
+    "version": "4.1.9",
     "engines": {
         "node": ">=6.12"
     },
@@ -50,11 +50,11 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.0.1",
+        "@0x/abi-gen-wrappers": "^5.0.2",
         "@0x/base-contract": "^5.1.1",
-        "@0x/contract-addresses": "^3.0.1",
+        "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.1",
-        "@0x/order-utils": "^8.2.1",
+        "@0x/order-utils": "^8.2.2",
         "@0x/sol-compiler": "^3.1.9",
         "@0x/subproviders": "^4.1.1",
         "@0x/typescript-typings": "^4.2.3",

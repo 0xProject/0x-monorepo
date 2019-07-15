@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-exchange",
-    "version": "2.1.7",
+    "version": "2.1.8",
     "engines": {
         "node": ">=6.12"
     },
@@ -49,7 +49,7 @@
     "devDependencies": {
         "@0x/abi-gen": "^2.1.1",
         "@0x/contracts-gen": "^1.0.10",
-        "@0x/contracts-test-utils": "^3.1.9",
+        "@0x/contracts-test-utils": "^3.1.10",
         "@0x/dev-utils": "^2.2.4",
         "@0x/sol-compiler": "^3.1.9",
         "@0x/tslint-config": "^3.0.1",
@@ -69,13 +69,13 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.1.1",
-        "@0x/contracts-asset-proxy": "^2.2.1",
-        "@0x/contracts-erc1155": "^1.1.8",
-        "@0x/contracts-erc20": "^2.2.7",
-        "@0x/contracts-erc721": "^2.1.8",
-        "@0x/contracts-exchange-libs": "^3.0.1",
-        "@0x/contracts-utils": "^3.1.8",
-        "@0x/order-utils": "^8.2.1",
+        "@0x/contracts-asset-proxy": "^2.2.2",
+        "@0x/contracts-erc1155": "^1.1.9",
+        "@0x/contracts-erc20": "^2.2.8",
+        "@0x/contracts-erc721": "^2.1.9",
+        "@0x/contracts-exchange-libs": "^3.0.2",
+        "@0x/contracts-utils": "^3.1.9",
+        "@0x/order-utils": "^8.2.2",
         "@0x/types": "^2.4.0",
         "@0x/typescript-typings": "^4.2.3",
         "@0x/utils": "^4.4.0",

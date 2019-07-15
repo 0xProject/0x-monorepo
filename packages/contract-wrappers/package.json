@@ -1,6 +1,6 @@
 {
     "name": "@0x/contract-wrappers",
-    "version": "9.1.6",
+    "version": "9.1.7",
     "description": "Smart TS wrappers for 0x smart contracts",
     "keywords": [
         "0xproject",
@@ -38,11 +38,11 @@
         "node": ">=6.0.0"
     },
     "devDependencies": {
-        "@0x/contracts-test-utils": "^3.1.9",
+        "@0x/contracts-test-utils": "^3.1.10",
         "@0x/coordinator-server": "0.1.1",
         "@0x/dev-utils": "^2.2.4",
-        "@0x/fill-scenarios": "^3.0.12",
-        "@0x/migrations": "^4.1.8",
+        "@0x/fill-scenarios": "^3.0.13",
+        "@0x/migrations": "^4.1.9",
         "@0x/subproviders": "^4.1.1",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
@@ -71,12 +71,12 @@
         "web3-provider-engine": "14.0.6"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.0.1",
+        "@0x/abi-gen-wrappers": "^5.0.2",
         "@0x/assert": "^2.1.0",
-        "@0x/contract-addresses": "^3.0.1",
+        "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.1",
         "@0x/json-schemas": "^3.0.11",
-        "@0x/order-utils": "^8.2.1",
+        "@0x/order-utils": "^8.2.2",
         "@0x/types": "^2.4.0",
         "@0x/typescript-typings": "^4.2.3",
         "@0x/utils": "^4.4.0",
