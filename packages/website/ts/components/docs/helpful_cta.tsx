@@ -17,7 +17,7 @@ export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ note, page, question })
     const [isClicked, setIsClicked] = useState<boolean>(false);
 
     const vote = (yesno: string) => {
-        analytics.track('was_this_helpful_feedback', { yesno, page });
+        // analytics.track('was_this_helpful_feedback', { yesno, page });
         setIsClicked(true);
     };
 
@@ -60,6 +60,10 @@ const HelpfulCtaWrapper = styled.div`
     display: flex;
     align-items: center;
     margin-bottom: 1.875rem;
+
+    @media (max-width: 500px) {
+        flex-direction: column;
+    }
 `;
 
 const CtaText = styled(Paragraph)`
@@ -68,7 +72,10 @@ const CtaText = styled(Paragraph)`
     font-weight: 400;
     line-height: 40px; /* button line-height + button border */
     margin-bottom: 0;
-    opacity: 1;
+
+    @media (max-width: 500px) {
+        margin-bottom: 12px;
+    }
 `;
 
 // prettier-ignore
@@ -85,6 +92,10 @@ const CtaButtons = styled.div`
     display: flex;
     align-items: center;
     margin-left: 40px;
+
+    @media (max-width: 500px) {
+        margin-left: 0;
+    }
 `;
 
 const CtaButton = styled(Button)`
