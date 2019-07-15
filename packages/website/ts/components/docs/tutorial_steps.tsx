@@ -21,7 +21,6 @@ export const TutorialSteps = styled.ol`
         display: flex;
         align-items: center;
         justify-content: center;
-        font-feature-settings: 'tnum' on, 'lnum' on;
         width: 30px;
         height: 30px;
         margin-right: 1rem;
