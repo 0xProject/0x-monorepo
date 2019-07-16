@@ -15,6 +15,8 @@ import { Heading } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
+const separatorMargin = '60px 0';
+
 export const DocsHome: React.FC = () => {
     return (
         <SiteWrap theme="light">
@@ -26,7 +28,7 @@ export const DocsHome: React.FC = () => {
                         <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
                     ))}
                 </ShortcutsWrapper>
-                <Separator />
+                <Separator margin={separatorMargin} />
                 <GetStartedWrapper>
                     <div>
                         <Heading size="default">Get Started</Heading>
@@ -34,13 +36,12 @@ export const DocsHome: React.FC = () => {
                             <GetStartedLink key={`getStarted-${index}`} {...link} />
                         ))}
                     </div>
-                    <Separator />
                     <div>
                         <Heading size="default">Useful Links</Heading>
                         <StepLinks links={usefulLinks} />
                     </div>
                 </GetStartedWrapper>
-                <Separator />
+                <Separator margin={separatorMargin} />
                 <CommunityWrapper>
                     {communityShortcuts.map((shortcut, index) => (
                         <CommunityLink key={`communityLink-${index}`} {...shortcut} />
@@ -64,12 +65,11 @@ const ShortcutsWrapper = styled.div`
 
 const GetStartedWrapper = styled.div`
     display: grid;
-    grid-template-columns: 1fr 0 1fr;
+    grid-template-columns: 1fr 1fr;
     grid-column-gap: 70px;
     grid-row-gap: 30px;
 
     @media (max-width: 900px) {
-        grid-column-gap: 30px;
         grid-template-columns: 1fr;
     }
 `;

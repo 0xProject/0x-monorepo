@@ -20,5 +20,4 @@ export const StepLinks: React.FC<ILinkProps> = ({ links }) => (
 const StepLinksWrapper = styled.div`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
-    margin-bottom: 1.875rem;
 `;
