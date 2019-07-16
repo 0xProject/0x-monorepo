@@ -26,6 +26,7 @@ export interface SectionProps extends WrapProps {
     isPadded?: boolean;
     isFullWidth?: boolean;
     isFlex?: boolean;
+    overflow?: string;
     padding?: string;
     paddingMobile?: string;
     flexBreakpoint?: string;
@@ -95,7 +96,7 @@ const SectionBase = styled.section<SectionProps>`
     padding: ${props => props.isPadded && (props.padding || '120px 0')};
     background-color: ${props => props.theme[`${props.bgColor}BgColor`] || props.bgColor};
     position: relative;
-    overflow: ${props => !props.isFullWidth && 'hidden'};
+    overflow: ${props => !props.isFullWidth && (props.overflow || 'hidden')};
 
     @media (max-width: 768px) {
         padding: ${props => props.isPadded && (props.paddingMobile || '40px 0')};

@@ -74,24 +74,26 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-            {Component ? (
-                <Columns>
-                    <TableOfContents contents={contents} />
-                    <ContentWrapper>
-                        <MDXProvider components={mdxComponents}>
-                            {/*
+            <Section maxWidth="1130px" overflow="visible">
+                {Component ? (
+                    <Columns>
+                        <TableOfContents contents={contents} />
+                        <ContentWrapper>
+                            <MDXProvider components={mdxComponents}>
+                                {/*
                                 // @ts-ignore */}
-                            <Component />
-                        </MDXProvider>
-                        <HelpCallout />
-                        <HelpfulCta page={page} />
-                    </ContentWrapper>
-                </Columns>
-            ) : (
-                <LoaderWrapper>
-                    <CircularProgress size={40} thickness={2} color={colors.brandLight} />
-                </LoaderWrapper>
-            )}
+                                <Component />
+                            </MDXProvider>
+                            <HelpCallout />
+                            <HelpfulCta page={page} />
+                        </ContentWrapper>
+                    </Columns>
+                ) : (
+                    <LoaderWrapper>
+                        <CircularProgress size={40} thickness={2} color={colors.brandLight} />
+                    </LoaderWrapper>
+                )}
+            </Section>
         </SiteWrap>
     );
 };
@@ -116,9 +118,7 @@ const Columns = styled.div`
 `;
 
 const ContentWrapper = styled.article`
-    min-height: 300px;
-    max-width: 100vw;
-    width: 100%;
+    min-width: 0;
 `;
 
 const Separator = styled.hr`
