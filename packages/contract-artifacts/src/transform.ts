@@ -7,6 +7,7 @@ export const REQUIRED_PROPERTIES: string[] = [
     'compilerOutput.evm.bytecode.object',
     'compilerOutput.abi',
     'compilerOutput.devdoc',
+    'compiler',
 ];
 
 export const FORBIDDEN_PROPERTIES: string[] = [
