@@ -156,6 +156,7 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
                 />
                 <ModalContact isOpen={this.state.isContactModalOpen} onDismiss={this._onDismissContactModal} />
                 <ModalVote
+                    zeipId={this._proposalData.zeipId}
                     isOpen={this.state.isVoteModalOpen}
                     onDismiss={this._onDismissVoteModal}
                     onWalletConnected={this._onWalletConnected.bind(this)}
@@ -206,7 +207,9 @@ export class Governance extends React.Component<RouteComponentProps<any>> {
     };
     private async _fetchVoteStatusAsync(): Promise<void> {
         try {
-            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : `https://${configs.DOMAIN_VOTE}/staging`;
+            const voteDomain = utils.isProduction()
+                ? `https://${configs.DOMAIN_VOTE}`
+                : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${this._proposalData.zeipId}`;
             const response = await fetch(voteEndpoint, {
                 method: 'get',

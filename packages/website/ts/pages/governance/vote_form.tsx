@@ -45,6 +45,7 @@ interface Props {
     injectedProvider?: InjectedProvider;
     ledgerSubproviderIfExists?: LedgerSubprovider;
     provider?: ZeroExProvider;
+    zeipId: number;
 }
 
 interface State {
@@ -55,7 +56,6 @@ interface State {
     isVoted: boolean;
     selectedAddress?: string;
     votePreference?: string;
-    zeip: number;
     voteHash?: string;
     signedVote?: SignedVote;
     comment?: string;
@@ -91,7 +91,7 @@ export class VoteForm extends React.Component<Props> {
         isSuccessful: false,
         isLedger: false,
         isVoted: false,
-        zeip: defaultZeip,
+        // zeipId: defaultZeip,
         errors: {},
     };
     public networkId: number;
@@ -102,7 +102,6 @@ export class VoteForm extends React.Component<Props> {
         isSuccessful: false,
         isVoted: false,
         votePreference: null,
-        zeip: VoteForm.defaultProps.zeip,
         errors: {},
     };
     // shared fields
@@ -191,8 +190,8 @@ export class VoteForm extends React.Component<Props> {
     private readonly _createAndSubmitVoteAsync = async (e: React.FormEvent): Promise<void> => {
         e.preventDefault();
 
-        const { zeip, votePreference, comment } = this.state;
-        const { currentBalance, selectedAddress, isLedger } = this.props;
+        const { votePreference, comment } = this.state;
+        const { currentBalance, selectedAddress, isLedger, zeipId } = this.props;
         const makerAddress = selectedAddress;
 
         if (isLedger) {
@@ -209,7 +208,7 @@ export class VoteForm extends React.Component<Props> {
             name: '0x Protocol Governance',
         };
         const message = {
-            zeip,
+            zeip: zeipId,
             preference: votePreference,
             from: makerAddress,
         };
@@ -236,7 +235,9 @@ export class VoteForm extends React.Component<Props> {
                 isAwaitingLedgerSignature: false,
             }));
 
-            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : 'http://localhost:3000';
+            const voteDomain = utils.isProduction()
+                ? `https://${configs.DOMAIN_VOTE}`
+                : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/vote`;
             const requestBody = { ...signedVote, comment };
             const response = await fetch(voteEndpoint, {

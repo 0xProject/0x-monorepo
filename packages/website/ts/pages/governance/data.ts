@@ -91,8 +91,7 @@ export const proposals: Proposals = {
             links: [
                 {
                     text: 'View Code',
-                    url:
-                        '',
+                    url: '',
                 },
                 {
                     text: 'View Audit',

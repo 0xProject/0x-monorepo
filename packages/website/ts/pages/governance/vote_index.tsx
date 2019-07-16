@@ -64,7 +64,9 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
     }
     private async _fetchVoteStatusAsync(zeipId: number): Promise<TallyInterface> {
         try {
-            const voteDomain = utils.isProduction() ? `https://${configs.DOMAIN_VOTE}` : `https://${configs.DOMAIN_VOTE}/staging`;
+            const voteDomain = utils.isProduction()
+                ? `https://${configs.DOMAIN_VOTE}`
+                : `https://${configs.DOMAIN_VOTE}/staging`;
             const voteEndpoint = `${voteDomain}/v1/tally/${zeipId}`;
             const response = await fetch(voteEndpoint, {
                 method: 'get',
@@ -100,8 +102,8 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
 
     private async _fetchTallysAsync(): Promise<void> {
         const tallyResponses = await Promise.all(ZEIP_IDS.map(async zeipId => this._fetchVoteStatusAsync(zeipId)));
-        const tallys: {[key: number]: TallyInterface} = {};
-        ZEIP_IDS.forEach((zeipId, i) => tallys[zeipId] = tallyResponses[i]);
+        const tallys: { [key: number]: TallyInterface } = {};
+        ZEIP_IDS.forEach((zeipId, i) => (tallys[zeipId] = tallyResponses[i]));
         this.setState({ tallys });
     }
 }
