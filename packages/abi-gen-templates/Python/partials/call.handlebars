@@ -21,6 +21,11 @@
         {{/if}}
         """
         {{#each this.inputs}}
+        self.validator.assert_valid(
+            method_name='{{../name}}',
+            parameter_name='{{name}}',
+            argument_value={{toPythonIdentifier name}},
+        )
         {{#if (equal type 'address')}}
         {{toPythonIdentifier this.name}} = self._validate_and_checksum_address({{toPythonIdentifier this.name}})
         {{else if (equal type 'uint256')}}
