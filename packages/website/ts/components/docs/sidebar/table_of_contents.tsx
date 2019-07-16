@@ -54,9 +54,18 @@ const ContentsWrapper = styled.div`
 `;
 
 const ContentsList = styled.ul`
+    li {
+        margin-bottom: 1rem;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
     ul {
         border-left: 1px solid #e3e3e3;
         padding-left: 0.7rem;
+        margin-top: 1rem;
 
         span {
             font-size: 0.7222rem;
@@ -65,10 +74,10 @@ const ContentsList = styled.ul`
     }
 `;
 
+// Note (piotr): The links could also be styled by using the level prop we get from contents generated from mdx files
+
 const ContentLink = styled(Link)`
-    display: block;
     font-size: 0.8333rem;
-    margin-bottom: 1rem;
 
     span {
         color: ${({ theme }) => theme.paragraphColor};
