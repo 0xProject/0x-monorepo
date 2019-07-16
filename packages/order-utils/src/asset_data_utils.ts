@@ -522,3 +522,4 @@ export const assetDataUtils = {
         }
     },
 };
+// tslint:disable:max-file-line-count
