@@ -115,8 +115,8 @@ contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
 packages/metacoin/src/contract_wrappers
-python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token.py
-python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
 
 # cli test output
 packages/abi-gen/test-cli/output

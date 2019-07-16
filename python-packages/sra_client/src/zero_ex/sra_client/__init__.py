@@ -105,7 +105,7 @@ Post Order
 
 Post an order for our Maker to trade ZRX for WETH:
 
->>> from zero_ex.contract_wrappers.exchange_types import Order, order_to_jsdict
+>>> from zero_ex.contract_wrappers.exchange.types import Order, order_to_jsdict
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
 ...     sign_hash)
@@ -253,7 +253,7 @@ consists just of our order):
 Select an order from the orderbook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
->>> from zero_ex.contract_wrappers.exchange_types import jsdict_to_order
+>>> from zero_ex.contract_wrappers.exchange.types import jsdict_to_order
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)

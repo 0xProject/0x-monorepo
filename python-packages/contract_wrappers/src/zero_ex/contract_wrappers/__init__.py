@@ -117,7 +117,7 @@ balance:
 Constructing an order
 ---------------------
 
->>> from zero_ex.contract_wrappers.exchange_types import Order
+>>> from zero_ex.contract_wrappers.exchange.types import Order
 >>> from zero_ex.order_utils import asset_data_utils
 >>> from datetime import datetime, timedelta
 >>> import random

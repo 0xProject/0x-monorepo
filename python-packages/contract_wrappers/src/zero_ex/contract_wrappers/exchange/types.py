@@ -18,7 +18,7 @@ from eth_utils import remove_0x_prefix
 
 from zero_ex.json_schemas import assert_valid
 
-from .exchange import (
+from . import (
     Tuple0xbb41e5b3,
     Tuple0x260219a2,
     Tuple0x054ca44e,

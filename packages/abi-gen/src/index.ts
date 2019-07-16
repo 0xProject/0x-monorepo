@@ -273,16 +273,17 @@ for (const abiFileName of abiFileNames) {
     }
 
     const outFileName = utils.makeOutputFileName(namedContent.name);
-    const outFileExtension = (() => {
+    const outFilePath = (() => {
         if (args.language === 'TypeScript') {
-            return 'ts';
+            return `${args.output}/${outFileName}.ts`;
         } else if (args.language === 'Python') {
-            return 'py';
+            const directory = `${args.output}/${outFileName}`;
+            mkdirp.sync(directory);
+            return `${directory}/__init__.py`;
         } else {
             throw new Error(`Unexpected language '${args.language}'`);
         }
     })();
-    const outFilePath = `${args.output}/${outFileName}.${outFileExtension}`;
 
     if (utils.isOutputFileUpToDate(outFilePath, [abiFileName, args.template, ...partialTemplateFileNames])) {
         logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);

@@ -31,18 +31,18 @@ zero_ex.contract_wrappers.TxParams
 .. autoclass:: zero_ex.contract_wrappers.TxParams
    :members:
 
-zero_ex.contract_wrappers.exchange_types
+zero_ex.contract_wrappers.exchange.types
 ========================================
 
-.. automodule:: zero_ex.contract_wrappers.exchange_types
+.. automodule:: zero_ex.contract_wrappers.exchange.types
 
-.. autoclass:: zero_ex.contract_wrappers.exchange_types.Order
+.. autoclass:: zero_ex.contract_wrappers.exchange.types.Order
 
-.. autoclass:: zero_ex.contract_wrappers.exchange_types.OrderInfo
+.. autoclass:: zero_ex.contract_wrappers.exchange.types.OrderInfo
 
-.. autoclass:: zero_ex.contract_wrappers.exchange_types.FillResults
+.. autoclass:: zero_ex.contract_wrappers.exchange.types.FillResults
 
-.. autoclass:: zero_ex.contract_wrappers.exchange_types.MatchedFillResults
+.. autoclass:: zero_ex.contract_wrappers.exchange.types.MatchedFillResults
 
 zero_ex.contract_wrappers.exchange: Generated Tuples
 ====================================================

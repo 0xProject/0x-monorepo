@@ -61,7 +61,7 @@ def assert_valid(data: Mapping, schema_id: str) -> None:
 
     >>> from zero_ex.json_schemas import assert_valid
     >>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-    >>> from zero_ex.contract_wrappers.exchange_types import (
+    >>> from zero_ex.contract_wrappers.exchange.types import (
     ...     Order, order_to_jsdict
     ... )
     >>> from zero_ex.order_utils import asset_data_utils

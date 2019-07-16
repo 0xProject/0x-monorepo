@@ -34,9 +34,12 @@ class PreInstallCommand(distutils.command.build_py.build_py):
                 "packages",
                 "python-contract-wrappers",
                 "generated",
-                "erc20_token.py",
+                "erc20_token",
+                "__init__.py",
             ),
-            path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_wrappers", "erc20_token"
+            ),
         )
         copy(
             path.join(
@@ -46,16 +49,19 @@ class PreInstallCommand(distutils.command.build_py.build_py):
                 "packages",
                 "python-contract-wrappers",
                 "generated",
-                "exchange.py",
+                "exchange",
+                "__init__.py",
             ),
-            path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_wrappers", "exchange"
+            ),
         )
         if find_spec("black") is None:
             subprocess.check_call("pip install black".split())  # nosec
         black_command = (
             BLACK_COMMAND
-            + " src/zero_ex/contract_wrappers/erc20_token.py"
-            + " src/zero_ex/contract_wrappers/exchange.py"
+            + " src/zero_ex/contract_wrappers/erc20_token/__init__.py"
+            + " src/zero_ex/contract_wrappers/exchange/__init__.py"
         )
         print(f"Running command `{black_command}`...")
         subprocess.check_call(black_command.split())  # nosec
