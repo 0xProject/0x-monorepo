@@ -36,6 +36,10 @@ const GetStartedButton = styled(Button)`
 `;
 
 const GetStartedParagraph = styled(Paragraph)`
+    &:last-of-type {
+        margin-bottom: 0;
+    }
+
     @media (max-width: 500px) {
         font-size: 14px;
     }
