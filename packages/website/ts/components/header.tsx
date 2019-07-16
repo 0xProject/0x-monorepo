@@ -1,10 +1,10 @@
-import _ from 'lodash';
 import * as React from 'react';
+import Headroom from 'react-headroom';
 import MediaQuery from 'react-responsive';
 import styled, { css, withTheme } from 'styled-components';
 import { Link } from 'ts/components/documentation/shared/link';
 
-import Headroom from 'react-headroom';
+import { Link } from '@0x/react-shared';
 
 import { Button } from 'ts/components/button';
 import { DropdownDevelopers } from 'ts/components/dropdowns/dropdown_developers';
@@ -67,49 +67,47 @@ const navItems: NavItemProps[] = [
     },
 ];
 
-class HeaderBase extends React.Component<HeaderProps> {
-    public onUnpin = () => {
-        if (this.props.isNavToggled) {
-            this.props.toggleMobileNav();
+export const HeaderBase: React.FC<HeaderProps> = props => {
+    const { isNavToggled, toggleMobileNav, theme } = props;
+
+    const onUnpin = () => {
+        if (isNavToggled) {
+            toggleMobileNav();
         }
     };
 
-    public render(): React.ReactNode {
-        const { isNavToggled, toggleMobileNav, theme } = this.props;
+    return (
+        <Headroom
+            onUnpin={onUnpin}
+            downTolerance={4}
+            upTolerance={10}
+            wrapperStyle={{ position: 'relative', zIndex: 2 }}
+        >
+            <StyledHeader isNavToggled={isNavToggled}>
+                <HeaderWrap>
+                    <Link to={WebsitePaths.Home}>
+                        <Logo />
+                    </Link>
 
-        return (
-            <Headroom
-                onUnpin={this.onUnpin}
-                downTolerance={4}
-                upTolerance={10}
-                wrapperStyle={{ position: 'relative', zIndex: 2 }}
-            >
-                <StyledHeader isNavToggled={isNavToggled}>
-                    <HeaderWrap>
-                        <Link to={WebsitePaths.Home}>
-                            <Logo />
-                        </Link>
+                    <NavLinks>
+                        {navItems.map((link, index) => (
+                            <NavItem key={`navlink-${index}`} link={link} />
+                        ))}
+                    </NavLinks>
 
-                        <NavLinks>
-                            {_.map(navItems, (link, index) => (
-                                <NavItem key={`navlink-${index}`} link={link} />
-                            ))}
-                        </NavLinks>
+                    <MediaQuery minWidth={990}>
+                        <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" to="/explore">
+                            Trade on 0x
+                        </TradeButton>
+                    </MediaQuery>
 
-                        <MediaQuery minWidth={990}>
-                            <TradeButton bgColor={theme.headerButtonBg} color="#ffffff" to="/explore">
-                                Trade on 0x
-                            </TradeButton>
-                        </MediaQuery>
-
-                        <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                        <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
-                    </HeaderWrap>
-                </StyledHeader>
-            </Headroom>
-        );
-    }
-}
+                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
+                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                </HeaderWrap>
+            </StyledHeader>
+        </Headroom>
+    );
+};
 
 export const Header = withTheme(HeaderBase);
 
