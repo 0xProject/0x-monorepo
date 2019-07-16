@@ -175,7 +175,7 @@ describe('StaticCallProxy', () => {
                 RevertReason.UnexpectedStaticCallResult,
             );
         });
-        it('should be successful if a function call with no inputs is successful', async () => {
+        it('should be successful if a function call with no inputs and no outputs is successful', async () => {
             const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
             const assetData = assetDataUtils.encodeStaticCallAssetData(
@@ -183,6 +183,12 @@ describe('StaticCallProxy', () => {
                 staticCallData,
                 expectedResultHash,
             );
+            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+        });
+        it('should be successful if the staticCallTarget is not a contract and no return value is expected', async () => {
+            const staticCallData = '0x0102030405060708';
+            const expectedResultHash = constants.KECCAK256_NULL;
+            const assetData = assetDataUtils.encodeStaticCallAssetData(toAddress, staticCallData, expectedResultHash);
             await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
         });
         it('should be successful if a function call with one static input returns the correct value', async () => {
