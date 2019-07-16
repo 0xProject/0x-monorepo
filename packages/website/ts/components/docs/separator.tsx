@@ -2,6 +2,7 @@ import styled from 'styled-components';
 
 interface ISeparatorProps {
     margin?: string;
+    marginMobile?: string;
 }
 
 export const Separator = styled.hr<ISeparatorProps>`
@@ -11,10 +12,11 @@ export const Separator = styled.hr<ISeparatorProps>`
     margin: ${({ margin }) => margin};
 
     @media (max-width: 768px) {
-        margin: 30px 0;
+        margin: ${({ marginMobile }) => marginMobile};
     }
 `;
 
 Separator.defaultProps = {
     margin: '30px 0',
+    marginMobile: '30px 0',
 };
