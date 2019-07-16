@@ -29,6 +29,10 @@ describe('Contract Artifacts', () => {
         const missingRequiredPropertiesByArtifact: ObjectMap<string[]> = {};
         for (const [artifactName, artifact] of Object.entries(artifacts)) {
             for (const requiredProperty of REQUIRED_PROPERTIES) {
+                // HACK (xianny): Remove after `compiler` field is added in v3.
+                if (requiredProperty === 'compiler' && artifact.schemaVersion === '2.0.0') {
+                    continue;
+                }
                 const requiredValue = get(artifact, requiredProperty);
                 if (requiredValue === undefined || requiredValue === '') {
                     const previousMissing = missingRequiredPropertiesByArtifact[artifactName];
