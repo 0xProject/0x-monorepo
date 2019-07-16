@@ -23,7 +23,7 @@ export const marketUtils = {
         return findOrdersThatCoverAssetFillAmount<T>(
             orders,
             takerAssetFillAmount,
-            'marketSell',
+            MarketOperation.Sell,
             opts,
         ) as OrdersAndRemainingTakerFillAmount<T>;
     },
@@ -45,7 +45,7 @@ export const marketUtils = {
         return findOrdersThatCoverAssetFillAmount<T>(
             orders,
             makerAssetFillAmount,
-            'marketBuy',
+            MarketOperation.Buy,
             opts,
         ) as OrdersAndRemainingMakerFillAmount<T>;
     },
@@ -133,14 +133,14 @@ function findOrdersThatCoverAssetFillAmount<T extends Order>(
     operation: MarketOperation,
     opts?: FindOrdersThatCoverTakerAssetFillAmountOpts | FindOrdersThatCoverMakerAssetFillAmountOpts,
 ): OrdersAndRemainingTakerFillAmount<T> | OrdersAndRemainingMakerFillAmount<T> {
-    const variablePrefix = operation === 'marketBuy' ? 'Maker' : 'Taker';
+    const variablePrefix = operation === MarketOperation.Buy ? 'Maker' : 'Taker';
     assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
     assert.isValidBaseUnitAmount('assetFillAmount', assetFillAmount);
     // try to get remainingFillableTakerAssetAmounts from opts, if it's not there, use takerAssetAmount values from orders
     const remainingFillableAssetAmounts = _.get(
         opts,
         `remainingFillable${variablePrefix}AssetAmounts`,
-        _.map(orders, order => (operation === 'marketBuy' ? order.makerAssetAmount : order.takerAssetAmount)),
+        _.map(orders, order => (operation === MarketOperation.Buy ? order.makerAssetAmount : order.takerAssetAmount)),
     ) as BigNumber[];
     _.forEach(remainingFillableAssetAmounts, (amount, index) =>
         assert.isValidBaseUnitAmount(`remainingFillable${variablePrefix}AssetAmount[${index}]`, amount),
@@ -194,7 +194,7 @@ function findOrdersThatCoverAssetFillAmount<T extends Order>(
         ...ordersAndRemainingFillAmount
     } = result;
 
-    if (operation === 'marketBuy') {
+    if (operation === MarketOperation.Buy) {
         return {
             ...ordersAndRemainingFillAmount,
             ordersRemainingFillableMakerAssetAmounts: resultOrdersRemainingFillableAssetAmounts,

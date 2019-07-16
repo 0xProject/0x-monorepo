@@ -4,6 +4,7 @@ import { APIOrder, AssetPairsResponse, OrderbookResponse } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { constants } from '../constants';
 import {
     OrderProvider,
     OrderProviderRequest,
@@ -117,9 +118,7 @@ export class StandardRelayerAPIOrderProvider implements OrderProvider {
      * @return  An array of asset data strings that can be used to purchased makerAssetData.
      */
     public async getAvailableTakerAssetDatasAsync(makerAssetData: string): Promise<string[]> {
-        // Return a maximum of 1000 asset datas
-        const maxPerPage = 1000;
-        const requestOpts = { networkId: this.networkId, perPage: maxPerPage };
+        const requestOpts = { networkId: this.networkId, perPage: constants.DEFAULT_PER_PAGE };
         const assetPairsRequest = { assetDataA: makerAssetData };
         const fullRequest = {
             ...requestOpts,
