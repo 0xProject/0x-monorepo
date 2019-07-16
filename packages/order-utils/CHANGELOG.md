@@ -5,6 +5,21 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.2.2 - _July 15, 2019_
+
+    * Dependencies updated
+
+## v8.2.1 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v8.2.0 - _July 13, 2019_
+
+    * Add support for encoding/decoding StaticCallProxy assetData (#1863)
+    * Add support for marketSell utils (#1914)
+    * Add support for encoding/decoding DutchAuction assetData (#1943)
+    * Added `validateMakerTransferThrowIfInvalidAsync` to OrderValidationUtils (#1937)
+
 ## v8.1.1 - _May 24, 2019_
 
     * Dependencies updated

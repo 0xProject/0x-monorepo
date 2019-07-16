@@ -6,7 +6,8 @@
                 "note": "Add MarketOperation type",
                 "pr": 1914
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "version": "2.3.0",

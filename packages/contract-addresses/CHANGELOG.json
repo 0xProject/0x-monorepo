@@ -1,5 +1,32 @@
 [
     {
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Update OrderValidator testnet addresses"
+            }
+        ],
+        "timestamp": 1563193019
+    },
+    {
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Update remaining Mainnet V2.1 contract addresses"
+            }
+        ],
+        "timestamp": 1563047529
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Redeployed Mainnet Exchange and Asset Proxies"
+            }
+        ],
+        "timestamp": 1563006338
+    },
+    {
         "version": "2.3.3",
         "changes": [
             {

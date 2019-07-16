@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.1 - _July 13, 2019_
+
+    * Fix bug in Trezor subprovider causing Trezor response to not be hex encoded (#1867)
+
 ## v4.1.0 - _May 24, 2019_
 
     * Improve performance of Trezor subprovider via caching (#1830)

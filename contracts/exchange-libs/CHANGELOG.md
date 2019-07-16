@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.0.2 - _July 15, 2019_
+
+    * Dependencies updated
+
+## v3.0.1 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v3.0.0 - _July 13, 2019_
+
+    * Move `LibTransactionDecoder` to contracts/dev-utils package (#1848)
+
 ## v2.1.6 - _May 24, 2019_
 
     * Dependencies updated

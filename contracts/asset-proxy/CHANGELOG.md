@@ -5,6 +5,20 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.2.2 - _July 15, 2019_
+
+    * Dependencies updated
+
+## v2.2.1 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v2.2.0 - _July 13, 2019_
+
+    * Add `LibAssetProxyIds` contract (#1835)
+    * Updated ERC1155 Asset Proxy. Less optimization. More explicit handling of edge cases. (#1852)
+    * Implement StaticCallProxy (#1863)
+
 ## v2.1.5 - _May 24, 2019_
 
     * Dependencies updated

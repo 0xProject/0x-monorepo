@@ -1,5 +1,23 @@
 [
     {
+        "timestamp": 1563193019,
+        "version": "2.2.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "2.2.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "2.2.0",
         "changes": [
             {
@@ -14,7 +32,8 @@
                 "note": "Implement StaticCallProxy",
                 "pr": 1863
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1558712885,

@@ -5,6 +5,18 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.10 - _July 15, 2019_
+
+    * Dependencies updated
+
+## v3.1.9 - _July 13, 2019_
+
+    * Dependencies updated
+
+## v3.1.8 - _July 13, 2019_
+
+    * Fixed false positives in `expectTransactionFailedAsync` and `expectContractCallFailedAsync` (#1852)
+
 ## v3.1.7 - _May 24, 2019_
 
     * Dependencies updated

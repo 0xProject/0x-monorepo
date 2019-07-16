@@ -4642,6 +4642,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4707,6 +4708,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -4778,6 +4780,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'leftOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4832,6 +4835,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'rightOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -4897,10 +4901,12 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4923,6 +4929,7 @@ export class ExchangeContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -4959,6 +4966,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5024,6 +5032,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5073,6 +5082,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5137,6 +5147,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5202,6 +5213,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5246,6 +5258,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5311,6 +5324,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5379,6 +5393,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5444,6 +5459,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5515,6 +5531,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5580,6 +5597,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5610,6 +5628,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5667,6 +5686,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -5757,6 +5777,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5822,6 +5843,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5852,6 +5874,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -5917,6 +5940,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'fillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -5987,6 +6011,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6044,6 +6069,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'orderStatus',
@@ -6070,6 +6096,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6171,6 +6198,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6236,6 +6264,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -6280,6 +6309,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -6345,6 +6375,7 @@ export class ExchangeContract extends BaseContract {
                     {
                         name: 'totalFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',

@@ -1117,6 +1117,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1179,6 +1180,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1248,6 +1250,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1270,6 +1273,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1332,6 +1336,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1390,6 +1395,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrders',
                         type: 'tuple[]',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1459,6 +1465,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'orderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',
@@ -1481,6 +1488,7 @@ export class ForwarderContract extends BaseContract {
                     {
                         name: 'feeOrderFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAssetFilledAmount',

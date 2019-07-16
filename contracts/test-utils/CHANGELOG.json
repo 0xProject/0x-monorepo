@@ -1,12 +1,31 @@
 [
     {
+        "timestamp": 1563193019,
+        "version": "3.1.10",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "3.1.9",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.1.8",
         "changes": [
             {
                 "note": "Fixed false positives in `expectTransactionFailedAsync` and `expectContractCallFailedAsync`",
                 "pr": 1852
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1558712885,

@@ -603,6 +603,7 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -660,6 +661,7 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'auctionDetails',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'beginTimeSeconds',
@@ -698,6 +700,7 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'buyOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -752,6 +755,7 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'sellOrder',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'makerAddress',
@@ -817,10 +821,12 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
+
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -843,6 +849,7 @@ export class DutchAuctionContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
+
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',

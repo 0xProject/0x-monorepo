@@ -1,5 +1,23 @@
 [
     {
+        "timestamp": 1563193019,
+        "version": "5.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "5.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "5.0.0",
         "changes": [
             {
@@ -22,7 +40,8 @@
                 "note": "Update wrappers to include `getABIEncodedTransactionData` for view and pure functions",
                 "pr": 1863
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "version": "4.3.0",

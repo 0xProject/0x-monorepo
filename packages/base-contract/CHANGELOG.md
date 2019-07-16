@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.1.1 - _July 13, 2019_
+
+    * Dependencies updated
+
 ## v5.1.0 - _May 10, 2019_
 
     * Export `PromiseWithTransactionHash` type (#1797)

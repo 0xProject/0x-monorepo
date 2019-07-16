@@ -6,7 +6,8 @@
                 "note": "Add function deleteNestedProperty",
                 "pr": 1842
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "version": "4.3.3",

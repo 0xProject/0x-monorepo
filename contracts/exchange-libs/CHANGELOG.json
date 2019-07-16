@@ -1,12 +1,31 @@
 [
     {
+        "timestamp": 1563193019,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
         "version": "3.0.0",
         "changes": [
             {
                 "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
                 "pr": 1848
             }
-        ]
+        ],
+        "timestamp": 1563006338
     },
     {
         "timestamp": 1558712885,
