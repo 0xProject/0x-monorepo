@@ -19,6 +19,7 @@ import { InlineCode } from 'ts/components/docs/inline_code';
 import { InlineLink } from 'ts/components/docs/inline_link';
 import { Notification } from 'ts/components/docs/notification';
 import { OrderedList } from 'ts/components/docs/ordered_list';
+import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { Table } from 'ts/components/docs/table';
@@ -74,10 +75,11 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-            <Section maxWidth="1130px" overflow="visible">
+            <Section maxWidth="1130px" isPadded={false} overflow="visible">
                 {Component ? (
                     <Columns>
                         <TableOfContents contents={contents} />
+                        <Separator />
                         <ContentWrapper>
                             <MDXProvider components={mdxComponents}>
                                 {/*
@@ -107,26 +109,16 @@ const LoaderWrapper = styled.div`
 
 const Columns = styled.div`
     display: grid;
-    grid-template-columns: 230px 1fr;
+    grid-template-columns: 230px 0 1fr;
     grid-column-gap: 118px;
-    grid-row-gap: 30px;
 
     @media (max-width: 900px) {
         grid-template-columns: 1fr;
-        grid-column-gap: 0;
     }
 `;
 
 const ContentWrapper = styled.article`
     min-width: 0;
-`;
-
-const Separator = styled.hr`
-    border-width: 0 0 1px;
-    border-color: #e4e4e4;
-    height: 0;
-    margin-top: 60px;
-    margin-bottom: 60px;
 `;
 
 const mdxComponents = {

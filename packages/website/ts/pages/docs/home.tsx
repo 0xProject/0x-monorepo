@@ -10,6 +10,7 @@ import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
+import { Separator } from 'ts/components/docs/separator';
 import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
@@ -106,17 +107,6 @@ const CommunityWrapper = styled.div`
 
     @media (max-width: 768px) {
         grid-template-columns: 1fr;
-    }
-`;
-
-const Separator = styled.hr`
-    border-width: 0 0 1px;
-    border-color: #e4e4e4;
-    height: 0;
-    margin: 60px 0;
-
-    @media (max-width: 500px) {
-        margin: 30px 0;
     }
 `;
 
