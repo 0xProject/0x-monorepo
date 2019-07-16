@@ -50,7 +50,7 @@ const ContentsAside = styled.aside`
 
 const ContentsWrapper = styled.div`
     position: sticky;
-    top: 154px; /* To make space for the header when clicking on links */
+    top: 154px; /* To make space for the header (react-headroom) when clicking on links */
 `;
 
 const ContentsList = styled.ul`
@@ -75,7 +75,7 @@ const ContentLink = styled(Link)`
         transition: color 250ms ease-in-out;
     }
 
-    &.scroll-link-active span {
+    &.active span {
         color: ${colors.brandDark};
     }
 `;
