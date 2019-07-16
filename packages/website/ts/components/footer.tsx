@@ -135,10 +135,10 @@ const FooterColumn = styled(Column)`
 const FooterSectionWrap = styled(FooterColumn)`
     @media (max-width: 768px) {
         width: 50%;
+        margin-bottom: 30px;
 
         & + & {
             margin-top: 0;
-            margin-bottom: 30px;
         }
     }
 `;
