@@ -83,12 +83,10 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
             let { no, yes } = responseData;
             yes = new BigNumber(yes);
             no = new BigNumber(no);
-            const totalBalance = yes.plus(no);
             const tally = {
                 ...responseData,
                 yes: new BigNumber(yes),
                 no: new BigNumber(no),
-                totalBalance,
             };
             return tally;
         } catch (e) {
@@ -103,7 +101,7 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
     private async _fetchTallysAsync(): Promise<void> {
         const tallyResponses = await Promise.all(ZEIP_IDS.map(async zeipId => this._fetchVoteStatusAsync(zeipId)));
         const tallys: {[key: number]: TallyInterface} = {};
-        ZEIP_IDS.map((zeipId, i) => tallys[zeipId] = tallyResponses[i]);
+        ZEIP_IDS.forEach((zeipId, i) => tallys[zeipId] = tallyResponses[i]);
         this.setState({ tallys });
     }
 }

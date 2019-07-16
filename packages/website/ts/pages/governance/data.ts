@@ -1,7 +1,7 @@
 import { BigNumber } from '@0x/utils';
 import * as moment from 'moment';
 
-import { TallyInterface, VoteOutcome } from 'ts/types';
+import { TallyInterface } from 'ts/types';
 
 export interface ProposalLink {
     text: string;
