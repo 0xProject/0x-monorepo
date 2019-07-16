@@ -75,7 +75,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={title} />
-            <Section maxWidth="1130px" isPadded={false} overflow="visible">
+            <Section maxWidth="1150px" isPadded={false} overflow="visible">
                 {Component ? (
                     <Columns>
                         <TableOfContents contents={contents} />
