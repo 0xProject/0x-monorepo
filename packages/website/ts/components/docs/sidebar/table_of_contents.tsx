@@ -17,36 +17,43 @@ export interface IContents {
 }
 
 export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents }) => {
-    console.log('contents', contents);
     return (
-        <ContentListWrapper>
-            <Contents contents={contents} />
-        </ContentListWrapper>
+        <ContentsAside>
+            <ContentsWrapper>
+                <Contents contents={contents} />
+            </ContentsWrapper>
+        </ContentsAside>
     );
 };
 
 const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
     return (
-        <ContentList>
+        <ContentsList>
             {contents.map(content => {
                 const { children, id, title } = content;
                 return (
                     <li key={id}>
-                        <ContentLink to={id}>{title}</ContentLink>
+                        <ContentLink containerId="" to={id}>
+                            {title}
+                        </ContentLink>
                         {children.length > 0 && <Contents contents={children} />}
                     </li>
                 );
             })}
-        </ContentList>
+        </ContentsList>
     );
 };
 
-const ContentListWrapper = styled.aside`
+const ContentsAside = styled.aside`
+    position: relative;
+`;
+
+const ContentsWrapper = styled.div`
     position: sticky;
     top: 154px; /* To make space for the header when clicking on links */
 `;
 
-const ContentList = styled.ul`
+const ContentsList = styled.ul`
     ul {
         border-left: 1px solid #e3e3e3;
         padding-left: 0.7rem;

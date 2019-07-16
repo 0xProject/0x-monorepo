@@ -19,6 +19,7 @@ export interface BaseLinkProps {
 }
 
 export interface ScrollLinkProps extends BaseLinkProps {
+    containerId?: string;
     onActivityChanged?: (isActive: boolean) => void;
 }
 
@@ -45,6 +46,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
         onMouseEnter: _.noop.bind(_),
         textDecoration: 'none',
         fontColor: 'inherit',
+        containerId: constants.SCROLL_CONTAINER_ID,
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -117,7 +119,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
                             spy={true}
                             hashSpy={true}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
-                            containerId={constants.SCROLL_CONTAINER_ID}
+                            containerId={this.props.containerId}
                             className={this.props.className}
                             style={styleWithDefault}
                             onSetActive={this._onActivityChanged.bind(this, true)}
