@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
@@ -82,7 +82,7 @@ export interface SmartContractParamsBase {
  */
 export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
     makerAssetFillAmount: BigNumber;
-    type: 'marketBuy';
+    type: MarketOperation.Buy;
 }
 
 /**
@@ -91,7 +91,7 @@ export interface ExchangeMarketBuySmartContractParams extends SmartContractParam
  */
 export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
     takerAssetFillAmount: BigNumber;
-    type: 'marketSell';
+    type: MarketOperation.Sell;
 }
 
 /**
@@ -227,12 +227,12 @@ export interface SwapQuoteBase {
 
 export interface MarketSellSwapQuote extends SwapQuoteBase {
     takerAssetFillAmount: BigNumber;
-    type: 'marketSell';
+    type: MarketOperation.Sell;
 }
 
 export interface MarketBuySwapQuote extends SwapQuoteBase {
     makerAssetFillAmount: BigNumber;
-    type: 'marketBuy';
+    type: MarketOperation.Buy;
 }
 
 export interface SwapQuoteWithAffiliateFeeBase {

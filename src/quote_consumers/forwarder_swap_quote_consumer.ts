@@ -1,4 +1,5 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -58,7 +59,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
-        if (params.type === 'marketBuy') {
+        if (params.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = params;
             args = [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient];
         } else {
@@ -108,7 +109,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         let params: ForwarderSmartContractParams;
         let methodName: string;
 
-        if (quoteWithAffiliateFee.type === 'marketBuy') {
+        if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quoteWithAffiliateFee;
 
             params = {
@@ -119,7 +120,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 feeSignatures,
                 feePercentage,
                 feeRecipient,
-                type: 'marketBuy',
+                type: MarketOperation.Buy,
             };
 
             methodName = 'marketBuyOrdersWithEth';
@@ -131,7 +132,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 feeSignatures,
                 feePercentage,
                 feeRecipient,
-                type: 'marketSell',
+                type: MarketOperation.Sell,
             };
             methodName = 'marketSellOrdersWithEth';
         }
@@ -188,7 +189,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         try {
             let txHash: string;
-            if (quoteWithAffiliateFee.type === 'marketBuy') {
+            if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
                 txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
                     orders,

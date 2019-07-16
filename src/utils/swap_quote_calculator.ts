@@ -29,7 +29,7 @@ export const swapQuoteCalculator = {
             takerAssetFillAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
-            'marketSell',
+            MarketOperation.Sell,
         ) as MarketSellSwapQuote;
     },
     calculateMarketBuySwapQuote(
@@ -45,7 +45,7 @@ export const swapQuoteCalculator = {
             makerAssetFillAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
-            'marketBuy',
+            MarketOperation.Buy,
         ) as MarketBuySwapQuote;
     },
 };
@@ -74,7 +74,7 @@ function calculateSwapQuote(
     let remainingFillAmount: BigNumber;
     let ordersRemainingFillableMakerAssetAmounts: BigNumber[];
 
-    if (marketOperation === 'marketBuy') {
+    if (marketOperation === MarketOperation.Buy) {
         // find the orders that cover the desired assetBuyAmount (with slippage)
         ({
             resultOrders,
@@ -185,16 +185,16 @@ function calculateSwapQuote(
         worstCaseQuoteInfo,
     };
 
-    if (marketOperation === 'marketBuy') {
+    if (marketOperation === MarketOperation.Buy) {
         return {
             ...quoteBase,
-            type: 'marketBuy',
+            type: MarketOperation.Buy,
             makerAssetFillAmount: assetFillAmount,
         };
     } else {
         return {
             ...quoteBase,
-            type: 'marketSell',
+            type: MarketOperation.Sell,
             takerAssetFillAmount: assetFillAmount,
         };
     }
@@ -208,12 +208,12 @@ function calculateQuoteInfo(
     marketOperation: MarketOperation,
 ): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
-    let makerTokenAmount = marketOperation === 'marketBuy' ? tokenAmount : constants.ZERO_AMOUNT;
-    let takerTokenAmount = marketOperation === 'marketSell' ? tokenAmount : constants.ZERO_AMOUNT;
+    let makerTokenAmount = marketOperation === MarketOperation.Buy ? tokenAmount : constants.ZERO_AMOUNT;
+    let takerTokenAmount = marketOperation === MarketOperation.Sell ? tokenAmount : constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
 
     if (isMakerAssetZrxToken) {
-        if (marketOperation === 'marketBuy') {
+        if (marketOperation === MarketOperation.Buy) {
             takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
         } else {
             makerTokenAmount = findZrxTokenAmountFromSellingTakerTokenAmount(
@@ -223,15 +223,15 @@ function calculateQuoteInfo(
         }
     } else {
         const findTokenAndZrxAmount =
-            marketOperation === 'marketBuy'
+            marketOperation === MarketOperation.Buy
                 ? findTakerTokenAndZrxAmountNeededToBuyAsset
                 : findMakerTokenAmountReceivedAndZrxAmountNeededToSellAsset;
         // find eth and zrx amounts needed to buy
         const tokenAndZrxAmountToBuyAsset = findTokenAndZrxAmount(
             ordersAndFillableAmounts,
-            marketOperation === 'marketBuy' ? makerTokenAmount : takerTokenAmount,
+            marketOperation === MarketOperation.Buy ? makerTokenAmount : takerTokenAmount,
         );
-        if (marketOperation === 'marketBuy') {
+        if (marketOperation === MarketOperation.Buy) {
             takerTokenAmount = tokenAndZrxAmountToBuyAsset[0];
         } else {
             makerTokenAmount = tokenAndZrxAmountToBuyAsset[0];
