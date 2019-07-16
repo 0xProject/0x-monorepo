@@ -21,9 +21,8 @@ pragma solidity ^0.5.5;
 import "./IAuthorizable.sol";
 
 
-contract IAssetProxy is
-    IAuthorizable
-{
+contract IAssetProxy {
+
     /// @dev Transfers assets. Either succeeds or throws.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param from Address to transfer asset from.
