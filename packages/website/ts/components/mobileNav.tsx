@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
@@ -8,56 +8,53 @@ import { WrapGrid, WrapProps } from 'ts/components/newLayout';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
-interface Props {
+interface IMobileNavProps {
     isToggled: boolean;
     toggleMobileNav: () => void;
 }
 
-export class MobileNav extends React.PureComponent<Props> {
-    public render(): React.ReactNode {
-        const { isToggled, toggleMobileNav } = this.props;
+export const MobileNav: React.FC<IMobileNavProps> = props => {
+    const { isToggled, toggleMobileNav } = props;
 
-        return (
-            <MediaQuery maxWidth={800}>
-                <Wrap isToggled={isToggled}>
-                    <Section>
-                        <h4>Products</h4>
+    return (
+        <MediaQuery maxWidth={800}>
+            <Wrap isToggled={isToggled}>
+                <Section>
+                    <h4>Products</h4>
+                    <ul>
+                        <li>
+                            <Link to={WebsitePaths.Instant}>0x Instant</Link>
+                        </li>
+                        <li>
+                            <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
+                        </li>
+                        <li>
+                            <Link to={WebsitePaths.AssetSwapperPage}>Swap Tokens</Link>
+                        </li>
+                    </ul>
+                </Section>
 
-                        <ul>
-                            <li>
-                                <Link to={WebsitePaths.Instant}>0x Instant</Link>
-                            </li>
-                            <li>
-                                <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
-                            </li>
-                            <li>
-                                <Link to={WebsitePaths.AssetSwapperPage}>Swap Tokens</Link>
-                            </li>
-                        </ul>
-                    </Section>
+                <Section isDark={true}>
+                    <Grid as="ul" isFullWidth={true} isWrapped={true}>
+                        <li>
+                            <Link to={WebsitePaths.Why}>Why 0x</Link>
+                        </li>
+                        <li>
+                            <Link to={WebsitePaths.AboutMission}>About</Link>
+                        </li>
+                        <li>
+                            <a href={constants.URL_BLOG} target="_blank">
+                                Blog
+                            </a>
+                        </li>
+                    </Grid>
+                </Section>
 
-                    <Section isDark={true}>
-                        <Grid as="ul" isFullWidth={true} isWrapped={true}>
-                            <li>
-                                <Link to={WebsitePaths.Why}>Why 0x</Link>
-                            </li>
-                            <li>
-                                <Link to={WebsitePaths.AboutMission}>About</Link>
-                            </li>
-                            <li>
-                                <a href={constants.URL_BLOG} target="_blank">
-                                    Blog
-                                </a>
-                            </li>
-                        </Grid>
-                    </Section>
-
-                    {isToggled && <Overlay onClick={toggleMobileNav} />}
-                </Wrap>
-            </MediaQuery>
-        );
-    }
-}
+                {isToggled && <Overlay onClick={toggleMobileNav} />}
+            </Wrap>
+        </MediaQuery>
+    );
+};
 
 const Wrap = styled.nav<{ isToggled: boolean }>`
     width: 100%;
@@ -97,10 +94,10 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
-interface SectionProps {
+interface ISectionProps {
     isDark?: boolean;
 }
-const Section = styled.div<SectionProps>`
+const Section = styled.div<ISectionProps>`
     width: 100%;
     padding: 15px 30px;
     background-color: ${props => (props.isDark ? props.theme.mobileNavBgLower : 'transparent')};
