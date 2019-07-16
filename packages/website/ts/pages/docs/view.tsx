@@ -76,9 +76,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
             <Hero title={title} />
             {Component ? (
                 <Columns>
-                    <DocsViewWrapper>
-                        <TableOfContents contents={contents} />
-                    </DocsViewWrapper>
+                    <TableOfContents contents={contents} />
                     <ContentWrapper>
                         <MDXProvider components={mdxComponents}>
                             {/*
@@ -97,10 +95,6 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         </SiteWrap>
     );
 };
-
-const DocsViewWrapper = styled.div`
-    position: relative;
-`;
 
 const LoaderWrapper = styled.div`
     display: flex;
