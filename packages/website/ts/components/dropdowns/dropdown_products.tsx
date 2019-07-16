@@ -1,8 +1,7 @@
-import * as _ from 'lodash';
-import * as React from 'react';
-
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+
 import { Heading, Paragraph } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 
@@ -29,9 +28,9 @@ const navData = [
     },
 ];
 
-export const DropdownProducts: React.FunctionComponent<{}> = () => (
+export const DropdownProducts: React.FC = () => (
     <List>
-        {_.map(navData, (item, index) => (
+        {navData.map((item, index) => (
             <li key={`productLink-${index}`}>
                 <Link to={item.url}>
                     <Heading asElement="h3" color="inherit" isNoMargin={true} size="small">
