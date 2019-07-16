@@ -6,8 +6,7 @@
                 "note": "Fix bug in Private Key subprovider causing checksummed tx.origin addresses to be rejected.",
                 "pr": 1962
             }
-        ],
-        "timestamp": 1563240294
+        ]
     },
     {
         "version": "4.1.1",
