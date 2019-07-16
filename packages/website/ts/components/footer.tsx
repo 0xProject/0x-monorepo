@@ -69,7 +69,7 @@ const linkRows: LinkRows[] = [
     },
 ];
 
-export const Footer: React.StatelessComponent = () => (
+export const Footer: React.FC = () => (
     <FooterWrap>
         <FlexWrap>
             <FooterColumn width="35%">
@@ -80,7 +80,7 @@ export const Footer: React.StatelessComponent = () => (
 
             <FooterColumn width="55%">
                 <WrapGrid isCentered={false} isWrapped={true}>
-                    {_.map(linkRows, (row: LinkRows, index) => (
+                    {linkRows.map((row: LinkRows, index) => (
                         <MediaQuery minWidth={row.isOnMobile ? 0 : 768} key={`fc-${index}`}>
                             <FooterSectionWrap>
                                 <RowHeading>{row.heading}</RowHeading>
@@ -97,7 +97,7 @@ export const Footer: React.StatelessComponent = () => (
 
 const LinkList = (props: LinkListProps) => (
     <List>
-        {_.map(props.links, (link, index) => (
+        {props.links.map((link, index) => (
             <li key={`fl-${index}`}>
                 <Link to={link.url} shouldOpenInNewTab={link.shouldOpenInNewTab}>
                     {link.text}
@@ -118,7 +118,7 @@ const FooterWrap = styled.footer`
     }
 
     @media (min-width: 768px) {
-        height: 350px;
+        min-height: 350px;
     }
 `;
 
