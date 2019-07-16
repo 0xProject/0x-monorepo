@@ -1,19 +1,18 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
-import { Button } from 'ts/components/button';
 import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
+import { GetStartedLink, IGetStartedLinkProps } from 'ts/components/docs/get_started_link';
 import { Hero } from 'ts/components/docs/hero';
+import { Separator } from 'ts/components/docs/separator';
 import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
-import { Separator } from 'ts/components/docs/separator';
-import { Heading, Paragraph } from 'ts/components/text';
+import { Heading } from 'ts/components/text';
 
-import { colors } from 'ts/style/colors';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
 export const DocsHome: React.FC = () => {
@@ -32,16 +31,10 @@ export const DocsHome: React.FC = () => {
                     <div>
                         <Heading size="default">Get Started</Heading>
                         {getStartedLinks.map((link, index) => (
-                            <Fragment key={`getStarted-${index}`}>
-                                <GetStartedButton color={colors.brandDark} href={link.url} isWithArrow={true}>
-                                    {link.heading}
-                                </GetStartedButton>
-                                <GetStartedParagraph color={colors.textDarkPrimary} isMuted={1}>
-                                    {link.description}
-                                </GetStartedParagraph>
-                            </Fragment>
+                            <GetStartedLink key={`getStarted-${index}`} {...link} />
                         ))}
                     </div>
+                    <Separator />
                     <div>
                         <Heading size="default">Useful Links</Heading>
                         <StepLinks links={usefulLinks} />
@@ -71,31 +64,13 @@ const ShortcutsWrapper = styled.div`
 
 const GetStartedWrapper = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 0 1fr;
     grid-column-gap: 70px;
     grid-row-gap: 30px;
 
     @media (max-width: 900px) {
         grid-column-gap: 30px;
         grid-template-columns: 1fr;
-    }
-`;
-
-const GetStartedButton = styled(Button)`
-    margin-bottom: 12px;
-
-    @media (max-width: 500px) {
-        font-size: 16px !important;
-
-        svg {
-            display: none;
-        }
-    }
-`;
-
-const GetStartedParagraph = styled(Paragraph)`
-    @media (max-width: 500px) {
-        font-size: 14px;
     }
 `;
 
@@ -156,29 +131,25 @@ const usefulLinks: IStepLinkConfig[] = [
     },
 ];
 
-const getStartedLinks: IShortcutLinkProps[] = [
+const getStartedLinks: IGetStartedLinkProps[] = [
     {
         heading: 'Launch an exchange in 30 seconds',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
-        icon: 'coreConcepts',
         url: '/docs/core-concepts',
     },
     {
         heading: 'Tap into contract-fillable liquidity',
         description: 'Source contract-fillable liquidity at the best prices from 0x.',
-        icon: 'apiExplorer',
         url: '/docs/api-explorer',
     },
     {
         heading: 'Launch your in-game marketplace',
         description: 'Make your in-game items tradable with minimal effort.',
-        icon: 'getStarted',
         url: '/docs/get-started',
     },
     {
         heading: 'Predict the future with 0x',
         description: 'Build a prediction market end-to-end using 0x and Augur.',
-        icon: 'tools',
         url: '/docs/core-concepts',
     },
 ];
