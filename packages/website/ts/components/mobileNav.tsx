@@ -2,10 +2,11 @@ import React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
-import { Link } from 'react-router-dom';
+import { Link } from '@0x/react-shared';
 
 import { WrapGrid, WrapProps } from 'ts/components/newLayout';
 import { WebsitePaths } from 'ts/types';
+
 import { constants } from 'ts/utils/constants';
 
 interface IMobileNavProps {
@@ -43,9 +44,9 @@ export const MobileNav: React.FC<IMobileNavProps> = props => {
                             <Link to={WebsitePaths.AboutMission}>About</Link>
                         </li>
                         <li>
-                            <a href={constants.URL_BLOG} target="_blank">
+                            <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
                                 Blog
-                            </a>
+                            </Link>
                         </li>
                     </Grid>
                 </Section>
@@ -97,6 +98,7 @@ const Overlay = styled.div`
 interface ISectionProps {
     isDark?: boolean;
 }
+
 const Section = styled.div<ISectionProps>`
     width: 100%;
     padding: 15px 30px;
