@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 // import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
-import { Highlight, Snippet } from 'react-instantsearch-dom';
+import { Highlight, Hits, Snippet } from 'react-instantsearch-dom';
 
 import { colors } from 'ts/style/colors';
 
@@ -57,11 +57,13 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     const [value, setValue] = useState<string>('');
 
     const onChange = (event: HitProps, { newValue }: HitProps): void => {
+        console.log('set newValue', newValue);
         setValue(newValue);
     };
 
-    const onSuggestionsFetchRequested = ({ newValue }: HitProps): void => {
-        refine(newValue);
+    const onSuggestionsFetchRequested = ({ value }: HitProps): void => {
+        console.log('value', value);
+        refine(value);
     };
 
     const onSuggestionsClearRequested = (): void => refine('');
@@ -78,10 +80,11 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
 
     const renderSuggestion = (hit: HitProps): React.ReactNode => {
         return (
-            <HitWrapper>
-                <Highlight attribute="title" hit={hit} tagName="mark" />
-                <Snippet attribute="textContent" hit={hit} tagName="mark" />
-            </HitWrapper>
+            <>
+                <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
+                <br />
+                {/* <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" /> */}
+            </>
         );
     };
 
@@ -107,7 +110,6 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
                 theme={theme}
                 suggestions={hits}
                 multiSection={true}
-                highlightFirstSuggestion={true}
                 onSuggestionSelected={onSuggestionSelected}
                 onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                 onSuggestionHighlighted={onSuggestionHighlighted}
@@ -131,19 +133,17 @@ const SectionTitle = styled.p`
     text-transform: uppercase;
     position: absolute;
     margin: 30px;
-`;
 
-const HitWrapper = styled.div`
-    display: flex;
-    align-items: flex-start;
+    @media (max-width: 800px) {
+        margin: 30px 18px;
+    }
 `;
 
 const Wrapper = styled.div<Props>`
     position: relative;
 
     .react-autosuggest__container {
-        padding: 13px 30px;
-        border: 1px solid transparent;
+        border: 1px solid green;
 
         &--open {
             background-color: ${colors.white};
@@ -151,9 +151,9 @@ const Wrapper = styled.div<Props>`
         }
 
         ${({ isHome }) =>
-            !isHome &&
+            isHome &&
             `
-            border: 1px solid green;
+            padding: 13px 30px;
         `};
     }
 
@@ -164,14 +164,19 @@ const Wrapper = styled.div<Props>`
     .react-autosuggest__suggestions-container {
         position: absolute;
         right: 0;
+        left: 0;
         background-color: ${colors.white};
         z-index: 10;
-        width: 890px;
+        /* width: 890px; */
+
         flex-grow: 1;
+        overflow-x: hidden;
+        overflow-y: scroll;
 
         &--open {
             border: 1px solid #dbdfdd;
             border-top: none;
+            height: 70vh;
         }
 
         ${({ isHome }) =>
@@ -183,6 +188,47 @@ const Wrapper = styled.div<Props>`
 
     .react-autosuggest__suggestions-list {
         flex-grow: 1;
+        width: 100%;
+    }
+
+    .react-autosuggest__suggestion {
+        /* color: ${colors.brandDark}; */
+        /* font-size: 0.85rem; */
+        /* line-height: 1.4;
+        font-weight: 400; */
+        /* padding: 25px 30px 25px 178px; */
+        padding: 25px 30px 25px 100px;
+        min-height: 110px;
+        border-bottom: 1px solid #eee;
+        transition: background-color 300ms ease-in-out;
+
+        display: flex;
+        flex-direction: column;
+
+    h6 {
+        display: inline;
+        color: ${colors.brandDark};
+        font-size: var(--smallHeading);
+
+        & + em {
+            font-size: var(--smallHeading);
+        }
+    }
+
+    em {
+        font-weight: bold;
+    }
+
+    p {
+        color: ${colors.textDarkSecondary};
+        font-size: var(--smallParagraph);
+        margin-bottom: 0;
+        border: 1px solid orange;
+    }
+
+        &--highlighted {
+            background-color: ${colors.backgroundLight};
+        }
     }
 
     .react-autosuggest__input {
@@ -207,10 +253,10 @@ const Wrapper = styled.div<Props>`
             &--focused,
             &--open {
                 background-color: white;
-                width: 890px;
-                position: absolute;
-                right: 0;
-                top: 0;
+                // width: 890px;
+                // position: absolute;
+                // right: 0;
+                // top: 0;
             }
         `};
 
@@ -228,19 +274,79 @@ const Wrapper = styled.div<Props>`
             left: 0;
         }
     }
-
-    .react-autosuggest__suggestion {
-        color: ${colors.brandDark};
-        font-size: 0.85rem;
-        line-height: 1.4;
-        font-weight: 400;
-        padding: 25px 30px 25px 178px;
-        min-height: 110px;
-        border-bottom: 1px solid #eee;
-        transition: background-color 300ms ease-in-out;
-
-        &--highlighted {
-            background-color: ${colors.backgroundLight};
-        }
-    }
 `;
+
+// import React, { Component } from 'react';
+// import PropTypes from 'prop-types';
+// import { Highlight, connectAutoComplete } from 'react-instantsearch-dom';
+// import AutoSuggest from 'react-autosuggest';
+
+// class AutoComplete extends Component {
+//     static propTypes = {
+//         hits: PropTypes.arrayOf(PropTypes.object).isRequired,
+//         currentRefinement: PropTypes.string.isRequired,
+//         refine: PropTypes.func.isRequired,
+//         onSuggestionSelected: PropTypes.func.isRequired,
+//         onSuggestionCleared: PropTypes.func.isRequired,
+//     };
+
+//     state = {
+//         // @ts-ignore
+//         value: this.props.currentRefinement,
+//     };
+//     // @ts-ignore
+//     onChange = (_, { newValue }) => {
+//         if (!newValue) {
+//             // @ts-ignore
+//             // this.props.onSuggestionCleared();
+//         }
+
+//         this.setState({
+//             value: newValue,
+//         });
+//     };
+//     // @ts-ignore
+//     onSuggestionsFetchRequested = ({ value }) => {
+//         // @ts-ignore
+//         this.props.refine(value);
+//     };
+
+//     onSuggestionsClearRequested = () => {
+//         // @ts-ignore
+//         this.props.refine();
+//     };
+//     // @ts-ignore
+//     getSuggestionValue(hit) {
+//         return hit.title;
+//     }
+//     // @ts-ignore
+//     renderSuggestion(hit) {
+//         return <Highlight attribute="title" hit={hit} tagName="mark" />;
+//     }
+
+//     render() {
+//         // @ts-ignore
+//         const { hits, onSuggestionSelected } = this.props;
+//         const { value } = this.state;
+
+//         const inputProps = {
+//             placeholder: 'Search for a product...',
+//             onChange: this.onChange,
+//             value,
+//         };
+
+//         return (
+//             <AutoSuggest
+//                 suggestions={hits}
+//                 onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+//                 onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+//                 onSuggestionSelected={onSuggestionSelected}
+//                 getSuggestionValue={this.getSuggestionValue}
+//                 renderSuggestion={this.renderSuggestion}
+//                 inputProps={inputProps}
+//             />
+//         );
+//     }
+// }
+
+// export default connectAutoComplete(AutoComplete);
