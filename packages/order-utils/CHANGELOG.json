@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.2.3",
+        "changes": [
+            {
+                "note": "Ensure `assetData` is word aligned",
+                "pr": 1964
+            }
+        ]
+    },
+    {
         "timestamp": 1563193019,
         "version": "8.2.2",
         "changes": [
