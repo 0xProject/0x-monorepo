@@ -373,6 +373,21 @@ export class SwapQuoter {
         return ordersAndFillableAmounts;
     }
 
+    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
+        swapQuote: SwapQuote,
+        takerAddress: string,
+    ): Promise<[boolean, boolean]> {
+        const orderValidatorWrapper = this._contractWrappers.orderValidator;
+        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(
+            takerAddress,
+            swapQuote.takerAssetData,
+        );
+        return [
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
+        ];
+    }
+
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
