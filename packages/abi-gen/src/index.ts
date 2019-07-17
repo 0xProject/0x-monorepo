@@ -84,6 +84,10 @@ function registerTypeScriptHelpers(): void {
     Handlebars.registerHelper('assertionType', utils.solTypeToAssertion.bind(utils));
     Handlebars.registerHelper('returnType', utils.solTypeToTsType.bind(utils, ParamKind.Output, args.backend));
 
+    Handlebars.registerHelper('ifEquals', function(this: typeof Handlebars, arg1: any, arg2: any, options: any): void {
+        return arg1 === arg2 ? options.fn(this) : options.inverse(this); // tslint:disable-line:no-invalid-this
+    });
+
     // Check if 0 or false exists
     Handlebars.registerHelper(
         'isDefined',

@@ -54,6 +54,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getSignerAddress(bytes32,bytes)');
@@ -99,6 +103,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionHash((uint256,address,bytes))');
@@ -148,6 +156,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorApprovalHash((address,bytes32,bytes,uint256))');
@@ -186,7 +198,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -198,12 +216,16 @@ export class CoordinatorContract extends BaseContract {
                 self.executeTransaction.estimateGasAsync.bind(
                     self,
                     transaction,
-                    txOrigin,
+                    txOrigin.toLowerCase(),
                     transactionSignature,
                     approvalExpirationTimeSeconds,
                     approvalSignatures,
                 ),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -224,7 +246,7 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const txHashPromise = self.executeTransaction.sendTransactionAsync(
                 transaction,
-                txOrigin,
+                txOrigin.toLowerCase(),
                 transactionSignature,
                 approvalExpirationTimeSeconds,
                 approvalSignatures,
@@ -257,7 +279,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -267,6 +295,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -294,7 +326,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -304,6 +342,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -328,7 +370,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'executeTransaction((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             return abiEncodedTransactionData;
         },
@@ -353,6 +401,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_EXCHANGE_DOMAIN_HASH()');
@@ -392,7 +444,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const encodedData = self._strictEncodeArguments(
                 'assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -402,6 +460,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -426,7 +488,13 @@ export class CoordinatorContract extends BaseContract {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'assertValidCoordinatorApprovals((uint256,address,bytes),address,bytes,uint256[],bytes[])',
-                [transaction, txOrigin, transactionSignature, approvalExpirationTimeSeconds, approvalSignatures],
+                [
+                    transaction,
+                    txOrigin.toLowerCase(),
+                    transactionSignature,
+                    approvalExpirationTimeSeconds,
+                    approvalSignatures,
+                ],
             );
             return abiEncodedTransactionData;
         },
@@ -471,6 +539,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('decodeOrdersFromFillData(bytes)');
@@ -521,6 +593,10 @@ export class CoordinatorContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_COORDINATOR_DOMAIN_HASH()');
