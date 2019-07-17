@@ -1103,7 +1103,45 @@ function aggregateBalances(
             );
         }
     }
-    // TODO(jalextowle): Implement the same as the above for ERC1155
+    // ERC1155
+    for (const owner of _.keys(totalBalances.erc1155)) {
+        for (const contract of _.keys(totalBalances.erc1155[owner])) {
+            // Fungible
+            for (const tokenId of _.keys(totalBalances.erc1155[owner][contract].fungible)) {
+                const difference = balances.erc1155[owner][contract].fungible[tokenId].minus(
+                    initialBalances.erc1155[owner][contract].fungible[tokenId],
+                );
+                totalBalances.erc1155[owner][contract].fungible[tokenId] = totalBalances.erc1155[owner][
+                    contract
+                ].fungible[tokenId].plus(difference);
+            }
+
+            // Nonfungible
+            let isDuplicate = false;
+            for (const value of balances.erc1155[owner][contract].nonFungible) {
+                // If the value is in the initial balances or the total balances, skip the
+                // value since it will already be added.
+                for (const val of totalBalances.erc1155[owner][contract].nonFungible) {
+                    if (value.isEqualTo(val)) {
+                        isDuplicate = true;
+                    }
+                }
+
+                if (!isDuplicate) {
+                    for (const val of initialBalances.erc1155[owner][contract].nonFungible) {
+                        if (value.isEqualTo(val)) {
+                            isDuplicate = true;
+                        }
+                    }
+                }
+
+                if (!isDuplicate) {
+                    totalBalances.erc1155[owner][contract].nonFungible.push(value);
+                }
+                isDuplicate = false;
+            }
+        }
+    }
     return totalBalances;
 }
 
