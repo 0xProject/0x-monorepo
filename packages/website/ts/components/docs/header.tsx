@@ -5,10 +5,11 @@ import styled, { css } from 'styled-components';
 
 import { Link } from '@0x/react-shared';
 
+import { MobileNav } from 'ts/components/docs/mobileNav';
 import { SearchInput } from 'ts/components/docs/search_input';
+
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
-import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 
@@ -30,13 +31,11 @@ interface INavItems {
     url?: string;
     id?: string;
     text?: string;
-    dropdownWidth?: number;
-    dropdownComponent?: React.FunctionComponent<any>;
 }
 
 const navItems: INavItems[] = [
     {
-        id: 'why',
+        id: 'core-concepts',
         url: WebsitePaths.Why,
         text: 'Core Concepts',
     },
@@ -93,7 +92,7 @@ export const Header: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }
                     </MediaQuery>
 
                     <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    <MobileNav navItems={navItems} isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
                 </HeaderWrap>
             </StyledHeader>
         </Headroom>
