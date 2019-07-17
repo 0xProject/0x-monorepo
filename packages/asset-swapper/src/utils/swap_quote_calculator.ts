@@ -22,6 +22,7 @@ export const swapQuoteCalculator = {
         takerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
+        shouldDisableFeeOrderCalculations: boolean,
     ): MarketSellSwapQuote {
         return calculateSwapQuote(
             ordersAndFillableAmounts,
@@ -29,6 +30,7 @@ export const swapQuoteCalculator = {
             takerAssetFillAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
+            shouldDisableFeeOrderCalculations,
             MarketOperation.Sell,
         ) as MarketSellSwapQuote;
     },
@@ -38,6 +40,7 @@ export const swapQuoteCalculator = {
         makerAssetFillAmount: BigNumber,
         slippagePercentage: number,
         isMakerAssetZrxToken: boolean,
+        shouldDisableFeeOrderCalculations: boolean,
     ): MarketBuySwapQuote {
         return calculateSwapQuote(
             ordersAndFillableAmounts,
@@ -45,6 +48,7 @@ export const swapQuoteCalculator = {
             makerAssetFillAmount,
             slippagePercentage,
             isMakerAssetZrxToken,
+            shouldDisableFeeOrderCalculations,
             MarketOperation.Buy,
         ) as MarketBuySwapQuote;
     },
@@ -56,6 +60,7 @@ function calculateSwapQuote(
     assetFillAmount: BigNumber,
     slippagePercentage: number,
     isMakerAssetZrxToken: boolean,
+    shouldDisableFeeOrderCalculations: boolean,
     marketOperation: MarketOperation,
 ): SwapQuote {
     const orders = ordersAndFillableAmounts.orders;
@@ -128,7 +133,7 @@ function calculateSwapQuote(
     // finding order that cover all fees, this will help with estimating ETH and minimizing gas usage
     let resultFeeOrders = [] as SignedOrder[];
     let feeOrdersRemainingFillableMakerAssetAmounts = [] as BigNumber[];
-    if (!isMakerAssetZrxToken) {
+    if (!shouldDisableFeeOrderCalculations && !isMakerAssetZrxToken) {
         const feeOrdersAndRemainingFeeAmount = marketUtils.findFeeOrdersThatCoverFeesForTargetOrders(
             resultOrders,
             feeOrders,
@@ -165,6 +170,7 @@ function calculateSwapQuote(
         trimmedFeeOrdersAndFillableAmounts,
         assetFillAmount,
         isMakerAssetZrxToken,
+        shouldDisableFeeOrderCalculations,
         marketOperation,
     );
     // in order to calculate the maxRate, reverse the ordersAndFillableAmounts such that they are sorted from worst rate to best rate
@@ -173,6 +179,7 @@ function calculateSwapQuote(
         reverseOrdersAndFillableAmounts(trimmedFeeOrdersAndFillableAmounts),
         assetFillAmount,
         isMakerAssetZrxToken,
+        shouldDisableFeeOrderCalculations,
         marketOperation,
     );
 
@@ -205,6 +212,7 @@ function calculateQuoteInfo(
     feeOrdersAndFillableAmounts: OrdersAndFillableAmounts,
     tokenAmount: BigNumber,
     isMakerAssetZrxToken: boolean,
+    shouldDisableFeeOrderCalculations: boolean,
     marketOperation: MarketOperation,
 ): SwapQuoteInfo {
     // find the total eth and zrx needed to buy assetAmount from the resultOrders from left to right
@@ -212,7 +220,7 @@ function calculateQuoteInfo(
     let takerTokenAmount = marketOperation === MarketOperation.Sell ? tokenAmount : constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
 
-    if (isMakerAssetZrxToken) {
+    if (!shouldDisableFeeOrderCalculations && isMakerAssetZrxToken) {
         if (marketOperation === MarketOperation.Buy) {
             takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
         } else {
@@ -221,7 +229,7 @@ function calculateQuoteInfo(
                 takerTokenAmount,
             );
         }
-    } else {
+    } else if (!shouldDisableFeeOrderCalculations) {
         const findTokenAndZrxAmount =
             marketOperation === MarketOperation.Buy
                 ? findTakerTokenAndZrxAmountNeededToBuyAsset

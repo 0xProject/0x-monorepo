@@ -78,6 +78,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(200),
                         0,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(150));
@@ -91,6 +92,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(200),
                         0.2,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(125));
@@ -103,6 +105,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(200),
                         0.05,
+                        false,
                         false,
                     );
                 };
@@ -120,6 +123,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(51),
                         0,
+                        false,
                         false,
                     );
                 };
@@ -142,6 +146,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(81),
                         0,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(80));
@@ -158,6 +163,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(100),
                         0,
+                        false,
                         false,
                     );
                 };
@@ -176,6 +182,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(100),
                         0.2,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(0));
@@ -189,6 +196,7 @@ describe('swapQuoteCalculator', () => {
                     new BigNumber(125),
                     0,
                     false,
+                    false,
                 ),
             ).to.not.throw();
         });
@@ -200,6 +208,7 @@ describe('swapQuoteCalculator', () => {
                     smallFeeOrderAndFillableAmount,
                     new BigNumber(125),
                     0,
+                    false,
                     false,
                 ),
             ).to.throw(SwapQuoterError.InsufficientZrxLiquidity);
@@ -214,6 +223,7 @@ describe('swapQuoteCalculator', () => {
                 smallFeeOrderAndFillableAmount,
                 assetSellAmount,
                 slippagePercentage,
+                false,
                 false,
             );
             // test if orders are correct
@@ -257,6 +267,7 @@ describe('swapQuoteCalculator', () => {
                 allFeeOrdersAndFillableAmounts,
                 assetSellAmount,
                 slippagePercentage,
+                false,
                 false,
             );
             // test if orders are correct
@@ -352,6 +363,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(500),
                         0,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(400));
@@ -365,6 +377,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(500),
                         0.2,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(333));
@@ -377,6 +390,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(600),
                         0.05,
+                        false,
                         false,
                     );
                 };
@@ -394,6 +408,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(201),
                         0,
+                        false,
                         false,
                     );
                 };
@@ -416,6 +431,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(124),
                         0,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(123));
@@ -432,6 +448,7 @@ describe('swapQuoteCalculator', () => {
                         smallFeeOrderAndFillableAmount,
                         new BigNumber(600),
                         0,
+                        false,
                         false,
                     );
                 };
@@ -450,6 +467,7 @@ describe('swapQuoteCalculator', () => {
                         new BigNumber(600),
                         0.2,
                         false,
+                        false,
                     );
                 };
                 testHelpers.expectInsufficientLiquidityError(expect, errorFunction, new BigNumber(0));
@@ -463,6 +481,7 @@ describe('swapQuoteCalculator', () => {
                     new BigNumber(300),
                     0,
                     false,
+                    false,
                 ),
             ).to.not.throw();
         });
@@ -474,6 +493,7 @@ describe('swapQuoteCalculator', () => {
                     smallFeeOrderAndFillableAmount,
                     new BigNumber(300),
                     0,
+                    false,
                     false,
                 ),
             ).to.throw(SwapQuoterError.InsufficientZrxLiquidity);
@@ -488,6 +508,7 @@ describe('swapQuoteCalculator', () => {
                 smallFeeOrderAndFillableAmount,
                 assetBuyAmount,
                 slippagePercentage,
+                false,
                 false,
             );
             // test if orders are correct
@@ -531,6 +552,7 @@ describe('swapQuoteCalculator', () => {
                 allFeeOrdersAndFillableAmounts,
                 assetBuyAmount,
                 slippagePercentage,
+                false,
                 false,
             );
             // test if orders are correct

@@ -373,6 +373,21 @@ export class SwapQuoter {
         return ordersAndFillableAmounts;
     }
 
+    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
+        swapQuote: SwapQuote,
+        takerAddress: string,
+    ): Promise<[boolean, boolean]> {
+        const orderValidatorWrapper = this._contractWrappers.orderValidator;
+        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(
+            takerAddress,
+            swapQuote.takerAssetData,
+        );
+        return [
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
+        ];
+    }
+
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
@@ -391,7 +406,7 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
+        const { shouldForceOrderRefresh, slippagePercentage, shouldDisableRequestingFeeOrders } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
@@ -406,7 +421,7 @@ export class SwapQuoter {
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
-            isMakerAssetZrxToken
+            shouldDisableRequestingFeeOrders || isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
                 : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
@@ -429,6 +444,7 @@ export class SwapQuoter {
                 assetFillAmount,
                 slippagePercentage,
                 isMakerAssetZrxToken,
+                shouldDisableRequestingFeeOrders,
             );
         } else {
             swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
@@ -437,6 +453,7 @@ export class SwapQuoter {
                 assetFillAmount,
                 slippagePercentage,
                 isMakerAssetZrxToken,
+                shouldDisableRequestingFeeOrders,
             );
         }
 
