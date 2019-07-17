@@ -23,6 +23,7 @@ export interface ButtonInterface {
     hasIcon?: boolean | string;
     isInline?: boolean;
     padding?: string;
+    fontSize?: string;
     href?: string;
     type?: string;
     target?: string;
@@ -78,7 +79,7 @@ const ButtonBase = styled.button<ButtonInterface>`
         !props.isNoPadding && !props.isWithArrow && ((!!props.padding && props.padding) || '18px 30px')};
     white-space: ${props => props.isWithArrow && 'nowrap'};
     text-align: center;
-    font-size: ${props => (props.isWithArrow ? '20px' : '18px')};
+    font-size: ${props => (props.fontSize ? props.fontSize : props.isWithArrow ? '20px' : '18px')};
     text-decoration: none;
     cursor: pointer;
     outline: none;

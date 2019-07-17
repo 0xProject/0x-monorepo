@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Paragraph } from 'ts/components/text';
 
 interface Props {
-    deadline: number;
+    deadline: moment.Moment;
 }
 
 interface TimeStructure {
@@ -23,7 +23,7 @@ const now = moment();
 
 export const Countdown: React.StatelessComponent<Props> = ({ deadline }) => {
     const pstOffset = '-0800';
-    const time = moment(deadline, 'X').utcOffset(pstOffset);
+    const time = deadline.utcOffset(pstOffset);
     const isPassed = time.isBefore(now);
     const voteTextPrefix = isPassed ? `Voting ended: ` : `Vote ends: `;
     const timeText = !isPassed ? ` • ${getRelativeTime(time)}` : '';
