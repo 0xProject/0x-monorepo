@@ -95,26 +95,12 @@ describe('StaticCallProxy', () => {
             const invalidOffsetToAssetData = ethUtil.bufferToHex(paddedTxDataEndBuffer).slice(2);
             const newAssetData = '0000000000000000000000000000000000000000000000000000000000000304';
             const badTxData = `${txData.replace(offsetToAssetData, invalidOffsetToAssetData)}${newAssetData}`;
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 web3Wrapper.sendTransactionAsync({
                     to: staticCallProxy.address,
                     from: fromAddress,
                     data: badTxData,
                 }),
-                RevertReason.InvalidAssetDataEnd,
-            );
-        });
-        it('should revert if the length of assetData, excluding the proxyId, is not a multiple of 32', async () => {
-            const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
-            const expectedResultHash = constants.KECCAK256_NULL;
-            const assetData = `${assetDataUtils.encodeStaticCallAssetData(
-                staticCallTarget.address,
-                staticCallData,
-                expectedResultHash,
-            )}01`;
-            await expectTransactionFailedAsync(
-                staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
-                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should revert if the length of assetData is less than 100 bytes', async () => {
@@ -125,9 +111,8 @@ describe('StaticCallProxy', () => {
                 .slice(0, -128);
             const assetDataByteLen = (assetData.length - 2) / 2;
             expect((assetDataByteLen - 4) % 32).to.equal(0);
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 staticCallProxy.transferFrom.sendTransactionAsync(assetData, fromAddress, toAddress, amount),
-                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should revert if the offset to `staticCallData` points to outside of assetData', async () => {
@@ -147,9 +132,8 @@ describe('StaticCallProxy', () => {
                 offsetToStaticCallData,
                 invalidOffsetToStaticCallData,
             )}${newStaticCallData}`;
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 staticCallProxy.transferFrom.sendTransactionAsync(badAssetData, fromAddress, toAddress, amount),
-                RevertReason.InvalidStaticCallDataOffset,
             );
         });
         it('should revert if the callTarget attempts to write to state', async () => {
@@ -191,7 +175,7 @@ describe('StaticCallProxy', () => {
                 RevertReason.UnexpectedStaticCallResult,
             );
         });
-        it('should be successful if a function call with no inputs is successful', async () => {
+        it('should be successful if a function call with no inputs and no outputs is successful', async () => {
             const staticCallData = staticCallTarget.noInputFunction.getABIEncodedTransactionData();
             const expectedResultHash = constants.KECCAK256_NULL;
             const assetData = assetDataUtils.encodeStaticCallAssetData(
@@ -199,6 +183,12 @@ describe('StaticCallProxy', () => {
                 staticCallData,
                 expectedResultHash,
             );
+            await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
+        });
+        it('should be successful if the staticCallTarget is not a contract and no return value is expected', async () => {
+            const staticCallData = '0x0102030405060708';
+            const expectedResultHash = constants.KECCAK256_NULL;
+            const assetData = assetDataUtils.encodeStaticCallAssetData(toAddress, staticCallData, expectedResultHash);
             await staticCallProxy.transferFrom.awaitTransactionSuccessAsync(assetData, fromAddress, toAddress, amount);
         });
         it('should be successful if a function call with one static input returns the correct value', async () => {

@@ -1077,7 +1077,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token ids to point outside the calldata.
+            // We want to change the offset to token ids to point outside the calldata.
             const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000080';
             const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000180';
             const assetDataWithBadTokenIdsOffset = assetData.replace(
@@ -1085,7 +1085,7 @@ describe('ERC1155Proxy', () => {
                 badEncodedOffsetToTokenIds,
             );
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1097,7 +1097,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenIdsOffset,
                 ),
-                RevertReason.InvalidIdsOffset,
             );
         });
         it('should revert if an element of token ids lies to outside the bounds of calldata', async () => {
@@ -1125,7 +1124,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token ids to the end of calldata.
+            // We want to change the offset to token ids to the end of calldata.
             // Then we'll add an invalid length: we encode length of 2 but only add 1 element.
             const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000080';
             const newEcodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
@@ -1137,7 +1136,7 @@ describe('ERC1155Proxy', () => {
             const encodedTokenIdValues = '0000000000000000000000000000000000000000000000000000000000000001';
             const assetDataWithBadTokenIds = `${assetDataWithNewTokenIdsOffset}${encodedTokenIdsLength}${encodedTokenIdValues}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1149,7 +1148,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenIds,
                 ),
-                RevertReason.InvalidIdsOffset,
             );
         });
         it('should revert token ids length overflows', async () => {
@@ -1177,7 +1175,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token ids to point to the end of calldata
+            // We want to change the offset to token ids to point to the end of calldata
             const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000080';
             const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
             const assetDataWithBadTokenIdsOffset = assetData.replace(
@@ -1189,7 +1187,7 @@ describe('ERC1155Proxy', () => {
             const buffer = '0'.repeat(64 * 10);
             const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1201,7 +1199,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithOverflow,
                 ),
-                RevertReason.Uint256Overflow,
             );
         });
         it('should revert token values length overflows', async () => {
@@ -1229,7 +1226,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token values to point to the end of calldata
+            // We want to change the offset to token values to point to the end of calldata
             const encodedOffsetToTokenIds = '00000000000000000000000000000000000000000000000000000000000000c0';
             const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
             const assetDataWithBadTokenIdsOffset = assetData.replace(
@@ -1241,7 +1238,7 @@ describe('ERC1155Proxy', () => {
             const buffer = '0'.repeat(64 * 10);
             const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1253,7 +1250,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithOverflow,
                 ),
-                RevertReason.Uint256Overflow,
             );
         });
         it('should revert token data length overflows', async () => {
@@ -1281,7 +1277,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token ids to point to the end of calldata,
+            // We want to change the offset to token ids to point to the end of calldata,
             // which we'll extend with a bad length.
             const encodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000100';
             const badEncodedOffsetToTokenIds = '0000000000000000000000000000000000000000000000000000000000000140';
@@ -1294,7 +1290,7 @@ describe('ERC1155Proxy', () => {
             const buffer = '0'.repeat(64 * 10);
             const assetDataWithOverflow = `${assetDataWithBadTokenIdsOffset}${encodedIdsLengthOverflow}${buffer}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1306,7 +1302,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithOverflow,
                 ),
-                RevertReason.InvalidDataOffset,
             );
         });
         it('should revert if token values resolves to outside the bounds of calldata', async () => {
@@ -1334,7 +1329,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token values to point outside the calldata.
+            // We want to change the offset to token values to point outside the calldata.
             const encodedOffsetToTokenValues = '00000000000000000000000000000000000000000000000000000000000000c0';
             const badEncodedOffsetToTokenValues = '00000000000000000000000000000000000000000000000000000000000001c0';
             const assetDataWithBadTokenIdsOffset = assetData.replace(
@@ -1342,7 +1337,7 @@ describe('ERC1155Proxy', () => {
                 badEncodedOffsetToTokenValues,
             );
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1354,7 +1349,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenIdsOffset,
                 ),
-                RevertReason.InvalidValuesOffset,
             );
         });
         it('should revert if an element of token values lies to outside the bounds of calldata', async () => {
@@ -1382,7 +1376,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token values to the end of calldata.
+            // We want to change the offset to token values to the end of calldata.
             // Then we'll add an invalid length: we encode length of 2 but only add 1 element.
             const encodedOffsetToTokenValues = '00000000000000000000000000000000000000000000000000000000000000c0';
             const newEcodedOffsetToTokenValues = '0000000000000000000000000000000000000000000000000000000000000140';
@@ -1394,7 +1388,7 @@ describe('ERC1155Proxy', () => {
             const encodedTokenValuesElements = '0000000000000000000000000000000000000000000000000000000000000001';
             const assetDataWithBadTokenIds = `${assetDataWithNewTokenValuesOffset}${encodedTokenValuesLength}${encodedTokenValuesElements}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1406,7 +1400,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenIds,
                 ),
-                RevertReason.InvalidValuesOffset,
             );
         });
         it('should revert if token data resolves to outside the bounds of calldata', async () => {
@@ -1434,7 +1427,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token data to point outside the calldata.
+            // We want to change the offset to token data to point outside the calldata.
             const encodedOffsetToTokenData = '0000000000000000000000000000000000000000000000000000000000000100';
             const badEncodedOffsetToTokenData = '00000000000000000000000000000000000000000000000000000000000001c0';
             const assetDataWithBadTokenDataOffset = assetData.replace(
@@ -1442,7 +1435,7 @@ describe('ERC1155Proxy', () => {
                 badEncodedOffsetToTokenData,
             );
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1454,7 +1447,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenDataOffset,
                 ),
-                RevertReason.InvalidDataOffset,
             );
         });
         it('should revert if an element of token data lies to outside the bounds of calldata', async () => {
@@ -1482,7 +1474,7 @@ describe('ERC1155Proxy', () => {
             // 0x100      0000000000000000000000000000000000000000000000000000000000000004
             // 0x120      0102030400000000000000000000000000000000000000000000000000000000
             //
-            // We want to chan ge the offset to token data to the end of calldata.
+            // We want to change the offset to token data to the end of calldata.
             // Then we'll add an invalid length: we encode length of 33 but only add 32 elements.
             const encodedOffsetToTokenData = '0000000000000000000000000000000000000000000000000000000000000100';
             const newEcodedOffsetToTokenData = '0000000000000000000000000000000000000000000000000000000000000140';
@@ -1494,7 +1486,7 @@ describe('ERC1155Proxy', () => {
             const encodedTokenDataElements = '0000000000000000000000000000000000000000000000000000000000000001';
             const assetDataWithBadTokenData = `${assetDataWithNewTokenDataOffset}${encodedTokenDataLength}${encodedTokenDataElements}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1506,7 +1498,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetDataWithBadTokenData,
                 ),
-                RevertReason.InvalidDataOffset,
             );
         });
         it('should revert if asset data lies outside the bounds of calldata', async () => {
@@ -1536,9 +1527,8 @@ describe('ERC1155Proxy', () => {
             const invalidOffsetToAssetData = '0000000000000000000000000000000000000000000000000000000000000180';
             const badTxData = txData.replace(offsetToAssetData, invalidOffsetToAssetData);
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromRawAsync(badTxData, authorized),
-                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should revert if asset data lies outside the bounds of calldata', async () => {
@@ -1570,39 +1560,8 @@ describe('ERC1155Proxy', () => {
             const newAssetData = '0000000000000000000000000000000000000000000000000000000000000304';
             const badTxData = `${txData.replace(offsetToAssetData, invalidOffsetToAssetData)}${newAssetData}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromRawAsync(badTxData, authorized),
-                RevertReason.InvalidAssetDataEnd,
-            );
-        });
-        it('should revert if length of assetData, excluding the selector, is not a multiple of 32', async () => {
-            // setup test parameters
-            const tokensToTransfer = fungibleTokens.slice(0, 1);
-            const valuesToTransfer = [fungibleValueToTransferLarge];
-            const valueMultiplier = valueMultiplierSmall;
-            const erc1155ContractAddress = erc1155Wrapper.getContract().address;
-            const assetData = assetDataUtils.encodeERC1155AssetData(
-                erc1155ContractAddress,
-                tokensToTransfer,
-                valuesToTransfer,
-                receiverCallbackData,
-            );
-            const extraData = '01';
-            const assetDataWithExtraData = `${assetData}${extraData}`;
-            // execute transfer
-            await expectTransactionFailedAsync(
-                erc1155ProxyWrapper.transferFromAsync(
-                    spender,
-                    receiverContract,
-                    erc1155Contract.address,
-                    tokensToTransfer,
-                    valuesToTransfer,
-                    valueMultiplier,
-                    receiverCallbackData,
-                    authorized,
-                    assetDataWithExtraData,
-                ),
-                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should revert if length of assetData is less than 132 bytes', async () => {
@@ -1618,7 +1577,7 @@ describe('ERC1155Proxy', () => {
             const zeros96Bytes = '0'.repeat(188);
             const assetData131Bytes = `${AssetProxyId.ERC1155}${zeros96Bytes}`;
             // execute transfer
-            await expectTransactionFailedAsync(
+            await expectTransactionFailedWithoutReasonAsync(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiverContract,
@@ -1630,7 +1589,6 @@ describe('ERC1155Proxy', () => {
                     authorized,
                     assetData131Bytes,
                 ),
-                RevertReason.InvalidAssetDataLength,
             );
         });
         it('should transfer nothing if value is zero', async () => {
