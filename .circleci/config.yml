@@ -33,6 +33,10 @@ jobs:
                   key: python-contract-wrappers-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/python-contract-wrappers/generated
+            - store_artifacts:
+                  path: ~/repo/packages/python-contract-wrappers/generated
+            - store_artifacts:
+                  path: ~/repo/packages/abi-gen/test-cli/output
     build-website:
         resource_class: medium+
         docker:
@@ -235,6 +239,24 @@ jobs:
                   key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
+            - store_artifacts:
+                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
+            - store_artifacts:
+                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
+            - store_artifacts:
+                  path: ~/repo/python-packages/contract_addresses/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/contract_artifacts/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/contract_wrappers/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/json_schemas/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/middlewares/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/order_utils/build
+            - store_artifacts:
+                  path: ~/repo/python-packages/sra_client/build
     test-rest-python:
         working_directory: ~/repo
         docker:
