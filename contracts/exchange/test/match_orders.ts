@@ -1932,12 +1932,13 @@ describe('matchOrders', () => {
                         await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                         constants.AWAIT_TRANSACTION_MINED_MS,
                     );
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
                     const tx = exchangeWrapper.matchOrdersWithMaximalFillAsync(
                         signedOrderLeft,
                         signedOrderRight,
                         takerAddress,
                     );
-                    return expect(tx).to.revertWith(RevertReason.ReentrancyIllegal);
+                    return expect(tx).to.revertWith(expectedError);
                 });
             });
         };

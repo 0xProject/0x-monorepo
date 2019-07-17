@@ -97,6 +97,10 @@ library LibExchangeRichErrors {
     bytes4 internal constant INCOMPLETE_FILL_ERROR_SELECTOR =
         0x152aa60e;
 
+    // bytes4(keccak256("BatchMatchOrdersError(uint8)"))
+    bytes4 internal constant BATCH_MATCH_ORDERS_ERROR_SELECTOR =
+        0xd4092f4f;
+
     // solhint-disable func-name-mixedcase
     function SignatureErrorSelector()
         internal
@@ -242,7 +246,17 @@ library LibExchangeRichErrors {
         return INCOMPLETE_FILL_ERROR_SELECTOR;
     }
 
-    function BatchMatchOrdersError(BatchMatchOrdersErrorCodes errorCode)
+    function BatchMatchOrdersErrorSelector()
+        internal
+        pure
+        returns (bytes4)
+    {
+        return BATCH_MATCH_ORDERS_ERROR_SELECTOR;
+    }
+
+    function BatchMatchOrdersError(
+        IExchangeRichErrors.BatchMatchOrdersErrorCodes errorCode
+    )
         internal
         pure
         returns (bytes memory)
