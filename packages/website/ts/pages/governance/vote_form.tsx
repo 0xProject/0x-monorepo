@@ -108,7 +108,7 @@ export class VoteForm extends React.Component<Props> {
     }
     public render(): React.ReactNode {
         const { votePreference, errors, isSuccessful, isAwaitingLedgerSignature } = this.state;
-        const { currentBalance, selectedAddress } = this.props;
+        const { currentBalance, selectedAddress, zeipId } = this.props;
         const bigNumberFormat = {
             decimalSeparator: '.',
             groupSeparator: ',',
@@ -125,7 +125,7 @@ export class VoteForm extends React.Component<Props> {
         return (
             <Form onSubmit={this._createAndSubmitVoteAsync.bind(this)} isSuccessful={isSuccessful}>
                 <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
-                    ZEIP-23 Vote
+                    ZEIP-{zeipId} Vote
                 </Heading>
                 <Paragraph isMuted={true} color={colors.textDarkPrimary}>
                     Make sure you are informed to the best of your ability before casting your vote. It will have
