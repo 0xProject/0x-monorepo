@@ -176,6 +176,7 @@ const Wrapper = styled.div<Props>`
         display: inline;
         color: ${colors.brandDark};
         font-size: var(--smallHeading);
+        font-weight: 300;
 
         & + em {
             font-size: var(--smallHeading);
@@ -183,7 +184,7 @@ const Wrapper = styled.div<Props>`
     }
 
     em {
-        font-weight: bold;
+        font-weight: 400;
     }
 
     p {
