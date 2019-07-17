@@ -252,7 +252,7 @@ contract MixinMatchOrders is
         // These equations can be combined to get the following:
         if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
             _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
-            _rrevert(NegativeSpreadError(
+            LibRichErrors._rrevert(LibExchangeRichErrors.NegativeSpreadError(
                 getOrderHash(leftOrder),
                 getOrderHash(rightOrder)
             ));
@@ -456,18 +456,26 @@ contract MixinMatchOrders is
     {
         // Ensure that the left and right orders have nonzero lengths.
         if (leftOrders.length == 0) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS));
+            LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
+                BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS
+            ));
         }
         if (rightOrders.length == 0) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS));
+            LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
+                BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS
+            ));
         }
 
         // Ensure that the left and right arrays are compatible.
         if (leftOrders.length != leftSignatures.length) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS));
+            LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
+                BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS
+            ));
         }
         if (rightOrders.length != rightSignatures.length) {
-            _rrevert(BatchMatchOrdersError(BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS));
+            LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
+                BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS
+            ));
         }
 
         batchMatchedFillResults.left = new LibFillResults.FillResults[](leftOrders.length);

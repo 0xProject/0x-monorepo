@@ -33,6 +33,7 @@ import "./MixinSignatureValidator.sol";
 
 contract MixinExchangeCore is
     IExchangeCore,
+    IExchangeRichErrors,
     LibExchangeSelectors,
     LibMath,
     LibFillResults,
@@ -69,7 +70,11 @@ contract MixinExchangeCore is
 
         // Ensure orderEpoch is monotonically increasing
         if (newOrderEpoch <= oldOrderEpoch) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderEpochError(makerAddress, orderSenderAddress, oldOrderEpoch));
+            LibRichErrors._rrevert(LibExchangeRichErrors.OrderEpochError(
+                makerAddress,
+                orderSenderAddress,
+                oldOrderEpoch
+            ));
         }
 
         // Update orderEpoch
@@ -340,14 +345,18 @@ contract MixinExchangeCore is
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
+                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(
+                    orderInfo.orderHash, msg.sender
+                ));
             }
         }
 
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             if (order.takerAddress != takerAddress) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidTakerError(orderInfo.orderHash, takerAddress));
+                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidTakerError(
+                    orderInfo.orderHash, takerAddress
+                ));
             }
         }
 
@@ -366,7 +375,7 @@ contract MixinExchangeCore is
                     makerAddress,
                     signature)) {
                 LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
-                    IExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
+                    SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature
@@ -395,7 +404,7 @@ contract MixinExchangeCore is
         // TODO: reconsider necessity for v2.1
         if (takerAssetFillAmount == 0) {
             LibRichErrors._rrevert(LibExchangeRichErrors.FillError(
-                IExchangeRichErrors.FillErrorCodes.INVALID_TAKER_AMOUNT,
+                FillErrorCodes.INVALID_TAKER_AMOUNT,
                 orderInfo.orderHash
             ));
         }
@@ -405,7 +414,7 @@ contract MixinExchangeCore is
         //       as an extra defence against potential bugs.
         if (takerAssetFilledAmount > takerAssetFillAmount) {
             LibRichErrors._rrevert(LibExchangeRichErrors.FillError(
-                IExchangeRichErrors.FillErrorCodes.TAKER_OVERPAY,
+                FillErrorCodes.TAKER_OVERPAY,
                 orderInfo.orderHash
             ));
         }
@@ -416,7 +425,7 @@ contract MixinExchangeCore is
         if (_safeAdd(orderInfo.orderTakerAssetFilledAmount, takerAssetFilledAmount)
             > order.takerAssetAmount) {
             LibRichErrors._rrevert(LibExchangeRichErrors.FillError(
-                IExchangeRichErrors.FillErrorCodes.OVERFILL,
+                FillErrorCodes.OVERFILL,
                 orderInfo.orderHash
             ));
         }
@@ -441,7 +450,7 @@ contract MixinExchangeCore is
         if (_safeMul(makerAssetFilledAmount, order.takerAssetAmount)
             > _safeMul(order.makerAssetAmount, takerAssetFilledAmount)) {
             LibRichErrors._rrevert(LibExchangeRichErrors.FillError(
-                IExchangeRichErrors.FillErrorCodes.INVALID_FILL_PRICE,
+                FillErrorCodes.INVALID_FILL_PRICE,
                 orderInfo.orderHash
             ));
         }
