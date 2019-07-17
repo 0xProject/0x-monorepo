@@ -3,18 +3,13 @@ import styled from 'styled-components';
 
 // import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
-import { Highlight, Hits, Snippet } from 'react-instantsearch-dom';
+import { Highlight, Snippet } from 'react-instantsearch-dom';
 
 import { colors } from 'ts/style/colors';
 
 interface Props {
     isHome?: boolean;
 }
-
-// interface ToolsHit {
-//     objectID: string;
-//     title: string;
-// }
 
 interface AutoCompleteProps {
     isHome?: boolean;
@@ -27,27 +22,6 @@ interface HitProps {
     [key: string]: any;
 }
 
-interface AutosuggestThemeClasses {
-    [key: string]: any;
-}
-
-const theme: AutosuggestThemeClasses = {
-    container: 'react-autosuggest__container',
-    containerOpen: 'react-autosuggest__container--open',
-    input: 'react-autosuggest__input',
-    inputOpen: 'react-autosuggest__input--open',
-    inputFocused: 'react-autosuggest__input--focused',
-    suggestionsContainer: 'react-autosuggest__suggestions-container',
-    suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
-    suggestionsList: 'react-autosuggest__suggestions-list',
-    suggestion: 'react-autosuggest__suggestion',
-    suggestionFirst: 'react-autosuggest__suggestion--first',
-    suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
-    sectionContainer: 'react-autosuggest__section-container',
-    sectionContainerFirst: 'react-autosuggest__section-container--first',
-    sectionTitle: 'react-autosuggest__section-title',
-};
-
 export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     isHome = false,
     hits = [],
@@ -56,15 +30,9 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
 }) => {
     const [value, setValue] = useState<string>('');
 
-    const onChange = (event: HitProps, { newValue }: HitProps): void => {
-        console.log('set newValue', newValue);
-        setValue(newValue);
-    };
+    const onChange = (event: HitProps, { newValue }: HitProps): void => setValue(newValue);
 
-    const onSuggestionsFetchRequested = ({ value }: HitProps): void => {
-        console.log('value', value);
-        refine(value);
-    };
+    const onSuggestionsFetchRequested = ({ value: newValue }: HitProps): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
 
@@ -107,7 +75,6 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     return (
         <Wrapper isHome={isHome}>
             <Autosuggest
-                theme={theme}
                 suggestions={hits}
                 multiSection={true}
                 onSuggestionSelected={onSuggestionSelected}
@@ -275,78 +242,3 @@ const Wrapper = styled.div<Props>`
         }
     }
 `;
-
-// import React, { Component } from 'react';
-// import PropTypes from 'prop-types';
-// import { Highlight, connectAutoComplete } from 'react-instantsearch-dom';
-// import AutoSuggest from 'react-autosuggest';
-
-// class AutoComplete extends Component {
-//     static propTypes = {
-//         hits: PropTypes.arrayOf(PropTypes.object).isRequired,
-//         currentRefinement: PropTypes.string.isRequired,
-//         refine: PropTypes.func.isRequired,
-//         onSuggestionSelected: PropTypes.func.isRequired,
-//         onSuggestionCleared: PropTypes.func.isRequired,
-//     };
-
-//     state = {
-//         // @ts-ignore
-//         value: this.props.currentRefinement,
-//     };
-//     // @ts-ignore
-//     onChange = (_, { newValue }) => {
-//         if (!newValue) {
-//             // @ts-ignore
-//             // this.props.onSuggestionCleared();
-//         }
-
-//         this.setState({
-//             value: newValue,
-//         });
-//     };
-//     // @ts-ignore
-//     onSuggestionsFetchRequested = ({ value }) => {
-//         // @ts-ignore
-//         this.props.refine(value);
-//     };
-
-//     onSuggestionsClearRequested = () => {
-//         // @ts-ignore
-//         this.props.refine();
-//     };
-//     // @ts-ignore
-//     getSuggestionValue(hit) {
-//         return hit.title;
-//     }
-//     // @ts-ignore
-//     renderSuggestion(hit) {
-//         return <Highlight attribute="title" hit={hit} tagName="mark" />;
-//     }
-
-//     render() {
-//         // @ts-ignore
-//         const { hits, onSuggestionSelected } = this.props;
-//         const { value } = this.state;
-
-//         const inputProps = {
-//             placeholder: 'Search for a product...',
-//             onChange: this.onChange,
-//             value,
-//         };
-
-//         return (
-//             <AutoSuggest
-//                 suggestions={hits}
-//                 onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-//                 onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-//                 onSuggestionSelected={onSuggestionSelected}
-//                 getSuggestionValue={this.getSuggestionValue}
-//                 renderSuggestion={this.renderSuggestion}
-//                 inputProps={inputProps}
-//             />
-//         );
-//     }
-// }
-
-// export default connectAutoComplete(AutoComplete);
