@@ -25,6 +25,56 @@ export const getSignedOrdersWithNoFees = (
     );
 };
 
+export const getSignedOrdersWithFees = (
+    makerAssetData: string,
+    takerAssetData: string,
+    makerAddress: string,
+    takerAddress: string,
+    fillableAmounts: BigNumber[],
+    takerFees: BigNumber[],
+): SignedOrder[] => {
+    const orders = getSignedOrdersWithNoFees(
+        makerAssetData,
+        takerAssetData,
+        makerAddress,
+        takerAddress,
+        fillableAmounts,
+    );
+    return _.map(orders, (order: SignedOrder, index: number) =>
+        orderFactory.createSignedOrderFromPartial({
+            ...order,
+            ...{ takerFee: takerFees[index] },
+        }),
+    );
+};
+
+export const getFullyFillableSwapQuoteWithFees = (
+    makerAssetData: string,
+    takerAssetData: string,
+    orders: SignedOrder[],
+    feeOrders: SignedOrder[],
+    operation: MarketOperation,
+) => {
+    const swapQuote = getFullyFillableSwapQuoteWithNoFees(
+        makerAssetData,
+        takerAssetData,
+        orders,
+        operation,
+    );
+    swapQuote.feeOrders = feeOrders;
+    const totalFeeTakerTokenAmount = _.reduce(
+        feeOrders,
+        (a: BigNumber, c: SignedOrder) => a.plus(c.takerAssetAmount),
+        ZERO_BIG_NUMBER,
+    );
+    // Adds fees to the SwapQuoteInfos assuming all feeOrders will be filled
+    swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount = totalFeeTakerTokenAmount;
+    swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount = totalFeeTakerTokenAmount;
+    swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount = swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount.plus(totalFeeTakerTokenAmount);
+    swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount = swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount.plus(totalFeeTakerTokenAmount);
+    return swapQuote;
+};
+
 export const getFullyFillableSwapQuoteWithNoFees = (
     makerAssetData: string,
     takerAssetData: string,
