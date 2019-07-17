@@ -33,7 +33,6 @@ export { StandardRelayerAPIOrderProvider } from './order_providers/standard_rela
 export {
     SwapQuoterError,
     SwapQuoterOpts,
-    SwapQuoteUtilsOpts,
     SwapQuote,
     SwapQuoteConsumerOpts,
     CalldataInfo,
