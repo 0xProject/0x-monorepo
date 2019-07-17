@@ -79,8 +79,6 @@ interface ErrorProps {
     [key: string]: string;
 }
 
-const defaultZeip = 23;
-
 // This is a copy of the generic form and includes a number of extra fields
 // TODO remove the extraneous fields
 export class VoteForm extends React.Component<Props> {
@@ -91,7 +89,6 @@ export class VoteForm extends React.Component<Props> {
         isSuccessful: false,
         isLedger: false,
         isVoted: false,
-        // zeipId: defaultZeip,
         errors: {},
     };
     public networkId: number;

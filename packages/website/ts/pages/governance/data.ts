@@ -71,8 +71,8 @@ export const proposals: Proposals = {
         title: 'StaticCallAssetProxy',
         summary: `This ZEIP introduces the ability to validate stateful assets during settlement, ensuring the asset has not been modified.`,
         url: '',
-        voteStartDate: moment(1563728400, 'X'),
-        voteEndDate: moment(1564333200, 'X'),
+        voteStartDate: moment(1563814800, 'X'),
+        voteEndDate: moment(1564419600, 'X'),
         benefit: {
             title: 'Benefit',
             summary: `Stateful assets can be traded safely on 0x without the risk of front running attacks which can de-value the underlying asset. An asset is guaranteed by the 0x protocol to contain the same state as described in the order during settlement. `,
@@ -105,8 +105,8 @@ export const proposals: Proposals = {
         title: 'Support ERC-1155 MultiToken Standard',
         summary: `This ZEIP introduces the ERC-1155 Asset Proxy, which adds support for trading ERC-1155 assets to 0x protocol. ERC-1155 is an evolution in token standards allowing mixed fungible and non-fungible assets within the same contract, enabling greater efficiency in the transfer and creation of new token concepts.`,
         url: 'https://github.com/0xProject/ZEIPs/issues/24',
-        voteStartDate: moment(1563728400, 'X'),
-        voteEndDate: moment(1564333200, 'X'),
+        voteStartDate: moment(1563814800, 'X'),
+        voteEndDate: moment(1564419600, 'X'),
         benefit: {
             title: 'Benefit',
             summary: `0x is designed to support numerous assets on the Ethereum blockchain. Adding support for the ERC1155 proxy enables new and more efficient types of trading such as batch transfers, shared deposit contracts and new types of tokens.`,
