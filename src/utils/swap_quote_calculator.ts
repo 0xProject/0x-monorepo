@@ -32,7 +32,6 @@ export const swapQuoteCalculator = {
             isMakerAssetZrxToken,
             shouldDisableFeeOrderCalculations,
             MarketOperation.Sell,
-
         ) as MarketSellSwapQuote;
     },
     calculateMarketBuySwapQuote(

@@ -89,5 +89,5 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
                 opts,
             );
         }
-   }
+    }
 }

@@ -95,7 +95,8 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
 }
 
 export enum ConsumerType {
-    Forwarder, Exchange,
+    Forwarder,
+    Exchange,
 }
 
 /**
