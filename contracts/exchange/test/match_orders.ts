@@ -3142,7 +3142,7 @@ describe('matchOrders', () => {
             // Set params left signatures to only include the first left signature
             params.leftSignatures = [params.leftSignatures[0]];
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
-                ExchangeRevertErrors.BatchMatchOrdersErrorCodes.IncompatibleLeftOrders,
+                ExchangeRevertErrors.BatchMatchOrdersErrorCodes.InvalidLengthLeftSignatures,
             );
             let tx = exchangeWrapper.batchMatchOrdersRawAsync(params, takerAddress);
             await expect(tx).to.revertWith(expectedError);
@@ -3182,7 +3182,7 @@ describe('matchOrders', () => {
             // Set params right signatures to only include the first right signature
             params.rightSignatures = [params.rightSignatures[0]];
             const expectedError = new ExchangeRevertErrors.BatchMatchOrdersError(
-                ExchangeRevertErrors.BatchMatchOrdersErrorCodes.IncompatibleRightOrders,
+                ExchangeRevertErrors.BatchMatchOrdersErrorCodes.InvalidLengthRightSignatures,
             );
             let tx = exchangeWrapper.batchMatchOrdersRawAsync(params, takerAddress);
             await expect(tx).to.revertWith(expectedError);
@@ -3525,6 +3525,38 @@ describe('matchOrders', () => {
                 false,
             );
         });
+
+        const reentrancyTest = (functionNames: string[]) => {
+            _.forEach(functionNames, async (functionName: string, functionId: number) => {
+                const description = `should not allow batchMatchOrders to reenter the Exchange contract via ${functionName}`;
+                it(description, async () => {
+                    const leftOrders = [
+                        await orderFactoryLeft.newSignedOrderAsync({
+                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                        }),
+                    ];
+                    const rightOrders = [
+                        await orderFactoryRight.newSignedOrderAsync({
+                            makerAddress: makerAddressRight,
+                            takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                            feeRecipientAddress: feeRecipientAddressRight,
+                        }),
+                    ];
+                    await web3Wrapper.awaitTransactionSuccessAsync(
+                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
+                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    );
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
+                    const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
+                    return expect(tx).to.revertWith(expectedError);
+                });
+            });
+        };
+        describe('batchMatchOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
     });
     describe('batchMatchOrdersWithMaximalFill', () => {
         it('should fully fill the the right order and pay the profit denominated in the left maker asset', async () => {
@@ -3786,6 +3818,39 @@ describe('matchOrders', () => {
                 true,
             );
         });
+
+        const reentrancyTest = (functionNames: string[]) => {
+            _.forEach(functionNames, async (functionName: string, functionId: number) => {
+                const description = `should not allow batchMatchOrdersWithMaximalFill to reenter the Exchange contract via ${functionName}`;
+                it(description, async () => {
+                    const leftOrders = [
+                        await orderFactoryLeft.newSignedOrderAsync({
+                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                        }),
+                    ];
+                    const rightOrders = [
+                        await orderFactoryRight.newSignedOrderAsync({
+                            makerAddress: makerAddressRight,
+                            takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
+                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+                            feeRecipientAddress: feeRecipientAddressRight,
+                        }),
+                    ];
+                    await web3Wrapper.awaitTransactionSuccessAsync(
+                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
+                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    );
+                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
+                    const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
+                    return expect(tx).to.revertWith(expectedError);
+                });
+            });
+        };
+        describe('batchMatchOrdersWithMaximalFill reentrancy tests', () =>
+            reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
     });
 });
 // tslint:disable-line:max-file-line-count

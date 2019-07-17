@@ -11,8 +11,8 @@ contract IExchangeRichErrors {
     enum BatchMatchOrdersErrorCodes {
         ZERO_LEFT_ORDERS,
         ZERO_RIGHT_ORDERS,
-        INCOMPATIBLE_LEFT_ORDERS,
-        INCOMPATIBLE_RIGHT_ORDERS
+        INVALID_LENGTH_LEFT_SIGNATURES,
+        INVALID_LENGTH_RIGHT_SIGNATURES
     }
 
     enum FillErrorCodes {
