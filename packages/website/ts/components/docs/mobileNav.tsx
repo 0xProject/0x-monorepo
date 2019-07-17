@@ -63,7 +63,7 @@ const BackButton = styled(Button)`
 
 const Wrap = styled.nav<{ isToggled: boolean }>`
     width: 100%;
-    height: 357px;
+    height: 426px;
     background-color: ${props => props.theme.mobileNavBgUpper};
     color: ${props => props.theme.mobileNavColor};
     transition: ${props => (props.isToggled ? 'visibility 0s, transform 0.5s' : 'visibility 0s 0.5s, transform 0.5s')};
@@ -99,12 +99,7 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
-interface ISectionProps {
-    isDark?: boolean;
-}
-
-const Section = styled.div<ISectionProps>`
+const Section = styled.div`
     width: 100%;
     padding: 15px 30px;
-    background-color: ${props => (props.isDark ? props.theme.mobileNavBgLower : 'transparent')};
 `;
