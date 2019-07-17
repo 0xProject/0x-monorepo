@@ -8,7 +8,6 @@ import {
     OrdersAndFillableAmounts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
-    SwapQuoteUtilsOpts,
 } from './types';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -20,10 +19,6 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     networkId: MAINNET_NETWORK_ID,
     orderRefreshIntervalMs: 10000, // 10 seconds
     expiryBufferMs: 120000, // 2 minutes
-};
-
-const DEFAULT_SWAP_QUOTE_UTILS_OPTS: SwapQuoteUtilsOpts = {
-    networkId: MAINNET_NETWORK_ID,
 };
 
 const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: ForwarderSwapQuoteGetOutputOpts = {
@@ -62,5 +57,4 @@ export const constants = {
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
     DEFAULT_PER_PAGE,
     DEFAULT_LIQUIDITY_REQUEST_OPTS,
-    DEFAULT_SWAP_QUOTE_UTILS_OPTS,
 };
