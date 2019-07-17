@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
+    ConsumerType,
     SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
@@ -74,13 +75,19 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
-        return swapQuoteConsumerUtils.getConsumerForSwapQuoteAsync(
-            quote,
-            this._contractWrappers,
-            this.provider,
-            this._exchangeConsumer,
-            this._forwarderConsumer,
-            opts,
-        );
-    }
+        if (opts.useConsumerType === ConsumerType.Exchange) {
+            return this._exchangeConsumer;
+        } else if (opts.useConsumerType === ConsumerType.Forwarder) {
+            return this._forwarderConsumer;
+        } else {
+            return swapQuoteConsumerUtils.getConsumerForSwapQuoteAsync(
+                quote,
+                this._contractWrappers,
+                this.provider,
+                this._exchangeConsumer,
+                this._forwarderConsumer,
+                opts,
+            );
+        }
+   }
 }

@@ -8,6 +8,7 @@ import {
     OrdersAndFillableAmounts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
+    SwapQuoteUtilsOpts,
 } from './types';
 
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -21,6 +22,10 @@ const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     expiryBufferMs: 120000, // 2 minutes
 };
 
+const DEFAULT_SWAP_QUOTE_UTILS_OPTS: SwapQuoteUtilsOpts = {
+    networkId: MAINNET_NETWORK_ID,
+};
+
 const DEFAULT_FORWARDER_SWAP_QUOTE_GET_OPTS: ForwarderSwapQuoteGetOutputOpts = {
     feePercentage: 0,
     feeRecipient: NULL_ADDRESS,
@@ -30,6 +35,7 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     shouldForceOrderRefresh: false,
+    shouldDisableRequestingFeeOrders: false,
     slippagePercentage: 0.2, // 20% slippage protection,
 };
 
@@ -56,4 +62,5 @@ export const constants = {
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
     DEFAULT_PER_PAGE,
     DEFAULT_LIQUIDITY_REQUEST_OPTS,
+    DEFAULT_SWAP_QUOTE_UTILS_OPTS,
 };

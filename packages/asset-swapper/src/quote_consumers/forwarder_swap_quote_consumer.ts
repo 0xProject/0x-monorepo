@@ -1,9 +1,11 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { calldataOptimizationUtils } from '@0x/contract-wrappers/src/utils/calldata_optimization_utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
 import * as _ from 'lodash';
+
 
 import { constants } from '../constants';
 import {
@@ -101,6 +103,12 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
+        // lowercase input addresses
+        const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
+        // optimize orders
+        const optimizedOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
+        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
+
         const signatures = _.map(orders, o => o.signature);
         const feeSignatures = _.map(feeOrders, o => o.signature);
 
@@ -113,25 +121,25 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             const { makerAssetFillAmount } = quoteWithAffiliateFee;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 makerAssetFillAmount,
                 signatures,
-                feeOrders,
+                feeOrders: optimizedFeeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
+                feeRecipient: normalizedFeeRecipientAddress,
                 type: MarketOperation.Buy,
             };
 
             methodName = 'marketBuyOrdersWithEth';
         } else {
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
-                feeOrders,
+                feeOrders: optimizedFeeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
+                feeRecipient: normalizedFeeRecipientAddress,
                 type: MarketOperation.Sell,
             };
             methodName = 'marketSellOrdersWithEth';

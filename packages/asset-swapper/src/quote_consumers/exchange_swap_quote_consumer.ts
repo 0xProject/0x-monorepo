@@ -1,4 +1,5 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { calldataOptimizationUtils } from '@0x/contract-wrappers/src/utils/calldata_optimization_utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
@@ -75,6 +76,8 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const { orders } = quote;
 
+        const optimizedOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
+
         const signatures = _.map(orders, o => o.signature);
 
         let params: ExchangeSmartContractParams;
@@ -84,7 +87,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { makerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 makerAssetFillAmount,
                 type: MarketOperation.Buy,
@@ -95,7 +98,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 takerAssetFillAmount,
                 type: MarketOperation.Sell,

@@ -94,6 +94,10 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
     type: MarketOperation.Sell;
 }
 
+export enum ConsumerType {
+    Forwarder, Exchange,
+}
+
 /**
  * Represents all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
  */
@@ -157,6 +161,10 @@ export interface SwapQuoteConsumerOpts {
     networkId: number;
 }
 
+export interface SwapQuoteUtilsOpts {
+    networkId: number;
+}
+
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
@@ -198,6 +206,7 @@ export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
  */
 export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
     takerAddress?: string;
+    useConsumerType?: ConsumerType;
 }
 
 /**
@@ -262,6 +271,7 @@ export interface SwapQuoteInfo {
  */
 export interface SwapQuoteRequestOpts {
     shouldForceOrderRefresh: boolean;
+    shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
 }
 
