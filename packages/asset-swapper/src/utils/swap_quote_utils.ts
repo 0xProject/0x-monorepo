@@ -22,12 +22,17 @@ export class SwapQuoteUtils {
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
         });
-
     }
 
-    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(swapQuote: SwapQuote, takerAddress: string): Promise<[boolean, boolean]> {
+    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
+        swapQuote: SwapQuote,
+        takerAddress: string,
+    ): Promise<[boolean, boolean]> {
         const orderValidatorWrapper = this._contractWrappers.orderValidator;
-        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(takerAddress, swapQuote.takerAssetData);
+        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(
+            takerAddress,
+            swapQuote.takerAssetData,
+        );
         return [
             balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
             balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),

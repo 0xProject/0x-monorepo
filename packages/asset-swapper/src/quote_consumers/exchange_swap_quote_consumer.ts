@@ -1,5 +1,5 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
-import { calldataOptimizationUtils } from '@0x/contract-wrappers/src/utils/calldata_optimization_utils';
+import { calldataOptimizationUtils } from '@0x/contract-wrappers/lib/src/utils/calldata_optimization_utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
