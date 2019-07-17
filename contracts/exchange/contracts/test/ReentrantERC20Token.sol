@@ -48,6 +48,8 @@ contract ReentrantERC20Token is
         MARKET_SELL_ORDERS,
         MATCH_ORDERS,
         MATCH_ORDERS_WITH_MAXIMAL_FILL,
+        BATCH_MATCH_ORDERS,
+        BATCH_MATCH_ORDERS_WITH_MAXIMAL_FILL,
         CANCEL_ORDER,
         BATCH_CANCEL_ORDERS,
         CANCEL_ORDERS_UP_TO,
@@ -158,6 +160,32 @@ contract ReentrantERC20Token is
                 signatures[0],
                 signatures[1]
             );
+        } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_MATCH_ORDERS)) {
+            LibOrder.Order[] memory leftOrders;
+            LibOrder.Order[] memory rightOrders;
+            (leftOrders, rightOrders) = _createBatchMatchedOrders();
+            bytes[] memory leftSignatures = _createWalletSignatures(1);
+            bytes[] memory rightSignatures = _createWalletSignatures(1);
+            callData = abi.encodeWithSelector(
+                exchange.batchMatchOrders.selector,
+                leftOrders,
+                rightOrders,
+                leftSignatures,
+                rightSignatures
+            );
+        } else if (currentFunctionId == uint8(ExchangeFunction.BATCH_MATCH_ORDERS_WITH_MAXIMAL_FILL)) {
+            LibOrder.Order[] memory leftOrders;
+            LibOrder.Order[] memory rightOrders;
+            (leftOrders, rightOrders) = _createBatchMatchedOrders();
+            bytes[] memory leftSignatures = _createWalletSignatures(1);
+            bytes[] memory rightSignatures = _createWalletSignatures(1);
+            callData = abi.encodeWithSelector(
+                exchange.batchMatchOrders.selector,
+                leftOrders,
+                rightOrders,
+                leftSignatures,
+                rightSignatures
+            );
         } else if (currentFunctionId == uint8(ExchangeFunction.CANCEL_ORDER)) {
             callData = abi.encodeWithSelector(
                 exchange.cancelOrder.selector,
@@ -247,6 +275,20 @@ contract ReentrantERC20Token is
         orders[1] = _orders[1];
         orders[1].takerAssetAmount = orders[1].makerAssetAmount;
         orders[1].makerAssetAmount = orders[0].takerAssetAmount;
+    }
+
+    function _createBatchMatchedOrders()
+        internal
+        view
+        returns (LibOrder.Order[] memory leftOrders, LibOrder.Order[] memory rightOrders)
+    {
+        LibOrder.Order[] memory _orders = _createOrders(2);
+        leftOrders = new LibOrder.Order[](1);
+        rightOrders = new LibOrder.Order[](1);
+        leftOrders[0] = _orders[0];
+        rightOrders[0] = _orders[1];
+        rightOrders[0].takerAssetAmount = rightOrders[0].makerAssetAmount;
+        rightOrders[0].makerAssetAmount = leftOrders[0].takerAssetAmount;
     }
 
     function _getTakerFillAmounts(

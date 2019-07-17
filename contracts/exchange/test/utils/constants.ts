@@ -10,6 +10,8 @@ export const constants = {
         'MARKET_SELL_ORDERS',
         'MATCH_ORDERS',
         'MATCH_ORDERS_WITH_MAXIMAL_FILL',
+        'BATCH_MATCH_ORDERS',
+        'BATCH_MATCH_ORDERS_WITH_MAXIMAL_FILL',
         'CANCEL_ORDER',
         'BATCH_CANCEL_ORDERS',
         'CANCEL_ORDERS_UP_TO',

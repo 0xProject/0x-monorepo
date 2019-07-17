@@ -7,8 +7,8 @@ import * as _ from 'lodash';
 export enum BatchMatchOrdersErrorCodes {
     ZeroLeftOrders,
     ZeroRightOrders,
-    IncompatibleLeftOrders,
-    IncompatibleRightOrders,
+    InvalidLengthLeftSignatures,
+    InvalidLengthRightSignatures,
 }
 
 export enum FillErrorCode {

@@ -289,7 +289,7 @@ contract MixinMatchOrders is
         //   If the left maker can buy exactly what the right maker can sell, then both orders are fully filled.
         // Case 2.
         //   If the left maker cannot buy more than the right maker can sell, then only the left order is fully filled.
-        if (leftTakerAssetAmountRemaining >= rightMakerAssetAmountRemaining) {
+        if (leftTakerAssetAmountRemaining > rightMakerAssetAmountRemaining) {
             // Case 1: Right order is fully filled
             _calculateCompleteRightFill(
                 matchedFillResults,
@@ -297,7 +297,7 @@ contract MixinMatchOrders is
                 rightMakerAssetAmountRemaining,
                 rightTakerAssetAmountRemaining
             );
-        } else {
+        } else if (rightMakerAssetAmountRemaining > leftTakerAssetAmountRemaining) {
             // Case 2: Left order is fully filled
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
@@ -309,6 +309,13 @@ contract MixinMatchOrders is
                 rightOrder.makerAssetAmount,
                 leftTakerAssetAmountRemaining // matchedFillResults.right.makerAssetFilledAmount
             );
+        } else {
+            // Case 3: Both orders are fully filled. Technically, this could be captured by the above cases, but
+            //         this calculation will be more precise since it does not include rounding.
+            matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
+            matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
+            matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
+            matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
         }
 
         // Calculate amount given to taker
@@ -411,6 +418,13 @@ contract MixinMatchOrders is
         }
     }
 
+    /// @dev Calculates the fill results for the maker and taker in the order matching and writes the results
+    ///      to the fillResults that are being collected on the order.
+    /// @param matchedFillResults The fill results object to populate with calculations.
+    /// @param leftOrder The left order that is being maximally filled. All of the information about fill amounts
+    ///                  can be derived from this order and the right asset remaining fields.
+    /// @param rightMakerAssetAmountRemaining The amount of the right maker asset that is remaining to be filled.
+    /// @param rightTakerAssetAmountRemaining The amount of the right taker asset that is remaining to be filled.
     function _calculateCompleteRightFill(
         MatchedFillResults memory matchedFillResults,
         LibOrder.Order memory leftOrder,
@@ -469,12 +483,12 @@ contract MixinMatchOrders is
         // Ensure that the left and right arrays are compatible.
         if (leftOrders.length != leftSignatures.length) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.INCOMPATIBLE_LEFT_ORDERS
+                BatchMatchOrdersErrorCodes.INVALID_LENGTH_LEFT_SIGNATURES
             ));
         }
         if (rightOrders.length != rightSignatures.length) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.INCOMPATIBLE_RIGHT_ORDERS
+                BatchMatchOrdersErrorCodes.INVALID_LENGTH_RIGHT_SIGNATURES
             ));
         }
 
@@ -540,13 +554,13 @@ contract MixinMatchOrders is
             // or break out of the loop if there are no more leftOrders to match.
             if (leftOrderInfo.orderTakerAssetFilledAmount >= leftOrder.takerAssetAmount) {
                 // Update the batched fill results once the leftIdx is updated.
-                batchMatchedFillResults.left[leftIdx] = leftFillResults;
+                batchMatchedFillResults.left[leftIdx++] = leftFillResults;
                 // Clear the intermediate fill results value.
                 leftFillResults = LibFillResults.FillResults(0, 0, 0, 0);
 
-                // If all of the right orders have been filled, break out of the loop.
+                // If all of the left orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
-                if (++leftIdx == leftOrders.length) {
+                if (leftIdx == leftOrders.length) {
                     // Update the right batched fill results
                     batchMatchedFillResults.right[rightIdx] = rightFillResults;
                     break;
@@ -560,13 +574,13 @@ contract MixinMatchOrders is
             // or break out of the loop if there are no more rightOrders to match.
             if (rightOrderInfo.orderTakerAssetFilledAmount >= rightOrder.takerAssetAmount) {
                 // Update the batched fill results once the rightIdx is updated.
-                batchMatchedFillResults.right[rightIdx] = rightFillResults;
+                batchMatchedFillResults.right[rightIdx++] = rightFillResults;
                 // Clear the intermediate fill results value.
                 rightFillResults = LibFillResults.FillResults(0, 0, 0, 0);
 
                 // If all of the right orders have been filled, break out of the loop.
                 // Otherwise, update the current right order.
-                if (++rightIdx == rightOrders.length) {
+                if (rightIdx == rightOrders.length) {
                     // Update the left batched fill results
                     batchMatchedFillResults.left[leftIdx] = leftFillResults;
                     break;
