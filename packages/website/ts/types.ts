@@ -765,4 +765,15 @@ export interface Package {
     description: string;
     link: ALink;
 }
+
+export type VoteOutcome = 'accepted' | 'rejected';
+export type VoteTime = 'upcoming' | 'happening';
+export type VoteStatus = VoteOutcome | VoteTime;
+
+export interface TallyInterface {
+    zeipId?: number;
+    yes?: BigNumber;
+    no?: BigNumber;
+    blockNumber?: string;
+}
 // tslint:disable:max-file-line-count

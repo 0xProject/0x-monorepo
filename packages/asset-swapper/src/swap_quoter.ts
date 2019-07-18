@@ -144,7 +144,7 @@ export class SwapQuoter {
             makerAssetData,
             takerAssetData,
             takerAssetSellAmount,
-            'marketSell',
+            MarketOperation.Sell,
             options,
         )) as MarketSellSwapQuote;
     }
@@ -170,7 +170,7 @@ export class SwapQuoter {
             makerAssetData,
             takerAssetData,
             makerAssetBuyAmount,
-            'marketBuy',
+            MarketOperation.Buy,
             options,
         )) as MarketBuySwapQuote;
     }
@@ -248,8 +248,7 @@ export class SwapQuoter {
         takerAssetData: string,
         options: Partial<LiquidityRequestOpts> = {},
     ): Promise<LiquidityForAssetData> {
-        const shouldForceOrderRefresh =
-            options.shouldForceOrderRefresh !== undefined ? options.shouldForceOrderRefresh : false;
+        const { shouldForceOrderRefresh } = _.merge({}, constants.DEFAULT_LIQUIDITY_REQUEST_OPTS, options);
         assert.isString('makerAssetData', makerAssetData);
         assert.isString('takerAssetData', takerAssetData);
         assetDataUtils.decodeAssetDataOrThrow(makerAssetData);
@@ -374,6 +373,21 @@ export class SwapQuoter {
         return ordersAndFillableAmounts;
     }
 
+    public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
+        swapQuote: SwapQuote,
+        takerAddress: string,
+    ): Promise<[boolean, boolean]> {
+        const orderValidatorWrapper = this._contractWrappers.orderValidator;
+        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(
+            takerAddress,
+            swapQuote.takerAssetData,
+        );
+        return [
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
+            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
+        ];
+    }
+
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
@@ -392,7 +406,7 @@ export class SwapQuoter {
         marketOperation: MarketOperation,
         options: Partial<SwapQuoteRequestOpts>,
     ): Promise<SwapQuote> {
-        const { shouldForceOrderRefresh, slippagePercentage } = _.merge(
+        const { shouldForceOrderRefresh, slippagePercentage, shouldDisableRequestingFeeOrders } = _.merge(
             {},
             constants.DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
             options,
@@ -407,7 +421,7 @@ export class SwapQuoter {
         // if the requested assetData is ZRX, don't get the fee info
         const [ordersAndFillableAmounts, feeOrdersAndFillableAmounts] = await Promise.all([
             this.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData, shouldForceOrderRefresh),
-            isMakerAssetZrxToken
+            shouldDisableRequestingFeeOrders || isMakerAssetZrxToken
                 ? Promise.resolve(constants.EMPTY_ORDERS_AND_FILLABLE_AMOUNTS)
                 : this.getOrdersAndFillableAmountsAsync(zrxTokenAssetData, takerAssetData, shouldForceOrderRefresh),
             shouldForceOrderRefresh,
@@ -423,13 +437,14 @@ export class SwapQuoter {
 
         let swapQuote: SwapQuote;
 
-        if (marketOperation === 'marketBuy') {
+        if (marketOperation === MarketOperation.Buy) {
             swapQuote = swapQuoteCalculator.calculateMarketBuySwapQuote(
                 ordersAndFillableAmounts,
                 feeOrdersAndFillableAmounts,
                 assetFillAmount,
                 slippagePercentage,
                 isMakerAssetZrxToken,
+                shouldDisableRequestingFeeOrders,
             );
         } else {
             swapQuote = swapQuoteCalculator.calculateMarketSellSwapQuote(
@@ -438,6 +453,7 @@ export class SwapQuoter {
                 assetFillAmount,
                 slippagePercentage,
                 isMakerAssetZrxToken,
+                shouldDisableRequestingFeeOrders,
             );
         }
 

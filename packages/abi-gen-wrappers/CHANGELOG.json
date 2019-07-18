@@ -33,6 +33,10 @@
                 "pr": 1823
             },
             {
+                "note": "Update wrappers to normalize address inputs to lowercase",
+                "pr": 1951
+            },
+            {
                 "note": "Update wrappers to include `getABIEncodedTransactionData` for view and pure functions",
                 "pr": 1863
             }

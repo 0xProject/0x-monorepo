@@ -24,6 +24,7 @@ interface Props {
     onDismiss?: () => void;
     onWalletConnected?: (providerName: string) => void;
     onVoted?: (voteInfo: VoteInfo) => void;
+    zeipId: number;
 }
 
 interface State {
@@ -38,7 +39,6 @@ interface State {
     isU2fSupported: boolean;
     isVoted: boolean;
     votePreference: string | null;
-    zeip: number;
     voteHash?: string;
     signedVote?: any;
     errorMessage?: string;
@@ -76,7 +76,6 @@ export class ModalVote extends React.Component<Props> {
         isSuccessful: false,
         isVoted: false,
         votePreference: null,
-        zeip: 23,
         errors: {},
     };
     // shared fields
@@ -84,7 +83,7 @@ export class ModalVote extends React.Component<Props> {
         super(props);
     }
     public render(): React.ReactNode {
-        const { isOpen, onDismiss } = this.props;
+        const { isOpen, onDismiss, zeipId } = this.props;
         const { isSuccessful, selectedAddress, currentBalance, isErrorModalOpen, errorMessage } = this.state;
         const bigNumberFormat = {
             decimalSeparator: '.',
@@ -109,7 +108,7 @@ export class ModalVote extends React.Component<Props> {
                     <StyledDialogContent>
                         {this._renderFormContent()}
                         <Confirmation isSuccessful={isSuccessful}>
-                            <Icon name="zeip-23" size="large" margin={[0, 0, 'default', 0]} />
+                            <Icon name={`zeip-${zeipId}`} size="large" margin={[0, 0, 'default', 0]} />
                             <Heading color={colors.textDarkPrimary} size={34} asElement="h2">
                                 Vote Received!
                             </Heading>
@@ -153,7 +152,8 @@ export class ModalVote extends React.Component<Props> {
         }
     }
     private _shareViaTwitterAsync(): void {
-        const tweetText = encodeURIComponent(`I voted on ZEIP-23! 🗳️#VoteWithZRX https://0x.org/vote`);
+        const { zeipId } = this.props;
+        const tweetText = encodeURIComponent(`I voted on ZEIP-${zeipId}! 🗳️#VoteWithZRX https://0x.org/vote`);
         window.open(`https://twitter.com/intent/tweet?text=${tweetText}`, 'Share your vote', 'width=500,height=400');
     }
     private _renderConnectWalletFormContent(): React.ReactNode {
@@ -190,6 +190,7 @@ export class ModalVote extends React.Component<Props> {
                     isLedger={isLedger}
                     ledgerSubproviderIfExists={ledgerSubproviderIfExists}
                     provider={providerEngine}
+                    zeipId={this.props.zeipId}
                     onVoted={this._onVoted.bind(this)}
                     onError={this._onError.bind(this)}
                 />
