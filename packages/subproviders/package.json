@@ -54,7 +54,7 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
-        "@0x/dev-utils": "^2.2.2",
+        "@0x/dev-utils": "^2.2.4",
         "@types/bip39": "^2.4.0",
         "@types/bn.js": "^4.11.0",
         "@types/ethereumjs-tx": "^1.0.0",
