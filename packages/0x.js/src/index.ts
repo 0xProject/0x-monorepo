@@ -71,7 +71,6 @@ export import Web3ProviderEngine = require('web3-provider-engine');
 export {
     RPCSubprovider,
     Callback,
-    JSONRPCRequestPayloadWithMethod,
     ErrorCallback,
     MetamaskSubprovider,
 } from '@0x/subproviders';
@@ -117,6 +116,7 @@ export {
     JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
+    JSONRPCErrorCallback,
     LogEntry,
     DecodedLogArgs,
     LogEntryEvent,
@@ -138,7 +138,6 @@ export {
     EIP1193Provider,
     ZeroExProvider,
     EIP1193Event,
-    JSONRPCErrorCallback,
     Web3JsV1Provider,
     Web3JsV2Provider,
     Web3JsV3Provider,

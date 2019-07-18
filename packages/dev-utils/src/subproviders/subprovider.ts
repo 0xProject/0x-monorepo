@@ -1,17 +1,18 @@
 import { promisify } from '@0x/utils';
 import { JSONRPCRequestPayload, JSONRPCResponsePayload } from 'ethereum-types';
+import Web3ProviderEngine = require('web3-provider-engine');
 
-import { Callback, ErrorCallback, JSONRPCRequestPayloadWithMethod } from './types';
+import { Callback, ErrorCallback } from './types';
 /**
  * Use the subprovider in @0x/subproviders. This is internal for dev-utils only.
  * Using any below avoiding types due to cyclic dependencies
  */
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
-    private engine!: any;
+    private engine!: Web3ProviderEngine;
     protected static _createFinalPayload(
-        payload: Partial<JSONRPCRequestPayloadWithMethod>,
-    ): Partial<JSONRPCRequestPayloadWithMethod> {
+        payload: Partial<JSONRPCRequestPayload>,
+    ): Partial<JSONRPCRequestPayload> {
         const finalPayload = {
             // defaults
             id: Subprovider._getRandomId(),
@@ -51,7 +52,7 @@ export abstract class Subprovider {
      * @param payload JSON RPC payload
      * @returns JSON RPC response payload
      */
-    public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayloadWithMethod>): Promise<JSONRPCResponsePayload> {
+    public async emitPayloadAsync(payload: Partial<JSONRPCRequestPayload>): Promise<JSONRPCResponsePayload> {
         const finalPayload = Subprovider._createFinalPayload(payload);
         // Promisify does the binding internally and `this` is supplied as a second argument
         // tslint:disable-next-line:no-unbound-method

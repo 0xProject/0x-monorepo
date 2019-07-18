@@ -16,7 +16,6 @@ export {
 export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError } from 'ethereum-types';
 
 export {
-    JSONRPCRequestPayloadWithMethod,
     NextCallback,
     ErrorCallback,
     OnNextCompleted,

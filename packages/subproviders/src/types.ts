@@ -1,5 +1,4 @@
 import { ECSignature } from '@0x/types';
-import { JSONRPCRequestPayload } from 'ethereum-types';
 import HDNode = require('hdkey');
 export interface LedgerCommunicationClient {
     close: () => Promise<void>;
@@ -92,8 +91,6 @@ export interface PartialTxParams {
     chainId: number; // EIP 155 chainId - mainnet: 1, ropsten: 3
 }
 
-export type DoneCallback = (err?: Error) => void;
-
 export interface LedgerCommunication {
     close_async: () => Promise<void>;
 }
@@ -127,14 +124,11 @@ export interface DerivedHDKeyInfo {
     hdKey: HDNode;
 }
 
+export type DoneCallback = (err?: Error) => void;
 export type ErrorCallback = (err: Error | null, data?: any) => void;
 export type Callback = () => void;
 export type OnNextCompleted = (err: Error | null, result: any, cb: Callback) => void;
 export type NextCallback = (callback?: OnNextCompleted) => void;
-
-export interface JSONRPCRequestPayloadWithMethod extends JSONRPCRequestPayload {
-    method: string;
-}
 
 export interface TrezorSubproviderConfig {
     accountFetchingConfigs: AccountFetchingConfigs;

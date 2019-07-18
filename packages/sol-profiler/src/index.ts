@@ -13,7 +13,6 @@ export { ProfilerSubprovider } from './profiler_subprovider';
 export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError } from 'ethereum-types';
 
 export {
-    JSONRPCRequestPayloadWithMethod,
     NextCallback,
     ErrorCallback,
     OnNextCompleted,

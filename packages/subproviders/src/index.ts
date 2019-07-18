@@ -38,7 +38,6 @@ export {
     NonceSubproviderErrors,
     LedgerSubproviderConfigs,
     PartialTxParams,
-    JSONRPCRequestPayloadWithMethod,
     ECSignatureString,
     AccountFetchingConfigs,
     LedgerEthereumClientFactoryAsync,
@@ -51,8 +50,8 @@ export {
 export { ECSignature, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types, EIP712Parameter } from '@0x/types';
 
 export {
-    JSONRPCRequestPayload,
     SupportedProvider,
+    JSONRPCRequestPayload,
     JSONRPCResponsePayload,
     JSONRPCResponseError,
     JSONRPCErrorCallback,
