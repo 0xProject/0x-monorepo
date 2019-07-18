@@ -99,7 +99,6 @@ export class TestLibDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

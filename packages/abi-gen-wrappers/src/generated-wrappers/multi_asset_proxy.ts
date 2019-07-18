@@ -1,7 +1,14 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
+import {
+    BaseContract,
+    BlockRange,
+    EventCallback,
+    IndexedFilterValues,
+    SubscriptionManager,
+    PromiseWithTransactionHash,
+} from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -10,6 +17,7 @@ import {
     ContractAbi,
     ContractArtifact,
     DecodedLogArgs,
+    LogWithDecodedArgs,
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -1110,6 +1118,76 @@ export class MultiAssetProxyContract extends BaseContract {
             >(MultiAssetProxyContract.ABI(), this._web3Wrapper, networkId);
         }
         return this._subscriptionManagerIfExists;
+    }
+    /**
+     * Subscribe to an event type emitted by the MultiAssetProxy contract.
+     * @param   eventName           The MultiAssetProxy contract event you would like to subscribe to.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @return Subscription token used later to unsubscribe
+     */
+    public async subscribeAsync<ArgsType extends MultiAssetProxyEventArgs>(
+        eventName: MultiAssetProxyEvents,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
+    ): Promise<string> {
+        assert.doesBelongToStringEnum('eventName', eventName, MultiAssetProxyEvents);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        const subscriptionToken = subscriptionManager._subscribe<ArgsType>(
+            this.address,
+            eventName,
+            indexFilterValues,
+            MultiAssetProxyContract.ABI(),
+            callback,
+            isVerbose,
+        );
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param   subscriptionToken Subscription token returned by `subscribeAsync()`
+     */
+    public async unsubscribeAsync(subscriptionToken: string): Promise<void> {
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        subscriptionManager._unsubscribe(subscriptionToken);
+    }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public async unsubscribeAllAsync(): Promise<void> {
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        subscriptionManager._unsubscribeAll();
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   eventName           The MultiAssetProxy contract event you would like to subscribe to.
+     * @param   blockRange          Block range to get logs from.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return  Array of logs that match the parameters
+     */
+    public async getLogsAsync<ArgsType extends MultiAssetProxyEventArgs>(
+        eventName: MultiAssetProxyEvents,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        assert.doesBelongToStringEnum('eventName', eventName, MultiAssetProxyEvents);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        const logs = await subscriptionManager._getLogsAsync<ArgsType>(
+            this.address,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            MultiAssetProxyContract.ABI(),
+        );
+        return logs;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('MultiAssetProxy', MultiAssetProxyContract.ABI(), address, supportedProvider, txDefaults);

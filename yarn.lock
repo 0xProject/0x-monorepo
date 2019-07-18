@@ -6553,14 +6553,6 @@ ethereumjs-blockstream@6.0.0:
     source-map-support "0.5.6"
     uuid "3.2.1"
 
-ethereumjs-blockstream@^6.0.0:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-6.0.1.tgz#a0c0c775f154ea8f613604eea238548c35aa87a9"
-  dependencies:
-    immutable "3.8.2"
-    source-map-support "0.5.6"
-    uuid "3.2.1"
-
 ethereumjs-common@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-0.6.1.tgz#ec98edf315a7f107afb6acc48e937a8266979fae"

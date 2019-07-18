@@ -48,13 +48,13 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    protected _unsubscribeAll(): void {
+    public _unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
             this._unsubscribe(filterToken);
         });
     }
-    protected _unsubscribe(filterToken: string, err?: Error): void {
+    public _unsubscribe(filterToken: string, err?: Error): void {
         if (this._filters[filterToken] === undefined) {
             throw new Error(ContractWrappersError.SubscriptionNotFound);
         }
@@ -68,7 +68,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
             this._stopBlockAndLogStream();
         }
     }
-    protected _subscribe<ArgsType extends ContractEventArgs>(
+    public _subscribe<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         indexFilterValues: IndexedFilterValues,
@@ -85,7 +85,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
         return filterToken;
     }
-    protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
+    public async _getLogsAsync<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         blockRange: BlockRange,

@@ -1,7 +1,11 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract{{#if events}}, SubscriptionManager {{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract{{#if events}},
+    BlockRange,
+    EventCallback,
+    IndexedFilterValues,
+    SubscriptionManager{{/if}},PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -9,7 +13,8 @@ import {
     CallData,
     ContractAbi,
     ContractArtifact,
-    DecodedLogArgs,
+    DecodedLogArgs,{{#if events}}
+    LogWithDecodedArgs,{{/if}}
     MethodAbi,
     TransactionReceiptWithDecodedLogs,
     TxData,
@@ -53,8 +58,8 @@ export class {{contractName}}Contract extends BaseContract {
     {{> tx contractName=../contractName}}
     {{/this.constant}}
 {{/each}}
-{{#if events}}private _subscriptionManagerIfExists?: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;{{/if}}
-    public static async deployFrom0xArtifactAsync(
+{{#if events}}private _subscriptionManagerIfExists?: SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>;
+{{/if}}public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
@@ -150,6 +155,76 @@ export class {{contractName}}Contract extends BaseContract {
             );
         }
         return this._subscriptionManagerIfExists;
+    }
+    /**
+     * Subscribe to an event type emitted by the {{contractName}} contract.
+     * @param   eventName           The {{contractName}} contract event you would like to subscribe to.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param   callback            Callback that gets called when a log is added/removed
+     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @return Subscription token used later to unsubscribe
+     */
+    public async subscribeAsync<ArgsType extends {{contractName}}EventArgs>(
+        eventName: {{contractName}}Events,
+        indexFilterValues: IndexedFilterValues,
+        callback: EventCallback<ArgsType>,
+        isVerbose: boolean = false,
+    ): Promise<string> {
+        assert.doesBelongToStringEnum('eventName', eventName, {{contractName}}Events);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        assert.isFunction('callback', callback);
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        const subscriptionToken = subscriptionManager._subscribe<ArgsType>(
+            this.address,
+            eventName,
+            indexFilterValues,
+            {{contractName}}Contract.ABI(),
+            callback,
+            isVerbose,
+        );
+        return subscriptionToken;
+    }
+    /**
+     * Cancel a subscription
+     * @param   subscriptionToken Subscription token returned by `subscribeAsync()`
+     */
+    public async unsubscribeAsync(subscriptionToken: string): Promise<void> {
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        subscriptionManager._unsubscribe(subscriptionToken);
+    }
+    /**
+     * Cancels all existing subscriptions
+     */
+    public async unsubscribeAllAsync(): Promise<void> {
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        subscriptionManager._unsubscribeAll();
+    }
+    /**
+     * Gets historical logs without creating a subscription
+     * @param   eventName           The {{contractName}} contract event you would like to subscribe to.
+     * @param   blockRange          Block range to get logs from.
+     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
+     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return  Array of logs that match the parameters
+     */
+    public async getLogsAsync<ArgsType extends {{contractName}}EventArgs>(
+        eventName: {{contractName}}Events,
+        blockRange: BlockRange,
+        indexFilterValues: IndexedFilterValues,
+    ): Promise<Array<LogWithDecodedArgs<ArgsType>>> {
+        assert.doesBelongToStringEnum('eventName', eventName, {{contractName}}Events);
+        assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
+        assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
+        const subscriptionManager = await this.getSubscriptionManagerAsync();
+        const logs = await subscriptionManager._getLogsAsync<ArgsType>(
+            this.address,
+            eventName,
+            blockRange,
+            indexFilterValues,
+            {{contractName}}Contract.ABI(),
+        );
+        return logs;
     }{{/if}}
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults);
