@@ -161,7 +161,7 @@ function registerPythonHelpers(): void {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
         // build an array of objects, each of which has one key, the Python
         // name of a tuple, with a string value holding the Python
-        // definition of that tuple.  using a key-value object conveniently
+        // definition of that tuple. Using a key-value object conveniently
         // filters duplicate references to the same tuple.
         const tupleDefinitions: { [pythonTupleName: string]: string } = {};
         for (const abi of abis) {
