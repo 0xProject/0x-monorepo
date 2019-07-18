@@ -1,7 +1,7 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -1862,6 +1862,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    private _subscriptionManagerIfExists?: SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -2639,6 +2640,18 @@ export class AssetProxyOwnerContract extends BaseContract {
             },
         ] as ContractAbi;
         return abi;
+    }
+    public async getSubscriptionManagerAsync(): Promise<
+        SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>
+    > {
+        if (this._subscriptionManagerIfExists === undefined) {
+            const networkId = await this._web3Wrapper.getNetworkIdAsync();
+            this._subscriptionManagerIfExists = new SubscriptionManager<
+                AssetProxyOwnerEventArgs,
+                AssetProxyOwnerEvents
+            >(AssetProxyOwnerContract.ABI(), this._web3Wrapper, networkId);
+        }
+        return this._subscriptionManagerIfExists;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('AssetProxyOwner', AssetProxyOwnerContract.ABI(), address, supportedProvider, txDefaults);

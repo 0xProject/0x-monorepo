@@ -1,7 +1,7 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -611,6 +611,7 @@ export class ERC20ProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    private _subscriptionManagerIfExists?: SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -852,6 +853,17 @@ export class ERC20ProxyContract extends BaseContract {
             },
         ] as ContractAbi;
         return abi;
+    }
+    public async getSubscriptionManagerAsync(): Promise<SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>> {
+        if (this._subscriptionManagerIfExists === undefined) {
+            const networkId = await this._web3Wrapper.getNetworkIdAsync();
+            this._subscriptionManagerIfExists = new SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>(
+                ERC20ProxyContract.ABI(),
+                this._web3Wrapper,
+                networkId,
+            );
+        }
+        return this._subscriptionManagerIfExists;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('ERC20Proxy', ERC20ProxyContract.ABI(), address, supportedProvider, txDefaults);

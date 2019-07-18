@@ -4,14 +4,17 @@ import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 
-import { AssetProxyOwnerContract } from '../../generated-wrappers/asset_proxy_owner';
+import { AssetProxyOwnerContract, TestAssetProxyOwnerContract } from '../../src';
 import { artifacts } from '../../src/artifacts';
 
 export class AssetProxyOwnerWrapper {
-    private readonly _assetProxyOwner: AssetProxyOwnerContract;
+    private readonly _assetProxyOwner: AssetProxyOwnerContract | TestAssetProxyOwnerContract;
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _logDecoder: LogDecoder;
-    constructor(assetproxyOwnerContract: AssetProxyOwnerContract, provider: Web3ProviderEngine) {
+    constructor(
+        assetproxyOwnerContract: AssetProxyOwnerContract | TestAssetProxyOwnerContract,
+        provider: Web3ProviderEngine,
+    ) {
         this._assetProxyOwner = assetproxyOwnerContract;
         this._web3Wrapper = new Web3Wrapper(provider);
         this._logDecoder = new LogDecoder(this._web3Wrapper, { ...artifacts, ...proxyArtifacts });
@@ -57,7 +60,7 @@ export class AssetProxyOwnerWrapper {
     ): Promise<TransactionReceiptWithDecodedLogs> {
         // tslint:disable-next-line:no-unnecessary-type-assertion
         const txHash = await (this
-            ._assetProxyOwner as AssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
+            ._assetProxyOwner as TestAssetProxyOwnerContract).executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
             txId,
             {
                 from,

@@ -1,5 +1,6 @@
 import {
     artifacts as proxyArtifacts,
+    ERC1155ProxyContract,
     ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
@@ -69,7 +70,7 @@ describe('Exchange core', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
-    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
     let multiAssetProxy: MultiAssetProxyContract;
     let staticCallProxy: StaticCallProxyContract;
     let staticCallTarget: TestStaticCallTargetContract;

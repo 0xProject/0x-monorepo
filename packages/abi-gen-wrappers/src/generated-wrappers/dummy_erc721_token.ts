@@ -1,7 +1,7 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -1253,6 +1253,7 @@ export class DummyERC721TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    private _subscriptionManagerIfExists?: SubscriptionManager<DummyERC721TokenEventArgs, DummyERC721TokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -1686,6 +1687,18 @@ export class DummyERC721TokenContract extends BaseContract {
             },
         ] as ContractAbi;
         return abi;
+    }
+    public async getSubscriptionManagerAsync(): Promise<
+        SubscriptionManager<DummyERC721TokenEventArgs, DummyERC721TokenEvents>
+    > {
+        if (this._subscriptionManagerIfExists === undefined) {
+            const networkId = await this._web3Wrapper.getNetworkIdAsync();
+            this._subscriptionManagerIfExists = new SubscriptionManager<
+                DummyERC721TokenEventArgs,
+                DummyERC721TokenEvents
+            >(DummyERC721TokenContract.ABI(), this._web3Wrapper, networkId);
+        }
+        return this._subscriptionManagerIfExists;
     }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('DummyERC721Token', DummyERC721TokenContract.ABI(), address, supportedProvider, txDefaults);

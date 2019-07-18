@@ -1,0 +1,92 @@
+{
+    "schemaVersion": "2.0.0",
+    "contractName": "EventDummy",
+    "compilerOutput": {
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "wad",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdraw",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "name": "_owner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "name": "_value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "Withdrawal",
+                "type": "event"
+            }
+        ],
+        "evm": {
+            "bytecode": {
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b5060b78061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c80632e1a7d4d14602d575b600080fd5b604760048036036020811015604157600080fd5b50356049565b005b60408051828152905133917f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65919081900360200190a25056fea265627a7a72305820b8caa6a4d49dfb44dab792cec2c3256622dc7239f88963f8867af0ffebc0024864736f6c634300050a0032",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0xB7 DUP1 PUSH2 0x1E PUSH1 0x0 CODECOPY PUSH1 0x0 RETURN INVALID PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x28 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x2E1A7D4D EQ PUSH1 0x2D JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x47 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH1 0x41 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP CALLDATALOAD PUSH1 0x49 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x40 DUP1 MLOAD DUP3 DUP2 MSTORE SWAP1 MLOAD CALLER SWAP2 PUSH32 0x7FCF532C15F0A6DB0BD6D0E038BEA71D30D808C7D98CB3BF7268A95BF5081B65 SWAP2 SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 LOG2 POP JUMP INVALID LOG2 PUSH6 0x627A7A723058 KECCAK256 0xb8 0xca 0xa6 LOG4 0xd4 SWAP14 0xfb DIFFICULTY 0xda 0xb7 SWAP3 0xce 0xc2 0xc3 0x25 PUSH7 0x22DC7239F88963 0xf8 DUP7 PUSH27 0xF0FFEBC0024864736F6C634300050A003200000000000000000000 ",
+                "sourceMap": "606:175:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;606:175:0;;;;;;;"
+            },
+            "deployedBytecode": {
+                "linkReferences": {},
+                "object": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c80632e1a7d4d14602d575b600080fd5b604760048036036020811015604157600080fd5b50356049565b005b60408051828152905133917f7fcf532c15f0a6db0bd6d0e038bea71d30d808c7d98cb3bf7268a95bf5081b65919081900360200190a25056fea265627a7a72305820b8caa6a4d49dfb44dab792cec2c3256622dc7239f88963f8867af0ffebc0024864736f6c634300050a0032",
+                "opcodes": "PUSH1 0x80 PUSH1 0x40 MSTORE CALLVALUE DUP1 ISZERO PUSH1 0xF JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP PUSH1 0x4 CALLDATASIZE LT PUSH1 0x28 JUMPI PUSH1 0x0 CALLDATALOAD PUSH1 0xE0 SHR DUP1 PUSH4 0x2E1A7D4D EQ PUSH1 0x2D JUMPI JUMPDEST PUSH1 0x0 DUP1 REVERT JUMPDEST PUSH1 0x47 PUSH1 0x4 DUP1 CALLDATASIZE SUB PUSH1 0x20 DUP2 LT ISZERO PUSH1 0x41 JUMPI PUSH1 0x0 DUP1 REVERT JUMPDEST POP CALLDATALOAD PUSH1 0x49 JUMP JUMPDEST STOP JUMPDEST PUSH1 0x40 DUP1 MLOAD DUP3 DUP2 MSTORE SWAP1 MLOAD CALLER SWAP2 PUSH32 0x7FCF532C15F0A6DB0BD6D0E038BEA71D30D808C7D98CB3BF7268A95BF5081B65 SWAP2 SWAP1 DUP2 SWAP1 SUB PUSH1 0x20 ADD SWAP1 LOG2 POP JUMP INVALID LOG2 PUSH6 0x627A7A723058 KECCAK256 0xb8 0xca 0xa6 LOG4 0xd4 SWAP14 0xfb DIFFICULTY 0xda 0xb7 SWAP3 0xce 0xc2 0xc3 0x25 PUSH7 0x22DC7239F88963 0xf8 DUP7 PUSH27 0xF0FFEBC0024864736F6C634300050A003200000000000000000000 ",
+                "sourceMap": "606:175:0:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;606:175:0;;;;;;;;;;;;;;;;;;;694:84;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;-1:-1;694:84:0;;:::i;:::-;;;744:27;;;;;;;;755:10;;744:27;;;;;;;;;;694:84;:::o"
+            }
+        }
+    },
+    "sources": {
+        "EventDummy.sol": {
+            "id": 0
+        }
+    },
+    "sourceCodes": {
+        "EventDummy.sol": "/*\n\n  Copyright 2018 ZeroEx Intl.\n\n  Licensed under the Apache License, Version 2.0 (the \"License\");\n  you may not use this file except in compliance with the License.\n  You may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\n  Unless required by applicable law or agreed to in writing, software\n  distributed under the License is distributed on an \"AS IS\" BASIS,\n  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n  See the License for the specific language governing permissions and\n  limitations under the License.\n\n*/\n\npragma solidity ^0.5.5;\n\n\ncontract EventDummy\n{\n\n    event  Withdrawal(address indexed _owner, uint _value);\n\n    function withdraw(uint wad) public {\n        emit Withdrawal(msg.sender, wad);\n    }\n\n}\n"
+    },
+    "sourceTreeHashHex": "0x26f3c6b164848ae7ccf786b4ebb64390bb748e60200500df2d1ed695f30e39d0",
+    "compiler": {
+        "name": "solc",
+        "version": "soljson-v0.5.10+commit.5a6ea5b1.js",
+        "settings": {
+            "optimizer": {
+                "enabled": true,
+                "runs": 1000000,
+                "details": {
+                    "yul": true,
+                    "deduplicate": true,
+                    "cse": true,
+                    "constantOptimizer": true
+                }
+            },
+            "outputSelection": {
+                "*": {
+                    "*": [
+                        "abi",
+                        "evm.bytecode.object",
+                        "evm.bytecode.sourceMap",
+                        "evm.deployedBytecode.object",
+                        "evm.deployedBytecode.sourceMap"
+                    ]
+                }
+            },
+            "evmVersion": "constantinople",
+            "remappings": []
+        }
+    },
+    "networks": {}
+}

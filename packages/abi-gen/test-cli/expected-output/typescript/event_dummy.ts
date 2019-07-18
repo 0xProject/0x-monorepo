@@ -1,7 +1,7 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract, SubscriptionManager, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -23,13 +23,76 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
+export type EventDummyEventArgs = EventDummyWithdrawalEventArgs;
+
+export enum EventDummyEvents {
+    Withdrawal = 'Withdrawal',
+}
+
+export interface EventDummyWithdrawalEventArgs extends DecodedLogArgs {
+    _owner: string;
+    _value: BigNumber;
+}
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
-export class TestLibDummyContract extends BaseContract {
-    public publicAddConstant = {
-        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-            assert.isBigNumber('x', x);
+export class EventDummyContract extends BaseContract {
+    public withdraw = {
+        async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+            assert.isBigNumber('wad', wad);
+            const self = (this as any) as EventDummyContract;
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+                self.withdraw.estimateGasAsync.bind(self, wad),
+            );
+            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+            return txHash;
+        },
+        awaitTransactionSuccessAsync(
+            wad: BigNumber,
+            txData?: Partial<TxData>,
+            pollingIntervalMs?: number,
+            timeoutMs?: number,
+        ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
+            assert.isBigNumber('wad', wad);
+            const self = (this as any) as EventDummyContract;
+            const txHashPromise = self.withdraw.sendTransactionAsync(wad, txData);
+            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+                txHashPromise,
+                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                    // When the transaction hash resolves, wait for it to be mined.
+                    return self._web3Wrapper.awaitTransactionSuccessAsync(
+                        await txHashPromise,
+                        pollingIntervalMs,
+                        timeoutMs,
+                    );
+                })(),
+            );
+        },
+        async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
+            assert.isBigNumber('wad', wad);
+            const self = (this as any) as EventDummyContract;
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
+            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...txData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+            return gas;
+        },
+        async callAsync(wad: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.isBigNumber('wad', wad);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -38,8 +101,8 @@ export class TestLibDummyContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
+            const self = (this as any) as EventDummyContract;
+            const encodedData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -50,61 +113,25 @@ export class TestLibDummyContract extends BaseContract {
             );
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(x: BigNumber): string {
-            assert.isBigNumber('x', x);
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
+        getABIEncodedTransactionData(wad: BigNumber): string {
+            assert.isBigNumber('wad', wad);
+            const self = (this as any) as EventDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
     };
-    public publicAddOne = {
-        async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
-            assert.isBigNumber('x', x);
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as TestLibDummyContract;
-            const encodedData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        getABIEncodedTransactionData(x: BigNumber): string {
-            assert.isBigNumber('x', x);
-            const self = (this as any) as TestLibDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
-            return abiEncodedTransactionData;
-        },
-    };
-
+    private _subscriptionManagerIfExists?: SubscriptionManager<EventDummyEventArgs, EventDummyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-    ): Promise<TestLibDummyContract> {
+    ): Promise<EventDummyContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
             schemas.numberSchema,
@@ -116,14 +143,14 @@ export class TestLibDummyContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return TestLibDummyContract.deployAsync(bytecode, abi, provider, txDefaults);
+        return EventDummyContract.deployAsync(bytecode, abi, provider, txDefaults);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-    ): Promise<TestLibDummyContract> {
+    ): Promise<EventDummyContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -145,8 +172,8 @@ export class TestLibDummyContract extends BaseContract {
         const txHash = await web3Wrapper.sendTransactionAsync(txDataWithDefaults);
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
-        logUtils.log(`TestLibDummy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new TestLibDummyContract(txReceipt.contractAddress as string, provider, txDefaults);
+        logUtils.log(`EventDummy successfully deployed at ${txReceipt.contractAddress}`);
+        const contractInstance = new EventDummyContract(txReceipt.contractAddress as string, provider, txDefaults);
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -157,48 +184,53 @@ export class TestLibDummyContract extends BaseContract {
     public static ABI(): ContractAbi {
         const abi = [
             {
-                constant: true,
+                constant: false,
                 inputs: [
                     {
-                        name: 'x',
+                        name: 'wad',
                         type: 'uint256',
                     },
                 ],
-                name: 'publicAddConstant',
-                outputs: [
-                    {
-                        name: 'result',
-                        type: 'uint256',
-                    },
-                ],
+                name: 'withdraw',
+                outputs: [],
                 payable: false,
-                stateMutability: 'pure',
+                stateMutability: 'nonpayable',
                 type: 'function',
             },
             {
-                constant: true,
+                anonymous: false,
                 inputs: [
                     {
-                        name: 'x',
-                        type: 'uint256',
+                        name: '_owner',
+                        type: 'address',
+                        indexed: true,
                     },
-                ],
-                name: 'publicAddOne',
-                outputs: [
                     {
-                        name: 'result',
+                        name: '_value',
                         type: 'uint256',
+                        indexed: false,
                     },
                 ],
-                payable: false,
-                stateMutability: 'pure',
-                type: 'function',
+                name: 'Withdrawal',
+                outputs: [],
+                type: 'event',
             },
         ] as ContractAbi;
         return abi;
     }
+    public async getSubscriptionManagerAsync(): Promise<SubscriptionManager<EventDummyEventArgs, EventDummyEvents>> {
+        if (this._subscriptionManagerIfExists === undefined) {
+            const networkId = await this._web3Wrapper.getNetworkIdAsync();
+            this._subscriptionManagerIfExists = new SubscriptionManager<EventDummyEventArgs, EventDummyEvents>(
+                EventDummyContract.ABI(),
+                this._web3Wrapper,
+                networkId,
+            );
+        }
+        return this._subscriptionManagerIfExists;
+    }
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('TestLibDummy', TestLibDummyContract.ABI(), address, supportedProvider, txDefaults);
+        super('EventDummy', EventDummyContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }
