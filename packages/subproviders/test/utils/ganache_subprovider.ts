@@ -1,6 +1,7 @@
 import { GanacheSubprovider } from '@0x/dev-utils';
 import * as fs from 'fs';
 
+import { Subprovider } from '../../src';
 import { configs } from '../utils/configs';
 
 const logger = {
@@ -15,4 +16,4 @@ export const ganacheSubprovider = new GanacheSubprovider({
     port: configs.port,
     networkId: configs.networkId,
     mnemonic: configs.mnemonic,
-});
+}) as Subprovider;

@@ -19,7 +19,7 @@ describe('RedundantSubprovider', () => {
     it('succeeds when supplied a healthy endpoint', (done: DoneCallback) => {
         provider = new Web3ProviderEngine();
         const subproviders = [ganacheSubprovider];
-        const redundantSubprovider = new RedundantSubprovider(subproviders as any);
+        const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
         providerUtils.startProviderEngine(provider);
 
@@ -43,7 +43,7 @@ describe('RedundantSubprovider', () => {
             new Error('REQUEST_FAILED'),
         );
         const subproviders = [nonExistentSubprovider as Subprovider, ganacheSubprovider];
-        const redundantSubprovider = new RedundantSubprovider(subproviders as any);
+        const redundantSubprovider = new RedundantSubprovider(subproviders);
         provider.addProvider(redundantSubprovider);
         providerUtils.startProviderEngine(provider);
 
