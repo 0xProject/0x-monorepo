@@ -171,6 +171,9 @@ class AbiGenDummy(BaseContractWrapper):
     ) -> None:
         """Execute underlying, same-named contract method.
 
+        a method that accepts an array of bytes
+
+        :param a: the array of bytes being accepted
         :param tx_params: transaction parameters
 
         """
@@ -511,8 +514,10 @@ class AbiGenDummy(BaseContractWrapper):
     ) -> Tuple0xcf8ad995:
         """Execute underlying, same-named contract method.
 
-        :param tx_params: transaction parameters
+        a method that returns a struct
 
+        :param tx_params: transaction parameters
+        :returns: a Struct struct
         """
         func = self._get_contract_instance(
             self.contract_address

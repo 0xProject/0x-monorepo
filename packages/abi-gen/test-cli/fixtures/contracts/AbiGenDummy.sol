@@ -103,6 +103,9 @@ contract AbiGenDummy
     event AnEvent(uint8 param);
 
     function acceptsBytes(bytes memory a) public pure {}
+
+    /// @dev a method that accepts an array of bytes
+    /// @param a the array of bytes being accepted
     function acceptsAnArrayOfBytes(bytes[] memory a) public pure {}
 
     struct Struct {
@@ -113,6 +116,9 @@ contract AbiGenDummy
     }
 
     function structInput(Struct memory s) public pure {}
+
+    /// @dev a method that returns a struct
+    /// @return a Struct struct
     function structOutput() public pure returns(Struct memory s) {}
 
     struct NestedStruct {
