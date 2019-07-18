@@ -220,7 +220,7 @@ function calculateQuoteInfo(
     let takerTokenAmount = marketOperation === MarketOperation.Sell ? tokenAmount : constants.ZERO_AMOUNT;
     let zrxTakerTokenAmount = constants.ZERO_AMOUNT;
 
-    if (!shouldDisableFeeOrderCalculations && isMakerAssetZrxToken) {
+    if (isMakerAssetZrxToken) {
         if (marketOperation === MarketOperation.Buy) {
             takerTokenAmount = findTakerTokenAmountNeededToBuyZrx(ordersAndFillableAmounts, makerTokenAmount);
         } else {
@@ -229,7 +229,7 @@ function calculateQuoteInfo(
                 takerTokenAmount,
             );
         }
-    } else if (!shouldDisableFeeOrderCalculations) {
+    } else {
         const findTokenAndZrxAmount =
             marketOperation === MarketOperation.Buy
                 ? findTakerTokenAndZrxAmountNeededToBuyAsset
@@ -246,7 +246,7 @@ function calculateQuoteInfo(
         }
         const zrxAmountToBuyAsset = tokenAndZrxAmountToBuyAsset[1];
         // find eth amount needed to buy zrx
-        zrxTakerTokenAmount = findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
+        zrxTakerTokenAmount = shouldDisableFeeOrderCalculations ? constants.ZERO_AMOUNT : findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
 
     const feeTakerTokenAmount = zrxTakerTokenAmount;

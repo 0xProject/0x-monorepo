@@ -1,15 +1,13 @@
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { MarketOperation } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
-import * as TypeMoq from 'typemoq';
 
 import { constants } from '../src/constants';
-import { } from '../src/types';
 import { affiliateFeeUtils } from '../src/utils/affiliate_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithNoFees, getSignedOrdersWithNoFees, getSignedOrdersWithFees, getFullyFillableSwapQuoteWithFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithFees, getFullyFillableSwapQuoteWithNoFees, getSignedOrdersWithFees, getSignedOrdersWithNoFees } from './utils/swap_quote';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -29,7 +27,7 @@ describe('affiliateFeeUtils', () => {
         NULL_ADDRESS,
         NULL_ADDRESS,
         FILLABLE_FEE_AMOUNTS,
-    )
+    );
     const fakeOrders = getSignedOrdersWithNoFees(
         FAKE_MAKER_ASSET_DATA,
         FAKE_TAKER_ASSET_DATA,
@@ -57,7 +55,7 @@ describe('affiliateFeeUtils', () => {
     const fakeSwapQuoteWithFees = getFullyFillableSwapQuoteWithFees(
         FAKE_MAKER_ASSET_DATA,
         FAKE_TAKER_ASSET_DATA,
-        fakeOrders,
+        fakeOrdersWithFees,
         fakeFeeOrders,
         MARKET_OPERATION,
     );
@@ -83,4 +81,4 @@ describe('affiliateFeeUtils', () => {
                 expect(updatedSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(14));
             });
     });
-})
+});
