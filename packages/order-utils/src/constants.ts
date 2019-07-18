@@ -85,6 +85,7 @@ const STATIC_CALL_METHOD_ABI: MethodAbi = {
 
 export const constants = {
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
+    DEFAULT_TAKER_SIMULATION_ADDRESS: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
     NULL_BYTES: '0x',
     NULL_ERC20_ASSET_DATA: '0xf47261b00000000000000000000000000000000000000000000000000000000000000000',
     // tslint:disable-next-line:custom-no-magic-numbers

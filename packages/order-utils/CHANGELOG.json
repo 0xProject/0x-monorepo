@@ -1,5 +1,13 @@
 [
     {
+        "version": "8.2.4",
+        "changes": [
+            {
+                "note": "Taker Transfer Simulation now uses a default non null address"
+            }
+        ]
+    },
+    {
         "version": "8.2.3",
         "changes": [
             {

@@ -123,6 +123,7 @@ export class OrderValidationUtils {
      * @param signedOrder SignedOrder of interest
      * @param makerAssetAmount Amount to transfer from the maker
      * @param takerAddress The address to transfer to, defaults to signedOrder.takerAddress
+     * unless it is address(0). If the takerAddress is address(0) a
      */
     public static async validateMakerTransferThrowIfInvalidAsync(
         networkId: NetworkId,
@@ -131,7 +132,12 @@ export class OrderValidationUtils {
         makerAssetAmount: BigNumber,
         takerAddress?: string,
     ): Promise<void> {
-        const toAddress = takerAddress === undefined ? signedOrder.takerAddress : takerAddress;
+        // Prevent sending to address(0) as a number of tokens in the wild have this restriction
+        const defaultToAddress =
+            signedOrder.takerAddress === constants.NULL_ADDRESS
+                ? constants.DEFAULT_TAKER_SIMULATION_ADDRESS
+                : signedOrder.takerAddress;
+        const toAddress = takerAddress === undefined ? defaultToAddress : takerAddress;
         const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
         const makerAssetDataProxyId = assetDataUtils.decodeAssetProxyId(signedOrder.makerAssetData);
         const exchangeContract = new ExchangeContract(contractAddresses.exchange, supportedProvider);
