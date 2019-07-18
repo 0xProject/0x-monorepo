@@ -3,7 +3,31 @@
         "version": "3.1.1",
         "changes": [
             {
-                "note": "Python method parameters are now in snake case; Python wrappers now support tuples in method parameters; document Python method's bytes params as requiring UTF-8; generate Python output into a contract-named folder, not a file (eg exchange/__init__.py rather than exchange.py) leaving space for user-defined additions to the same module, such as for custom types, as used by the Exchange wrapper's manually-written type aliases in the contract_wrappers.exchange.types Python module; support for customizable parameter validation for Python wrappers; wrap Python docstrings better, for pydocstyle compliance; lots of fixes to satisfy linters of generated Python code.",
+                "note": "Python method parameters are now in snake case",
+                "pr": 1919
+            },
+            {
+                "note": "Python wrappers now support tuples in method parameters",
+                "pr": 1919
+            },
+            {
+                "note": "document Python method's bytes params as requiring UTF-8",
+                "pr": 1919
+            },
+            {
+                "note": "generate Python output into a contract-named folder, not a file (eg exchange/__init__.py rather than exchange.py) leaving space for user-defined additions to the same module, such as for custom types, as used by the Exchange wrapper's manually-written type aliases in the contract_wrappers.exchange.types Python module",
+                "pr": 1919
+            },
+            {
+                "note": "support for customizable parameter validation for Python wrappers",
+                "pr": 1919
+            },
+            {
+                "note": "wrap Python docstrings better, for pydocstyle compliance",
+                "pr": 1919
+            },
+            {
+                "note": "lots of fixes to satisfy linters of generated Python code",
                 "pr": 1919
             }
         ]
