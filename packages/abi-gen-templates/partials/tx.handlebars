@@ -7,7 +7,7 @@ public {{languageSpecificName}} = {
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
     const self = this as any as {{contractName}}Contract;
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
             to: self.address,
@@ -17,9 +17,13 @@ public {{languageSpecificName}} = {
         self._web3Wrapper.getContractDefaults(),
         self.{{languageSpecificName}}.estimateGasAsync.bind(
             self,
-            {{> params inputs=inputs}}
+            {{> normalized_params inputs=inputs}}
         ),
     );
+    if (txDataWithDefaults.from !== undefined) {
+        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+    }
+
     const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
     return txHash;
     },
@@ -34,7 +38,7 @@ public {{languageSpecificName}} = {
     {{/each}}
     const self = this as any as {{contractName}}Contract;
     {{#if inputs}}
-    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync({{> params input=inputs}}, txData);
+    const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync({{> normalized_params input=inputs}}, txData);
     {{else}}
     const txHashPromise = self.{{languageSpecificName}}.sendTransactionAsync(txData);
     {{/if}}
@@ -58,7 +62,7 @@ public {{languageSpecificName}} = {
     {{#assertionType name type}}{{/assertionType}}
     {{/each}}
     const self = this as any as {{contractName}}Contract;
-    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> params inputs=inputs}}]);
+    const encodedData = self._strictEncodeArguments('{{this.functionSignature}}', [{{> normalized_params inputs=inputs}}]);
     const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
         {
             to: self.address,
@@ -67,6 +71,10 @@ public {{languageSpecificName}} = {
         },
         self._web3Wrapper.getContractDefaults(),
     );
+    if (txDataWithDefaults.from !== undefined) {
+        txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+    }
+    
     const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
     return gas;
     },

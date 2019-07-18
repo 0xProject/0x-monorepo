@@ -90,6 +90,16 @@ contract AbiGenDummy
         return ecrecover(prefixedHash, v, r, s);
     }
 
+    // test: generated code should normalize address inputs to lowercase
+    // add extra inputs to make sure it works with address in any position
+    function withAddressInput(address x, uint256 a, uint256 b, address y, uint256 c)
+        public
+        pure
+        returns (address z)
+    {
+        return x;
+    }
+
     event AnEvent(uint8 param);
 
     function acceptsBytes(bytes memory a) public pure {}

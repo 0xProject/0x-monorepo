@@ -91,6 +91,19 @@ describe('AbiGenDummy Contract', () => {
             expect(result).to.equal(signerAddress);
         });
     });
+
+    describe('withAddressInput', () => {
+        it('should normalize address inputs to lowercase', async () => {
+            const xAddress = devConstants.TESTRPC_FIRST_ADDRESS.toUpperCase();
+            const yAddress = devConstants.TESTRPC_FIRST_ADDRESS;
+            const a = new BigNumber(1);
+            const b = new BigNumber(2);
+            const c = new BigNumber(3);
+            const output = await abiGenDummy.withAddressInput.callAsync(xAddress, a, b, yAddress, c);
+
+            expect(output).to.equal(xAddress.toLowerCase());
+        });
+    });
 });
 
 describe('Lib dummy contract', () => {

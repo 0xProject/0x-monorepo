@@ -37,3 +37,4 @@ packages/sol-coverage/test/fixtures/artifacts
 .pytest_cache
 .mypy_cache
 .tox
+packages/abi-gen/test-cli/fixtures/artifacts/AbiGenDummy.json

@@ -47,7 +47,7 @@ export class PrivateKeyWalletSubprovider extends BaseWalletSubprovider {
      */
     public async signTransactionAsync(txParams: PartialTxParams): Promise<string> {
         PrivateKeyWalletSubprovider._validateTxParams(txParams);
-        if (txParams.from !== undefined && txParams.from !== this._address) {
+        if (txParams.from !== undefined && txParams.from.toLowerCase() !== this._address.toLowerCase()) {
             throw new Error(
                 `Requested to sign transaction with address: ${txParams.from}, instantiated with address: ${
                     this._address

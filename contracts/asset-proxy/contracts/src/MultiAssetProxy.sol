@@ -90,7 +90,10 @@ contract MultiAssetProxy is
                 //          offset to assetData.
 
                 // Load offset to `assetData`
-                let assetDataOffset := calldataload(4)
+                let assetDataOffset := add(calldataload(4), 4)
+
+                // Load length in bytes of `assetData`
+                let assetDataLength := calldataload(assetDataOffset)
 
                 // Asset data itself is encoded as follows:
                 //
@@ -108,41 +111,62 @@ contract MultiAssetProxy is
                 // |          | 132 + a     | b       | nestedAssetData Contents (offsets)  |
                 // |          | 132 + a + b |         | nestedAssetData[0, ..., len]        |
 
+                // Assert that the length of asset data:
+                // 1. Must be at least 68 bytes (see table above)
+                // 2. Must be a multiple of 32 (excluding the 4-byte selector)
+                if or(lt(assetDataLength, 68), mod(sub(assetDataLength, 4), 32)) {
+                    // Revert with `Error("INVALID_ASSET_DATA_LENGTH")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000019494e56414c49445f41535345545f444154415f4c454e475448000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
+
+                // End of asset data in calldata
+                // assetDataOffset
+                // + 32 (assetData len)
+                let assetDataEnd := add(assetDataOffset, add(assetDataLength, 32))
+                if gt(assetDataEnd, calldatasize()) {
+                    // Revert with `Error("INVALID_ASSET_DATA_END")`
+                    mstore(0, 0x08c379a000000000000000000000000000000000000000000000000000000000)
+                    mstore(32, 0x0000002000000000000000000000000000000000000000000000000000000000)
+                    mstore(64, 0x00000016494e56414c49445f41535345545f444154415f454e44000000000000)
+                    mstore(96, 0)
+                    revert(0, 100)
+                }
+
                 // In order to find the offset to `amounts`, we must add:
-                // 4 (function selector)
-                // + assetDataOffset
+                // assetDataOffset
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
-                let amountsOffset := calldataload(add(assetDataOffset, 40))
+                let amountsOffset := calldataload(add(assetDataOffset, 36))
 
                 // In order to find the offset to `nestedAssetData`, we must add:
-                // 4 (function selector)
-                // + assetDataOffset
+                // assetDataOffset
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
                 // + 32 (amounts offset)
-                let nestedAssetDataOffset := calldataload(add(assetDataOffset, 72))
+                let nestedAssetDataOffset := calldataload(add(assetDataOffset, 68))
 
                 // In order to find the start of the `amounts` contents, we must add: 
-                // 4 (function selector) 
-                // + assetDataOffset 
+                // assetDataOffset 
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
                 // + amountsOffset
                 // + 32 (amounts len)
-                let amountsContentsStart := add(assetDataOffset, add(amountsOffset, 72))
+                let amountsContentsStart := add(assetDataOffset, add(amountsOffset, 68))
 
                 // Load number of elements in `amounts`
                 let amountsLen := calldataload(sub(amountsContentsStart, 32))
 
                 // In order to find the start of the `nestedAssetData` contents, we must add: 
-                // 4 (function selector) 
-                // + assetDataOffset 
+                // assetDataOffset 
                 // + 32 (assetData len)
                 // + 4 (assetProxyId)
                 // + nestedAssetDataOffset
                 // + 32 (nestedAssetData len)
-                let nestedAssetDataContentsStart := add(assetDataOffset, add(nestedAssetDataOffset, 72))
+                let nestedAssetDataContentsStart := add(assetDataOffset, add(nestedAssetDataOffset, 68))
 
                 // Load number of elements in `nestedAssetData`
                 let nestedAssetDataLen := calldataload(sub(nestedAssetDataContentsStart, 32))
@@ -204,15 +228,20 @@ contract MultiAssetProxy is
                     let nestedAssetDataElementOffset := calldataload(add(nestedAssetDataContentsStart, i))
 
                     // In order to find the start of the `nestedAssetData[i]` contents, we must add:
-                    // 4 (function selector) 
-                    // + assetDataOffset 
+                    // assetDataOffset 
                     // + 32 (assetData len)
                     // + 4 (assetProxyId)
                     // + nestedAssetDataOffset
                     // + 32 (nestedAssetData len)
                     // + nestedAssetDataElementOffset
                     // + 32 (nestedAssetDataElement len)
-                    let nestedAssetDataElementContentsStart := add(assetDataOffset, add(nestedAssetDataOffset, add(nestedAssetDataElementOffset, 104)))
+                    let nestedAssetDataElementContentsStart := add(
+                        assetDataOffset,
+                        add(
+                            nestedAssetDataOffset,
+                            add(nestedAssetDataElementOffset, 100)
+                        )
+                    )
 
                     // Load length of `nestedAssetData[i]`
                     let nestedAssetDataElementLenStart := sub(nestedAssetDataElementContentsStart, 32)

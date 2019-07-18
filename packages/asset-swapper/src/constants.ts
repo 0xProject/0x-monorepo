@@ -30,6 +30,7 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     shouldForceOrderRefresh: false,
+    shouldDisableRequestingFeeOrders: false,
     slippagePercentage: 0.2, // 20% slippage protection,
 };
 
