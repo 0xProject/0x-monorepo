@@ -33,6 +33,14 @@ describe('PrivateKeyWalletSubprovider', () => {
                 const txHex = await subprovider.signTransactionAsync(fixtureData.TX_DATA);
                 expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
             });
+            it('signs a transaction where the tx.origin is checksummed.', async () => {
+                const TX_DATA_CHECKSUMMED_ORIGIN = {
+                    ...fixtureData.TX_DATA,
+                    from: fixtureData.TEST_RPC_ACCOUNT_0_CHECKSUMMED,
+                };
+                const txHex = await subprovider.signTransactionAsync(TX_DATA_CHECKSUMMED_ORIGIN);
+                expect(txHex).to.be.equal(fixtureData.TX_DATA_SIGNED_RESULT);
+            });
             it('signs an EIP712 sign typed data message', async () => {
                 const signature = await subprovider.signTypedDataAsync(
                     fixtureData.TEST_RPC_ACCOUNT_0,
