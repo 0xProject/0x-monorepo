@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.4.1",
+        "changes": [
+            {
+                "note": "Updated WS OrdersChannelSubscriptionOpts params to match SRA docs",
+                "pr": "1957"
+            }
+        ]
+    },
+    {
         "version": "2.4.0",
         "changes": [
             {

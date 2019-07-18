@@ -49,7 +49,7 @@ Each CHANGELOG entry that corresponds to a published package will have a `timest
             }
         ]
     },
-```
+``` 
 
 If an entry without a `timestamp` already exists, this means other changes have been introduced by other collaborators since the last publish. Add your changes to the list of notes and adjust the version if your PR introduces a greater semver change (i.e current changes required a patch bump, but your changes require a major version bump).
 
