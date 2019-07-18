@@ -10,9 +10,7 @@ import { Callback, ErrorCallback } from '../types';
 export abstract class Subprovider {
     // tslint:disable-next-line:underscore-private-and-protected
     private engine!: Web3ProviderEngine;
-    protected static _createFinalPayload(
-        payload: Partial<JSONRPCRequestPayload>,
-    ): Partial<JSONRPCRequestPayload> {
+    protected static _createFinalPayload(payload: Partial<JSONRPCRequestPayload>): Partial<JSONRPCRequestPayload> {
         const finalPayload = {
             // defaults
             id: Subprovider._getRandomId(),

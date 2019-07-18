@@ -15,11 +15,6 @@ export {
 
 export { JSONRPCRequestPayload, JSONRPCResponsePayload, JSONRPCResponseError } from 'ethereum-types';
 
-export {
-    NextCallback,
-    ErrorCallback,
-    OnNextCompleted,
-    Callback,
-} from '@0x/subproviders';
+export { NextCallback, ErrorCallback, OnNextCompleted, Callback } from '@0x/subproviders';
 
 export import Web3ProviderEngine = require('web3-provider-engine');

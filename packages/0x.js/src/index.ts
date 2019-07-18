@@ -68,12 +68,7 @@ export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
-export {
-    RPCSubprovider,
-    Callback,
-    ErrorCallback,
-    MetamaskSubprovider,
-} from '@0x/subproviders';
+export { RPCSubprovider, Callback, ErrorCallback, MetamaskSubprovider } from '@0x/subproviders';
 
 export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 
