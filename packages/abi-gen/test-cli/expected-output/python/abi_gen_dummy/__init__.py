@@ -439,13 +439,15 @@ class AbiGenDummy(BaseContractWrapper):
         self,
         tx_params: Optional[TxParams] = None,
         view_only: bool = False,
-    ) -> Union[HexBytes, bytes]:
+    ) -> Union[int, Union[HexBytes, bytes]]:
         """Execute underlying, same-named contract method.
 
         :param tx_params: transaction parameters
         :param view_only: whether to use transact() or call()
 
-        :returns: transaction hash
+        :returns: if param `view_only`:code: is `True`:code:, then returns the
+            value returned from the underlying function; else returns the
+            transaction hash.
         """
         func = self._get_contract_instance(
             self.contract_address

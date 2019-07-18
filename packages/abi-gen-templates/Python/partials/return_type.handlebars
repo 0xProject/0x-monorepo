@@ -1,5 +1,7 @@
 {{~#if outputs~}}
-{{#if this.constant}}
+{{^if this.constant}}
+Union[
+{{~/if~}}
 {{#if outputs.length}}
 {{#singleReturnValue}}
 {{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
@@ -7,8 +9,6 @@
 {{^singleReturnValue}}
 [{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
 {{/singleReturnValue}}
-{{/if}}
-{{/if}}
-{{^if this.constant}}
-Union[HexBytes, bytes]
-{{~/if~}}{{else}}None{{/if~}}
+{{else}}None
+{{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}
+{{else}}None{{/if~}}

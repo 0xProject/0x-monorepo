@@ -17,7 +17,9 @@
         {{else}}
         :param view_only: whether to use transact() or call()
 
-        :returns: transaction hash
+        :returns: if param `view_only`:code: is `True`:code:, then returns the
+            value returned from the underlying function; else returns the
+            transaction hash.
         {{/if}}
         """
         {{#each this.inputs}}
