@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.1.4",
+        "changes": [
+            {
+                "note": "new interface TupleDataItem, a DataItem that definitely has a `components` field",
+                "pr": 1919
+            }
+        ]
+    },
+    {
         "version": "2.1.3",
         "changes": [
             {
