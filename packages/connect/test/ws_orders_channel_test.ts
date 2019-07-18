@@ -25,7 +25,6 @@ describe('WebSocketOrdersChannel', () => {
     const subscriptionOpts = {
         makerAssetProxyId: '0xf47261b0',
         takerAssetAddress: '0x323b5d4c32345ced77393b3530b1eed0f346429d',
-        limit: 100,
     };
     describe('#subscribe', () => {
         it('throws when subscriptionOpts does not conform to schema', () => {
