@@ -25,11 +25,6 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js lib/test/global_hooks.js --timeout 10000 --bail --exit",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
-    "config": {
-        "postpublish": {
-            "dockerHubRepo": "order-watcher"
-        }
-    },
     "repository": {
         "type": "git",
         "url": "https://github.com/0xProject/0x-monorepo"
