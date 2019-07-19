@@ -519,7 +519,7 @@ export class ERC20TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

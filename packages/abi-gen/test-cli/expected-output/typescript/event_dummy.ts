@@ -134,7 +134,7 @@ export class EventDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<EventDummyEventArgs, EventDummyEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<EventDummyEventArgs, EventDummyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

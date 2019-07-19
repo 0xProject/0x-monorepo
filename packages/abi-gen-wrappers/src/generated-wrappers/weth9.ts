@@ -780,7 +780,7 @@ export class WETH9Contract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
+    private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

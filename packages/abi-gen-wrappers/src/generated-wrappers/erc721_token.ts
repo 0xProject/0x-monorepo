@@ -857,7 +857,7 @@ export class ERC721TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

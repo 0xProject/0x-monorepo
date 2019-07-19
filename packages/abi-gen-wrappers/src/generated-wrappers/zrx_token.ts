@@ -621,7 +621,7 @@ export class ZRXTokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<ZRXTokenEventArgs, ZRXTokenEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<ZRXTokenEventArgs, ZRXTokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

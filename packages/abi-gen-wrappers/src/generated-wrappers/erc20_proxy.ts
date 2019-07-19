@@ -619,7 +619,7 @@ export class ERC20ProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManager: SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>;
+    private readonly _subscriptionManager: SubscriptionManager<ERC20ProxyEventArgs, ERC20ProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,

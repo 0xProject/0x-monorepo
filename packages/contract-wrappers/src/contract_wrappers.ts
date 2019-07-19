@@ -119,24 +119,9 @@ export class ContractWrappers {
                 : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
         this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
-        this.erc20Token = new ERC20TokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc20Proxy,
-            blockPollingIntervalMs,
-        );
-        this.erc721Token = new ERC721TokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc721Proxy,
-            blockPollingIntervalMs,
-        );
-        this.etherToken = new EtherTokenWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc20Token,
-            blockPollingIntervalMs,
-        );
+        this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, this.erc20Proxy, blockPollingIntervalMs);
+        this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, this.erc721Proxy, blockPollingIntervalMs);
+        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.erc20Token, blockPollingIntervalMs);
         this.exchange = new ExchangeWrapper(
             this._web3Wrapper,
             config.networkId,
