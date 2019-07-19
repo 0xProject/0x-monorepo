@@ -159,5 +159,133 @@ describe('signTypedDataUtils', () => {
             const hashHex = `0x${hash}`;
             expect(hashHex).to.be.eq('0xfaa49b35faeb9197e9c3ba7a52075e6dad19739549f153b77dfcf59408a4b422');
         });
+        it('creates a hash of an object with an array of ints', () => {
+            const intArrayData = {
+                types: {
+                    EIP712Domain: [
+                        {
+                            name: 'name',
+                            type: 'string',
+                        },
+                        {
+                            name: 'version',
+                            type: 'string',
+                        },
+                        {
+                            name: 'verifyingContract',
+                            type: 'address',
+                        },
+                    ],
+                    MyStruct: [
+                        {
+                            name: 'myInts',
+                            type: 'uint256[]',
+                        },
+                    ],
+                },
+                domain: {
+                    name: 'TestDomain',
+                    version: '4.5',
+                    verifyingContract: '0x0000000000000000000000000000000000000000',
+                },
+                message: {
+                    myInts: ['0', '1', '2'],
+                },
+                primaryType: 'MyStruct',
+            };
+            const hash = signTypedDataUtils.generateTypedDataHash(intArrayData).toString('hex');
+            const hashHex = `0x${hash}`;
+            expect(hashHex).to.be.eq('0x0000000000000000000000000000000000000000000000000000000000000000');
+        });
+        it('creates a hash of an object with an array of addresses', () => {
+            const addressArrayData = {
+                types: {
+                    EIP712Domain: [
+                        {
+                            name: 'name',
+                            type: 'string',
+                        },
+                        {
+                            name: 'version',
+                            type: 'string',
+                        },
+                        {
+                            name: 'verifyingContract',
+                            type: 'address',
+                        },
+                    ],
+                    MyStruct: [
+                        {
+                            name: 'myAddresses',
+                            type: 'address[]',
+                        },
+                    ],
+                },
+                domain: {
+                    name: 'TestDomain',
+                    version: '4.5',
+                    verifyingContract: '0x0000000000000000000000000000000000000000',
+                },
+                message: {
+                    myAddresses: [
+                      '0x0123456789012345678901234567890123456789',
+                      '0x1234567890123456789012345678901234567890',
+                      '0x2345678901234567890123456789012345678901',
+                    ],
+                },
+                primaryType: 'MyStruct',
+            };
+            const hash = signTypedDataUtils.generateTypedDataHash(addressArrayData).toString('hex');
+            const hashHex = `0x${hash}`;
+            expect(hashHex).to.be.eq('0x0000000000000000000000000000000000000000000000000000000000000000');
+        });
+        it('creates a hash of an object with an array of structs', () => {
+            const structArrayData = {
+                types: {
+                    EIP712Domain: [
+                        {
+                            name: 'name',
+                            type: 'string',
+                        },
+                        {
+                            name: 'version',
+                            type: 'string',
+                        },
+                        {
+                            name: 'verifyingContract',
+                            type: 'address',
+                        },
+                    ],
+                    MyStruct: [
+                        {
+                            name: 'mySmallStructs',
+                            type: 'MySmallStruct[]',
+                        },
+                    ],
+                    MySmallStruct: [
+                        {
+                            name: 'myData',
+                            type: 'uint256',
+                        },
+                    ],
+                },
+                domain: {
+                    name: 'TestDomain',
+                    version: '4.5',
+                    verifyingContract: '0x0000000000000000000000000000000000000000',
+                },
+                message: {
+                    mySmallStructs: [
+                      { myData: '1' },
+                      { myData: '2' },
+                      { myData: '3' },
+                    ],
+                },
+                primaryType: 'MyStruct',
+            };
+            const hash = signTypedDataUtils.generateTypedDataHash(structArrayData).toString('hex');
+            const hashHex = `0x${hash}`;
+            expect(hashHex).to.be.eq('0x0000000000000000000000000000000000000000000000000000000000000000');
+        });
     });
 });

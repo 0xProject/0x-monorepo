@@ -708,7 +708,7 @@ export interface EIP712Types {
     [key: string]: EIP712Parameter[];
 }
 
-export type EIP712ObjectValue = string | number | EIP712Object;
+export type EIP712ObjectValue = string | number | EIP712Object | (string | number | EIP712Object)[];
 
 export interface EIP712Object {
     [key: string]: EIP712ObjectValue;
