@@ -40,26 +40,22 @@ describe('EventDummy Contract', () => {
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
-    it('should have SubscriptionManager', async () => {
-        const subscriptionManager = await eventDummy.getSubscriptionManagerAsync();
-        expect(subscriptionManager).be.instanceOf(SubscriptionManager);
-    });
     describe('#subscribe', () => {
         afterEach(async () => {
-            await eventDummy.unsubscribeAllAsync();
+            await eventDummy.unsubscribeAll();
             stubs.forEach(s => s.restore());
             stubs = [];
         });
         it('Should allow unsubscribeAll to be called successfully after an error', (done: DoneCallback) => {
             (async () => {
                 const callback = (err: Error | null, _logEvent?: DecodedLogEvent<EventDummyWithdrawalEventArgs>): any =>
-                    eventDummy.subscribeAsync(EventDummyEvents.Withdrawal, indexFilterValues, callback);
+                    eventDummy.subscribe(EventDummyEvents.Withdrawal, indexFilterValues, callback);
                 stubs = [
                     Sinon.stub(eventDummy.getWeb3Wrapper(), 'getBlockIfExistsAsync').throws(
                         new Error('JSON RPC error'),
                     ),
                 ];
-                await eventDummy.unsubscribeAllAsync();
+                await eventDummy.unsubscribeAll();
                 done();
             })().catch(done);
         });

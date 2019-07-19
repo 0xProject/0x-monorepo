@@ -857,7 +857,7 @@ export class ERC721TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManagerIfExists?: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
+    private _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -1172,17 +1172,6 @@ export class ERC721TokenContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
-    public async getSubscriptionManagerAsync(): Promise<SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>> {
-        if (this._subscriptionManagerIfExists === undefined) {
-            const networkId = await this._web3Wrapper.getNetworkIdAsync();
-            this._subscriptionManagerIfExists = new SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>(
-                ERC721TokenContract.ABI(),
-                this._web3Wrapper,
-                networkId,
-            );
-        }
-        return this._subscriptionManagerIfExists;
-    }
     /**
      * Subscribe to an event type emitted by the ERC721Token contract.
      * @param   eventName           The ERC721Token contract event you would like to subscribe to.
@@ -1192,40 +1181,39 @@ export class ERC721TokenContract extends BaseContract {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public async subscribeAsync<ArgsType extends ERC721TokenEventArgs>(
+    public subscribe<ArgsType extends ERC721TokenEventArgs>(
         eventName: ERC721TokenEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
-    ): Promise<string> {
+        blockPollingIntervalMs?: number,
+    ): string {
         assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        const subscriptionToken = subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
             this.address,
             eventName,
             indexFilterValues,
             ERC721TokenContract.ABI(),
             callback,
             isVerbose,
+            blockPollingIntervalMs,
         );
         return subscriptionToken;
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribeAsync()`
+     * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
-    public async unsubscribeAsync(subscriptionToken: string): Promise<void> {
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        subscriptionManager._unsubscribe(subscriptionToken);
+    public unsubscribe(subscriptionToken: string): void {
+        this._subscriptionManager._unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
-    public async unsubscribeAllAsync(): Promise<void> {
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        subscriptionManager._unsubscribeAll();
+    public unsubscribeAll(): void {
+        this._subscriptionManager._unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -1243,8 +1231,7 @@ export class ERC721TokenContract extends BaseContract {
         assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        const logs = await subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
             this.address,
             eventName,
             blockRange,
@@ -1256,6 +1243,10 @@ export class ERC721TokenContract extends BaseContract {
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('ERC721Token', ERC721TokenContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        this._subscriptionManager = new SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>(
+            ERC721TokenContract.ABI(),
+            this._web3Wrapper,
+        );
     }
 }
 

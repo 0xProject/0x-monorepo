@@ -12,16 +12,15 @@ import {
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
-import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues } from './types';
-import { constants } from './utils/constants';
+import { BlockRange, EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
 import { filterUtils } from './utils/filter_utils';
+
+const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;
 
 export class SubscriptionManager<ContractEventArgs, ContractEvents extends string> {
     public abi: ContractAbi;
-    protected _networkId: number;
     protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
-    private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
     private readonly _filters: { [filterToken: string]: FilterObject };
     private readonly _filterCallbacks: {
@@ -36,12 +35,9 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
             logUtils.warn(err);
         }
     }
-    constructor(abi: ContractAbi, web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
+    constructor(abi: ContractAbi, web3Wrapper: Web3Wrapper) {
         this.abi = abi;
         this._web3Wrapper = web3Wrapper;
-        this._networkId = networkId;
-        this._blockPollingIntervalMs =
-            blockPollingIntervalMs === undefined ? constants.DEFAULT_BLOCK_POLLING_INTERVAL : blockPollingIntervalMs;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;
@@ -56,7 +52,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     }
     public _unsubscribe(filterToken: string, err?: Error): void {
         if (this._filters[filterToken] === undefined) {
-            throw new Error(ContractWrappersError.SubscriptionNotFound);
+            throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
         if (err !== undefined) {
             const callback = this._filterCallbacks[filterToken];
@@ -75,10 +71,11 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         abi: ContractAbi,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
+        blockPollingIntervalMs?: number,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (this._blockAndLogStreamerIfExists === undefined) {
-            this._startBlockAndLogStream(isVerbose);
+            this._startBlockAndLogStream(isVerbose, blockPollingIntervalMs);
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
@@ -117,9 +114,9 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
             }
         });
     }
-    private _startBlockAndLogStream(isVerbose: boolean): void {
+    private _startBlockAndLogStream(isVerbose: boolean, blockPollingIntervalMs?: number): void {
         if (this._blockAndLogStreamerIfExists !== undefined) {
-            throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
+            throw new Error(SubscriptionErrors.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._blockstreamGetBlockOrNullAsync.bind(this),
@@ -128,9 +125,10 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
+        const _blockPollingIntervalMs = blockPollingIntervalMs === undefined ? DEFAULT_BLOCK_POLLING_INTERVAL : blockPollingIntervalMs;
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
-            this._blockPollingIntervalMs,
+            _blockPollingIntervalMs,
             SubscriptionManager._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         let isRemoved = false;
@@ -170,7 +168,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
     }
     private _stopBlockAndLogStream(): void {
         if (this._blockAndLogStreamerIfExists === undefined) {
-            throw new Error(ContractWrappersError.SubscriptionNotFound);
+            throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);

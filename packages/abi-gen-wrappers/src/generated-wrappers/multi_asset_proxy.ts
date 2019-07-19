@@ -794,7 +794,7 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
-    private _subscriptionManagerIfExists?: SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>;
+    private _subscriptionManager: SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
@@ -1107,18 +1107,6 @@ export class MultiAssetProxyContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
-    public async getSubscriptionManagerAsync(): Promise<
-        SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>
-    > {
-        if (this._subscriptionManagerIfExists === undefined) {
-            const networkId = await this._web3Wrapper.getNetworkIdAsync();
-            this._subscriptionManagerIfExists = new SubscriptionManager<
-                MultiAssetProxyEventArgs,
-                MultiAssetProxyEvents
-            >(MultiAssetProxyContract.ABI(), this._web3Wrapper, networkId);
-        }
-        return this._subscriptionManagerIfExists;
-    }
     /**
      * Subscribe to an event type emitted by the MultiAssetProxy contract.
      * @param   eventName           The MultiAssetProxy contract event you would like to subscribe to.
@@ -1128,40 +1116,39 @@ export class MultiAssetProxyContract extends BaseContract {
      * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
-    public async subscribeAsync<ArgsType extends MultiAssetProxyEventArgs>(
+    public subscribe<ArgsType extends MultiAssetProxyEventArgs>(
         eventName: MultiAssetProxyEvents,
         indexFilterValues: IndexedFilterValues,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
-    ): Promise<string> {
+        blockPollingIntervalMs?: number,
+    ): string {
         assert.doesBelongToStringEnum('eventName', eventName, MultiAssetProxyEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        const subscriptionToken = subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
             this.address,
             eventName,
             indexFilterValues,
             MultiAssetProxyContract.ABI(),
             callback,
             isVerbose,
+            blockPollingIntervalMs,
         );
         return subscriptionToken;
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribeAsync()`
+     * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
-    public async unsubscribeAsync(subscriptionToken: string): Promise<void> {
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        subscriptionManager._unsubscribe(subscriptionToken);
+    public unsubscribe(subscriptionToken: string): void {
+        this._subscriptionManager._unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
-    public async unsubscribeAllAsync(): Promise<void> {
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        subscriptionManager._unsubscribeAll();
+    public unsubscribeAll(): void {
+        this._subscriptionManager._unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -1179,8 +1166,7 @@ export class MultiAssetProxyContract extends BaseContract {
         assert.doesBelongToStringEnum('eventName', eventName, MultiAssetProxyEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const subscriptionManager = await this.getSubscriptionManagerAsync();
-        const logs = await subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
             this.address,
             eventName,
             blockRange,
@@ -1192,6 +1178,10 @@ export class MultiAssetProxyContract extends BaseContract {
     constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
         super('MultiAssetProxy', MultiAssetProxyContract.ABI(), address, supportedProvider, txDefaults);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
+        this._subscriptionManager = new SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>(
+            MultiAssetProxyContract.ABI(),
+            this._web3Wrapper,
+        );
     }
 }
 
