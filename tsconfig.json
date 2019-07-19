@@ -46,7 +46,6 @@
         { "path": "./packages/ethereum-types" },
         { "path": "./packages/fill-scenarios" },
         { "path": "./packages/json-schemas" },
-        { "path": "./packages/metacoin" },
         { "path": "./packages/migrations" },
         { "path": "./packages/monorepo-scripts" },
         { "path": "./packages/order-utils" },

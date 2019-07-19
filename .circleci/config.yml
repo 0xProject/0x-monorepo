@@ -102,7 +102,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contract-wrappers
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
-            - run: yarn wsrun test:circleci @0x/metacoin
             - run: yarn wsrun test:circleci @0x/order-utils
             - run: yarn wsrun test:circleci @0x/order-watcher
             - run: yarn wsrun test:circleci @0x/sol-compiler
@@ -144,10 +143,6 @@ jobs:
                   key: coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/json-schemas/coverage/lcov.info
-            - save_cache:
-                  key: coverage-metacoin-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/metacoin/coverage/lcov.info
             - save_cache:
                   key: coverage-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -326,9 +321,6 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-metacoin-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-order-utils-{{ .Environment.CIRCLE_SHA1 }}
