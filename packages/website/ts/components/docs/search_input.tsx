@@ -1,10 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
-
-import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
 import algoliasearch from 'algoliasearch/lite';
 import { Configure, connectAutoComplete, Index, InstantSearch } from 'react-instantsearch-dom';
+
+import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
 const searchClient = algoliasearch('VHMP18K2OO', 'e46d0171577e85fa5418c50b18f80ade');
 
