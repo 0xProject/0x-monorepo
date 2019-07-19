@@ -47,7 +47,7 @@ const LevelWrapper = styled.div`
 `;
 
 const DifficultyLabel = styled.span`
-    font-size: 0.777777778rem;
+    font-size: 0.78rem;
     color: ${colors.brandDark};
-    margin-right: 0.611111111rem;
+    margin-right: 0.61rem;
 `;

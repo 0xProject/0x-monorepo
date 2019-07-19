@@ -12,17 +12,13 @@ interface IRatingBulletProps {
 }
 
 export const RatingBar: React.FC<IRatingBarProps> = ({ rating }) => {
-    const id = Math.random()
-        .toString(36)
-        .substring(2, 15);
-    const ratingPlaceholders = Array.from(new Array(3), (value, index) => index + 1);
+    const ratingPlaceholders = Array.from(new Array(3), (_, index) => index + 1);
     const fillCheck = (currentIndex: number) => currentIndex <= rating;
 
-    // TODO convert this to use a Container component
     return (
         <RatingBarWrapper>
             {ratingPlaceholders.map((currentIndex: number) => (
-                <RatingBullet key={`${id}-${currentIndex}`} isFilled={fillCheck(currentIndex)} />
+                <RatingBullet key={`rating-${currentIndex}`} isFilled={fillCheck(currentIndex)} />
             ))}
         </RatingBarWrapper>
     );
