@@ -1,16 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { Link } from '@0x/react-shared';
+
 import { colors } from 'ts/style/colors';
 
 export interface IStepLinkConfig {
     title: string;
     url: string;
-    shouldOpenInNewTab?: boolean;
 }
 
 export const StepLink: React.FC<IStepLinkConfig> = props => (
-    <StepLinkWrapper href={props.url}>
+    <StepLinkWrapper to={props.url}>
         <StepLinkText>{props.title}</StepLinkText>
         <svg height="14px" width="14px" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -23,7 +24,7 @@ export const StepLink: React.FC<IStepLinkConfig> = props => (
     </StepLinkWrapper>
 );
 
-const StepLinkWrapper = styled.a`
+const StepLinkWrapper = styled(Link)`
     color: ${colors.brandDark};
     padding: 21px 25px 19px;
     display: flex;

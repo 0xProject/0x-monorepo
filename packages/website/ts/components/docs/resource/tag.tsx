@@ -16,7 +16,7 @@ export const Tag: React.FC<ITagProps> = ({ children, isInverted }) => {
         <TagText isInverted={isInverted}>
             {isInverted && (
                 <svg width="10" height="9" viewBox="0 0 10 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 4.5L3.5 7L9 1" stroke="white" stroke-width="1.5" />
+                    <path d="M1 4.5L3.5 7L9 1" stroke="white" strokeWidth="1.5" />
                 </svg>
             )}
             {children}

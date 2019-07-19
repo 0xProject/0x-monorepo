@@ -4,18 +4,18 @@ import styled from 'styled-components';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
+import { Link } from '@0x/react-shared';
+
 import { colors } from 'ts/style/colors';
 export interface IShortcutLinkProps {
     heading: string;
     icon: string;
     description?: string;
     url: string;
-    shouldOpenInNewTab?: boolean;
-    isHome?: boolean;
 }
 
 export const ShortcutLink: React.FC<IShortcutLinkProps> = props => (
-    <ShortcutLinkWrapper isHome={props.isHome} href={props.url}>
+    <ShortcutLinkWrapper to={props.url}>
         <ShortcutIcon color={colors.brandLight} name={props.icon} />
         <div>
             <Heading size="small" marginBottom="8px">
@@ -28,10 +28,6 @@ export const ShortcutLink: React.FC<IShortcutLinkProps> = props => (
     </ShortcutLinkWrapper>
 );
 
-ShortcutLink.defaultProps = {
-    isHome: false,
-};
-
 const ShortcutIcon = styled(Icon)`
     margin-bottom: 1rem;
 
@@ -41,7 +37,7 @@ const ShortcutIcon = styled(Icon)`
     }
 `;
 
-const ShortcutLinkWrapper = styled.a<{ isHome: boolean }>`
+const ShortcutLinkWrapper = styled(Link)`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 50px;
