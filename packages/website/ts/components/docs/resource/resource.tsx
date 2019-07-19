@@ -18,14 +18,12 @@ export interface IResourceProps {
 }
 
 export const Resource: React.FC<IResourceProps> = ({ heading, description, isCommunity, url, tags }) => {
-    console.log('isCommunity', isCommunity);
-
     return (
         <Wrapper>
             <Heading color={colors.brandDark} size="small" marginBottom="8px">
                 <Link to={url}>{heading}</Link>
             </Heading>
-            <Paragraph size="default" marginBottom="30px">
+            <Paragraph size="default" marginBottom="10px">
                 {description}
             </Paragraph>
             <Meta>
@@ -43,18 +41,19 @@ export const Resource: React.FC<IResourceProps> = ({ heading, description, isCom
 
 const Wrapper = styled.div`
     border: 1px solid #d7e3db;
-    padding: 25px 30px;
+    padding: 25px 30px 5px;
     margin-bottom: 1.1rem;
     display: block;
 `;
 
 const Meta = styled.div`
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
 `;
 
 const Tags = styled.div`
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    flex-wrap: wrap;
 `;

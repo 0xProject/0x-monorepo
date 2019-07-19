@@ -43,6 +43,7 @@ export const Level: React.FC<LevelProps> = ({ difficulty }) => {
 const LevelWrapper = styled.div`
     display: flex;
     align-items: center;
+    margin: 20px 0;
 `;
 
 const DifficultyLabel = styled.span`
