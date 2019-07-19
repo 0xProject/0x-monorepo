@@ -1,15 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-// import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
 import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
 import algoliasearch from 'algoliasearch/lite';
-// import Autocomplete from 'react-autocomplete';
-import { Configure, connectAutoComplete, Index, InstantSearch, SearchBox } from 'react-instantsearch-dom';
+import { Configure, connectAutoComplete, Index, InstantSearch } from 'react-instantsearch-dom';
 
 const searchClient = algoliasearch('VHMP18K2OO', 'e46d0171577e85fa5418c50b18f80ade');
-// const index = searchClient.initIndex(['0x_tools_test']);
 
 interface ISearchInputProps {
     isHome?: boolean;

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// import Autocomplete from 'react-autocomplete';
 import Autosuggest from 'react-autosuggest';
 import { Highlight, Snippet } from 'react-instantsearch-dom';
 
@@ -51,7 +50,7 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
             <>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
                 <br />
-                {/* <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" /> */}
+                <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
             </>
         );
     };
@@ -98,8 +97,9 @@ const SectionTitle = styled.p`
     font-size: 12px;
     padding: 7px 10px 5px;
     text-transform: uppercase;
-    position: absolute;
     margin: 30px;
+    position: sticky;
+    top: 0px;
 
     @media (max-width: 800px) {
         margin: 30px 18px;
@@ -190,10 +190,15 @@ const Wrapper = styled.div<Props>`
         }
 
         p {
+            display: inline;
             color: ${colors.textDarkSecondary};
             font-size: var(--smallParagraph);
-            margin-bottom: 0;
-            border: 1px solid orange;
+            font-weight: 300;
+        }
+
+        span {
+            font-size: var(--smallParagraph);
+            font-weight: 400;
         }
     }
 
