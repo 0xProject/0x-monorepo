@@ -22,23 +22,9 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
             console.log('searchState', searchState);
         }}
     >
-        <Wrapper isHome={isHome}>
-            <AutoComplete isHome={isHome} />
-            <Configure hitsPerPage={5} distinct={true} />
-            <Index indexName="0x_tools_test" />
-            <Index indexName="0x_guides_test" />
-        </Wrapper>
+        <AutoComplete isHome={isHome} />
+        <Configure hitsPerPage={5} distinct={true} />
+        <Index indexName="0x_tools_test" />
+        <Index indexName="0x_guides_test" />
     </InstantSearch>
 );
-
-const Wrapper = styled.div<ISearchInputProps>`
-    width: 100%;
-    position: relative;
-
-    ${({ isHome }) =>
-        isHome &&
-        `
-        max-width: 890px;
-        margin: 0 auto;
-    `};
-`;
