@@ -90,6 +90,19 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     );
 };
 
+const Overlay = styled.div`
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background: #000;
+    opacity: 0.5;
+
+    pointer-events: none;
+`;
+
 const SectionTitle = styled.p`
     color: ${colors.brandDark};
     background-color: rgba(0, 56, 49, 0.1);
@@ -108,6 +121,53 @@ const SectionTitle = styled.p`
 
 const Wrapper = styled.div<Props>`
     position: relative;
+
+    ${({ isHome }) =>
+        isHome &&
+        `
+        width: calc(100% - 60px);
+        margin: 0 auto;
+    `};
+
+    .react-autosuggest__input {
+        background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E")
+            transparent left center no-repeat;
+        font-size: 22px;
+        padding: 18px 18px 21px 35px;
+        width: 100%;
+        border: 0;
+        border-bottom: 1px solid #b4bebd;
+        outline: none;
+
+        &--open {
+            border-bottom-color: ${colors.brandLight};
+        }
+
+        ${({ isHome }) =>
+            !isHome &&
+            `
+            background-color: #EBEEEC;
+            border-bottom: 0;
+            padding: 13px 21px 15px 52px;
+            background-position: left 21px center;
+            font-size: 1rem;
+
+            &--focused,
+            &--open {
+                background-color: white;
+            }
+        `};
+
+        &:before {
+            content: '';
+            width: 30px;
+            height: 30px;
+            opacity: 0.15;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    }
 
     .react-autosuggest__container {
         border: 1px solid orangered;
@@ -143,7 +203,6 @@ const Wrapper = styled.div<Props>`
         &--open {
             border: 1px solid #dbdfdd;
             border-top: none;
-            height: 70vh;
         }
 
         ${({ isHome }) =>
@@ -159,17 +218,14 @@ const Wrapper = styled.div<Props>`
     }
 
     .react-autosuggest__suggestion {
-        /* color: ${colors.brandDark}; */
-        /* font-size: 0.85rem; */
-        /* line-height: 1.4;
-        font-weight: 400; */
+        display: flex;
+        flex-direction: column;
+
+        border-bottom: 1px solid #eee;
+
         /* padding: 25px 30px 25px 178px; */
         padding: 25px 30px 25px 100px;
         min-height: 110px;
-        border-bottom: 1px solid #eee;
-
-        display: flex;
-        flex-direction: column;
 
         transition: background-color 300ms ease-in-out;
 
@@ -199,50 +255,6 @@ const Wrapper = styled.div<Props>`
         span {
             font-size: var(--smallParagraph);
             font-weight: 400;
-        }
-    }
-
-    .react-autosuggest__input {
-        background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E")
-            transparent left center no-repeat;
-        font-size: 22px;
-        padding: 18px 18px 21px 35px;
-        width: 100%;
-        border: 0;
-        border-bottom: 1px solid #b4bebd;
-        outline: none;
-
-        ${({ isHome }) =>
-            !isHome &&
-            `
-            background-color: #EBEEEC;
-            border-bottom: 0;
-            padding: 13px 21px 15px 52px;
-            background-position: left 21px center;
-            font-size: 1rem;
-
-            &--focused,
-            &--open {
-                background-color: white;
-                // width: 890px;
-                // position: absolute;
-                // right: 0;
-                // top: 0;
-            }
-        `};
-
-        &--open {
-            border-bottom-color: ${colors.brandLight};
-        }
-
-        &:before {
-            content: '';
-            width: 30px;
-            height: 30px;
-            opacity: 0.15;
-            position: absolute;
-            top: 0;
-            left: 0;
         }
     }
 `;

@@ -23,7 +23,7 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
         }}
     >
         <Wrapper isHome={isHome}>
-            <AutoComplete />
+            <AutoComplete isHome={isHome} />
             <Configure hitsPerPage={5} distinct={true} />
             <Index indexName="0x_tools_test" />
             <Index indexName="0x_guides_test" />
