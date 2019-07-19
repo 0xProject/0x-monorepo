@@ -109,8 +109,12 @@ const LoaderWrapper = styled.div`
 
 const Columns = styled.div`
     display: grid;
-    grid-template-columns: 65px 0 1fr;
-    grid-column-gap: 118px;
+    grid-template-columns: 130px 0 1fr;
+    grid-column-gap: 60px;
+
+    @media (min-width: 1440px) {
+        grid-template-columns: 230px 0 1fr;
+    }
 
     @media (max-width: 900px) {
         grid-template-columns: 1fr;
