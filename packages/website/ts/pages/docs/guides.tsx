@@ -33,6 +33,10 @@ const Columns = styled.div`
     grid-template-columns: 250px 1fr;
     grid-column-gap: 98px;
     grid-row-gap: 30px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
 `;
 
 const filterGroups: FilterGroup[] = [
