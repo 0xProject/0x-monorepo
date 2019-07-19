@@ -12,6 +12,7 @@ import { Note } from 'ts/components/docs/note';
 import { Notification } from 'ts/components/docs/notification';
 import { OrderedList } from 'ts/components/docs/ordered_list';
 import { Resource } from 'ts/components/docs/resource/resource';
+import { Separator } from 'ts/components/docs/separator';
 import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
@@ -29,10 +30,11 @@ export const DocsPageTemplate: React.FC = () => {
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={`Page Template`} description="This a subheader for the page" />
-            <Section maxWidth="1030px" isPadded={false}>
+            <Section maxWidth="1150px" isPadded={false} overflow="visible">
                 <Columns>
                     <Filters groups={filterGroups} />
-                    <article>
+                    <Separator />
+                    <ContentWrapper>
                         <LargeHeading>Large Heading</LargeHeading>
                         <LargeIntro>Larger introduction text</LargeIntro>
                         <Heading asElement="h2" size="default">
@@ -209,23 +211,23 @@ export const DocsPageTemplate: React.FC = () => {
                                 heading="RadarRelay SDK"
                                 description="A description could possibly go here but could be tight."
                                 icon="flexibleIntegration"
-                                url="#"
+                                url="/"
                             />
                             <FeatureLink
                                 heading="RadarRelay SDK"
                                 description="A description could possibly go here but could be tight."
                                 icon="flexibleIntegration"
-                                url="#"
+                                url="/"
                             />
                             <FeatureLink
                                 heading="RadarRelay SDK"
                                 description="A description could possibly go here but could be tight."
                                 icon="flexibleIntegration"
-                                url="#"
+                                url="/"
                             />
                         </div>
                         <NewsletterWidget />
-                    </article>
+                    </ContentWrapper>
                 </Columns>
             </Section>
         </SiteWrap>
@@ -234,9 +236,16 @@ export const DocsPageTemplate: React.FC = () => {
 
 const Columns = styled.div`
     display: grid;
-    grid-template-columns: 230px 1fr;
+    grid-template-columns: 65px 0 1fr;
     grid-column-gap: 118px;
-    grid-row-gap: 30px;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+`;
+
+const ContentWrapper = styled.article`
+    min-width: 0;
 `;
 
 const LargeHeading = styled(Heading).attrs({

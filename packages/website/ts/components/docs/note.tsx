@@ -11,8 +11,10 @@ export interface INoteProps {
 
 export const Note: React.FC<INoteProps> = props => (
     <NoteWrapper>
-        <NoteHeading marginBottom="6px">{props.heading}</NoteHeading>
-        <NoteDescription>{props.description}</NoteDescription>
+        <Heading asElement="h4" color={colors.brandDark} size={17} marginBottom="6px">
+            {props.heading}
+        </Heading>
+        <Description>{props.description}</Description>
     </NoteWrapper>
 );
 
@@ -26,13 +28,8 @@ const NoteWrapper = styled.div`
     margin-bottom: 30px;
 `;
 
-const NoteHeading = styled(Heading).attrs({ color: colors.brandDark, asElement: 'h4' })`
-    font-size: 0.944444444rem !important;
-    margin-bottom: 6px;
-`;
-
-const NoteDescription = styled(Paragraph)`
-    font-size: 0.888888889rem;
+const Description = styled(Paragraph)`
+    font-size: 0.88rem;
     margin-bottom: 0;
     line-height: 1.4;
     opacity: 1;

@@ -14,7 +14,7 @@ export interface IGetStartedLinkProps {
 
 export const GetStartedLink: React.FC<IGetStartedLinkProps> = props => (
     <>
-        <GetStartedButton color={colors.brandDark} href={props.url} isWithArrow={true}>
+        <GetStartedButton color={colors.brandDark} to={props.url} isWithArrow={true}>
             {props.heading}
         </GetStartedButton>
         <GetStartedParagraph color={colors.textDarkPrimary} isMuted={1}>
