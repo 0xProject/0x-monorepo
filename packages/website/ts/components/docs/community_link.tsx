@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { Link } from '@0x/react-shared';
+
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
@@ -14,7 +16,7 @@ export interface ICommunityLinkProps {
 }
 
 export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
-    <CommunityLinkWrapper href={props.url}>
+    <CommunityLinkWrapper to={props.url}>
         <CommunityIcon color={colors.brandLight} name={props.icon} margin={[0, 0, 24, 0]} />
         <Heading size="small" marginBottom="8px">
             {props.heading}
@@ -25,7 +27,7 @@ export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
     </CommunityLinkWrapper>
 );
 
-const CommunityLinkWrapper = styled.a`
+const CommunityLinkWrapper = styled(Link)`
     background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 50px;

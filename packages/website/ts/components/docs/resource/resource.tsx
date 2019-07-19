@@ -19,7 +19,7 @@ export interface IResourceProps {
 
 export const Resource: React.FC<IResourceProps> = ({ heading, description, isCommunity, url, tags }) => {
     return (
-        <Wrapper>
+        <ResourceWrapper>
             <Heading color={colors.brandDark} size="small" marginBottom="8px">
                 <Link to={url}>{heading}</Link>
             </Heading>
@@ -35,11 +35,11 @@ export const Resource: React.FC<IResourceProps> = ({ heading, description, isCom
                 </Tags>
                 <Level difficulty={Difficulty.Beginner} />
             </Meta>
-        </Wrapper>
+        </ResourceWrapper>
     );
 };
 
-const Wrapper = styled.div`
+const ResourceWrapper = styled.div`
     border: 1px solid #d7e3db;
     padding: 25px 30px 5px;
     margin-bottom: 1.1rem;
