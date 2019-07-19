@@ -110,7 +110,7 @@ const Wrapper = styled.div<Props>`
     position: relative;
 
     .react-autosuggest__container {
-        border: 1px solid green;
+        border: 1px solid orangered;
 
         &--open {
             background-color: ${colors.white};
@@ -167,35 +167,33 @@ const Wrapper = styled.div<Props>`
         padding: 25px 30px 25px 100px;
         min-height: 110px;
         border-bottom: 1px solid #eee;
-        transition: background-color 300ms ease-in-out;
 
         display: flex;
         flex-direction: column;
 
-    h6 {
-        display: inline;
-        color: ${colors.brandDark};
-        font-size: var(--smallHeading);
-        font-weight: 300;
-
-        & + em {
-            font-size: var(--smallHeading);
-        }
-    }
-
-    em {
-        font-weight: 400;
-    }
-
-    p {
-        color: ${colors.textDarkSecondary};
-        font-size: var(--smallParagraph);
-        margin-bottom: 0;
-        border: 1px solid orange;
-    }
+        transition: background-color 300ms ease-in-out;
 
         &--highlighted {
             background-color: ${colors.backgroundLight};
+        }
+
+        h6 {
+            display: inline;
+            color: ${colors.brandDark};
+            font-size: var(--smallHeading);
+            font-weight: 300;
+        }
+
+        em {
+            font-size: var(--smallHeading);
+            font-weight: 400;
+        }
+
+        p {
+            color: ${colors.textDarkSecondary};
+            font-size: var(--smallParagraph);
+            margin-bottom: 0;
+            border: 1px solid orange;
         }
     }
 
