@@ -61,7 +61,11 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
             '0x_tools_test': 'Tools',
             '0x_guides_test': 'Guides',
         };
-        return <p>{titles[section.index]}</p>;
+
+        if (section.hits.length) {
+            return <p>{titles[section.index]}</p>;
+        }
+        return null;
     };
 
     const getSectionSuggestions = (section: HitProps): string => section.hits;
