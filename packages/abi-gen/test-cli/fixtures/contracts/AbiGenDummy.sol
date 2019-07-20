@@ -130,5 +130,6 @@ contract AbiGenDummy
     function nestedStructOutput() public pure returns(NestedStruct memory) {}
 
     uint someState;
-    function nonPureMethod() public returns(uint) { return someState; }
+    function nonPureMethod() public returns(uint) { return someState += 1; }
+    function nonPureMethodThatReturnsNothing() public { someState += 1; }
 }

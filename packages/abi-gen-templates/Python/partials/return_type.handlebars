@@ -11,4 +11,4 @@ Union[
 {{/singleReturnValue}}
 {{else}}None
 {{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}
-{{else}}None{{/if~}}
+{{else}}{{#if this.constant}}None{{else}}Union[None, Union[HexBytes, bytes]]{{/if}}{{/if~}}
