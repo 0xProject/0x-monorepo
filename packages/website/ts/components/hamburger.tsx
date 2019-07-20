@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 interface Props {
@@ -6,7 +6,7 @@ interface Props {
     onClick?: () => void;
 }
 
-export const Hamburger: React.FunctionComponent<Props> = (props: Props) => {
+export const Hamburger: React.FC<Props> = (props: Props) => {
     return (
         <StyledHamburger isOpen={props.isOpen} onClick={props.onClick}>
             <span />
