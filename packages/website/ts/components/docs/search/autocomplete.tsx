@@ -60,7 +60,7 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
             '0x_tools_test': 'Tools',
             '0x_guides_test': 'Guides',
         };
-        return <SectionTitle>{titles[section.index]}</SectionTitle>;
+        return <p>{titles[section.index]}</p>;
     };
 
     const getSectionSuggestions = (section: HitProps): string => section.hits;
@@ -103,22 +103,6 @@ const Overlay = styled.div`
     pointer-events: none;
 `;
 
-const SectionTitle = styled.p`
-    color: ${colors.brandDark};
-    background-color: rgba(0, 56, 49, 0.1);
-    border-radius: 4px;
-    font-size: 12px;
-    padding: 7px 10px 5px;
-    text-transform: uppercase;
-    margin: 30px;
-    position: sticky;
-    top: 0px;
-
-    @media (max-width: 800px) {
-        margin: 30px 18px;
-    }
-`;
-
 const Wrapper = styled.div<Props>`
     position: relative;
 
@@ -126,6 +110,7 @@ const Wrapper = styled.div<Props>`
         isHome &&
         `
         width: calc(100% - 60px);
+        max-width: 900px;
         margin: 0 auto;
     `};
 
@@ -141,6 +126,10 @@ const Wrapper = styled.div<Props>`
 
         &--open {
             border-bottom-color: ${colors.brandLight};
+        }
+
+        @media (max-width: 900px) {
+            border: none;
         }
 
         ${({ isHome }) =>
@@ -181,11 +170,50 @@ const Wrapper = styled.div<Props>`
             isHome &&
             `
             padding: 13px 30px;
+
+            @media (max-width: 900px) {
+                padding: 13px 18px;
+            }
         `};
     }
 
     .react-autosuggest__section-container {
         display: flex;
+
+        @media (max-width: 900px) {
+            flex-direction: column;
+        }
+    }
+
+    .react-autosuggest__section-title {
+        text-align: center;
+        min-width: 180px;
+
+        p {
+            width: max-content;
+            float: left;
+            color: ${colors.brandDark};
+            background-color: rgba(0, 56, 49, 0.1);
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            position: sticky;
+            top: 0px;
+            margin: 30px;
+            padding: 4px 10px 2px;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 900px) {
+            min-width: 100%;
+
+            p {
+                margin: 0;
+                padding: 10px 18px 8px;
+                border-radius: 0;
+                width: 100%;
+            }
+        }
     }
 
     .react-autosuggest__suggestions-container {
@@ -194,11 +222,8 @@ const Wrapper = styled.div<Props>`
         left: 0;
         background-color: ${colors.white};
         z-index: 10;
-        /* width: 890px; */
 
         flex-grow: 1;
-        overflow-x: hidden;
-        overflow-y: scroll;
 
         &--open {
             border: 1px solid #dbdfdd;
@@ -223,14 +248,19 @@ const Wrapper = styled.div<Props>`
 
         border-bottom: 1px solid #eee;
 
-        /* padding: 25px 30px 25px 178px; */
-        padding: 25px 30px 25px 100px;
         min-height: 110px;
+        padding: 25px 30px;
+        margin-right: 30px;
 
         transition: background-color 300ms ease-in-out;
 
         &--highlighted {
             background-color: ${colors.backgroundLight};
+        }
+
+        @media (max-width: 900px) {
+            padding: 25px 18px;
+            margin-right: 0;
         }
 
         h6 {
