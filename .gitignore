@@ -96,7 +96,6 @@ contracts/extensions/generated-artifacts/
 contracts/exchange-forwarder/generated-artifacts/
 contracts/dev-utils/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
-packages/metacoin/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
 # generated contract wrappers
@@ -114,7 +113,6 @@ contracts/erc1155/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
-packages/metacoin/src/contract_wrappers
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
 python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
 

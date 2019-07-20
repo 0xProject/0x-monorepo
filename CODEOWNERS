@@ -20,7 +20,6 @@ packages/contract-artifacts/ @albrow
 packages/dev-utils/ @LogvinovLeon @fabioberger
 packages/devnet/ @albrow
 packages/ethereum-types/ @LogvinovLeon
-packages/metacoin/ @LogvinovLeon
 packages/monorepo-scripts/ @fabioberger
 packages/order-utils/ @fabioberger @LogvinovLeon 
 packages/python-contract-wrappers/ @feuGeneA

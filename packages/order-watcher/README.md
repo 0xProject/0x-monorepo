@@ -1,4 +1,6 @@
-## OrderWatcher
+## OrderWatcher [Deprecated]
+
+:no_entry: WARNING: This project is deprecated. Please use [0x Mesh](https://github.com/0xProject/0x-mesh) for all your orderbook pruning needs. It can be used with or without order sharing enabled. If you have any questions about how to use Mesh, reach out to us in the [#mesh channel on Discord](https://discordapp.com/invite/d3FTX3M) :no_entry:
 
 An order watcher daemon that watches for order validity.
 
