@@ -4,7 +4,7 @@
 
 import subprocess  # nosec
 from shutil import copy, rmtree
-from os import environ, path
+from os import environ, path, remove
 from pathlib import Path
 from sys import argv
 from importlib.util import find_spec
@@ -132,6 +132,9 @@ class CleanCommandExtension(clean):
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
         rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
+        # generated files:
+        remove("src/zero_ex/contract_wrappers/exchange/__init__.py")
+        remove("src/zero_ex/contract_wrappers/erc20_token/__init__.py")
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
