@@ -15,7 +15,7 @@ import { Heading } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-const separatorMargin = '60px 0';
+const SEPARATOR_MARGIN = '60px 0';
 
 export const DocsHome: React.FC = () => {
     return (
@@ -28,7 +28,7 @@ export const DocsHome: React.FC = () => {
                         <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
                     ))}
                 </ShortcutsWrapper>
-                <Separator margin={separatorMargin} />
+                <Separator margin={SEPARATOR_MARGIN} />
                 <GetStartedWrapper>
                     <div>
                         <Heading size="default">Get Started</Heading>
@@ -41,7 +41,7 @@ export const DocsHome: React.FC = () => {
                         <StepLinks links={usefulLinks} />
                     </div>
                 </GetStartedWrapper>
-                <Separator margin={separatorMargin} />
+                <Separator margin={SEPARATOR_MARGIN} />
                 <CommunityWrapper>
                     {communityShortcuts.map((shortcut, index) => (
                         <CommunityLink key={`communityLink-${index}`} {...shortcut} />
