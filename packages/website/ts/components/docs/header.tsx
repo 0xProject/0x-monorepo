@@ -117,15 +117,13 @@ const DocsLogoWrap = styled.div`
     position: relative;
     display: flex;
     align-items: center;
-    font-size: 1.411764706rem;
+    font-size: var(--defaultHeading);
     color: rgba(0, 0, 0, 0.5);
     margin-left: 0.875rem;
+    z-index: 25;
 `;
 
 const DocsLogoLink = styled(Link)`
-    font-size: inherit;
-    color: inherit;
-    display: block;
     margin-left: 0.625rem;
 `;
 
