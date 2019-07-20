@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
-
 import Autosuggest from 'react-autosuggest';
 import { Highlight, Snippet } from 'react-instantsearch-dom';
+import styled from 'styled-components';
+
+import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
 
@@ -47,11 +48,11 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
 
     const renderSuggestion = (hit: HitProps): React.ReactNode => {
         return (
-            <>
+            <Link to={hit.url}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
                 <br />
                 <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
-            </>
+            </Link>
         );
     };
 
@@ -243,24 +244,30 @@ const Wrapper = styled.div<Props>`
     }
 
     .react-autosuggest__suggestion {
-        display: flex;
-        flex-direction: column;
-
         border-bottom: 1px solid #eee;
+        transition: background-color 300ms ease-in-out;
 
-        min-height: 110px;
-        padding: 25px 30px;
         margin-right: 30px;
 
-        transition: background-color 300ms ease-in-out;
+        @media (max-width: 900px) {
+            margin-right: 0;
+        }
 
         &--highlighted {
             background-color: ${colors.backgroundLight};
         }
 
-        @media (max-width: 900px) {
-            padding: 25px 18px;
-            margin-right: 0;
+        a {
+            display: flex;
+            flex-direction: column;
+            min-height: 110px;
+
+            padding: 25px 30px;
+
+            @media (max-width: 900px) {
+                padding: 25px 18px;
+                margin-right: 0;
+            }
         }
 
         h6 {
