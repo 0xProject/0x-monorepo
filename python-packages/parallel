@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+"""Run the given command in all packages in parallel.
+
+Handy for quick verification test runs, but annoying in that all of the output
+is interleaved.
+
+$ ./parallel ./setup.py lint
+
+This will `cd` into each package, run `./setup.py lint`, then `cd ..`, all in
+parallel, in a separate process for each package.  The number of processes is
+decided by ProcessPoolExecutor.  Replace "lint" with any of "test", "clean",
+"build_sphinx" (for docs), etc.
+
+Also consider:
+
+$ ./parallel pip install -e .[dev] # install all the packages in editable mode
+
+$ ./parallel pip uninstall $(basename $(pwd))
+
+>>>"""
+
+from concurrent.futures import ProcessPoolExecutor
+from os import chdir
+from subprocess import check_call
+from sys import argv
+
+PACKAGES = [
+    "contract_addresses",
+    "contract_artifacts",
+    "contract_wrappers",
+    "json_schemas",
+    "sra_client",
+    "order_utils",
+    "middlewares",
+]
+
+def run_cmd_on_package(package: str):
+    """cd to the package dir, ./setup.py lint, cd .."""
+    chdir(package)
+    check_call(f"{' '.join(argv[1:])}".split())
+    chdir("..")
+
+ProcessPoolExecutor().map(run_cmd_on_package, PACKAGES)
