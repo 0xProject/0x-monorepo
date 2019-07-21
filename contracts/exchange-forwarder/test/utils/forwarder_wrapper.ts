@@ -15,11 +15,6 @@ export class ForwarderWrapper {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _forwarderContract: ForwarderContract;
     private readonly _logDecoder: LogDecoder;
-    public static getPercentageOfValue(value: BigNumber, percentage: number): BigNumber {
-        const numerator = constants.PERCENTAGE_DENOMINATOR.times(percentage).dividedToIntegerBy(100);
-        const newValue = value.times(numerator).dividedToIntegerBy(constants.PERCENTAGE_DENOMINATOR);
-        return newValue;
-    }
     constructor(contractInstance: ForwarderContract, provider: Web3ProviderEngine) {
         this._forwarderContract = contractInstance;
         this._web3Wrapper = new Web3Wrapper(provider);
