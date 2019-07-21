@@ -7,8 +7,9 @@ import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
 
-interface Props {
+interface IWrapperProps {
     isHome?: boolean;
+    currentRefinement?: string;
 }
 
 interface AutoCompleteProps {
@@ -78,7 +79,7 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
 
     return (
         <>
-            <Wrapper isHome={isHome}>
+            <Wrapper currentRefinement={currentRefinement} isHome={isHome}>
                 <Autosuggest
                     suggestions={hits}
                     multiSection={true}
@@ -114,10 +115,10 @@ const Overlay = styled.div`
     cursor: pointer;
 `;
 
-const Wrapper = styled.div<Props>`
+const Wrapper = styled.div<IWrapperProps>`
     position: relative;
     min-width: 240px;
-    z-index: 500;
+    z-index: ${({ currentRefinement }) => currentRefinement && 500};
 
     ${({ isHome }) =>
         isHome &&
