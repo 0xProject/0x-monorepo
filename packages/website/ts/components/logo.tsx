@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { ThemeInterface } from 'ts/components/siteWrap';
 import LogoIcon from 'ts/icons/logo-with-type.svg';
 
+import { zIndex } from 'ts/style/z_index';
+
 interface LogoInterface {
     theme?: ThemeInterface;
 }
@@ -14,7 +16,7 @@ interface LogoInterface {
 const StyledLogo = styled.div`
     text-align: left;
     position: relative;
-    z-index: 25;
+    z-index: ${zIndex.header};
 
     @media (max-width: 800px) {
         svg {
