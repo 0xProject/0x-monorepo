@@ -14,6 +14,8 @@ import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
 
 import { colors } from 'ts/style/colors';
+import { zIndex } from 'ts/style/z_index';
+
 import { WebsitePaths } from 'ts/types';
 
 interface IHeaderProps {
@@ -120,7 +122,7 @@ const DocsLogoWrap = styled.div`
     font-size: var(--defaultHeading);
     color: rgba(0, 0, 0, 0.5);
     margin-left: 0.875rem;
-    z-index: 25;
+    z-index: ${zIndex.header};
 `;
 
 const DocsLogoLink = styled(Link)`

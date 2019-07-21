@@ -1,6 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import { zIndex } from 'ts/style/z_index';
+
 interface Props {
     isOpen: boolean;
     onClick?: () => void;
@@ -22,7 +24,7 @@ const StyledHamburger = styled.button<Props>`
     width: 22px;
     height: 16px;
     position: relative;
-    z-index: 25;
+    z-index: ${zIndex.header};
     padding: 0;
     outline: none;
     user-select: none;

@@ -15,6 +15,9 @@ import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
 import { ThemeValuesInterface } from 'ts/components/siteWrap';
+
+import { zIndex } from 'ts/style/z_index';
+
 import { WebsitePaths } from 'ts/types';
 
 interface HeaderProps {
@@ -214,7 +217,7 @@ const DropdownWrap = styled.div<DropdownWrapInterface>`
     opacity: 0;
     transform: translate3d(0, -10px, 0);
     transition: opacity 0.35s, transform 0.35s, visibility 0s 0.35s;
-    z-index: 20;
+    z-index: ${zIndex.header};
 
     &:after,
     &:before {

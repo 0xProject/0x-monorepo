@@ -8,6 +8,8 @@ import { Button } from 'ts/components/button';
 import { SearchInput } from 'ts/components/docs/search_input';
 
 import { colors } from 'ts/style/colors';
+import { zIndex } from 'ts/style/z_index';
+
 import { WebsitePaths } from 'ts/types';
 
 interface IMobileNavProps {
@@ -73,7 +75,7 @@ const Wrap = styled.nav<{ isToggled: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    z-index: 20;
+    z-index: ${zIndex.mobileNav};
     top: 0;
     left: 0;
     font-size: 20px;
