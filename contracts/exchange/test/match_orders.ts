@@ -713,6 +713,40 @@ describe('matchOrders', () => {
             );
         });
 
+        it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
+            // Create orders to match
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+            });
+            // Match signedOrderLeft with signedOrderRight
+            const expectedTransferAmounts = {
+                // Left Maker
+                leftMakerAssetSoldByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+                leftMakerFeeAssetPaidByLeftMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Right Maker
+                rightMakerAssetSoldByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                rightMakerFeeAssetPaidByRightMakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                // Taker
+                leftTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+                rightTakerFeeAssetPaidByTakerAmount: Web3Wrapper.toBaseUnitAmount(100, 16), // 100%
+            };
+            // Match signedOrderLeft with signedOrderRight
+            await matchOrderTester.matchOrdersAndAssertEffectsAsync(
+                {
+                    leftOrder: signedOrderLeft,
+                    rightOrder: signedOrderRight,
+                },
+                takerAddress,
+                expectedTransferAmounts,
+                false,
+            );
+        });
+
         it('should transfer the correct amounts when left order is completely filled and right order is partially filled', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
