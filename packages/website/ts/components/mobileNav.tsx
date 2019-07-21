@@ -5,9 +5,12 @@ import styled from 'styled-components';
 import { Link } from '@0x/react-shared';
 
 import { WrapGrid, WrapProps } from 'ts/components/newLayout';
-import { WebsitePaths } from 'ts/types';
+
+import { zIndex } from 'ts/style/z_index';
 
 import { constants } from 'ts/utils/constants';
+
+import { WebsitePaths } from 'ts/types';
 
 interface IMobileNavProps {
     isToggled: boolean;
@@ -67,7 +70,7 @@ const Wrap = styled.nav<{ isToggled: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    z-index: 20;
+    z-index: ${zIndex.mobileNav};
     top: 0;
     left: 0;
     font-size: 20px;

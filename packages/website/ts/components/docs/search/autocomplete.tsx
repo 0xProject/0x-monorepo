@@ -25,7 +25,7 @@ interface HitProps {
 export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     isHome = false,
     hits = [],
-    currentRefinement = '',
+    currentRefinement,
     refine,
 }) => {
     const [value, setValue] = useState<string>('');
@@ -77,21 +77,24 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
     };
 
     return (
-        <Wrapper isHome={isHome}>
-            <Autosuggest
-                suggestions={hits}
-                multiSection={true}
-                onSuggestionSelected={onSuggestionSelected}
-                onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                onSuggestionHighlighted={onSuggestionHighlighted}
-                onSuggestionsClearRequested={onSuggestionsClearRequested}
-                getSuggestionValue={getSuggestionValue}
-                renderSuggestion={renderSuggestion}
-                inputProps={inputProps}
-                renderSectionTitle={renderSectionTitle}
-                getSectionSuggestions={getSectionSuggestions}
-            />
-        </Wrapper>
+        <>
+            <Wrapper isHome={isHome}>
+                <Autosuggest
+                    suggestions={hits}
+                    multiSection={true}
+                    onSuggestionSelected={onSuggestionSelected}
+                    onSuggestionsFetchRequested={onSuggestionsFetchRequested}
+                    onSuggestionHighlighted={onSuggestionHighlighted}
+                    onSuggestionsClearRequested={onSuggestionsClearRequested}
+                    getSuggestionValue={getSuggestionValue}
+                    renderSuggestion={renderSuggestion}
+                    inputProps={inputProps}
+                    renderSectionTitle={renderSectionTitle}
+                    getSectionSuggestions={getSectionSuggestions}
+                />
+            </Wrapper>
+            {currentRefinement && <Overlay onClick={onSuggestionsClearRequested} />}
+        </>
     );
 };
 
@@ -102,15 +105,19 @@ const Overlay = styled.div`
     left: 0;
     right: 0;
 
-    background: #000;
-    opacity: 0.5;
+    z-index: 30;
 
-    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(243, 246, 244, 0.5);
+    cursor: pointer;
 `;
 
 const Wrapper = styled.div<Props>`
     position: relative;
     min-width: 240px;
+    z-index: 500;
 
     ${({ isHome }) =>
         isHome &&
@@ -119,6 +126,29 @@ const Wrapper = styled.div<Props>`
         max-width: 900px;
         margin: 0 auto;
     `};
+
+    .react-autosuggest__container {
+        &--open,
+        &--focused {
+            background-color: ${colors.white};
+        }
+
+        ${({ isHome }) =>
+            isHome &&
+            `
+            border: 1px solid transparent;
+            padding: 13px 30px;
+
+            &--focused,
+            &--open {
+                border: 1px solid #dbdfdd;
+            }
+
+            @media (max-width: 900px) {
+                padding: 13px 18px;
+            }
+        `};
+    }
 
     .react-autosuggest__input {
         background: url("data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23fff' fill-opacity='.01' d='M0 0h24v24H0z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M5 10.5a5.5 5.5 0 1 1 11 0 5.5 5.5 0 0 1-11 0zM10.5 3a7.5 7.5 0 1 0 4.55 13.463l4.743 4.744 1.414-1.414-4.744-4.744A7.5 7.5 0 0 0 10.5 3z' fill='%235C5C5C'/%3E%3C/svg%3E")
@@ -135,6 +165,7 @@ const Wrapper = styled.div<Props>`
             `
             border-bottom-color: #b4bebd;
 
+            &--focused,
             &--open {
                 border-bottom-color: ${colors.brandLight};
                 
@@ -182,27 +213,6 @@ const Wrapper = styled.div<Props>`
         }
     }
 
-    .react-autosuggest__container {
-        &--open {
-            background-color: ${colors.white};
-        }
-
-        ${({ isHome }) =>
-            isHome &&
-            `
-            border: 1px solid transparent;
-            padding: 13px 30px;
-
-            &--open {
-                border: 1px solid #dbdfdd;
-            }
-
-            @media (max-width: 900px) {
-                padding: 13px 18px;
-            }
-        `};
-    }
-
     .react-autosuggest__section-container {
         display: flex;
 
@@ -246,10 +256,9 @@ const Wrapper = styled.div<Props>`
         position: absolute;
 
         background-color: ${colors.white};
-        z-index: 10;
-
         flex-grow: 1;
 
+        &--focused,
         &--open {
             border: 1px solid #dbdfdd;
             border-top: none;
@@ -260,6 +269,7 @@ const Wrapper = styled.div<Props>`
             `
             right: 0;
             left: 0;
+            top: 94px; 
         `};
 
         ${({ isHome }) =>
