@@ -7,23 +7,23 @@ import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
 
-interface IWrapperProps {
-    isHome?: boolean;
-    currentRefinement?: string;
-}
-
-interface AutoCompleteProps {
+interface IAutoCompleteProps {
     isHome?: boolean;
     hits?: object[];
     currentRefinement?: string;
     refine?: (value: string) => void;
 }
 
-interface HitProps {
+interface IHitProps {
     [key: string]: any;
 }
 
-export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
+interface IWrapperProps {
+    isHome?: boolean;
+    currentRefinement?: string;
+}
+
+export const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     isHome = false,
     hits = [],
     currentRefinement,
@@ -31,23 +31,23 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
 }) => {
     const [value, setValue] = useState<string>('');
 
-    const onChange = (event: HitProps, { newValue }: HitProps): void => setValue(newValue);
+    const onChange = (event: IHitProps, { newValue }: IHitProps): void => setValue(newValue);
 
-    const onSuggestionsFetchRequested = ({ value: newValue }: HitProps): void => refine(newValue);
+    const onSuggestionsFetchRequested = ({ value: newValue }: IHitProps): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
 
     // tslint:disable-next-line: no-empty
     const onSuggestionHighlighted = (): void => {};
 
-    const getSuggestionValue = (hit: HitProps): string => hit.textContent;
+    const getSuggestionValue = (hit: IHitProps): string => hit.textContent;
 
-    const onSuggestionSelected = (event: HitProps, { suggestion }: HitProps): void => {
+    const onSuggestionSelected = (event: IHitProps, { suggestion }: IHitProps): void => {
         // tslint:disable-next-line: no-console
         console.log(suggestion);
     };
 
-    const renderSuggestion = (hit: HitProps): React.ReactNode => {
+    const renderSuggestion = (hit: IHitProps): React.ReactNode => {
         return (
             <Link to={hit.url}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
@@ -57,7 +57,7 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
         );
     };
 
-    const renderSectionTitle = (section: HitProps): React.ReactNode => {
+    const renderSectionTitle = (section: IHitProps): React.ReactNode => {
         const titles: { [key: string]: any } = {
             '0x_tools_test': 'Tools',
             '0x_guides_test': 'Guides',
@@ -69,7 +69,7 @@ export const CustomAutoComplete: React.FC<AutoCompleteProps> = ({
         return null;
     };
 
-    const getSectionSuggestions = (section: HitProps): string => section.hits;
+    const getSectionSuggestions = (section: IHitProps): string => section.hits;
 
     const inputProps = {
         placeholder: 'Search docs',
