@@ -110,6 +110,7 @@ const Overlay = styled.div`
 
 const Wrapper = styled.div<Props>`
     position: relative;
+    min-width: 240px;
 
     ${({ isHome }) =>
         isHome &&
@@ -125,30 +126,48 @@ const Wrapper = styled.div<Props>`
         font-size: 22px;
         padding: 18px 18px 21px 35px;
         width: 100%;
-        border: 0;
-        border-bottom: 1px solid #b4bebd;
+
         outline: none;
+        border: 1px solid transparent;
 
-        &--open {
-            border-bottom-color: ${colors.brandLight};
-        }
+        ${({ isHome }) =>
+            isHome &&
+            `
+            border-bottom-color: #b4bebd;
 
-        @media (max-width: 900px) {
-            border: none;
-        }
+            &--open {
+                border-bottom-color: ${colors.brandLight};
+                
+                @media (max-width: 900px) {
+                    border-bottom-color: transparent;
+                }
+            }
+        `};
 
         ${({ isHome }) =>
             !isHome &&
             `
             background-color: #EBEEEC;
-            border-bottom: 0;
             padding: 13px 21px 15px 52px;
             background-position: left 21px center;
             font-size: 1rem;
 
+            @media (min-width: 800px) {
+                position: absolute;
+                right: 30px;
+                top: -24px;
+                width: 240px;
+            }
+
             &--focused,
             &--open {
                 background-color: white;
+                border: 1px solid #dbdfdd;
+                border-bottom-color: ${colors.brandLight};
+                
+                @media (min-width: 800px) {
+                    width: 900px;
+                }
             }
         `};
 
@@ -164,17 +183,19 @@ const Wrapper = styled.div<Props>`
     }
 
     .react-autosuggest__container {
-        border: 1px solid orangered;
-
         &--open {
             background-color: ${colors.white};
-            border-color: #dbdfdd;
         }
 
         ${({ isHome }) =>
             isHome &&
             `
+            border: 1px solid transparent;
             padding: 13px 30px;
+
+            &--open {
+                border: 1px solid #dbdfdd;
+            }
 
             @media (max-width: 900px) {
                 padding: 13px 18px;
@@ -223,8 +244,7 @@ const Wrapper = styled.div<Props>`
 
     .react-autosuggest__suggestions-container {
         position: absolute;
-        right: 0;
-        left: 0;
+
         background-color: ${colors.white};
         z-index: 10;
 
@@ -236,9 +256,22 @@ const Wrapper = styled.div<Props>`
         }
 
         ${({ isHome }) =>
+            isHome &&
+            `
+            right: 0;
+            left: 0;
+        `};
+
+        ${({ isHome }) =>
             !isHome &&
             `
-            top: 50px;
+            width: 100%;
+
+            @media (min-width: 800px) {
+                width: 900px;
+                right: 30px;
+                top: 28px;
+            }
         `};
     }
 
