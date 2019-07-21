@@ -289,6 +289,8 @@ contract MixinMatchOrders is
         //   If the left maker can buy exactly what the right maker can sell, then both orders are fully filled.
         // Case 2.
         //   If the left maker cannot buy more than the right maker can sell, then only the left order is fully filled.
+        // Case 3.
+        //   If the left maker can buy exactly as much as the right maker can sell, then both orders are fully filled.
         if (leftTakerAssetAmountRemaining > rightMakerAssetAmountRemaining) {
             // Case 1: Right order is fully filled
             _calculateCompleteRightFill(
@@ -297,7 +299,7 @@ contract MixinMatchOrders is
                 rightMakerAssetAmountRemaining,
                 rightTakerAssetAmountRemaining
             );
-        } else if (rightMakerAssetAmountRemaining > leftTakerAssetAmountRemaining) {
+        } else if (leftTakerAssetAmountRemaining < rightMakerAssetAmountRemaining) {
             // Case 2: Left order is fully filled
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
@@ -309,13 +311,16 @@ contract MixinMatchOrders is
                 rightOrder.makerAssetAmount,
                 leftTakerAssetAmountRemaining // matchedFillResults.right.makerAssetFilledAmount
             );
-        } else {
+        } else { // leftTakerAssetAmountRemaining == rightMakerAssetAmountRemaining
             // Case 3: Both orders are fully filled. Technically, this could be captured by the above cases, but
             //         this calculation will be more precise since it does not include rounding.
-            matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
-            matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
-            matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
-            matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
+            _calculateCompleteFillBoth(
+                matchedFillResults,
+                leftMakerAssetAmountRemaining,
+                leftTakerAssetAmountRemaining,
+                rightMakerAssetAmountRemaining,
+                rightTakerAssetAmountRemaining
+            );
         }
 
         // Calculate amount given to taker
@@ -346,8 +351,9 @@ contract MixinMatchOrders is
         internal
         pure
     {
-        bool doesLeftMakerAssetProfitExist;
-        bool doesRightMakerAssetProfitExist;
+        // If a maker asset is greater than the opposite taker asset, than there will be a spread denominated in that maker asset.
+        bool doesLeftMakerAssetProfitExist = leftMakerAssetAmountRemaining > rightTakerAssetAmountRemaining;
+        bool doesRightMakerAssetProfitExist = rightMakerAssetAmountRemaining > leftTakerAssetAmountRemaining;
 
         // Calculate the maximum fill results for the maker and taker assets. At least one of the orders will be fully filled.
         //
@@ -359,13 +365,13 @@ contract MixinMatchOrders is
         //
         // There are three cases to consider:
         // Case 1.
-        //   If the left maker can buy more than or equal to the right maker can sell, then only the right order is fully filled.
+        //   If the left maker can buy more than the right maker can sell, then only the right order is fully filled.
         // Case 2.
-        //   If the right maker can buy more than or equal to the left maker can sell, then only the right order is fully filled.
+        //   If the right maker can buy more than the left maker can sell, then only the right order is fully filled.
         // Case 3.
         //   If the right maker can sell the max of what the left maker can buy and the left maker can sell the max of
         //   what the right maker can buy, then both orders are fully filled.
-        if (leftTakerAssetAmountRemaining >= rightMakerAssetAmountRemaining) {
+        if (leftTakerAssetAmountRemaining > rightMakerAssetAmountRemaining) {
             // Case 1: Right order is fully filled with the profit paid in the left makerAsset
             _calculateCompleteRightFill(
                 matchedFillResults,
@@ -373,9 +379,7 @@ contract MixinMatchOrders is
                 rightMakerAssetAmountRemaining,
                 rightTakerAssetAmountRemaining
             );
-            // Indicate that the profit should be set to the spread denominated in the left maker asset.
-            doesLeftMakerAssetProfitExist = true;
-        } else if (rightTakerAssetAmountRemaining >= leftMakerAssetAmountRemaining) {
+        } else if (rightTakerAssetAmountRemaining > leftMakerAssetAmountRemaining) {
             // Case 2: Left order is fully filled with the profit paid in the right makerAsset.
             matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
             matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
@@ -388,17 +392,15 @@ contract MixinMatchOrders is
                 leftMakerAssetAmountRemaining
             );
             matchedFillResults.right.takerAssetFilledAmount = leftMakerAssetAmountRemaining;
-            // Indicate that the profit should be set to the spread denominated in the right maker asset.
-            doesRightMakerAssetProfitExist = true;
         } else {
             // Case 3: The right and left orders are fully filled
-            matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
-            matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
-            matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
-            matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
-            // Indicate that the profit should be set to the spread denominated in the left and the right maker assets.
-            doesLeftMakerAssetProfitExist = true;
-            doesRightMakerAssetProfitExist = true;
+            _calculateCompleteFillBoth(
+                matchedFillResults,
+                leftMakerAssetAmountRemaining,
+                leftTakerAssetAmountRemaining,
+                rightMakerAssetAmountRemaining,
+                rightTakerAssetAmountRemaining
+            );
         }
 
         // Calculate amount given to taker in the left order's maker asset if the left spread will be part of the profit.
@@ -416,6 +418,31 @@ contract MixinMatchOrders is
                 matchedFillResults.left.takerAssetFilledAmount
             );
         }
+    }
+
+    /// @dev Calculates the fill results for the maker and taker in the order matching and writes the results
+    ///      to the fillResults that are being collected on the order. Both orders will be fully filled in this
+    ///      case.
+    /// @param matchedFillResults The fill results object to populate with calculations.
+    /// @param leftMakerAssetAmountRemaining The amount of the left maker asset that is remaining to be filled.
+    /// @param leftTakerAssetAmountRemaining The amount of the left taker asset that is remaining to be filled.
+    /// @param rightMakerAssetAmountRemaining The amount of the right maker asset that is remaining to be filled.
+    /// @param rightTakerAssetAmountRemaining The amount of the right taker asset that is remaining to be filled.
+    function _calculateCompleteFillBoth(
+        MatchedFillResults memory matchedFillResults,
+        uint256 leftMakerAssetAmountRemaining,
+        uint256 leftTakerAssetAmountRemaining,
+        uint256 rightMakerAssetAmountRemaining,
+        uint256 rightTakerAssetAmountRemaining
+    )
+        internal
+        pure
+    {
+        // Calculate the fully filled results for both orders.
+        matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
+        matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
+        matchedFillResults.right.makerAssetFilledAmount = rightMakerAssetAmountRemaining;
+        matchedFillResults.right.takerAssetFilledAmount = rightTakerAssetAmountRemaining;
     }
 
     /// @dev Calculates the fill results for the maker and taker in the order matching and writes the results
