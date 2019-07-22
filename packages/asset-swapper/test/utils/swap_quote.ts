@@ -1,13 +1,37 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import { SupportedProvider } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
 import { SwapQuote } from '../../src/types';
+import { constants } from '../../src/constants';
 
 const ZERO_BIG_NUMBER = new BigNumber(0);
 
-export const getSignedOrdersWithNoFees = (
+export const getSignedOrdersWithNoFeesAsync = async (
+    provider: SupportedProvider,
+    makerAssetData: string,
+    takerAssetData: string,
+    makerAddress: string,
+    takerAddress: string,
+    fillableAmounts: BigNumber[],
+): Promise<SignedOrder[]> => {
+    const promises = _.map(fillableAmounts, async (fillableAmount: BigNumber) =>
+        orderFactory.createSignedOrderAsync(
+            provider,
+            makerAddress,
+            fillableAmount,
+            makerAssetData,
+            fillableAmount,
+            takerAssetData,
+            constants.NULL_ADDRESS,
+        ),
+    );
+    return Promise.all(promises);
+};
+
+export const getPartialSignedOrdersWithNoFees = (
     makerAssetData: string,
     takerAssetData: string,
     makerAddress: string,
@@ -25,7 +49,7 @@ export const getSignedOrdersWithNoFees = (
     );
 };
 
-export const getSignedOrdersWithFees = (
+export const getPartialSignedOrdersWithFees = (
     makerAssetData: string,
     takerAssetData: string,
     makerAddress: string,
@@ -33,7 +57,7 @@ export const getSignedOrdersWithFees = (
     fillableAmounts: BigNumber[],
     takerFees: BigNumber[],
 ): SignedOrder[] => {
-    const orders = getSignedOrdersWithNoFees(
+    const orders = getPartialSignedOrdersWithNoFees(
         makerAssetData,
         takerAssetData,
         makerAddress,

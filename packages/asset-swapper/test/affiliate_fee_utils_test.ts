@@ -7,7 +7,7 @@ import { constants } from '../src/constants';
 import { affiliateFeeUtils } from '../src/utils/affiliate_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithFees, getFullyFillableSwapQuoteWithNoFees, getSignedOrdersWithFees, getSignedOrdersWithNoFees } from './utils/swap_quote';
+import { getFullyFillableSwapQuoteWithFees, getFullyFillableSwapQuoteWithNoFees, getPartialSignedOrdersWithFees, getPartialSignedOrdersWithNoFees } from './utils/swap_quote';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -21,14 +21,14 @@ const FILLABLE_FEE_AMOUNTS = [new BigNumber(1), new BigNumber(1), new BigNumber(
 const MARKET_OPERATION = MarketOperation.Sell;
 
 describe('affiliateFeeUtils', () => {
-    const fakeFeeOrders = getSignedOrdersWithNoFees(
+    const fakeFeeOrders = getPartialSignedOrdersWithNoFees(
         FAKE_MAKER_ASSET_DATA,
         FAKE_TAKER_ASSET_DATA,
         NULL_ADDRESS,
         NULL_ADDRESS,
         FILLABLE_FEE_AMOUNTS,
     );
-    const fakeOrders = getSignedOrdersWithNoFees(
+    const fakeOrders = getPartialSignedOrdersWithNoFees(
         FAKE_MAKER_ASSET_DATA,
         FAKE_TAKER_ASSET_DATA,
         NULL_ADDRESS,
@@ -36,7 +36,7 @@ describe('affiliateFeeUtils', () => {
         FILLABLE_AMOUNTS,
     );
 
-    const fakeOrdersWithFees = getSignedOrdersWithFees(
+    const fakeOrdersWithFees = getPartialSignedOrdersWithFees(
         FAKE_MAKER_ASSET_DATA,
         FAKE_TAKER_ASSET_DATA,
         NULL_ADDRESS,
