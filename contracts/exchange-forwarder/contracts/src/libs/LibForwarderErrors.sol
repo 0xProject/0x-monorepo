@@ -31,4 +31,5 @@ contract LibForwarderErrors {
     string constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY = "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY";  // Fallback function may only be used for WETH withdrawals.
     string constant INVALID_MSG_VALUE = "INVALID_MSG_VALUE";                                      // msg.value must be greater than 0.
     string constant INVALID_AMOUNT = "INVALID_AMOUNT";                                            // Amount must equal 1.
+    string constant MAKER_ASSET_MISMATCH = "MAKER_ASSET_MISMATCH";                                // Maker asset must be the same across all orders in a given input
 }

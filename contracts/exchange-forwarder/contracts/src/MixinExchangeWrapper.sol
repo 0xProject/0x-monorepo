@@ -181,24 +181,17 @@ contract MixinExchangeWrapper is
         )
     {
         uint256 ordersLength = orders.length;
-
         for (uint256 i = 0; i != ordersLength; i++) {
             require(
                 orders[i].makerAssetData.equals(orders[0].makerAssetData),
                 "MAKER_ASSET_MISMATCH"
             );
 
-            // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, makerAssetAcquiredAmount);
-
-            // Convert the remaining amount of makerAsset to buy into remaining amount
-            // of takerAsset to sell, assuming entire amount can be sold in the current order.
-            // We round up because the exchange rate computed by fillOrder rounds in favor
-            // of the Maker. In this case we want to overestimate the amount of takerAsset.
+            // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
-                remainingMakerAssetFillAmount
+                _safeSub(makerAssetFillAmount, makerAssetAcquiredAmount)
             );
 
             // Attempt to sell the remaining amount of takerAsset
@@ -207,7 +200,6 @@ contract MixinExchangeWrapper is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-
             // Update amounts filled and fees paid by maker and taker
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
                 makerAssetAcquiredAmount = _safeAdd(
@@ -221,23 +213,23 @@ contract MixinExchangeWrapper is
             } else {
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
-                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
+                    singleFillResults.makerAssetFilledAmount
                 );
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
-                    singleFillResults.takerAssetFilledAmount
+                    _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
                 );
             }
             _addFillResults(totalFillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
-            if (makerAssetAcquiredAmount >= makerAssetFillAmount) {
+            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }
         }
 
         require(
-            makerAssetAcquiredAmount >= makerAssetFillAmount,
+            totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount,
             "COMPLETE_FILL_FAILED"
         );
         return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);

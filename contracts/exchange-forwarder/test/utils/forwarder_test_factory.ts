@@ -135,11 +135,13 @@ export class ForwarderTestFactory {
             expectedResults.takerAssetFillAmount,
             forwarderFeeOptions.baseFeePercentage,
         );
+        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
+
         const ethValue = expectedResults.takerAssetFillAmount
             .plus(expectedResults.wethFees)
+            .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee)
             .plus(ethValueAdjustment);
-        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
 
         if (ethValueAdjustment.isNegative()) {
             return expectTransactionFailedAsync(
@@ -190,10 +192,12 @@ export class ForwarderTestFactory {
             expectedResults.takerAssetFillAmount,
             forwarderFeeOptions.baseFeePercentage,
         );
+        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
+
         const ethValue = expectedResults.takerAssetFillAmount
             .plus(expectedResults.wethFees)
+            .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee);
-        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
 
         const tx = await this._forwarderWrapper.marketSellOrdersWithEthAsync(
             orders,
@@ -233,7 +237,11 @@ export class ForwarderTestFactory {
         const fowarderFeeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(this._forwarderFeeRecipientAddress);
         const newBalances = await this._erc20Wrapper.getBalancesAsync();
 
-        expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
+        expectBalanceWithin(
+            takerEthBalanceAfter,
+            takerEthBalanceBefore.minus(totalEthSpent).minus(expectedResults.maxOversoldWeth),
+            takerEthBalanceBefore.minus(totalEthSpent),
+        );
         if (ethSpentOnForwarderFee.gt(0)) {
             expect(fowarderFeeRecipientEthBalanceAfter).to.be.bignumber.equal(
                 forwarderFeeRecipientEthBalanceBefore.plus(ethSpentOnForwarderFee),
