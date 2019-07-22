@@ -5,7 +5,7 @@ import { Configure, connectAutoComplete, Index, InstantSearch } from 'react-inst
 
 import { CustomAutoComplete } from 'ts/components/docs/search/autocomplete';
 
-const searchClient = algoliasearch('VHMP18K2OO', 'e46d0171577e85fa5418c50b18f80ade');
+const searchClient = algoliasearch('39X6WOJZKW', '6acba761a34d99781628c6178af1e16c');
 
 interface ISearchInputProps {
     isHome?: boolean;
@@ -18,7 +18,7 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
         searchClient={searchClient}
         indexName="0x_tools_test"
         onSearchStateChange={(searchState: any) => {
-            console.log('searchState', searchState);
+            // console.log('searchState', searchState);
         }}
     >
         <AutoComplete isHome={isHome} />
