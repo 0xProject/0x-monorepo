@@ -72,7 +72,7 @@ export const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const getSectionSuggestions = (section: IHitProps): string => section.hits;
 
     const inputProps = {
-        placeholder: 'Search docs',
+        placeholder: 'Search docs…',
         onChange,
         value,
     };
