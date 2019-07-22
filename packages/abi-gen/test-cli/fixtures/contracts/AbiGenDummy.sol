@@ -88,4 +88,10 @@ contract AbiGenDummy
         return ecrecover(prefixedHash, v, r, s);
     }
 
+    event  Withdrawal(address indexed _owner, uint _value);
+
+    function withdraw(uint wad) public {
+        emit Withdrawal(msg.sender, wad);
+    }
+
 }

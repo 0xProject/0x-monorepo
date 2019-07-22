@@ -22,5 +22,5 @@
             }
         }
     },
-    "contracts": ["AbiGenDummy.sol", "EventDummy.sol", "LibDummy.sol", "TestLibDummy.sol"]
+    "contracts": ["AbiGenDummy.sol", "LibDummy.sol", "TestLibDummy.sol"]
 }

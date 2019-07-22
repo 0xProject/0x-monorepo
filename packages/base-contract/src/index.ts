@@ -150,9 +150,6 @@ export class BaseContract {
         }
         return rawEncoded;
     }
-    public getWeb3Wrapper(): Web3Wrapper {
-        return this._web3Wrapper;
-    }
     protected _lookupAbiEncoder(functionSignature: string): AbiEncoder.Method {
         const abiEncoder = this._abiEncoderByFunctionSignature[functionSignature];
         if (abiEncoder === undefined) {

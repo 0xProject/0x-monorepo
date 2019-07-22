@@ -7,7 +7,6 @@
     },
     "files": [
         "./fixtures/artifacts/AbiGenDummy.json",
-        "./fixtures/artifacts/EventDummy.json",
         "./fixtures/artifacts/LibDummy.json",
         "./fixtures/artifacts/TestLibDummy.json"
     ],
