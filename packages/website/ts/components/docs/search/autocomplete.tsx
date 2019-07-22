@@ -318,25 +318,28 @@ const Wrapper = styled.div<IWrapperProps>`
             }
         }
 
+        /* Highlight - Text */
         h6 {
             display: inline;
             color: ${colors.brandDark};
             font-size: var(--smallHeading);
             font-weight: 300;
         }
-
+        /* Highlight - Match */
         em {
             font-size: var(--smallHeading);
             font-weight: 400;
         }
 
+        /* Snippet - Text */
         p {
             display: inline;
             color: ${colors.textDarkSecondary};
             font-size: var(--smallParagraph);
             font-weight: 300;
+            line-height: 1.4;
         }
-
+        /* Snippet - Match */
         span {
             font-size: var(--smallParagraph);
             font-weight: 400;
