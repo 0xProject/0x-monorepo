@@ -261,10 +261,13 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         configs.NPM_REGISTRY_URL
     } --yes`;
     if (configs.IS_LOCAL_PUBLISH) {
-        lernaPublishCmd += ` --skip-git`;
+        lernaPublishCmd += ` --no-git-tag-version --no-push`;
     }
     utils.log('Lerna is publishing...');
-    await execAsync(lernaPublishCmd, { cwd: constants.monorepoRootPath });
+    await execAsync(lernaPublishCmd, {
+        cwd: constants.monorepoRootPath,
+        maxBuffer: 102400000, // 500 * 1024 * 200
+    });
 }
 
 function updateVersionNumberIfNeeded(currentVersion: string, proposedNextVersion: string): string {
