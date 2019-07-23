@@ -199,9 +199,9 @@ export const DocsPageTemplate: React.FC = () => {
                             <Heading asElement="h2" size="default">
                                 Resources
                             </Heading>
-                            {resources.map((resource, index) => (
+                            {/* {resources.map((resource, index) => (
                                 <Resource key={`resource-${index}`} {...resource} />
-                            ))}
+                            ))} */}
                         </div>
                         <div>
                             <Heading asElement="h2" size="default">

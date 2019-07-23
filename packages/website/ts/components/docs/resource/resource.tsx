@@ -9,19 +9,27 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
+interface IHitProps {
+    hit: IResourceProps;
+}
 export interface IResourceProps {
-    heading?: string;
+    title?: string;
     description?: string;
+    difficulty?: Difficulty;
     isCommunity?: boolean;
     url: string;
     tags: string[];
 }
 
-export const Resource: React.FC<IResourceProps> = ({ heading, description, isCommunity, url, tags }) => {
+export const Resource: React.FC<IHitProps> = ({ hit }) => {
+    const { title, difficulty, description, isCommunity, tags, url } = hit;
+
+    console.log('hit', hit);
+
     return (
         <ResourceWrapper>
             <Heading color={colors.brandDark} size="small" marginBottom="8px">
-                <Link to={url}>{heading}</Link>
+                <Link to={url}>{title}</Link>
             </Heading>
             <Paragraph size="default" marginBottom="10px">
                 {description}
@@ -33,7 +41,7 @@ export const Resource: React.FC<IResourceProps> = ({ heading, description, isCom
                         <Tag key={`tag-${index}`}>{label}</Tag>
                     ))}
                 </Tags>
-                <Level difficulty={Difficulty.Beginner} />
+                <Level difficulty={difficulty} />
             </Meta>
         </ResourceWrapper>
     );

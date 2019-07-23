@@ -47,7 +47,7 @@ export const DocsTools: React.FC = () => {
                                 ))}
                             </FeaturedToolsWrapper>
 
-                            <ResourcesWrapper>
+                            {/* <ResourcesWrapper>
                                 <Heading asElement="h2" size="default">
                                     Docker Images
                                 </Heading>
@@ -55,8 +55,8 @@ export const DocsTools: React.FC = () => {
                                 {resources.map((resource, index) => (
                                     <Resource key={`resource-${index}`} {...resource} />
                                 ))}
-                            </ResourcesWrapper>
-
+                            </ResourcesWrapper> */}
+                            {/* 
                             <ResourcesWrapper>
                                 <Heading asElement="h2" size="default">
                                     TypeScript Libraries
@@ -65,7 +65,7 @@ export const DocsTools: React.FC = () => {
                                 {resources.map((resource, index) => (
                                     <Resource key={`resource-${index}`} {...resource} />
                                 ))}
-                            </ResourcesWrapper>
+                            </ResourcesWrapper> */}
                         </article>
                     </Columns>
                 </InstantSearch>
