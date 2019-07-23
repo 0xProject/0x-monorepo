@@ -12,7 +12,7 @@ import { Heading } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
-import { ClearRefinements, Hits, InstantSearch } from 'react-instantsearch-dom';
+import { Hits, InstantSearch } from 'react-instantsearch-dom';
 
 import algoliasearch from 'algoliasearch/lite';
 
@@ -25,14 +25,12 @@ export const DocsTools: React.FC = () => {
             <Hero title="Tools" />
             <Section maxWidth="1030px" isPadded={false}>
                 <InstantSearch searchClient={searchClient} indexName="0x_tools_test">
-                    <ClearRefinements />
-
                     <Columns>
                         <Filters filters={filters} />
                         <article>
-                            <Hits />
+                            <Hits hitComponent={Resource} />
 
-                            <FeaturedToolsWrapper>
+                            {/* <FeaturedToolsWrapper>
                                 <Heading asElement="h2" size="default">
                                     Featured Tools
                                 </Heading>
@@ -45,7 +43,7 @@ export const DocsTools: React.FC = () => {
                                         url={link.url}
                                     />
                                 ))}
-                            </FeaturedToolsWrapper>
+                            </FeaturedToolsWrapper> */}
 
                             {/* <ResourcesWrapper>
                                 <Heading asElement="h2" size="default">
@@ -94,8 +92,10 @@ const ResourcesWrapper = styled.div`
 `;
 
 const filters = [
-    { attribute: 'tags', heading: 'Developer persona' },
-    { attribute: 'difficulty', heading: 'Difficulty' },
+    { attribute: 'type', heading: 'Type' },
+    { attribute: 'tags', heading: 'Developer Persona' },
+    { attribute: 'difficulty', heading: 'Level' },
+    { attribute: 'isCommunity', heading: 'Community Maintained', customLabel: 'Include Community Maintained' },
 ];
 
 const featuredLinks = [

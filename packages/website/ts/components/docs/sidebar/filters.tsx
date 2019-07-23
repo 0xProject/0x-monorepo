@@ -10,6 +10,7 @@ interface IFiltersProps {
 interface IFiltersGroupProps {
     attribute: string;
     heading: string;
+    customLabel?: string;
 }
 
 export const Filters: React.FC<IFiltersProps> = ({ filters }) => (

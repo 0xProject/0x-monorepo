@@ -5,6 +5,7 @@ import { colors } from 'ts/style/colors';
 
 export interface IFilterProps extends IFilterCheckboxProps {
     label: string;
+    customLabel?: string;
     value: string;
     refine: (value: string) => void;
 }
@@ -13,13 +14,13 @@ interface IFilterCheckboxProps {
     isRefined: boolean;
 }
 
-export const Filter: React.FC<IFilterProps> = ({ isRefined, label, value, refine }) => {
+export const Filter: React.FC<IFilterProps> = ({ isRefined, label, value, customLabel, refine }) => {
     const handleClick = () => refine(value);
 
     return (
         <FilterWrapper onClick={handleClick}>
             <FilterCheckbox isRefined={isRefined} />
-            <FilterLabel>{label}</FilterLabel>
+            <FilterLabel>{customLabel ? customLabel : label}</FilterLabel>
         </FilterWrapper>
     );
 };

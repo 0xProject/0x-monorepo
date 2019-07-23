@@ -8,11 +8,12 @@ import { styled } from 'ts/style/theme';
 
 interface IFilterListProps {
     heading: string;
+    customLabel?: string;
     items: IFilterProps[];
     refine: (value: string) => void;
 }
 
-const FiltersList: React.FC<IFilterListProps> = ({ items, heading, refine }) => {
+const FiltersList: React.FC<IFilterListProps> = ({ items, customLabel, heading, refine }) => {
     if (!items.length) {
         return null;
     }
@@ -23,7 +24,7 @@ const FiltersList: React.FC<IFilterListProps> = ({ items, heading, refine }) => 
                 {heading}
             </Heading>
             {items.map((item: IFilterProps, index: number) => (
-                <Filter key={`filter-${index}`} refine={refine} {...item} />
+                <Filter key={`filter-${index}`} customLabel={customLabel} refine={refine} {...item} />
             ))}
         </FiltersGroupWrapper>
     );
