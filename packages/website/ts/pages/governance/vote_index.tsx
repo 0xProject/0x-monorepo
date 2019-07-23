@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import styled from 'styled-components';
 
+import { Button } from 'ts/components/button';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Column, Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
@@ -11,6 +12,7 @@ import { Proposal, proposals } from 'ts/pages/governance/data';
 import { VoteIndexCard } from 'ts/pages/governance/vote_index_card';
 import { TallyInterface } from 'ts/types';
 import { configs } from 'ts/utils/configs';
+import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 import { utils } from 'ts/utils/utils';
 
@@ -48,9 +50,22 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
                         <Heading size="medium" isCentered={true}>
                             0x Protocol Governance
                         </Heading>
-                        <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
-                            Vote on 0x Improvement Proposals (ZEIPs) using ZRX tokens
-                        </Paragraph>
+                        <SubtitleContentWrap>
+                            <Paragraph size="medium" isCentered={true} isMuted={true} marginBottom="0">
+                                Vote on 0x Improvement Proposals (ZEIPs) using ZRX tokens.
+                            </Paragraph>
+                            <ButtonWrapper>
+                                <Button
+                                    href={constants.URL_VOTE_FAQ}
+                                    isWithArrow={true}
+                                    isAccentColor={true}
+                                    shouldUseAnchorTag={true}
+                                    target="_blank"
+                                >
+                                    FAQ
+                                </Button>
+                            </ButtonWrapper>
+                        </SubtitleContentWrap>
                     </Column>
                 </Section>
                 <VoteIndexCardWrapper>
@@ -110,4 +125,14 @@ export class VoteIndex extends React.Component<VoteIndexProps, VoteIndexState> {
 
 const VoteIndexCardWrapper = styled.div`
     margin-bottom: 150px;
+`;
+
+const SubtitleContentWrap = styled.div`
+    & > * {
+        display: inline;
+    }
+`;
+
+const ButtonWrapper = styled.div`
+    margin-left: 0.5rem;
 `;
