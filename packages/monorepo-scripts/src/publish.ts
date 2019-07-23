@@ -264,9 +264,24 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         lernaPublishCmd += ` --no-git-tag-version --no-push`;
     }
     utils.log('Lerna is publishing...');
-    await execAsync(lernaPublishCmd, {
+    const child = await spawnAsync(lernaPublishCmd, {
         cwd: constants.monorepoRootPath,
         maxBuffer: 102400000, // 500 * 1024 * 200
+    });
+    child.stdout.on('data', async (data: Buffer) => {
+        const output = data.toString('utf8');
+        utils.log('Lerna publish cmd: ', output);
+        const isOTPPrompt = _.includes(output, 'Enter OTP:');
+        if (isOTPPrompt) {
+            // Prompt for OTP
+            prompt.start();
+            const result = await promisify(prompt.get)(['OTP']);
+            child.stdin.write(`${result.OTP}\n`);
+        }
+    });
+    child.stderr.on('data', (data: Buffer) => {
+        const output = data.toString('utf8');
+        utils.log('Lerna publish cmd: ', output);
     });
 }
 
