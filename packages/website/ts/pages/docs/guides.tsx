@@ -44,7 +44,7 @@ const Columns = styled.div`
 
 const filters = [
     {
-        attribute: 'topic',
+        attribute: 'topics',
         heading: 'Topic',
     },
     {
