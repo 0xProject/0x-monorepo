@@ -1,7 +1,7 @@
 
     def {{this.languageSpecificName}}(
-        self,
-        {{> typed_params inputs=inputs}}
+        self,{{#if inputs}}
+        {{> typed_params inputs=inputs}},{{/if}}
         tx_params: Optional[TxParams] = None,
         {{^this.constant}}
         view_only: bool = False,
@@ -44,9 +44,7 @@
 {{/each}}
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.{{this.name}}(
-            {{> params}}
-        )
+        ).functions.{{this.name}}({{> params}})
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,

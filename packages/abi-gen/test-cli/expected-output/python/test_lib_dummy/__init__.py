@@ -118,9 +118,7 @@ class TestLibDummy(BaseContractWrapper):
         x = int(x)
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.publicAddConstant(
-            x
-        )
+        ).functions.publicAddConstant(x)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -146,9 +144,7 @@ class TestLibDummy(BaseContractWrapper):
         x = int(x)
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.publicAddOne(
-            x
-        )
+        ).functions.publicAddOne(x)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,

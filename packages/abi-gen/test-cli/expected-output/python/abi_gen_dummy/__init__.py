@@ -156,8 +156,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.simpleRequire(
-        )
+        ).functions.simpleRequire()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -188,9 +187,7 @@ class AbiGenDummy(BaseContractWrapper):
         ]
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.acceptsAnArrayOfBytes(
-            a
-        )
+        ).functions.acceptsAnArrayOfBytes(a)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -199,10 +196,7 @@ class AbiGenDummy(BaseContractWrapper):
 
     def ecrecover_fn(
         self,
-        _hash: bytes,
-        v: int,
-        r: bytes,
-        s: bytes,
+        _hash: bytes, v: int, r: bytes, s: bytes,
         tx_params: Optional[TxParams] = None,
     ) -> str:
         """Execute underlying, same-named contract method.
@@ -232,12 +226,7 @@ class AbiGenDummy(BaseContractWrapper):
         )
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.ecrecoverFn(
-            _hash,
-            v,
-            r,
-            s
-        )
+        ).functions.ecrecoverFn(_hash, v, r, s)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -262,9 +251,7 @@ class AbiGenDummy(BaseContractWrapper):
         a = bytes.fromhex(a.decode("utf-8"))
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.acceptsBytes(
-            a
-        )
+        ).functions.acceptsBytes(a)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -282,8 +269,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.revertWithConstant(
-        )
+        ).functions.revertWithConstant()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -301,8 +287,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.simpleRevert(
-        )
+        ).functions.simpleRevert()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -320,8 +305,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.nestedStructOutput(
-        )
+        ).functions.nestedStructOutput()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -339,8 +323,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.requireWithConstant(
-        )
+        ).functions.requireWithConstant()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -349,11 +332,7 @@ class AbiGenDummy(BaseContractWrapper):
 
     def with_address_input(
         self,
-        x: str,
-        a: int,
-        b: int,
-        y: str,
-        c: int,
+        x: str, a: int, b: int, y: str, c: int,
         tx_params: Optional[TxParams] = None,
     ) -> str:
         """Execute underlying, same-named contract method.
@@ -396,13 +375,7 @@ class AbiGenDummy(BaseContractWrapper):
         c = int(c)
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.withAddressInput(
-            x,
-            a,
-            b,
-            y,
-            c
-        )
+        ).functions.withAddressInput(x, a, b, y, c)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -426,9 +399,7 @@ class AbiGenDummy(BaseContractWrapper):
         )
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.structInput(
-            s
-        )
+        ).functions.structInput(s)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -451,8 +422,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.nonPureMethod(
-        )
+        ).functions.nonPureMethod()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -478,9 +448,7 @@ class AbiGenDummy(BaseContractWrapper):
         x = int(x)
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.simplePureFunctionWithInput(
-            x
-        )
+        ).functions.simplePureFunctionWithInput(x)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -503,8 +471,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.nonPureMethodThatReturnsNothing(
-        )
+        ).functions.nonPureMethodThatReturnsNothing()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -522,8 +489,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.simplePureFunction(
-        )
+        ).functions.simplePureFunction()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -547,9 +513,7 @@ class AbiGenDummy(BaseContractWrapper):
         )
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.nestedStructInput(
-            n
-        )
+        ).functions.nestedStructInput(n)
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -569,8 +533,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.structOutput(
-        )
+        ).functions.structOutput()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
@@ -588,8 +551,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         func = self._get_contract_instance(
             self.contract_address
-        ).functions.pureFunctionWithConstant(
-        )
+        ).functions.pureFunctionWithConstant()
         return self._invoke_function_call(
             func=func,
             tx_params=tx_params,
