@@ -1,4 +1,4 @@
-"""Generated wrapper for {{contractName}} Solidity contract."""
+"""Generated wrapper for LibDummy Solidity contract."""
 
 # pylint: disable=too-many-arguments
 
@@ -20,8 +20,8 @@ from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
-class {{contractName}}ValidatorBase:
-    """Base class for validating inputs to {{contractName}} methods."""
+class LibDummyValidatorBase:
+    """Base class for validating inputs to LibDummy methods."""
     def __init__(
         self,
         provider: BaseProvider,
@@ -44,31 +44,31 @@ class {{contractName}}ValidatorBase:
 
 # Try to import a custom validator class definition; if there isn't one,
 # declare one that we can instantiate for the default argument to the
-# constructor for {{contractName}} below.
+# constructor for LibDummy below.
 try:
     # both mypy and pylint complain about what we're doing here, but this
     # works just fine, so their messages have been disabled here.
     from . import (  # type: ignore # pylint: disable=import-self
-        {{contractName}}Validator,
+        LibDummyValidator,
     )
 except ImportError:
 
-    class {{contractName}}Validator({{contractName}}ValidatorBase):  # type: ignore
+    class LibDummyValidator(LibDummyValidatorBase):  # type: ignore
         """No-op input validator."""
 
 
-{{tupleDefinitions ABIString}}
+
 
 
 # pylint: disable=too-many-public-methods
-class {{contractName}}(BaseContractWrapper):
-    """Wrapper class for {{contractName}} Solidity contract.{{docBytesIfNecessary ABIString}}"""
+class LibDummy(BaseContractWrapper):
+    """Wrapper class for LibDummy Solidity contract."""
 
     def __init__(
         self,
         provider: BaseProvider,
         contract_address: str,
-        validator: {{contractName}}Validator = None,
+        validator: LibDummyValidator = None,
         private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
@@ -86,7 +86,7 @@ class {{contractName}}(BaseContractWrapper):
         )
 
         if not validator:
-            validator = {{contractName}}Validator(provider, contract_address, private_key)
+            validator = LibDummyValidator(provider, contract_address, private_key)
 
         self.validator = validator
 
@@ -96,20 +96,14 @@ class {{contractName}}(BaseContractWrapper):
         :returns: contract object
         """
         return self._contract_instance(
-            address=token_address, abi={{contractName}}.abi()
+            address=token_address, abi=LibDummy.abi()
         )
-{{#each methods}}
-{{> call contractName=../contractName}}
-{{/each}}
-{{#each events}}
-{{> event}}
-{{/each}}
 
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '{{{ABIString}}}'  # noqa: E501 (line-too-long)
+            '[]'  # noqa: E501 (line-too-long)
         )
 
 # pylint: disable=too-many-lines

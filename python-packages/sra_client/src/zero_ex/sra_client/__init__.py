@@ -105,10 +105,9 @@ Post Order
 
 Post an order for our Maker to trade ZRX for WETH:
 
+>>> from zero_ex.contract_wrappers.exchange.types import Order, order_to_jsdict
 >>> from zero_ex.order_utils import (
 ...     asset_data_utils,
-...     Order,
-...     order_to_jsdict,
 ...     sign_hash)
 >>> import random
 >>> from datetime import datetime, timedelta
@@ -254,7 +253,7 @@ consists just of our order):
 Select an order from the orderbook
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
->>> from zero_ex.order_utils import jsdict_to_order
+>>> from zero_ex.contract_wrappers.exchange.types import jsdict_to_order
 >>> order = jsdict_to_order(orderbook.bids.records[0].order)
 >>> from pprint import pprint
 >>> pprint(order)
@@ -322,8 +321,8 @@ book.  Now let's have the taker fill it:
 ... )
 >>> exchange.fill_order(
 ...     order=order,
-...     taker_amount=order['makerAssetAmount']/2, # note the half fill
-...     signature=order['signature'],
+...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
+...     signature=order['signature'].replace('0x', '').encode('utf-8'),
 ...     tx_params=TxParams(from_=taker_address)
 ... )
 HexBytes('0x...')

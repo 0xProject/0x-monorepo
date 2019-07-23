@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.1.10",
+        "changes": [
+            {
+                "note": "re-export new ethereum-types types, TupleDataItem",
+                "pr": 1919
+            }
+        ]
+    },
+    {
         "timestamp": 1563006338,
         "version": "3.1.9",
         "changes": [

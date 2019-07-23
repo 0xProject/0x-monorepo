@@ -4,7 +4,7 @@
 
 import subprocess  # nosec
 from shutil import copy, rmtree
-from os import environ, path
+from os import environ, path, remove
 from pathlib import Path
 from sys import argv
 from importlib.util import find_spec
@@ -34,17 +34,37 @@ class PreInstallCommand(distutils.command.build_py.build_py):
                 "packages",
                 "python-contract-wrappers",
                 "generated",
-                "erc20_token.py",
+                "erc20_token",
+                "__init__.py",
             ),
-            path.join(pkgdir, "src", "zero_ex", "contract_wrappers"),
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_wrappers", "erc20_token"
+            ),
+        )
+        copy(
+            path.join(
+                pkgdir,
+                "..",
+                "..",
+                "packages",
+                "python-contract-wrappers",
+                "generated",
+                "exchange",
+                "__init__.py",
+            ),
+            path.join(
+                pkgdir, "src", "zero_ex", "contract_wrappers", "exchange"
+            ),
         )
         if find_spec("black") is None:
             subprocess.check_call("pip install black".split())  # nosec
-        subprocess.check_call(  # nosec
-            (
-                BLACK_COMMAND + " src/zero_ex/contract_wrappers/erc20_token.py"
-            ).split()
+        black_command = (
+            BLACK_COMMAND
+            + " src/zero_ex/contract_wrappers/erc20_token/__init__.py"
+            + " src/zero_ex/contract_wrappers/exchange/__init__.py"
         )
+        print(f"Running command `{black_command}`...")
+        subprocess.check_call(black_command.split())  # nosec
 
 
 class TestCommandExtension(TestCommand):
@@ -112,6 +132,9 @@ class CleanCommandExtension(clean):
         rmtree(".tox", ignore_errors=True)
         rmtree(".pytest_cache", ignore_errors=True)
         rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
+        # generated files:
+        remove("src/zero_ex/contract_wrappers/exchange/__init__.py")
+        remove("src/zero_ex/contract_wrappers/erc20_token/__init__.py")
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
@@ -255,6 +278,7 @@ setup(
         "build_sphinx": {
             "source_dir": ("setup.py", "src"),
             "build_dir": ("setup.py", "build/docs"),
+            "warning_is_error": ("setup.py", "true"),
         }
     },
 )

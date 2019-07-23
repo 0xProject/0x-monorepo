@@ -1,6 +1,3 @@
 [MESSAGES CONTROL]
-disable=C0330,line-too-long,fixme,too-few-public-methods,too-many-ancestors
+disable=C0330,line-too-long,fixme,too-few-public-methods,too-many-ancestors,duplicate-code
 # C0330 is "bad hanging indent". we use indents per `black`.
-
-[SIMILARITIES]
-min-similarity-lines=12

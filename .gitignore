@@ -113,6 +113,8 @@ contracts/erc1155/generated-wrappers/
 contracts/extensions/generated-wrappers/
 contracts/exchange-forwarder/generated-wrappers/
 contracts/dev-utils/generated-wrappers/
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
+python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
 
 # cli test output
 packages/abi-gen/test-cli/output
@@ -132,3 +134,6 @@ python-packages/*/dist
 __pycache__
 python-packages/*/src/*.egg-info
 python-packages/*/.coverage
+
+# python keeps package-local copies of json schemas
+python-packages/json_schemas/src/zero_ex/json_schemas/schemas

@@ -4,7 +4,16 @@ import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import * as changeCase from 'change-case';
 import * as cliFormat from 'cli-format';
-import { AbiDefinition, ConstructorAbi, ContractAbi, DevdocOutput, EventAbi, MethodAbi } from 'ethereum-types';
+import {
+    AbiDefinition,
+    ConstructorAbi,
+    ContractAbi,
+    DataItem,
+    DevdocOutput,
+    EventAbi,
+    MethodAbi,
+    TupleDataItem,
+} from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
@@ -102,8 +111,9 @@ function registerPythonHelpers(): void {
         return lhs === rhs;
     });
     Handlebars.registerHelper('safeString', (str, options) => new Handlebars.SafeString(str));
-    Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils, ParamKind.Input, args.backend));
-    Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils, ParamKind.Output, args.backend));
+    Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils));
+    Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils));
+    Handlebars.registerHelper('toPythonIdentifier', utils.toPythonIdentifier.bind(utils));
     Handlebars.registerHelper(
         'sanitizeDevdocDetails',
         (methodName: string, devdocDetails: string, indent: number, options) => {
@@ -116,12 +126,111 @@ function registerPythonHelpers(): void {
             return new Handlebars.SafeString(
                 `\n${cliFormat.wrap(devdocDetails || '', {
                     paddingLeft: ' '.repeat(indent),
-                    width: columnsPerRow - indent,
+                    width: columnsPerRow,
                     ansi: false,
                 })}\n`,
             );
         },
     );
+    Handlebars.registerHelper(
+        'makeParameterDocstringRole',
+        (name: string, description: string, indent: number, options) => {
+            let docstring = `:param ${name}:`;
+            if (description && description.length > 0) {
+                docstring = `${docstring} ${description}`;
+            }
+            return new Handlebars.SafeString(utils.wrapPythonDocstringRole(docstring, indent));
+        },
+    );
+    Handlebars.registerHelper(
+        'makeReturnDocstringRole',
+        (description: string, indent: number, options) =>
+            new Handlebars.SafeString(utils.wrapPythonDocstringRole(`:returns: ${description}`, indent)),
+    );
+    Handlebars.registerHelper(
+        'makeEventParameterDocstringRole',
+        (eventName: string, indent: number, options) =>
+            new Handlebars.SafeString(
+                utils.wrapPythonDocstringRole(
+                    `:param tx_hash: hash of transaction emitting ${eventName} event`,
+                    indent,
+                ),
+            ),
+    );
+    Handlebars.registerHelper('tupleDefinitions', (abisJSON: string, options) => {
+        const abis: AbiDefinition[] = JSON.parse(abisJSON);
+        // build an array of objects, each of which has one key, the Python
+        // name of a tuple, with a string value holding the Python
+        // definition of that tuple. Using a key-value object conveniently
+        // filters duplicate references to the same tuple.
+        const tupleDefinitions: { [pythonTupleName: string]: string } = {};
+        for (const abi of abis) {
+            let parameters: DataItem[] = [];
+            if (abi.hasOwnProperty('inputs')) {
+                // HACK(feuGeneA): using "as MethodAbi" below, but abi
+                // could just as well be ConstructorAbi, EventAbi, etc.  We
+                // just need to tell the TypeScript compiler that it's NOT
+                // FallbackAbi, or else it would complain, "Property
+                // 'inputs' does not exist on type 'AbiDefinition'.
+                // Property 'inputs' does not exist on type
+                // 'FallbackAbi'.", despite the enclosing if statement.
+                // tslint:disable:no-unnecessary-type-assertion
+                parameters = parameters.concat((abi as MethodAbi).inputs);
+            }
+            if (abi.hasOwnProperty('outputs')) {
+                // HACK(feuGeneA): same as described above, except here we
+                // KNOW that it's a MethodAbi, given the enclosing if
+                // statement, because that's the only AbiDefinition subtype
+                // that actually has an outputs field.
+                parameters = parameters.concat((abi as MethodAbi).outputs);
+            }
+            for (const parameter of parameters) {
+                if (parameter.type === 'tuple') {
+                    tupleDefinitions[
+                        utils.makePythonTupleName((parameter as TupleDataItem).components)
+                    ] = utils.makePythonTupleClassBody((parameter as TupleDataItem).components);
+                }
+            }
+        }
+        const tupleDeclarations = [];
+        for (const pythonTupleName in tupleDefinitions) {
+            if (tupleDefinitions[pythonTupleName]) {
+                tupleDeclarations.push(
+                    `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    A tuple found in an ABI may have been written in Solidity as a literal\n    tuple, or it may have been written as a parameter with a Solidity\n    \`struct\`:code: data type; there's no way to tell which, based solely on the\n    ABI, and the name of a Solidity \`struct\`:code: is not conveyed through the\n    ABI.  This class represents a tuple that appeared in a method definition.\n    Its name is derived from a hash of that tuple's field names, and every\n    method whose ABI refers to a tuple with that same list of field names will\n    have a generated wrapper method that refers to this class.\n\n    Any members of type \`bytes\`:code: should be encoded as UTF-8, which can be\n    accomplished via \`str.encode("utf_8")\`:code:\n    """${
+                        tupleDefinitions[pythonTupleName]
+                    }`,
+                );
+            }
+        }
+        return new Handlebars.SafeString(tupleDeclarations.join('\n\n'));
+    });
+    Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string, options) => {
+        const abis: AbiDefinition[] = JSON.parse(abisJSON);
+        // see if any ABIs accept params of type bytes, and if so then emit
+        // explanatory documentation string.
+        for (const abi of abis) {
+            if (abi.hasOwnProperty('inputs')) {
+                // HACK(feuGeneA): using "as MethodAbi" below, but abi
+                // could just as well be ConstructorAbi, EventAbi, etc.  We
+                // just need to tell the TypeScript compiler that it's NOT
+                // FallbackAbi, or else it would complain, "Property
+                // 'inputs' does not exist on type 'AbiDefinition'.
+                // Property 'inputs' does not exist on type
+                // 'FallbackAbi'.", despite the enclosing if statement.
+                // tslint:disable:no-unnecessary-type-assertion
+                if ((abi as MethodAbi).inputs) {
+                    for (const input of (abi as MethodAbi).inputs) {
+                        if (input.type === 'bytes') {
+                            return new Handlebars.SafeString(
+                                '\n\n    All method parameters of type `bytes`:code: should be encoded as UTF-8,\n    which can be accomplished via `str.encode("utf_8")`:code:.\n    ',
+                            );
+                        }
+                    }
+                }
+            }
+        }
+        return '';
+    });
 }
 if (args.language === 'TypeScript') {
     registerTypeScriptHelpers();
@@ -168,16 +277,17 @@ for (const abiFileName of abiFileNames) {
     }
 
     const outFileName = utils.makeOutputFileName(namedContent.name);
-    const outFileExtension = (() => {
+    const outFilePath = (() => {
         if (args.language === 'TypeScript') {
-            return 'ts';
+            return `${args.output}/${outFileName}.ts`;
         } else if (args.language === 'Python') {
-            return 'py';
+            const directory = `${args.output}/${outFileName}`;
+            mkdirp.sync(directory);
+            return `${directory}/__init__.py`;
         } else {
             throw new Error(`Unexpected language '${args.language}'`);
         }
     })();
-    const outFilePath = `${args.output}/${outFileName}.${outFileExtension}`;
 
     if (utils.isOutputFileUpToDate(outFilePath, [abiFileName, args.template, ...partialTemplateFileNames])) {
         logUtils.log(`Already up to date: ${chalk.bold(outFilePath)}`);

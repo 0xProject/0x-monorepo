@@ -91,13 +91,7 @@ describe('Schema', () => {
             validateAgainstSchema(testCases, addressSchema);
         });
         it('should fail for invalid addresses', () => {
-            const testCases = [
-                '0x',
-                '0',
-                '0x00',
-                '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42',
-                '0x8b0292B11a196601eD2ce54B665CaFEca0347D42',
-            ];
+            const testCases = ['0x', '0', '0x00', '0xzzzzzzB11a196601eD2ce54B665CaFEca0347D42'];
             const shouldFail = true;
             validateAgainstSchema(testCases, addressSchema, shouldFail);
         });
@@ -730,7 +724,7 @@ describe('Schema', () => {
                         validateAgainstSchema(testCases, relayerApiOrdersChannelSubscribeSchema);
                     });
                     it('should fail for invalid orders channel websocket subscribe message', () => {
-                        const checksummedAddress = '0xA2b31daCf30a9C50ca473337c01d8A201ae33e32';
+                        const bogusAddress = '0xz2b31daCf30a9C50ca473337c01d8A201ae33e32';
                         const testCases = [
                             {
                                 type: 'subscribe',
@@ -743,7 +737,7 @@ describe('Schema', () => {
                                 payload: {
                                     makerAssetProxyId: '0x02571792',
                                     takerAssetProxyId: '0xf47261b0',
-                                    makerAssetAddress: checksummedAddress,
+                                    makerAssetAddress: bogusAddress,
                                 },
                             },
                             {

@@ -91,24 +91,24 @@ we need to tell the WETH token contract to let the 0x contracts transfer our
 balance:
 
 >>> from zero_ex.contract_wrappers import ERC20Token
->>> zrx_wrapper = ERC20Token(
+>>> zrx_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
 ... )
->>> weth_wrapper = ERC20Token(
+>>> weth_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
 ... )
 
 >>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> tx = zrx_wrapper.approve(
+>>> tx = zrx_token.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
 
->>> tx = weth_wrapper.approve(
+>>> tx = weth_token.approve(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=taker_address),
@@ -117,8 +117,8 @@ balance:
 Constructing an order
 ---------------------
 
->>> from zero_ex.order_utils import asset_data_utils, Order
->>> from eth_utils import remove_0x_prefix
+>>> from zero_ex.contract_wrappers.exchange.types import Order
+>>> from zero_ex.order_utils import asset_data_utils
 >>> from datetime import datetime, timedelta
 >>> import random
 >>> order = Order(
@@ -143,8 +143,8 @@ For this order to be valid, our Maker must sign a hash of it:
 >>> from zero_ex.order_utils import generate_order_hash_hex
 >>> order_hash_hex = generate_order_hash_hex(order, exchange_address)
 
->>> from zero_ex.order_utils import sign_hash
->>> maker_signature = sign_hash(
+>>> from zero_ex.order_utils import sign_hash_to_bytes
+>>> maker_signature = sign_hash_to_bytes(
 ...     ganache, Web3.toChecksumAddress(maker_address), order_hash_hex
 ... )
 
@@ -162,13 +162,13 @@ fill.  This example fills the order completely, but partial fills are possible
 too.
 
 >>> from zero_ex.contract_wrappers import Exchange
->>> exchange_contract = Exchange(
+>>> exchange = Exchange(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
 ... )
->>> tx_hash = exchange_contract.fill_order(
+>>> tx_hash = exchange.fill_order(
 ...     order=order,
-...     taker_amount=order["takerAssetAmount"],
+...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
 ...     tx_params=TxParams(from_=taker_address)
 ... )
@@ -176,10 +176,10 @@ too.
 Once the transaction is mined, we can get the details of our exchange through
 the exchange wrapper:
 
->>> exchange_contract.get_fill_event(tx_hash)
+>>> exchange.get_fill_event(tx_hash)
 (AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Fill', ...}),)
 >>> from pprint import pprint
->>> pprint(exchange_contract.get_fill_event(tx_hash)[0].args.__dict__)
+>>> pprint(exchange.get_fill_event(tx_hash)[0].args.__dict__)
 {'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
  'makerAssetData': b...,
@@ -191,7 +191,7 @@ the exchange wrapper:
  'takerAssetData': b...,
  'takerAssetFilledAmount': 100000000000000000,
  'takerFeePaid': 0}
->>> exchange_contract.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
+>>> exchange.get_fill_event(tx_hash)[0].args.takerAssetFilledAmount
 100000000000000000
 
 Cancelling an order
@@ -217,23 +217,23 @@ A Maker can cancel an order that has yet to be filled.
 ...     )
 ... )
 
->>> tx_hash = exchange_contract.cancel_order(
+>>> tx_hash = exchange.cancel_order(
 ...     order=order, tx_params=TxParams(from_=maker_address)
 ... )
 
 Once the transaction is mined, we can get the details of the cancellation
 through the Exchange wrapper:
 
->>> exchange_contract.get_cancel_event(tx_hash)
+>>> exchange.get_cancel_event(tx_hash)
 (AttributeDict({'args': ...({'makerAddress': ...}), 'event': 'Cancel', ...}),)
->>> pprint(exchange_contract.get_cancel_event(tx_hash)[0].args.__dict__)
+>>> pprint(exchange.get_cancel_event(tx_hash)[0].args.__dict__)
 {'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
  'makerAddress': '0x...',
  'makerAssetData': b...,
  'orderHash': b...,
  'senderAddress': '0x...',
  'takerAssetData': b...}
->>> exchange_contract.get_cancel_event(tx_hash)[0].args.feeRecipientAddress
+>>> exchange.get_cancel_event(tx_hash)[0].args.feeRecipientAddress
 '0x0000000000000000000000000000000000000000'
 
 Batching orders
@@ -258,10 +258,10 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_1 = sign_hash(
+>>> signature_1 = sign_hash_to_bytes(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_1, exchange_contract.address)
+...     generate_order_hash_hex(order_1, exchange.contract_address)
 ... )
 >>> order_2 = Order(
 ...     makerAddress=maker_address,
@@ -279,17 +279,17 @@ is an example where the taker fills two orders in one transaction:
 ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
 ...     )
 ... )
->>> signature_2 = sign_hash(
+>>> signature_2 = sign_hash_to_bytes(
 ...     ganache,
 ...     Web3.toChecksumAddress(maker_address),
-...     generate_order_hash_hex(order_2, exchange_contract.address)
+...     generate_order_hash_hex(order_2, exchange.contract_address)
 ... )
 
 Fill order_1 and order_2 together:
 
->>> exchange_contract.batch_fill_orders(
+>>> exchange.batch_fill_orders(
 ...     orders=[order_1, order_2],
-...     taker_amounts=[1, 2],
+...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
 ...     tx_params=TxParams(from_=taker_address))
 HexBytes('0x...')
@@ -297,4 +297,4 @@ HexBytes('0x...')
 
 from .tx_params import TxParams
 from .erc20_token import ERC20Token
-from .exchange_wrapper import Exchange
+from .exchange import Exchange

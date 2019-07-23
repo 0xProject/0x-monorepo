@@ -1,13 +1,3 @@
-#!/usr/bin/env python
+#!/usr/bin/env bash
 
-"""Script to run linters against local copy of all components."""
-
-from os import path
-import subprocess
-
-subprocess.check_call(
-    (
-        f"{path.join('.', 'cmd_pkgs_in_dep_order.py')}"
-        + f" {path.join('.', 'setup.py')} lint"
-    ).split()
-)
+./parallel ./setup.py lint

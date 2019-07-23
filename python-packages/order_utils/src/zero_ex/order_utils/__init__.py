@@ -14,58 +14,11 @@ contracts deployed on it.  For convenience, a docker container is provided for
 just this purpose.  To start it:
 `docker run -d -p 8545:8545 0xorg/ganache-cli:2.2.2`:code:.
 
-Constructing an order
----------------------
+"""
 
-Here is a short demonstration on how to create a 0x order.
-
->>> from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
->>> from zero_ex.order_utils import asset_data_utils, Order
->>> from datetime import datetime, timedelta
->>> import random
->>> my_address = "0x5409ed021d9299bf6814279a6a1411a7e866a631"
->>> example_order = Order(
-...     makerAddress=my_address,
-...     takerAddress="0x0000000000000000000000000000000000000000",
-...     exchangeAddress=NETWORK_TO_ADDRESSES[NetworkId.MAINNET].exchange,
-...     senderAddress="0x0000000000000000000000000000000000000000",
-...     feeRecipientAddress="0x0000000000000000000000000000000000000000",
-...     makerAssetData=asset_data_utils.encode_erc20(
-...        NETWORK_TO_ADDRESSES[NetworkId.MAINNET].ether_token
-...     ),
-...     takerAssetData=asset_data_utils.encode_erc20(
-...         NETWORK_TO_ADDRESSES[NetworkId.MAINNET].zrx_token
-...     ),
-...     salt=random.randint(1, 100000000000000000),
-...     makerFee=0,
-...     takerFee=0,
-...     makerAssetAmount=1 * 10 ** 18,  # Convert token amount to base unit with 18 decimals
-...     takerAssetAmount=500 * 10 ** 18,  # Convert token amount to base unit with 18 decimals
-...     expirationTimeSeconds=round(
-...         (datetime.utcnow() + timedelta(days=1)).timestamp()
-...     )
-... )
->>> import pprint
->>> pprint.pprint(example_order)
-{'exchangeAddress': '0x...',
- 'expirationTimeSeconds': ...,
- 'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
- 'makerAddress': '0x...',
- 'makerAssetAmount': 1000000000000000000,
- 'makerAssetData': b...,
- 'makerFee': 0,
- 'salt': ...,
- 'senderAddress': '0x0000000000000000000000000000000000000000',
- 'takerAddress': '0x0000000000000000000000000000000000000000',
- 'takerAssetAmount': 500000000000000000000,
- 'takerAssetData': b...,
- 'takerFee': 0}
-"""  # noqa E501
-
-from copy import copy
 from enum import auto, Enum
 import json
-from typing import cast, Dict, NamedTuple, Tuple
+from typing import Tuple
 from pkg_resources import resource_string
 
 from mypy_extensions import TypedDict
@@ -78,6 +31,7 @@ from web3.utils import datatypes
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 import zero_ex.contract_artifacts
+from zero_ex.contract_wrappers.exchange.types import Order, order_to_jsdict
 from zero_ex.dev_utils.type_assertions import (
     assert_is_address,
     assert_is_hex_string,
@@ -133,238 +87,6 @@ class _Constants:
         N_SIGNATURE_TYPES = auto()
 
 
-class Order(TypedDict):  # pylint: disable=too-many-instance-attributes
-    """A Web3-compatible representation of the Exchange.Order struct.
-
-    >>> from zero_ex.order_utils import asset_data_utils
-    >>> from eth_utils import remove_0x_prefix
-    >>> from datetime import datetime, timedelta
-    >>> import random
-    >>> order = Order(
-    ...     makerAddress=maker_address,
-    ...     takerAddress='0x0000000000000000000000000000000000000000',
-    ...     senderAddress='0x0000000000000000000000000000000000000000',
-    ...     feeRecipientAddress='0x0000000000000000000000000000000000000000',
-    ...     makerAssetData=asset_data_utils.encode_erc20(zrx_address),
-    ...     takerAssetData=asset_data_utils.encode_erc20(weth_address),
-    ...     salt=random.randint(1, 100000000000000000),
-    ...     makerFee=0,
-    ...     takerFee=0,
-    ...     makerAssetAmount=1,
-    ...     takerAssetAmount=1,
-    ...     expirationTimeSeconds=round(
-    ...         (datetime.utcnow() + timedelta(days=1)).timestamp()
-    ...     )
-    ... )
-    """
-
-    makerAddress: str
-    """Address that created the order."""
-
-    takerAddress: str
-    """Address that is allowed to fill the order.
-
-    If set to 0, any address is allowed to fill the order.
-    """
-
-    feeRecipientAddress: str
-    """Address that will recieve fees when order is filled."""
-
-    senderAddress: str
-    """Address that is allowed to call Exchange contract methods that affect
-    this order. If set to 0, any address is allowed to call these methods.
-    """
-
-    makerAssetAmount: int
-    """Amount of makerAsset being offered by maker. Must be greater than 0."""
-
-    takerAssetAmount: int
-    """Amount of takerAsset being bid on by maker. Must be greater than 0."""
-
-    makerFee: int
-    """Amount of ZRX paid to feeRecipient by maker when order is filled.  If
-    set to 0, no transfer of ZRX from maker to feeRecipient will be attempted.
-    """
-
-    takerFee: int
-    """Amount of ZRX paid to feeRecipient by taker when order is filled.  If
-    set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.
-    """
-
-    expirationTimeSeconds: int
-    """Timestamp in seconds at which order expires."""
-
-    salt: int
-    """Arbitrary number to facilitate uniqueness of the order's hash."""
-
-    makerAssetData: bytes
-    """Encoded data that can be decoded by a specified proxy contract when
-    transferring makerAsset. The last byte references the id of this proxy.
-    """
-
-    takerAssetData: bytes
-    """Encoded data that can be decoded by a specified proxy contract when
-    transferring takerAsset. The last byte references the id of this proxy.
-    """
-
-
-def make_empty_order() -> Order:
-    """Construct an empty order.
-
-    Initializes all strings to "0x0000000000000000000000000000000000000000",
-    all numbers to 0, and all bytes to nulls.
-    """
-    return {
-        "makerAddress": _Constants.null_address,
-        "takerAddress": _Constants.null_address,
-        "senderAddress": _Constants.null_address,
-        "feeRecipientAddress": _Constants.null_address,
-        "makerAssetData": (b"\x00") * 20,
-        "takerAssetData": (b"\x00") * 20,
-        "salt": 0,
-        "makerFee": 0,
-        "takerFee": 0,
-        "makerAssetAmount": 0,
-        "takerAssetAmount": 0,
-        "expirationTimeSeconds": 0,
-    }
-
-
-def order_to_jsdict(
-    order: Order,
-    exchange_address="0x0000000000000000000000000000000000000000",
-    signature: str = None,
-) -> dict:
-    """Convert a Web3-compatible order struct to a JSON-schema-compatible dict.
-
-    More specifically, do explicit decoding for the `bytes`:code: fields, and
-    convert numerics to strings.
-
-    >>> import pprint
-    >>> pprint.pprint(order_to_jsdict(
-    ...     {
-    ...         'makerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'takerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'feeRecipientAddress':
-    ...             "0x0000000000000000000000000000000000000000",
-    ...         'senderAddress': "0x0000000000000000000000000000000000000000",
-    ...         'makerAssetAmount': 1,
-    ...         'takerAssetAmount': 1,
-    ...         'makerFee': 0,
-    ...         'takerFee': 0,
-    ...         'expirationTimeSeconds': 1,
-    ...         'salt': 1,
-    ...         'makerAssetData': (0).to_bytes(1, byteorder='big') * 20,
-    ...         'takerAssetData': (0).to_bytes(1, byteorder='big') * 20,
-    ...     },
-    ... ))
-    {'exchangeAddress': '0x0000000000000000000000000000000000000000',
-     'expirationTimeSeconds': '1',
-     'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-     'makerAddress': '0x0000000000000000000000000000000000000000',
-     'makerAssetAmount': '1',
-     'makerAssetData': '0x0000000000000000000000000000000000000000',
-     'makerFee': '0',
-     'salt': '1',
-     'senderAddress': '0x0000000000000000000000000000000000000000',
-     'takerAddress': '0x0000000000000000000000000000000000000000',
-     'takerAssetAmount': '1',
-     'takerAssetData': '0x0000000000000000000000000000000000000000',
-     'takerFee': '0'}
-    """
-    jsdict = cast(Dict, copy(order))
-
-    # encode bytes fields
-    jsdict["makerAssetData"] = "0x" + order["makerAssetData"].hex()
-    jsdict["takerAssetData"] = "0x" + order["takerAssetData"].hex()
-
-    jsdict["exchangeAddress"] = exchange_address
-
-    jsdict["expirationTimeSeconds"] = str(order["expirationTimeSeconds"])
-
-    jsdict["makerAssetAmount"] = str(order["makerAssetAmount"])
-    jsdict["takerAssetAmount"] = str(order["takerAssetAmount"])
-
-    jsdict["makerFee"] = str(order["makerFee"])
-    jsdict["takerFee"] = str(order["takerFee"])
-
-    jsdict["salt"] = str(order["salt"])
-
-    if signature is not None:
-        jsdict["signature"] = signature
-
-    assert_valid(jsdict, "/orderSchema")
-
-    return jsdict
-
-
-def jsdict_to_order(jsdict: dict) -> Order:
-    r"""Convert a JSON-schema-compatible dict order to a Web3-compatible struct.
-
-    More specifically, do explicit encoding of the `bytes`:code: fields, and
-    parse integers from strings.
-
-    >>> import pprint
-    >>> pprint.pprint(jsdict_to_order(
-    ...     {
-    ...         'makerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'takerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
-    ...         'senderAddress': "0x0000000000000000000000000000000000000000",
-    ...         'makerAssetAmount': "1000000000000000000",
-    ...         'takerAssetAmount': "1000000000000000000",
-    ...         'makerFee': "0",
-    ...         'takerFee': "0",
-    ...         'expirationTimeSeconds': "12345",
-    ...         'salt': "12345",
-    ...         'makerAssetData': "0x0000000000000000000000000000000000000000",
-    ...         'takerAssetData': "0x0000000000000000000000000000000000000000",
-    ...         'exchangeAddress': "0x0000000000000000000000000000000000000000",
-    ...     },
-    ... ))
-    {'expirationTimeSeconds': 12345,
-     'feeRecipientAddress': '0x0000000000000000000000000000000000000000',
-     'makerAddress': '0x0000000000000000000000000000000000000000',
-     'makerAssetAmount': 1000000000000000000,
-     'makerAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-                       b'\x00\x00\x00\x00\x00\x00\x00\x00',
-     'makerFee': 0,
-     'salt': 12345,
-     'senderAddress': '0x0000000000000000000000000000000000000000',
-     'takerAddress': '0x0000000000000000000000000000000000000000',
-     'takerAssetAmount': 1000000000000000000,
-     'takerAssetData': b'\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-                       b'\x00\x00\x00\x00\x00\x00\x00\x00',
-     'takerFee': 0}
-    """  # noqa: E501 (line too long)
-    assert_valid(jsdict, "/orderSchema")
-
-    order = cast(Order, copy(jsdict))
-
-    order["makerAssetData"] = bytes.fromhex(
-        remove_0x_prefix(jsdict["makerAssetData"])
-    )
-    order["takerAssetData"] = bytes.fromhex(
-        remove_0x_prefix(jsdict["takerAssetData"])
-    )
-
-    order["makerAssetAmount"] = int(jsdict["makerAssetAmount"])
-    order["takerAssetAmount"] = int(jsdict["takerAssetAmount"])
-
-    order["makerFee"] = int(jsdict["makerFee"])
-    order["takerFee"] = int(jsdict["takerFee"])
-
-    order["expirationTimeSeconds"] = int(jsdict["expirationTimeSeconds"])
-
-    order["salt"] = int(jsdict["salt"])
-
-    del order["exchangeAddress"]  # type: ignore
-    # silence mypy pending release of
-    # https://github.com/python/mypy/issues/3550
-
-    return order
-
-
 def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     """Calculate the hash of the given order as a hexadecimal string.
 
@@ -374,20 +96,20 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
     :returns: A string, of ASCII hex digits, representing the order hash.
 
     >>> generate_order_hash_hex(
-    ...     {
-    ...         'makerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'takerAddress': "0x0000000000000000000000000000000000000000",
-    ...         'feeRecipientAddress': "0x0000000000000000000000000000000000000000",
-    ...         'senderAddress': "0x0000000000000000000000000000000000000000",
-    ...         'makerAssetAmount': "1000000000000000000",
-    ...         'takerAssetAmount': "1000000000000000000",
-    ...         'makerFee': "0",
-    ...         'takerFee': "0",
-    ...         'expirationTimeSeconds': "12345",
-    ...         'salt': "12345",
-    ...         'makerAssetData': (0).to_bytes(1, byteorder='big') * 20,
-    ...         'takerAssetData': (0).to_bytes(1, byteorder='big') * 20,
-    ...     },
+    ...     Order(
+    ...         makerAddress="0x0000000000000000000000000000000000000000",
+    ...         takerAddress="0x0000000000000000000000000000000000000000",
+    ...         feeRecipientAddress="0x0000000000000000000000000000000000000000",
+    ...         senderAddress="0x0000000000000000000000000000000000000000",
+    ...         makerAssetAmount="1000000000000000000",
+    ...         takerAssetAmount="1000000000000000000",
+    ...         makerFee="0",
+    ...         takerFee="0",
+    ...         expirationTimeSeconds="12345",
+    ...         salt="12345",
+    ...         makerAssetData=((0).to_bytes(1, byteorder='big') * 20),
+    ...         takerAssetData=((0).to_bytes(1, byteorder='big') * 20),
+    ...     ),
     ...     exchange_address="0x0000000000000000000000000000000000000000",
     ... )
     '55eaa6ec02f3224d30873577e9ddd069a288c16d6fb407210eecbc501fa76692'
@@ -427,19 +149,6 @@ def generate_order_hash_hex(order: Order, exchange_address: str) -> str:
         + eip712_domain_struct_hash
         + eip712_order_struct_hash
     ).hex()
-
-
-class OrderInfo(NamedTuple):
-    """A Web3-compatible representation of the Exchange.OrderInfo struct."""
-
-    order_status: str
-    """A `str`:code: describing the order's validity and fillability."""
-
-    order_hash: bytes
-    """A `bytes`:code: object representing the EIP712 hash of the order."""
-
-    order_taker_asset_filled_amount: int
-    """An `int`:code: indicating the amount that has already been filled."""
 
 
 def is_valid_signature(
@@ -636,3 +345,21 @@ def sign_hash(
         "Signature returned from web3 provider is in an unknown format."
         + " Attempted to parse as RSV and as VRS."
     )
+
+
+def sign_hash_to_bytes(
+    provider: BaseProvider, signer_address: str, hash_hex: str
+) -> bytes:
+    """Sign a message with the given hash, and return the signature.
+
+    >>> provider = Web3.HTTPProvider("http://127.0.0.1:8545")
+    >>> sign_hash_to_bytes(
+    ...     provider,
+    ...     Web3(provider).personal.listAccounts[0],
+    ...     '0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004',
+    ... ).decode(encoding='utf_8')
+    '1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03'
+    """  # noqa: E501 (line too long)
+    return remove_0x_prefix(
+        sign_hash(provider, signer_address, hash_hex)
+    ).encode(encoding="utf_8")

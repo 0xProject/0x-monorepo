@@ -1,13 +1,14 @@
-{{#if this.constant}}
+{{~#if outputs~}}
+{{^if this.constant}}
+Union[
+{{~/if~}}
 {{#if outputs.length}}
 {{#singleReturnValue}}
- {{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
+{{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
 {{/singleReturnValue}}
 {{^singleReturnValue}}
 [{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
 {{/singleReturnValue}}
-{{/if}}
-{{/if}}
-{{^if this.constant}}
- Union[HexBytes, bytes]
-{{~/if~}}
+{{else}}None
+{{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}
+{{else}}{{#if this.constant}}None{{else}}Union[None, Union[HexBytes, bytes]]{{/if}}{{/if~}}

@@ -186,6 +186,7 @@ setup(
         "build_sphinx": {
             "source_dir": ("setup.py", "src"),
             "build_dir": ("setup.py", "build/docs"),
+            "warning_is_error": ("setup.py", "true"),
         }
     },
 )

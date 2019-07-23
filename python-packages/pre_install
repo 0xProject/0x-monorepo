@@ -5,17 +5,21 @@
 from os import chdir, path
 import subprocess
 
+from concurrent.futures import ProcessPoolExecutor
+from os import chdir
+from subprocess import check_call
+from sys import argv
+
 PACKAGES = [
     "contract_wrappers",
     "contract_artifacts",
+    "json_schemas",
 ]
 
-for package in PACKAGES:
-    print(f"Running command `pre_install` in package {package}")
+def run_cmd_on_package(package: str):
+    """cd to the package dir, ./setup.py pre_install, cd .."""
     chdir(package)
-    subprocess.check_call(
-        (
-            path.join(".", "setup.py") + " pre_install"
-        ).split()
-    )
+    check_call(f"{path.join('.', 'setup.py')} pre_install".split())
     chdir("..")
+
+ProcessPoolExecutor().map(run_cmd_on_package, PACKAGES)
