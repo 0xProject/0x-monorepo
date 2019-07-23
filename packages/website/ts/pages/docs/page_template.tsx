@@ -13,7 +13,7 @@ import { Notification } from 'ts/components/docs/notification';
 import { OrderedList } from 'ts/components/docs/ordered_list';
 import { Resource } from 'ts/components/docs/resource/resource';
 import { Separator } from 'ts/components/docs/separator';
-import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
+import { Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
@@ -32,7 +32,7 @@ export const DocsPageTemplate: React.FC = () => {
             <Hero title={`Page Template`} description="This a subheader for the page" />
             <Section maxWidth="1150px" isPadded={false} overflow="visible">
                 <Columns>
-                    <Filters groups={filterGroups} />
+                    <Filters filters={filters} />
                     <Separator />
                     <ContentWrapper>
                         <LargeHeading>Large Heading</LargeHeading>
@@ -286,46 +286,14 @@ const usefulLinks: IStepLinkConfig[] = [
     },
 ];
 
-const filterGroups: FilterGroup[] = [
+const filters = [
     {
+        attribute: 'Topic',
         heading: 'Topic',
-        name: 'topic',
-        filters: [
-            {
-                value: 'Mesh',
-                label: 'Mesh',
-            },
-            {
-                value: 'Testing',
-                label: 'Testing',
-            },
-            {
-                value: 'Coordinator Model',
-                label: 'Coordinator Model',
-            },
-            {
-                value: 'Protocol developer',
-                label: 'Protocol developer',
-            },
-        ],
     },
     {
+        attribute: 'Difficulty',
         heading: 'Level',
-        name: 'level',
-        filters: [
-            {
-                value: 'Beginner',
-                label: 'Beginner',
-            },
-            {
-                value: 'Intermediate',
-                label: 'Intermediate',
-            },
-            {
-                value: 'Advanced',
-                label: 'Advanced',
-            },
-        ],
     },
 ];
 
