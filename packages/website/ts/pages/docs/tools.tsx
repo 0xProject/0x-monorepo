@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { FeatureLink } from 'ts/components/docs/feature_link';
 import { Hero } from 'ts/components/docs/hero';
 import { Resource } from 'ts/components/docs/resource/resource';
-import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
+import { Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
@@ -12,51 +12,63 @@ import { Heading } from 'ts/components/text';
 
 import { documentConstants } from 'ts/utils/document_meta_constants';
 
+import { ClearRefinements, Hits, InstantSearch } from 'react-instantsearch-dom';
+
+import algoliasearch from 'algoliasearch/lite';
+
+const searchClient = algoliasearch('39X6WOJZKW', '6acba761a34d99781628c6178af1e16c');
+
 export const DocsTools: React.FC = () => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title="Tools" />
             <Section maxWidth="1030px" isPadded={false}>
-                <Columns>
-                    <Filters groups={filterGroups} />
-                    <article>
-                        <FeaturedToolsWrapper>
-                            <Heading asElement="h2" size="default">
-                                Featured Tools
-                            </Heading>
-                            {featuredLinks.map((link, index) => (
-                                <FeatureLink
-                                    key={`featuredLink-${index}`}
-                                    heading={link.heading}
-                                    description={link.description}
-                                    icon={link.icon}
-                                    url={link.url}
-                                />
-                            ))}
-                        </FeaturedToolsWrapper>
+                <InstantSearch searchClient={searchClient} indexName="0x_tools_test">
+                    <ClearRefinements />
 
-                        <ResourcesWrapper>
-                            <Heading asElement="h2" size="default">
-                                Docker Images
-                            </Heading>
+                    <Columns>
+                        <Filters filters={filters} />
+                        <article>
+                            <Hits />
 
-                            {resources.map((resource, index) => (
-                                <Resource key={`resource-${index}`} {...resource} />
-                            ))}
-                        </ResourcesWrapper>
+                            <FeaturedToolsWrapper>
+                                <Heading asElement="h2" size="default">
+                                    Featured Tools
+                                </Heading>
+                                {featuredLinks.map((link, index) => (
+                                    <FeatureLink
+                                        key={`featuredLink-${index}`}
+                                        heading={link.heading}
+                                        description={link.description}
+                                        icon={link.icon}
+                                        url={link.url}
+                                    />
+                                ))}
+                            </FeaturedToolsWrapper>
 
-                        <ResourcesWrapper>
-                            <Heading asElement="h2" size="default">
-                                TypeScript Libraries
-                            </Heading>
+                            <ResourcesWrapper>
+                                <Heading asElement="h2" size="default">
+                                    Docker Images
+                                </Heading>
 
-                            {resources.map((resource, index) => (
-                                <Resource key={`resource-${index}`} {...resource} />
-                            ))}
-                        </ResourcesWrapper>
-                    </article>
-                </Columns>
+                                {resources.map((resource, index) => (
+                                    <Resource key={`resource-${index}`} {...resource} />
+                                ))}
+                            </ResourcesWrapper>
+
+                            <ResourcesWrapper>
+                                <Heading asElement="h2" size="default">
+                                    TypeScript Libraries
+                                </Heading>
+
+                                {resources.map((resource, index) => (
+                                    <Resource key={`resource-${index}`} {...resource} />
+                                ))}
+                            </ResourcesWrapper>
+                        </article>
+                    </Columns>
+                </InstantSearch>
             </Section>
         </SiteWrap>
     );
@@ -81,87 +93,9 @@ const ResourcesWrapper = styled.div`
     margin-bottom: 40px;
 `;
 
-const filterGroups: FilterGroup[] = [
-    {
-        heading: 'Type',
-        name: 'type',
-        filters: [
-            {
-                value: 'Docker images',
-                label: 'Docker images',
-            },
-            {
-                value: 'Typescript/Javascript Libraries',
-                label: 'Typescript/Javascript Libraries',
-            },
-            {
-                value: 'Python Libraries',
-                label: 'Python Libraries',
-            },
-            {
-                value: 'Golang Libraries',
-                label: 'Golang Libraries',
-            },
-            {
-                value: 'Starter projects',
-                label: 'Starter projects',
-            },
-            {
-                value: 'Command-line tools',
-                label: 'Command-line tools',
-            },
-        ],
-    },
-    {
-        heading: 'Developer Persona',
-        name: 'developerPersona',
-        filters: [
-            {
-                value: 'Relayer',
-                label: 'Relayer',
-            },
-            {
-                value: 'Trader',
-                label: 'Trader',
-            },
-            {
-                value: 'Instant integrator',
-                label: 'Instant integrator',
-            },
-            {
-                value: 'Protocol developer',
-                label: 'Protocol developer',
-            },
-        ],
-    },
-    {
-        heading: 'Level',
-        name: 'level',
-        filters: [
-            {
-                value: 'Beginner',
-                label: 'Beginner',
-            },
-            {
-                value: 'Intermediate',
-                label: 'Intermediate',
-            },
-            {
-                value: 'Advanced',
-                label: 'Advanced',
-            },
-        ],
-    },
-    {
-        heading: 'Communtity Maintained',
-        name: 'communityMaintained',
-        filters: [
-            {
-                value: '1',
-                label: 'Include Community Maintained',
-            },
-        ],
-    },
+const filters = [
+    { attribute: 'tags', heading: 'Developer persona' },
+    { attribute: 'difficulty', heading: 'Difficulty' },
 ];
 
 const featuredLinks = [

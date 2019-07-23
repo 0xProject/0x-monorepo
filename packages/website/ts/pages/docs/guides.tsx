@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import { Hero } from 'ts/components/docs/hero';
 import { Resource } from 'ts/components/docs/resource/resource';
-import { FilterGroup, Filters } from 'ts/components/docs/sidebar/filters';
+import { Filters } from 'ts/components/docs/sidebar/filters';
 import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
@@ -16,7 +16,7 @@ export const DocsGuides: React.FC = () => {
             <Hero title="Guides" />
             <Section maxWidth={'1030px'} isPadded={false} padding="0 0">
                 <Columns>
-                    <Filters groups={filterGroups} />
+                    <Filters filters={filters} />
                     <article>
                         {resources.map((resource, index) => (
                             <Resource key={`resource-${index}`} {...resource} />
@@ -39,46 +39,14 @@ const Columns = styled.div`
     }
 `;
 
-const filterGroups: FilterGroup[] = [
+const filters = [
     {
+        attribute: 'Topic',
         heading: 'Topic',
-        name: 'topic',
-        filters: [
-            {
-                value: 'Mesh',
-                label: 'Mesh',
-            },
-            {
-                value: 'Testing',
-                label: 'Testing',
-            },
-            {
-                value: 'Coordinator Model',
-                label: 'Coordinator Model',
-            },
-            {
-                value: 'Protocol developer',
-                label: 'Protocol developer',
-            },
-        ],
     },
     {
+        attribute: 'Difficulty',
         heading: 'Level',
-        name: 'level',
-        filters: [
-            {
-                value: 'Beginner',
-                label: 'Beginner',
-            },
-            {
-                value: 'Intermediate',
-                label: 'Intermediate',
-            },
-            {
-                value: 'Advanced',
-                label: 'Advanced',
-            },
-        ],
     },
 ];
 
