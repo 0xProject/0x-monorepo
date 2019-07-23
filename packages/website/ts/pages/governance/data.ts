@@ -69,7 +69,7 @@ export const proposals: Proposals = {
     39: {
         zeipId: 39,
         title: 'StaticCallAssetProxy',
-        summary: `This ZEIP introduces the ability to validate stateful assets during settlement, ensuring the asset has not been modified.`,
+        summary: `This ZEIP introduces the ability to create conditional orders based off of arbitrary blockchain state. This can be used to validate stateful assets during settlement, ensuring the asset has not been modified.`,
         url: '',
         voteStartDate: moment(1563814800, 'X'),
         voteEndDate: moment(1564419600, 'X'),
@@ -86,16 +86,13 @@ export const proposals: Proposals = {
         },
         risks: {
             title: 'Risk',
-            summary: `There is no risk in deploying ZEIP-39 as it has no ability to move assets from a users account.`,
+            summary: `There is no risk to user assets in deploying ZEIP-39 as it is incapable of changing any blockchain state.`,
             rating: 1,
             links: [
                 {
                     text: 'View Code',
-                    url: '',
-                },
-                {
-                    text: 'View Audit',
-                    url: '',
+                    url:
+                        'https://github.com/0xProject/0x-monorepo/blob/development/contracts/asset-proxy/contracts/src/StaticCallProxy.sol#L25',
                 },
             ],
         },
