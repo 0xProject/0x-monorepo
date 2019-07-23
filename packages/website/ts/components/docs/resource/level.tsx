@@ -5,14 +5,14 @@ import { RatingBar } from 'ts/components/docs/resource/rating_bar';
 
 import { colors } from 'ts/style/colors';
 
-export interface LevelProps {
+interface ILevelProps {
     difficulty: Difficulty;
 }
 
 export enum Difficulty {
-    Beginner = 'beginner',
-    Intermediate = 'intermediate',
-    Advanced = 'advanced',
+    Beginner = 'Beginner',
+    Intermediate = 'Intermediate',
+    Advanced = 'Advanced',
 }
 
 const difficulties = {
@@ -30,12 +30,12 @@ const difficulties = {
     },
 };
 
-export const Level: React.FC<LevelProps> = ({ difficulty }) => {
-    const info = difficulties[difficulty];
+export const Level: React.FC<ILevelProps> = ({ difficulty }) => {
+    const { label, rating } = difficulties[difficulty];
     return (
         <LevelWrapper>
-            <DifficultyLabel>{info.label}</DifficultyLabel>
-            <RatingBar rating={info.rating} />
+            <DifficultyLabel>{label}</DifficultyLabel>
+            <RatingBar rating={rating} />
         </LevelWrapper>
     );
 };
