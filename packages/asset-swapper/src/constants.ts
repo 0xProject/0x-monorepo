@@ -9,6 +9,7 @@ import {
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
 } from './types';
+import { MethodAbi, AbiType } from 'ethereum-protocol';
 
 const NULL_BYTES = '0x';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -44,6 +45,16 @@ const DEFAULT_LIQUIDITY_REQUEST_OPTS: LiquidityRequestOpts = {
     shouldForceOrderRefresh: false,
 };
 
+const DYDX_EXCHANGE_WRAPPERS_METHOD_ABI: MethodAbi = {
+    name: 'exchange',
+    inputs: [],
+    outputs: [],
+    constant: false,
+    stateMutability: 'nonpayable',
+    payable: false,
+    type: AbiType.Function,
+};
+
 export const constants = {
     NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
@@ -59,4 +70,5 @@ export const constants = {
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
     DEFAULT_PER_PAGE,
     DEFAULT_LIQUIDITY_REQUEST_OPTS,
+    DYDX_EXCHANGE_WRAPPERS_METHOD_ABI,
 };

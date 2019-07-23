@@ -7,12 +7,15 @@ import { constants } from '../constants';
 import {
     CalldataInfo,
     ConsumerType,
+    ExchangeWrappersParams,
+    ExchangeWrappersParamsInfo,
     SmartContractParams,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerOpts,
     SwapQuoteExecutionOpts,
+    SwapQuoteGetExchangeWrappersParamsOpts,
     SwapQuoteGetOutputOpts,
 } from '../types';
 import { assert } from '../utils/assert';
@@ -21,7 +24,7 @@ import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
-export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractParams> {
+export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractParams, ExchangeWrappersParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -42,6 +45,13 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
+    }
+
+    public async getExchangeWrappersParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>,
+    ): Promise<ExchangeWrappersParamsInfo<ExchangeWrappersParams>> {
+        return this._exchangeConsumer.getExchangeWrappersParamsOrThrowAsync(quote, opts);
     }
 
     public async getCalldataOrThrowAsync(
@@ -74,7 +84,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     private async _getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
+    ): Promise<SwapQuoteConsumerBase<SmartContractParams, ExchangeWrappersParams>> {
         if (opts.useConsumerType === ConsumerType.Exchange) {
             return this._exchangeConsumer;
         } else if (opts.useConsumerType === ConsumerType.Forwarder) {

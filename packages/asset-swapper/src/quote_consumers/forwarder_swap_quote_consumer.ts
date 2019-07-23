@@ -9,6 +9,8 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
+    ExchangeWrappersParams,
+    ExchangeWrappersParamsInfo,
     ForwarderSmartContractParams,
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
@@ -17,6 +19,8 @@ import {
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
+    SwapQuoteGetExchangeWrappersParamsOpts,
+    SwapQuoterError,
 } from '../types';
 import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
@@ -24,7 +28,7 @@ import { assetDataUtils } from '../utils/asset_data_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<ForwarderSmartContractParams> {
+export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<ForwarderSmartContractParams, ExchangeWrappersParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -40,6 +44,14 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
         });
+    }
+
+    // tslint:disable-next-line: prefer-function-over-method
+    public async getExchangeWrappersParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>,
+    ): Promise<ExchangeWrappersParamsInfo<ExchangeWrappersParams>> {
+        throw new Error(SwapQuoteConsumerError.DoNotSupportConsumerOutput);
     }
 
     /**

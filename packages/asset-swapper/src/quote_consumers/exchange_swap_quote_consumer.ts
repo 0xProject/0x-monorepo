@@ -1,5 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
-import { MarketOperation } from '@0x/types';
+import { assetDataUtils } from '@0x/order-utils';
+import { ERC20AssetData, MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -8,20 +9,26 @@ import * as _ from 'lodash';
 import { constants } from '../constants';
 import {
     CalldataInfo,
+    DydxExchangeWrappersParams,
     ExchangeSmartContractParams,
+    ExchangeWrappersParams,
+    ExchangeWrappersParamsInfo,
+    ExchangeWrapperType,
     SmartContractParamsInfo,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
     SwapQuoteExecutionOptsBase,
+    SwapQuoteGetExchangeWrappersParamsOpts,
     SwapQuoteGetOutputOptsBase,
 } from '../types';
 import { assert } from '../utils/assert';
+import { exchangeWrappersUtils } from '../utils/exchange_wrappers_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<ExchangeSmartContractParams> {
+export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<ExchangeSmartContractParams, ExchangeWrappersParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -38,6 +45,38 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             networkId,
         });
     }
+
+    public async getExchangeWrappersParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>,
+    ): Promise<ExchangeWrappersParamsInfo<ExchangeWrappersParams>> {
+        if (quote.type === MarketOperation.Sell && opts.useExchangeWrapperType === ExchangeWrapperType.Dydx) {
+            const smartContractParams = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+
+            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData) as ERC20AssetData;
+            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData) as ERC20AssetData;
+
+            const params: DydxExchangeWrappersParams = {
+                tradeOriginator: constants.NULL_ADDRESS,
+                // TODO: specify receiver
+                receiver: constants.NULL_ADDRESS,
+                makerToken: decodedMakerAssetData.tokenAddress,
+                takerToken: decodedTakerAssetData.tokenAddress,
+                requestedFillAmount: quote.takerAssetFillAmount,
+                orderData: exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote),
+            };
+
+            return {
+                params,
+                methodAbi: constants.DYDX_EXCHANGE_WRAPPERS_METHOD_ABI,
+                // TODO: add recipient of dydx exchange wrappers parameters
+                to: '',
+                ethAmount: smartContractParams.ethAmount,
+            };
+        } else {
+            throw new Error(SwapQuoteConsumerError.DoNotSupportConsumerOutput);
+        }
+   }
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,

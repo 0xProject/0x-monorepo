@@ -15,6 +15,7 @@ import {
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
+    ExchangeWrappersParams,
 } from '../types';
 
 import { assert } from './assert';
@@ -90,7 +91,7 @@ export const swapQuoteConsumerUtils = {
         exchangeConsumer: ExchangeSwapQuoteConsumer,
         forwarderConsumer: ForwarderSwapQuoteConsumer,
         opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
+    ): Promise<SwapQuoteConsumerBase<SmartContractParams, ExchangeWrappersParams>> {
         const wethAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {

@@ -2,6 +2,8 @@ import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
+import { constants } from './constants';
+
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
@@ -102,6 +104,10 @@ export enum ConsumerType {
     Exchange,
 }
 
+export enum ExchangeWrapperType {
+    Dydx,
+}
+
 /**
  * Represents all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
  */
@@ -149,13 +155,32 @@ export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartCo
  * getSmartContractParamsOrThrow: Get SmartContractParamsInfo to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
-export interface SwapQuoteConsumerBase<T> {
+export interface SwapQuoteConsumerBase<SCParams, EWParams> {
+    getExchangeWrappersParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>): Promise<ExchangeWrappersParamsInfo<EWParams>>;
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOptsBase>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOptsBase>,
-    ): Promise<SmartContractParamsInfo<T>>;
+    ): Promise<SmartContractParamsInfo<SCParams>>;
     executeSwapQuoteOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteExecutionOptsBase>): Promise<string>;
+}
+
+export interface DydxExchangeWrappersParams {
+    tradeOriginator: string;
+    receiver: string;
+    makerToken: string;
+    takerToken: string;
+    requestedFillAmount: BigNumber;
+    orderData: string;
+}
+
+export type ExchangeWrappersParams = DydxExchangeWrappersParams;
+
+export interface ExchangeWrappersParamsInfo<T> {
+    params: T;
+    methodAbi: MethodAbi;
+    to: string;
+    ethAmount?: BigNumber;
 }
 
 /**
@@ -163,6 +188,10 @@ export interface SwapQuoteConsumerBase<T> {
  */
 export interface SwapQuoteConsumerOpts {
     networkId: number;
+}
+
+export interface SwapQuoteGetExchangeWrappersParamsOpts extends SwapQuoteGetOutputOpts {
+    useExchangeWrapperType: ExchangeWrapperType;
 }
 
 /**
@@ -304,6 +333,7 @@ export enum SwapQuoteConsumerError {
     NoAddressAvailable = 'NO_ADDRESS_AVAILABLE',
     SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
     TransactionValueTooLow = 'TRANSACTION_VALUE_TOO_LOW',
+    DoNotSupportConsumerOutput = 'DO_NOT_SUPPORT_CONSUMER_OUTPUT',
 }
 
 /**
