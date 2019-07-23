@@ -1,53 +1,26 @@
 import React from 'react';
 
-import { Filter } from 'ts/components/docs/sidebar/filter';
-import { Heading } from 'ts/components/text';
+import { FiltersGroup } from 'ts/components/docs/sidebar/filters_group';
 
-import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
 
-export interface IFiltersProps {
-    groups: FilterGroup[];
+interface IFiltersProps {
+    filters: IFiltersGroupProps[];
 }
-
-export interface FilterGroup {
+interface IFiltersGroupProps {
+    attribute: string;
     heading: string;
-    name: string;
-    filters: IFilterProps[];
 }
 
-interface IFilterProps {
-    value: string;
-    label: string;
-}
-
-export const Filters: React.FC<IFiltersProps> = ({ groups }) => {
-    return (
-        <FiltersWrapper>
-            {groups.map(({ heading, name, filters }: FilterGroup, groupIndex) => (
-                <FiltersGroupWrapper key={`filter-group-${groupIndex}`}>
-                    <FilterGroupHeading asElement="h3">{heading}</FilterGroupHeading>
-                    {filters.map(({ value, label }: IFilterProps, filterIndex) => (
-                        <Filter key={`filter-${name}-${filterIndex}`} name={name} value={value} label={label} />
-                    ))}
-                </FiltersGroupWrapper>
-            ))}
-        </FiltersWrapper>
-    );
-};
+export const Filters: React.FC<IFiltersProps> = ({ filters }) => (
+    <FiltersWrapper>
+        {filters.map((filter: IFiltersGroupProps, index: number) => (
+            <FiltersGroup key={`filter-${index}`} {...filter} />
+        ))}
+    </FiltersWrapper>
+);
 
 const FiltersWrapper = styled.aside`
     position: relative;
     max-width: 700px;
-`;
-
-const FiltersGroupWrapper = styled.div`
-    margin-bottom: 2.22em;
-`;
-
-const FilterGroupHeading = styled(Heading)`
-    color: ${colors.textDarkPrimary};
-    font-size: 1rem !important;
-    font-weight: 400 !important;
-    margin-bottom: 1em !important;
 `;
