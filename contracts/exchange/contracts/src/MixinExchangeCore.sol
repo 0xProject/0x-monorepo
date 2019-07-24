@@ -33,7 +33,6 @@ import "./MixinSignatureValidator.sol";
 contract MixinExchangeCore is
     IExchangeCore,
     LibMath,
-    LibFillResults,
     MixinAssetProxyDispatcher,
     MixinSignatureValidator
 {
@@ -89,13 +88,13 @@ contract MixinExchangeCore is
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         public
         nonReentrant
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
             order,
@@ -108,7 +107,7 @@ contract MixinExchangeCore is
     /// @dev After calling, the order can not be filled anymore.
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    function cancelOrder(Order memory order)
+    function cancelOrder(LibOrder.Order memory order)
         public
         nonReentrant
     {
@@ -119,13 +118,13 @@ contract MixinExchangeCore is
     /// @param order Order to gather information on.
     /// @return OrderInfo Information about the order and its state.
     ///         See LibOrder.OrderInfo for a complete description.
-    function getOrderInfo(Order memory order)
+    function getOrderInfo(LibOrder.Order memory order)
         public
         view
-        returns (OrderInfo memory orderInfo)
+        returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Compute the order hash
-        orderInfo.orderHash = getOrderHash(order);
+        orderInfo.orderHash = LibOrder.getOrderHash(order);
 
         // Fetch filled amount
         orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
@@ -135,7 +134,7 @@ contract MixinExchangeCore is
         // edge cases in the supporting infrastructure because they have
         // an 'infinite' price when computed by a simple division.
         if (order.makerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(OrderStatus.INVALID_MAKER_ASSET_AMOUNT);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.INVALID_MAKER_ASSET_AMOUNT);
             return orderInfo;
         }
 
@@ -144,35 +143,35 @@ contract MixinExchangeCore is
         // Instead of distinguishing between unfilled and filled zero taker
         // amount orders, we choose not to support them.
         if (order.takerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(OrderStatus.INVALID_TAKER_ASSET_AMOUNT);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.INVALID_TAKER_ASSET_AMOUNT);
             return orderInfo;
         }
 
         // Validate order availability
         if (orderInfo.orderTakerAssetFilledAmount >= order.takerAssetAmount) {
-            orderInfo.orderStatus = uint8(OrderStatus.FULLY_FILLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.FULLY_FILLED);
             return orderInfo;
         }
 
         // Validate order expiration
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= order.expirationTimeSeconds) {
-            orderInfo.orderStatus = uint8(OrderStatus.EXPIRED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.EXPIRED);
             return orderInfo;
         }
 
         // Check if order has been cancelled
         if (cancelled[orderInfo.orderHash]) {
-            orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.CANCELLED);
             return orderInfo;
         }
         if (orderEpoch[order.makerAddress][order.senderAddress] > order.salt) {
-            orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.CANCELLED);
             return orderInfo;
         }
 
         // All other statuses are ruled out: order is Fillable
-        orderInfo.orderStatus = uint8(OrderStatus.FILLABLE);
+        orderInfo.orderStatus = uint8(LibOrder.OrderStatus.FILLABLE);
         return orderInfo;
     }
 
@@ -182,15 +181,15 @@ contract MixinExchangeCore is
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function _fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // Fetch order info
-        OrderInfo memory orderInfo = getOrderInfo(order);
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Fetch taker address
         address takerAddress = _getCurrentContextAddress();
@@ -235,11 +234,11 @@ contract MixinExchangeCore is
     /// @dev After calling, the order can not be filled anymore.
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    function _cancelOrder(Order memory order)
+    function _cancelOrder(LibOrder.Order memory order)
         internal
     {
         // Fetch current order status
-        OrderInfo memory orderInfo = getOrderInfo(order);
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Validate context
         _assertValidCancel(order, orderInfo);
@@ -258,11 +257,11 @@ contract MixinExchangeCore is
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
     function _updateFilledState(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         internal
     {
@@ -294,7 +293,7 @@ contract MixinExchangeCore is
     /// @param order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
     function _updateCancelledState(
-        Order memory order,
+        LibOrder.Order memory order,
         bytes32 orderHash
     )
         internal
@@ -319,8 +318,8 @@ contract MixinExchangeCore is
     /// @param takerAddress Address of order taker.
     /// @param signature Proof that the orders was created by its maker.
     function _assertFillableOrder(
-        Order memory order,
-        OrderInfo memory orderInfo,
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo,
         address takerAddress,
         bytes memory signature
     )
@@ -328,10 +327,10 @@ contract MixinExchangeCore is
         view
     {
         // An order can only be filled if its status is FILLABLE.
-        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
+        if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
             LibRichErrors._rrevert(LibExchangeRichErrors.OrderStatusError(
                 orderInfo.orderHash,
-                OrderStatus(orderInfo.orderStatus)
+                LibOrder.OrderStatus(orderInfo.orderStatus)
             ));
         }
 
@@ -367,7 +366,7 @@ contract MixinExchangeCore is
                     orderInfo.orderHash,
                     signature)) {
                 LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
-                    SignatureErrorCodes.BAD_SIGNATURE,
+                    IExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature
@@ -380,8 +379,8 @@ contract MixinExchangeCore is
     /// @param order to be cancelled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     function _assertValidCancel(
-        Order memory order,
-        OrderInfo memory orderInfo
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo
     )
         internal
         view
@@ -405,12 +404,12 @@ contract MixinExchangeCore is
     /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
     /// @return fillResults Amounts filled and fees paid by maker and taker.
     function _calculateFillResults(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFilledAmount
     )
         internal
         pure
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;

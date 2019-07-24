@@ -234,9 +234,13 @@ contract MixinMatchOrders is
     /// @dev Validates context for matchOrders. Succeeds or throws.
     /// @param leftOrder First order to match.
     /// @param rightOrder Second order to match.
+    /// @param leftOrderInfo OrderStatus, orderHash, and amount already filled of leftOrder.
+    /// @param rightOrderInfo OrderStatus, orderHash, and amount already filled of rightOrder.
     function _assertValidMatch(
         LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder
+        LibOrder.Order memory rightOrder,
+        LibOrder.OrderInfo memory leftOrderInfo,
+        LibOrder.OrderInfo memory rightOrderInfo
     )
         internal
         view
@@ -252,8 +256,8 @@ contract MixinMatchOrders is
         if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
             _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
             LibRichErrors._rrevert(LibExchangeRichErrors.NegativeSpreadError(
-                getOrderHash(leftOrder),
-                getOrderHash(rightOrder)
+                leftOrderInfo.orderHash,
+                rightOrderInfo.orderHash
             ));
         }
     }
@@ -268,7 +272,7 @@ contract MixinMatchOrders is
     /// @param rightMakerAssetAmountRemaining The amount of the right order maker asset that can still be filled.
     /// @param rightTakerAssetAmountRemaining The amount of the right order taker asset that can still be filled.
     function _calculateMatchedFillResults(
-        MatchedFillResults memory matchedFillResults,
+        LibFillResults.MatchedFillResults memory matchedFillResults,
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftMakerAssetAmountRemaining,
@@ -339,7 +343,7 @@ contract MixinMatchOrders is
     /// @param rightMakerAssetAmountRemaining The amount of the right order maker asset that can still be filled.
     /// @param rightTakerAssetAmountRemaining The amount of the right order taker asset that can still be filled.
     function _calculateMatchedFillResultsWithMaximalFill(
-        MatchedFillResults memory matchedFillResults,
+        LibFillResults.MatchedFillResults memory matchedFillResults,
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
         uint256 leftMakerAssetAmountRemaining,
@@ -428,7 +432,7 @@ contract MixinMatchOrders is
     /// @param rightMakerAssetAmountRemaining The amount of the right maker asset that is remaining to be filled.
     /// @param rightTakerAssetAmountRemaining The amount of the right taker asset that is remaining to be filled.
     function _calculateCompleteFillBoth(
-        MatchedFillResults memory matchedFillResults,
+        LibFillResults.MatchedFillResults memory matchedFillResults,
         uint256 leftMakerAssetAmountRemaining,
         uint256 leftTakerAssetAmountRemaining,
         uint256 rightMakerAssetAmountRemaining,
@@ -452,7 +456,7 @@ contract MixinMatchOrders is
     /// @param rightMakerAssetAmountRemaining The amount of the right maker asset that is remaining to be filled.
     /// @param rightTakerAssetAmountRemaining The amount of the right taker asset that is remaining to be filled.
     function _calculateCompleteRightFill(
-        MatchedFillResults memory matchedFillResults,
+        LibFillResults.MatchedFillResults memory matchedFillResults,
         LibOrder.Order memory leftOrder,
         uint256 rightMakerAssetAmountRemaining,
         uint256 rightTakerAssetAmountRemaining
@@ -497,24 +501,24 @@ contract MixinMatchOrders is
         // Ensure that the left and right orders have nonzero lengths.
         if (leftOrders.length == 0) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS
+                IExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS
             ));
         }
         if (rightOrders.length == 0) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS
+                IExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS
             ));
         }
 
         // Ensure that the left and right arrays are compatible.
         if (leftOrders.length != leftSignatures.length) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.INVALID_LENGTH_LEFT_SIGNATURES
+                IExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_LEFT_SIGNATURES
             ));
         }
         if (rightOrders.length != rightSignatures.length) {
             LibRichErrors._rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                BatchMatchOrdersErrorCodes.INVALID_LENGTH_RIGHT_SIGNATURES
+                IExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_RIGHT_SIGNATURES
             ));
         }
 
@@ -556,11 +560,11 @@ contract MixinMatchOrders is
             );
 
             // Aggregate the new fill results with the previous fill results for the current orders.
-            _addFillResults(
+            LibFillResults._addFillResults(
                 leftFillResults,
                 matchResults.left
             );
-            _addFillResults(
+            LibFillResults._addFillResults(
                 rightFillResults,
                 matchResults.right
             );

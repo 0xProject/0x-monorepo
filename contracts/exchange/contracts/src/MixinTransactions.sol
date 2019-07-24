@@ -28,7 +28,6 @@ import "./LibExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
-    LibZeroExTransaction,
     ISignatureValidator,
     ITransactions
 {
@@ -44,7 +43,7 @@ contract MixinTransactions is
     /// @param signature Proof that transaction has been signed by signer.
     /// @return ABI encoded return data of the underlying Exchange function call.
     function executeTransaction(
-        ZeroExTransaction memory transaction,
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
         public
@@ -58,7 +57,7 @@ contract MixinTransactions is
     /// @param signatures Array of proofs that transactions have been signed by signer(s).
     /// @return Array containing ABI encoded return data for each of the underlying Exchange function calls.
     function batchExecuteTransactions(
-        ZeroExTransaction[] memory transactions,
+        LibZeroExTransaction.ZeroExTransaction[] memory transactions,
         bytes[] memory signatures
     )
         public
@@ -77,13 +76,13 @@ contract MixinTransactions is
     /// @param signature Proof that transaction has been signed by signer.
     /// @return ABI encoded return data of the underlying Exchange function call.
     function _executeTransaction(
-        ZeroExTransaction memory transaction,
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
         internal
         returns (bytes memory)
     {
-        bytes32 transactionHash = getTransactionHash(transaction);
+        bytes32 transactionHash = LibZeroExTransaction.getTransactionHash(transaction);
 
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time

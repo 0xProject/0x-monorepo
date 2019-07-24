@@ -113,10 +113,10 @@ contract LibOrder is
         // Assembly for more efficiently computing:
         // keccak256(abi.encodePacked(
         //     EIP712_ORDER_SCHEMA_HASH,
-        //     bytes32(order.makerAddress),
-        //     bytes32(order.takerAddress),
-        //     bytes32(order.feeRecipientAddress),
-        //     bytes32(order.senderAddress),
+        //     uint256(order.makerAddress),
+        //     uint256(order.takerAddress),
+        //     uint256(order.feeRecipientAddress),
+        //     uint256(order.senderAddress),
         //     order.makerAssetAmount,
         //     order.takerAssetAmount,
         //     order.makerFee,

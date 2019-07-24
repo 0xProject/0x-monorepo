@@ -46,7 +46,7 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrKillOrder(
             order,
@@ -68,7 +68,7 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
@@ -99,10 +99,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrder(
                 orders[i],
@@ -125,10 +125,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrKillOrder(
                 orders[i],
@@ -150,10 +150,10 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = fillOrderNoThrow(
                 orders[i],
@@ -175,7 +175,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
@@ -191,14 +191,14 @@ contract MixinWrapperFunctions is
             uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
+            LibFillResults._addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -219,7 +219,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
@@ -243,14 +243,14 @@ contract MixinWrapperFunctions is
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
+            LibFillResults._addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
@@ -298,7 +298,7 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
             order,

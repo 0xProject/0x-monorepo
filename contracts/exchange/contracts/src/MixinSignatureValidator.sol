@@ -36,8 +36,6 @@ import "./MixinTransactions.sol";
 contract MixinSignatureValidator is
     ReentrancyGuard,
     LibEIP1271,
-    LibOrder,
-    LibZeroExTransaction,
     ISignatureValidator,
     MixinTransactions
 {
@@ -129,14 +127,14 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given order and signer.
     function isValidOrderSignature(
-        Order memory order,
+        LibOrder.Order memory order,
         bytes memory signature
     )
         public
         view
         returns (bool isValid)
     {
-        bytes32 orderHash = getOrderHash(order);
+        bytes32 orderHash = LibOrder.getOrderHash(order);
         return _isValidOrderWithHashSignature(
             order,
             orderHash,
@@ -149,14 +147,14 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given transaction and signer.
     function isValidTransactionSignature(
-        ZeroExTransaction memory transaction,
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
         public
         view
         returns (bool isValid)
     {
-        bytes32 transactionHash = getTransactionHash(transaction);
+        bytes32 transactionHash = LibZeroExTransaction.getTransactionHash(transaction);
         isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,
@@ -198,7 +196,7 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given order and signer.
     function _isValidOrderWithHashSignature(
-        Order memory order,
+        LibOrder.Order memory order,
         bytes32 orderHash,
         bytes memory signature
     )
@@ -246,7 +244,7 @@ contract MixinSignatureValidator is
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given transaction and signer.
     function _isValidTransactionWithHashSignature(
-        ZeroExTransaction memory transaction,
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes32 transactionHash,
         bytes memory signature
     )
