@@ -1,5 +1,5 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { SignedOrder, MarketOperation } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
