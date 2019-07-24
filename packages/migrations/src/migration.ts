@@ -22,7 +22,6 @@ export async function runMigrationsAsync(
     txDefaults: TxData,
 ): Promise<ContractAddresses> {
     const provider = providerUtils.standardizeOrThrow(supportedProvider);
-    const chainId = await providerUtils.getChainIdAsync(provider);
     const web3Wrapper = new Web3Wrapper(provider);
 
     // Proxies
@@ -54,7 +53,6 @@ export async function runMigrationsAsync(
         provider,
         txDefaults,
         zrxAssetData,
-        new BigNumber(chainId),
     );
 
     // Dummy ERC20 tokens
@@ -198,7 +196,6 @@ export async function runMigrationsAsync(
         provider,
         txDefaults,
         exchange.address,
-        new BigNumber(chainId),
     );
 
     const contractAddresses = {

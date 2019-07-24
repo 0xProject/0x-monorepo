@@ -5,7 +5,7 @@ import { SignedOrder } from '@0x/types';
 import { constants as exchangeConstants, ExchangeFunctionName, IExchangeContract } from '../../src';
 
 export const exchangeDataEncoder = {
-    encodeOrdersToExchangeData(fnName: string, orders: SignedOrder[] = []): string {
+    encodeOrdersToExchangeData(fnName: ExchangeFunctionName, orders: SignedOrder[] = []): string {
         const exchangeInstance = new IExchangeContract(constants.NULL_ADDRESS, provider);
         let data;
         if (exchangeConstants.SINGLE_FILL_FN_NAMES.indexOf(fnName) !== -1) {

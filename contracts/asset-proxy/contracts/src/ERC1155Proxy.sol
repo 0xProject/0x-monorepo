@@ -71,7 +71,7 @@ contract ERC1155Proxy is
             // to avoid copying over `ids` or `data`. This is possible if they are
             // identical to `values` and the offsets for each are pointing to the 
             // same location in the ABI encoded calldata.
-            scaledValues[i] = safeMul(values[i], amount);
+            scaledValues[i] = _safeMul(values[i], amount);
         }
 
         // Execute `safeBatchTransferFrom` call
