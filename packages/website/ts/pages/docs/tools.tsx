@@ -2,10 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 
 import { FeatureLink } from 'ts/components/docs/feature_link';
-import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
+
 import { Resource } from 'ts/components/docs/resource/resource';
 import { Filters } from 'ts/components/docs/sidebar/filters';
 import { Heading } from 'ts/components/text';
+
+import { Columns } from 'ts/components/docs/layout/columns';
+import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
+import { Separator } from 'ts/components/docs/separator';
 
 import { Hits, InstantSearch } from 'react-instantsearch-dom';
 
@@ -19,7 +23,8 @@ export const DocsTools: React.FC = () => {
             <InstantSearch searchClient={searchClient} indexName="0x_tools_test">
                 <Columns>
                     <Filters filters={filters} />
-                    <article>
+                    <Separator />
+                    <ContentWrapper>
                         <Hits hitComponent={Resource} />
 
                         {/* <FeaturedToolsWrapper>
@@ -56,22 +61,15 @@ export const DocsTools: React.FC = () => {
                                     <Resource key={`resource-${index}`} {...resource} />
                                 ))}
                             </ResourcesWrapper> */}
-                    </article>
+                    </ContentWrapper>
                 </Columns>
             </InstantSearch>
         </DocsPageLayout>
     );
 };
 
-const Columns = styled.div`
-    display: grid;
-    grid-template-columns: 250px 1fr;
-    grid-column-gap: 98px;
-    grid-row-gap: 30px;
-
-    @media (max-width: 900px) {
-        grid-template-columns: 1fr;
-    }
+const ContentWrapper = styled.article`
+    min-width: 0;
 `;
 
 const FeaturedToolsWrapper = styled.div`
