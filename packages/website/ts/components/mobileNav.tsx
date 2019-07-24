@@ -1,5 +1,4 @@
 import React from 'react';
-import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
 import { Link } from '@0x/react-shared';
@@ -21,42 +20,40 @@ export const MobileNav: React.FC<IMobileNavProps> = props => {
     const { isToggled, toggleMobileNav } = props;
 
     return (
-        <MediaQuery maxWidth={800}>
-            <Wrap isToggled={isToggled}>
-                <Section>
-                    <h4>Products</h4>
-                    <ul>
-                        <li>
-                            <Link to={WebsitePaths.Instant}>0x Instant</Link>
-                        </li>
-                        <li>
-                            <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
-                        </li>
-                        <li>
-                            <Link to={WebsitePaths.AssetSwapperPage}>Swap Tokens</Link>
-                        </li>
-                    </ul>
-                </Section>
+        <Wrap isToggled={isToggled}>
+            <Section>
+                <h4>Products</h4>
+                <ul>
+                    <li>
+                        <Link to={WebsitePaths.Instant}>0x Instant</Link>
+                    </li>
+                    <li>
+                        <Link to={WebsitePaths.LaunchKit}>0x Launch Kit</Link>
+                    </li>
+                    <li>
+                        <Link to={WebsitePaths.AssetSwapperPage}>Swap Tokens</Link>
+                    </li>
+                </ul>
+            </Section>
 
-                <Section isDark={true}>
-                    <Grid as="ul" isFullWidth={true} isWrapped={true}>
-                        <li>
-                            <Link to={WebsitePaths.Why}>Why 0x</Link>
-                        </li>
-                        <li>
-                            <Link to={WebsitePaths.AboutMission}>About</Link>
-                        </li>
-                        <li>
-                            <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
-                                Blog
-                            </Link>
-                        </li>
-                    </Grid>
-                </Section>
+            <Section isDark={true}>
+                <Grid as="ul" isFullWidth={true} isWrapped={true}>
+                    <li>
+                        <Link to={WebsitePaths.Why}>Why 0x</Link>
+                    </li>
+                    <li>
+                        <Link to={WebsitePaths.AboutMission}>About</Link>
+                    </li>
+                    <li>
+                        <Link to={constants.URL_BLOG} shouldOpenInNewTab={true}>
+                            Blog
+                        </Link>
+                    </li>
+                </Grid>
+            </Section>
 
-                {isToggled && <Overlay onClick={toggleMobileNav} />}
-            </Wrap>
-        </MediaQuery>
+            {isToggled && <Overlay onClick={toggleMobileNav} />}
+        </Wrap>
     );
 };
 
