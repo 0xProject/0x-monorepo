@@ -19,6 +19,7 @@ import { ForwarderWrapper } from './forwarder_wrapper';
 chaiSetup.configure();
 const expect = chai.expect;
 
+// Necessary bookkeeping to validate Forwarder results
 interface ForwarderFillState {
     takerAssetFillAmount: BigNumber;
     makerAssetFillAmount: BigNumber;
@@ -28,6 +29,9 @@ interface ForwarderFillState {
     maxOverboughtMakerAsset: BigNumber;
 }
 
+// Simulates filling some orders via the Forwarder contract. For example, if
+// orders = [A, B, C, D] and fractionalNumberOfOrdersToFill = 2.3, then
+// we simulate A and B being completely filled, and 0.3 * C being filled.
 function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersToFill: BigNumber): ForwarderFillState {
     const currentState = {
         takerAssetFillAmount: constants.ZERO_AMOUNT,
@@ -71,7 +75,7 @@ function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersT
                 currentState.percentageFees = currentState.percentageFees.plus(takerFee);
             } else if (order.takerFeeAssetData === order.takerAssetData) {
                 currentState.wethFees = currentState.wethFees.plus(takerFee);
-                // Up to 1 wei worth of WETH will be oversold per order
+                // Up to 1 wei worth of WETH will be oversold per order due to rounding
                 currentState.maxOversoldWeth = currentState.maxOversoldWeth.plus(new BigNumber(1));
                 // Equivalently, up to 1 wei worth of maker asset will be overbought per order
                 currentState.maxOverboughtMakerAsset = currentState.maxOversoldWeth
@@ -86,6 +90,7 @@ function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersT
     return currentState;
 }
 
+// Since bignumber is not compatible with chai's within
 function expectBalanceWithin(balance: BigNumber, low: BigNumber, high: BigNumber): void {
     expect(balance).to.be.bignumber.gte(low);
     expect(balance).to.be.bignumber.lte(high);
@@ -99,8 +104,8 @@ export class ForwarderTestFactory {
     private readonly _takerAddress: string;
     private readonly _orderFeeRecipientAddress: string;
     private readonly _forwarderFeeRecipientAddress: string;
-    private readonly _gasPrice: BigNumber;
     private readonly _wethAddress: string;
+    private readonly _gasPrice: BigNumber;
 
     public static getPercentageOfValue(value: BigNumber, percentage: BigNumber): BigNumber {
         const numerator = constants.PERCENTAGE_DENOMINATOR.times(percentage).dividedToIntegerBy(100);
@@ -116,8 +121,8 @@ export class ForwarderTestFactory {
         takerAddress: string,
         orderFeeRecipientAddress: string,
         forwarderFeeRecipientAddress: string,
-        gasPrice: BigNumber,
         wethAddress: string,
+        gasPrice: BigNumber,
     ) {
         this._forwarderWrapper = forwarderWrapper;
         this._erc20Wrapper = erc20Wrapper;
@@ -126,8 +131,8 @@ export class ForwarderTestFactory {
         this._takerAddress = takerAddress;
         this._orderFeeRecipientAddress = orderFeeRecipientAddress;
         this._forwarderFeeRecipientAddress = forwarderFeeRecipientAddress;
-        this._gasPrice = gasPrice;
         this._wethAddress = wethAddress;
+        this._gasPrice = gasPrice;
     }
 
     public async marketBuyTestAsync(
@@ -135,7 +140,7 @@ export class ForwarderTestFactory {
         fractionalNumberOfOrdersToFill: BigNumber,
         makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
         options: {
-            ethValueAdjustment?: BigNumber;
+            ethValueAdjustment?: BigNumber; // Used to provided insufficient/excess ETH
             forwarderFeePercentage?: BigNumber;
             makerAssetId?: BigNumber;
             revertReason?: RevertReason;
