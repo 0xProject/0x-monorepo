@@ -4,8 +4,8 @@ import { BigNumber } from '@0x/utils';
 import { SupportedProvider } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 
-import { SwapQuote } from '../../src/types';
 import { constants } from '../../src/constants';
+import { SwapQuote } from '../../src/types';
 
 const ZERO_BIG_NUMBER = new BigNumber(0);
 
@@ -16,6 +16,7 @@ export const getSignedOrdersWithNoFeesAsync = async (
     makerAddress: string,
     takerAddress: string,
     fillableAmounts: BigNumber[],
+    exchangeAddress?: string,
 ): Promise<SignedOrder[]> => {
     const promises = _.map(fillableAmounts, async (fillableAmount: BigNumber) =>
         orderFactory.createSignedOrderAsync(
@@ -25,7 +26,7 @@ export const getSignedOrdersWithNoFeesAsync = async (
             makerAssetData,
             fillableAmount,
             takerAssetData,
-            constants.NULL_ADDRESS,
+            exchangeAddress || constants.NULL_ADDRESS,
         ),
     );
     return Promise.all(promises);
