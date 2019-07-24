@@ -12,7 +12,6 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { DocsGuides } from 'ts/pages/docs/guides';
 import { DocsHome } from 'ts/pages/docs/home';
-import { DocsPageTemplate } from 'ts/pages/docs/page_template';
 import { DocsTools } from 'ts/pages/docs/tools';
 import { DocsView } from 'ts/pages/docs/view';
 import { store } from 'ts/redux/store';
