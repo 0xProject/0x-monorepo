@@ -2,10 +2,13 @@
 
 import { PackageJSON } from '@0x/types';
 import { logUtils } from '@0x/utils';
+import { spawn } from 'child_process';
 import * as promisify from 'es6-promisify';
+import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as moment from 'moment';
 import opn = require('opn');
+import * as path from 'path';
 import { exec as execAsync, spawn as spawnAsync } from 'promisify-child-process';
 import * as prompt from 'prompt';
 import semver = require('semver');
@@ -254,34 +257,53 @@ async function updateChangeLogsAsync(updatedPublicPackages: Package[]): Promise<
 }
 
 async function lernaPublishAsync(packageToNextVersion: { [name: string]: string }): Promise<void> {
-    const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
-        return `${packageName}@${nextVersion}`;
-    }).join(',');
-    let lernaPublishCmd = `node ${constants.lernaExecutable} publish --cdVersions=${packageVersionString} --registry=${
-        configs.NPM_REGISTRY_URL
-    } --yes`;
-    if (configs.IS_LOCAL_PUBLISH) {
-        lernaPublishCmd += ` --no-git-tag-version --no-push`;
-    }
-    utils.log('Lerna is publishing...');
-    const child = await spawnAsync(lernaPublishCmd, {
-        cwd: constants.monorepoRootPath,
-        maxBuffer: 102400000, // 500 * 1024 * 200
-    });
-    child.stdout.on('data', async (data: Buffer) => {
-        const output = data.toString('utf8');
-        utils.log('Lerna publish cmd: ', output);
-        const isOTPPrompt = _.includes(output, 'Enter OTP:');
-        if (isOTPPrompt) {
-            // Prompt for OTP
-            prompt.start();
-            const result = await promisify(prompt.get)(['OTP']);
-            child.stdin.write(`${result.OTP}\n`);
+    return new Promise<void>((resolve, reject) => {
+        const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
+            return `${packageName}|${nextVersion}`;
+        }).join(',');
+        const cdVersionsFilepath = path.join(__dirname, 'cd_versions.txt');
+        fs.writeFileSync(cdVersionsFilepath, packageVersionString);
+        const lernaPublishCmd = `node`;
+        const lernaPublishArgs = [
+            `${constants.lernaExecutable}`,
+            'publish',
+            `--cdVersions=${cdVersionsFilepath}`,
+            `--registry=${configs.NPM_REGISTRY_URL}`,
+            `--yes`,
+        ];
+        if (configs.IS_LOCAL_PUBLISH) {
+            lernaPublishArgs.push('--no-git-tag-version');
+            lernaPublishArgs.push('--no-push');
         }
-    });
-    child.stderr.on('data', (data: Buffer) => {
-        const output = data.toString('utf8');
-        utils.log('Lerna publish cmd: ', output);
+        utils.log('Lerna is publishing...');
+        try {
+            const child = spawn(lernaPublishCmd, lernaPublishArgs, {
+                cwd: constants.monorepoRootPath,
+            });
+            child.stdout.on('data', async (data: Buffer) => {
+                const output = data.toString('utf8');
+                utils.log('Lerna publish cmd: ', output);
+                const isOTPPrompt = _.includes(output, 'Enter OTP:');
+                if (isOTPPrompt) {
+                    // Prompt for OTP
+                    prompt.start();
+                    const result = await promisify(prompt.get)(['OTP']);
+                    child.stdin.write(`${result.OTP}\n`);
+                }
+                const didFinishPublishing = _.includes(output, 'Successfully published:');
+                if (didFinishPublishing) {
+                    // Remove temporary cdVersions file
+                    fs.unlinkSync(cdVersionsFilepath);
+                    resolve();
+                }
+            });
+            child.stderr.on('data', (data: Buffer) => {
+                const output = data.toString('utf8');
+                utils.log('Lerna publish cmd: ', output);
+            });
+        } catch (err) {
+            reject(err);
+        }
     });
 }
 
