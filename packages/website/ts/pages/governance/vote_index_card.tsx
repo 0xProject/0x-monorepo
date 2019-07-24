@@ -70,7 +70,7 @@ export const VoteIndexCard: React.StatelessComponent<VoteIndexCardProps> = ({
     const totalBalances = getTotalBalancesString(tally);
     const isPastProposal = voteTime === undefined;
     return (
-        <ReactRouterLink to={`vote/zeip-${zeipId}`}>
+        <ReactRouterLink to={`/vote/zeip-${zeipId}`}>
             <Section
                 hasBorder={isPastProposal}
                 bgColor={!isPastProposal ? 'dark' : 'none'}
