@@ -36,6 +36,7 @@ export interface SectionProps extends WrapProps {
     hasHover?: boolean;
     flexBreakpoint?: string;
     maxWidth?: string;
+    minHeight?: string;
     bgColor?: 'dark' | 'light' | string;
     children: any;
     alignItems?: string;
@@ -100,6 +101,7 @@ export const WrapSticky = styled.div<WrapProps>`
 
 const SectionBase = styled.section<SectionProps>`
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
+    min-height: ${props => props.minHeight || 'auto'};
     max-width: 1500px;
     cursor: ${props => props.hasHover && 'pointer'};
     border: ${props => props.hasBorder && `1px solid ${props.theme.lightBgColor}`};
