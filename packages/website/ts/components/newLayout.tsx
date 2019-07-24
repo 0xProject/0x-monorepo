@@ -31,6 +31,7 @@ export interface SectionProps extends WrapProps {
     paddingMobile?: string;
     flexBreakpoint?: string;
     maxWidth?: string;
+    minHeight?: string;
     bgColor?: 'dark' | 'light' | string;
     children: any;
     alignItems?: string;
@@ -91,6 +92,7 @@ export const WrapSticky = styled.div<WrapProps>`
 
 const SectionBase = styled.section<SectionProps>`
     width: ${props => !props.isFullWidth && 'calc(100% - 60px)'};
+    min-height: ${props => props.minHeight || 'auto'};
     max-width: 1500px;
     margin: 0 auto;
     padding: ${props => props.isPadded && (props.padding || '120px 0')};
