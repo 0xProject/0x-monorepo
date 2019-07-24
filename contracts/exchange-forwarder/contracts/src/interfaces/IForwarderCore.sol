@@ -25,10 +25,8 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 
 contract IForwarderCore {
 
-    /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
-    ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
-    ///      Any ETH not spent will be refunded to sender.
+    /// @dev Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
+    ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
@@ -44,8 +42,9 @@ contract IForwarderCore {
         payable
         returns (LibFillResults.FillResults memory orderFillResults);
 
-    /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    /// @dev Attempt to fill makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may spend some amount of the makerAsset filled to pay takerFees where
+    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.

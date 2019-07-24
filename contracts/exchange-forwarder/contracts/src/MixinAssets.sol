@@ -35,9 +35,9 @@ contract MixinAssets is
 
     bytes4 constant internal ERC20_TRANSFER_SELECTOR = bytes4(keccak256("transfer(address,uint256)"));
 
-    /// @dev Withdraws assets from this contract. The contract requires a ZRX balance in order to
-    ///      function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
-    ///      used to withdraw assets that were accidentally sent to this contract.
+    /// @dev Withdraws assets from this contract. The contract formerly required a ZRX balance in order
+    ///      to function optimally, and this function allows the ZRX to be withdrawn by owner.
+    ///      It may also be used to withdraw assets that were accidentally sent to this contract.
     /// @param assetData Byte array encoded for the respective asset proxy.
     /// @param amount Amount of ERC20 token to withdraw.
     function withdrawAsset(
@@ -50,23 +50,24 @@ contract MixinAssets is
         _transferAssetToSender(assetData, amount);
     }
 
-    function _approveMakerAssetProxy(bytes memory assetData)
-        internal
+    /// @dev Approves the respective proxy for a given asset to transfer tokens on the Forwarder contract's behalf.
+    ///      This is necessary because an order fee denominated in the maker asset (i.e. a percentage fee) is sent by the
+    ///      Forwarder contract to the fee recipient.
+    ///      This method needs to be called before forwarding orders of a maker asset that hasn't
+    ///      previously been approved.
+    /// @param assetData Byte array encoded for the respective asset proxy.
+    function approveMakerAssetProxy(bytes calldata assetData)
+        external
     {
         bytes4 proxyId = assetData.readBytes4(0);
-
-        address proxyAddress;
-        address assetAddress;
+        // For now we only care about ERC20, since percentage fees on ERC721 tokens are invalid.
         if (proxyId == ERC20_DATA_ID) {
-            proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
-        } else if (proxyId == ERC721_DATA_ID) {
-            proxyAddress = EXCHANGE.getAssetProxy(ERC721_DATA_ID);
-        } else {
-            revert("UNSUPPORTED_ASSET_PROXY");
+            address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+            IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
+            if (assetToken.allowance(address(this), proxyAddress) != MAX_UINT) {
+                assetToken.approve(proxyAddress, MAX_UINT);
+            }
         }
-
-        assetAddress = assetData.readAddress(16);
-        IERC20Token(assetAddress).approve(proxyAddress, MAX_UINT);
     }
 
     /// @dev Transfers given amount of asset to sender.

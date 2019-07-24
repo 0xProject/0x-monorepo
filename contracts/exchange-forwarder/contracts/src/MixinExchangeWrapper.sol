@@ -110,7 +110,7 @@ contract MixinExchangeWrapper is
             );
             FillResults memory singleFillResults;
 
-            // Update amounts filled and the remaining amount of WETH to sell
+            // Percentage fee
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
                 // Attempt to sell the remaining amount of WETH
                 singleFillResults = _fillOrderNoThrow(
@@ -119,32 +119,38 @@ contract MixinExchangeWrapper is
                     signatures[i]
                 );
 
+                // Subtract fee from makerAssetFilledAmount for the net amount acquired.
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
                 );
+
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
                     singleFillResults.takerAssetFilledAmount
                 );
+            // WETH fee
             } else {
-                // We first sell WETH as the takerAsset, then use it to pay the takerFee.
+                // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
                 // This ensures that we reserve enough to pay the fee.
                 uint256 takerAssetFillAmount = _getPartialAmountCeil(
                     orders[i].takerAssetAmount,
                     _safeAdd(orders[i].takerAssetAmount, orders[i].takerFee),
                     remainingTakerAssetFillAmount
                 );
+
                 singleFillResults = _fillOrderNoThrow(
                     orders[i],
                     takerAssetFillAmount,
                     signatures[i]
                 );
 
+                // WETH is also spent on the taker fee, so we add it here.
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
                     _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
                 );
+
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     singleFillResults.makerAssetFilledAmount
@@ -153,7 +159,7 @@ contract MixinExchangeWrapper is
 
             _addFillResults(totalFillResults, singleFillResults);
 
-            // Stop execution if the entire amount of takerAsset has been sold
+            // Stop execution if the entire amount of WETH has been sold
             if (wethSpentAmount >= wethSellAmount) {
                 break;
             }
@@ -161,11 +167,12 @@ contract MixinExchangeWrapper is
         return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is filled.
+    ///      Note that as of v3.0.0, makerAssetFillAmount is the amount of makerAsset *filled* by the Forwarder,
+    ///      some of which may be spent on order fees. The amount acquired after fees is makerAssetAcquiredAmount.
     ///      The asset being sold by taker must always be WETH.
     /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
+    /// @param makerAssetFillAmount Desired amount of makerAsset to fill.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function _marketBuyExactAmountWithWeth(
@@ -200,21 +207,26 @@ contract MixinExchangeWrapper is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
-            // Update amounts filled and fees paid by maker and taker
+            // Percentage fee
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
+                // Subtract fee from makerAssetFilledAmount for the net amount acquired.
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
                 );
+
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
                     singleFillResults.takerAssetFilledAmount
                 );
+            // WETH fee
             } else {
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     singleFillResults.makerAssetFilledAmount
                 );
+
+                // WETH is also spent on the taker fee, so we add it here.
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
                     _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
@@ -222,7 +234,7 @@ contract MixinExchangeWrapper is
             }
             _addFillResults(totalFillResults, singleFillResults);
 
-            // Stop execution if the entire amount of makerAsset has been bought
+            // Stop execution if the entire amount of makerAsset has been filled
             if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
                 break;
             }

@@ -43,7 +43,7 @@ contract MixinForwarderCore is
 {
     using LibBytes for bytes;
 
-    /// @dev Constructor approves ERC20 proxy to transfer ZRX and WETH on this contract's behalf.
+    /// @dev Constructor approves ERC20 proxy to transfer WETH on this contract's behalf.
     constructor ()
         public
     {
@@ -55,10 +55,8 @@ contract MixinForwarderCore is
         ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
     }
 
-    /// @dev Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
-    ///      5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
-    ///      Any ETH not spent will be refunded to sender.
+    /// @dev Purchases as much of orders' makerAssets as possible by selling as much of the ETH value sent
+    ///      as possible, accounting for order and forwarder fees.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
@@ -77,17 +75,14 @@ contract MixinForwarderCore is
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        // Calculate amount of WETH that won't be spent on ETH fees.
+        // Calculate amount of WETH that won't be spent on the forwarder fee.
         uint256 wethSellAmount = _getPartialAmountFloor(
             PERCENTAGE_DENOMINATOR,
             _safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
             msg.value
         );
 
-        _approveMakerAssetProxy(orders[0].makerAssetData);
-
-        // Market sell 95% of WETH.
-        // ZRX fees are payed with this contract's balance.
+        // Spends up to wethSellAmount to fill orders and pay WETH order fees.
         uint256 wethSpentAmount;
         uint256 makerAssetAcquiredAmount;
         (
@@ -100,7 +95,7 @@ contract MixinForwarderCore is
             signatures
         );
 
-        // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
+        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
         _transferEthFeeAndRefund(
             wethSpentAmount,
@@ -115,8 +110,9 @@ contract MixinForwarderCore is
         );
     }
 
-    /// @dev Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+    /// @dev Attempt to fill makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may spend some amount of the makerAsset filled to pay takerFees where
+    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees). 
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
@@ -138,10 +134,9 @@ contract MixinForwarderCore is
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        _approveMakerAssetProxy(orders[0].makerAssetData);
-
-        // Attempt to purchase desired amount of makerAsset.
-        // ZRX fees are payed with this contract's balance.
+        // Attempt to fill the desired amount of makerAsset. Note that makerAssetAcquiredAmount < makerAssetFillAmount
+        // if any of the orders filled have an takerFee denominated in makerAsset, since these fees will be paid out
+        // from the Forwarder's temporary makerAsset balance.
         uint256 wethSpentAmount;
         uint256 makerAssetAcquiredAmount;
         (
@@ -154,7 +149,7 @@ contract MixinForwarderCore is
             signatures
         );
 
-        // Transfer feePercentage of total ETH spent on primary orders to feeRecipient.
+        // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
         _transferEthFeeAndRefund(
             wethSpentAmount,
@@ -162,7 +157,7 @@ contract MixinForwarderCore is
             feeRecipient
         );
 
-        // Transfer purchased assets to msg.sender.
+        // Transfer acquired assets to msg.sender.
         _transferAssetToSender(
             orders[0].makerAssetData,
             makerAssetAcquiredAmount

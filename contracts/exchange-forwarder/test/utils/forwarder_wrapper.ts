@@ -70,4 +70,12 @@ export class ForwarderWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
+    public async approveMakerAssetProxyAsync(
+        assetData: string,
+        txData: TxDataPayable,
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._forwarderContract.approveMakerAssetProxy.sendTransactionAsync(assetData, txData);
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
 }
