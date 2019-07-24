@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Link as ReactRouterLink } from 'react-router-dom';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/components/siteWrap';
+import { IThemeInterface } from 'ts/style/theme';
 
 import { colors } from 'ts/style/colors';
 import { withFilteredProps } from 'ts/utils/filter_props';
@@ -30,7 +30,7 @@ export interface ButtonInterface {
     textAlign?: string;
     to?: string;
     onClick?: (e: any) => any;
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
     shouldUseAnchorTag?: boolean;
 }
 

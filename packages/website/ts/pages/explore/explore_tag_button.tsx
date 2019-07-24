@@ -1,7 +1,7 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/components/siteWrap';
+import { IThemeInterface } from 'ts/style/theme';
 
 import { colors } from 'ts/style/colors';
 
@@ -14,7 +14,7 @@ export interface ButtonInterface {
     hasIcon?: boolean | string;
     padding?: string;
     onClick?: (e: any) => any;
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
 }
 
 export const ExploreTagButton: React.StatelessComponent<ButtonInterface> = (props: ButtonInterface) => {
