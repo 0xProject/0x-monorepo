@@ -71,9 +71,9 @@
         "web3-provider-engine": "14.0.6"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.0.2",
-        "@0x/assert": "^2.1.0",
-        "@0x/base-contract": "^5.1.1",
+        "@0x/abi-gen-wrappers": "^5.0.3",
+        "@0x/assert": "^2.1.1",
+        "@0x/base-contract": "^5.1.2",
         "@0x/contract-addresses": "^3.0.2",
         "@0x/contract-artifacts": "^2.0.2",
         "@0x/json-schemas": "^3.1.11",
