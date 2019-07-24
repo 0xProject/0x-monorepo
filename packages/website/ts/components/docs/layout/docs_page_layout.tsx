@@ -20,12 +20,14 @@ interface IDocsPageLayoutProps {
     isHome?: boolean;
 }
 
+const SECTION_MIN_HEIGHT = '50vh';
+
 export const DocsPageLayout: React.FC<IDocsPageLayoutProps> = props => {
     return (
         <SiteWrap theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={props.title} subtitle={props.subtitle} isHome={props.isHome} />
-            <Section maxWidth="1150px" isPadded={false} overflow="visible">
+            <Section maxWidth="1150px" minHeight={SECTION_MIN_HEIGHT} isPadded={false} overflow="visible">
                 {props.loading ? (
                     <LoaderWrapper>
                         <CircularProgress size={40} thickness={2} color={colors.brandLight} />
@@ -42,5 +44,5 @@ const LoaderWrapper = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 300px;
+    min-height: ${SECTION_MIN_HEIGHT};
 `;
