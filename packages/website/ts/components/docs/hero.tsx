@@ -8,28 +8,18 @@ import { colors } from 'ts/style/colors';
 interface IHeroProps {
     isHome?: boolean;
     title?: string;
-    description?: string;
+    subtitle?: string;
 }
 
-export const Hero: React.FC<IHeroProps> = ({ description, isHome, title }) => {
-    return (
-        <HeroWrapper isHome={isHome}>
-            <Heading
-                size={isHome ? 'large' : 'medium'}
-                isCentered={true}
-                marginBottom={isHome || description ? '30px' : '0'}
-            >
-                {title}
-            </Heading>
-            {description && <Paragraph isCentered={true}>{description}</Paragraph>}
-            {isHome && <SearchInput isHome={true} />}
-        </HeroWrapper>
-    );
-};
-
-Hero.defaultProps = {
-    isHome: false,
-};
+export const Hero: React.FC<IHeroProps> = ({ isHome = false, subtitle, title }) => (
+    <HeroWrapper isHome={isHome}>
+        <Heading size={isHome ? 'large' : 'medium'} isCentered={true} marginBottom={isHome || subtitle ? '30px' : '0'}>
+            {title}
+        </Heading>
+        {subtitle && <Paragraph isCentered={true}>{subtitle}</Paragraph>}
+        {isHome && <SearchInput isHome={true} />}
+    </HeroWrapper>
+);
 
 const HeroWrapper = styled.div<{ isHome: boolean }>`
     background-color: ${colors.backgroundLight};

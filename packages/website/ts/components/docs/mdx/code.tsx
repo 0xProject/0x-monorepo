@@ -3,7 +3,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
 import { Button } from 'ts/components/button';
-import { CodeRun } from 'ts/components/docs/code_run';
+import { CodeRun } from 'ts/components/docs/mdx/code_run';
 
 import { colors } from 'ts/style/colors';
 import { styled } from 'ts/style/theme';
