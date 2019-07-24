@@ -10,6 +10,7 @@ import {
     SwapQuoterOpts,
 } from './types';
 
+const NULL_BYTES = '0x';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_NETWORK_ID = 1;
 const ONE_SECOND_MS = 1000;
@@ -44,6 +45,7 @@ const DEFAULT_LIQUIDITY_REQUEST_OPTS: LiquidityRequestOpts = {
 };
 
 export const constants = {
+    NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
     MAINNET_NETWORK_ID,
