@@ -19,7 +19,9 @@ import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
 import { Table } from 'ts/components/docs/mdx/table';
 import { UnorderedList } from 'ts/components/docs/mdx/unordered_list';
 
+import { Columns } from 'ts/components/docs/layout/columns';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
+
 import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
@@ -82,20 +84,6 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         </DocsPageLayout>
     );
 };
-
-const Columns = styled.div`
-    display: grid;
-    grid-template-columns: 130px 0 1fr;
-    grid-column-gap: 60px;
-
-    @media (min-width: 1440px) {
-        grid-template-columns: 230px 0 1fr;
-    }
-
-    @media (max-width: 900px) {
-        grid-template-columns: 1fr;
-    }
-`;
 
 const ContentWrapper = styled.article`
     min-width: 0;
