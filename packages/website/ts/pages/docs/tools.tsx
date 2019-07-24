@@ -1,4 +1,5 @@
 import React from 'react';
+import { Hits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
 import { FeatureLink } from 'ts/components/docs/feature_link';
@@ -12,16 +13,12 @@ import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 
-import { Hits, InstantSearch } from 'react-instantsearch-dom';
-
-import algoliasearch from 'algoliasearch/lite';
-
-const searchClient = algoliasearch('39X6WOJZKW', '6acba761a34d99781628c6178af1e16c');
+import { searchClient, searchIndex } from 'ts/utils/algolia_search';
 
 export const DocsTools: React.FC = () => {
     return (
         <DocsPageLayout title="Tools">
-            <InstantSearch searchClient={searchClient} indexName="0x_tools_test">
+            <InstantSearch searchClient={searchClient} indexName={searchIndex.tools}>
                 <Columns>
                     <Filters filters={filters} />
                     <Separator />

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { SearchInput } from 'ts/components/docs/search_input';
+import { SearchInput } from 'ts/components/docs/search/search_input';
 import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
