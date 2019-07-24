@@ -6,7 +6,7 @@ import styled, { css } from 'styled-components';
 import { Link } from '@0x/react-shared';
 
 import { MobileNav } from 'ts/components/docs/mobileNav';
-import { SearchInput } from 'ts/components/docs/search_input';
+import { SearchInput } from 'ts/components/docs/search/search_input';
 
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';

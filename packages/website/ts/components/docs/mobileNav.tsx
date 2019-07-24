@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Link } from '@0x/react-shared';
 
 import { Button } from 'ts/components/button';
-import { SearchInput } from 'ts/components/docs/search_input';
+import { SearchInput } from 'ts/components/docs/search/search_input';
 
 import { colors } from 'ts/style/colors';
 import { zIndex } from 'ts/style/z_index';
