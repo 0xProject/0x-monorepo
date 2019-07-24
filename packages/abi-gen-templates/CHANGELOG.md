@@ -5,6 +5,13 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.3.0 - _July 24, 2019_
+
+    * Python: fix broken event handling (#1919)
+    * Python: custom validator class support (#1919)
+    * Python: linter fixes (#1919)
+    * Python: normalize bytes parameters in wrapper methods (#1919)
+
 ## v2.2.1 - _July 13, 2019_
 
     * Dependencies updated

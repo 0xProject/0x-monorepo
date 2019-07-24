@@ -9,6 +9,16 @@
         ]
     },
     {
+        "version": "9.1.8",
+        "changes": [
+            {
+                "note": "re-export new ethereum-types type, TupleDataItem",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
         "timestamp": 1563193019,
         "version": "9.1.7",
         "changes": [

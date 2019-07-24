@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.2.3 - _July 24, 2019_
+
+    * Ensure `assetData` is word aligned (#1964)
+
 ## v8.2.2 - _July 15, 2019_
 
     * Dependencies updated

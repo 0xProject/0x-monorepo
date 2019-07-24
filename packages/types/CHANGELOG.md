@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v2.4.1 - _July 24, 2019_
+
+    * Dependencies updated
+
 ## v2.4.0 - _July 13, 2019_
 
     * Add MarketOperation type (#1914)

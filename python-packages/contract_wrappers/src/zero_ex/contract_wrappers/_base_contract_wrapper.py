@@ -34,7 +34,7 @@ class BaseContractWrapper:
         self._private_key = private_key
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
-        self._contract_address = self._validate_and_checksum_address(
+        self.contract_address = self._validate_and_checksum_address(
             contract_address
         )
 
@@ -120,7 +120,7 @@ class BaseContractWrapper:
         :returns: str of transaction hash
         """
         contract_instance = self._contract_instance(
-            address=self._contract_address, abi=abi
+            address=self.contract_address, abi=abi
         )
         if args is None:
             args = []
@@ -131,6 +131,6 @@ class BaseContractWrapper:
             )
         raise Exception(
             "No method {} found on contract {}.".format(
-                self._contract_address, method
+                self.contract_address, method
             )
         )

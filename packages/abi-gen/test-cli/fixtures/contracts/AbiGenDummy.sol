@@ -16,6 +16,8 @@
 
 */
 
+pragma experimental ABIEncoderV2;
+
 pragma solidity ^0.5.5;
 
 
@@ -94,4 +96,46 @@ contract AbiGenDummy
         emit Withdrawal(msg.sender, wad);
     }
 
+    // test: generated code should normalize address inputs to lowercase
+    // add extra inputs to make sure it works with address in any position
+    function withAddressInput(address x, uint256 a, uint256 b, address y, uint256 c)
+        public
+        pure
+        returns (address z)
+    {
+        return x;
+    }
+
+    event AnEvent(uint8 param);
+
+    function acceptsBytes(bytes memory a) public pure {}
+
+    /// @dev a method that accepts an array of bytes
+    /// @param a the array of bytes being accepted
+    function acceptsAnArrayOfBytes(bytes[] memory a) public pure {}
+
+    struct Struct {
+        bytes someBytes;
+        uint32 anInteger;
+        bytes[] aDynamicArrayOfBytes;
+        string aString;
+    }
+
+    function structInput(Struct memory s) public pure {}
+
+    /// @dev a method that returns a struct
+    /// @return a Struct struct
+    function structOutput() public pure returns(Struct memory s) {}
+
+    struct NestedStruct {
+        Struct innerStruct;
+        string description;
+    }
+
+    function nestedStructInput(NestedStruct memory n) public pure {}
+    function nestedStructOutput() public pure returns(NestedStruct memory) {}
+
+    uint someState;
+    function nonPureMethod() public returns(uint) { return someState += 1; }
+    function nonPureMethodThatReturnsNothing() public { someState += 1; }
 }

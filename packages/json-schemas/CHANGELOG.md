@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.11 - _July 24, 2019_
+
+    * permit mixed-case addresses
+
 ## v3.0.11 - _July 13, 2019_
 
     * Dependencies updated

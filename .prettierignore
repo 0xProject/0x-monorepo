@@ -27,8 +27,6 @@ lib
 /packages/abi-gen/test-cli/output
 /packages/json-schemas/schemas
 /python-packages/json_schemas/src/zero_ex/json_schemas/schemas
-/packages/metacoin/src/contract_wrappers
-/packages/metacoin/artifacts
 /packages/sra-spec/public/
 /packages/dev-tools-pages/ts/**/data.json
 package.json
@@ -37,3 +35,6 @@ packages/sol-coverage/test/fixtures/artifacts
 .pytest_cache
 .mypy_cache
 .tox
+packages/abi-gen/test-cli/fixtures/artifacts/AbiGenDummy.json
+packages/abi-gen/test-cli/fixtures/artifacts/LibDummy.json
+packages/abi-gen/test-cli/fixtures/artifacts/TestLibDummy.json

@@ -1,3 +1,7 @@
+import { createHash } from 'crypto';
+
+import * as changeCase from 'change-case';
+import * as cliFormat from 'cli-format';
 import { AbiType, ConstructorAbi, DataItem } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
@@ -98,12 +102,12 @@ export const utils = {
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
     },
-    solTypeToPyType(paramKind: ParamKind, backend: ContractsBackend, solType: string, components?: DataItem[]): string {
+    solTypeToPyType(solType: string, components?: DataItem[]): string {
         const trailingArrayRegex = /\[\d*\]$/;
         if (solType.match(trailingArrayRegex)) {
             const arrayItemSolType = solType.replace(trailingArrayRegex, '');
-            const arrayItemPyType = utils.solTypeToPyType(paramKind, backend, arrayItemSolType, components);
-            const arrayPyType = `Array[${arrayItemPyType}]`;
+            const arrayItemPyType = utils.solTypeToPyType(arrayItemSolType, components);
+            const arrayPyType = `List[${arrayItemPyType}]`;
             return arrayPyType;
         } else {
             const solTypeRegexToPyType = [
@@ -121,18 +125,7 @@ export const utils = {
             }
             const TUPLE_TYPE_REGEX = '^tuple$';
             if (solType.match(TUPLE_TYPE_REGEX)) {
-                const componentsType = _.map(components, component => {
-                    const componentValueType = utils.solTypeToPyType(
-                        paramKind,
-                        backend,
-                        component.type,
-                        component.components,
-                    );
-                    const componentType = `'${component.name}': ${componentValueType}`;
-                    return componentType;
-                });
-                const pyType = `TypedDict('${solType}(${components})', {${componentsType.join(',')}}`;
-                return pyType;
+                return utils.makePythonTupleName(components as DataItem[]);
             }
             throw new Error(`Unknown Solidity type found: ${solType}`);
         }
@@ -189,5 +182,172 @@ export const utils = {
                 throw err;
             }
         }
+    },
+    /**
+     * simply concatenate all of the names of the components, and convert that
+     * concatenation into PascalCase to conform to Python convention.
+     */
+    makePythonTupleName(tupleComponents: DataItem[]): string {
+        const lengthOfHashSuffix = 8;
+        return `Tuple0x${createHash('MD5')
+            .update(_.map(tupleComponents, component => component.name).join('_'))
+            .digest()
+            .toString('hex')
+            .substring(0, lengthOfHashSuffix)}`;
+    },
+    /**
+     * @returns a string that is a Python code snippet that's intended to be
+     * used as the second parameter to a TypedDict() instantiation; value
+     * looks like "{ 'python_dict_key': python_type, ... }".
+     */
+    makePythonTupleClassBody(tupleComponents: DataItem[]): string {
+        let toReturn: string = '';
+        for (const tupleComponent of tupleComponents) {
+            toReturn = `${toReturn}\n\n    ${tupleComponent.name}: ${utils.solTypeToPyType(
+                tupleComponent.type,
+                tupleComponent.components,
+            )}`;
+        }
+        toReturn = `${toReturn}`;
+        return toReturn;
+    },
+    /**
+     * used to generate Python-parseable identifier names for parameters to
+     * contract methods.
+     */
+    toPythonIdentifier(input: string): string {
+        let snakeCased = changeCase.snake(input);
+        const pythonReservedWords = [
+            'False',
+            'None',
+            'True',
+            'and',
+            'as',
+            'assert',
+            'break',
+            'class',
+            'continue',
+            'def',
+            'del',
+            'elif',
+            'else',
+            'except',
+            'finally',
+            'for',
+            'from',
+            'global',
+            'if',
+            'import',
+            'in',
+            'is',
+            'lambda',
+            'nonlocal',
+            'not',
+            'or',
+            'pass',
+            'raise',
+            'return',
+            'try',
+            'while',
+            'with',
+            'yield',
+        ];
+        const pythonBuiltins = [
+            'abs',
+            'delattr',
+            'hash',
+            'memoryview',
+            'set',
+            'all',
+            'dict',
+            'help',
+            'min',
+            'setattr',
+            'any',
+            'dir',
+            'hex',
+            'next',
+            'slice',
+            'ascii',
+            'divmod',
+            'id',
+            'object',
+            'sorted',
+            'bin',
+            'enumerate',
+            'input',
+            'oct',
+            'staticmethod',
+            'bool',
+            'eval',
+            'int',
+            'open',
+            'str',
+            'breakpoint',
+            'exec',
+            'isinstance',
+            'ord',
+            'sum',
+            'bytearray',
+            'filter',
+            'issubclass',
+            'pow',
+            'super',
+            'bytes',
+            'float',
+            'iter',
+            'print',
+            'tuple',
+            'callable',
+            'format',
+            'len',
+            'property',
+            'type',
+            'chr',
+            'frozenset',
+            'list',
+            'range',
+            'vars',
+            'classmethod',
+            'getattr',
+            'locals',
+            'repr',
+            'zip',
+            'compile',
+            'globals',
+            'map',
+            'reversed',
+            '__import__',
+            'complex',
+            'hasattr',
+            'max',
+            'round',
+        ];
+        if (
+            pythonReservedWords.includes(snakeCased) ||
+            pythonBuiltins.includes(snakeCased) ||
+            /*changeCase strips leading underscores :(*/ input[0] === '_'
+        ) {
+            snakeCased = `_${snakeCased}`;
+        }
+        return snakeCased;
+    },
+    /**
+     * Python docstrings are used to generate documentation, and that
+     * transformation supports annotation of parameters, return types, etc, via
+     * re-Structured Text "interpreted text roles".  Per the pydocstyle linter,
+     * such annotations should be line-wrapped at 80 columns, with a hanging
+     * indent of 4 columns.  This function simply returns an accordingly
+     * wrapped and hanging-indented `role` string.
+     */
+    wrapPythonDocstringRole(docstring: string, indent: number): string {
+        const columnsPerIndent = 4;
+        const columnsPerRow = 80;
+        return cliFormat.wrap(docstring, {
+            paddingLeft: ' '.repeat(indent),
+            width: columnsPerRow,
+            ansi: false,
+            hangingIndent: ' '.repeat(columnsPerIndent),
+        });
     },
 };

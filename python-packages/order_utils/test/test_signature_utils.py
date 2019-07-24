@@ -3,7 +3,7 @@
 import pytest
 from web3 import Web3
 
-from zero_ex.order_utils import is_valid_signature
+from zero_ex.order_utils import is_valid_signature, sign_hash_to_bytes
 
 
 def test_is_valid_signature__provider_wrong_type():
@@ -126,3 +126,17 @@ def test_is_valid_signature__unsupported_sig_types():
     )
     assert is_valid is False
     assert reason == "SIGNATURE_UNSUPPORTED"
+
+
+def test_sign_hash_to_bytes__golden_path():
+    """Test the happy path through sign_hash_to_bytes()."""
+    provider = Web3.HTTPProvider("http://127.0.0.1:8545")
+    signature = sign_hash_to_bytes(
+        provider,
+        Web3(provider).personal.listAccounts[0],  # pylint: disable=no-member
+        "0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004",
+    )
+    assert (
+        signature
+        == b"1b117902c86dfb95fe0d1badd983ee166ad259b27acb220174cbb4460d872871137feabdfe76e05924b484789f79af4ee7fa29ec006cedce1bbf369320d034e10b03"  # noqa: E501 (line too long)
+    )

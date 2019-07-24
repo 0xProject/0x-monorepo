@@ -1,4 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { calldataOptimizationUtils } from '@0x/contract-wrappers/lib/src/utils/calldata_optimization_utils';
+import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -58,7 +60,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
-        if (params.type === 'marketBuy') {
+        if (params.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = params;
             args = [orders, makerAssetFillAmount, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient];
         } else {
@@ -100,6 +102,12 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
+        // lowercase input addresses
+        const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
+        // optimize orders
+        const optimizedOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
+        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
+
         const signatures = _.map(orders, o => o.signature);
         const feeSignatures = _.map(feeOrders, o => o.signature);
 
@@ -108,30 +116,30 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         let params: ForwarderSmartContractParams;
         let methodName: string;
 
-        if (quoteWithAffiliateFee.type === 'marketBuy') {
+        if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quoteWithAffiliateFee;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 makerAssetFillAmount,
                 signatures,
-                feeOrders,
+                feeOrders: optimizedFeeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
-                type: 'marketBuy',
+                feeRecipient: normalizedFeeRecipientAddress,
+                type: MarketOperation.Buy,
             };
 
             methodName = 'marketBuyOrdersWithEth';
         } else {
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
-                feeOrders,
+                feeOrders: optimizedFeeOrders,
                 feeSignatures,
                 feePercentage,
-                feeRecipient,
-                type: 'marketSell',
+                feeRecipient: normalizedFeeRecipientAddress,
+                type: MarketOperation.Sell,
             };
             methodName = 'marketSellOrdersWithEth';
         }
@@ -188,7 +196,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         try {
             let txHash: string;
-            if (quoteWithAffiliateFee.type === 'marketBuy') {
+            if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
                 txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
                     orders,

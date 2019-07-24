@@ -1,4 +1,4 @@
-import { SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
@@ -82,7 +82,7 @@ export interface SmartContractParamsBase {
  */
 export interface ExchangeMarketBuySmartContractParams extends SmartContractParamsBase {
     makerAssetFillAmount: BigNumber;
-    type: 'marketBuy';
+    type: MarketOperation.Buy;
 }
 
 /**
@@ -91,7 +91,15 @@ export interface ExchangeMarketBuySmartContractParams extends SmartContractParam
  */
 export interface ExchangeMarketSellSmartContractParams extends SmartContractParamsBase {
     takerAssetFillAmount: BigNumber;
-    type: 'marketSell';
+    type: MarketOperation.Sell;
+}
+
+/**
+ * Represents the varying smart contracts that can consume a valid swap quote
+ */
+export enum ConsumerType {
+    Forwarder,
+    Exchange,
 }
 
 /**
@@ -184,33 +192,27 @@ export interface ForwarderSwapQuoteGetOutputOpts extends SwapQuoteGetOutputOptsB
     ethAmount?: BigNumber;
 }
 
-/**
- * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
- */
-export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
-
 export type SwapQuote = MarketBuySwapQuote | MarketSellSwapQuote;
 
 /**
- * feePercentage: percentage (up to 5%) of the taker asset paid to feeRecipient
- * feeRecipient: address of the receiver of the feePercentage of taker asset
- * ethAmount: The amount of eth (in Wei) sent to the forwarder contract.
+ * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
+ * useConsumerType: If provided, defaults the SwapQuoteConsumer to create output consumed by ConsumerType.
  */
 export interface SwapQuoteGetOutputOpts extends ForwarderSwapQuoteGetOutputOpts {
     takerAddress?: string;
+    useConsumerType?: ConsumerType;
 }
 
-/**
- * Represents the options for executing a swap quote with ForwarderSwapQuoteConusmer
- */
 export interface ForwarderSwapQuoteExecutionOpts extends ForwarderSwapQuoteGetOutputOpts, SwapQuoteExecutionOptsBase {}
 
+/**
+ * Represents the options for executing a swap quote with SwapQuoteConsumer
+ */
 export interface SwapQuoteExecutionOpts extends SwapQuoteGetOutputOpts, ForwarderSwapQuoteExecutionOpts {}
 
 /**
  * takerAssetData: String that represents a specific taker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
  * makerAssetData: String that represents a specific maker asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
- * makerAssetFillAmount: The amount of makerAsset to swap for.
  * orders: An array of objects conforming to SignedOrder. These orders can be used to cover the requested assetBuyAmount plus slippage.
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
  * bestCaseQuoteInfo: Info about the best case price for the asset.
@@ -225,14 +227,22 @@ export interface SwapQuoteBase {
     worstCaseQuoteInfo: SwapQuoteInfo;
 }
 
+/**
+ * takerAssetFillAmount: The amount of takerAsset sold for makerAsset.
+ * type: Specified MarketOperation the SwapQuote is provided for
+ */
 export interface MarketSellSwapQuote extends SwapQuoteBase {
     takerAssetFillAmount: BigNumber;
-    type: 'marketSell';
+    type: MarketOperation.Sell;
 }
 
+/**
+ * makerAssetFillAmount: The amount of makerAsset bought with takerAsset.
+ * type: Specified MarketOperation the SwapQuote is provided for
+ */
 export interface MarketBuySwapQuote extends SwapQuoteBase {
     makerAssetFillAmount: BigNumber;
-    type: 'marketBuy';
+    type: MarketOperation.Buy;
 }
 
 export interface SwapQuoteWithAffiliateFeeBase {
@@ -244,6 +254,7 @@ export interface MarketSellSwapQuoteWithAffiliateFee extends SwapQuoteWithAffili
 export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffiliateFeeBase, MarketBuySwapQuote {}
 
 export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
+
 /**
  * assetEthAmount: The amount of eth required to pay for the requested asset.
  * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.
@@ -258,10 +269,12 @@ export interface SwapQuoteInfo {
 
 /**
  * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
+ * shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  */
 export interface SwapQuoteRequestOpts {
     shouldForceOrderRefresh: boolean;
+    shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
 }
 

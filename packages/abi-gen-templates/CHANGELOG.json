@@ -1,5 +1,27 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Python: fix broken event handling",
+                "pr": 1919
+            },
+            {
+                "note": "Python: custom validator class support",
+                "pr": 1919
+            },
+            {
+                "note": "Python: linter fixes",
+                "pr": 1919
+            },
+            {
+                "note": "Python: normalize bytes parameters in wrapper methods",
+                "pr": 1919
+            }
+        ],
+        "timestamp": 1563957393
+    },
+    {
         "timestamp": 1563006338,
         "version": "2.2.1",
         "changes": [

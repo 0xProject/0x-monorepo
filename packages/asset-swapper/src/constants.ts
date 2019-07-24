@@ -4,14 +4,17 @@ import { BigNumber } from '@0x/utils';
 import {
     ForwarderSwapQuoteExecutionOpts,
     ForwarderSwapQuoteGetOutputOpts,
+    LiquidityRequestOpts,
     OrdersAndFillableAmounts,
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
 } from './types';
 
+const NULL_BYTES = '0x';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';
 const MAINNET_NETWORK_ID = 1;
 const ONE_SECOND_MS = 1000;
+const DEFAULT_PER_PAGE = 1000;
 
 const DEFAULT_SWAP_QUOTER_OPTS: SwapQuoterOpts = {
     networkId: MAINNET_NETWORK_ID,
@@ -28,6 +31,7 @@ const DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS: ForwarderSwapQuoteExecutionOpts
 
 const DEFAULT_SWAP_QUOTE_REQUEST_OPTS: SwapQuoteRequestOpts = {
     shouldForceOrderRefresh: false,
+    shouldDisableRequestingFeeOrders: false,
     slippagePercentage: 0.2, // 20% slippage protection,
 };
 
@@ -36,7 +40,12 @@ const EMPTY_ORDERS_AND_FILLABLE_AMOUNTS: OrdersAndFillableAmounts = {
     remainingFillableMakerAssetAmounts: [] as BigNumber[],
 };
 
+const DEFAULT_LIQUIDITY_REQUEST_OPTS: LiquidityRequestOpts = {
+    shouldForceOrderRefresh: false,
+};
+
 export const constants = {
+    NULL_BYTES,
     ZERO_AMOUNT: new BigNumber(0),
     NULL_ADDRESS,
     MAINNET_NETWORK_ID,
@@ -48,4 +57,6 @@ export const constants = {
     DEFAULT_FORWARDER_SWAP_QUOTE_EXECUTE_OPTS,
     DEFAULT_SWAP_QUOTE_REQUEST_OPTS,
     EMPTY_ORDERS_AND_FILLABLE_AMOUNTS,
+    DEFAULT_PER_PAGE,
+    DEFAULT_LIQUIDITY_REQUEST_OPTS,
 };

@@ -59,6 +59,10 @@ export class DutchAuctionContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.getAuctionDetails.estimateGasAsync.bind(self, order),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -125,6 +129,10 @@ export class DutchAuctionContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -174,6 +182,10 @@ export class DutchAuctionContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -263,6 +275,10 @@ export class DutchAuctionContract extends BaseContract {
                 self._web3Wrapper.getContractDefaults(),
                 self.matchOrders.estimateGasAsync.bind(self, buyOrder, sellOrder, buySignature, sellSignature),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -371,6 +387,10 @@ export class DutchAuctionContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -445,6 +465,10 @@ export class DutchAuctionContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder(
@@ -579,7 +603,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -637,7 +660,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'auctionDetails',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'beginTimeSeconds',
@@ -676,7 +698,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'buyOrder',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -731,7 +752,6 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'sellOrder',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -797,12 +817,10 @@ export class DutchAuctionContract extends BaseContract {
                     {
                         name: 'matchedFillResults',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'left',
                                 type: 'tuple',
-
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',
@@ -825,7 +843,6 @@ export class DutchAuctionContract extends BaseContract {
                             {
                                 name: 'right',
                                 type: 'tuple',
-
                                 components: [
                                     {
                                         name: 'makerAssetFilledAmount',

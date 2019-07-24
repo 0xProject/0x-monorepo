@@ -3,16 +3,17 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as React from 'react';
 
 import { Heading, Paragraph } from 'ts/components/text';
-import { TallyInterface } from 'ts/pages/governance/governance';
+import { ZERO_TALLY } from 'ts/pages/governance/data';
 import { VoteBar } from 'ts/pages/governance/vote_bar';
 import { colors } from 'ts/style/colors';
+import { TallyInterface } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
-interface VoteStatsProps {
+export interface VoteStatsProps {
     tally?: TallyInterface;
 }
 
-export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) => {
+export const getTotalBalancesString = (tally: TallyInterface = ZERO_TALLY): string => {
     const bigNumberFormat = {
         decimalSeparator: '.',
         groupSeparator: ',',
@@ -21,15 +22,23 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
         fractionGroupSeparator: ' ',
         fractionGroupSize: 0,
     };
-    const { yes, totalBalance } = tally;
-    const HUNDRED = new BigNumber(100);
+    const { yes, no } = tally;
+    const totalBalance = yes.plus(no);
     const totalBalanceString = Web3Wrapper.toUnitAmount(totalBalance, constants.DECIMAL_PLACES_ETH).toFormat(
         0,
         BigNumber.ROUND_FLOOR,
         bigNumberFormat,
     );
-    let yesPercentage = HUNDRED.times(yes.dividedBy(totalBalance));
-    let noPercentage = HUNDRED.minus(yesPercentage);
+    return totalBalanceString;
+};
+
+export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) => {
+    const { yes, no } = tally;
+    const totalBalance = yes.plus(no);
+    const oneHundred = new BigNumber(100);
+    const totalBalanceString = getTotalBalancesString(tally);
+    let yesPercentage = oneHundred.times(yes.dividedBy(totalBalance));
+    let noPercentage = oneHundred.minus(yesPercentage);
 
     if (isNaN(yesPercentage.toNumber())) {
         yesPercentage = new BigNumber(0);
@@ -49,4 +58,8 @@ export const VoteStats: React.StatelessComponent<VoteStatsProps> = ({ tally }) =
             <Paragraph marginBottom="24px">({totalBalanceString} ZRX total vote)</Paragraph>
         </>
     );
+};
+
+VoteStats.defaultProps = {
+    tally: ZERO_TALLY,
 };

@@ -84,6 +84,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('name()');
@@ -123,6 +127,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getApproved(uint256)');
@@ -147,7 +155,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved, _tokenId]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
+                _approved.toLowerCase(),
+                _tokenId,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -155,8 +166,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.approve.estimateGasAsync.bind(self, _approved, _tokenId),
+                self.approve.estimateGasAsync.bind(self, _approved.toLowerCase(), _tokenId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -170,7 +185,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.approve.sendTransactionAsync(_approved, _tokenId, txData);
+            const txHashPromise = self.approve.sendTransactionAsync(_approved.toLowerCase(), _tokenId, txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -191,7 +206,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_approved', _approved);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved, _tokenId]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
+                _approved.toLowerCase(),
+                _tokenId,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -200,6 +218,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -220,7 +242,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [_approved, _tokenId]);
+            const encodedData = self._strictEncodeArguments('approve(address,uint256)', [
+                _approved.toLowerCase(),
+                _tokenId,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -229,6 +254,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
@@ -242,7 +271,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('approve(address,uint256)', [
-                _approved,
+                _approved.toLowerCase(),
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
@@ -260,8 +289,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -271,8 +300,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferFrom.estimateGasAsync.bind(self, _from, _to, _tokenId),
+                self.transferFrom.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _tokenId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -288,7 +321,12 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
+            const txHashPromise = self.transferFrom.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -312,8 +350,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -324,6 +362,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -347,8 +389,8 @@ export class DummyERC721TokenContract extends BaseContract {
             }
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -359,6 +401,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
@@ -373,8 +419,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
@@ -389,7 +435,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to, _tokenId]);
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to.toLowerCase(), _tokenId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -397,8 +443,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.mint.estimateGasAsync.bind(self, _to, _tokenId),
+                self.mint.estimateGasAsync.bind(self, _to.toLowerCase(), _tokenId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -412,7 +462,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.mint.sendTransactionAsync(_to, _tokenId, txData);
+            const txHashPromise = self.mint.sendTransactionAsync(_to.toLowerCase(), _tokenId, txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -433,7 +483,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to, _tokenId]);
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to.toLowerCase(), _tokenId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -442,6 +492,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -462,7 +516,7 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to, _tokenId]);
+            const encodedData = self._strictEncodeArguments('mint(address,uint256)', [_to.toLowerCase(), _tokenId]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -471,6 +525,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('mint(address,uint256)');
@@ -483,7 +541,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [_to, _tokenId]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('mint(address,uint256)', [
+                _to.toLowerCase(),
+                _tokenId,
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -499,8 +560,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -510,8 +571,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.safeTransferFrom1.estimateGasAsync.bind(self, _from, _to, _tokenId),
+                self.safeTransferFrom1.estimateGasAsync.bind(self, _from.toLowerCase(), _to.toLowerCase(), _tokenId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -527,7 +592,12 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_to', _to);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
+            const txHashPromise = self.safeTransferFrom1.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -551,8 +621,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -563,6 +633,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -586,8 +660,8 @@ export class DummyERC721TokenContract extends BaseContract {
             }
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
@@ -598,6 +672,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256)');
@@ -612,8 +690,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
             ]);
             return abiEncodedTransactionData;
@@ -644,6 +722,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('ownerOf(uint256)');
@@ -675,7 +757,7 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner]);
+            const encodedData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -684,6 +766,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
@@ -695,7 +781,7 @@ export class DummyERC721TokenContract extends BaseContract {
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
             const self = (this as any) as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
     };
@@ -719,6 +805,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
@@ -753,6 +843,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('symbol()');
@@ -776,7 +870,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner, _tokenId]);
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner.toLowerCase(), _tokenId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -784,8 +878,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.burn.estimateGasAsync.bind(self, _owner, _tokenId),
+                self.burn.estimateGasAsync.bind(self, _owner.toLowerCase(), _tokenId),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -799,7 +897,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.burn.sendTransactionAsync(_owner, _tokenId, txData);
+            const txHashPromise = self.burn.sendTransactionAsync(_owner.toLowerCase(), _tokenId, txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -820,7 +918,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner, _tokenId]);
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner.toLowerCase(), _tokenId]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -829,6 +927,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -849,7 +951,7 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner, _tokenId]);
+            const encodedData = self._strictEncodeArguments('burn(address,uint256)', [_owner.toLowerCase(), _tokenId]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -858,6 +960,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('burn(address,uint256)');
@@ -870,7 +976,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_owner', _owner);
             assert.isBigNumber('_tokenId', _tokenId);
             const self = (this as any) as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [_owner, _tokenId]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('burn(address,uint256)', [
+                _owner.toLowerCase(),
+                _tokenId,
+            ]);
             return abiEncodedTransactionData;
         },
     };
@@ -883,7 +992,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator, _approved]);
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -891,8 +1003,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.setApprovalForAll.estimateGasAsync.bind(self, _operator, _approved),
+                self.setApprovalForAll.estimateGasAsync.bind(self, _operator.toLowerCase(), _approved),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -906,7 +1022,11 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
+            const txHashPromise = self.setApprovalForAll.sendTransactionAsync(
+                _operator.toLowerCase(),
+                _approved,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -927,7 +1047,10 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_operator', _operator);
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator, _approved]);
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -936,6 +1059,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -956,7 +1083,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [_operator, _approved]);
+            const encodedData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
+                _operator.toLowerCase(),
+                _approved,
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -965,6 +1095,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setApprovalForAll(address,bool)');
@@ -978,7 +1112,7 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBoolean('_approved', _approved);
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('setApprovalForAll(address,bool)', [
-                _operator,
+                _operator.toLowerCase(),
                 _approved,
             ]);
             return abiEncodedTransactionData;
@@ -998,8 +1132,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_data', _data);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
                 _data,
             ]);
@@ -1010,8 +1144,18 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.safeTransferFrom2.estimateGasAsync.bind(self, _from, _to, _tokenId, _data),
+                self.safeTransferFrom2.estimateGasAsync.bind(
+                    self,
+                    _from.toLowerCase(),
+                    _to.toLowerCase(),
+                    _tokenId,
+                    _data,
+                ),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1029,7 +1173,13 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isBigNumber('_tokenId', _tokenId);
             assert.isString('_data', _data);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(_from, _to, _tokenId, _data, txData);
+            const txHashPromise = self.safeTransferFrom2.sendTransactionAsync(
+                _from.toLowerCase(),
+                _to.toLowerCase(),
+                _tokenId,
+                _data,
+                txData,
+            );
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -1055,8 +1205,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_data', _data);
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
                 _data,
             ]);
@@ -1068,6 +1218,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1093,8 +1247,8 @@ export class DummyERC721TokenContract extends BaseContract {
             }
             const self = (this as any) as DummyERC721TokenContract;
             const encodedData = self._strictEncodeArguments('safeTransferFrom(address,address,uint256,bytes)', [
-                _from,
-                _to,
+                _from.toLowerCase(),
+                _to.toLowerCase(),
                 _tokenId,
                 _data,
             ]);
@@ -1106,6 +1260,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('safeTransferFrom(address,address,uint256,bytes)');
@@ -1122,7 +1280,7 @@ export class DummyERC721TokenContract extends BaseContract {
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
                 'safeTransferFrom(address,address,uint256,bytes)',
-                [_from, _to, _tokenId, _data],
+                [_from.toLowerCase(), _to.toLowerCase(), _tokenId, _data],
             );
             return abiEncodedTransactionData;
         },
@@ -1145,7 +1303,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('isApprovedForAll(address,address)', [_owner, _operator]);
+            const encodedData = self._strictEncodeArguments('isApprovedForAll(address,address)', [
+                _owner.toLowerCase(),
+                _operator.toLowerCase(),
+            ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1154,6 +1315,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isApprovedForAll(address,address)');
@@ -1167,8 +1332,8 @@ export class DummyERC721TokenContract extends BaseContract {
             assert.isString('_operator', _operator);
             const self = (this as any) as DummyERC721TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('isApprovedForAll(address,address)', [
-                _owner,
-                _operator,
+                _owner.toLowerCase(),
+                _operator.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
         },
@@ -1177,7 +1342,7 @@ export class DummyERC721TokenContract extends BaseContract {
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1185,8 +1350,12 @@ export class DummyERC721TokenContract extends BaseContract {
                     data: encodedData,
                 },
                 self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner),
+                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
@@ -1198,7 +1367,7 @@ export class DummyERC721TokenContract extends BaseContract {
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner, txData);
+            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
             return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
                 txHashPromise,
                 (async (): Promise<TransactionReceiptWithDecodedLogs> => {
@@ -1214,7 +1383,7 @@ export class DummyERC721TokenContract extends BaseContract {
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1223,6 +1392,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            if (txDataWithDefaults.from !== undefined) {
+                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+            }
+
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
@@ -1237,7 +1410,7 @@ export class DummyERC721TokenContract extends BaseContract {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
             const self = (this as any) as DummyERC721TokenContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1246,6 +1419,10 @@ export class DummyERC721TokenContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
@@ -1257,7 +1434,9 @@ export class DummyERC721TokenContract extends BaseContract {
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as DummyERC721TokenContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner]);
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
+                newOwner.toLowerCase(),
+            ]);
             return abiEncodedTransactionData;
         },
     };

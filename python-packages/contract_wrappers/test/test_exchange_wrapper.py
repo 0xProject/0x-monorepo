@@ -7,8 +7,9 @@ from eth_utils import remove_0x_prefix
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
 from zero_ex.contract_wrappers import Exchange, TxParams
+from zero_ex.contract_wrappers.exchange.types import Order
 from zero_ex.json_schemas import assert_valid
-from zero_ex.order_utils import generate_order_hash_hex, Order, sign_hash
+from zero_ex.order_utils import generate_order_hash_hex, sign_hash_to_bytes
 
 
 @pytest.fixture(scope="module")
@@ -28,20 +29,20 @@ def create_test_order(
     taker_asset_data,
 ):
     """Create a test order."""
-    order: Order = {
-        "makerAddress": maker_address.lower(),
-        "takerAddress": "0x0000000000000000000000000000000000000000",
-        "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
-        "senderAddress": "0x0000000000000000000000000000000000000000",
-        "makerAssetAmount": maker_asset_amount,
-        "takerAssetAmount": taker_asset_amount,
-        "makerFee": 0,
-        "takerFee": 0,
-        "expirationTimeSeconds": 100000000000000,
-        "salt": random.randint(1, 1000000000),
-        "makerAssetData": maker_asset_data,
-        "takerAssetData": taker_asset_data,
-    }
+    order = Order(
+        makerAddress=maker_address.lower(),
+        takerAddress="0x0000000000000000000000000000000000000000",
+        feeRecipientAddress="0x0000000000000000000000000000000000000000",
+        senderAddress="0x0000000000000000000000000000000000000000",
+        makerAssetAmount=maker_asset_amount,
+        takerAssetAmount=taker_asset_amount,
+        makerFee=0,
+        takerFee=0,
+        expirationTimeSeconds=100000000000000,
+        salt=random.randint(1, 1000000000),
+        makerAssetData=maker_asset_data,
+        takerAssetData=taker_asset_data,
+    )
     return order
 
 
@@ -69,16 +70,16 @@ def test_exchange_wrapper__fill_order(
     """Test filling an order."""
     taker = accounts[0]
     maker = accounts[1]
-    exchange_address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.contract_address
     order = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     order_hash = generate_order_hash_hex(
         order=order, exchange_address=exchange_address
     )
-    order_signature = sign_hash(ganache_provider, maker, order_hash)
+    order_signature = sign_hash_to_bytes(ganache_provider, maker, order_hash)
 
     tx_hash = exchange_wrapper.fill_order(
         order=order,
-        taker_amount=order["takerAssetAmount"],
+        taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
         tx_params=TxParams(from_=taker),
     )
@@ -98,7 +99,7 @@ def test_exchange_wrapper__batch_fill_orders(
     """Test filling a batch of orders."""
     taker = accounts[0]
     maker = accounts[1]
-    exchange_address = exchange_wrapper.address
+    exchange_address = exchange_wrapper.contract_address
     orders = []
     order_1 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
     order_2 = create_test_order(maker, 1, weth_asset_data, 1, weth_asset_data)
@@ -109,13 +110,13 @@ def test_exchange_wrapper__batch_fill_orders(
         for order in orders
     ]
     order_signatures = [
-        sign_hash(ganache_provider, maker, order_hash)
+        sign_hash_to_bytes(ganache_provider, maker, order_hash)
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
     tx_hash = exchange_wrapper.batch_fill_orders(
         orders=orders,
-        taker_amounts=taker_amounts,
+        taker_asset_fill_amounts=taker_amounts,
         signatures=order_signatures,
         tx_params=TxParams(from_=taker),
     )

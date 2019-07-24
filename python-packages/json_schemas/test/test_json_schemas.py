@@ -1,7 +1,6 @@
 """Tests of zero_ex.json_schemas"""
 
 
-from zero_ex.order_utils import make_empty_order, order_to_jsdict
 from zero_ex.json_schemas import _LOCAL_RESOLVER, assert_valid
 
 
@@ -34,7 +33,7 @@ def test_assert_valid_caches_resources():
     """
     _LOCAL_RESOLVER._remote_cache.cache_clear()  # pylint: disable=W0212
 
-    assert_valid(order_to_jsdict(make_empty_order()), "/orderSchema")
+    assert_valid(EMPTY_ORDER, "/orderSchema")
     cache_info = (
         _LOCAL_RESOLVER._remote_cache.cache_info()  # pylint: disable=W0212
     )

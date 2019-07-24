@@ -131,6 +131,7 @@ export {
     ConstructorAbi,
     FallbackAbi,
     DataItem,
+    TupleDataItem,
     ConstructorStateMutability,
     StateMutability,
     Web3JsProvider,

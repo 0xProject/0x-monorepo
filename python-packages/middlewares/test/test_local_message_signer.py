@@ -10,7 +10,6 @@ from zero_ex.middlewares.local_message_signer import (
 from zero_ex.order_utils import (
     generate_order_hash_hex,
     is_valid_signature,
-    make_empty_order,
     sign_hash,
 )
 
@@ -31,7 +30,20 @@ def test_local_message_signer__sign_order():
     web3_instance.middleware_stack.add(
         construct_local_message_signer(private_key)
     )
-    order = make_empty_order()
+    order = {
+        "makerAddress": "0x0000000000000000000000000000000000000000",
+        "takerAddress": "0x0000000000000000000000000000000000000000",
+        "senderAddress": "0x0000000000000000000000000000000000000000",
+        "feeRecipientAddress": "0x0000000000000000000000000000000000000000",
+        "makerAssetData": (b"\x00") * 20,
+        "takerAssetData": (b"\x00") * 20,
+        "salt": 0,
+        "makerFee": 0,
+        "takerFee": 0,
+        "makerAssetAmount": 0,
+        "takerAssetAmount": 0,
+        "expirationTimeSeconds": 0,
+    }
     order_hash = generate_order_hash_hex(order, exchange)
     signature = sign_hash(ganache, to_checksum_address(address), order_hash)
     assert signature == expected_signature

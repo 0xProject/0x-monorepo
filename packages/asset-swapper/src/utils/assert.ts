@@ -1,6 +1,6 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
-import { SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
 import { OrderProvider, OrderProviderRequest, SwapQuote, SwapQuoteInfo } from '../types';
@@ -12,13 +12,36 @@ export const assert = {
         sharedAssert.isHexString(`${variableName}.makerAssetData`, swapQuote.makerAssetData);
         sharedAssert.doesConformToSchema(`${variableName}.orders`, swapQuote.orders, schemas.signedOrdersSchema);
         sharedAssert.doesConformToSchema(`${variableName}.feeOrders`, swapQuote.feeOrders, schemas.signedOrdersSchema);
+        assert.isValidOrdersForSwapQuote(
+            `${variableName}.orders`,
+            swapQuote.orders,
+            swapQuote.makerAssetData,
+            swapQuote.takerAssetData,
+        );
         assert.isValidSwapQuoteInfo(`${variableName}.bestCaseQuoteInfo`, swapQuote.bestCaseQuoteInfo);
         assert.isValidSwapQuoteInfo(`${variableName}.worstCaseQuoteInfo`, swapQuote.worstCaseQuoteInfo);
-        if (swapQuote.type === 'marketBuy') {
+        if (swapQuote.type === MarketOperation.Buy) {
             sharedAssert.isBigNumber(`${variableName}.makerAssetFillAmount`, swapQuote.makerAssetFillAmount);
         } else {
             sharedAssert.isBigNumber(`${variableName}.takerAssetFillAmount`, swapQuote.takerAssetFillAmount);
         }
+    },
+    isValidOrdersForSwapQuote(
+        variableName: string,
+        orders: SignedOrder[],
+        makerAssetData: string,
+        takerAssetData: string,
+    ): void {
+        _.every(orders, (order: SignedOrder, index: number) => {
+            assert.assert(
+                order.takerAssetData === takerAssetData,
+                `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData}`,
+            );
+            assert.assert(
+                order.makerAssetData === makerAssetData,
+                `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData}`,
+            );
+        });
     },
     isValidForwarderSwapQuote(variableName: string, swapQuote: SwapQuote, wethAssetData: string): void {
         assert.isValidSwapQuote(variableName, swapQuote);

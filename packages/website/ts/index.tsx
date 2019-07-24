@@ -26,6 +26,7 @@ import { Explore } from 'ts/pages/explore';
 import { NextEcosystem } from 'ts/pages/ecosystem';
 import { Extensions } from 'ts/pages/extensions';
 import { Governance } from 'ts/pages/governance/governance';
+import { VoteIndex } from 'ts/pages/governance/vote_index';
 import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
@@ -120,7 +121,8 @@ render(
                                 <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
                                 <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
                                 <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
-                                <Route exact={true} path={WebsitePaths.Vote} component={Governance as any} />
+                                <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
+                                <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
                                 <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
                                 <Route
                                     exact={true}

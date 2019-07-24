@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+./parallel ./setup.py build_sphinx

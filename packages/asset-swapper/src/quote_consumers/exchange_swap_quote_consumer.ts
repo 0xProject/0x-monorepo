@@ -1,4 +1,5 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -50,7 +51,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const { orders, signatures } = params;
         let args: any[];
-        if (params.type === 'marketBuy') {
+        if (params.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = params;
             args = [orders, makerAssetFillAmount, signatures];
         } else {
@@ -76,17 +77,19 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const signatures = _.map(orders, o => o.signature);
 
+        const optimizedOrders = swapQuoteConsumerUtils.optimizeOrdersForMarketExchangeOperation(orders, quote.type);
+
         let params: ExchangeSmartContractParams;
         let methodName: string;
 
-        if (quote.type === 'marketBuy') {
+        if (quote.type === MarketOperation.Buy) {
             const { makerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 makerAssetFillAmount,
-                type: 'marketBuy',
+                type: MarketOperation.Buy,
             };
 
             methodName = 'marketBuyOrders';
@@ -94,10 +97,10 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 takerAssetFillAmount,
-                type: 'marketSell',
+                type: MarketOperation.Sell,
             };
 
             methodName = 'marketSellOrders';
@@ -139,7 +142,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         try {
             let txHash: string;
-            if (quote.type === 'marketBuy') {
+            if (quote.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quote;
                 txHash = await this._contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
                     orders,
