@@ -77,6 +77,8 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         const signatures = _.map(orders, o => o.signature);
 
+        const optimizedOrders = swapQuoteConsumerUtils.optimizeOrdersForMarketExchangeOperation(orders, quote.type);
+
         let params: ExchangeSmartContractParams;
         let methodName: string;
 
@@ -84,7 +86,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { makerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 makerAssetFillAmount,
                 type: MarketOperation.Buy,
@@ -95,7 +97,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = quote;
 
             params = {
-                orders,
+                orders: optimizedOrders,
                 signatures,
                 takerAssetFillAmount,
                 type: MarketOperation.Sell,
