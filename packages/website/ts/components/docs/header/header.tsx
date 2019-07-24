@@ -11,9 +11,9 @@ import { SearchInput } from 'ts/components/docs/search/search_input';
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { FlexWrap } from 'ts/components/newLayout';
- import { IThemeValuesInterface } from 'ts/style/theme';
 
 import { colors } from 'ts/style/colors';
+import { IThemeValuesInterface } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 
 import { WebsitePaths } from 'ts/types';
