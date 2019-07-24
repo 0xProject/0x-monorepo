@@ -1,10 +1,11 @@
-import { DocsInfo, DocsInfoConfig } from '@0x/react-docs';
 import { Dispatch } from 'redux';
 import { DocPageProps } from 'ts/pages/documentation/doc_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
-import { ScreenWidths } from 'ts/types';
+import { DocsInfoConfig, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
+
+import { DocsInfo } from 'ts/utils/docs_info';
 
 export interface ConnectedState {
     docsVersion: string;

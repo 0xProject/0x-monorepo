@@ -1,4 +1,3 @@
-import { DocsInfo } from '@0x/react-docs';
 import { ALink, colors, Link, Styles } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
@@ -15,6 +14,8 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { Deco, Key, ProviderType, WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
+
+import { DocsInfo } from '../../utils/docs_info';
 
 export enum TopBarDisplayType {
     Default,

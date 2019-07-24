@@ -3,8 +3,8 @@ import { Parameter, SolidityMethod, TypeDefinitionByName, TypescriptFunction, Ty
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { DocsInfo } from '../docs_info';
-import { constants } from '../utils/constants';
+import { constants } from '../../../utils/constants';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Comment } from './comment';
 import { Signature } from './signature';

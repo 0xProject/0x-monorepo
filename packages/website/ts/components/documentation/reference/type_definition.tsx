@@ -4,9 +4,9 @@ import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { DocsInfo } from '../docs_info';
-import { KindString, SupportedDocJson } from '../types';
-import { constants } from '../utils/constants';
+import { KindString, SupportedDocJson } from '../../../types';
+import { constants } from '../../../utils/constants';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';

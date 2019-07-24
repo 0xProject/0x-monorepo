@@ -2,8 +2,8 @@ import { AnchorTitle, HeaderSizes } from '@0x/react-shared';
 import { Property, TypeDefinitionByName } from '@0x/types';
 import * as React from 'react';
 
-import { DocsInfo } from '../docs_info';
-import { constants } from '../utils/constants';
+import { constants } from '../../../utils/constants';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Comment } from './comment';
 import { SourceLink } from './source_link';

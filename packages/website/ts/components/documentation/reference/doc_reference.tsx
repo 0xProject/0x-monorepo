@@ -23,9 +23,9 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as semver from 'semver';
 
-import { DocsInfo } from '../docs_info';
-import { AddressByContractName, SupportedDocJson } from '../types';
-import { constants } from '../utils/constants';
+import { AddressByContractName, SupportedDocJson } from '../../../types';
+import { constants } from '../../../utils/constants';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Badge } from './badge';
 import { Comment } from './comment';

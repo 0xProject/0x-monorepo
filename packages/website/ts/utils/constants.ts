@@ -2,6 +2,8 @@ import { ALink } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Key, WebsitePaths } from 'ts/types';
 
+import { SupportedDocJson } from '../types';
+
 const URL_FORUM = 'https://forum.0x.org';
 const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
 
@@ -132,4 +134,10 @@ export const constants = {
             shouldOpenInNewTab: true,
         },
     ] as ALink[],
+    TYPES_SECTION_NAME: 'types',
+    EXTERNAL_EXPORTS_SECTION_NAME: 'external exports',
+    TYPE_TO_SYNTAX: {
+        [SupportedDocJson.SolDoc]: 'solidity',
+        [SupportedDocJson.TypeDoc]: 'typescript',
+    } as { [supportedDocType: string]: string },
 };

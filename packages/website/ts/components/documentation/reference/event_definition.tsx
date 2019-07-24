@@ -3,7 +3,7 @@ import { Event, EventArg } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { DocsInfo } from '../docs_info';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Type } from './type';
 

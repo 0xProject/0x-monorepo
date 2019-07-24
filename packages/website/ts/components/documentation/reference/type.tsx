@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';
 
-import { DocsInfo } from '../docs_info';
+import { DocsInfo } from '../../../utils/docs_info';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';

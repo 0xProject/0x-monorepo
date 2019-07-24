@@ -9,8 +9,9 @@ import {
     SectionNameToMarkdownByVersion,
     SectionsMap,
     SupportedDocJson,
-} from './types';
-import { constants } from './utils/constants';
+} from '../types';
+
+import { constants } from './constants';
 
 export class DocsInfo {
     public id: string;

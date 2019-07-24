@@ -26,8 +26,7 @@
         "@0x/contract-wrappers": "^9.1.7",
         "@0x/json-schemas": "^3.0.11",
         "@0x/order-utils": "^8.2.2",
-        "@0x/react-docs": "^2.0.14",
-        "@0x/react-shared": "^2.0.14",
+        "@0x/react-shared": "^2.0.15",
         "@0x/subproviders": "^4.1.2",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
@@ -78,6 +77,7 @@
         "redux-devtools-extension": "^2.13.2",
         "rollbar": "^2.4.7",
         "semver-sort": "0.0.4",
+        "semver": "5.5.0",
         "styled-components": "^4.1.1",
         "thenby": "^1.2.3",
         "truffle-contract": "2.0.1",
@@ -85,6 +85,7 @@
         "xml-js": "^1.6.4"
     },
     "devDependencies": {
+        "@0x/tslint-config": "^3.0.1",
         "@types/accounting": "^0.4.1",
         "@types/blockies": "^0.0.0",
         "@types/deep-equal": "^1.0.0",

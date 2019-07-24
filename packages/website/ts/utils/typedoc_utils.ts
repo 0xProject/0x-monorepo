@@ -20,10 +20,10 @@ import {
 import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { DocsInfo } from '../docs_info';
 import { KindString } from '../types';
 
 import { constants } from './constants';
+import { DocsInfo } from './docs_info';
 
 export class TypeDocUtils {
     private readonly _typeDocNameOrder: string[];

@@ -1,9 +1,10 @@
-import { constants as docConstants, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
 import { DocPackages } from 'ts/types';
 
+import { DocsInfoConfig, SupportedDocJson } from '../types';
+import { constants } from '../utils/constants';
 import { getMapStateToProps, mapDispatchToProps } from '../utils/documentation_container';
 
 /* tslint:disable:no-var-requires */
@@ -14,7 +15,7 @@ const InstallationMarkdown = require('md/docs/ethereum_types/installation');
 const markdownSections = {
     introduction: 'introduction',
     installation: 'installation',
-    types: docConstants.TYPES_SECTION_NAME,
+    types: constants.TYPES_SECTION_NAME,
 };
 
 const docsInfoConfig: DocsInfoConfig = {

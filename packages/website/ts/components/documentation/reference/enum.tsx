@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { EnumValue } from '../types';
+import { EnumValue } from '../../../types';
 
 export interface EnumProps {
     values: EnumValue[];
