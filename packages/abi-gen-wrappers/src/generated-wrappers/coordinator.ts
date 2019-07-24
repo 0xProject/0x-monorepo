@@ -702,7 +702,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -736,7 +735,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'approval',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'txOrigin',
@@ -774,7 +772,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -833,7 +830,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'transaction',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'salt',
@@ -885,7 +881,6 @@ export class CoordinatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',

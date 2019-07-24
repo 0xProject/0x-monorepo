@@ -684,7 +684,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -746,7 +745,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'orderStatus',
@@ -765,7 +763,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -839,7 +836,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -901,7 +897,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'ordersInfo',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'orderStatus',
@@ -920,7 +915,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'tradersInfo',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -967,7 +961,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'orders',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1029,7 +1022,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: '',
                         type: 'tuple[]',
-
                         components: [
                             {
                                 name: 'makerBalance',
@@ -1126,7 +1118,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'order',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerAddress',
@@ -1188,7 +1179,6 @@ export class OrderValidatorContract extends BaseContract {
                     {
                         name: 'traderInfo',
                         type: 'tuple',
-
                         components: [
                             {
                                 name: 'makerBalance',

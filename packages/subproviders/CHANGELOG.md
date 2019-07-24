@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.1.2 - _July 24, 2019_
+
+    * Fix bug in Private Key subprovider causing checksummed tx.origin addresses to be rejected. (#1962)
+
 ## v4.1.1 - _July 13, 2019_
 
     * Fix bug in Trezor subprovider causing Trezor response to not be hex encoded (#1867)

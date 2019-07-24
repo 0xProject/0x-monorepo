@@ -6,7 +6,8 @@
                 "note": "re-export new ethereum-types types, TupleDataItem",
                 "pr": 1919
             }
-        ]
+        ],
+        "timestamp": 1563957393
     },
     {
         "timestamp": 1563006338,
