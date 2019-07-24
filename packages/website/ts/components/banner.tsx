@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
 
 import { Button } from 'ts/components/button';
-import { ThemeInterface } from 'ts/components/siteWrap';
+import { IThemeInterface } from 'ts/style/theme';
 import { Paragraph } from 'ts/components/text';
 
 import { Column, Section } from 'ts/components/newLayout';
@@ -15,7 +15,7 @@ interface Props {
     customCta?: React.ReactNode;
     mainCta?: CTAButton;
     secondaryCta?: CTAButton;
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
 }
 
 interface CTAButton {

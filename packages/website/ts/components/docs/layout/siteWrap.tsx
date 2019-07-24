@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
+import { Header } from 'ts/components/docs/header/header';
 import { Footer } from 'ts/components/footer';
-import { Header } from 'ts/components/header';
 
 import { GlobalStyles } from 'ts/constants/globalStyle';
 import { GLOBAL_THEMES } from 'ts/style/theme';

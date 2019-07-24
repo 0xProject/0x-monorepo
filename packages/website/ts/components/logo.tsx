@@ -1,13 +1,13 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { ThemeInterface } from 'ts/components/siteWrap';
+import { IThemeInterface } from 'ts/style/theme';
 import LogoIcon from 'ts/icons/logo-with-type.svg';
 
 import { zIndex } from 'ts/style/z_index';
 
 interface LogoInterface {
-    theme?: ThemeInterface;
+    theme?: IThemeInterface;
 }
 
 // Note let's refactor this

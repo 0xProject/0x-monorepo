@@ -14,7 +14,7 @@ import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
+ import { IThemeValuesInterface } from 'ts/style/theme';
 
 import { zIndex } from 'ts/style/z_index';
 
@@ -24,7 +24,7 @@ interface HeaderProps {
     location?: Location;
     isNavToggled?: boolean;
     toggleMobileNav?: () => void;
-    theme: ThemeValuesInterface;
+    theme: IThemeValuesInterface;
 }
 
 interface NavItemProps {
