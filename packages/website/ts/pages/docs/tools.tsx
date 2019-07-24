@@ -80,18 +80,3 @@ const filters = [
     { attribute: 'difficulty', heading: 'Level' },
     { attribute: 'isCommunity', heading: 'Community Maintained', customLabel: 'Include Community Maintained' },
 ];
-
-const featuredLinks = [
-    {
-        heading: '0x Code Sandbox',
-        description: 'A description could possibly go here but could be tight.',
-        icon: 'flexibleIntegration',
-        url: 'https://0x.org',
-    },
-    {
-        heading: '0x Code Sandbox',
-        description: 'A description could possibly go here but could be tight.',
-        icon: 'flexibleIntegration',
-        url: 'https://0x.org',
-    },
-];

@@ -11,19 +11,18 @@ import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 
 interface IFeatureLinkProps {
-    heading: string;
-    icon: string;
+    title: string;
     description?: string;
     url: string;
 }
 
 export const FeatureLink: React.FC<IFeatureLinkProps> = props => (
     <FeatureLinkWrapper to={props.url}>
-        <StyledIcon color={colors.brandLight} name={props.icon} size={60} />
+        <StyledIcon color={colors.brandLight} name="flexibleIntegration" size={60} />
         <Content>
             <div>
                 <Heading asElement="h3" size="small" marginBottom="6px">
-                    {props.heading}
+                    {props.title}
                 </Heading>
                 <Paragraph size="default" marginBottom="0">
                     {props.description}
