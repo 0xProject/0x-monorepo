@@ -11,6 +11,7 @@ interface IFilterListProps {
     customLabel?: string;
     items: IFilterProps[];
     refine: (value: string) => void;
+    transformItems: (items: IFilterProps[]) => void;
 }
 
 const FiltersList: React.FC<IFilterListProps> = ({ items, customLabel, heading, refine }) => {
