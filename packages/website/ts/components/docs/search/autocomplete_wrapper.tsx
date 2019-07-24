@@ -30,7 +30,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             isHome &&
             `
             border: 1px solid transparent;
-            padding: 13px 30px;
+            padding: 13px 30px 0;
 
             &--focused,
             &--open {
@@ -115,18 +115,18 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
     }
 
     .react-autosuggest__section-title {
-        text-align: center;
-        min-width: 180px;
+        position: relative;
+        /* min-width: 180px; */
 
         p {
+            position: absolute;
             width: max-content;
-            float: left;
             color: ${colors.brandDark};
             background-color: rgba(0, 56, 49, 0.1);
             border-radius: 4px;
             font-size: 12px;
+            text-align: center;
             text-transform: uppercase;
-            position: sticky;
             top: 0px;
             margin: 30px;
             padding: 4px 10px 2px;
@@ -134,9 +134,8 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
         }
 
         @media (max-width: 900px) {
-            min-width: 100%;
-
             p {
+                position: static;
                 margin: 0;
                 padding: 10px 18px 8px;
                 border-radius: 0;
@@ -162,7 +161,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             `
             right: 0;
             left: 0;
-            top: 94px; 
+            top: 81px; 
         `};
 
         ${({ isHome }) =>
@@ -185,38 +184,37 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
 
     .react-autosuggest__suggestion {
         border-bottom: 1px solid #eee;
-        transition: background-color 300ms ease-in-out;
-
-        margin-right: 30px;
+        /* margin-right: 30px; */
 
         @media (max-width: 900px) {
             margin-right: 0;
         }
 
         &--highlighted {
-            background-color: ${colors.backgroundLight};
-        }
+            background: ${colors.backgroundLight};
 
-        a {
-            display: flex;
-            flex-direction: column;
-            min-height: 110px;
-
-            padding: 25px 30px;
-
-            @media (max-width: 900px) {
-                padding: 25px 18px;
-                margin-right: 0;
+            h6:first-of-type {
+                &:before {
+                    position: absolute;
+                    content: '';
+                    background: url("data:image/svg+xml,%3Csvg width='8' height='12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M7.071 5.657L1.414 0 0 1.414l4.244 4.244L0 9.9l1.414 1.414L7.071 5.66v-.002z' fill='%23003831'/%3E%3C/svg%3E")
+                        transparent left center no-repeat;
+                    left: -16px;
+                    height: 18px;
+                    width: 8px;
+                }
             }
         }
 
         /* Highlight - Text */
         h6 {
+            position: relative;
             display: inline;
             color: ${colors.brandDark};
             font-size: var(--smallHeading);
             font-weight: 300;
         }
+
         /* Highlight - Match */
         em {
             font-size: var(--smallHeading);
@@ -231,10 +229,25 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             font-weight: 300;
             line-height: 1.4;
         }
+
         /* Snippet - Match */
         span {
             font-size: var(--smallParagraph);
             font-weight: 400;
+        }
+
+        /* Link - container */
+        a {
+            display: flex;
+            flex-direction: column;
+            min-height: 110px;
+
+            padding: 25px 30px 25px 180px;
+
+            @media (max-width: 900px) {
+                padding: 25px 18px;
+                margin-right: 0;
+            }
         }
     }
 `;
