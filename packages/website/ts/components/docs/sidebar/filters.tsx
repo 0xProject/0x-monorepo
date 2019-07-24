@@ -1,5 +1,7 @@
 import React from 'react';
 
+import _ from 'lodash';
+
 import { FiltersGroup } from 'ts/components/docs/sidebar/filters_group';
 
 import { styled } from 'ts/style/theme';
@@ -13,10 +15,12 @@ interface IFiltersGroupProps {
     customLabel?: string;
 }
 
+const transformItems = (items: IFiltersGroupProps[]) => _.orderBy(items, 'label', 'asc');
+
 export const Filters: React.FC<IFiltersProps> = ({ filters }) => (
     <FiltersWrapper>
         {filters.map((filter: IFiltersGroupProps, index: number) => (
-            <FiltersGroup key={`filter-${index}`} {...filter} />
+            <FiltersGroup key={`filter-${index}`} transformItems={transformItems} {...filter} />
         ))}
     </FiltersWrapper>
 );
