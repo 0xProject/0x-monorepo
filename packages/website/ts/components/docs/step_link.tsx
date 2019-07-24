@@ -25,15 +25,18 @@ export const StepLink: React.FC<IStepLinkConfig> = props => (
 );
 
 const StepLinkWrapper = styled(Link)`
-    color: ${colors.brandDark};
     padding: 21px 25px 19px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 
     &:hover {
-        background-color: ${colors.brandDark};
-        color: ${colors.white};
+        background: ${colors.brandDark};
+
+        * {
+            color: ${colors.white};
+            fill: ${colors.white};
+        }
     }
 
     & + & {
