@@ -5,13 +5,13 @@ import styled, { css } from 'styled-components';
 
 import { Link } from '@0x/react-shared';
 
-import { MobileNav } from 'ts/components/docs/mobileNav';
+import { MobileNav } from 'ts/components/docs/header/mobileNav';
 import { SearchInput } from 'ts/components/docs/search/search_input';
 
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { FlexWrap } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
+ import { IThemeValuesInterface } from 'ts/style/theme';
 
 import { colors } from 'ts/style/colors';
 import { zIndex } from 'ts/style/z_index';
@@ -149,7 +149,7 @@ const LinkWrap = styled.li`
     }
 `;
 
-const linkStyles = css<{ theme: ThemeValuesInterface }>`
+const linkStyles = css<{ theme: IThemeValuesInterface }>`
     color: ${({ theme }) => theme.textColor};
     opacity: 0.5;
     transition: opacity 0.35s;

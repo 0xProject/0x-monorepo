@@ -4,13 +4,13 @@ import * as React from 'react';
 import styled, { withTheme } from 'styled-components';
 
 import { Column, FlexWrap } from 'ts/components/newLayout';
-import { ThemeValuesInterface } from 'ts/components/siteWrap';
+ import { IThemeValuesInterface } from 'ts/style/theme';
 import { Heading } from 'ts/components/text';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 interface Props {
-    theme: ThemeValuesInterface;
+    theme: IThemeValuesInterface;
 }
 
 interface LinkConfig {
