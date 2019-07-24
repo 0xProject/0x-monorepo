@@ -18,7 +18,6 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -36,8 +35,6 @@ contract MixinExchangeCore is
     MixinAssetProxyDispatcher,
     MixinSignatureValidator
 {
-    using LibBytes for bytes;
-
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -207,7 +204,7 @@ contract MixinExchangeCore is
         uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = _calculateFillResults(order, takerAssetFilledAmount);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
 
         bytes32 orderHash = orderInfo.orderHash;
 
@@ -397,39 +394,6 @@ contract MixinExchangeCore is
         if (order.makerAddress != makerAddress) {
             LibRichErrors._rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
         }
-    }
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function _calculateFillResults(
-        LibOrder.Order memory order,
-        uint256 takerAssetFilledAmount
-    )
-        internal
-        pure
-        returns (LibFillResults.FillResults memory fillResults)
-    {
-        // Compute proportional transfer amounts
-        fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = _safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
-        );
-        fillResults.makerFeePaid = _safeGetPartialAmountFloor(
-            fillResults.makerAssetFilledAmount,
-            order.makerAssetAmount,
-            order.makerFee
-        );
-        fillResults.takerFeePaid = _safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.takerFee
-        );
-
-        return fillResults;
     }
 
     /// @dev Settles an order by transferring assets between counterparties.

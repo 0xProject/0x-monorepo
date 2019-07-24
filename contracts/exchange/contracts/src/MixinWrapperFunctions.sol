@@ -198,7 +198,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            LibFillResults._addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults._addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -250,7 +250,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            LibFillResults._addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults._addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
