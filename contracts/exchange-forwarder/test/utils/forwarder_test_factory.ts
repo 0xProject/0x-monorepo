@@ -1,5 +1,13 @@
-import { ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import { chaiSetup, constants, ERC20BalancesByOwner, expectTransactionFailedAsync, web3Wrapper } from '@0x/contracts-test-utils';
+import { ERC20Wrapper } from '@0x/contracts-asset-proxy';
+import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import {
+    chaiSetup,
+    constants,
+    ERC20BalancesByOwner,
+    expectTransactionFailedAsync,
+    web3Wrapper,
+} from '@0x/contracts-test-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
@@ -20,10 +28,7 @@ interface ForwarderFillState {
     maxOverboughtMakerAsset: BigNumber;
 }
 
-function computeExpectedResults(
-    orders: SignedOrder[],
-    fractionalNumberOfOrdersToFill: BigNumber,
-): ForwarderFillState {
+function computeExpectedResults(orders: SignedOrder[], fractionalNumberOfOrdersToFill: BigNumber): ForwarderFillState {
     const currentState = {
         takerAssetFillAmount: constants.ZERO_AMOUNT,
         makerAssetFillAmount: constants.ZERO_AMOUNT,
@@ -34,42 +39,49 @@ function computeExpectedResults(
     };
     let remainingOrdersToFill = fractionalNumberOfOrdersToFill;
 
-    _.forEach(orders, (order: SignedOrder): void => {
-        if (remainingOrdersToFill.isEqualTo(constants.ZERO_AMOUNT)) {
-            return;
-        }
+    _.forEach(
+        orders,
+        (order: SignedOrder): void => {
+            if (remainingOrdersToFill.isEqualTo(constants.ZERO_AMOUNT)) {
+                return;
+            }
 
-        let makerAssetAmount;
-        let takerAssetAmount;
-        let takerFee;
-        if (remainingOrdersToFill.isLessThan(new BigNumber(1))) {
-            const [partialFillNumerator, partialFillDenominator] = remainingOrdersToFill.toFraction();
-            makerAssetAmount = order.makerAssetAmount.times(partialFillNumerator).dividedToIntegerBy(partialFillDenominator);
-            takerAssetAmount = order.takerAssetAmount.times(partialFillNumerator).dividedToIntegerBy(partialFillDenominator);
-            takerFee = order.takerFee.times(partialFillNumerator).dividedToIntegerBy(partialFillDenominator);
-        } else {
-            makerAssetAmount = order.makerAssetAmount;
-            takerAssetAmount = order.takerAssetAmount;
-            takerFee = order.takerFee;
-        }
+            let makerAssetAmount;
+            let takerAssetAmount;
+            let takerFee;
+            if (remainingOrdersToFill.isLessThan(new BigNumber(1))) {
+                const [partialFillNumerator, partialFillDenominator] = remainingOrdersToFill.toFraction();
+                makerAssetAmount = order.makerAssetAmount
+                    .times(partialFillNumerator)
+                    .dividedToIntegerBy(partialFillDenominator);
+                takerAssetAmount = order.takerAssetAmount
+                    .times(partialFillNumerator)
+                    .dividedToIntegerBy(partialFillDenominator);
+                takerFee = order.takerFee.times(partialFillNumerator).dividedToIntegerBy(partialFillDenominator);
+            } else {
+                makerAssetAmount = order.makerAssetAmount;
+                takerAssetAmount = order.takerAssetAmount;
+                takerFee = order.takerFee;
+            }
 
-        currentState.takerAssetFillAmount = currentState.takerAssetFillAmount.plus(takerAssetAmount);
-        currentState.makerAssetFillAmount = currentState.makerAssetFillAmount.plus(makerAssetAmount);
+            currentState.takerAssetFillAmount = currentState.takerAssetFillAmount.plus(takerAssetAmount);
+            currentState.makerAssetFillAmount = currentState.makerAssetFillAmount.plus(makerAssetAmount);
 
-        if (order.takerFeeAssetData === order.makerAssetData) {
-            currentState.percentageFees = currentState.percentageFees.plus(takerFee);
-        } else if (order.takerFeeAssetData === order.takerAssetData) {
-            currentState.wethFees = currentState.wethFees.plus(takerFee);
-            // Up to 1 wei worth of WETH will be oversold per order
-            currentState.maxOversoldWeth = currentState.maxOversoldWeth.plus(new BigNumber(1));
-            // Equivalently, up to 1 wei worth of maker asset will be overbought per order
-            currentState.maxOverboughtMakerAsset = currentState.maxOversoldWeth
-                .times(makerAssetAmount)
-                .dividedToIntegerBy(takerAssetAmount);
-        }
+            if (order.takerFeeAssetData === order.makerAssetData) {
+                currentState.percentageFees = currentState.percentageFees.plus(takerFee);
+            } else if (order.takerFeeAssetData === order.takerAssetData) {
+                currentState.wethFees = currentState.wethFees.plus(takerFee);
+                // Up to 1 wei worth of WETH will be oversold per order
+                currentState.maxOversoldWeth = currentState.maxOversoldWeth.plus(new BigNumber(1));
+                // Equivalently, up to 1 wei worth of maker asset will be overbought per order
+                currentState.maxOverboughtMakerAsset = currentState.maxOversoldWeth
+                    .times(makerAssetAmount)
+                    .dividedToIntegerBy(takerAssetAmount);
+            }
 
-        remainingOrdersToFill = BigNumber.min(remainingOrdersToFill.minus(new BigNumber(1)), constants.ZERO_AMOUNT);
-    });
+            remainingOrdersToFill = BigNumber.max(remainingOrdersToFill.minus(new BigNumber(1)), constants.ZERO_AMOUNT);
+        },
+    );
 
     return currentState;
 }
@@ -121,21 +133,32 @@ export class ForwarderTestFactory {
     public async marketBuyTestAsync(
         orders: SignedOrder[],
         fractionalNumberOfOrdersToFill: BigNumber,
-        makerAssetAddress: string,
-        takerEthBalanceBefore: BigNumber,
-        erc20Balances: ERC20BalancesByOwner,
-        ethValueAdjustment: BigNumber = constants.ZERO_AMOUNT,
-        forwarderFeeOptions: {
-            baseFeePercentage: BigNumber;
-            forwarderFeeRecipientEthBalanceBefore: BigNumber;
-        } = { baseFeePercentage: constants.ZERO_AMOUNT, forwarderFeeRecipientEthBalanceBefore: constants.ZERO_AMOUNT },
+        makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
+        options: {
+            ethValueAdjustment?: BigNumber;
+            forwarderFeePercentage?: BigNumber;
+            makerAssetId?: BigNumber;
+            revertReason?: RevertReason;
+        } = {},
     ): Promise<void> {
+        const ethValueAdjustment = options.ethValueAdjustment || constants.ZERO_AMOUNT;
+        const forwarderFeePercentage = options.forwarderFeePercentage || constants.ZERO_AMOUNT;
+
+        const erc20Balances = await this._erc20Wrapper.getBalancesAsync();
+        const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(this._takerAddress);
+        const forwarderFeeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(
+            this._forwarderFeeRecipientAddress,
+        );
+
         const expectedResults = computeExpectedResults(orders, fractionalNumberOfOrdersToFill);
         const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
             expectedResults.takerAssetFillAmount,
-            forwarderFeeOptions.baseFeePercentage,
+            forwarderFeePercentage,
         );
-        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
+        const feePercentage = ForwarderTestFactory.getPercentageOfValue(
+            constants.PERCENTAGE_DENOMINATOR,
+            forwarderFeePercentage,
+        );
 
         const ethValue = expectedResults.takerAssetFillAmount
             .plus(expectedResults.wethFees)
@@ -143,16 +166,20 @@ export class ForwarderTestFactory {
             .plus(ethSpentOnForwarderFee)
             .plus(ethValueAdjustment);
 
-        if (ethValueAdjustment.isNegative()) {
-            return expectTransactionFailedAsync(
+        if (options.revertReason !== undefined) {
+            await expectTransactionFailedAsync(
                 this._forwarderWrapper.marketBuyOrdersWithEthAsync(
                     orders,
-                    expectedResults.makerAssetFillAmount, {
-                    value: ethValue,
-                    from: this._takerAddress,
-                }),
-                RevertReason.CompleteFillFailed,
+                    expectedResults.makerAssetFillAmount,
+                    {
+                        value: ethValue,
+                        from: this._takerAddress,
+                    },
+                    { feePercentage, feeRecipient: this._forwarderFeeRecipientAddress },
+                ),
+                options.revertReason,
             );
+            return;
         }
 
         const tx = await this._forwarderWrapper.marketBuyOrdersWithEthAsync(
@@ -165,39 +192,59 @@ export class ForwarderTestFactory {
             { feePercentage, feeRecipient: this._forwarderFeeRecipientAddress },
         );
 
-        await this._checkResultsAsync(
-            tx,
-            expectedResults,
-            forwarderFeeOptions.forwarderFeeRecipientEthBalanceBefore,
-            takerEthBalanceBefore,
-            erc20Balances,
-            ethSpentOnForwarderFee,
-            makerAssetAddress,
-        );
+        await this._checkResultsAsync(tx, expectedResults, takerEthBalanceBefore, erc20Balances, makerAssetContract, {
+            forwarderFeePercentage,
+            forwarderFeeRecipientEthBalanceBefore,
+            makerAssetId: options.makerAssetId,
+        });
     }
 
     public async marketSellTestAsync(
         orders: SignedOrder[],
         fractionalNumberOfOrdersToFill: BigNumber,
-        makerAssetAddress: string,
-        takerEthBalanceBefore: BigNumber,
-        erc20Balances: ERC20BalancesByOwner,
-        forwarderFeeOptions: {
-            baseFeePercentage: BigNumber;
-            forwarderFeeRecipientEthBalanceBefore: BigNumber;
-        } = { baseFeePercentage: constants.ZERO_AMOUNT, forwarderFeeRecipientEthBalanceBefore: constants.ZERO_AMOUNT },
+        makerAssetContract: DummyERC20TokenContract,
+        options: {
+            forwarderFeePercentage?: BigNumber;
+            revertReason?: RevertReason;
+        } = {},
     ): Promise<void> {
+        const forwarderFeePercentage = options.forwarderFeePercentage || constants.ZERO_AMOUNT;
+
+        const erc20Balances = await this._erc20Wrapper.getBalancesAsync();
+        const takerEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(this._takerAddress);
+        const forwarderFeeRecipientEthBalanceBefore = await web3Wrapper.getBalanceInWeiAsync(
+            this._forwarderFeeRecipientAddress,
+        );
+
         const expectedResults = computeExpectedResults(orders, fractionalNumberOfOrdersToFill);
         const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
             expectedResults.takerAssetFillAmount,
-            forwarderFeeOptions.baseFeePercentage,
+            forwarderFeePercentage,
         );
-        const feePercentage = ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeeOptions.baseFeePercentage);
+        const feePercentage = ForwarderTestFactory.getPercentageOfValue(
+            constants.PERCENTAGE_DENOMINATOR,
+            forwarderFeePercentage,
+        );
 
         const ethValue = expectedResults.takerAssetFillAmount
             .plus(expectedResults.wethFees)
             .plus(expectedResults.maxOversoldWeth)
             .plus(ethSpentOnForwarderFee);
+
+        if (options.revertReason !== undefined) {
+            await expectTransactionFailedAsync(
+                this._forwarderWrapper.marketSellOrdersWithEthAsync(
+                    orders,
+                    {
+                        value: ethValue,
+                        from: this._takerAddress,
+                    },
+                    { feePercentage, feeRecipient: this._forwarderFeeRecipientAddress },
+                ),
+                options.revertReason,
+            );
+            return;
+        }
 
         const tx = await this._forwarderWrapper.marketSellOrdersWithEthAsync(
             orders,
@@ -208,33 +255,65 @@ export class ForwarderTestFactory {
             { feePercentage, feeRecipient: this._forwarderFeeRecipientAddress },
         );
 
-        await this._checkResultsAsync(
-            tx,
-            expectedResults,
-            forwarderFeeOptions.forwarderFeeRecipientEthBalanceBefore,
-            takerEthBalanceBefore,
-            erc20Balances,
-            ethSpentOnForwarderFee,
-            makerAssetAddress,
+        await this._checkResultsAsync(tx, expectedResults, takerEthBalanceBefore, erc20Balances, makerAssetContract, {
+            forwarderFeePercentage,
+            forwarderFeeRecipientEthBalanceBefore,
+        });
+    }
+
+    private _checkErc20Balances(
+        oldBalances: ERC20BalancesByOwner,
+        newBalances: ERC20BalancesByOwner,
+        expectedResults: ForwarderFillState,
+        makerAssetContract: DummyERC20TokenContract,
+    ): void {
+        const makerAssetAddress = makerAssetContract.address;
+        expectBalanceWithin(
+            newBalances[this._makerAddress][makerAssetAddress],
+            oldBalances[this._makerAddress][makerAssetAddress]
+                .minus(expectedResults.makerAssetFillAmount)
+                .minus(expectedResults.maxOverboughtMakerAsset),
+            oldBalances[this._makerAddress][makerAssetAddress].minus(expectedResults.makerAssetFillAmount),
         );
+        expectBalanceWithin(
+            newBalances[this._takerAddress][makerAssetAddress],
+            oldBalances[this._takerAddress][makerAssetAddress]
+                .plus(expectedResults.makerAssetFillAmount)
+                .minus(expectedResults.percentageFees),
+            oldBalances[this._takerAddress][makerAssetAddress]
+                .plus(expectedResults.makerAssetFillAmount)
+                .minus(expectedResults.percentageFees)
+                .plus(expectedResults.maxOverboughtMakerAsset),
+        );
+        expect(newBalances[this._orderFeeRecipientAddress][makerAssetAddress]).to.be.bignumber.equal(
+            oldBalances[this._orderFeeRecipientAddress][makerAssetAddress].plus(expectedResults.percentageFees),
+        );
+        expect(newBalances[this._forwarderAddress][makerAssetAddress]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
     }
 
     private async _checkResultsAsync(
         tx: TransactionReceiptWithDecodedLogs,
         expectedResults: ForwarderFillState,
-        forwarderFeeRecipientEthBalanceBefore: BigNumber,
         takerEthBalanceBefore: BigNumber,
         erc20Balances: ERC20BalancesByOwner,
-        ethSpentOnForwarderFee: BigNumber,
-        makerAssetAddress: string,
+        makerAssetContract: DummyERC20TokenContract | DummyERC721TokenContract,
+        options: {
+            forwarderFeePercentage?: BigNumber;
+            forwarderFeeRecipientEthBalanceBefore?: BigNumber;
+            makerAssetId?: BigNumber;
+        } = {},
     ): Promise<void> {
+        const ethSpentOnForwarderFee = ForwarderTestFactory.getPercentageOfValue(
+            expectedResults.takerAssetFillAmount,
+            options.forwarderFeePercentage || constants.ZERO_AMOUNT,
+        );
         const totalEthSpent = expectedResults.takerAssetFillAmount
             .plus(expectedResults.wethFees)
             .plus(ethSpentOnForwarderFee)
             .plus(this._gasPrice.times(tx.gasUsed));
+
         const takerEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(this._takerAddress);
         const forwarderEthBalance = await web3Wrapper.getBalanceInWeiAsync(this._forwarderAddress);
-        const fowarderFeeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(this._forwarderFeeRecipientAddress);
         const newBalances = await this._erc20Wrapper.getBalancesAsync();
 
         expectBalanceWithin(
@@ -242,32 +321,21 @@ export class ForwarderTestFactory {
             takerEthBalanceBefore.minus(totalEthSpent).minus(expectedResults.maxOversoldWeth),
             takerEthBalanceBefore.minus(totalEthSpent),
         );
-        if (ethSpentOnForwarderFee.gt(0)) {
+        if (options.forwarderFeeRecipientEthBalanceBefore !== undefined) {
+            const fowarderFeeRecipientEthBalanceAfter = await web3Wrapper.getBalanceInWeiAsync(
+                this._forwarderFeeRecipientAddress,
+            );
             expect(fowarderFeeRecipientEthBalanceAfter).to.be.bignumber.equal(
-                forwarderFeeRecipientEthBalanceBefore.plus(ethSpentOnForwarderFee),
+                options.forwarderFeeRecipientEthBalanceBefore.plus(ethSpentOnForwarderFee),
             );
         }
 
-        expectBalanceWithin(
-            newBalances[this._makerAddress][makerAssetAddress],
-            erc20Balances[this._makerAddress][makerAssetAddress]
-                .minus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.maxOverboughtMakerAsset),
-            erc20Balances[this._makerAddress][makerAssetAddress].minus(expectedResults.makerAssetFillAmount),
-        );
-        expectBalanceWithin(
-            newBalances[this._takerAddress][makerAssetAddress],
-            erc20Balances[this._takerAddress][makerAssetAddress]
-                .plus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.percentageFees),
-            erc20Balances[this._takerAddress][makerAssetAddress]
-                .plus(expectedResults.makerAssetFillAmount)
-                .minus(expectedResults.percentageFees)
-                .plus(expectedResults.maxOverboughtMakerAsset),
-        );
-        expect(newBalances[this._orderFeeRecipientAddress][makerAssetAddress]).to.be.bignumber.equal(
-            erc20Balances[this._orderFeeRecipientAddress][makerAssetAddress].plus(expectedResults.percentageFees),
-        );
+        if (makerAssetContract instanceof DummyERC20TokenContract) {
+            await this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
+        } else if (options.makerAssetId !== undefined) {
+            const newOwner = await makerAssetContract.ownerOf.callAsync(options.makerAssetId);
+            expect(newOwner).to.be.bignumber.equal(this._takerAddress);
+        }
 
         expectBalanceWithin(
             newBalances[this._makerAddress][this._wethAddress],
@@ -281,7 +349,6 @@ export class ForwarderTestFactory {
         );
 
         expect(newBalances[this._forwarderAddress][this._wethAddress]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
-        expect(newBalances[this._forwarderAddress][makerAssetAddress]).to.be.bignumber.equal(constants.ZERO_AMOUNT);
         expect(forwarderEthBalance).to.be.bignumber.equal(constants.ZERO_AMOUNT);
     }
 }
