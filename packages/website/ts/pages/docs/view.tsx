@@ -7,30 +7,23 @@ import capitalize from 'lodash/capitalize';
 
 import { MDXProvider } from '@mdx-js/react';
 
-import CircularProgress from 'material-ui/CircularProgress';
+import { Code } from 'ts/components/docs/mdx/code';
+import { CodeTabs } from 'ts/components/docs/mdx/code_tabs';
+import { H1, H2, H3, H4 } from 'ts/components/docs/mdx/headings';
+import { HelpCallout } from 'ts/components/docs/mdx/help_callout';
+import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
+import { InlineCode } from 'ts/components/docs/mdx/inline_code';
+import { InlineLink } from 'ts/components/docs/mdx/inline_link';
+import { Notification } from 'ts/components/docs/mdx/notification';
+import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
+import { Table } from 'ts/components/docs/mdx/table';
+import { UnorderedList } from 'ts/components/docs/mdx/unordered_list';
 
-import { Code } from 'ts/components/docs/code';
-import { CodeTabs } from 'ts/components/docs/code_tabs';
-import { H1, H2, H3, H4 } from 'ts/components/docs/headings';
-import { HelpCallout } from 'ts/components/docs/help_callout';
-import { HelpfulCta } from 'ts/components/docs/helpful_cta';
-import { Hero } from 'ts/components/docs/hero';
-import { InlineCode } from 'ts/components/docs/inline_code';
-import { InlineLink } from 'ts/components/docs/inline_link';
-import { Notification } from 'ts/components/docs/notification';
-import { OrderedList } from 'ts/components/docs/ordered_list';
+import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
-import { SiteWrap } from 'ts/components/docs/siteWrap';
-import { Table } from 'ts/components/docs/table';
-import { UnorderedList } from 'ts/components/docs/unordered_list';
-import { DocumentTitle } from 'ts/components/document_title';
-import { Section } from 'ts/components/newLayout';
+
 import { Paragraph } from 'ts/components/text';
-
-import { documentConstants } from 'ts/utils/document_meta_constants';
-
-import { colors } from 'ts/style/colors';
 
 interface IDocsViewProps {
     match: match<any>;
@@ -68,44 +61,27 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                 contents: component.tableOfContents(),
             });
         }
-        // @TODO: add error handling if needed
+        // @INFO: add error handling if needed
     };
 
     return (
-        <SiteWrap theme="light">
-            <DocumentTitle {...documentConstants.DOCS} />
-            <Hero title={title} />
-            <Section maxWidth="1150px" isPadded={false} overflow="visible">
-                {Component ? (
-                    <Columns>
-                        <TableOfContents contents={contents} />
-                        <Separator />
-                        <ContentWrapper>
-                            <MDXProvider components={mdxComponents}>
-                                {/*
+        <DocsPageLayout title={title} loading={!Component}>
+            <Columns>
+                <TableOfContents contents={contents} />
+                <Separator />
+                <ContentWrapper>
+                    <MDXProvider components={mdxComponents}>
+                        {/*
                                 // @ts-ignore */}
-                                <Component />
-                            </MDXProvider>
-                            <HelpCallout />
-                            <HelpfulCta page={page} />
-                        </ContentWrapper>
-                    </Columns>
-                ) : (
-                    <LoaderWrapper>
-                        <CircularProgress size={40} thickness={2} color={colors.brandLight} />
-                    </LoaderWrapper>
-                )}
-            </Section>
-        </SiteWrap>
+                        <Component />
+                    </MDXProvider>
+                    <HelpCallout />
+                    <HelpfulCta page={page} />
+                </ContentWrapper>
+            </Columns>
+        </DocsPageLayout>
     );
 };
-
-const LoaderWrapper = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 300px;
-`;
 
 const Columns = styled.div`
     display: grid;

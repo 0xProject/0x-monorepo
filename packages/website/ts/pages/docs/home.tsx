@@ -3,52 +3,44 @@ import styled from 'styled-components';
 
 import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
 import { GetStartedLink, IGetStartedLinkProps } from 'ts/components/docs/get_started_link';
-import { Hero } from 'ts/components/docs/hero';
 import { Separator } from 'ts/components/docs/separator';
 import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
-import { SiteWrap } from 'ts/components/docs/siteWrap';
 import { IStepLinkConfig } from 'ts/components/docs/step_link';
 import { StepLinks } from 'ts/components/docs/step_links';
-import { DocumentTitle } from 'ts/components/document_title';
-import { Section } from 'ts/components/newLayout';
 import { Heading } from 'ts/components/text';
 
-import { documentConstants } from 'ts/utils/document_meta_constants';
+import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
 const SEPARATOR_MARGIN = '60px 0';
 
 export const DocsHome: React.FC = () => {
     return (
-        <SiteWrap theme="light">
-            <DocumentTitle {...documentConstants.DOCS} />
-            <Hero isHome={true} title="0x Docs" />
-            <Section maxWidth="1150px" isPadded={false}>
-                <ShortcutsWrapper>
-                    {shortcuts.map((shortcut, index) => (
-                        <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
+        <DocsPageLayout isHome={true} title="0x Docs">
+            <ShortcutsWrapper>
+                {shortcuts.map((shortcut, index) => (
+                    <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
+                ))}
+            </ShortcutsWrapper>
+            <Separator margin={SEPARATOR_MARGIN} />
+            <GetStartedWrapper>
+                <div>
+                    <Heading size="default">Get Started</Heading>
+                    {getStartedLinks.map((link, index) => (
+                        <GetStartedLink key={`getStarted-${index}`} {...link} />
                     ))}
-                </ShortcutsWrapper>
-                <Separator margin={SEPARATOR_MARGIN} />
-                <GetStartedWrapper>
-                    <div>
-                        <Heading size="default">Get Started</Heading>
-                        {getStartedLinks.map((link, index) => (
-                            <GetStartedLink key={`getStarted-${index}`} {...link} />
-                        ))}
-                    </div>
-                    <div>
-                        <Heading size="default">Useful Links</Heading>
-                        <StepLinks links={usefulLinks} />
-                    </div>
-                </GetStartedWrapper>
-                <Separator margin={SEPARATOR_MARGIN} />
-                <CommunityWrapper>
-                    {communityShortcuts.map((shortcut, index) => (
-                        <CommunityLink key={`communityLink-${index}`} {...shortcut} />
-                    ))}
-                </CommunityWrapper>
-            </Section>
-        </SiteWrap>
+                </div>
+                <div>
+                    <Heading size="default">Useful Links</Heading>
+                    <StepLinks links={usefulLinks} />
+                </div>
+            </GetStartedWrapper>
+            <Separator margin={SEPARATOR_MARGIN} />
+            <CommunityWrapper>
+                {communityShortcuts.map((shortcut, index) => (
+                    <CommunityLink key={`communityLink-${index}`} {...shortcut} />
+                ))}
+            </CommunityWrapper>
+        </DocsPageLayout>
     );
 };
 
