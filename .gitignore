@@ -78,9 +78,6 @@ TODO.md
 # VSCode file
 .vscode
 
-# server cli
-packages/testnet-faucets/server/
-
 # generated contract artifacts/
 contracts/integrations/generated-artifacts/
 contracts/staking/generated-artifacts/
