@@ -8,6 +8,7 @@ import { Filters } from 'ts/components/docs/sidebar/filters';
 import { Heading } from 'ts/components/text';
 
 import { Columns } from 'ts/components/docs/layout/columns';
+import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 
@@ -67,10 +68,6 @@ export const DocsTools: React.FC = () => {
         </DocsPageLayout>
     );
 };
-
-const ContentWrapper = styled.article`
-    min-width: 0;
-`;
 
 const FeaturedToolsWrapper = styled.div`
     margin-bottom: 50px;
