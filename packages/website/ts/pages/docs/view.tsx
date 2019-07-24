@@ -1,9 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { match } from 'react-router-dom';
-import styled from 'styled-components';
-
-import { utils } from '@0x/react-shared';
-import capitalize from 'lodash/capitalize';
 
 import { MDXProvider } from '@mdx-js/react';
 
@@ -20,6 +16,7 @@ import { Table } from 'ts/components/docs/mdx/table';
 import { UnorderedList } from 'ts/components/docs/mdx/unordered_list';
 
 import { Columns } from 'ts/components/docs/layout/columns';
+import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
 import { Separator } from 'ts/components/docs/separator';
@@ -34,18 +31,18 @@ interface IDocsViewProps {
 interface IDocsViewState {
     Component: React.ReactNode;
     contents: IContents[];
+    title: string;
 }
 
 export const DocsView: React.FC<IDocsViewProps> = props => {
     const [state, setState] = useState<IDocsViewState>({
         Component: null,
         contents: [],
+        title: '',
     });
 
-    const { Component, contents } = state;
-
+    const { Component, contents, title } = state;
     const { page } = props.match.params;
-    const title = capitalize(utils.convertDashesToSpaces(page));
 
     useEffect(
         () => {
@@ -61,9 +58,9 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
             setState({
                 Component: component.default,
                 contents: component.tableOfContents(),
+                title: component.meta.title,
             });
         }
-        // @INFO: add error handling if needed
     };
 
     return (
@@ -84,10 +81,6 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
         </DocsPageLayout>
     );
 };
-
-const ContentWrapper = styled.article`
-    min-width: 0;
-`;
 
 const mdxComponents = {
     code: Code,
