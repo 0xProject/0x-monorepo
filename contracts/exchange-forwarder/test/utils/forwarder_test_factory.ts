@@ -336,7 +336,7 @@ export class ForwarderTestFactory {
         }
 
         if (makerAssetContract instanceof DummyERC20TokenContract) {
-            await this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
+            this._checkErc20Balances(erc20Balances, newBalances, expectedResults, makerAssetContract);
         } else if (options.makerAssetId !== undefined) {
             const newOwner = await makerAssetContract.ownerOf.callAsync(options.makerAssetId);
             expect(newOwner).to.be.bignumber.equal(this._takerAddress);
