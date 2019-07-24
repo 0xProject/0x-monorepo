@@ -11,6 +11,8 @@ import { Heading } from 'ts/components/text';
 
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
+import { constants } from 'ts/utils/constants';
+
 const SEPARATOR_MARGIN = '60px 0';
 
 export const DocsHome: React.FC = () => {
@@ -88,19 +90,19 @@ const shortcuts: IShortcutLinkProps[] = [
         heading: 'API Explorer',
         description: 'Browse and filter through all the open-source 0x developer tools',
         icon: 'apiExplorer',
-        url: '/docs/core-concepts',
+        url: '/docs/api-explorer',
     },
     {
         heading: 'Guides',
         description: 'Dive into intermediate and advanced 0x development  topics',
         icon: 'getStarted',
-        url: '/docs/get-started',
+        url: '/docs/guides',
     },
     {
         heading: 'Tools',
         description: 'Explore the core 0x library and how to use it',
         icon: 'tools',
-        url: '/docs/core-concepts',
+        url: '/docs/tools',
     },
 ];
 
@@ -111,15 +113,15 @@ const usefulLinks: IStepLinkConfig[] = [
     },
     {
         title: 'API Explorer',
-        url: '/docs/core-concepts',
+        url: '/docs/api-explorer',
     },
     {
         title: 'Guides',
-        url: '/docs/get-started',
+        url: '/docs/guides',
     },
     {
         title: 'Tools',
-        url: '/docs/core-concepts',
+        url: '/docs/tools',
     },
 ];
 
@@ -137,12 +139,12 @@ const getStartedLinks: IGetStartedLinkProps[] = [
     {
         heading: 'Launch your in-game marketplace',
         description: 'Make your in-game items tradable with minimal effort.',
-        url: '/docs/get-started',
+        url: '/docs/guides',
     },
     {
         heading: 'Predict the future with 0x',
         description: 'Build a prediction market end-to-end using 0x and Augur.',
-        url: '/docs/core-concepts',
+        url: '/docs/tools',
     },
 ];
 
@@ -151,18 +153,18 @@ const communityShortcuts: ICommunityLinkProps[] = [
         heading: 'Discord',
         description: 'Chat with the 0x community',
         icon: 'chat',
-        url: '/docs/core-concepts',
+        url: constants.URL_ZEROEX_CHAT,
     },
     {
         heading: 'Forum',
         description: 'Nerd out with 0x researchers',
         icon: 'forum',
-        url: '/docs/core-concepts',
+        url: constants.URL_FORUM,
     },
     {
         heading: 'GitHub',
         description: 'Contribute to development',
         icon: 'github',
-        url: '/docs/get-started',
+        url: constants.URL_GITHUB_ORG,
     },
 ];
