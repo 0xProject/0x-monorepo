@@ -22,7 +22,7 @@ pragma solidity ^0.5.5;
 library LibSafeMath {
 
     uint256 constant internal MAX_UINT_96 = 79228162514264337593543950335; // 2**96-1
-    
+
     uint256 constant internal MAX_UINT_64 = 18446744073709551615; // 2**64-1
 
     /// @dev Returns the addition of two unsigned integers, reverting on overflow.
@@ -92,5 +92,25 @@ library LibSafeMath {
             "VALUE_TOO_LARGE_TO_DOWNCAST_TO_UINT64"
         );
         return uint64(a);
+    }
+
+    /// @dev Calculates partial value given a numerator and denominator, rounded up.
+    /// @param target Value to calculate partial of.
+    /// @param numerator Numerator.
+    /// @param denominator Denominator.
+    /// @return Partial value of target rounded down.
+    function _getPartialAmountCeil(
+        uint256 target,
+        uint256 numerator,
+        uint256 denominator
+    )
+        internal
+        pure
+        returns (uint256 partialAmount)
+    {
+        return partialAmount = _div(
+            _add(_mul(numerator, target), _sub(denominator, 1)),
+            denominator
+        );
     }
 }

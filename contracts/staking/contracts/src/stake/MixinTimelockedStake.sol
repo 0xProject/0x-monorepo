@@ -68,7 +68,7 @@ contract MixinTimelockedStake is
     /// The field `un-timelocked (virtual)` is the true amount of un-timelocked stake, as represented in the system;
     /// the value in this field represents stake that has moved from the state
     /// "Deactivated & Timelocke" to "Deactivated & Withdrawable" (see MixinStake).
-    /// 
+    ///
     /// |   Action    | Timelock Period | lockedAt  |  total   | pending | un-timelocked  | un-timelocked (virtual) |
     /// |             |        0        |     0     |    0     |    0    |       0        |          0              |
     /// |   lock(5)   |        1        |     1     |    5     |    0    |       0        |          0              |
@@ -84,7 +84,7 @@ contract MixinTimelockedStake is
     /// |             |        7        |     6     |    20    |    0    |       0        |          0              |
     /// |             |        8        |     6     |    20    |    0    |       0        |          20             |
     /// -------------------------------------------------------------------------------------------------------------
-    
+
     using LibSafeMath for uint256;
 
     /// @dev Forces the timelock data structure to sync to state.
@@ -106,7 +106,7 @@ contract MixinTimelockedStake is
         (IStructs.Timelock memory ownerTimelock,) = _getSynchronizedTimelock(owner);
         uint96 downcastAmount = amount._downcastToUint96();
         ownerTimelock.total += downcastAmount;
-        timelockedStakeByOwner[owner] = ownerTimelock;
+        _timelockedStakeByOwner[owner] = ownerTimelock;
     }
 
     /// @dev Updates storage to reflect the most up-to-date timelock data structure for a given owner.
@@ -118,7 +118,7 @@ contract MixinTimelockedStake is
         if (!isOutOfSync) {
             return;
         }
-        timelockedStakeByOwner[owner] = ownerTimelock;
+        _timelockedStakeByOwner[owner] = ownerTimelock;
     }
 
     /// @dev Returns the most up-to-date timelock data structure for a given owner.
@@ -132,7 +132,7 @@ contract MixinTimelockedStake is
         )
     {
         uint64 currentTimelockPeriod = getCurrentTimelockPeriod();
-        ownerTimelock = timelockedStakeByOwner[owner];
+        ownerTimelock = _timelockedStakeByOwner[owner];
         isOutOfSync = false;
         if (currentTimelockPeriod == ownerTimelock.lockedAt._add(1)) {
             // shift n periods

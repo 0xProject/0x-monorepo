@@ -75,7 +75,7 @@ contract MixinStake is
     ///
     /// -- Valid State Transtions --
     /// Activated -> Deactivated & Timelocked
-    /// 
+    ///
     /// Activated & Delegated -> Deactivated & Timelocked
     ///
     /// Deactivated & Timelocked -> Deactivated & Withdrawable
@@ -136,8 +136,8 @@ contract MixinStake is
             amount <= getActivatableStake(owner),
             "INSUFFICIENT_BALANCE"
         );
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._add(amount);
-        totalActivatedStake = totalActivatedStake._add(amount);
+        _activatedStakeByOwner[owner] = _activatedStakeByOwner[owner]._add(amount);
+        _totalActivatedStake = _totalActivatedStake._add(amount);
     }
 
     /// @dev Deactivate & Timelock stake that is currently in the Activated state.
@@ -151,8 +151,8 @@ contract MixinStake is
             amount <= getActivatedStake(owner),
             "INSUFFICIENT_BALANCE"
         );
-        activatedStakeByOwner[owner] = activatedStakeByOwner[owner]._sub(amount);
-        totalActivatedStake = totalActivatedStake._sub(amount);
+        _activatedStakeByOwner[owner] = _activatedStakeByOwner[owner]._sub(amount);
+        _totalActivatedStake = _totalActivatedStake._sub(amount);
         _timelockStake(owner, amount);
     }
 
@@ -166,7 +166,7 @@ contract MixinStake is
         _depositFromOwnerIntoZrxVault(owner, amount);
 
         // mint stake
-        stakeByOwner[owner] = stakeByOwner[owner]._add(amount);
+        _stakeByOwner[owner] = _stakeByOwner[owner]._add(amount);
 
         // emit stake event
         emit StakeMinted(
@@ -182,7 +182,7 @@ contract MixinStake is
         internal
     {
         // burn stake
-        stakeByOwner[owner] = stakeByOwner[owner]._sub(amount);
+        _stakeByOwner[owner] = _stakeByOwner[owner]._sub(amount);
 
         // withdraw equivalent amount of ZRX from vault
         _withdrawToOwnerFromZrxVault(owner, amount);

@@ -49,7 +49,7 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return currentEpoch;
+        return _currentEpoch;
     }
 
     /// @dev Returns the current epoch period, measured in seconds.
@@ -71,11 +71,11 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return currentEpochStartTimeInSeconds;
+        return _currentEpochStartTimeInSeconds;
     }
 
     /// @dev Returns the earliest end time in seconds of this epoch.
-    ///      The next epoch can begin once this time is reached.  
+    ///      The next epoch can begin once this time is reached.
     ///      Epoch period = [startTimeInSeconds..endTimeInSeconds)
     /// @return Time in seconds.
     function getCurrentEpochEarliestEndTimeInSeconds()
@@ -93,7 +93,7 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return currentTimelockPeriod;
+        return _currentTimelockPeriod;
     }
 
     /// @dev Returns the length of a timelock period, measured in epochs.
@@ -115,7 +115,7 @@ contract MixinScheduler is
         view
         returns (uint64)
     {
-        return currentTimelockPeriodStartEpoch;
+        return _currentTimelockPeriodStartEpoch;
     }
 
     /// @dev Returns the epoch that the current timelock period will end.
@@ -146,28 +146,28 @@ contract MixinScheduler is
         );
 
         // incremment epoch
-        uint64 nextEpoch = currentEpoch._add(1);
-        currentEpoch = nextEpoch;
-        currentEpochStartTimeInSeconds = currentBlockTimestamp;
-        uint64 earliestEndTimeInSeconds = currentEpochStartTimeInSeconds._add(getEpochDurationInSeconds());
-        
+        uint64 nextEpoch = _currentEpoch._add(1);
+        _currentEpoch = nextEpoch;
+        _currentEpochStartTimeInSeconds = currentBlockTimestamp;
+        uint64 earliestEndTimeInSeconds = _currentEpochStartTimeInSeconds._add(getEpochDurationInSeconds());
+
         // notify of epoch change
         emit EpochChanged(
-            currentEpoch,
-            currentEpochStartTimeInSeconds,
+            _currentEpoch,
+            _currentEpochStartTimeInSeconds,
             earliestEndTimeInSeconds
         );
 
         // increment timelock period, if needed
         if (getCurrentTimelockPeriodEndEpoch() <= nextEpoch) {
-            currentTimelockPeriod = currentTimelockPeriod._add(1);
-            currentTimelockPeriodStartEpoch = currentEpoch;
-            uint64 endEpoch = currentEpoch._add(getTimelockDurationInEpochs());
-            
+            _currentTimelockPeriod = _currentTimelockPeriod._add(1);
+            _currentTimelockPeriodStartEpoch = _currentEpoch;
+            uint64 endEpoch = _currentEpoch._add(getTimelockDurationInEpochs());
+
             // notify
             emit TimelockPeriodChanged(
-                currentTimelockPeriod,
-                currentTimelockPeriodStartEpoch,
+                _currentTimelockPeriod,
+                _currentTimelockPeriodStartEpoch,
                 endEpoch
             );
         }

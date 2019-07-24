@@ -110,26 +110,26 @@ contract MixinDelegatedStake is
         private
     {
         // take snapshot of parameters before any computation
-        uint256 _delegatedStakeByOwner = delegatedStakeByOwner[owner];
-        uint256 _delegatedStakeToPoolByOwner = delegatedStakeToPoolByOwner[owner][poolId];
-        uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
+        uint256 delegatedStakeByOwner = _delegatedStakeByOwner[owner];
+        uint256 delegatedStakeToPoolByOwner = _delegatedStakeToPoolByOwner[owner][poolId];
+        uint256 delegatedStakeByPoolId = _delegatedStakeByPoolId[poolId];
 
         // join staking pool
         _joinStakingPool(
             poolId,
             owner,
             amount,
-            _delegatedStakeByPoolId
+            delegatedStakeByPoolId
         );
 
         // increment how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._add(amount);
+        _delegatedStakeByOwner[owner] = delegatedStakeByOwner._add(amount);
 
         // increment how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._add(amount);
+        _delegatedStakeToPoolByOwner[owner][poolId] = delegatedStakeToPoolByOwner._add(amount);
 
         // increment how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._add(amount);
+        _delegatedStakeByPoolId[poolId] = delegatedStakeByPoolId._add(amount);
     }
 
     /// @dev Undelegates stake of `owner` from the staking pool with id `poolId`
@@ -144,26 +144,26 @@ contract MixinDelegatedStake is
         private
     {
         // take snapshot of parameters before any computation
-        uint256 _delegatedStakeByOwner = delegatedStakeByOwner[owner];
-        uint256 _delegatedStakeToPoolByOwner = delegatedStakeToPoolByOwner[owner][poolId];
-        uint256 _delegatedStakeByPoolId = delegatedStakeByPoolId[poolId];
+        uint256 delegatedStakeByOwner = _delegatedStakeByOwner[owner];
+        uint256 delegatedStakeToPoolByOwner = _delegatedStakeToPoolByOwner[owner][poolId];
+        uint256 delegatedStakeByPoolId = _delegatedStakeByPoolId[poolId];
 
         // leave the staking pool
         _leaveStakingPool(
             poolId,
             owner,
             amount,
-            _delegatedStakeToPoolByOwner,
-            _delegatedStakeByPoolId
+            delegatedStakeToPoolByOwner,
+            delegatedStakeByPoolId
         );
 
         // decrement how much stake the owner has delegated
-        delegatedStakeByOwner[owner] = _delegatedStakeByOwner._sub(amount);
+        _delegatedStakeByOwner[owner] = delegatedStakeByOwner._sub(amount);
 
         // decrement how much stake the owner has delegated to the input pool
-        delegatedStakeToPoolByOwner[owner][poolId] = _delegatedStakeToPoolByOwner._sub(amount);
+        _delegatedStakeToPoolByOwner[owner][poolId] = delegatedStakeToPoolByOwner._sub(amount);
 
         // decrement how much stake has been delegated to pool
-        delegatedStakeByPoolId[poolId] = _delegatedStakeByPoolId._sub(amount);
+        _delegatedStakeByPoolId[poolId] = delegatedStakeByPoolId._sub(amount);
     }
 }

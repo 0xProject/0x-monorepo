@@ -51,10 +51,11 @@ interface IStructs {
 
     /// @dev State for Staking Pools (see MixinStakingPool).
     /// @param operatorAddress Address of pool operator.
-    /// @param operatorShare Portion of pool rewards owned by operator.
+    /// @param operatorShare Portion of pool rewards owned by operator, denominated
+    ///                      as 1 / `TOKEN_MULTIPLIER`.
     struct Pool {
         address payable operatorAddress;
-        uint8 operatorShare;
+        uint256 operatorShare;
     }
 
     /// @dev State for a pool that actively traded during the current epoch.

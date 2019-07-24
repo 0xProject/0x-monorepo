@@ -32,12 +32,12 @@ contract StakingProxy is
 {
 
     /// @dev Constructor.
-    /// @param _stakingContract Staking contract to delegate calls to.
-    constructor(address _stakingContract)
+    /// @param stakingContract Staking contract to delegate calls to.
+    constructor(address stakingContract)
         public
     {
-        owner = msg.sender;
-        stakingContract = _stakingContract;
+        _owner = msg.sender;
+        _stakingContract = stakingContract;
     }
 
     /// @dev Delegates calls to the staking contract, if it is set.
@@ -46,8 +46,8 @@ contract StakingProxy is
         external
         payable
     {
-        address _stakingContract = stakingContract;
-        if (_stakingContract == NIL_ADDRESS) {
+        address stakingContract = _stakingContract;
+        if (stakingContract == NIL_ADDRESS) {
             return;
         }
 
@@ -62,7 +62,7 @@ contract StakingProxy is
             // delegate call into staking contract
             let success := delegatecall(
                 gas,                    // forward all gas
-                _stakingContract,       // calling staking contract
+                stakingContract,       // calling staking contract
                 0x0,                    // start of input (calldata)
                 calldatasize(),         // length of input (calldata)
                 0x0,                    // write output over input
@@ -88,13 +88,13 @@ contract StakingProxy is
 
     /// @dev Attach a staking contract; future calls will be delegated to the staking contract.
     /// Note that this is callable only by this contract's owner.
-    /// @param _stakingContract Address of staking contract.
-    function attachStakingContract(address _stakingContract)
+    /// @param stakingContract Address of staking contract.
+    function attachStakingContract(address stakingContract)
         external
         onlyOwner
     {
-        stakingContract = _stakingContract;
-        emit StakingContractAttachedToProxy(_stakingContract);
+        _stakingContract = stakingContract;
+        emit StakingContractAttachedToProxy(stakingContract);
     }
 
     /// @dev Detach the current staking contract.
@@ -103,7 +103,7 @@ contract StakingProxy is
         external
         onlyOwner
     {
-        stakingContract = NIL_ADDRESS;
+        _stakingContract = NIL_ADDRESS;
         emit StakingContractDetachedFromProxy();
     }
 }

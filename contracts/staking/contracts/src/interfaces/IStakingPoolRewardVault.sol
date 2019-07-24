@@ -30,14 +30,12 @@ interface IStakingPoolRewardVault {
 
     /// @dev Holds the balance for a staking pool.
     /// @param initialzed True iff the balance struct is initialized.
-    /// @param operatorShare Percentage of the total balance owned by the operator.
     /// @param operatorBalance Balance in ETH of the operator.
     /// @param membersBalance Balance in ETH co-owned by the pool members.
     struct Balance {
         bool initialized;
-        uint8 operatorShare;
-        uint96 operatorBalance;
-        uint96 membersBalance;
+        uint256 operatorBalance;
+        uint256 membersBalance;
     }
 
     /// @dev Emitted when reward is deposited.
@@ -70,21 +68,12 @@ interface IStakingPoolRewardVault {
 
     /// @dev Emitted when a staking pool is registered.
     /// @param poolId Unique Id of pool that was registered.
-    /// @param operatorShare Share of rewards owned by operator.
     event StakingPoolRegistered(
-        bytes32 poolId,
-        uint8 operatorShare
+        bytes32 poolId
     );
 
-    /// @dev Default constructor. This contract is payable, but only by the staking contract.
+    /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
-        external
-        payable;
-
-    /// @dev Deposit a reward in ETH.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    function deposit()
         external
         payable;
 
@@ -92,7 +81,9 @@ interface IStakingPoolRewardVault {
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
+    /// @param operatorReward Share of the reward to credit the pool operator.
+    /// @param membersReward Share of the reward to credit the pool members.
+    function depositFor(bytes32 poolId, uint256 operatorReward, uint256 membersReward)
         external
         payable;
 
@@ -101,8 +92,9 @@ interface IStakingPoolRewardVault {
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
+    /// @param operatorReward Share of the reward to credit the pool operator.
+    /// @param membersReward Share of the reward to credit the pool members.
+    function recordDepositFor(bytes32 poolId, uint256 operatorReward, uint256 membersReward)
         external;
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
@@ -125,8 +117,7 @@ interface IStakingPoolRewardVault {
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param poolOperatorShare Percentage of rewards given to the pool operator.
-    function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
+    function registerStakingPool(bytes32 poolId)
         external;
 
     /// @dev Returns the total balance of a pool.

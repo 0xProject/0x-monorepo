@@ -49,7 +49,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return totalActivatedStake;
+        return _totalActivatedStake;
     }
 
     /// @dev Returns the total stake for a given owner.
@@ -61,7 +61,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return stakeByOwner[owner];
+        return _stakeByOwner[owner];
     }
 
     /// @dev Returns the activated stake for a given owner.
@@ -73,7 +73,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return activatedStakeByOwner[owner];
+        return _activatedStakeByOwner[owner];
     }
 
     /// @dev Returns the deactivated stake for a given owner.
@@ -97,7 +97,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return activatedStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
+        return _activatedStakeByOwner[owner]._sub(getStakeDelegatedByOwner(owner));
     }
 
     /// @dev Returns the stake that can be activated for a given owner.
@@ -133,7 +133,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeByOwner[owner];
+        return _delegatedStakeByOwner[owner];
     }
 
     /// @dev Returns the stake delegated to a specific staking pool, by a given owner.
@@ -146,7 +146,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeToPoolByOwner[owner][poolId];
+        return _delegatedStakeToPoolByOwner[owner][poolId];
     }
 
     /// @dev Returns the total stake delegated to a specific staking pool, across all members.
@@ -158,7 +158,7 @@ contract MixinStakeBalances is
         view
         returns (uint256)
     {
-        return delegatedStakeByPoolId[poolId];
+        return _delegatedStakeByPoolId[poolId];
     }
 
     /// @dev Returns the timelocked stake for a given owner.

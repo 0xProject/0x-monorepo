@@ -42,7 +42,7 @@ contract MixinStakingPoolRewardVault is
         external
         onlyOwner
     {
-        rewardVault = IStakingPoolRewardVault(rewardVaultAddress);
+        _rewardVault = IStakingPoolRewardVault(rewardVaultAddress);
         emit StakingPoolRewardVaultChanged(rewardVaultAddress);
     }
 
@@ -53,7 +53,7 @@ contract MixinStakingPoolRewardVault is
         view
         returns (address)
     {
-        return address(rewardVault);
+        return address(_rewardVault);
     }
 
     /// @dev Returns the total balance in ETH of a staking pool, as recorded in the vault.
@@ -64,7 +64,7 @@ contract MixinStakingPoolRewardVault is
         view
         returns (uint256)
     {
-        return rewardVault.balanceOf(poolId);
+        return _rewardVault.balanceOf(poolId);
     }
 
     /// @dev Returns the balance in ETH of the staking pool operator, as recorded in the vault.
@@ -75,7 +75,7 @@ contract MixinStakingPoolRewardVault is
         view
         returns (uint256)
     {
-        return rewardVault.balanceOfOperator(poolId);
+        return _rewardVault.balanceOfOperator(poolId);
     }
 
     /// @dev Returns the balance in ETH co-owned by the members of a pool, as recorded in the vault.
@@ -86,18 +86,16 @@ contract MixinStakingPoolRewardVault is
         view
         returns (uint256)
     {
-        return rewardVault.balanceOfMembers(poolId);
+        return _rewardVault.balanceOfMembers(poolId);
     }
 
     /// @dev Registers a staking pool in the reward vault.
     /// @param poolId Unique id of pool.
-    /// @param operatorShare The percentage of the rewards owned by the operator.
-    function _registerStakingPoolInRewardVault(bytes32 poolId, uint8 operatorShare)
+    function _registerStakingPoolInRewardVault(bytes32 poolId)
         internal
     {
-        rewardVault.registerStakingPool(
-            poolId,
-            operatorShare
+        _rewardVault.registerStakingPool(
+            poolId
         );
     }
 
@@ -107,7 +105,7 @@ contract MixinStakingPoolRewardVault is
     function _withdrawFromOperatorInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
-        rewardVault.withdrawForOperator(poolId, amount);
+        _rewardVault.withdrawForOperator(poolId, amount);
     }
 
     /// @dev Withdraws an amount in ETH of the reward for a pool member.
@@ -116,7 +114,7 @@ contract MixinStakingPoolRewardVault is
     function _withdrawFromMemberInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
         internal
     {
-        rewardVault.withdrawForMember(poolId, amount);
+        _rewardVault.withdrawForMember(poolId, amount);
     }
 
     /// @dev Deposits an amount in ETH into the reward vault.
@@ -124,16 +122,21 @@ contract MixinStakingPoolRewardVault is
     function _depositIntoStakingPoolRewardVault(uint256 amount)
         internal
     {
-        address payable rewardVaultAddress = address(uint160(address(rewardVault)));
+        address payable rewardVaultAddress = address(uint160(address(_rewardVault)));
         rewardVaultAddress.transfer(amount);
     }
 
-    /// @dev Records an amount deposited into the reward vault for a specific pool.
+    /// @dev Credits operator and member rewards for a pool in the reward vault.
     /// @param poolId Unique id of pool.
-    /// @param amount The amount in ETH to record.
-    function _recordDepositInStakingPoolRewardVault(bytes32 poolId, uint256 amount)
+    /// @param operatorReward The amount in ETH to credit the pool operator.
+    /// @param membersReward The amount in ETH to credit the pool members.
+    function _recordDepositInStakingPoolRewardVault(
+        bytes32 poolId,
+        uint256 operatorReward,
+        uint256 membersReward
+    )
         internal
     {
-        rewardVault.recordDepositFor(poolId, amount);
+        _rewardVault.recordDepositFor(poolId, operatorReward, membersReward);
     }
 }

@@ -61,6 +61,15 @@ interface IStakingEvents {
         uint256 rewardsRemaining
     );
 
+    /// @dev Emitted by MixinExchangeFees the first time protocol fees are
+    ///      first credited to a staking pool in an epoch.
+    /// @param epoch The epoch the pool was activated in.
+    /// @param poolId The pool ID.
+    event StakingPoolActivated(
+        uint256 indexed epoch,
+        uint256 indexed poolId
+    );
+
     /// @dev Emitted by MixinExchangeFees when a pool's rewards are paid out.
     /// @param poolId The pool ID.
     /// @param epoch The epoch for which the rewards came from.
@@ -84,11 +93,12 @@ interface IStakingEvents {
     /// @dev Emitted by MixinStakingPool when a new pool is created.
     /// @param poolId Unique id generated for pool.
     /// @param operatorAddress Address of creator/operator of pool.
-    /// @param operatorShare The share of rewards given to the operator.
+    /// @param operatorShare The share of rewards given to the operator, denominated
+    ///                      in 1 / `TOKEN_MULTIPLIER`.
     event StakingPoolCreated(
         bytes32 poolId,
         address operatorAddress,
-        uint8 operatorShare
+        uint256 operatorShare
     );
 
     /// @dev Emitted by MixinStakingPool when a new maker is added to a pool.

@@ -53,10 +53,10 @@ contract MixinExchangeManager is
         onlyOwner
     {
         require(
-            !validExchanges[addr],
+            !_validExchanges[addr],
             "EXCHANGE_ADDRESS_ALREADY_REGISTERED"
         );
-        validExchanges[addr] = true;
+        _validExchanges[addr] = true;
         emit ExchangeAdded(addr);
     }
 
@@ -67,10 +67,10 @@ contract MixinExchangeManager is
         onlyOwner
     {
         require(
-            validExchanges[addr],
+            _validExchanges[addr],
             "EXCHANGE_ADDRESS_NOT_REGISTERED"
         );
-        validExchanges[addr] = false;
+        _validExchanges[addr] = false;
         emit ExchangeRemoved(addr);
     }
 
@@ -82,6 +82,6 @@ contract MixinExchangeManager is
         view
         returns (bool)
     {
-        return validExchanges[addr];
+        return _validExchanges[addr];
     }
 }

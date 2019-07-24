@@ -19,7 +19,6 @@
 pragma solidity ^0.5.5;
 
 import "../libs/LibSafeMath.sol";
-import "../libs/LibSafeMath96.sol";
 import "./MixinVaultCore.sol";
 import "../interfaces/IStakingPoolRewardVault.sol";
 import "../immutable/MixinConstants.sol";
@@ -34,7 +33,6 @@ contract StakingPoolRewardVault is
 {
 
     using LibSafeMath for uint256;
-    using LibSafeMath96 for uint96;
 
     /// @dev This vault manages staking pool rewards.
     /// Rewards can be deposited and withdraw by the staking contract.
@@ -49,20 +47,8 @@ contract StakingPoolRewardVault is
     // mapping from Pool to Reward Balance in ETH
     mapping (bytes32 => Balance) internal balanceByPoolId;
 
-    /// @dev Default constructor. This contract is payable, but only by the staking contract.
+    /// @dev Fallback function. This contract is payable, but only by the staking contract.
     function ()
-        external
-        payable
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
-    {
-        emit RewardDeposited(UNKNOWN_STAKING_POOL_ID, msg.value);
-    }
-
-    /// @dev Deposit a reward in ETH.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    function deposit()
         external
         payable
         onlyStakingContract
@@ -75,37 +61,26 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    function depositFor(bytes32 poolId)
+    /// @param operatorReward Share of the reward to credit the pool operator.
+    /// @param membersReward Share of the reward to credit the pool members.
+    function depositFor(
+        bytes32 poolId,
+        uint256 operatorReward,
+        uint256 membersReward
+    )
         external
         payable
         onlyStakingContract
         onlyNotInCatostrophicFailure
     {
-        // update balance of pool
-        uint256 amount = msg.value;
-        Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
-        balanceByPoolId[poolId] = balance;
+        uint256 totalReward = operatorReward._add(membersReward);
 
-        // notify
-        emit RewardDeposited(poolId, amount);
-    }
+        require(
+            msg.value == totalReward,
+            "INVALID_REWARD_DEPOSIT"
+        );
 
-    /// @dev Record a deposit for a pool. This deposit should be in the same transaction,
-    /// which is enforced by the staking contract. We do not enforce it here to save (a lot of) gas.
-    /// Note that this is only callable by the staking contract, and when
-    /// not in catastrophic failure mode.
-    /// @param poolId Unique Id of pool.
-    /// @param amount Amount in ETH to record.
-    function recordDepositFor(bytes32 poolId, uint256 amount)
-        external
-        onlyStakingContract
-        onlyNotInCatostrophicFailure
-    {
-        // update balance of pool
-        Balance memory balance = balanceByPoolId[poolId];
-        _incrementBalanceStruct(balance, amount);
-        balanceByPoolId[poolId] = balance;
+        recordDepositFor(poolId, operatorReward, membersReward);
     }
 
     /// @dev Withdraw some amount in ETH of an operator's reward.
@@ -122,9 +97,9 @@ contract StakingPoolRewardVault is
             amount <= balanceByPoolId[poolId].operatorBalance,
             "AMOUNT_EXCEEDS_BALANCE_OF_POOL"
         );
-        
+
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].operatorBalance -= uint96(amount);
+        balanceByPoolId[poolId].operatorBalance -= amount;
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -147,7 +122,7 @@ contract StakingPoolRewardVault is
         );
 
         // update balance and transfer `amount` in ETH to staking contract
-        balanceByPoolId[poolId].membersBalance -= uint96(amount);
+        balanceByPoolId[poolId].membersBalance -= amount;
         stakingContractAddress.transfer(amount);
 
         // notify
@@ -158,18 +133,11 @@ contract StakingPoolRewardVault is
     /// Note that this is only callable by the staking contract, and when
     /// not in catastrophic failure mode.
     /// @param poolId Unique Id of pool.
-    /// @param poolOperatorShare Percentage of rewards given to the pool operator.
-    function registerStakingPool(bytes32 poolId, uint8 poolOperatorShare)
+    function registerStakingPool(bytes32 poolId)
         external
         onlyStakingContract
         onlyNotInCatostrophicFailure
     {
-        // operator share must be a valid percentage
-        require(
-            poolOperatorShare <= 100,
-            "OPERATOR_SHARE_MUST_BE_BETWEEN_0_AND_100"
-        );
-
         // pool must not exist
         Balance memory balance = balanceByPoolId[poolId];
         require(
@@ -179,11 +147,10 @@ contract StakingPoolRewardVault is
 
         // set initial balance
         balance.initialized = true;
-        balance.operatorShare = poolOperatorShare;
         balanceByPoolId[poolId] = balance;
 
         // notify
-        emit StakingPoolRegistered(poolId, poolOperatorShare);
+        emit StakingPoolRegistered(poolId);
     }
 
     /// @dev Returns the total balance of a pool.
@@ -220,23 +187,28 @@ contract StakingPoolRewardVault is
         return balanceByPoolId[poolId].membersBalance;
     }
 
-    /// @dev Increments a balance struct, splitting the input amount between the
-    /// pool operator and members of the pool based on the pool operator's share.
-    /// @param balance Balance struct to increment.
-    /// @param amount256Bit Amount to add to balance.
-    function _incrementBalanceStruct(Balance memory balance, uint256 amount256Bit)
-        private
-        pure
+    /// @dev Record a deposit for a pool, without actually depositing ether.
+    ///      It is the responsibility of the staking contract to actually transfer
+    ///      `operatorReward` + `membersReward` ether to this contract.
+    ///      Note that this is only callable by the staking contract, and when
+    ///      not in catastrophic failure mode.
+    /// @param poolId Unique Id of pool.
+    /// @param operatorReward Share of the reward to credit the pool operator.
+    /// @param membersReward Share of the reward to credit the pool members.
+    function recordDepositFor(
+        bytes32 poolId,
+        uint256 operatorReward,
+        uint256 membersReward
+    )
+        public
+        onlyStakingContract
+        onlyNotInCatostrophicFailure
     {
-        // balances are stored as uint96; safely downscale.
-        uint96 amount = amount256Bit._downcastToUint96();
+        Balance memory balance = balanceByPoolId[poolId];
+        balance.operatorBalance = balance.operatorBalance._add(operatorReward);
+        balance.membersBalance = balance.membersBalance._add(membersReward);
+        balanceByPoolId[poolId] = balance;
 
-        // compute portions. One of the two must round down: the operator always receives the leftover from rounding.
-        uint96 operatorPortion = amount._computePercentageCeil(balance.operatorShare);
-        uint96 poolPortion = amount._sub(operatorPortion);
-
-        // update balances
-        balance.operatorBalance = balance.operatorBalance._add(operatorPortion);
-        balance.membersBalance = balance.membersBalance._add(poolPortion);
+        emit RewardDeposited(poolId, operatorReward._add(membersReward));
     }
 }

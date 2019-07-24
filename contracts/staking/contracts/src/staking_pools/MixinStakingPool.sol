@@ -41,7 +41,7 @@ contract MixinStakingPool is
     /// @dev This mixin contains logic for staking pools.
     /// A pool has a single operator and any number of delegators (members).
     /// Any staker can create a pool, although at present it is only beneficial
-    /// for market makers to create staking pools. A market maker *must* create a 
+    /// for market makers to create staking pools. A market maker *must* create a
     /// pool in order to receive fee-based rewards at the end of each epoch (see MixinExchangeFees).
     /// Moreover, creating a staking pool leverages the delegated stake within the pool,
     /// which is counted towards a maker's total stake when computing rewards. A market maker
@@ -89,28 +89,35 @@ contract MixinStakingPool is
 
     /// @dev Create a new staking pool. The sender will be the operator of this pool.
     /// Note that an operator must be payable.
-    /// @param operatorShare The percentage of any rewards owned by the operator.
+    /// @param operatorShare Fraction of any rewards owned by the operator, denominated
+    ///                      in 1 / `TOKEN_MULTIPLIER`.
     /// @return poolId The unique pool id generated for this pool.
-    function createStakingPool(uint8 operatorShare)
+    function createStakingPool(uint256 operatorShare)
         external
         returns (bytes32 poolId)
     {
+        // Cannot have an operator share > 100%.
+        require(
+            operatorShare <= TOKEN_MULTIPLIER,
+            "INVALID_OPERATOR_SHARE"
+        );
+
         // note that an operator must be payable
         address payable operatorAddress = msg.sender;
 
         // assign pool id and generate next id
-        poolId = nextPoolId;
-        nextPoolId = _computeNextStakingPoolId(poolId);
+        poolId = _nextPoolId;
+        _nextPoolId = _computeNextStakingPoolId(poolId);
 
         // store metadata about this pool
         IStructs.Pool memory pool = IStructs.Pool({
             operatorAddress: operatorAddress,
             operatorShare: operatorShare
         });
-        poolById[poolId] = pool;
+        _poolById[poolId] = pool;
 
         // register pool in reward vault
-        _registerStakingPoolInRewardVault(poolId, operatorShare);
+        _registerStakingPoolInRewardVault(poolId);
 
         // notify
         emit StakingPoolCreated(poolId, operatorAddress, operatorShare);
@@ -138,8 +145,8 @@ contract MixinStakingPool is
             !isMakerAssignedToStakingPool(makerAddress),
             "MAKER_ADDRESS_ALREADY_REGISTERED"
         );
-        poolIdByMakerAddress[makerAddress] = poolId;
-        makerAddressesByPoolId[poolId].push(makerAddress);
+        _poolIdByMakerAddress[makerAddress] = poolId;
+        _makerAddressesByPoolId[poolId].push(makerAddress);
 
         // notify
         emit MakerAddedToStakingPool(
@@ -166,7 +173,7 @@ contract MixinStakingPool is
         );
 
         // load list of makers for the input pool.
-        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
+        address[] storage makerAddressesByPoolIdPtr = _makerAddressesByPoolId[poolId];
         uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
 
         // find index of maker to remove.
@@ -188,7 +195,7 @@ contract MixinStakingPool is
         makerAddressesByPoolIdPtr.length -= 1;
 
         // reset the pool id assigned to the maker.
-        poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
+        _poolIdByMakerAddress[makerAddress] = NIL_MAKER_ID;
 
         // notify
         emit MakerRemovedFromStakingPool(
@@ -230,7 +237,11 @@ contract MixinStakingPool is
 
         // hash approval message and check signer address
         address verifierAddress = address(this);
-        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(approval, CHAIN_ID, verifierAddress);
+        approvalHash = LibEIP712Hash._hashStakingPoolApprovalMessage(
+            approval,
+            CHAIN_ID,
+            verifierAddress
+        );
 
         return approvalHash;
     }
@@ -241,7 +252,7 @@ contract MixinStakingPool is
         view
         returns (bytes32)
     {
-        return poolIdByMakerAddress[makerAddress];
+        return _poolIdByMakerAddress[makerAddress];
     }
 
     /// @dev Returns true iff the maker is assigned to a staking pool.
@@ -255,27 +266,6 @@ contract MixinStakingPool is
         return getStakingPoolIdOfMaker(makerAddress) != NIL_MAKER_ID;
     }
 
-    /// @dev Returns the makers for a given pool.
-    /// @param poolId Unique id of pool.
-    /// @return _makerAddressesByPoolId Makers for pool.
-    function getMakersForStakingPool(bytes32 poolId)
-        public
-        view
-        returns (address[] memory _makerAddressesByPoolId)
-    {
-        // Load pointer to addresses of makers
-        address[] storage makerAddressesByPoolIdPtr = makerAddressesByPoolId[poolId];
-        uint256 makerAddressesByPoolIdLength = makerAddressesByPoolIdPtr.length;
-
-        // Construct list of makers
-        _makerAddressesByPoolId = new address[](makerAddressesByPoolIdLength);
-        for (uint i = 0; i < makerAddressesByPoolIdLength; ++i) {
-            _makerAddressesByPoolId[i] = makerAddressesByPoolIdPtr[i];
-        }
-
-        return _makerAddressesByPoolId;
-    }
-
     /// @dev Returns the unique id that will be assigned to the next pool that is created.
     /// @return Pool id.
     function getNextStakingPoolId()
@@ -283,7 +273,7 @@ contract MixinStakingPool is
         view
         returns (bytes32)
     {
-        return nextPoolId;
+        return _nextPoolId;
     }
 
     /// @dev Returns the pool operator
@@ -294,7 +284,7 @@ contract MixinStakingPool is
         view
         returns (address operatorAddress)
     {
-        operatorAddress = poolById[poolId].operatorAddress;
+        operatorAddress = _poolById[poolId].operatorAddress;
     }
 
     /// @dev Convenience function for loading information on a pool.
@@ -305,7 +295,7 @@ contract MixinStakingPool is
         view
         returns (IStructs.Pool memory pool)
     {
-        pool = poolById[poolId];
+        pool = _poolById[poolId];
         return pool;
     }
 

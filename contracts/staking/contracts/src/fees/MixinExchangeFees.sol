@@ -42,8 +42,7 @@ contract MixinExchangeFees is
     MixinStakingPoolRewardVault,
     MixinStakingPool,
     MixinTimelockedStake,
-    MixinStakeBalances,
-    MixinPanic
+    MixinStakeBalances
 {
 
     /// @dev This mixin contains the logic for 0x protocol fees.
@@ -72,8 +71,8 @@ contract MixinExchangeFees is
         );
 
         bytes32 poolId = getStakingPoolIdOfMaker(makerAddress);
-        IStructs.ActivePool storage pool = _activePoolsByEpoch[currentEpoch % 2][poolId];
-        ActivePoolState poolState = pool.state;
+        IStructs.ActivePool storage pool = _activePoolsByEpoch[_currentEpoch % 2][poolId];
+        IStructs.ActivePoolState poolState = pool.state;
         uint256 feesCollected = 0;
 
         if (poolState == IStructs.ActivePoolState.DEFAULT) {
@@ -86,12 +85,12 @@ contract MixinExchangeFees is
             pool.weightedStake = 0;
         } else {
             // We should not have gotten here.
-            _assert(false);
+            assert(false);
         }
         if (feesCollected == 0) {
             // Pool hasn't been activated for this epoch.
             pool.feesCollected = msg.value;
-            emit StakingPoolActivated(currentEpoch, poolId);
+            emit StakingPoolActivated(_currentEpoch, poolId);
         } else {
             pool.feesCollected = feesCollected._add(msg.value);
         }
@@ -118,6 +117,7 @@ contract MixinExchangeFees is
         _numPreFinalizedPools = 0;
         _unfinalizedTotalWeightedStake = 0;
         _unfinalizedTotalFeesCollected = 0;
+        _rewardsPaidLastEpoch = 0;
 
         // Reset new epoch state variables.
         _numActivePools = 0;
@@ -125,11 +125,10 @@ contract MixinExchangeFees is
         // If there are no pools to finalize, we can just finalize the epoch now.
         if (_unfinalizedPoolsRemaining == 0) {
             emit EpochFinalized(
-                currentEpoch,
+                _currentEpoch,
                 0, // No rewards were paid out.
                 address(this).balance
             );
-
         }
         _goToNextEpoch();
     }
@@ -149,12 +148,12 @@ contract MixinExchangeFees is
             return;
         }
 
-        uint256 epoch = currentEpoch - 1;
-        mapping(bytes32 => ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
+        uint256 epoch = _currentEpoch - 1;
+        mapping(bytes32 => IStructs.ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
         uint256 numPools = poolIds.length;
         for (uint256 i = 0; i != numPools; i++) {
             bytes32 poolId = poolIds[i];
-            ActivePool storage pool = pools[poolId];
+            IStructs.ActivePool storage pool = pools[poolId];
             if (pool.feesCollected == 0 || pool.state != IStructs.ActivePoolState.DEFAULT) {
                 // Pool is not eligible.
                 continue;
@@ -163,7 +162,7 @@ contract MixinExchangeFees is
             poolsRemaining -= 1;
 
             // Computed weighted stake.
-            uint256 weightedStake = _getPoolWeightedStake(poolId)
+            uint256 weightedStake = _getPoolWeightedStake(poolId);
 
             pool.weightedStake = weightedStake;
             _unfinalizedTotalWeightedStake = _unfinalizedTotalWeightedStake._add(weightedStake);
@@ -184,25 +183,25 @@ contract MixinExchangeFees is
         poolsRemaining = _unfinalizedPoolsRemaining;
         // Make sure we've pre-finalized all pools first.
         require(
-            poolsRemaining != _numPreFinalizedPools,
+            poolsRemaining == _numPreFinalizedPools,
             "ALL_POOLS_MUST_BE_PREFINALIZED"
-        };
+        );
         // If we have no more pools to finalize, stop.
         if (poolsRemaining == 0) {
             return;
         }
 
-        uint256 epoch = currentEpoch - 1;
-        mapping(bytes32 => ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
+        uint256 epoch = _currentEpoch - 1;
+        mapping(bytes32 => IStructs.ActivePool) storage pools = _activePoolsByEpoch[epoch % 2];
         uint256 totalRewardsToPay = 0;
         uint256 numPools = poolIds.length;
-        uint256 __unfinalizedRewardsAvailable = _unfinalizedRewardsAvailable;
-        uint256 __unfinalizedTotalFeesCollected = _unfinalizedTotalFeesCollected;
-        uint256 __unfinalizedTotalWeightedStake = _unfinalizedTotalWeightedStake;
+        uint256 unfinalizedRewardsAvailable = _unfinalizedRewardsAvailable;
+        uint256 unfinalizedTotalFeesCollected = _unfinalizedTotalFeesCollected;
+        uint256 unfinalizedTotalWeightedStake = _unfinalizedTotalWeightedStake;
         for (uint256 i = 0; i < numPools; i++) {
             bytes32 poolId = poolIds[i];
-            ActivePool storage pool = pools[poolId];
-            _assert(pool.feesCollected != 0);
+            IStructs.ActivePool storage pool = pools[poolId];
+            assert(pool.feesCollected != 0);
             if (pool.state != IStructs.ActivePoolState.PRE_FINALIZED) {
                 // Pool is not eligible.
                 continue;
@@ -215,21 +214,22 @@ contract MixinExchangeFees is
 
             // Compute reward for this pool.
             uint256 reward = LibFeeMath._cobbDouglasSuperSimplified(
-                __unfinalizedRewardsAvailable,
+                unfinalizedRewardsAvailable,
                 poolFeesCollected,
-                __unfinalizedTotalFeesCollected,
+                unfinalizedTotalFeesCollected,
                 poolWeightedStake,
-                __unfinalizedTotalWeightedStake
+                unfinalizedTotalWeightedStake
             );
 
             // Increase the amount we have to deposit into the reward vault
             // at the end of this loop.
             totalRewardsToPay = totalRewardsToPay._add(reward);
             // Credit the pool in the reward vault.
+            (uint256 operatorReward, uint256 membersReward) = _splitPoolReward(poolId, reward);
             _recordDepositInStakingPoolRewardVault(
                 poolId,
-                _getPoolOperatorShareOfReward(reward),
-                _getPoolMembersShareOfReward(reward)
+                operatorReward,
+                membersReward
             );
             emit RewardDeposited(
                 poolId,
@@ -242,21 +242,21 @@ contract MixinExchangeFees is
 
         // Depost the total rewards into the reward vault.
         if (totalRewardsToPay != 0) {
-            rewardsPaidLastEpoch = rewardsPaidLastEpoch._add(totalRewardsToPay);
+            _rewardsPaidLastEpoch = _rewardsPaidLastEpoch._add(totalRewardsToPay);
             _depositIntoStakingPoolRewardVault(totalRewardsToPay);
         }
 
         // Keep `_unfinalizedPoolsRemaining` and `_numPreFinalizedPools` in sync.
-        _assert(poolsRemaining <= _unfinalizedPoolsRemaining);
+        assert(poolsRemaining <= _unfinalizedPoolsRemaining);
         _unfinalizedPoolsRemaining = _numPreFinalizedPools = poolsRemaining;
 
         // If we've finalized all the pools, the epoch is finalized.
         if (poolsRemaining == 0) {
-            _assert(rewardsPaidLastEpoch <= __unfinalizedRewardsAvailable);
+            assert(_rewardsPaidLastEpoch <= unfinalizedRewardsAvailable);
             emit EpochFinalized(
                 epoch,
-                rewardsPaidLastEpoch,
-                __unfinalizedRewardsAvailable._sub(rewardsPaidLastEpoch)
+                _rewardsPaidLastEpoch,
+                unfinalizedRewardsAvailable._sub(_rewardsPaidLastEpoch)
             );
         }
     }
@@ -269,7 +269,7 @@ contract MixinExchangeFees is
         view
         returns (uint256 feesCollected)
     {
-        ActivePool storage pool = _activePoolsByEpoch[currentEpoch % 2][poolId];
+        IStructs.ActivePool storage pool = _activePoolsByEpoch[_currentEpoch % 2][poolId];
         feesCollected = pool.feesCollected;
     }
 
@@ -287,5 +287,24 @@ contract MixinExchangeFees is
             ._mul(REWARD_PAYOUT_DELEGATED_STAKE_PERCENT_VALUE)
             ._div(100)
         );
+    }
+
+    /// @dev Split a reward between the operator and members of a pool, based
+    ///      on the pool's `operatorShare`.
+    /// @param poolId The pool's unique ID.
+    /// @param reward The reward.
+    function _splitPoolReward(
+        bytes32 poolId,
+        uint256 reward
+    )
+        private
+        returns (uint256 operatorReward, uint256 membersReward)
+    {
+        uint256 share = _poolById[poolId];
+        uint256 operatorReward = reward._getPartialAmountCeil(
+            share,
+            TOKEN_MULTIPLIER
+        );
+        membersReward = reward._sub(operatorReward);
     }
 }

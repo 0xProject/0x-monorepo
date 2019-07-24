@@ -30,61 +30,61 @@ contract MixinStorage is
     MixinConstants
 {
     // address of owner
-    address internal owner;
+    address internal _owner;
 
     // address of staking contract
-    address internal stakingContract;
+    address internal _stakingContract;
 
     // mapping from Owner to Amount Staked
-    mapping (address => uint256) internal stakeByOwner;
+    mapping (address => uint256) internal _stakeByOwner;
 
     // mapping from Owner to Amount of Instactive Stake
-    mapping (address => uint256) internal activatedStakeByOwner;
+    mapping (address => uint256) internal _activatedStakeByOwner;
 
     // mapping from Owner to Amount Timelocked
-    mapping (address => IStructs.Timelock) internal timelockedStakeByOwner;
+    mapping (address => IStructs.Timelock) internal _timelockedStakeByOwner;
 
     // mapping from Owner to Amount Delegated
-    mapping (address => uint256) internal delegatedStakeByOwner;
+    mapping (address => uint256) internal _delegatedStakeByOwner;
 
     // mapping from Owner to Pool Id to Amount Delegated
-    mapping (address => mapping (bytes32 => uint256)) internal delegatedStakeToPoolByOwner;
+    mapping (address => mapping (bytes32 => uint256)) internal _delegatedStakeToPoolByOwner;
 
     // mapping from Pool Id to Amount Delegated
-    mapping (bytes32 => uint256) internal delegatedStakeByPoolId;
+    mapping (bytes32 => uint256) internal _delegatedStakeByPoolId;
 
     // total activated stake in the system
-    uint256 internal totalActivatedStake;
+    uint256 internal _totalActivatedStake;
 
     // tracking Pool Id
-    bytes32 internal nextPoolId = INITIAL_POOL_ID;
+    bytes32 internal _nextPoolId = INITIAL_POOL_ID;
 
     // mapping from Pool Id to Pool
-    mapping (bytes32 => IStructs.Pool) internal poolById;
+    mapping (bytes32 => IStructs.Pool) internal _poolById;
 
     // mapping from Maker Address to Pool Id
     // A Maker can only hold a single token
-    mapping (address => bytes32) internal poolIdByMakerAddress;
+    mapping (address => bytes32) internal _poolIdByMakerAddress;
 
     // mapping from Pool Id to Addresses
-    mapping (bytes32 => address[]) internal makerAddressesByPoolId;
+    mapping (bytes32 => address[]) internal _makerAddressesByPoolId;
 
     // current epoch
-    uint64 internal currentEpoch = INITIAL_EPOCH;
+    uint64 internal _currentEpoch = INITIAL_EPOCH;
 
     // current epoch start time
-    uint64 internal currentEpochStartTimeInSeconds;
+    uint64 internal _currentEpochStartTimeInSeconds;
 
     // current withdrawal period
-    uint64 internal currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
+    uint64 internal _currentTimelockPeriod = INITIAL_TIMELOCK_PERIOD;
 
     // current epoch start time
-    uint64 internal currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
+    uint64 internal _currentTimelockPeriodStartEpoch = INITIAL_EPOCH;
 
     // State information for each active pool in an epoch.
     // In this case, epoch is actually `epoch % 2` since we only need state
     // for `currentEpoch` and `currentEpoch - 1`.
-    mapping(uint256 => mapping(bytes32 => ActivePool)) internal _activePoolsByEpoch;
+    mapping(uint256 => mapping(bytes32 => IStructs.ActivePool)) internal _activePoolsByEpoch;
 
     // Number of pools activated in the current epoch.
     uint256 internal _numActivePools;
@@ -113,17 +113,17 @@ contract MixinStorage is
     uint256 internal _rewardsPaidLastEpoch;
 
     // mapping from POol Id to Shadow Rewards
-    mapping (bytes32 => uint256) internal shadowRewardsByPoolId;
+    mapping (bytes32 => uint256) internal _shadowRewardsByPoolId;
 
     // shadow balances by
-    mapping (address => mapping (bytes32 => uint256)) internal shadowRewardsInPoolByOwner;
+    mapping (address => mapping (bytes32 => uint256)) internal _shadowRewardsInPoolByOwner;
 
     // registrered 0x exchanges
-    mapping (address => bool) internal validExchanges;
+    mapping (address => bool) internal _validExchanges;
 
     // ZRX vault
-    IZrxVault internal zrxVault;
+    IZrxVault internal _zrxVault;
 
     // Rebate Vault
-    IStakingPoolRewardVault internal rewardVault;
+    IStakingPoolRewardVault internal _rewardVault;
 }

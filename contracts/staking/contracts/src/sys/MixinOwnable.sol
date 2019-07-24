@@ -20,7 +20,7 @@ contract MixinOwnable is
     /// @dev reverts if called by a sender other than the owner.
     modifier onlyOwner() {
         require(
-            msg.sender == owner,
+            msg.sender == _owner,
             "NOT_OWNER"
         );
         _;
@@ -36,7 +36,7 @@ contract MixinOwnable is
             newOwner != address(0),
             "CANNOT_SET_OWNEROT_ADDRESS_ZERO"
         );
-        owner = newOwner;
+        _owner = newOwner;
         emit OwnershipTransferred(newOwner);
     }
 }
