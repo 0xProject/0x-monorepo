@@ -1,5 +1,5 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { SignedOrder } from '@0x/types';
+import { SignedOrder, MarketOperation } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
 import { Provider } from 'ethereum-types';
@@ -71,6 +71,17 @@ export const swapQuoteConsumerUtils = {
     },
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
+    },
+    optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
+        return _.map(orders, (order: SignedOrder, index: number) => {
+            const optimizedOrder = _.clone(order);
+            if (operation === MarketOperation.Sell && index !== 0) {
+                optimizedOrder.takerAssetData = constants.NULL_ADDRESS;
+            } else if (index !== 0) {
+                optimizedOrder.makerAssetData = constants.NULL_ADDRESS;
+            }
+            return optimizedOrder;
+        });
     },
     async getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
