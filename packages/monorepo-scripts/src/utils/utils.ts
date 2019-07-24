@@ -79,6 +79,9 @@ export const utils = {
         const result = await execAsync(`${constants.lernaExecutable} updated --json`, {
             cwd: constants.monorepoRootPath,
         });
+        if (result.stdout === '') {
+            return [];
+        }
         const updatedPackages = JSON.parse(result.stdout);
         if (!shouldIncludePrivate) {
             const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
