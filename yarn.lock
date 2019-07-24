@@ -56,16 +56,16 @@
     read-package-tree "^5.1.6"
     semver "^6.2.0"
 
-"@0x-lerna-fork/changed@3.16.8":
-  version "3.16.8"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.16.8.tgz#f99767c08c1070506fcca066b829f9b20506c821"
-  integrity sha512-aQb6NoOrjHZbp+vccVpnIjMlot2oqiFUb+dJB5gH0c+Iw7MGb5KSKkF1lODt76U54VCqT3IsBdHB+U1O7bCWrg==
+"@0x-lerna-fork/changed@3.16.9":
+  version "3.16.9"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.16.9.tgz#79cd1597cae00a1700b8248c27f00f8aebf75873"
+  integrity sha512-njwFVyTlERlMuuAvdqsU1No7tv3MsNlCoquRjQORw7DhdfNENPWs4LzYqwu2OdlLlUiIt12GQI2pGOHJROZ7lg==
   dependencies:
     "@0x-lerna-fork/collect-updates" "3.16.3"
     "@0x-lerna-fork/command" "3.16.3"
     "@0x-lerna-fork/listable" "3.16.3"
     "@0x-lerna-fork/output" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.8"
+    "@0x-lerna-fork/version" "3.16.9"
 
 "@0x-lerna-fork/check-working-tree@3.16.3":
   version "3.16.3"
@@ -318,14 +318,14 @@
     p-map "^2.1.0"
     write-json-file "^3.2.0"
 
-"@0x-lerna-fork/lerna@3.16.8":
-  version "3.16.8"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.16.8.tgz#d8c697db74d598f5ee4e18621ee6c353e9151068"
-  integrity sha512-gkBFBmigBClHQE5JwEP+yE5iuLnY+xEsfUXvSWvpkDN0IOS/kh/74FVbhOzHfrotooA6x+oTOZE5l3cOMOCyuA==
+"@0x-lerna-fork/lerna@3.16.9":
+  version "3.16.9"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.16.9.tgz#9a68fc960545a50ecf03b03ad88300f884e23fe9"
+  integrity sha512-4XegTdnSZCJG2Tg2aVtY0j09AyJ54z7ZMaH3c6zEwFk/opdXFsE1HkyYY9Ar2Qmzlo8HkoWLzo4wn2tsd9Bkiw==
   dependencies:
     "@0x-lerna-fork/add" "3.16.3"
     "@0x-lerna-fork/bootstrap" "3.16.3"
-    "@0x-lerna-fork/changed" "3.16.8"
+    "@0x-lerna-fork/changed" "3.16.9"
     "@0x-lerna-fork/clean" "3.16.3"
     "@0x-lerna-fork/cli" "3.16.3"
     "@0x-lerna-fork/create" "3.16.3"
@@ -335,9 +335,9 @@
     "@0x-lerna-fork/init" "3.16.3"
     "@0x-lerna-fork/link" "3.16.3"
     "@0x-lerna-fork/list" "3.16.3"
-    "@0x-lerna-fork/publish" "3.16.8"
+    "@0x-lerna-fork/publish" "3.16.9"
     "@0x-lerna-fork/run" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.8"
+    "@0x-lerna-fork/version" "3.16.9"
     import-local "^2.0.0"
     npmlog "^4.1.2"
 
@@ -519,10 +519,10 @@
     inquirer "^6.2.0"
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/publish@3.16.8":
-  version "3.16.8"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.16.8.tgz#9f2bdf8a6085b33af67dc67c700d48b29ddd032f"
-  integrity sha512-II9XEvc7nskBTxWwWnim+T+V+IAUSMO3+ffMUd5U9crhSASuWS1tNdBGjNJPMMaqSGzswUEUxI8PjlfcfVEOIw==
+"@0x-lerna-fork/publish@3.16.9":
+  version "3.16.9"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.16.9.tgz#282a4bcb660036f39c5f8bab18c8744ed8a073c9"
+  integrity sha512-OVafQ6TmhRSxNSUEtSSbwIS63VXdbzCt73j10HYvMEpzm7SjQhM5JvRDraBBn9gRjm/M4oH7mVffKcQBQYUw/w==
   dependencies:
     "@0x-lerna-fork/check-working-tree" "3.16.3"
     "@0x-lerna-fork/child-process" "3.16.3"
@@ -542,7 +542,7 @@
     "@0x-lerna-fork/run-lifecycle" "3.16.3"
     "@0x-lerna-fork/run-topologically" "3.16.3"
     "@0x-lerna-fork/validation-error" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.8"
+    "@0x-lerna-fork/version" "3.16.9"
     "@evocateur/libnpmaccess" "^3.1.2"
     "@evocateur/npm-registry-fetch" "^4.0.0"
     "@evocateur/pacote" "^9.6.3"
@@ -665,10 +665,10 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/version@3.16.8":
-  version "3.16.8"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/version/-/version-3.16.8.tgz#7e08c81149c82507e50e5c1458b748ba84b1c207"
-  integrity sha512-g/oPaNUPw0guxhg6J+3mO7R+RjKlCIZY7vX52pgD7ddnW9znmUepClnEoY92CSDnCqXt3YmZEZsDxeSK0gyycQ==
+"@0x-lerna-fork/version@3.16.9":
+  version "3.16.9"
+  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/version/-/version-3.16.9.tgz#71df8f8f7af117b72764219577301b7b66c2accf"
+  integrity sha512-QkHjxElSdh0UdAQ3bEgk1ANDeaNwLkdCXA2gwEIg9FLS+Z/Dc6U2DZRng7rqX99tRkKjdnFOZJeawieCy5t0Sg==
   dependencies:
     "@0x-lerna-fork/check-working-tree" "3.16.3"
     "@0x-lerna-fork/child-process" "3.16.3"
@@ -714,26 +714,6 @@
   resolved "https://registry.yarnpkg.com/@0x/abi-gen-wrappers/-/abi-gen-wrappers-4.3.0.tgz#b36616b129f44072474a7d5739299e4b1068e3d4"
   dependencies:
     "@0x/base-contract" "^5.1.0"
-
-"@0x/abi-gen@^2.1.1":
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/@0x/abi-gen/-/abi-gen-2.1.1.tgz#2ca9072e64a2a46b6149aaea434f09d5dbf0866f"
-  integrity sha512-QLigDvQEGe248MjafJ58nWfwMbz+Va6KTlCsrADTuQd711XY10c95poDPevOfAXNHFZYpgS6rEzIau0WmY+Kbw==
-  dependencies:
-    "@0x/types" "^2.4.0"
-    "@0x/typescript-typings" "^4.2.3"
-    "@0x/utils" "^4.4.0"
-    chalk "^2.3.0"
-    change-case "^3.0.2"
-    cli-format "^3.0.9"
-    ethereum-types "^2.1.3"
-    glob "^7.1.2"
-    handlebars "^4.0.11"
-    lodash "^4.17.11"
-    mkdirp "^0.5.1"
-    tmp "^0.0.33"
-    to-snake-case "^1.0.0"
-    yargs "^10.0.3"
 
 "@0x/asset-buyer@6.1.4":
   version "6.1.4"
