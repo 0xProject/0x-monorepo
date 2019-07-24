@@ -10,6 +10,20 @@
     },
     {
         "timestamp": 1563193019,
+        "version": "0.1.4",
+        "changes": [
+            {
+                "note": "Switched MarketOperation type to enum and expanded default constants configuration",
+                "pr": 1959
+            },
+            {
+                "note": "Added additional options to control asset-swapper behavior and optimized consumer output",
+                "pr": 1966
+            }
+        ]
+    },
+    {
+        "timestamp": 1563193019,
         "version": "0.0.4",
         "changes": [
             {
