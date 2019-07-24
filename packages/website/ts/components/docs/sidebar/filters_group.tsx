@@ -35,4 +35,16 @@ export const FiltersGroup = connectRefinementList(FiltersList);
 
 const FiltersGroupWrapper = styled.div`
     margin-bottom: 2.22em;
+
+    @media (max-width: 900px) {
+        margin-bottom: 30px;
+
+        &:last-of-type {
+            margin-bottom: 0;
+
+            label:last-of-type {
+                margin-bottom: 0;
+            }
+        }
+    }
 `;
