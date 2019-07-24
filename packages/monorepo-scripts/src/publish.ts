@@ -261,6 +261,10 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
         const packageVersionString = _.map(packageToNextVersion, (nextVersion: string, packageName: string) => {
             return `${packageName}|${nextVersion}`;
         }).join(',');
+        // HACK(fabio): Previously we would pass the packageVersionString directly to `lerna publish` using the
+        // `--cdVersions` flag. Since we now need to use `spawn` instead of `exec` when calling Lerna, passing
+        // them as a string arg is causing `spawn` to error with `ENAMETOOLONG`. In order to shorten the args
+        // passed to `spawn` we now write the new version to a file and pass the filepath to the `cdVersions` arg.
         const cdVersionsFilepath = path.join(__dirname, 'cd_versions.txt');
         fs.writeFileSync(cdVersionsFilepath, packageVersionString);
         const lernaPublishCmd = `node`;
@@ -302,6 +306,8 @@ async function lernaPublishAsync(packageToNextVersion: { [name: string]: string 
                 utils.log('Lerna publish cmd: ', output);
             });
         } catch (err) {
+            // Remove temporary cdVersions file
+            fs.unlinkSync(cdVersionsFilepath);
             reject(err);
         }
     });
