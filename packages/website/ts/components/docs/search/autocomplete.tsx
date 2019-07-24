@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import Autosuggest from 'react-autosuggest';
-import { Highlight, Snippet } from 'react-instantsearch-dom';
+import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
 import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
+
+import { searchIndex } from 'ts/utils/algolia_search';
 
 interface IAutoCompleteProps {
     isHome?: boolean;
@@ -23,12 +25,7 @@ interface IWrapperProps {
     currentRefinement?: string;
 }
 
-export const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
-    isHome = false,
-    hits = [],
-    currentRefinement,
-    refine,
-}) => {
+const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits = [], currentRefinement, refine }) => {
     const [value, setValue] = useState<string>('');
 
     const onChange = (event: IHitProps, { newValue }: IHitProps): void => setValue(newValue);
@@ -40,12 +37,10 @@ export const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     // tslint:disable-next-line: no-empty
     const onSuggestionHighlighted = (): void => {};
 
-    const getSuggestionValue = (hit: IHitProps): string => hit.textContent;
+    // tslint:disable-next-line: no-empty
+    const onSuggestionSelected = (event: IHitProps, { suggestion }: IHitProps): void => {};
 
-    const onSuggestionSelected = (event: IHitProps, { suggestion }: IHitProps): void => {
-        // tslint:disable-next-line: no-console
-        console.log(suggestion);
-    };
+    const getSuggestionValue = (hit: IHitProps): string => hit.textContent;
 
     const renderSuggestion = (hit: IHitProps): React.ReactNode => {
         return (
@@ -58,9 +53,11 @@ export const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     };
 
     const renderSectionTitle = (section: IHitProps): React.ReactNode => {
+        const { tools, guides } = searchIndex;
+
         const titles: { [key: string]: any } = {
-            '0x_tools_test': 'Tools',
-            '0x_guides_test': 'Guides',
+            [tools]: 'Tools',
+            [guides]: 'Guides',
         };
 
         if (section.hits.length) {
@@ -346,3 +343,5 @@ const Wrapper = styled.div<IWrapperProps>`
         }
     }
 `;
+
+export const AutoComplete = connectAutoComplete(CustomAutoComplete);
