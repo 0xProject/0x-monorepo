@@ -24,8 +24,6 @@ export interface IResourceProps {
 export const Resource: React.FC<IHitProps> = ({ hit }) => {
     const { title, difficulty, description, isCommunity, tags, url } = hit;
 
-    console.log('hit', hit);
-
     return (
         <ResourceWrapper>
             <Heading color={colors.brandDark} size="small" marginBottom="8px">
