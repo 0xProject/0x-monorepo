@@ -1,6 +1,8 @@
 import algoliasearch from 'algoliasearch/lite';
 
-export const searchClient = algoliasearch('39X6WOJZKW', '6acba761a34d99781628c6178af1e16c');
+import { configs } from 'ts/utils/configs';
+
+export const searchClient = algoliasearch(configs.ALGOLIA_APP_ID, configs.ALGOLIA_API_KEY_CLIENT);
 
 export const searchIndex = {
     guides: '0x_guides_test',
