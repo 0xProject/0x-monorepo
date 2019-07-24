@@ -89,12 +89,14 @@ export const Header: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }
                         ))}
                     </NavLinks>
 
-                    <MediaQuery minWidth={990}>
+                    <MediaQuery minWidth={1200}>
                         <SearchInput isHome={false} />
                     </MediaQuery>
 
-                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                    <MobileNav navItems={navItems} isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    <MediaQuery maxWidth={1200}>
+                        <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
+                        <MobileNav navItems={navItems} isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    </MediaQuery>
                 </HeaderWrap>
             </StyledHeader>
         </Headroom>

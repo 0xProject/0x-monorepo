@@ -103,8 +103,10 @@ export const HeaderBase: React.FC<HeaderProps> = props => {
                         </TradeButton>
                     </MediaQuery>
 
-                    <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
-                    <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    <MediaQuery maxWidth={800}>
+                        <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
+                        <MobileNav isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
+                    </MediaQuery>
                 </HeaderWrap>
             </StyledHeader>
         </Headroom>

@@ -29,10 +29,6 @@ const StyledHamburger = styled.button<Props>`
     outline: none;
     user-select: none;
 
-    @media (min-width: 800px) {
-        display: none;
-    }
-
     span {
         display: block;
         background-color: ${props => props.theme.textColor};
