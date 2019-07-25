@@ -13,6 +13,8 @@ import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
 import { constants } from 'ts/utils/constants';
 
+import { WebsitePaths } from 'ts/types';
+
 const SEPARATOR_MARGIN = '60px 0';
 
 export const DocsHome: React.FC = () => {
@@ -69,44 +71,44 @@ const shortcuts: IShortcutLinkProps[] = [
         heading: 'Core Concepts',
         description: 'Understand the fundamentals of 0x development',
         icon: 'coreConcepts',
-        url: '/docs/core-concepts',
+        url: WebsitePaths.DocsCoreConcepts,
     },
     {
         heading: 'API Explorer',
         description: 'Browse and filter through all the open-source 0x developer tools',
         icon: 'apiExplorer',
-        url: '/docs/api-explorer',
+        url: WebsitePaths.DocsApiExplorer,
     },
     {
         heading: 'Guides',
         description: 'Dive into intermediate and advanced 0x development  topics',
         icon: 'getStarted',
-        url: '/docs/guides',
+        url: WebsitePaths.DocsGuides,
     },
     {
         heading: 'Tools',
         description: 'Explore the core 0x library and how to use it',
         icon: 'tools',
-        url: '/docs/tools',
+        url: WebsitePaths.DocsTools,
     },
 ];
 
 const usefulLinks: IStepLinkProps[] = [
     {
         title: 'Core Concepts',
-        url: '/docs/core-concepts',
+        url: WebsitePaths.DocsCoreConcepts,
     },
     {
         title: 'API Explorer',
-        url: '/docs/api-explorer',
+        url: WebsitePaths.DocsApiExplorer,
     },
     {
         title: 'Guides',
-        url: '/docs/guides',
+        url: WebsitePaths.DocsGuides,
     },
     {
         title: 'Tools',
-        url: '/docs/tools',
+        url: WebsitePaths.DocsTools,
     },
 ];
 
@@ -114,22 +116,22 @@ const getStartedLinks: IGetStartedLinkProps[] = [
     {
         heading: 'Launch an exchange in 30 seconds',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
-        url: '/docs/core-concepts',
+        url: WebsitePaths.DocsCoreConcepts,
     },
     {
         heading: 'Tap into contract-fillable liquidity',
         description: 'Source contract-fillable liquidity at the best prices from 0x.',
-        url: '/docs/api-explorer',
+        url: WebsitePaths.DocsApiExplorer,
     },
     {
         heading: 'Launch your in-game marketplace',
         description: 'Make your in-game items tradable with minimal effort.',
-        url: '/docs/guides',
+        url: WebsitePaths.DocsGuides,
     },
     {
         heading: 'Predict the future with 0x',
         description: 'Build a prediction market end-to-end using 0x and Augur.',
-        url: '/docs/tools',
+        url: WebsitePaths.DocsTools,
     },
 ];
 
