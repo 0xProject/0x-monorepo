@@ -1,4 +1,3 @@
-import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -11,6 +10,7 @@ import { Blockchain } from 'ts/blockchain';
 import { EthWethConversionButton } from 'ts/components/eth_weth_conversion_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import {
+    EtherscanLinkSuffixes,
     OutdatedWrappedEtherByNetworkId,
     Side,
     Token,
@@ -18,6 +18,7 @@ import {
     TokenState,
     TokenStateByAddress,
 } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
@@ -91,7 +92,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
         const etherToken = this._getEthToken();
         const wethBalance = Web3Wrapper.toUnitAmount(this.state.ethTokenState.balance, constants.DECIMAL_PLACES_ETH);
         const isBidirectional = true;
-        const etherscanUrl = sharedUtils.getEtherScanLinkIfExists(
+        const etherscanUrl = utils.getEtherScanLinkIfExists(
             etherToken.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
@@ -285,7 +286,7 @@ export class EthWrappers extends React.Component<EthWrappersProps, EthWrappersSt
                     this,
                     outdatedWETHIfExists.address,
                 );
-                const etherscanUrl = sharedUtils.getEtherScanLinkIfExists(
+                const etherscanUrl = utils.getEtherScanLinkIfExists(
                     outdatedWETHIfExists.address,
                     this.props.networkId,
                     EtherscanLinkSuffixes.Address,

@@ -1,12 +1,13 @@
-import { AnchorTitle, colors, HeaderSizes } from '@0x/react-shared';
 import { CustomType, CustomTypeChild, TypeDefinitionByName, TypeDocTypes } from '@0x/types';
 import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { AnchorTitle } from 'ts/components/documentation/shared/anchor_title';
 
-import { KindString, SupportedDocJson } from '../../../types';
-import { constants } from '../../../utils/constants';
-import { DocsInfo } from '../../../utils/docs_info';
+import { HeaderSizes, KindString, SupportedDocJson } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
+import { DocsInfo } from 'ts/utils/docs_info';
 
 import { Comment } from './comment';
 import { CustomEnum } from './custom_enum';

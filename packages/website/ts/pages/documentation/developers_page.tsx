@@ -1,4 +1,3 @@
-import { colors, constants as sharedConstants } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Helmet } from 'react-helmet';
@@ -10,6 +9,8 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
 import { ScreenWidths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
@@ -145,7 +146,7 @@ export class DevelopersPage extends React.Component<DevelopersPageProps, Develop
                                 sidebar={this.props.sidebar}
                             />
                         </Container>
-                        <MainContentContainer id={sharedConstants.SCROLL_CONTAINER_ID}>
+                        <MainContentContainer id={constants.SCROLL_CONTAINER_ID}>
                             {this.props.mainContent}
                         </MainContentContainer>
                     </Container>

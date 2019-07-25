@@ -1,8 +1,8 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import { constants } from '../utils/constants';
-import { utils } from '../utils/utils';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
 export interface MarkdownLinkBlockProps {
     href: string;

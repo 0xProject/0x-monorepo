@@ -1,4 +1,3 @@
-import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
@@ -20,7 +19,7 @@ import {
 import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { AccountState, ProviderType } from 'ts/types';
+import { AccountState, ProviderType, Styles } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const ROOT_HEIGHT = 24;

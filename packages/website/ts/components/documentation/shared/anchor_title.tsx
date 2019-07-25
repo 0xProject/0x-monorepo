@@ -1,9 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Link } from '../components/link';
-import { HeaderSizes, Styles } from '../types';
-import { colors } from '../utils/colors';
+import { HeaderSizes, Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+
+import { Link } from './link';
 
 export interface AnchorTitleProps {
     title: string | React.ReactNode;

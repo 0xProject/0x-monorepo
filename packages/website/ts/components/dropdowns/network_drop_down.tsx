@@ -1,8 +1,8 @@
-import { constants as sharedConstants } from '@0x/react-shared';
 import * as _ from 'lodash';
 import DropDownMenu from 'material-ui/DropDownMenu';
 import MenuItem from 'material-ui/MenuItem';
 import * as React from 'react';
+import { constants } from 'ts/utils/constants';
 
 interface NetworkDropDownProps {
     updateSelectedNetwork: (e: any, index: number, value: number) => void;
@@ -24,7 +24,7 @@ export class NetworkDropDown extends React.Component<NetworkDropDownProps, Netwo
     }
     private _renderDropDownItems(): React.ReactNode {
         const items = _.map(this.props.avialableNetworkIds, networkId => {
-            const networkName = sharedConstants.NETWORK_NAME_BY_ID[networkId];
+            const networkName = constants.NETWORK_NAME_BY_ID[networkId];
             const primaryText = (
                 <div className="flex">
                     <div className="pr1" style={{ width: 14, paddingTop: 2 }}>

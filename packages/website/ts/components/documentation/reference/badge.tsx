@@ -1,5 +1,5 @@
-import { Styles } from '@0x/react-shared';
 import * as React from 'react';
+import { Styles } from 'ts/types';
 
 const styles: Styles = {
     badge: {

@@ -1,4 +1,4 @@
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
 import _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';

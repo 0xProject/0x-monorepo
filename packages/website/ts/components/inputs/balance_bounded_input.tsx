@@ -1,10 +1,10 @@
-import { colors } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import TextField from 'material-ui/TextField';
 import * as React from 'react';
 import { RequiredLabel } from 'ts/components/ui/required_label';
 import { ValidatedBigNumberCallback } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 interface BalanceBoundedInputProps {

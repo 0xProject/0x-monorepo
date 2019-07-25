@@ -1,9 +1,10 @@
-import { AnchorTitle, HeaderSizes } from '@0x/react-shared';
 import { Property, TypeDefinitionByName } from '@0x/types';
 import * as React from 'react';
+import { AnchorTitle } from 'ts/components/documentation/shared/anchor_title';
 
-import { constants } from '../../../utils/constants';
-import { DocsInfo } from '../../../utils/docs_info';
+import { HeaderSizes } from 'ts/types';
+import { constants } from 'ts/utils/constants';
+import { DocsInfo } from 'ts/utils/docs_info';
 
 import { Comment } from './comment';
 import { SourceLink } from './source_link';

@@ -1,10 +1,10 @@
-import { colors } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as React from 'react';
 import { Balance } from 'ts/components/ui/balance';
 import { Container } from 'ts/components/ui/container';
 import { IconButton } from 'ts/components/ui/icon_button';
 import { Text } from 'ts/components/ui/text';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 
 export interface WrapEthOnboardingStep1Props {}

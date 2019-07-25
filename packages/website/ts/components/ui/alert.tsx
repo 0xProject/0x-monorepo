@@ -1,6 +1,6 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import { AlertTypes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface AlertProps {
     type: AlertTypes;

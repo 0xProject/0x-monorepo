@@ -1,6 +1,6 @@
-import { Styles } from '@0x/react-shared';
 import * as React from 'react';
 import { InputLabel } from 'ts/components/ui/input_label';
+import { Styles } from 'ts/types';
 
 const styles: Styles = {
     hr: {

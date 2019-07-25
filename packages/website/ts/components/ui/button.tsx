@@ -1,7 +1,7 @@
-import { colors } from '@0x/react-shared';
 import { darken, saturate } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
+import { colors } from 'ts/utils/colors';
 
 export interface ButtonProps {
     className?: string;

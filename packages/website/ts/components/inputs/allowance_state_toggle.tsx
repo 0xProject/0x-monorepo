@@ -1,4 +1,3 @@
-import { colors } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -11,6 +10,7 @@ import { Text } from 'ts/components/ui/text';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { BalanceErrs, Token, TokenState } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
+import { colors } from 'ts/utils/colors';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
 

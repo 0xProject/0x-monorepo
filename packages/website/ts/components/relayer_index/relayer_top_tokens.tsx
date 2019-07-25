@@ -1,10 +1,10 @@
-import { colors, EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
-import { WebsiteBackendTokenInfo } from 'ts/types';
+import { EtherscanLinkSuffixes, WebsiteBackendTokenInfo } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { utils } from 'ts/utils/utils';
 
@@ -56,6 +56,6 @@ class TokenLink extends React.Component<TokenLinkProps, TokenLinkState> {
         );
     }
     private _tokenLinkFromToken(tokenInfo: WebsiteBackendTokenInfo, networkId: number): string {
-        return sharedUtils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
+        return utils.getEtherScanLinkIfExists(tokenInfo.address, networkId, EtherscanLinkSuffixes.Address);
     }
 }

@@ -1,4 +1,3 @@
-import { colors, constants as sharedConstants } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -13,6 +12,7 @@ import { NetworkDropDown } from 'ts/components/dropdowns/network_drop_down';
 import { LifeCycleRaisedButton } from 'ts/components/ui/lifecycle_raised_button';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { ProviderType } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { utils } from 'ts/utils/utils';
@@ -85,7 +85,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
         );
     }
     private _renderConnectStep(): React.ReactNode {
-        const networkIds = _.values(sharedConstants.NETWORK_ID_BY_NAME);
+        const networkIds = _.values(constants.NETWORK_ID_BY_NAME);
         return (
             <div>
                 <div className="h4 pt3">Follow these instructions before proceeding:</div>
@@ -166,7 +166,7 @@ export class LedgerConfigDialog extends React.Component<LedgerConfigDialogProps,
             const balanceInWei = this.state.addressBalances[i];
             const addressTooltipId = `address-${userAddress}`;
             const balanceTooltipId = `balance-${userAddress}`;
-            const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+            const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
             // We specifically prefix kovan ETH.
             // TODO: We should probably add prefixes for all networks
             const isKovanNetwork = networkName === 'Kovan';

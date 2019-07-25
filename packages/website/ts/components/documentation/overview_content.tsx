@@ -1,14 +1,17 @@
-import { colors, Link, MarkdownLinkBlock, utils as sharedUtils } from '@0x/react-shared';
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
+import { Link } from 'ts/components/documentation/shared/link';
+import { MarkdownLinkBlock } from 'ts/components/documentation/shared/markdown_link_block';
 import { TutorialButton } from 'ts/components/documentation/tutorial_button';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
 import { Deco, Key, Package, TutorialInfo } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { Translate } from 'ts/utils/translate';
+import { utils } from 'ts/utils/utils';
 
 export interface OverviewContentProps {
     translate: Translate;
@@ -28,7 +31,7 @@ export class OverviewContent extends React.Component<OverviewContentProps, Overv
                     <Container marginTop="36px">
                         {_.map(this.props.tutorials, tutorialInfo => (
                             <ScrollElement
-                                name={sharedUtils.getIdFromName(
+                                name={utils.getIdFromName(
                                     this.props.translate.get(tutorialInfo.link.title as Key, Deco.Cap),
                                 )}
                                 key={`tutorial-${tutorialInfo.link.title}`}
@@ -63,7 +66,7 @@ export class OverviewContent extends React.Component<OverviewContentProps, Overv
         );
     }
     private _renderPackage(pkg: Package): React.ReactNode {
-        const id = sharedUtils.getIdFromName(pkg.link.title);
+        const id = utils.getIdFromName(pkg.link.title);
         return (
             <ScrollElement name={id} key={`package-${pkg.link.title}`}>
                 <Container className="pb2">

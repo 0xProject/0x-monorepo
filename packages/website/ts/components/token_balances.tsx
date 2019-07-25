@@ -1,10 +1,3 @@
-import {
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    Networks,
-    Styles,
-    utils as sharedUtils,
-} from '@0x/react-shared';
 import { BigNumber, errorUtils, fetchAsync, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -31,7 +24,10 @@ import {
     BalanceErrs,
     BlockchainCallErrs,
     BlockchainErrs,
+    EtherscanLinkSuffixes,
+    Networks,
     ScreenWidths,
+    Styles,
     Token,
     TokenByAddress,
     TokenStateByAddress,
@@ -115,7 +111,7 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
             if (this.state.isBalanceSpinnerVisible) {
                 const receivedAmountInWei = nextProps.userEtherBalanceInWei.minus(this.props.userEtherBalanceInWei);
                 const receivedAmountInEth = Web3Wrapper.toUnitAmount(receivedAmountInWei, constants.DECIMAL_PLACES_ETH);
-                const networkName = sharedConstants.NETWORK_NAME_BY_ID[this.props.networkId];
+                const networkName = constants.NETWORK_NAME_BY_ID[this.props.networkId];
                 this.props.dispatcher.showFlashMessage(
                     `Received ${receivedAmountInEth.toString(10)} ${networkName} Ether`,
                 );
@@ -329,16 +325,16 @@ export class TokenBalances extends React.Component<TokenBalancesProps, TokenBala
     }
     private _renderTokenRow(tokenColSpan: number, actionPaddingX: number, token: Token): React.ReactNode {
         const tokenState = this.state.trackedTokenStateByAddress[token.address];
-        const tokenLink = sharedUtils.getEtherScanLinkIfExists(
+        const tokenLink = utils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,
         );
         const isMintable =
             (_.includes(configs.SYMBOLS_OF_MINTABLE_KOVAN_TOKENS, token.symbol) &&
-                this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
+                this.props.networkId === constants.NETWORK_ID_BY_NAME[Networks.Kovan]) ||
             (_.includes(configs.SYMBOLS_OF_MINTABLE_ROPSTEN_TOKENS, token.symbol) &&
-                this.props.networkId === sharedConstants.NETWORK_ID_BY_NAME[Networks.Ropsten]);
+                this.props.networkId === constants.NETWORK_ID_BY_NAME[Networks.Ropsten]);
         return (
             <TableRow key={token.address} style={{ height: TOKEN_TABLE_ROW_HEIGHT }}>
                 <TableRowColumn colSpan={tokenColSpan}>

@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { Parameter, Type as TypeDef, TypeDefinitionByName, TypeParameter } from '@0x/types';
 
-import { DocsInfo } from '../../../utils/docs_info';
+import { DocsInfo } from 'ts/utils/docs_info';
 
 import { Type } from './type';
 

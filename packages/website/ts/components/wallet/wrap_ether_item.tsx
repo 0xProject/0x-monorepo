@@ -1,4 +1,3 @@
-import { Styles } from '@0x/react-shared';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -11,7 +10,7 @@ import { Container } from 'ts/components/ui/container';
 import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Dispatcher } from 'ts/redux/dispatcher';
 import { colors } from 'ts/style/colors';
-import { BlockchainCallErrs, Side, Token } from 'ts/types';
+import { BlockchainCallErrs, Side, Styles, Token } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';

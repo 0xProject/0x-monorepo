@@ -1,6 +1,6 @@
-import { Link as SmartLink } from '@0x/react-shared';
 import * as React from 'react';
 import styled from 'styled-components';
+import { Link as SmartLink } from 'ts/components/documentation/shared/link';
 
 interface LinkInterface {
     color?: string;

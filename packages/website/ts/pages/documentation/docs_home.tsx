@@ -1,4 +1,5 @@
-import { ALink, colors, Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -7,7 +8,8 @@ import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { ALink, Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 

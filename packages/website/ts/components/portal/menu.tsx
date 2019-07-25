@@ -1,9 +1,8 @@
-import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { CustomMenuItem } from 'ts/components/ui/custom_menu_item';
 import { colors } from 'ts/style/colors';
-import { WebsitePaths } from 'ts/types';
+import { Styles, WebsitePaths } from 'ts/types';
 
 export interface MenuTheme {
     paddingLeft: number;

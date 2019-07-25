@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import { CustomType, TypeDefinitionByName } from '@0x/types';
 
-import { DocsInfo } from '../../../utils/docs_info';
+import { DocsInfo } from 'ts/utils/docs_info';
 
 import { Signature } from './signature';
 import { Type } from './type';

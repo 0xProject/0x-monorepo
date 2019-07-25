@@ -1,6 +1,7 @@
-import { colors, MarkdownCodeBlock } from '@0x/react-shared';
 import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
+import { MarkdownCodeBlock } from 'ts/components/documentation/shared/markdown_code_block';
+import { colors } from 'ts/utils/colors';
 
 export interface CommentProps {
     comment: string;

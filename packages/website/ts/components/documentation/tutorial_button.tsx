@@ -1,12 +1,13 @@
-import { colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
+import { styled } from 'ts/style/theme';
 import { Deco, Key, TutorialInfo } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { Translate } from 'ts/utils/translate';
 
-import { styled } from 'ts/style/theme';
+import { Link } from './shared/link';
 
 export interface TutorialButtonProps {
     className?: string;

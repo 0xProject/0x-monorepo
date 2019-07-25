@@ -1,11 +1,13 @@
-import { colors, Link, utils as sharedUtils } from '@0x/react-shared';
 import { Type as TypeDef, TypeDefinitionByName, TypeDocTypes } from '@0x/types';
 import { errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as ReactTooltip from 'react-tooltip';
+import { colors } from 'ts/utils/colors';
+import { DocsInfo } from 'ts/utils/docs_info';
+import { utils } from 'ts/utils/utils';
 
-import { DocsInfo } from '../../../utils/docs_info';
+import { Link } from '../shared/link';
 
 import { Signature } from './signature';
 import { TypeDefinition } from './type_definition';
@@ -223,7 +225,7 @@ export const Type: React.SFC<TypeProps> = (props: TypeProps): any => {
             : `${props.docsInfo.typeSectionName}-${typeName}`;
         typeName = (
             <span>
-                {sharedUtils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
+                {utils.isUserOnMobile() || props.isInPopover || isExportedClassReference ? (
                     <span style={{ color: colors.lightBlueA700, cursor: 'pointer' }}>{typeName}</span>
                 ) : (
                     <Link to={typeDefinitionAnchorId}>

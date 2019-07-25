@@ -1,5 +1,4 @@
 import { assetDataUtils, generatePseudoRandomSalt, orderHashUtils } from '@0x/order-utils';
-import { colors } from '@0x/react-shared';
 import { Order as ZeroExOrder } from '@0x/types';
 import { BigNumber, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
@@ -31,6 +30,7 @@ import {
     TokenByAddress,
 } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';

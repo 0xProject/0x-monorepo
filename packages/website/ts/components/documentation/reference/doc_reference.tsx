@@ -1,15 +1,4 @@
 import {
-    colors,
-    constants as sharedConstants,
-    EtherscanLinkSuffixes,
-    HeaderSizes,
-    Link,
-    MarkdownSection,
-    Networks,
-    SectionHeader,
-    utils as sharedUtils,
-} from '@0x/react-shared';
-import {
     DocAgnosticFormat,
     Event,
     ExternalExportToLink,
@@ -22,10 +11,15 @@ import {
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as semver from 'semver';
+import { Link } from 'ts/components/documentation/shared/link';
+import { MarkdownSection } from 'ts/components/documentation/shared/markdown_section';
+import { SectionHeader } from 'ts/components/documentation/shared/section_header';
+import { AddressByContractName, EtherscanLinkSuffixes, HeaderSizes, Networks, SupportedDocJson } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { constants } from 'ts/utils/constants';
+import { utils } from 'ts/utils/utils';
 
-import { AddressByContractName, SupportedDocJson } from '../../../types';
-import { constants } from '../../../utils/constants';
-import { DocsInfo } from '../../../utils/docs_info';
+import { DocsInfo } from 'ts/utils/docs_info';
 
 import { Badge } from './badge';
 import { Comment } from './comment';
@@ -55,7 +49,7 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
     public componentDidUpdate(prevProps: DocReferenceProps, _prevState: DocReferenceState): void {
         if (!_.isEqual(prevProps.docAgnosticFormat, this.props.docAgnosticFormat)) {
             const hash = window.location.hash.slice(1);
-            sharedUtils.scrollToHash(hash, sharedConstants.SCROLL_CONTAINER_ID);
+            utils.scrollToHash(hash, constants.SCROLL_CONTAINER_ID);
         }
     }
     public render(): React.ReactNode {
@@ -67,7 +61,7 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
 
         return (
             <div>
-                <div id={sharedConstants.SCROLL_TOP_ID} />
+                <div id={constants.SCROLL_TOP_ID} />
                 {renderedSections}
             </div>
         );
@@ -250,9 +244,9 @@ export class DocReference extends React.Component<DocReferenceProps, DocReferenc
                 if (contractAddress === undefined) {
                     return null;
                 }
-                const linkIfExists = sharedUtils.getEtherScanLinkIfExists(
+                const linkIfExists = utils.getEtherScanLinkIfExists(
                     contractAddress,
-                    sharedConstants.NETWORK_ID_BY_NAME[networkName],
+                    constants.NETWORK_ID_BY_NAME[networkName],
                     EtherscanLinkSuffixes.Address,
                 );
                 return (

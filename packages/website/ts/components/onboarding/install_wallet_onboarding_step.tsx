@@ -1,4 +1,4 @@
-import { colors } from '@0x/react-shared';
+import { colors } from 'ts/utils/colors';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';

@@ -4,8 +4,8 @@ import { NavLink as ReactRounterLink } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 import * as validUrl from 'valid-url';
 
-import { LinkType } from '../types';
-import { constants } from '../utils/constants';
+import { LinkType } from 'ts/types';
+import { constants } from 'ts/utils/constants';
 
 export interface BaseLinkProps {
     to: string;

@@ -1,4 +1,3 @@
-import { utils as sharedUtils } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
@@ -25,8 +24,8 @@ export const getStartedClick = () => {
     if (window.innerWidth < CONFIGURATOR_MIN_WIDTH_PX) {
         utils.openUrl(`${WebsitePaths.Wiki}#Get-Started-With-Instant`);
     } else {
-        sharedUtils.setUrlHash('configurator');
-        sharedUtils.scrollToHash('configurator', '');
+        utils.setUrlHash('configurator');
+        utils.scrollToHash('configurator', '');
     }
 };
 

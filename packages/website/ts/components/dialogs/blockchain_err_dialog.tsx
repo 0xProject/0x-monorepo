@@ -1,9 +1,9 @@
-import { colors, Networks } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';
-import { BlockchainErrs } from 'ts/types';
+import { BlockchainErrs, Networks } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 
 interface BlockchainErrDialogProps {

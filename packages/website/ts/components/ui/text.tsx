@@ -1,4 +1,4 @@
-import { colors } from '@0x/react-shared';
+import { colors } from 'ts/utils/colors';
 import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';

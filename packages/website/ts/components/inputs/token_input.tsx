@@ -1,4 +1,4 @@
-import { colors } from '@0x/react-shared';
+import { colors } from 'ts/utils/colors';
 import Paper from 'material-ui/Paper';
 import * as React from 'react';
 import { Blockchain } from 'ts/blockchain';

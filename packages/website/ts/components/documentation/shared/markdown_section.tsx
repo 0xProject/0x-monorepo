@@ -3,9 +3,9 @@ import * as React from 'react';
 import * as ReactMarkdown from 'react-markdown';
 import { Element as ScrollElement } from 'react-scroll';
 
-import { HeaderSizes } from '../types';
-import { colors } from '../utils/colors';
-import { utils } from '../utils/utils';
+import { HeaderSizes } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 import { AnchorTitle } from './anchor_title';
 import { Link } from './link';

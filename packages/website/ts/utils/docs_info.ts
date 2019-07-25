@@ -1,6 +1,7 @@
-import { ALink, utils as sharedUtils } from '@0x/react-shared';
 import { DocAgnosticFormat, ObjectMap, TypeDefinitionByName } from '@0x/types';
 import * as _ from 'lodash';
+import { ALink } from 'ts/types';
+import { utils } from 'ts/utils/utils';
 
 import {
     ContractsByVersionByNetworkId,
@@ -50,7 +51,7 @@ export class DocsInfo {
         _.each(this.markdownMenu, (linkTitles, sectionName) => {
             sectionNameToLinks[sectionName] = [];
             _.each(linkTitles, linkTitle => {
-                const to = sharedUtils.getIdFromName(linkTitle);
+                const to = utils.getIdFromName(linkTitle);
                 const links = sectionNameToLinks[sectionName];
                 links.push({
                     title: linkTitle,

@@ -1,4 +1,4 @@
-import { colors } from '@0x/react-shared';
+import { colors } from 'ts/utils/colors';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import * as React from 'react';
 

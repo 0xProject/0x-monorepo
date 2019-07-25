@@ -1,6 +1,7 @@
-import { colors, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 export interface IconButtonProps {
     iconName: string;
