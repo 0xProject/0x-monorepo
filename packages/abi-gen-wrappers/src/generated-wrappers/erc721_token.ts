@@ -1314,7 +1314,7 @@ export class ERC721TokenContract extends BaseContract {
         assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             this.address,
             eventName,
             indexFilterValues,
@@ -1330,13 +1330,13 @@ export class ERC721TokenContract extends BaseContract {
      * @param   subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
-        this._subscriptionManager._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        this._subscriptionManager._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -1354,7 +1354,7 @@ export class ERC721TokenContract extends BaseContract {
         assert.doesBelongToStringEnum('eventName', eventName, ERC721TokenEvents);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             this.address,
             eventName,
             blockRange,

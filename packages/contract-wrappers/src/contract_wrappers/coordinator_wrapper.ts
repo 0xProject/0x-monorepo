@@ -35,7 +35,7 @@ export class CoordinatorWrapper {
     public address: string;
     public exchangeAddress: string;
     public registryAddress: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _contractInstance: CoordinatorContract;
     private readonly _registryInstance: CoordinatorRegistryContract;
     private readonly _exchangeInstance: ExchangeContract;

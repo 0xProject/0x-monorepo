@@ -30,7 +30,7 @@ import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
  */
 export class ERC721TokenWrapper {
     public abi: ContractAbi = ERC721Token.compilerOutput.abi;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
     private readonly _blockPollingIntervalMs?: number;
     private readonly _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
@@ -399,7 +399,7 @@ export class ERC721TokenWrapper {
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
@@ -416,13 +416,13 @@ export class ERC721TokenWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._subscriptionManager._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        this._subscriptionManager._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -444,7 +444,7 @@ export class ERC721TokenWrapper {
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedTokenAddress,
             eventName,
             blockRange,

@@ -25,7 +25,7 @@ export class ForwarderWrapper {
     public address: string;
     public zrxTokenAddress: string;
     public etherTokenAddress: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _forwarderContract: ForwarderContract;
 
     /**

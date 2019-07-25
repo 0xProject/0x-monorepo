@@ -14,7 +14,7 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 export class ERC721ProxyWrapper {
     public abi: ContractAbi = ERC721Proxy.compilerOutput.abi;
     public address: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _erc721ProxyContract: ERC721ProxyContract;
     /**
      * Instantiate ERC721ProxyWrapper

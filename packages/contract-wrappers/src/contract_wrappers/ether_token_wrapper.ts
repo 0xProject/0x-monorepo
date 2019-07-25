@@ -19,7 +19,7 @@ import { ERC20TokenWrapper } from './erc20_token_wrapper';
  */
 export class EtherTokenWrapper {
     public abi: ContractAbi = WETH9.compilerOutput.abi;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     private readonly _blockPollingIntervalMs?: number;
     private readonly _etherTokenContractsByAddress: {
@@ -139,7 +139,7 @@ export class EtherTokenWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             blockRange,
@@ -170,7 +170,7 @@ export class EtherTokenWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
@@ -187,13 +187,13 @@ export class EtherTokenWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._subscriptionManager._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        this._subscriptionManager._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];

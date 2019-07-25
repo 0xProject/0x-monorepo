@@ -31,7 +31,7 @@ import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
 export class ERC20TokenWrapper {
     public abi: ContractAbi = ERC20Token.compilerOutput.abi;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _blockPollingIntervalMs?: number;
     private readonly _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;
     private readonly _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
@@ -372,7 +372,7 @@ export class ERC20TokenWrapper {
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const subscriptionToken = this._subscriptionManager._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
@@ -389,13 +389,13 @@ export class ERC20TokenWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._subscriptionManager._unsubscribe(subscriptionToken); // doesn't matter which contract is used
+        this._subscriptionManager.unsubscribe(subscriptionToken); // doesn't matter which contract is used
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        this._subscriptionManager._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -417,7 +417,7 @@ export class ERC20TokenWrapper {
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const logs = await this._subscriptionManager._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedTokenAddress,
             eventName,
             blockRange,

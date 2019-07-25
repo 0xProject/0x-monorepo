@@ -17,7 +17,7 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 export class DutchAuctionWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
     public address: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _dutchAuctionContract: DutchAuctionContract;
     /**
      * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex

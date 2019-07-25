@@ -19,9 +19,9 @@ const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;
 
 export class SubscriptionManager<ContractEventArgs, ContractEvents extends string> {
     public abi: ContractAbi;
-    protected _web3Wrapper: Web3Wrapper;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _filters: { [filterToken: string]: FilterObject };
     private readonly _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
@@ -44,13 +44,13 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    public _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
-            this._unsubscribe(filterToken);
+            this.unsubscribe(filterToken);
         });
     }
-    public _unsubscribe(filterToken: string, err?: Error): void {
+    public unsubscribe(filterToken: string, err?: Error): void {
         if (this._filters[filterToken] === undefined) {
             throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
@@ -64,7 +64,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
             this._stopBlockAndLogStream();
         }
     }
-    public _subscribe<ArgsType extends ContractEventArgs>(
+    public subscribe<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         indexFilterValues: IndexedFilterValues,
@@ -82,7 +82,7 @@ export class SubscriptionManager<ContractEventArgs, ContractEvents extends strin
         this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
         return filterToken;
     }
-    public async _getLogsAsync<ArgsType extends ContractEventArgs>(
+    public async getLogsAsync<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         blockRange: BlockRange,

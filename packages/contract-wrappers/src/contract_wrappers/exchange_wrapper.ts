@@ -48,7 +48,7 @@ export class ExchangeWrapper {
     public abi: ContractAbi = Exchange.compilerOutput.abi;
     public address: string;
     public zrxTokenAddress: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _exchangeContract: ExchangeContract;
     private readonly _blockPollingIntervalMs?: number;
     private readonly _erc721TokenWrapper: ERC721TokenWrapper;

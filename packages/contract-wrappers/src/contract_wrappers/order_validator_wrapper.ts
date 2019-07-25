@@ -17,7 +17,7 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 export class OrderValidatorWrapper {
     public abi: ContractAbi = OrderValidator.compilerOutput.abi;
     public address: string;
-    protected _web3Wrapper: Web3Wrapper;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _orderValidatorContract: OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
