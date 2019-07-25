@@ -38,9 +38,111 @@ except ImportError:
 
 
 
-# pylint: disable=too-many-public-methods
+class PublicAddConstantMethod:
+    """Various interfaces to the publicAddConstant method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the publicAddConstant method."""
+        self.contract.validator.assert_valid(
+            method_name='publicAddConstant',
+            parameter_name='x',
+            argument_value=x,
+        )
+        # safeguard against fractional inputs
+        x = int(x)
+        return (x)
+
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.publicAddConstant(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.publicAddConstant(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class PublicAddOneMethod:
+    """Various interfaces to the publicAddOne method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the publicAddOne method."""
+        self.contract.validator.assert_valid(
+            method_name='publicAddOne',
+            parameter_name='x',
+            argument_value=x,
+        )
+        # safeguard against fractional inputs
+        x = int(x)
+        return (x)
+
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.publicAddOne(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.publicAddOne(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy(BaseContractWrapper):
     """Wrapper class for TestLibDummy Solidity contract."""
+    public_add_constant: PublicAddConstantMethod
+    public_add_one: PublicAddOneMethod
 
     def __init__(
         self,
@@ -67,6 +169,8 @@ class TestLibDummy(BaseContractWrapper):
             private_key=private_key,
         )
 
+        self.public_add_constant = PublicAddConstantMethod(self)
+        self.public_add_one = PublicAddOneMethod(self)
 
     def _get_contract_instance(self, token_address):
         """Get an instance of the smart contract at a specific address.
@@ -75,58 +179,6 @@ class TestLibDummy(BaseContractWrapper):
         """
         return self._contract_instance(
             address=token_address, abi=TestLibDummy.abi()
-        )
-
-    def public_add_constant(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='publicAddConstant',
-            parameter_name='x',
-            argument_value=x,
-        )
-        # safeguard against fractional inputs
-        x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.publicAddConstant(x)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def public_add_one(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='publicAddOne',
-            parameter_name='x',
-            argument_value=x,
-        )
-        # safeguard against fractional inputs
-        x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.publicAddOne(x)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
         )
 
     @staticmethod

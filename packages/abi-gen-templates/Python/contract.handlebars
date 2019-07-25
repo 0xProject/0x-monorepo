@@ -37,10 +37,16 @@ except ImportError:
 
 {{tupleDefinitions ABIString}}
 
+{{#each methods}}
+{{> method_class contractName=../contractName}}
+{{/each}}
 
-# pylint: disable=too-many-public-methods
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
 class {{contractName}}(BaseContractWrapper):
     """Wrapper class for {{contractName}} Solidity contract.{{docBytesIfNecessary ABIString}}"""
+{{#each methods}}
+    {{toPythonIdentifier this.name}}: {{toPythonClassname this.name}}Method
+{{/each}}
 
     def __init__(
         self,
@@ -67,6 +73,9 @@ class {{contractName}}(BaseContractWrapper):
             private_key=private_key,
         )
 
+        {{#each methods}}
+        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(self)
+        {{/each}}
 
     def _get_contract_instance(self, token_address):
         """Get an instance of the smart contract at a specific address.
@@ -76,9 +85,6 @@ class {{contractName}}(BaseContractWrapper):
         return self._contract_instance(
             address=token_address, abi={{contractName}}.abi()
         )
-{{#each methods}}
-{{> call contractName=../contractName}}
-{{/each}}
 {{#each events}}
 {{> event}}
 {{/each}}

@@ -102,13 +102,13 @@ balance:
 
 >>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> tx = zrx_token.approve(
+>>> tx = zrx_token.approve.send_transaction(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
 
->>> tx = weth_token.approve(
+>>> tx = weth_token.approve.send_transaction(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=taker_address),
@@ -166,7 +166,7 @@ too.
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
 ... )
->>> tx_hash = exchange.fill_order(
+>>> tx_hash = exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
@@ -217,7 +217,7 @@ A Maker can cancel an order that has yet to be filled.
 ...     )
 ... )
 
->>> tx_hash = exchange.cancel_order(
+>>> tx_hash = exchange.cancel_order.send_transaction(
 ...     order=order, tx_params=TxParams(from_=maker_address)
 ... )
 
@@ -287,7 +287,7 @@ is an example where the taker fills two orders in one transaction:
 
 Fill order_1 and order_2 together:
 
->>> exchange.batch_fill_orders(
+>>> exchange.batch_fill_orders.send_transaction(
 ...     orders=[order_1, order_2],
 ...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],

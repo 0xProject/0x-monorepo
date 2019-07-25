@@ -80,13 +80,798 @@ class Tuple0xcf8ad995(TypedDict):
     aString: str
 
 
-# pylint: disable=too-many-public-methods
+class SimpleRequireMethod:
+    """Various interfaces to the simpleRequire method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simpleRequire()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simpleRequire()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class AcceptsAnArrayOfBytesMethod:
+    """Various interfaces to the acceptsAnArrayOfBytes method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, a: List[bytes]):
+        """Validate the inputs to the acceptsAnArrayOfBytes method."""
+        self.contract.validator.assert_valid(
+            method_name='acceptsAnArrayOfBytes',
+            parameter_name='a',
+            argument_value=a,
+        )
+        a = [
+            bytes.fromhex(a_element.decode("utf-8"))
+            for a_element in a
+        ]
+        return (a)
+
+    def call(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        a method that accepts an array of bytes
+
+        :param a: the array of bytes being accepted
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.acceptsAnArrayOfBytes(a)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        a method that accepts an array of bytes
+
+        :param a: the array of bytes being accepted
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.acceptsAnArrayOfBytes(a)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class EcrecoverFnMethod:
+    """Various interfaces to the ecrecoverFn method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, _hash: bytes, v: int, r: bytes, s: bytes):
+        """Validate the inputs to the ecrecoverFn method."""
+        self.contract.validator.assert_valid(
+            method_name='ecrecoverFn',
+            parameter_name='hash',
+            argument_value=_hash,
+        )
+        self.contract.validator.assert_valid(
+            method_name='ecrecoverFn',
+            parameter_name='v',
+            argument_value=v,
+        )
+        self.contract.validator.assert_valid(
+            method_name='ecrecoverFn',
+            parameter_name='r',
+            argument_value=r,
+        )
+        self.contract.validator.assert_valid(
+            method_name='ecrecoverFn',
+            parameter_name='s',
+            argument_value=s,
+        )
+        return (_hash, v, r, s)
+
+    def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.ecrecoverFn(_hash, v, r, s)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.ecrecoverFn(_hash, v, r, s)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class AcceptsBytesMethod:
+    """Various interfaces to the acceptsBytes method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, a: bytes):
+        """Validate the inputs to the acceptsBytes method."""
+        self.contract.validator.assert_valid(
+            method_name='acceptsBytes',
+            parameter_name='a',
+            argument_value=a,
+        )
+        a = bytes.fromhex(a.decode("utf-8"))
+        return (a)
+
+    def call(self, a: bytes, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.acceptsBytes(a)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, a: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.acceptsBytes(a)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class RevertWithConstantMethod:
+    """Various interfaces to the revertWithConstant method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.revertWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.revertWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class SimpleRevertMethod:
+    """Various interfaces to the simpleRevert method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simpleRevert()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simpleRevert()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class NestedStructOutputMethod:
+    """Various interfaces to the nestedStructOutput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nestedStructOutput()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nestedStructOutput()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class RequireWithConstantMethod:
+    """Various interfaces to the requireWithConstant method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.requireWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.requireWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class WithAddressInputMethod:
+    """Various interfaces to the withAddressInput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, x: str, a: int, b: int, y: str, c: int):
+        """Validate the inputs to the withAddressInput method."""
+        self.contract.validator.assert_valid(
+            method_name='withAddressInput',
+            parameter_name='x',
+            argument_value=x,
+        )
+        # pylint: disable=W0212
+        x = self.contract._validate_and_checksum_address(x)
+        self.contract.validator.assert_valid(
+            method_name='withAddressInput',
+            parameter_name='a',
+            argument_value=a,
+        )
+        # safeguard against fractional inputs
+        a = int(a)
+        self.contract.validator.assert_valid(
+            method_name='withAddressInput',
+            parameter_name='b',
+            argument_value=b,
+        )
+        # safeguard against fractional inputs
+        b = int(b)
+        self.contract.validator.assert_valid(
+            method_name='withAddressInput',
+            parameter_name='y',
+            argument_value=y,
+        )
+        # pylint: disable=W0212
+        y = self.contract._validate_and_checksum_address(y)
+        self.contract.validator.assert_valid(
+            method_name='withAddressInput',
+            parameter_name='c',
+            argument_value=c,
+        )
+        # safeguard against fractional inputs
+        c = int(c)
+        return (x, a, b, y, c)
+
+    def call(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> str:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.withAddressInput(x, a, b, y, c)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.withAddressInput(x, a, b, y, c)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class StructInputMethod:
+    """Various interfaces to the structInput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
+        """Validate the inputs to the structInput method."""
+        self.contract.validator.assert_valid(
+            method_name='structInput',
+            parameter_name='s',
+            argument_value=s,
+        )
+        return (s)
+
+    def call(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (s) = self.validate_and_normalize_inputs(s)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.structInput(s)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (s) = self.validate_and_normalize_inputs(s)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.structInput(s)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class NonPureMethodMethod:
+    """Various interfaces to the nonPureMethod method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Union[int, Union[HexBytes, bytes]]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+        :returns: the return value of the underlying method.
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nonPureMethod()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nonPureMethod()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class SimplePureFunctionWithInputMethod:
+    """Various interfaces to the simplePureFunctionWithInput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the simplePureFunctionWithInput method."""
+        self.contract.validator.assert_valid(
+            method_name='simplePureFunctionWithInput',
+            parameter_name='x',
+            argument_value=x,
+        )
+        # safeguard against fractional inputs
+        x = int(x)
+        return (x)
+
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simplePureFunctionWithInput(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simplePureFunctionWithInput(x)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class NonPureMethodThatReturnsNothingMethod:
+    """Various interfaces to the nonPureMethodThatReturnsNothing method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+        :returns: the return value of the underlying method.
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nonPureMethodThatReturnsNothing()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+        :param view_only: whether to use transact() or call()
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nonPureMethodThatReturnsNothing()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class SimplePureFunctionMethod:
+    """Various interfaces to the simplePureFunction method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simplePureFunction()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.simplePureFunction()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class NestedStructInputMethod:
+    """Various interfaces to the nestedStructInput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
+        """Validate the inputs to the nestedStructInput method."""
+        self.contract.validator.assert_valid(
+            method_name='nestedStructInput',
+            parameter_name='n',
+            argument_value=n,
+        )
+        return (n)
+
+    def call(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (n) = self.validate_and_normalize_inputs(n)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nestedStructInput(n)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        (n) = self.validate_and_normalize_inputs(n)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.nestedStructInput(n)
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class StructOutputMethod:
+    """Various interfaces to the structOutput method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
+        """Execute underlying, same-named contract method.
+
+        a method that returns a struct
+
+        :param tx_params: transaction parameters
+        :returns: a Struct struct
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.structOutput()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        a method that returns a struct
+
+        :param tx_params: transaction parameters
+        :returns: a Struct struct
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.structOutput()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+class PureFunctionWithConstantMethod:
+    """Various interfaces to the pureFunctionWithConstant method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    def call(self, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.pureFunctionWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+
+        :param tx_params: transaction parameters
+
+        """
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.pureFunctionWithConstant()
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )
+
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AbiGenDummy(BaseContractWrapper):
     """Wrapper class for AbiGenDummy Solidity contract.
 
     All method parameters of type `bytes`:code: should be encoded as UTF-8,
     which can be accomplished via `str.encode("utf_8")`:code:.
     """
+    simple_require: SimpleRequireMethod
+    accepts_an_array_of_bytes: AcceptsAnArrayOfBytesMethod
+    ecrecover_fn: EcrecoverFnMethod
+    accepts_bytes: AcceptsBytesMethod
+    revert_with_constant: RevertWithConstantMethod
+    simple_revert: SimpleRevertMethod
+    nested_struct_output: NestedStructOutputMethod
+    require_with_constant: RequireWithConstantMethod
+    with_address_input: WithAddressInputMethod
+    struct_input: StructInputMethod
+    non_pure_method: NonPureMethodMethod
+    simple_pure_function_with_input: SimplePureFunctionWithInputMethod
+    non_pure_method_that_returns_nothing: NonPureMethodThatReturnsNothingMethod
+    simple_pure_function: SimplePureFunctionMethod
+    nested_struct_input: NestedStructInputMethod
+    struct_output: StructOutputMethod
+    pure_function_with_constant: PureFunctionWithConstantMethod
 
     def __init__(
         self,
@@ -113,6 +898,23 @@ class AbiGenDummy(BaseContractWrapper):
             private_key=private_key,
         )
 
+        self.simple_require = SimpleRequireMethod(self)
+        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(self)
+        self.ecrecover_fn = EcrecoverFnMethod(self)
+        self.accepts_bytes = AcceptsBytesMethod(self)
+        self.revert_with_constant = RevertWithConstantMethod(self)
+        self.simple_revert = SimpleRevertMethod(self)
+        self.nested_struct_output = NestedStructOutputMethod(self)
+        self.require_with_constant = RequireWithConstantMethod(self)
+        self.with_address_input = WithAddressInputMethod(self)
+        self.struct_input = StructInputMethod(self)
+        self.non_pure_method = NonPureMethodMethod(self)
+        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(self)
+        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(self)
+        self.simple_pure_function = SimplePureFunctionMethod(self)
+        self.nested_struct_input = NestedStructInputMethod(self)
+        self.struct_output = StructOutputMethod(self)
+        self.pure_function_with_constant = PureFunctionWithConstantMethod(self)
 
     def _get_contract_instance(self, token_address):
         """Get an instance of the smart contract at a specific address.
@@ -121,419 +923,6 @@ class AbiGenDummy(BaseContractWrapper):
         """
         return self._contract_instance(
             address=token_address, abi=AbiGenDummy.abi()
-        )
-
-    def simple_require(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simpleRequire()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def accepts_an_array_of_bytes(
-        self,
-        a: List[bytes],
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        a method that accepts an array of bytes
-
-        :param a: the array of bytes being accepted
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='acceptsAnArrayOfBytes',
-            parameter_name='a',
-            argument_value=a,
-        )
-        a = [
-            bytes.fromhex(a_element.decode("utf-8"))
-            for a_element in a
-        ]
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.acceptsAnArrayOfBytes(a)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def ecrecover_fn(
-        self,
-        _hash: bytes, v: int, r: bytes, s: bytes,
-        tx_params: Optional[TxParams] = None,
-    ) -> str:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='ecrecoverFn',
-            parameter_name='hash',
-            argument_value=_hash,
-        )
-        self.validator.assert_valid(
-            method_name='ecrecoverFn',
-            parameter_name='v',
-            argument_value=v,
-        )
-        self.validator.assert_valid(
-            method_name='ecrecoverFn',
-            parameter_name='r',
-            argument_value=r,
-        )
-        self.validator.assert_valid(
-            method_name='ecrecoverFn',
-            parameter_name='s',
-            argument_value=s,
-        )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.ecrecoverFn(_hash, v, r, s)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def accepts_bytes(
-        self,
-        a: bytes,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='acceptsBytes',
-            parameter_name='a',
-            argument_value=a,
-        )
-        a = bytes.fromhex(a.decode("utf-8"))
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.acceptsBytes(a)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def revert_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.revertWithConstant()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def simple_revert(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simpleRevert()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def nested_struct_output(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> Tuple0xc9bdd2d5:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nestedStructOutput()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def require_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.requireWithConstant()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def with_address_input(
-        self,
-        x: str, a: int, b: int, y: str, c: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> str:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='withAddressInput',
-            parameter_name='x',
-            argument_value=x,
-        )
-        x = self._validate_and_checksum_address(x)
-        self.validator.assert_valid(
-            method_name='withAddressInput',
-            parameter_name='a',
-            argument_value=a,
-        )
-        # safeguard against fractional inputs
-        a = int(a)
-        self.validator.assert_valid(
-            method_name='withAddressInput',
-            parameter_name='b',
-            argument_value=b,
-        )
-        # safeguard against fractional inputs
-        b = int(b)
-        self.validator.assert_valid(
-            method_name='withAddressInput',
-            parameter_name='y',
-            argument_value=y,
-        )
-        y = self._validate_and_checksum_address(y)
-        self.validator.assert_valid(
-            method_name='withAddressInput',
-            parameter_name='c',
-            argument_value=c,
-        )
-        # safeguard against fractional inputs
-        c = int(c)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.withAddressInput(x, a, b, y, c)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def struct_input(
-        self,
-        s: Tuple0xcf8ad995,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='structInput',
-            parameter_name='s',
-            argument_value=s,
-        )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.structInput(s)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def non_pure_method(
-        self,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[int, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
-
-        :returns: if param `view_only`:code: is `True`:code:, then returns the
-            value returned from the underlying function; else returns the
-            transaction hash.
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nonPureMethod()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=view_only
-        )
-
-    def simple_pure_function_with_input(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='simplePureFunctionWithInput',
-            parameter_name='x',
-            argument_value=x,
-        )
-        # safeguard against fractional inputs
-        x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simplePureFunctionWithInput(x)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def non_pure_method_that_returns_nothing(
-        self,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[None, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
-
-        :returns: if param `view_only`:code: is `True`:code:, then returns the
-            value returned from the underlying function; else returns the
-            transaction hash.
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nonPureMethodThatReturnsNothing()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=view_only
-        )
-
-    def simple_pure_function(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simplePureFunction()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def nested_struct_input(
-        self,
-        n: Tuple0xc9bdd2d5,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        self.validator.assert_valid(
-            method_name='nestedStructInput',
-            parameter_name='n',
-            argument_value=n,
-        )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nestedStructInput(n)
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def struct_output(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> Tuple0xcf8ad995:
-        """Execute underlying, same-named contract method.
-
-        a method that returns a struct
-
-        :param tx_params: transaction parameters
-        :returns: a Struct struct
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.structOutput()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
-
-    def pure_function_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.pureFunctionWithConstant()
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
         )
     def get_an_event_event(
         self, tx_hash: Union[HexBytes, bytes]

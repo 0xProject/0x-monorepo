@@ -1,6 +1,6 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 
-from typing import Any, Dict, Optional, Union
+from typing import Any
 
 from eth_utils import to_checksum_address
 from web3 import Web3
@@ -33,12 +33,7 @@ class ValidatorBase:
 
 
 class BaseContractWrapper:
-    """Base class for wrapping ethereum smart contracts.
-
-    It provides functionality for instantiating a contract instance,
-    calling view functions, and calling functions which require
-    transactions.
-    """
+    """Base class for wrapping an Ethereum smart contract method."""
 
     def __init__(
         self,
@@ -47,9 +42,11 @@ class BaseContractWrapper:
         validator: ValidatorBase = None,
         private_key: str = None,
     ):
-        """Create an instance of BaseContractWrapper.
+        """Instantiate the object.
 
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param provider: Instance of :class:`web3.providers.base.BaseProvider`
+        :param contract_address: Where the contract has been deployed to.
+        :param validator: Used to validate method inputs.
         :param private_key: If specified, transactions will be signed locally,
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
@@ -161,7 +158,3 @@ class BaseContractWrapper:
                 self.contract_address, method
             )
         )
-
-    @staticmethod
-    def abi() -> Dict[Any, Any]:
-        """Return the ABI to the underlying contract."""

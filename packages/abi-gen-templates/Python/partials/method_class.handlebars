@@ -1,0 +1,83 @@
+
+class {{toPythonClassname this.name}}Method:
+    """Various interfaces to the {{this.name}} method."""
+
+    def __init__(self, contract: BaseContractWrapper):
+        """Persist instance data."""
+        self.contract = contract
+
+    {{#if inputs}}
+    def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
+        """Validate the inputs to the {{this.name}} method."""
+        {{#each this.inputs}}
+        self.contract.validator.assert_valid(
+            method_name='{{../name}}',
+            parameter_name='{{name}}',
+            argument_value={{toPythonIdentifier name}},
+        )
+        {{#if (equal type 'address')}}
+        # pylint: disable=W0212
+        {{toPythonIdentifier this.name}} = self.contract._validate_and_checksum_address({{toPythonIdentifier this.name}})
+        {{else if (equal type 'uint256')}}
+        # safeguard against fractional inputs
+        {{toPythonIdentifier this.name}} = int({{toPythonIdentifier this.name}})
+        {{else if (equal type 'bytes')}}
+        {{toPythonIdentifier this.name}} = bytes.fromhex({{toPythonIdentifier this.name}}.decode("utf-8"))
+        {{else if (equal type 'bytes[]')}}
+        {{toPythonIdentifier this.name}} = [
+            bytes.fromhex({{toPythonIdentifier this.name}}_element.decode("utf-8"))
+            for {{toPythonIdentifier this.name}}_element in {{toPythonIdentifier this.name}}
+        ]
+{{/if}}
+{{/each}}
+        return ({{> params }})
+
+    {{/if}}
+    def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> return_type outputs=outputs type='call'~}}:
+        """Execute underlying, same-named contract method.
+{{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
+{{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
+        :param tx_params: transaction parameters
+        {{#if this.constant~}}
+        {{#if this.devdoc.return}}
+{{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
+        {{else}}
+        :returns: the return value of the underlying method.
+        {{/if}}
+        """
+        {{#if inputs}}
+        ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
+        {{/if}}
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.{{this.name}}({{> params}})
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=True
+        )
+
+    def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying, same-named contract method.
+{{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
+{{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
+        :param tx_params: transaction parameters
+        {{#if this.constant~}}
+        {{#if this.devdoc.return}}
+{{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
+        {{else}}
+        :param view_only: whether to use transact() or call()
+        {{/if}}
+        """
+        {{#if inputs}}
+        ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
+        {{/if}}
+        tx_params = super().normalize_tx_params(tx_params)
+        func = self.contract._contract_instance(  # pylint: disable=W0212
+            address=self.contract.contract_address, abi=self.contract.abi()
+        ).functions.{{this.name}}({{> params}})
+        return self.contract._invoke_function_call(  # pylint: disable=W0212
+            func=func,
+            tx_params=tx_params,
+            view_only=False
+        )

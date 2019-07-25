@@ -38,7 +38,7 @@ except ImportError:
 
 
 
-# pylint: disable=too-many-public-methods
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
 class LibDummy(BaseContractWrapper):
     """Wrapper class for LibDummy Solidity contract."""
 

@@ -25,8 +25,8 @@ def test_erc20_wrapper__balance_of(
     weth_instance,  # pylint: disable=redefined-outer-name
 ):
     """Test getting baance of an account for an ERC20 token."""
-    acc1_original_weth_balance = erc20_wrapper.balance_of(accounts[0])
-    acc2_original_weth_balance = erc20_wrapper.balance_of(accounts[1])
+    acc1_original_weth_balance = erc20_wrapper.balance_of.call(accounts[0])
+    acc2_original_weth_balance = erc20_wrapper.balance_of.call(accounts[1])
 
     expected_difference = 1 * 10 ** 18
 
@@ -36,8 +36,8 @@ def test_erc20_wrapper__balance_of(
     weth_instance.functions.deposit().transact(
         {"from": accounts[1], "value": expected_difference}
     )
-    acc1_weth_balance = erc20_wrapper.balance_of(accounts[0])
-    acc2_weth_balance = erc20_wrapper.balance_of(accounts[1])
+    acc1_weth_balance = erc20_wrapper.balance_of.call(accounts[0])
+    acc2_weth_balance = erc20_wrapper.balance_of.call(accounts[1])
 
     assert (
         acc1_weth_balance - acc1_original_weth_balance == expected_difference
@@ -53,21 +53,21 @@ def test_erc20_wrapper__approve(
     erc20_wrapper,  # pylint: disable=redefined-outer-name
 ):
     """Test approving one account to spend balance from another account."""
-    erc20_wrapper.approve(
+    erc20_wrapper.approve.send_transaction(
         erc20_proxy_address,
         MAX_ALLOWANCE,
         tx_params=TxParams(from_=accounts[0]),
     )
-    erc20_wrapper.approve(
+    erc20_wrapper.approve.send_transaction(
         erc20_proxy_address,
         MAX_ALLOWANCE,
         tx_params=TxParams(from_=accounts[1]),
     )
 
-    acc_1_weth_allowance = erc20_wrapper.allowance(
+    acc_1_weth_allowance = erc20_wrapper.allowance.call(
         accounts[0], erc20_proxy_address
     )
-    acc_2_weth_allowance = erc20_wrapper.allowance(
+    acc_2_weth_allowance = erc20_wrapper.allowance.call(
         accounts[1], erc20_proxy_address
     )
 
