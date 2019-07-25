@@ -68,7 +68,7 @@ const Hits: React.FC<IHitsProps> = ({ hits }) => {
 
     return (
         <>
-            {featuredTools.length && (
+            {featuredTools.length > 0 && (
                 <FeaturedToolsWrapper>
                     <Heading asElement="h2" size="default">
                         Featured Tools
