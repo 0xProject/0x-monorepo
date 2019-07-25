@@ -1,7 +1,6 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
-import styled from 'styled-components';
 
 import { Link } from '@0x/react-shared';
 
@@ -10,6 +9,27 @@ import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrap
 
 import { searchIndex } from 'ts/utils/algolia_search';
 
+interface IHit {
+    description: string;
+    difficulty: string;
+    id: number | string;
+    isCommunity?: boolean;
+    isFeatured?: boolean;
+    objectID: string;
+    tags?: string[];
+    textContent: string;
+    title: string;
+    type?: string;
+    url: string;
+    _highlightResult: any;
+    _snippetResult: any;
+}
+interface ISnippetMatchLevels {
+    [index: string]: number;
+}
+
+const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
+
 interface IAutoCompleteProps {
     isHome?: boolean;
     hits?: object[];
@@ -17,16 +37,12 @@ interface IAutoCompleteProps {
     refine?: (value: string) => void;
 }
 
-interface IHitProps {
-    [key: string]: any;
-}
-
 const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits = [], currentRefinement, refine }) => {
     const [value, setValue] = useState<string>('');
 
-    const onChange = (event: IHitProps, { newValue }: IHitProps): void => setValue(newValue);
+    const onChange = (event: React.KeyboardEvent, { newValue }: any): void => setValue(newValue);
 
-    const onSuggestionsFetchRequested = ({ value: newValue }: IHitProps): void => refine(newValue);
+    const onSuggestionsFetchRequested = ({ value: newValue }: any): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
 
@@ -34,24 +50,33 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
     const onSuggestionHighlighted = (): void => {};
 
     // tslint:disable-next-line: no-empty
-    const onSuggestionSelected = (event: IHitProps, { suggestion }: IHitProps): void => {};
+    const onSuggestionSelected = (event: React.MouseEvent, { suggestion }: any): void => {};
 
-    const getSuggestionValue = (hit: IHitProps): string => hit.textContent;
+    const getSuggestionValue = (hit: IHit): string => hit.textContent;
 
-    const renderSuggestion = (hit: IHitProps): React.ReactNode => {
+    const renderSuggestion = (hit: IHit): React.ReactNode => {
+        let attributeToSnippet = 'description';
+
+        const description: string = hit._snippetResult.description.matchLevel;
+        const textContent: string = hit._snippetResult.textContent.matchLevel;
+
+        if (SNIPPET_MATCH_LEVELS[textContent] > SNIPPET_MATCH_LEVELS[description]) {
+            attributeToSnippet = 'textContent';
+        }
+
         return (
             <Link to={hit.url}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
                 <br />
-                <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
+                <Snippet attribute={attributeToSnippet} hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
         );
     };
 
-    const renderSectionTitle = (section: IHitProps): React.ReactNode => {
+    const renderSectionTitle = (section: any): React.ReactNode => {
         const { tools, guides } = searchIndex;
 
-        const titles: { [key: string]: any } = {
+        const titles: { [key: string]: string } = {
             [tools]: 'Tools',
             [guides]: 'Guides',
         };
@@ -62,7 +87,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
         return null;
     };
 
-    const getSectionSuggestions = (section: IHitProps): string => section.hits;
+    const getSectionSuggestions = (section: any): string => section.hits;
 
     const inputProps = {
         placeholder: 'Search docs…',
