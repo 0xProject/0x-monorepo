@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import CircularProgress from 'material-ui/CircularProgress';
 
-import { Hero } from 'ts/components/docs/hero';
+import { Hero } from 'ts/components/docs/layout/hero';
 import { ScrollTopArrow } from 'ts/components/docs/layout/scroll_top_arrow';
 import { SiteWrap } from 'ts/components/docs/layout/siteWrap';
 
