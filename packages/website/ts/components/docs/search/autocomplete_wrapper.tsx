@@ -193,7 +193,9 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
         &--highlighted {
             background: ${colors.backgroundLight};
 
-            h6:first-of-type {
+            .ais-Highlight {
+                position: relative;
+
                 &:before {
                     position: absolute;
                     content: '';
@@ -208,7 +210,6 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
 
         /* Highlight - Text */
         h6 {
-            position: relative;
             display: inline;
             color: ${colors.brandDark};
             font-size: var(--smallHeading);
