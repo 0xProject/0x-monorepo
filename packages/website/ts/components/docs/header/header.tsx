@@ -38,23 +38,23 @@ interface INavItems {
 const navItems: INavItems[] = [
     {
         id: 'core-concepts',
-        url: WebsitePaths.Why,
         text: 'Core Concepts',
+        url: WebsitePaths.DocsCoreConcepts,
     },
     {
         id: 'api-explorer',
-        url: WebsitePaths.AboutMission,
         text: 'API Explorer',
+        url: WebsitePaths.DocsApiExplorer,
     },
     {
         id: 'guides',
-        url: '/docs/guides',
         text: 'Guides',
+        url: WebsitePaths.DocsGuides,
     },
     {
         id: 'tools',
-        url: '/docs/tools',
         text: 'Tools',
+        url: WebsitePaths.DocsTools,
     },
 ];
 

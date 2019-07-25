@@ -442,6 +442,10 @@ export enum WebsitePaths {
     Portal = '/portal',
     Wiki = '/wiki',
     Docs = '/docs',
+    DocsApiExplorer = '/docs/api-explorer',
+    DocsCoreConcepts = '/docs/core-concepts',
+    DocsGuides = '/docs/guides',
+    DocsTools = '/docs/tools',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
     FAQ = '/faq', // tslint:disable-line:enum-naming
