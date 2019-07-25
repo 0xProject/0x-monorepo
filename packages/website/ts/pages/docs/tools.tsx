@@ -15,6 +15,25 @@ import { Separator } from 'ts/components/docs/separator';
 
 import { searchClient, searchIndex } from 'ts/utils/algolia_search';
 
+interface IHitsProps {
+    hits: IHit[];
+}
+interface IHit {
+    description: string;
+    difficulty: string;
+    id: number | string;
+    isCommunity?: boolean;
+    isFeatured?: boolean;
+    objectID: string;
+    tags?: string[];
+    textContent: string;
+    title: string;
+    type?: string;
+    url: string;
+    _highlightResult: any;
+    _snippetResult: any;
+}
+
 export const DocsTools: React.FC = () => {
     return (
         <DocsPageLayout title="Tools">
@@ -31,40 +50,36 @@ export const DocsTools: React.FC = () => {
     );
 };
 
-// @ts-ignore
-const getUniqueContentTypes = hits => {
+function getUniqueContentTypes(hits: IHit[]): string[] {
+    const contentTypes: string[] = [];
     // @ts-ignore
-    const types = [];
-
     for (const hit of hits) {
-        // @ts-ignore
-        if (!types.includes(hit.type)) {
-            types.push(hit.type);
+        if (!contentTypes.includes(hit.type)) {
+            contentTypes.push(hit.type);
         }
     }
 
-    return types;
-};
+    return contentTypes;
+}
 
-// @ts-ignore
-const Hits = ({ hits }) => {
-    const types = getUniqueContentTypes(hits);
-    const featuredLinks = hits.filter((hit: any) => hit.isFeatured);
+const Hits: React.FC<IHitsProps> = ({ hits }) => {
+    const contentTypes = getUniqueContentTypes(hits);
+    const featuredTools = hits.filter((hit: IHit) => hit.isFeatured);
 
     return (
         <>
-            {featuredLinks.length && (
+            {featuredTools.length && (
                 <FeaturedToolsWrapper>
                     <Heading asElement="h2" size="default">
                         Featured Tools
                     </Heading>
-                    {featuredLinks.map((link: any, index: number) => (
-                        <FeatureLink key={`featuredLink-${index}`} {...link} />
+                    {featuredTools.map((hit: IHit, index: number) => (
+                        <FeatureLink key={`featuredLink-${index}`} {...hit} />
                     ))}
                 </FeaturedToolsWrapper>
             )}
 
-            {types.map(type => {
+            {contentTypes.map(type => {
                 const filteredHits = hits.filter((hit: any) => hit.type === type);
 
                 return (
