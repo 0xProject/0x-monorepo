@@ -1,13 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
 
-import { CommunityLinks, ICommunityLinkProps } from 'ts/components/docs/community_links';
-import { GetStartedLink, IGetStartedLinkProps } from 'ts/components/docs/get_started_link';
-import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
-import { IStepLinkProps, StepLinks } from 'ts/components/docs/step_links';
+import { CommunityLinks } from 'ts/components/docs/home/community_links';
+import { MiddleSection } from 'ts/components/docs/home/middle_section';
+import { ShortcutLinks } from 'ts/components/docs/home/shortcut_links';
 
 import { Separator } from 'ts/components/docs/separator';
-import { Heading } from 'ts/components/text';
 
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
@@ -20,53 +17,16 @@ const SEPARATOR_MARGIN = '60px 0';
 export const DocsHome: React.FC = () => {
     return (
         <DocsPageLayout isHome={true} title="0x Docs">
-            <ShortcutsWrapper>
-                {shortcuts.map((shortcut, index) => (
-                    <ShortcutLink key={`shortcut-${index}`} {...shortcut} />
-                ))}
-            </ShortcutsWrapper>
+            <ShortcutLinks links={shortcutLinks} />
             <Separator margin={SEPARATOR_MARGIN} />
-            <GetStartedWrapper>
-                <div>
-                    <Heading size="default">Get Started</Heading>
-                    {getStartedLinks.map((link, index) => (
-                        <GetStartedLink key={`getStarted-${index}`} {...link} />
-                    ))}
-                </div>
-                <div>
-                    <Heading size="default">Useful Links</Heading>
-                    <StepLinks links={usefulLinks} />
-                </div>
-            </GetStartedWrapper>
+            <MiddleSection getStartedLinks={getStartedLinks} usefulLinks={usefulLinks} />
             <Separator margin={SEPARATOR_MARGIN} />
             <CommunityLinks links={communityLinks} />
         </DocsPageLayout>
     );
 };
 
-const ShortcutsWrapper = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-
-    @media (max-width: 500px) {
-        grid-template-columns: 1fr;
-    }
-`;
-
-const GetStartedWrapper = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-column-gap: 70px;
-    grid-row-gap: 30px;
-
-    @media (max-width: 900px) {
-        grid-template-columns: 1fr;
-    }
-`;
-
-const shortcuts: IShortcutLinkProps[] = [
+const shortcutLinks = [
     {
         heading: 'Core Concepts',
         description: 'Understand the fundamentals of 0x development',
@@ -93,7 +53,7 @@ const shortcuts: IShortcutLinkProps[] = [
     },
 ];
 
-const usefulLinks: IStepLinkProps[] = [
+const usefulLinks = [
     {
         title: 'Core Concepts',
         url: WebsitePaths.DocsCoreConcepts,
@@ -112,7 +72,7 @@ const usefulLinks: IStepLinkProps[] = [
     },
 ];
 
-const getStartedLinks: IGetStartedLinkProps[] = [
+const getStartedLinks = [
     {
         heading: 'Launch an exchange in 30 seconds',
         description: 'Learn how to spin up an exchange or marketplace in seconds.',
@@ -135,7 +95,7 @@ const getStartedLinks: IGetStartedLinkProps[] = [
     },
 ];
 
-const communityLinks: ICommunityLinkProps[] = [
+const communityLinks = [
     {
         heading: 'Discord',
         description: 'Chat with the 0x community',
