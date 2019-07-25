@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
+
+import { fadeIn } from 'ts/style/keyframes';
 
 import { errorReporter } from 'ts/utils/error_reporter';
 import { utils } from 'ts/utils/utils';
@@ -129,12 +131,6 @@ const SubmitButton = styled.button`
     top: 0;
     overflow: hidden;
     outline: 0;
-`;
-
-// prettier-ignore
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
 `;
 
 const SuccessText = styled.p<IArrowProps>`
