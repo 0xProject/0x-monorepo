@@ -5,7 +5,9 @@ import { analytics } from 'ts/utils/analytics';
 
 import { Button } from 'ts/components/button';
 import { Paragraph } from 'ts/components/text';
+
 import { colors } from 'ts/style/colors';
+import { fadeIn } from 'ts/style/keyframes';
 
 interface IHelpfulCtaProps {
     page: string;
@@ -76,12 +78,6 @@ const CtaText = styled(Paragraph)`
     @media (max-width: 500px) {
         margin-bottom: 12px;
     }
-`;
-
-// prettier-ignore
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
 `;
 
 const CtaTextAnimated = styled(CtaText)`

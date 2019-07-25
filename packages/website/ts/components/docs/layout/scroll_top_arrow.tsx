@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { animateScroll } from 'react-scroll';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import debounce from 'lodash/debounce';
 
 import { colors } from 'ts/style/colors';
+import { fadeIn, fadeOut } from 'ts/style/keyframes';
 
 export const ScrollTopArrow = () => {
     const [scrollY, setScrollY] = useState<number>(window.scrollY);
@@ -27,16 +28,6 @@ export const ScrollTopArrow = () => {
         </ArrowWrapper>
     );
 };
-
-const fadeIn = keyframes`
-    from { opacity: 0; }
-    to { opacity: 1; }
-`;
-
-const fadeOut = keyframes`
-    from { opacity: 1; }
-    to { opacity: 0; }
-`;
 
 const ArrowWrapper = styled.button<{ isArrowVisible: boolean }>`
     visibility: ${props => (props.isArrowVisible ? 'visible' : 'hidden')};
