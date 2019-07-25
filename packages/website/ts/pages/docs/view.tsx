@@ -19,6 +19,7 @@ import { Columns } from 'ts/components/docs/layout/columns';
 import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
+import { NewsletterWidget } from 'ts/components/docs/newsletter_widget';
 import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
@@ -74,6 +75,7 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
                                 // @ts-ignore */}
                         <Component />
                     </MDXProvider>
+                    <NewsletterWidget />
                     <HelpCallout />
                     <HelpfulCta page={page} />
                 </ContentWrapper>
