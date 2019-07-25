@@ -1,6 +1,6 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 from eth_utils import to_checksum_address
 from web3 import Web3
@@ -161,3 +161,7 @@ class BaseContractWrapper:
                 self.contract_address, method
             )
         )
+
+    @staticmethod
+    def abi() -> Dict[Any, Any]:
+        """Return the ABI to the underlying contract."""
