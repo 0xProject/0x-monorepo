@@ -2,7 +2,7 @@ import React from 'react';
 import { connectHits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
-import { FeatureLink } from 'ts/components/docs/feature_link';
+import { FeatureLink } from 'ts/components/docs/tools/feature_link';
 
 import { Resource } from 'ts/components/docs/resource/resource';
 import { Filters } from 'ts/components/docs/sidebar/filters';

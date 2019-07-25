@@ -6,11 +6,23 @@ import { Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
+interface IGetStartedLinksProps {
+    links: IGetStartedLinkProps[];
+}
+
 export interface IGetStartedLinkProps {
     heading: string;
     description: string;
     url: string;
 }
+
+export const GetStartedLinks: React.FC<IGetStartedLinksProps> = ({ links }) => (
+    <>
+        {links.map((link, index) => (
+            <GetStartedLink key={`getStartedLink-${index}`} {...link} />
+        ))}
+    </>
+);
 
 export const GetStartedLink: React.FC<IGetStartedLinkProps> = props => (
     <>

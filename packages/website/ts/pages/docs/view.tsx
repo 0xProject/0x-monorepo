@@ -10,6 +10,7 @@ import { HelpCallout } from 'ts/components/docs/mdx/help_callout';
 import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
 import { InlineCode } from 'ts/components/docs/mdx/inline_code';
 import { InlineLink } from 'ts/components/docs/mdx/inline_link';
+import { NewsletterWidget } from 'ts/components/docs/mdx/newsletter_widget';
 import { Notification } from 'ts/components/docs/mdx/notification';
 import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
 import { Table } from 'ts/components/docs/mdx/table';
@@ -19,7 +20,6 @@ import { Columns } from 'ts/components/docs/layout/columns';
 import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
-import { NewsletterWidget } from 'ts/components/docs/newsletter_widget';
 import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
