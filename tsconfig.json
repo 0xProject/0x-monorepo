@@ -50,7 +50,6 @@
         { "path": "./packages/monorepo-scripts" },
         { "path": "./packages/order-utils" },
         { "path": "./packages/order-watcher" },
-        { "path": "./packages/react-shared" },
         { "path": "./packages/sol-compiler" },
         { "path": "./packages/sol-coverage" },
         { "path": "./packages/sol-profiler" },
