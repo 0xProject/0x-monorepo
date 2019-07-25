@@ -16,8 +16,7 @@ class {{toPythonClassname this.name}}Method:
             argument_value={{toPythonIdentifier name}},
         )
         {{#if (equal type 'address')}}
-        # pylint: disable=W0212
-        {{toPythonIdentifier this.name}} = self.contract._validate_and_checksum_address({{toPythonIdentifier this.name}})
+        {{toPythonIdentifier this.name}} = self.contract.validate_and_checksum_address({{toPythonIdentifier this.name}})
         {{else if (equal type 'uint256')}}
         # safeguard against fractional inputs
         {{toPythonIdentifier this.name}} = int({{toPythonIdentifier this.name}})
@@ -48,14 +47,8 @@ class {{toPythonClassname this.name}}Method:
         {{#if inputs}}
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.{{this.name}}({{> params}})
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.{{this.name}}({{> params}})
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
 
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -73,11 +66,5 @@ class {{toPythonClassname this.name}}Method:
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.{{this.name}}({{> params}})
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=False
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.{{this.name}}({{> params}})
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)

@@ -73,7 +73,7 @@ class LibDummy(BaseContractWrapper):
 
         :returns: contract object
         """
-        return self._contract_instance(
+        return self.contract_instance(
             address=token_address, abi=LibDummy.abi()
         )
 

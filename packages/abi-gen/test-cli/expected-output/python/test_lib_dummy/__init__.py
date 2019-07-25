@@ -63,14 +63,8 @@ class PublicAddConstantMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.publicAddConstant(x)
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -79,14 +73,8 @@ class PublicAddConstantMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.publicAddConstant(x)
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=False
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)
 
 class PublicAddOneMethod:
     """Various interfaces to the publicAddOne method."""
@@ -113,14 +101,8 @@ class PublicAddOneMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.publicAddOne(x)
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -129,14 +111,8 @@ class PublicAddOneMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract._contract_instance(  # pylint: disable=W0212
-            address=self.contract.contract_address, abi=self.contract.abi()
-        ).functions.publicAddOne(x)
-        return self.contract._invoke_function_call(  # pylint: disable=W0212
-            func=func,
-            tx_params=tx_params,
-            view_only=False
-        )
+        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy(BaseContractWrapper):
@@ -177,7 +153,7 @@ class TestLibDummy(BaseContractWrapper):
 
         :returns: contract object
         """
-        return self._contract_instance(
+        return self.contract_instance(
             address=token_address, abi=TestLibDummy.abi()
         )
 

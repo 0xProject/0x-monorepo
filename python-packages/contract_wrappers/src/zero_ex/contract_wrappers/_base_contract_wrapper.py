@@ -55,7 +55,7 @@ class BaseContractWrapper:
         self._private_key = private_key
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
-        self.contract_address = self._validate_and_checksum_address(
+        self.contract_address = self.validate_and_checksum_address(
             contract_address
         )
         if validator is None:
@@ -78,7 +78,7 @@ class BaseContractWrapper:
                 )
                 self._can_send_tx = True
 
-    def _contract_instance(self, address: str, abi: dict):
+    def contract_instance(self, address: str, abi: dict):
         """Get a contract instance.
 
         :param address: string address of contract
@@ -90,12 +90,14 @@ class BaseContractWrapper:
             address=to_checksum_address(address), abi=abi
         )
 
-    def _validate_and_checksum_address(self, address: str):
+    def validate_and_checksum_address(self, address: str):
+        """Validate the given address, and return it's checksum address."""
         if not self._web3.isAddress(address):
             raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
 
-    def _invoke_function_call(self, func, tx_params, view_only):
+    def invoke_function_call(self, func, tx_params, view_only):
+        """Invoke the given contract method."""
         if view_only:
             return func.call()
         if not self._can_send_tx:
@@ -109,7 +111,7 @@ class BaseContractWrapper:
             tx_params.from_ = (
                 self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
             )
-        tx_params.from_ = self._validate_and_checksum_address(tx_params.from_)
+        tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
         if self._private_key:
             res = self._sign_and_send_raw_direct(func, tx_params)
         else:
@@ -143,14 +145,14 @@ class BaseContractWrapper:
 
         :returns: str of transaction hash
         """
-        contract_instance = self._contract_instance(
+        contract_instance = self.contract_instance(
             address=self.contract_address, abi=abi
         )
         if args is None:
             args = []
         if hasattr(contract_instance.functions, method):
             func = getattr(contract_instance.functions, method)(*args)
-            return self._invoke_function_call(
+            return self.invoke_function_call(
                 func=func, tx_params=tx_params, view_only=view_only
             )
         raise Exception(
