@@ -25,6 +25,8 @@ import {
     WalletContract,
 } from '../src';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -59,23 +61,27 @@ describe('MixinSignatureValidator', () => {
             artifacts.TestSignatureValidator,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         testWallet = await WalletContract.deployFrom0xArtifactAsync(
             artifacts.Wallet,
             provider,
             txDefaults,
+            dependencyArtifacts,
             signerAddress,
         );
         testValidator = await ValidatorContract.deployFrom0xArtifactAsync(
             artifacts.Validator,
             provider,
             txDefaults,
+            dependencyArtifacts,
             signerAddress,
         );
         maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
             artifacts.TestStaticCallReceiver,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(

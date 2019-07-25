@@ -29,6 +29,8 @@ import {
     TestExchangeInternalsContract,
 } from '../src';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
 const expect = chai.expect;
@@ -118,6 +120,7 @@ describe('matchOrders', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            dependencyArtifacts,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
@@ -141,6 +144,7 @@ describe('matchOrders', () => {
             artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
+            dependencyArtifacts,
             exchange.address,
         );
 
@@ -175,6 +179,7 @@ describe('matchOrders', () => {
             artifacts.TestExchangeInternals,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
     });
     beforeEach(async () => {

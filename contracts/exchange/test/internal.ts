@@ -18,6 +18,8 @@ import * as _ from 'lodash';
 
 import { artifacts, TestExchangeInternalsContract } from '../src';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 chaiSetup.configure();
 const expect = chai.expect;
 
@@ -65,6 +67,7 @@ describe('Exchange core internal functions', () => {
             artifacts.TestExchangeInternals,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         overflowErrorForSendTransaction = new Error(
             await getRevertReasonOrErrorMessageForSendTransactionAsync(RevertReason.Uint256Overflow),
