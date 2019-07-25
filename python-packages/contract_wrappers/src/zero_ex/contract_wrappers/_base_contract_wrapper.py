@@ -125,38 +125,3 @@ class BaseContractWrapper:
         )
         return self._web3_eth.sendRawTransaction(signed_tx.rawTransaction)
 
-    # pylint: disable=too-many-arguments
-    def execute_method(
-        self,
-        abi: dict,
-        method: str,
-        args: Optional[Union[list, tuple]] = None,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> str:
-        """Execute the method on a contract instance.
-
-        :param abi: dict of contract ABI
-        :param method: string name of method to call
-        :param args: default None, list or tuple of arguments for the method
-        :param tx_params: default None, :class:`TxParams` transaction params
-        :param view_only: default False, boolean of whether the transaction
-            should only be validated.
-
-        :returns: str of transaction hash
-        """
-        contract_instance = self.contract_instance(
-            address=self.contract_address, abi=abi
-        )
-        if args is None:
-            args = []
-        if hasattr(contract_instance.functions, method):
-            func = getattr(contract_instance.functions, method)(*args)
-            return self.invoke_function_call(
-                func=func, tx_params=tx_params, view_only=view_only
-            )
-        raise Exception(
-            "No method {} found on contract {}.".format(
-                self.contract_address, method
-            )
-        )

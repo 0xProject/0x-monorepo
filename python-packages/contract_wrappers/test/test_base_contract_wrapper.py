@@ -1,10 +1,8 @@
 """Tests for :class:`BaseContractWrapper`."""
 
 import pytest
-from eth_utils import to_checksum_address
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-from zero_ex.contract_artifacts import abi_by_name
 from zero_ex.contract_wrappers._base_contract_wrapper import (
     BaseContractWrapper,
 )
@@ -17,32 +15,3 @@ def contract_wrapper(ganache_provider):
         provider=ganache_provider,
         contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].ether_token,
     )
-
-
-def test_contract_wrapper__execute_method(
-    accounts,
-    contract_wrapper,  # pylint: disable=redefined-outer-name
-    erc20_proxy_address,
-):
-    """Test :function:`BaseContractWrapper.execute` method."""
-    acc1_allowance = contract_wrapper.execute_method(
-        abi=abi_by_name("WETH9"),
-        method="allowance",
-        view_only=True,
-        args=(
-            to_checksum_address(accounts[3]),
-            to_checksum_address(erc20_proxy_address),
-        ),
-    )
-    assert acc1_allowance == 0
-
-    with pytest.raises(Exception):
-        contract_wrapper.execute_method(
-            abi=abi_by_name("WETH9"),
-            method="send",
-            view_only=True,
-            args=[
-                to_checksum_address(accounts[3]),
-                to_checksum_address(erc20_proxy_address),
-            ],
-        )
