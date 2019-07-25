@@ -58,7 +58,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = params;
             args = [orders, takerAssetFillAmount, signatures];
         }
-        const calldataHexString = abiEncoder.encode(args);
+        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
         return {
             calldataHexString,
             methodAbi,

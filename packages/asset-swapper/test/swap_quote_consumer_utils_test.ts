@@ -1,3 +1,4 @@
+import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
@@ -7,14 +8,14 @@ import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
+import { SwapQuote, SwapQuoteConsumer } from '../src';
+import { ConsumerType } from '../src/types';
+import { swapQuoteConsumerUtils } from '../src/utils/swap_quote_consumer_utils';
+
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
 import { getFullyFillableSwapQuoteWithNoFees, getSignedOrdersWithNoFeesAsync } from './utils/swap_quote';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
-import { SwapQuote, SwapQuoteConsumer } from '../src';
-import { ContractWrappers, ContractAddresses } from '@0x/contract-wrappers';
-import { swapQuoteConsumerUtils } from '../src/utils/swap_quote_consumer_utils';
-import { ConsumerType } from '../src/types';
 
 chaiSetup.configure();
 const expect = chai.expect;

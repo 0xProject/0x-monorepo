@@ -84,7 +84,7 @@ export const swapQuoteConsumerUtils = {
             return optimizedOrder;
         });
     },
-    async getConsumerForSwapQuoteAsync(
+    async getConsumerTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
         provider: Provider,
