@@ -35,4 +35,12 @@ const NewsletterSignupWrapper = styled.a`
     flex-direction: column;
     text-align: center;
     margin-bottom: 1.875rem;
+
+    @media (max-width: 768px) {
+        padding: 40px 80px 50px;
+    }
+
+    @media (max-width: 425px) {
+        padding: 40px 20px 30px;
+    }
 `;
