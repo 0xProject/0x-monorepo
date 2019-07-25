@@ -80,12 +80,7 @@ export const getFullyFillableSwapQuoteWithFees = (
     feeOrders: SignedOrder[],
     operation: MarketOperation,
 ) => {
-    const swapQuote = getFullyFillableSwapQuoteWithNoFees(
-        makerAssetData,
-        takerAssetData,
-        orders,
-        operation,
-    );
+    const swapQuote = getFullyFillableSwapQuoteWithNoFees(makerAssetData, takerAssetData, orders, operation);
     swapQuote.feeOrders = feeOrders;
     const totalFeeTakerTokenAmount = _.reduce(
         feeOrders,
@@ -95,8 +90,12 @@ export const getFullyFillableSwapQuoteWithFees = (
     // Adds fees to the SwapQuoteInfos assuming all feeOrders will be filled
     swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount = totalFeeTakerTokenAmount;
     swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount = totalFeeTakerTokenAmount;
-    swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount = swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount.plus(totalFeeTakerTokenAmount);
-    swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount = swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount.plus(totalFeeTakerTokenAmount);
+    swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount = swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount.plus(
+        totalFeeTakerTokenAmount,
+    );
+    swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount = swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount.plus(
+        totalFeeTakerTokenAmount,
+    );
     return swapQuote;
 };
 

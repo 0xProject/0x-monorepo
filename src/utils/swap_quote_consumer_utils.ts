@@ -6,13 +6,9 @@ import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
-import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
 import {
     ConsumerType,
-    SmartContractParams,
     SwapQuote,
-    SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
