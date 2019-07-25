@@ -16,7 +16,7 @@ export interface ICommunityLinkProps {
 }
 
 export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
-    <CommunityLinkWrapper to={props.url}>
+    <CommunityLinkWrapper to={props.url} shouldOpenInNewTab={true}>
         <CommunityIcon color={colors.brandLight} name={props.icon} margin={[0, 0, 24, 0]} />
         <Heading size="small" marginBottom="8px">
             {props.heading}
