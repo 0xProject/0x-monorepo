@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-import { CommunityLink, ICommunityLinkProps } from 'ts/components/docs/community_link';
+import { CommunityLinks, ICommunityLinkProps } from 'ts/components/docs/community_links';
 import { GetStartedLink, IGetStartedLinkProps } from 'ts/components/docs/get_started_link';
 import { IShortcutLinkProps, ShortcutLink } from 'ts/components/docs/shortcut_link';
 import { IStepLinkProps, StepLinks } from 'ts/components/docs/step_links';
@@ -37,11 +37,7 @@ export const DocsHome: React.FC = () => {
                 </div>
             </GetStartedWrapper>
             <Separator margin={SEPARATOR_MARGIN} />
-            <CommunityWrapper>
-                {communityShortcuts.map((shortcut, index) => (
-                    <CommunityLink key={`communityLink-${index}`} {...shortcut} />
-                ))}
-            </CommunityWrapper>
+            <CommunityLinks links={communityLinks} />
         </DocsPageLayout>
     );
 };
@@ -64,17 +60,6 @@ const GetStartedWrapper = styled.div`
     grid-row-gap: 30px;
 
     @media (max-width: 900px) {
-        grid-template-columns: 1fr;
-    }
-`;
-
-const CommunityWrapper = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-column-gap: 30px;
-    grid-row-gap: 30px;
-
-    @media (max-width: 768px) {
         grid-template-columns: 1fr;
     }
 `;
@@ -148,7 +133,7 @@ const getStartedLinks: IGetStartedLinkProps[] = [
     },
 ];
 
-const communityShortcuts: ICommunityLinkProps[] = [
+const communityLinks: ICommunityLinkProps[] = [
     {
         heading: 'Discord',
         description: 'Chat with the 0x community',

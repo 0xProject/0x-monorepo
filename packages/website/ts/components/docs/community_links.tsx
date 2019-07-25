@@ -15,6 +15,20 @@ export interface ICommunityLinkProps {
     url: string;
 }
 
+interface ICommunityLinksProps {
+    links: ICommunityLinkProps[];
+}
+
+export const CommunityLinks: React.FC<ICommunityLinksProps> = ({ links }) => {
+    return (
+        <CommunityLinksWrapper>
+            {links.map((link, index) => (
+                <CommunityLink key={`communityLink-${index}`} {...link} />
+            ))}
+        </CommunityLinksWrapper>
+    );
+};
+
 export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
     <CommunityLinkWrapper to={props.url} shouldOpenInNewTab={true}>
         <CommunityIcon color={colors.brandLight} name={props.icon} margin={[0, 0, 24, 0]} />
@@ -26,6 +40,17 @@ export const CommunityLink: React.FC<ICommunityLinkProps> = props => (
         </Paragraph>
     </CommunityLinkWrapper>
 );
+
+const CommunityLinksWrapper = styled.div`
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 30px;
+    grid-row-gap: 30px;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
+`;
 
 const CommunityLinkWrapper = styled(Link)`
     background-color: ${colors.backgroundLight};
