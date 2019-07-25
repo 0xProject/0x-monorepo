@@ -1,5 +1,5 @@
 import React from 'react';
-import { Hits, InstantSearch } from 'react-instantsearch-dom';
+import { connectHits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
 import { FeatureLink } from 'ts/components/docs/feature_link';
@@ -23,48 +23,89 @@ export const DocsTools: React.FC = () => {
                     <Filters filters={filters} />
                     <Separator />
                     <ContentWrapper>
-                        <Hits hitComponent={Resource} />
-
-                        {/* <FeaturedToolsWrapper>
-                                <Heading asElement="h2" size="default">
-                                    Featured Tools
-                                </Heading>
-                                {featuredLinks.map((link, index) => (
-                                    <FeatureLink
-                                        key={`featuredLink-${index}`}
-                                        heading={link.heading}
-                                        description={link.description}
-                                        icon={link.icon}
-                                        url={link.url}
-                                    />
-                                ))}
-                            </FeaturedToolsWrapper> */}
-
-                        {/* <ResourcesWrapper>
-                                <Heading asElement="h2" size="default">
-                                    Docker Images
-                                </Heading>
-
-                                {resources.map((resource, index) => (
-                                    <Resource key={`resource-${index}`} {...resource} />
-                                ))}
-                            </ResourcesWrapper> */}
-                        {/* 
-                            <ResourcesWrapper>
-                                <Heading asElement="h2" size="default">
-                                    TypeScript Libraries
-                                </Heading>
-
-                                {resources.map((resource, index) => (
-                                    <Resource key={`resource-${index}`} {...resource} />
-                                ))}
-                            </ResourcesWrapper> */}
+                        {/* <Hits hitComponent={Resource} /> */} <CustomHits />
                     </ContentWrapper>
                 </Columns>
             </InstantSearch>
         </DocsPageLayout>
     );
 };
+
+// @ts-ignore
+const getUniqueContentTypes = hits => {
+    // @ts-ignore
+    const types = [];
+
+    for (const hit of hits) {
+        // @ts-ignore
+        if (!types.includes(hit.type)) {
+            types.push(hit.type);
+        }
+    }
+
+    return types;
+};
+
+// @ts-ignore
+const Hits = ({ hits }) => {
+    const types = getUniqueContentTypes(hits);
+
+    console.log('types', types);
+    return (
+        <>
+            {types.map(type => {
+                const filteredHits = hits.filter((hit: any) => hit.type === type);
+
+                return (
+                    <ResourcesWrapper key={type}>
+                        <Heading asElement="h2" size="default">
+                            {type}
+                        </Heading>
+                        {filteredHits.map((hit: any, index: number) => (
+                            <Resource key={`resource-${index}`} hit={hit} />
+                        ))}
+                    </ResourcesWrapper>
+                );
+            })}
+            {/* <FeaturedToolsWrapper>
+                <Heading asElement="h2" size="default">
+                    Featured Tools
+                </Heading>
+                {featuredLinks.map((link, index) => (
+                    <FeatureLink
+                        key={`featuredLink-${index}`}
+                        heading={link.heading}
+                        description={link.description}
+                        icon={link.icon}
+                        url={link.url}
+                    />
+                ))}
+            </FeaturedToolsWrapper>
+
+            <ResourcesWrapper>
+                <Heading asElement="h2" size="default">
+                    Docker Images
+                </Heading>
+
+                {resources.map((resource, index) => (
+                    <Resource key={`resource-${index}`} {...resource} />
+                ))}
+            </ResourcesWrapper>
+
+            <ResourcesWrapper>
+                <Heading asElement="h2" size="default">
+                    TypeScript Libraries
+                </Heading>
+
+                {resources.map((resource, index) => (
+                    <Resource key={`resource-${index}`} {...resource} />
+                ))}
+            </ResourcesWrapper> */}
+        </>
+    );
+};
+
+const CustomHits = connectHits(Hits);
 
 const FeaturedToolsWrapper = styled.div`
     margin-bottom: 50px;
