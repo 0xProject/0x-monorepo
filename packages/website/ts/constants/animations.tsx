@@ -1,6 +1,6 @@
 import { css, keyframes } from 'styled-components';
 
-export const fadeIn = keyframes`
+const fadeInUp = keyframes`
     0% {
         transform: translateY(10px);
         opacity: 0;
@@ -14,5 +14,5 @@ export const fadeIn = keyframes`
 export const addFadeInAnimation = (duration: string = '0.5s', delay: string = '0s') => css`
     opacity: 0;
     transform: translateY(10px);
-    animation: ${fadeIn} ${duration} ${delay} forwards;
+    animation: ${fadeInUp} ${duration} ${delay} forwards;
 `;
