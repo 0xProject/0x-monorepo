@@ -1,6 +1,6 @@
-import { colors } from 'ts/utils/colors';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 export interface QuestionProps {
     prompt: string;

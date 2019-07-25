@@ -1,5 +1,5 @@
-import { Link } from 'ts/components/documentation/shared/link';
 import * as React from 'react';
+import { Link } from 'ts/components/documentation/shared/link';
 import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
 import { Styles } from 'ts/types';

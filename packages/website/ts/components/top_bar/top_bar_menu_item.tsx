@@ -1,6 +1,6 @@
-import { Link } from 'ts/components/documentation/shared/link';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { Link } from 'ts/components/documentation/shared/link';
 import { colors } from 'ts/style/colors';
 
 import { CallToAction } from 'ts/components/ui/button';

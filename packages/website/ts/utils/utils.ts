@@ -528,4 +528,4 @@ export const utils = {
         const etherScanPrefix = networkName === Networks.Mainnet ? '' : `${networkName.toLowerCase()}.`;
         return `https://${etherScanPrefix}etherscan.io/${suffix}/${addressOrTxHash}`;
     },
-};
+}; // tslint:disable:max-file-line-count

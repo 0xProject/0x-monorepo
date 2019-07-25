@@ -1,8 +1,8 @@
-import { Link } from 'ts/components/documentation/shared/link';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Link } from 'ts/components/documentation/shared/link';
 import { colors } from 'ts/style/colors';
 
 import { Blockchain } from 'ts/blockchain';
