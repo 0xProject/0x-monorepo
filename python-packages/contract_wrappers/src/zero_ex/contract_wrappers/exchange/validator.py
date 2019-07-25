@@ -6,11 +6,11 @@ from web3.providers.base import BaseProvider
 
 from zero_ex import json_schemas
 
-from . import ExchangeValidatorBase
+from .._base_contract_wrapper import ValidatorBase
 from .types import order_to_jsdict
 
 
-class ExchangeValidator(ExchangeValidatorBase):
+class ExchangeValidator(ValidatorBase):
     """Validate inputs to Exchange methods."""
 
     def __init__(

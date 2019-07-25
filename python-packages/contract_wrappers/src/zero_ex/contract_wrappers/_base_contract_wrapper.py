@@ -1,12 +1,35 @@
 """Base wrapper class for accessing ethereum smart contracts."""
 
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 from eth_utils import to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
 
 from .tx_params import TxParams
+
+
+class ValidatorBase:
+    """Base class for validating inputs to methods."""
+
+    def __init__(
+        self,
+        provider: BaseProvider,
+        contract_address: str,
+        private_key: str = None,
+    ):
+        """Initialize the instance."""
+
+    def assert_valid(
+        self, method_name: str, parameter_name: str, argument_value: Any
+    ):
+        """Raise an exception if method input is not valid.
+
+        :param method_name: Name of the method whose input is to be validated.
+        :param parameter_name: Name of the parameter whose input is to be
+            validated.
+        :param argument_value: Value of argument to parameter to be validated.
+        """
 
 
 class BaseContractWrapper:
@@ -21,6 +44,7 @@ class BaseContractWrapper:
         self,
         provider: BaseProvider,
         contract_address: str,
+        validator: ValidatorBase = None,
         private_key: str = None,
     ):
         """Create an instance of BaseContractWrapper.
@@ -37,6 +61,9 @@ class BaseContractWrapper:
         self.contract_address = self._validate_and_checksum_address(
             contract_address
         )
+        if validator is None:
+            validator = ValidatorBase(provider, contract_address, private_key)
+        self.validator = validator
 
         self._can_send_tx = False
         if self._web3_eth.defaultAccount or self._web3_eth.accounts:

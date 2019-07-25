@@ -16,30 +16,8 @@ from hexbytes import HexBytes
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper
+from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper, ValidatorBase
 from zero_ex.contract_wrappers.tx_params import TxParams
-
-
-class AbiGenDummyValidatorBase:
-    """Base class for validating inputs to AbiGenDummy methods."""
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        private_key: str = None,
-    ):
-        """Initialize the instance."""
-
-    def assert_valid(
-        self, method_name: str, parameter_name: str, argument_value: Any
-    ):
-        """Raise an exception if method input is not valid.
-
-        :param method_name: Name of the method whose input is to be validated.
-        :param parameter_name: Name of the parameter whose input is to be
-            validated.
-        :param argument_value: Value of argument to parameter to be validated.
-        """
 
 
 # Try to import a custom validator class definition; if there isn't one,
@@ -53,7 +31,7 @@ try:
     )
 except ImportError:
 
-    class AbiGenDummyValidator(AbiGenDummyValidatorBase):  # type: ignore
+    class AbiGenDummyValidator(ValidatorBase):  # type: ignore
         """No-op input validator."""
 
 
@@ -125,16 +103,16 @@ class AbiGenDummy(BaseContractWrapper):
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
         """
-        super().__init__(
-            provider=provider,
-            contract_address=contract_address,
-            private_key=private_key,
-        )
-
         if not validator:
             validator = AbiGenDummyValidator(provider, contract_address, private_key)
 
-        self.validator = validator
+        super().__init__(
+            provider=provider,
+            contract_address=contract_address,
+            validator=validator,
+            private_key=private_key,
+        )
+
 
     def _get_contract_instance(self, token_address):
         """Get an instance of the smart contract at a specific address.
