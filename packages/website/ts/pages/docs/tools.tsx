@@ -23,7 +23,7 @@ export const DocsTools: React.FC = () => {
                     <Filters filters={filters} />
                     <Separator />
                     <ContentWrapper>
-                        {/* <Hits hitComponent={Resource} /> */} <CustomHits />
+                        <CustomHits />
                     </ContentWrapper>
                 </Columns>
             </InstantSearch>
@@ -49,10 +49,21 @@ const getUniqueContentTypes = hits => {
 // @ts-ignore
 const Hits = ({ hits }) => {
     const types = getUniqueContentTypes(hits);
+    const featuredLinks = hits.filter((hit: any) => hit.isFeatured);
 
-    console.log('types', types);
     return (
         <>
+            {featuredLinks.length && (
+                <FeaturedToolsWrapper>
+                    <Heading asElement="h2" size="default">
+                        Featured Tools
+                    </Heading>
+                    {featuredLinks.map((link: any, index: number) => (
+                        <FeatureLink key={`featuredLink-${index}`} {...link} />
+                    ))}
+                </FeaturedToolsWrapper>
+            )}
+
             {types.map(type => {
                 const filteredHits = hits.filter((hit: any) => hit.type === type);
 
@@ -67,40 +78,6 @@ const Hits = ({ hits }) => {
                     </ResourcesWrapper>
                 );
             })}
-            {/* <FeaturedToolsWrapper>
-                <Heading asElement="h2" size="default">
-                    Featured Tools
-                </Heading>
-                {featuredLinks.map((link, index) => (
-                    <FeatureLink
-                        key={`featuredLink-${index}`}
-                        heading={link.heading}
-                        description={link.description}
-                        icon={link.icon}
-                        url={link.url}
-                    />
-                ))}
-            </FeaturedToolsWrapper>
-
-            <ResourcesWrapper>
-                <Heading asElement="h2" size="default">
-                    Docker Images
-                </Heading>
-
-                {resources.map((resource, index) => (
-                    <Resource key={`resource-${index}`} {...resource} />
-                ))}
-            </ResourcesWrapper>
-
-            <ResourcesWrapper>
-                <Heading asElement="h2" size="default">
-                    TypeScript Libraries
-                </Heading>
-
-                {resources.map((resource, index) => (
-                    <Resource key={`resource-${index}`} {...resource} />
-                ))}
-            </ResourcesWrapper> */}
         </>
     );
 };
