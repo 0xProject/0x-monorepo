@@ -7,7 +7,12 @@ import { constants } from '../src/constants';
 import { affiliateFeeUtils } from '../src/utils/affiliate_fee_utils';
 
 import { chaiSetup } from './utils/chai_setup';
-import { getFullyFillableSwapQuoteWithFees, getFullyFillableSwapQuoteWithNoFees, getPartialSignedOrdersWithFees, getPartialSignedOrdersWithNoFees } from './utils/swap_quote';
+import {
+    getFullyFillableSwapQuoteWithFees,
+    getFullyFillableSwapQuoteWithNoFees,
+    getPartialSignedOrdersWithFees,
+    getPartialSignedOrdersWithNoFees,
+} from './utils/swap_quote';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -61,24 +66,27 @@ describe('affiliateFeeUtils', () => {
     );
 
     describe('getSwapQuoteWithAffiliateFee', () => {
-            it('should return unchanged swapQuote if feePercentage is 0', () => {
-                const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(fakeSwapQuote, 0);
-                const fakeSwapQuoteWithAffiliateFees = { ...fakeSwapQuote, ...{ feePercentage: 0 }};
-                expect(updatedSwapQuote).to.deep.equal(fakeSwapQuoteWithAffiliateFees);
-            });
-            it('should return correct feeTakerToken and totalTakerToken amounts when provided SwapQuote with no fees', () => {
-                const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(fakeSwapQuote, FEE_PERCENTAGE);
-                expect(updatedSwapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(1));
-                expect(updatedSwapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(11));
-                expect(updatedSwapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(1));
-                expect(updatedSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(11));
-            });
-            it('should return correct feeTakerToken and totalTakerToken amounts when provides SwapQuote with fees', () => {
-                const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(fakeSwapQuoteWithFees, FEE_PERCENTAGE);
-                expect(updatedSwapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(4));
-                expect(updatedSwapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(14));
-                expect(updatedSwapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(4));
-                expect(updatedSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(14));
-            });
+        it('should return unchanged swapQuote if feePercentage is 0', () => {
+            const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(fakeSwapQuote, 0);
+            const fakeSwapQuoteWithAffiliateFees = { ...fakeSwapQuote, ...{ feePercentage: 0 } };
+            expect(updatedSwapQuote).to.deep.equal(fakeSwapQuoteWithAffiliateFees);
+        });
+        it('should return correct feeTakerToken and totalTakerToken amounts when provided SwapQuote with no fees', () => {
+            const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(fakeSwapQuote, FEE_PERCENTAGE);
+            expect(updatedSwapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(1));
+            expect(updatedSwapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(11));
+            expect(updatedSwapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(1));
+            expect(updatedSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(11));
+        });
+        it('should return correct feeTakerToken and totalTakerToken amounts when provides SwapQuote with fees', () => {
+            const updatedSwapQuote = affiliateFeeUtils.getSwapQuoteWithAffiliateFee(
+                fakeSwapQuoteWithFees,
+                FEE_PERCENTAGE,
+            );
+            expect(updatedSwapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(4));
+            expect(updatedSwapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(14));
+            expect(updatedSwapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.deep.equal(new BigNumber(4));
+            expect(updatedSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.deep.equal(new BigNumber(14));
+        });
     });
 });

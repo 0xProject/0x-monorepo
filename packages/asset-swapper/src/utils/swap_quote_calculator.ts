@@ -246,7 +246,9 @@ function calculateQuoteInfo(
         }
         const zrxAmountToBuyAsset = tokenAndZrxAmountToBuyAsset[1];
         // find eth amount needed to buy zrx
-        zrxTakerTokenAmount = shouldDisableFeeOrderCalculations ? constants.ZERO_AMOUNT : findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
+        zrxTakerTokenAmount = shouldDisableFeeOrderCalculations
+            ? constants.ZERO_AMOUNT
+            : findTakerTokenAmountNeededToBuyZrx(feeOrdersAndFillableAmounts, zrxAmountToBuyAsset);
     }
 
     const feeTakerTokenAmount = zrxTakerTokenAmount;

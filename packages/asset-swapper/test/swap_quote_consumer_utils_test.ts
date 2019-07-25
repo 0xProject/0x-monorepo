@@ -1,14 +1,13 @@
 import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
 import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 
-import { SwapQuote, SwapQuoteConsumer } from '../src';
+import { SwapQuote } from '../src';
 import { ConsumerType } from '../src/types';
 import { swapQuoteConsumerUtils } from '../src/utils/swap_quote_consumer_utils';
 
@@ -23,16 +22,18 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const ONE_ETH_IN_WEI = new BigNumber(1000000000000000000);
 const TESTRPC_NETWORK_ID = 50;
-const MARKET_OPERATION = MarketOperation.Sell;
-const FILLABLE_AMOUNTS = [new BigNumber(2), new BigNumber(3), new BigNumber(5)].map(value => value.multipliedBy(ONE_ETH_IN_WEI));
-const LARGE_FILLABLE_AMOUNTS = [new BigNumber(20), new BigNumber(20), new BigNumber(20)].map(value => value.multipliedBy(ONE_ETH_IN_WEI));
+const FILLABLE_AMOUNTS = [new BigNumber(2), new BigNumber(3), new BigNumber(5)].map(value =>
+    value.multipliedBy(ONE_ETH_IN_WEI),
+);
+const LARGE_FILLABLE_AMOUNTS = [new BigNumber(20), new BigNumber(20), new BigNumber(20)].map(value =>
+    value.multipliedBy(ONE_ETH_IN_WEI),
+);
 
 describe('swapQuoteConsumerUtils', () => {
     let contractWrappers: ContractWrappers;
     let userAddresses: string[];
     let makerAddress: string;
     let takerAddress: string;
-    let feeRecipient: string;
     let makerTokenAddress: string;
     let takerTokenAddress: string;
     let makerAssetData: string;
@@ -50,7 +51,7 @@ describe('swapQuoteConsumerUtils', () => {
             contractAddresses,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        [takerAddress, makerAddress, feeRecipient] = userAddresses;
+        [takerAddress, makerAddress] = userAddresses;
         [makerTokenAddress, takerTokenAddress] = tokenUtils.getDummyERC20TokenAddresses();
         [makerAssetData, takerAssetData, wethAssetData] = [
             assetDataUtils.encodeERC20AssetData(makerTokenAddress),
@@ -75,11 +76,8 @@ describe('swapQuoteConsumerUtils', () => {
         let forwarderSwapQuote: SwapQuote;
         let exchangeSwapQuote: SwapQuote;
         let largeForwarderSwapQuote: SwapQuote;
-        let swapQuoteConsumer: SwapQuoteConsumer;
 
         beforeEach(async () => {
-            swapQuoteConsumer = new SwapQuoteConsumer(provider, { networkId });
-
             exchangeOrders = await getSignedOrdersWithNoFeesAsync(
                 provider,
                 makerAssetData,
@@ -148,7 +146,7 @@ describe('swapQuoteConsumerUtils', () => {
             expect(consumerType).to.equal(ConsumerType.Forwarder);
         });
         it('should return exchange consumer if takerAsset is wEth and taker has enough weth', async () => {
-            const etherInWei = (new BigNumber(20)).multipliedBy(ONE_ETH_IN_WEI);
+            const etherInWei = new BigNumber(20).multipliedBy(ONE_ETH_IN_WEI);
             await contractWrappers.etherToken.depositAsync(contractAddresses.etherToken, etherInWei, takerAddress);
             const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
                 forwarderSwapQuote,
@@ -158,8 +156,8 @@ describe('swapQuoteConsumerUtils', () => {
             );
             expect(consumerType).to.equal(ConsumerType.Exchange);
         });
-        it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)',async () => {
-            const etherInWei = (new BigNumber(50)).multipliedBy(ONE_ETH_IN_WEI);
+        it('should return forwarder consumer if takerAsset is wEth and takerAddress has no available balance in either weth or eth (defaulting behavior)', async () => {
+            const etherInWei = new BigNumber(50).multipliedBy(ONE_ETH_IN_WEI);
             await contractWrappers.etherToken.depositAsync(contractAddresses.etherToken, etherInWei, takerAddress);
             const consumerType = await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
                 largeForwarderSwapQuote,

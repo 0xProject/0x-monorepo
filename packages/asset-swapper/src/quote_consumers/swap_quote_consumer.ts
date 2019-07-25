@@ -75,12 +75,14 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
         quote: SwapQuote,
         opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
-        const useConsumerType = opts.useConsumerType || await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
-            quote,
-            this._contractWrappers,
-            this.provider,
-            opts,
-        );
+        const useConsumerType =
+            opts.useConsumerType ||
+            (await swapQuoteConsumerUtils.getConsumerTypeForSwapQuoteAsync(
+                quote,
+                this._contractWrappers,
+                this.provider,
+                opts,
+            ));
         if (useConsumerType === ConsumerType.Exchange) {
             return this._exchangeConsumer;
         } else if (useConsumerType === ConsumerType.Forwarder) {

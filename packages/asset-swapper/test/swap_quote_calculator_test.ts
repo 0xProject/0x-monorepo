@@ -323,18 +323,14 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.bestCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
-            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // because we have no slippage protection, minRate is equal to maxRate
             expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(assetSellAmount);
             expect(swapQuote.worstCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
-            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
                 expectedTotalTakerAssetAmount,
             );
@@ -365,9 +361,7 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.bestCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedMakerAssetAmountForTakerAsset,
             );
-            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // 100 eth to fill the first order + 208 eth for fees
             const expectedWorstMakerAssetAmountForTakerAsset = new BigNumber(100);
@@ -376,9 +370,7 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.worstCaseQuoteInfo.makerTokenAmount).to.bignumber.equal(
                 expectedWorstMakerAssetAmountForTakerAsset,
             );
-            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
                 expectedWorstTotalTakerAssetAmount,
             );
@@ -693,17 +685,13 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
                 expectedTakerAssetAmountForMakerAsset,
             );
-            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // because we have no slippage protection, minRate is equal to maxRate
             expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
                 expectedTakerAssetAmountForMakerAsset,
             );
-            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
                 expectedTotalTakerAssetAmount,
             );
@@ -734,9 +722,7 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.bestCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
                 expectedTakerAssetAmountForMakerAsset,
             );
-            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.bestCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(expectedTotalTakerAssetAmount);
             // 100 eth to fill the first order + 208 eth for fees
             const expectedWorstTakerAssetAmountForMakerAsset = new BigNumber(100);
@@ -744,9 +730,7 @@ describe('swapQuoteCalculator', () => {
             expect(swapQuote.worstCaseQuoteInfo.takerTokenAmount).to.bignumber.equal(
                 expectedWorstTakerAssetAmountForMakerAsset,
             );
-            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(
-                constants.ZERO_AMOUNT,
-            );
+            expect(swapQuote.worstCaseQuoteInfo.feeTakerTokenAmount).to.bignumber.equal(constants.ZERO_AMOUNT);
             expect(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount).to.bignumber.equal(
                 expectedWorstTotalTakerAssetAmount,
             );

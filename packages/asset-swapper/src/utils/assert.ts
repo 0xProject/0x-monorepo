@@ -35,11 +35,15 @@ export const assert = {
         _.every(orders, (order: SignedOrder, index: number) => {
             assert.assert(
                 order.takerAssetData === takerAssetData,
-                `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData} but found ${order.takerAssetData}`,
+                `Expected ${variableName}[${index}].takerAssetData to be ${takerAssetData} but found ${
+                    order.takerAssetData
+                }`,
             );
             assert.assert(
                 order.makerAssetData === makerAssetData,
-                `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData} but found ${order.makerAssetData}`,
+                `Expected ${variableName}[${index}].makerAssetData to be ${makerAssetData} but found ${
+                    order.makerAssetData
+                }`,
             );
         });
     },
