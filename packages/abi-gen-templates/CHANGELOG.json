@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            }
+        ]
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {
