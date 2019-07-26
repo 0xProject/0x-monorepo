@@ -109,14 +109,14 @@ class BaseContractWrapper:
 
     def invoke_function_call(self, func, tx_params, view_only):
         """Invoke the given contract method."""
+        tx_params = self.normalize_tx_params(tx_params)
         if view_only:
-            return func.call()
+            return func.call(tx_params.as_dict())
         if not self._can_send_tx:
             raise Exception(
                 "Cannot send transaction because no local private_key"
                 " or account found."
             )
-        tx_params = self.normalize_tx_params(tx_params)
         if self._private_key:
             res = self._sign_and_send_raw_direct(func, tx_params)
         else:
