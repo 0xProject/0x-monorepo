@@ -709,15 +709,6 @@ class AbiGenDummy(BaseContractWrapper):
         self.nested_struct_input = NestedStructInputMethod(self)
         self.struct_output = StructOutputMethod(self)
         self.pure_function_with_constant = PureFunctionWithConstantMethod(self)
-
-    def _get_contract_instance(self, token_address):
-        """Get an instance of the smart contract at a specific address.
-
-        :returns: contract object
-        """
-        return self.contract_instance(
-            address=token_address, abi=AbiGenDummy.abi()
-        )
     def get_an_event_event(
         self, tx_hash: Union[HexBytes, bytes]
     ) -> Tuple[AttributeDict]:
@@ -727,7 +718,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         return (
-            self._get_contract_instance(self.contract_address)
+            self.contract_instance(self.contract_address, AbiGenDummy.abi())
             .events.AnEvent()
             .processReceipt(tx_receipt)
         )

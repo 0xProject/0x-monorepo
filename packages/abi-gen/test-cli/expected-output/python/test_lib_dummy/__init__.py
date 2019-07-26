@@ -148,15 +148,6 @@ class TestLibDummy(BaseContractWrapper):
         self.public_add_constant = PublicAddConstantMethod(self)
         self.public_add_one = PublicAddOneMethod(self)
 
-    def _get_contract_instance(self, token_address):
-        """Get an instance of the smart contract at a specific address.
-
-        :returns: contract object
-        """
-        return self.contract_instance(
-            address=token_address, abi=TestLibDummy.abi()
-        )
-
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""

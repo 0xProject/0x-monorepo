@@ -68,15 +68,6 @@ class LibDummy(BaseContractWrapper):
         )
 
 
-    def _get_contract_instance(self, token_address):
-        """Get an instance of the smart contract at a specific address.
-
-        :returns: contract object
-        """
-        return self.contract_instance(
-            address=token_address, abi=LibDummy.abi()
-        )
-
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""
