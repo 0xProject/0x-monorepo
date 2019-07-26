@@ -25,6 +25,8 @@ import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_
 
 import { Paragraph } from 'ts/components/text';
 
+import { Accordion } from 'ts/components/docs/sidebar/sidebar_wrapper';
+
 interface IDocsViewProps {
     match: match<any>;
 }
@@ -67,7 +69,9 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
     return (
         <DocsPageLayout title={title} loading={!Component}>
             <Columns>
-                <TableOfContents contents={contents} />
+                <Accordion>
+                    <TableOfContents contents={contents} />
+                </Accordion>
                 <Separator />
                 <ContentWrapper>
                     <MDXProvider components={mdxComponents}>

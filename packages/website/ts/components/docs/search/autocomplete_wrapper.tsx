@@ -184,7 +184,6 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
 
     .react-autosuggest__suggestion {
         border-bottom: 1px solid #eee;
-        /* margin-right: 30px; */
 
         @media (max-width: 900px) {
             margin-right: 0;

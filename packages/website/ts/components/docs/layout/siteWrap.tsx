@@ -7,6 +7,8 @@ import { Footer } from 'ts/components/footer';
 import { GlobalStyles } from 'ts/constants/globalStyle';
 import { GLOBAL_THEMES } from 'ts/style/theme';
 
+// Note (piotr): This code is essentially repeated from siteWrap for the whole website, the only difference is the header component used by it. It might be better to either pass in a headerComponent prop or shave off the unnecessary code here
+
 interface ISiteWrapProps {
     theme?: 'dark' | 'light' | 'gray';
     isFullScreen?: boolean;
