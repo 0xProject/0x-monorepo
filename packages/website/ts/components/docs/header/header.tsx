@@ -83,17 +83,17 @@ export const Header: React.FC<IHeaderProps> = ({ isNavToggled, toggleMobileNav }
                         </DocsLogoWrap>
                     </LogoWrap>
 
-                    <NavLinks>
-                        {navItems.map((link, index) => (
-                            <NavItem key={`navlink-${index}`} link={link} />
-                        ))}
-                    </NavLinks>
-
                     <MediaQuery minWidth={1200}>
+                        <NavLinks>
+                            {navItems.map((link, index) => (
+                                <NavItem key={`navlink-${index}`} link={link} />
+                            ))}
+                        </NavLinks>
+
                         <SearchInput isHome={false} />
                     </MediaQuery>
 
-                    <MediaQuery maxWidth={1200}>
+                    <MediaQuery maxWidth={1199}>
                         <Hamburger isOpen={isNavToggled} onClick={toggleMobileNav} />
                         <MobileNav navItems={navItems} isToggled={isNavToggled} toggleMobileNav={toggleMobileNav} />
                     </MediaQuery>
@@ -138,7 +138,7 @@ const LinkWrap = styled.li`
         display: block;
     }
 
-    @media (min-width: 800px) {
+    @media (min-width: 1200px) {
         &:hover > div {
             display: block;
             visibility: visible;
