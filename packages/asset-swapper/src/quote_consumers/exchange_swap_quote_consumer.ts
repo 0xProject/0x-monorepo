@@ -1,6 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { MarketOperation } from '@0x/types';
+import { MarketOperation, ERC20AssetData } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -56,8 +56,8 @@ export class ExchangeSwapQuoteConsumer
         if (quote.type === MarketOperation.Sell && opts.useExchangeWrapperType === ExchangeWrapperType.Dydx) {
             const smartContractParams = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
-            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData);
-            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData);
+            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData) as ERC20AssetData;
+            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData) as ERC20AssetData;
 
             const { orderData, to } = this._exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote.orders);
 
