@@ -55,7 +55,7 @@
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.1.0",
+        "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
         "nyc": "^11.0.1",
         "shx": "^0.2.2",
