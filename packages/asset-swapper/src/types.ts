@@ -1,9 +1,6 @@
 import { MarketOperation, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
-
-import { constants } from './constants';
-
 /**
  * makerAssetData: The assetData representing the desired makerAsset.
  * takerAssetData: The assetData representing the desired takerAsset.
@@ -156,7 +153,10 @@ export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartCo
  * executeSwapQuoteOrThrowAsync: Executes a web3 transaction to swap for tokens with provided SwapQuote. Throws if invalid SwapQuote is provided.
  */
 export interface SwapQuoteConsumerBase<SCParams, EWParams> {
-    getExchangeWrappersParamsOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>): Promise<ExchangeWrappersParamsInfo<EWParams>>;
+    getExchangeWrappersParamsOrThrowAsync(
+        quote: SwapQuote,
+        opts: Partial<SwapQuoteGetExchangeWrappersParamsOpts>,
+    ): Promise<ExchangeWrappersParamsInfo<EWParams>>;
     getCalldataOrThrowAsync(quote: SwapQuote, opts: Partial<SwapQuoteGetOutputOptsBase>): Promise<CalldataInfo>;
     getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,

@@ -20,7 +20,6 @@ import {
     SwapQuoteConsumerError,
     SwapQuoteConsumerOpts,
     SwapQuoteGetExchangeWrappersParamsOpts,
-    SwapQuoterError,
 } from '../types';
 import { affiliateFeeUtils } from '../utils/affiliate_fee_utils';
 import { assert } from '../utils/assert';
@@ -28,7 +27,8 @@ import { assetDataUtils } from '../utils/asset_data_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<ForwarderSmartContractParams, ExchangeWrappersParams> {
+export class ForwarderSwapQuoteConsumer
+    implements SwapQuoteConsumerBase<ForwarderSmartContractParams, ExchangeWrappersParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 

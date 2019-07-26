@@ -1,11 +1,16 @@
 import { SignedOrder } from '@0x/types';
 import { providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
-import { OrderMapper, OrderType, ZeroExV2MultiOrder as DydxMultiOrder, ZeroExV2Order as DydxOrder } from '@dydxprotocol/exchange-wrappers';
+import {
+    OrderMapper,
+    OrderType,
+    ZeroExV2MultiOrder as DydxMultiOrder,
+    ZeroExV2Order as DydxOrder,
+} from '@dydxprotocol/exchange-wrappers';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { SwapQuote, SwapQuoteConsumerOpts } from '../types';
+import { SwapQuoteConsumerOpts } from '../types';
 import { assert } from '../utils/assert';
 
 // TODO(david) finish

@@ -9,13 +9,13 @@ import { constants } from '../constants';
 import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
 import {
+    ExchangeWrappersParams,
     SmartContractParams,
     SwapQuote,
     SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
-    ExchangeWrappersParams,
 } from '../types';
 
 import { assert } from './assert';

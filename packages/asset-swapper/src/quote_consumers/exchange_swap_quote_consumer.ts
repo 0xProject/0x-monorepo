@@ -1,6 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { ERC20AssetData, MarketOperation } from '@0x/types';
+import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
@@ -28,7 +28,8 @@ import { ExchangeWrappersUtils } from '../utils/exchange_wrappers_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
-export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<ExchangeSmartContractParams, ExchangeWrappersParams> {
+export class ExchangeSwapQuoteConsumer
+    implements SwapQuoteConsumerBase<ExchangeSmartContractParams, ExchangeWrappersParams> {
     public readonly provider: ZeroExProvider;
     public readonly networkId: number;
 
@@ -55,8 +56,8 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         if (quote.type === MarketOperation.Sell && opts.useExchangeWrapperType === ExchangeWrapperType.Dydx) {
             const smartContractParams = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
-            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData) as ERC20AssetData;
-            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData) as ERC20AssetData;
+            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData);
+            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData);
 
             const { orderData, to } = this._exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote.orders);
 
@@ -78,7 +79,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         } else {
             throw new Error(SwapQuoteConsumerError.DoNotSupportConsumerOutput);
         }
-   }
+    }
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
