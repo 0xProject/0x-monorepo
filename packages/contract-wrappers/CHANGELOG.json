@@ -1,5 +1,14 @@
 [
     {
+        "version": "10.0.0",
+        "changes": [
+            {
+                "note": "Constructors for `ERC20TokenWrapper`, `ERC721TokenWrapper`, and `EtherTokenWrapper` no longer accept networkId",
+                "pr": 1970
+            }
+        ]
+    },
+    {
         "version": "9.1.8",
         "changes": [
             {

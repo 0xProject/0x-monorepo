@@ -14,12 +14,11 @@ import { DutchAuctionWrapperError, OrderTransactionOpts } from '../types';
 import { assert } from '../utils/assert';
 import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
-import { ContractWrapper } from './contract_wrapper';
-
-export class DutchAuctionWrapper extends ContractWrapper {
+export class DutchAuctionWrapper {
     public abi: ContractAbi = DutchAuction.compilerOutput.abi;
     public address: string;
-    private _dutchAuctionContractIfExists?: DutchAuctionContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _dutchAuctionContract: DutchAuctionContract;
     /**
      * Dutch auction details are encoded with the asset data for a 0x order. This function produces a hex
      * encoded assetData string, containing information both about the asset being traded and the
@@ -56,8 +55,13 @@ export class DutchAuctionWrapper extends ContractWrapper {
      * default to the known address corresponding to the networkId.
      */
     public constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
-        super(web3Wrapper, networkId);
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).dutchAuction : address;
+        this._web3Wrapper = web3Wrapper;
+        this._dutchAuctionContract = new DutchAuctionContract(
+            this.address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
     }
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -89,11 +93,9 @@ export class DutchAuctionWrapper extends ContractWrapper {
         ) {
             throw new Error(DutchAuctionWrapperError.AssetDataMismatch);
         }
-        // get contract
-        const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
         // validate transaction
         if (orderTransactionOpts.shouldValidate) {
-            await dutchAuctionInstance.matchOrders.callAsync(
+            await this._dutchAuctionContract.matchOrders.callAsync(
                 buyOrder,
                 sellOrder,
                 buyOrder.signature,
@@ -107,7 +109,7 @@ export class DutchAuctionWrapper extends ContractWrapper {
             );
         }
         // send transaction
-        const txHash = await dutchAuctionInstance.matchOrders.sendTransactionAsync(
+        const txHash = await this._dutchAuctionContract.matchOrders.sendTransactionAsync(
             buyOrder,
             sellOrder,
             buyOrder.signature,
@@ -129,22 +131,8 @@ export class DutchAuctionWrapper extends ContractWrapper {
     public async getAuctionDetailsAsync(sellOrder: SignedOrder): Promise<DutchAuctionDetails> {
         // type assertions
         assert.doesConformToSchema('sellOrder', sellOrder, schemas.signedOrderSchema);
-        // get contract
-        const dutchAuctionInstance = await this._getDutchAuctionContractAsync();
         // call contract
-        const auctionDetails = await dutchAuctionInstance.getAuctionDetails.callAsync(sellOrder);
+        const auctionDetails = await this._dutchAuctionContract.getAuctionDetails.callAsync(sellOrder);
         return auctionDetails;
-    }
-    private async _getDutchAuctionContractAsync(): Promise<DutchAuctionContract> {
-        if (this._dutchAuctionContractIfExists !== undefined) {
-            return this._dutchAuctionContractIfExists;
-        }
-        const contractInstance = new DutchAuctionContract(
-            this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
-        );
-        this._dutchAuctionContractIfExists = contractInstance;
-        return this._dutchAuctionContractIfExists;
     }
 }

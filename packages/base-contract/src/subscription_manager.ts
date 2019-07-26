@@ -12,24 +12,16 @@ import {
 import { Block, BlockAndLogStreamer, Log } from 'ethereumjs-blockstream';
 import * as _ from 'lodash';
 
-import {
-    BlockRange,
-    ContractEventArgs,
-    ContractEvents,
-    ContractWrappersError,
-    EventCallback,
-    IndexedFilterValues,
-} from '../types';
-import { constants } from '../utils/constants';
-import { filterUtils } from '../utils/filter_utils';
+import { BlockRange, EventCallback, IndexedFilterValues, SubscriptionErrors } from './types';
+import { filterUtils } from './utils/filter_utils';
 
-export abstract class ContractWrapper {
-    public abstract abi: ContractAbi;
-    protected _networkId: number;
-    protected _web3Wrapper: Web3Wrapper;
+const DEFAULT_BLOCK_POLLING_INTERVAL = 1000;
+
+export class SubscriptionManager<ContractEventArgs, ContractEvents extends string> {
+    public abi: ContractAbi;
     private _blockAndLogStreamerIfExists: BlockAndLogStreamer<Block, Log> | undefined;
-    private readonly _blockPollingIntervalMs: number;
     private _blockAndLogStreamIntervalIfExists?: NodeJS.Timer;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _filters: { [filterToken: string]: FilterObject };
     private readonly _filterCallbacks: {
         [filterToken: string]: EventCallback<ContractEventArgs>;
@@ -43,26 +35,24 @@ export abstract class ContractWrapper {
             logUtils.warn(err);
         }
     }
-    constructor(web3Wrapper: Web3Wrapper, networkId: number, blockPollingIntervalMs?: number) {
+    constructor(abi: ContractAbi, web3Wrapper: Web3Wrapper) {
+        this.abi = abi;
         this._web3Wrapper = web3Wrapper;
-        this._networkId = networkId;
-        this._blockPollingIntervalMs =
-            blockPollingIntervalMs === undefined ? constants.DEFAULT_BLOCK_POLLING_INTERVAL : blockPollingIntervalMs;
         this._filters = {};
         this._filterCallbacks = {};
         this._blockAndLogStreamerIfExists = undefined;
         this._onLogAddedSubscriptionToken = undefined;
         this._onLogRemovedSubscriptionToken = undefined;
     }
-    protected _unsubscribeAll(): void {
+    public unsubscribeAll(): void {
         const filterTokens = _.keys(this._filterCallbacks);
         _.each(filterTokens, filterToken => {
-            this._unsubscribe(filterToken);
+            this.unsubscribe(filterToken);
         });
     }
-    protected _unsubscribe(filterToken: string, err?: Error): void {
+    public unsubscribe(filterToken: string, err?: Error): void {
         if (this._filters[filterToken] === undefined) {
-            throw new Error(ContractWrappersError.SubscriptionNotFound);
+            throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
         if (err !== undefined) {
             const callback = this._filterCallbacks[filterToken];
@@ -74,24 +64,25 @@ export abstract class ContractWrapper {
             this._stopBlockAndLogStream();
         }
     }
-    protected _subscribe<ArgsType extends ContractEventArgs>(
+    public subscribe<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         indexFilterValues: IndexedFilterValues,
         abi: ContractAbi,
         callback: EventCallback<ArgsType>,
         isVerbose: boolean = false,
+        blockPollingIntervalMs?: number,
     ): string {
         const filter = filterUtils.getFilter(address, eventName, indexFilterValues, abi);
         if (this._blockAndLogStreamerIfExists === undefined) {
-            this._startBlockAndLogStream(isVerbose);
+            this._startBlockAndLogStream(isVerbose, blockPollingIntervalMs);
         }
         const filterToken = filterUtils.generateUUID();
         this._filters[filterToken] = filter;
         this._filterCallbacks[filterToken] = callback as EventCallback<ContractEventArgs>;
         return filterToken;
     }
-    protected async _getLogsAsync<ArgsType extends ContractEventArgs>(
+    public async getLogsAsync<ArgsType extends ContractEventArgs>(
         address: string,
         eventName: ContractEvents,
         blockRange: BlockRange,
@@ -123,21 +114,23 @@ export abstract class ContractWrapper {
             }
         });
     }
-    private _startBlockAndLogStream(isVerbose: boolean): void {
+    private _startBlockAndLogStream(isVerbose: boolean, blockPollingIntervalMs?: number): void {
         if (this._blockAndLogStreamerIfExists !== undefined) {
-            throw new Error(ContractWrappersError.SubscriptionAlreadyPresent);
+            throw new Error(SubscriptionErrors.SubscriptionAlreadyPresent);
         }
         this._blockAndLogStreamerIfExists = new BlockAndLogStreamer(
             this._blockstreamGetBlockOrNullAsync.bind(this),
             this._blockstreamGetLogsAsync.bind(this),
-            ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
+            SubscriptionManager._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         const catchAllLogFilter = {};
         this._blockAndLogStreamerIfExists.addLogFilter(catchAllLogFilter);
+        const _blockPollingIntervalMs =
+            blockPollingIntervalMs === undefined ? DEFAULT_BLOCK_POLLING_INTERVAL : blockPollingIntervalMs;
         this._blockAndLogStreamIntervalIfExists = intervalUtils.setAsyncExcludingInterval(
             this._reconcileBlockAsync.bind(this),
-            this._blockPollingIntervalMs,
-            ContractWrapper._onBlockAndLogStreamerError.bind(this, isVerbose),
+            _blockPollingIntervalMs,
+            SubscriptionManager._onBlockAndLogStreamerError.bind(this, isVerbose),
         );
         let isRemoved = false;
         this._onLogAddedSubscriptionToken = this._blockAndLogStreamerIfExists.subscribeToOnLogAdded(
@@ -176,7 +169,7 @@ export abstract class ContractWrapper {
     }
     private _stopBlockAndLogStream(): void {
         if (this._blockAndLogStreamerIfExists === undefined) {
-            throw new Error(ContractWrappersError.SubscriptionNotFound);
+            throw new Error(SubscriptionErrors.SubscriptionNotFound);
         }
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogAdded(this._onLogAddedSubscriptionToken as string);
         this._blockAndLogStreamerIfExists.unsubscribeFromOnLogRemoved(this._onLogRemovedSubscriptionToken as string);

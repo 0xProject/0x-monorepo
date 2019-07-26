@@ -19,6 +19,10 @@ import * as _ from 'lodash';
 
 import { formatABIDataItem } from './utils';
 
+export { SubscriptionManager } from './subscription_manager';
+
+export * from './types';
+
 export interface AbiEncoderByFunctionSignature {
     [key: string]: AbiEncoder.Method;
 }

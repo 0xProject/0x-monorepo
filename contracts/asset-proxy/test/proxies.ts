@@ -31,6 +31,7 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    ERC1155ProxyContract,
     ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
@@ -71,7 +72,7 @@ describe('Asset Transfer Proxies', () => {
     let erc721AFromTokenId: BigNumber;
     let erc721BFromTokenId: BigNumber;
 
-    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
     let erc1155ProxyWrapper: ERC1155ProxyWrapper;
     let erc1155Contract: ERC1155MintableContract;
     let erc1155Contract2: ERC1155MintableContract;

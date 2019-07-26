@@ -1,4 +1,5 @@
 import { ERC20TokenContract, ERC20TokenEventArgs, ERC20TokenEvents } from '@0x/abi-gen-wrappers';
+import { SubscriptionManager } from '@0x/base-contract';
 import { ERC20Token } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
@@ -20,7 +21,6 @@ import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { ContractWrapper } from './contract_wrapper';
 import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
 
 /**
@@ -28,27 +28,28 @@ import { ERC20ProxyWrapper } from './erc20_proxy_wrapper';
  * All ERC20 method calls are supported, along with some convenience methods for getting/setting allowances
  * to the 0x ERC20 Proxy smart contract.
  */
-export class ERC20TokenWrapper extends ContractWrapper {
+export class ERC20TokenWrapper {
     public abi: ContractAbi = ERC20Token.compilerOutput.abi;
     public UNLIMITED_ALLOWANCE_IN_BASE_UNITS = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _blockPollingIntervalMs?: number;
+    private readonly _subscriptionManager: SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>;
     private readonly _tokenContractsByAddress: { [address: string]: ERC20TokenContract };
     private readonly _erc20ProxyWrapper: ERC20ProxyWrapper;
     /**
      * Instantiate ERC20TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
      * @param erc20ProxyWrapper The ERC20ProxyWrapper instance to use
-     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc20ProxyWrapper: ERC20ProxyWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc20ProxyWrapper: ERC20ProxyWrapper, blockPollingIntervalMs?: number) {
+        this._web3Wrapper = web3Wrapper;
         this._tokenContractsByAddress = {};
         this._erc20ProxyWrapper = erc20ProxyWrapper;
+        this._blockPollingIntervalMs = blockPollingIntervalMs;
+        this._subscriptionManager = new SubscriptionManager<ERC20TokenEventArgs, ERC20TokenEvents>(
+            ERC20TokenContract.ABI(),
+            web3Wrapper,
+        );
     }
     /**
      * Retrieves an owner's ERC20 token balance.
@@ -371,13 +372,14 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const subscriptionToken = this._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
             ERC20Token.compilerOutput.abi,
             callback,
             isVerbose,
+            this._blockPollingIntervalMs,
         );
         return subscriptionToken;
     }
@@ -387,13 +389,13 @@ export class ERC20TokenWrapper extends ContractWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken); // doesn't matter which contract is used
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        super._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -415,7 +417,7 @@ export class ERC20TokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const logs = await this._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedTokenAddress,
             eventName,
             blockRange,
