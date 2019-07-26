@@ -45,12 +45,12 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
 };
 
 const ContentsAside = styled.aside`
-    position: relative;
+    /* position: relative; */
 `;
 
 const ContentsWrapper = styled.div`
-    position: sticky;
-    top: 154px; /* To make space for the header (react-headroom) when clicking on links */
+    /* position: sticky; */
+    /* top: 154px; To make space for the header (react-headroom) when clicking on links */
 `;
 
 const ContentsList = styled.ul`
