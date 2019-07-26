@@ -188,6 +188,11 @@ const team: TeamMember[] = [
         name: 'Theo Gonella',
         title: 'Product Manager',
     },
+    {
+        imageUrl: '/images/team/alext.jpg',
+        name: 'Alex Towle',
+        title: 'Engineer',
+    },
 ];
 
 const advisors: TeamMember[] = [
