@@ -137,6 +137,7 @@ describe('AssetProxyDispatcher', () => {
                 proxyArtifacts.ERC20Proxy,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
             );
             // Register new ERC20 Transfer Proxy contract
             return expectTransactionFailedAsync(

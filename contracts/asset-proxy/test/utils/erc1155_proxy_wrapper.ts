@@ -54,6 +54,7 @@ export class ERC1155ProxyWrapper {
                 erc1155Artifacts.ERC1155Mintable,
                 this._provider,
                 txDefaults,
+                artifacts,
             );
             const erc1155Wrapper = new Erc1155Wrapper(erc1155Contract, this._provider, this._contractOwnerAddress);
             this._dummyTokenWrappers.push(erc1155Wrapper);
@@ -69,6 +70,7 @@ export class ERC1155ProxyWrapper {
             artifacts.ERC1155Proxy,
             this._provider,
             txDefaults,
+            artifacts,
         );
         this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;

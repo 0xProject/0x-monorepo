@@ -30,7 +30,12 @@ describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
     before(async () => {
         providerUtils.startProviderEngine(provider);
-        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
+        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(
+            artifacts.AbiGenDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         await blockchainLifecycle.startAsync();
     });
     after(async () => {
@@ -146,7 +151,12 @@ describe('Lib dummy contract', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(artifacts.TestLibDummy, provider, txDefaults);
+        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

@@ -1,14 +1,11 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import {
-    BaseContract,
+import { BaseContract,
     BlockRange,
     EventCallback,
     IndexedFilterValues,
-    SubscriptionManager,
-    PromiseWithTransactionHash,
-} from '@0x/base-contract';
+    SubscriptionManager,PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -29,6 +26,7 @@ import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
+import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type AssetProxyOwnerEventArgs =
@@ -113,6 +111,7 @@ export interface AssetProxyOwnerRequirementChangeEventArgs extends DecodedLogArg
     required: BigNumber;
 }
 
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -122,7 +121,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_0: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string> {
+        ): Promise<string
+        > {
             assert.isBigNumber('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -132,8 +132,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('owners(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('owners(uint256)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -142,45 +143,54 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owners(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: BigNumber): string {
+        getABIEncodedTransactionData(
+                index_0: BigNumber,
+            ): string {
             assert.isBigNumber('index_0', index_0);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('owners(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('owners(uint256)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public removeOwner = {
-        async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.removeOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            owner: string,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.removeOwner.estimateGasAsync.bind(
+                self,
+                owner.toLowerCase()
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -188,41 +198,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.removeOwner.sendTransactionAsync(owner.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.removeOwner.sendTransactionAsync(owner.toLowerCase()
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            owner: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
-        async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+        async callAsync(
+            owner: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void
+        > {
             assert.isString('owner', owner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -232,8 +252,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -242,47 +263,54 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('removeOwner(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(owner: string): string {
+        getABIEncodedTransactionData(
+                owner: string,
+            ): string {
             assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [
-                owner.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('removeOwner(address)', [owner.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public revokeConfirmation = {
-        async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.revokeConfirmation.estimateGasAsync.bind(self, transactionId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            transactionId: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.revokeConfirmation.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -290,45 +318,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.revokeConfirmation.sendTransactionAsync(transactionId, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.revokeConfirmation.sendTransactionAsync(transactionId
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -338,8 +372,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -348,24 +383,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('revokeConfirmation(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('revokeConfirmation(uint256)', [
-                transactionId,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('revokeConfirmation(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -374,7 +409,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_0: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -384,8 +420,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -394,22 +431,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isOwner(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isOwner(address)', [index_0.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -419,7 +458,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_1: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isBigNumber('index_0', index_0);
             assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -430,11 +470,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmations(uint256,address)', [
-                index_0,
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('confirmations(uint256,address)', [index_0,
+        index_1.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -443,51 +482,57 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmations(uint256,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: BigNumber, index_1: string): string {
+        getABIEncodedTransactionData(
+                index_0: BigNumber,
+                index_1: string,
+            ): string {
             assert.isBigNumber('index_0', index_0);
             assert.isString('index_1', index_1);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('confirmations(uint256,address)', [
-                index_0,
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('confirmations(uint256,address)', [index_0,
+        index_1.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public executeRemoveAuthorizedAddressAtIndex = {
-        async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(self, transactionId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            transactionId: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.executeRemoveAuthorizedAddressAtIndex.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -495,50 +540,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(
-                transactionId,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.executeRemoveAuthorizedAddressAtIndex.sendTransactionAsync(transactionId
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -548,10 +594,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [
-                transactionId,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -560,30 +605,33 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeRemoveAuthorizedAddressAtIndex(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'executeRemoveAuthorizedAddressAtIndex(uint256)',
-                [transactionId],
-            );
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeRemoveAuthorizedAddressAtIndex(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public secondsTimeLocked = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<BigNumber
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -592,7 +640,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
+            const self = this as any as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('secondsTimeLocked()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -602,20 +650,20 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('secondsTimeLocked()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AssetProxyOwnerContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('secondsTimeLocked()', []);
             return abiEncodedTransactionData;
         },
@@ -626,7 +674,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             executed: boolean,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isBoolean('pending', pending);
             assert.isBoolean('executed', executed);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -637,8 +686,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getTransactionCount(bool,bool)', [pending, executed]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('getTransactionCount(bool,bool)', [pending,
+        executed
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -647,26 +698,27 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionCount(bool,bool)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(pending: boolean, executed: boolean): string {
+        getABIEncodedTransactionData(
+                pending: boolean,
+                executed: boolean,
+            ): string {
             assert.isBoolean('pending', pending);
             assert.isBoolean('executed', executed);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getTransactionCount(bool,bool)', [
-                pending,
-                executed,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getTransactionCount(bool,bool)', [pending,
+        executed
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -674,30 +726,33 @@ export class AssetProxyOwnerContract extends BaseContract {
         async sendTransactionAsync(
             assetProxyContract: string,
             isRegistered: boolean,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract.toLowerCase(),
+    isRegistered
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.registerAssetProxy.estimateGasAsync.bind(
+                self,
                 assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxyContract.toLowerCase(), isRegistered),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                isRegistered
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             assetProxyContract: string,
@@ -706,59 +761,57 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxyContract.toLowerCase(),
+    isRegistered
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             assetProxyContract: string,
             isRegistered: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('assetProxyContract', assetProxyContract);
-            assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isString('assetProxyContract', assetProxyContract);
+        assert.isBoolean('isRegistered', isRegistered);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract.toLowerCase(),
+    isRegistered
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             assetProxyContract: string,
             isRegistered: boolean,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isString('assetProxyContract', assetProxyContract);
             assert.isBoolean('isRegistered', isRegistered);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -769,11 +822,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract.toLowerCase(),
+        isRegistered
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -782,49 +834,57 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address,bool)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(assetProxyContract: string, isRegistered: boolean): string {
+        getABIEncodedTransactionData(
+                assetProxyContract: string,
+                isRegistered: boolean,
+            ): string {
             assert.isString('assetProxyContract', assetProxyContract);
             assert.isBoolean('isRegistered', isRegistered);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [
-                assetProxyContract.toLowerCase(),
-                isRegistered,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address,bool)', [assetProxyContract.toLowerCase(),
+        isRegistered
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public addOwner = {
-        async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.addOwner.estimateGasAsync.bind(self, owner.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            owner: string,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.addOwner.estimateGasAsync.bind(
+                self,
+                owner.toLowerCase()
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -832,41 +892,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.addOwner.sendTransactionAsync(owner.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.addOwner.sendTransactionAsync(owner.toLowerCase()
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            owner: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isString('owner', owner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
-        async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+        async callAsync(
+            owner: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void
+        > {
             assert.isString('owner', owner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -876,8 +946,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -886,22 +957,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('addOwner(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(owner: string): string {
+        getABIEncodedTransactionData(
+                owner: string,
+            ): string {
             assert.isString('owner', owner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('addOwner(address)', [owner.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -910,7 +983,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -920,8 +994,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isConfirmed(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('isConfirmed(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -930,48 +1005,54 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isConfirmed(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isConfirmed(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isConfirmed(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public changeTimeLock = {
         async sendTransactionAsync(
             _secondsTimeLocked: BigNumber,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeTimeLock.estimateGasAsync.bind(self, _secondsTimeLocked),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.changeTimeLock.estimateGasAsync.bind(
+                self,
+                _secondsTimeLocked
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
@@ -979,45 +1060,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.changeTimeLock.sendTransactionAsync(_secondsTimeLocked
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(_secondsTimeLocked: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            _secondsTimeLocked: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             _secondsTimeLocked: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1027,8 +1114,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1037,24 +1125,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeTimeLock(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(_secondsTimeLocked: BigNumber): string {
+        getABIEncodedTransactionData(
+                _secondsTimeLocked: BigNumber,
+            ): string {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeTimeLock(uint256)', [
-                _secondsTimeLocked,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('changeTimeLock(uint256)', [_secondsTimeLocked
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1063,7 +1151,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_0: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1073,8 +1162,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0.toLowerCase()]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1083,24 +1173,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isAssetProxyRegistered(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [
-                index_0.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isAssetProxyRegistered(address)', [index_0.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1109,7 +1199,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1119,8 +1210,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getConfirmationCount(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('getConfirmationCount(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1129,24 +1221,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmationCount(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getConfirmationCount(uint256)', [
-                transactionId,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getConfirmationCount(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1155,7 +1247,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_0: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<[string, BigNumber, string, boolean]> {
+        ): Promise<[string, BigNumber, string, boolean]
+        > {
             assert.isBigNumber('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1165,8 +1258,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('transactions(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('transactions(uint256)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1175,27 +1269,33 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber, string, boolean]>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<[string, BigNumber, string, boolean]
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: BigNumber): string {
+        getABIEncodedTransactionData(
+                index_0: BigNumber,
+            ): string {
             assert.isBigNumber('index_0', index_0);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transactions(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transactions(uint256)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public getOwners = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string[]
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1204,7 +1304,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
+            const self = this as any as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('getOwners()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1214,20 +1314,20 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getOwners()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AssetProxyOwnerContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getOwners()', []);
             return abiEncodedTransactionData;
         },
@@ -1240,7 +1340,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             executed: boolean,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber[]> {
+        ): Promise<BigNumber[]
+        > {
             assert.isBigNumber('from', from);
             assert.isBigNumber('to', to);
             assert.isBoolean('pending', pending);
@@ -1253,13 +1354,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getTransactionIds(uint256,uint256,bool,bool)', [
-                from,
-                to,
-                pending,
-                executed,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('getTransactionIds(uint256,uint256,bool,bool)', [from,
+        to,
+        pending,
+        executed
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1268,28 +1368,33 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getTransactionIds(uint256,uint256,bool,bool)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber[]>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber[]
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(from: BigNumber, to: BigNumber, pending: boolean, executed: boolean): string {
+        getABIEncodedTransactionData(
+                from: BigNumber,
+                to: BigNumber,
+                pending: boolean,
+                executed: boolean,
+            ): string {
             assert.isBigNumber('from', from);
             assert.isBigNumber('to', to);
             assert.isBoolean('pending', pending);
             assert.isBoolean('executed', executed);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getTransactionIds(uint256,uint256,bool,bool)',
-                [from, to, pending, executed],
-            );
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getTransactionIds(uint256,uint256,bool,bool)', [from,
+        to,
+        pending,
+        executed
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1298,7 +1403,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string[]> {
+        ): Promise<string[]
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1308,8 +1414,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('getConfirmations(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('getConfirmations(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1318,27 +1425,33 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getConfirmations(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string[]>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string[]
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getConfirmations(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getConfirmations(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public transactionCount = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<BigNumber
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1347,7 +1460,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
+            const self = this as any as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('transactionCount()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1357,44 +1470,51 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactionCount()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AssetProxyOwnerContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transactionCount()', []);
             return abiEncodedTransactionData;
         },
     };
     public changeRequirement = {
-        async sendTransactionAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('_required', _required);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.changeRequirement.estimateGasAsync.bind(self, _required),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            _required: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.changeRequirement.estimateGasAsync.bind(
+                self,
+                _required
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             _required: BigNumber,
@@ -1402,45 +1522,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('_required', _required);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.changeRequirement.sendTransactionAsync(_required, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.changeRequirement.sendTransactionAsync(_required
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('_required', _required);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            _required: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('_required', _required);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             _required: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('_required', _required);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1450,8 +1576,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1460,45 +1587,54 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('changeRequirement(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(_required: BigNumber): string {
+        getABIEncodedTransactionData(
+                _required: BigNumber,
+            ): string {
             assert.isBigNumber('_required', _required);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('changeRequirement(uint256)', [_required]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('changeRequirement(uint256)', [_required
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public confirmTransaction = {
-        async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.confirmTransaction.estimateGasAsync.bind(self, transactionId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            transactionId: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.confirmTransaction.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -1506,45 +1642,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.confirmTransaction.sendTransactionAsync(transactionId, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.confirmTransaction.sendTransactionAsync(transactionId
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1554,8 +1696,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1564,24 +1707,24 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmTransaction(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('confirmTransaction(uint256)', [
-                transactionId,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('confirmTransaction(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1590,32 +1733,36 @@ export class AssetProxyOwnerContract extends BaseContract {
             destination: string,
             value: BigNumber,
             data: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('destination', destination);
-            assert.isBigNumber('value', value);
-            assert.isString('data', data);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination.toLowerCase(),
+    value,
+    data
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.submitTransaction.estimateGasAsync.bind(
+                self,
                 destination.toLowerCase(),
                 value,
-                data,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.submitTransaction.estimateGasAsync.bind(self, destination.toLowerCase(), value, data),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                data
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             destination: string,
@@ -1625,27 +1772,25 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('destination', destination);
-            assert.isBigNumber('value', value);
-            assert.isString('data', data);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.submitTransaction.sendTransactionAsync(
-                destination.toLowerCase(),
-                value,
-                data,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.submitTransaction.sendTransactionAsync(destination.toLowerCase(),
+    value,
+    data
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             destination: string,
@@ -1653,29 +1798,28 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('destination', destination);
-            assert.isBigNumber('value', value);
-            assert.isString('data', data);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination.toLowerCase(),
-                value,
-                data,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isString('destination', destination);
+        assert.isBigNumber('value', value);
+        assert.isString('data', data);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination.toLowerCase(),
+    value,
+    data
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             destination: string,
@@ -1683,7 +1827,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             data: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);
             assert.isString('data', data);
@@ -1695,12 +1840,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination.toLowerCase(),
-                value,
-                data,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination.toLowerCase(),
+        value,
+        data
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1709,28 +1853,30 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('submitTransaction(address,uint256,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(destination: string, value: BigNumber, data: string): string {
+        getABIEncodedTransactionData(
+                destination: string,
+                value: BigNumber,
+                data: string,
+            ): string {
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);
             assert.isString('data', data);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [
-                destination.toLowerCase(),
-                value,
-                data,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('submitTransaction(address,uint256,bytes)', [destination.toLowerCase(),
+        value,
+        data
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1739,7 +1885,8 @@ export class AssetProxyOwnerContract extends BaseContract {
             index_0: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isBigNumber('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1749,8 +1896,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('confirmationTimes(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('confirmationTimes(uint256)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1759,27 +1907,33 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('confirmationTimes(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: BigNumber): string {
+        getABIEncodedTransactionData(
+                index_0: BigNumber,
+            ): string {
             assert.isBigNumber('index_0', index_0);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('confirmationTimes(uint256)', [index_0]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('confirmationTimes(uint256)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public MAX_OWNER_COUNT = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<BigNumber
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1788,7 +1942,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
+            const self = this as any as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('MAX_OWNER_COUNT()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1798,26 +1952,30 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('MAX_OWNER_COUNT()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AssetProxyOwnerContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('MAX_OWNER_COUNT()', []);
             return abiEncodedTransactionData;
         },
     };
     public required = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<BigNumber
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -1826,7 +1984,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
+            const self = this as any as AssetProxyOwnerContract;
             const encodedData = self._strictEncodeArguments('required()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -1836,20 +1994,20 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('required()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AssetProxyOwnerContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('required()', []);
             return abiEncodedTransactionData;
         },
@@ -1858,30 +2016,33 @@ export class AssetProxyOwnerContract extends BaseContract {
         async sendTransactionAsync(
             owner: string,
             newOwner: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('owner', owner);
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner.toLowerCase(),
+    newOwner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.replaceOwner.estimateGasAsync.bind(
+                self,
                 owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.replaceOwner.estimateGasAsync.bind(self, owner.toLowerCase(), newOwner.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                newOwner.toLowerCase()
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             owner: string,
@@ -1890,55 +2051,57 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('owner', owner);
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.replaceOwner.sendTransactionAsync(
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.replaceOwner.sendTransactionAsync(owner.toLowerCase(),
+    newOwner.toLowerCase()
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(owner: string, newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('owner', owner);
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            owner: string,
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isString('owner', owner);
+        assert.isString('newOwner', newOwner);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner.toLowerCase(),
+    newOwner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             owner: string,
             newOwner: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1949,11 +2112,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('replaceOwner(address,address)', [owner.toLowerCase(),
+        newOwner.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1962,49 +2124,57 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('replaceOwner(address,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(owner: string, newOwner: string): string {
+        getABIEncodedTransactionData(
+                owner: string,
+                newOwner: string,
+            ): string {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [
-                owner.toLowerCase(),
-                newOwner.toLowerCase(),
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('replaceOwner(address,address)', [owner.toLowerCase(),
+        newOwner.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public executeTransaction = {
-        async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(self, transactionId),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            transactionId: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.executeTransaction.estimateGasAsync.bind(
+                self,
+                transactionId
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -2012,45 +2182,51 @@ export class AssetProxyOwnerContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const txHashPromise = self.executeTransaction.sendTransactionAsync(transactionId, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const txHashPromise = self.executeTransaction.sendTransactionAsync(transactionId
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            transactionId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('transactionId', transactionId);
+        const self = this as any as AssetProxyOwnerContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('transactionId', transactionId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -2060,8 +2236,9 @@ export class AssetProxyOwnerContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as AssetProxyOwnerContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId]);
+            const self = this as any as AssetProxyOwnerContract;
+            const encodedData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2070,36 +2247,37 @@ export class AssetProxyOwnerContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(transactionId: BigNumber): string {
+        getABIEncodedTransactionData(
+                transactionId: BigNumber,
+            ): string {
             assert.isBigNumber('transactionId', transactionId);
-            const self = (this as any) as AssetProxyOwnerContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256)', [
-                transactionId,
-            ]);
+            const self = this as any as AssetProxyOwnerContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256)', [transactionId
+        ]);
             return abiEncodedTransactionData;
         },
     };
-    private readonly _subscriptionManager: SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>;
-    public static async deployFrom0xArtifactAsync(
+private readonly _subscriptionManager: SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>;
+public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        _owners: string[],
-        _assetProxyContracts: string[],
-        _required: BigNumber,
-        _secondsTimeLocked: BigNumber,
+        artifactDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+            _owners: string[],
+            _assetProxyContracts: string[],
+            _required: BigNumber,
+            _secondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -2112,26 +2290,23 @@ export class AssetProxyOwnerContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return AssetProxyOwnerContract.deployAsync(
-            bytecode,
-            abi,
-            provider,
-            txDefaults,
-            _owners,
-            _assetProxyContracts,
-            _required,
-            _secondsTimeLocked,
-        );
+        const abiDependencies = _.mapValues(artifactDependencies, (artifactDependency: ContractArtifact | SimpleContractArtifact) => {return artifactDependency.compilerOutput.abi});
+        return AssetProxyOwnerContract.deployAsync(bytecode, abi, provider, txDefaults, abiDependencies, _owners,
+_assetProxyContracts,
+_required,
+_secondsTimeLocked
+);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        _owners: string[],
-        _assetProxyContracts: string[],
-        _required: BigNumber,
-        _secondsTimeLocked: BigNumber,
+        abiDependencies: { [contractName: string]: ContractAbi },
+            _owners: string[],
+            _assetProxyContracts: string[],
+            _required: BigNumber,
+            _secondsTimeLocked: BigNumber,
     ): Promise<AssetProxyOwnerContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -2141,17 +2316,29 @@ export class AssetProxyOwnerContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_owners, _assetProxyContracts, _required, _secondsTimeLocked] = BaseContract._formatABIDataItemList(
+        [_owners,
+_assetProxyContracts,
+_required,
+_secondsTimeLocked
+] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_owners, _assetProxyContracts, _required, _secondsTimeLocked],
+            [_owners,
+_assetProxyContracts,
+_required,
+_secondsTimeLocked
+],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_owners, _assetProxyContracts, _required, _secondsTimeLocked]);
+        const txData = deployInfo.encode(bytecode, [_owners,
+_assetProxyContracts,
+_required,
+_secondsTimeLocked
+]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            { data: txData },
+            {data: txData},
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -2159,17 +2346,22 @@ export class AssetProxyOwnerContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`AssetProxyOwner successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new AssetProxyOwnerContract(txReceipt.contractAddress as string, provider, txDefaults);
-        contractInstance.constructorArgs = [_owners, _assetProxyContracts, _required, _secondsTimeLocked];
+        const contractInstance = new AssetProxyOwnerContract(txReceipt.contractAddress as string, provider, txDefaults, abiDependencies);
+        contractInstance.constructorArgs = [_owners,
+_assetProxyContracts,
+_required,
+_secondsTimeLocked
+];
         return contractInstance;
     }
+
 
     /**
      * @returns      The contract ABI
      */
     public static ABI(): ContractAbi {
         const abi = [
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2188,7 +2380,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2197,12 +2389,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'removeOwner',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2211,12 +2404,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'revokeConfirmation',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2235,7 +2429,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2258,7 +2452,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2267,14 +2461,16 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'executeRemoveAuthorizedAddressAtIndex',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'secondsTimeLocked',
                 outputs: [
                     {
@@ -2286,7 +2482,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2309,7 +2505,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2322,12 +2518,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'registerAssetProxy',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2336,12 +2533,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'addOwner',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2360,7 +2558,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2369,12 +2567,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'changeTimeLock',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2393,7 +2592,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2412,7 +2611,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2443,9 +2642,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'getOwners',
                 outputs: [
                     {
@@ -2457,7 +2657,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2488,7 +2688,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2507,9 +2707,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'transactionCount',
                 outputs: [
                     {
@@ -2521,7 +2722,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2530,12 +2731,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'changeRequirement',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2544,12 +2746,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'confirmTransaction',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2576,7 +2779,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -2595,9 +2798,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'MAX_OWNER_COUNT',
                 outputs: [
                     {
@@ -2609,9 +2813,10 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'required',
                 outputs: [
                     {
@@ -2623,7 +2828,7 @@ export class AssetProxyOwnerContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2636,12 +2841,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'replaceOwner',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -2650,12 +2856,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'executeTransaction',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 inputs: [
                     {
                         name: '_owners',
@@ -2674,19 +2881,22 @@ export class AssetProxyOwnerContract extends BaseContract {
                         type: 'uint256',
                     },
                 ],
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'constructor',
             },
-            {
-                inputs: [],
-                outputs: [],
+            { 
+                inputs: [
+                ],
+                outputs: [
+                ],
                 payable: true,
                 stateMutability: 'payable',
                 type: 'fallback',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2701,10 +2911,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'AssetProxyRegistration',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2719,10 +2930,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'ConfirmationTimeSet',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2732,10 +2944,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'TimeLockChange',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2750,10 +2963,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'Confirmation',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2768,10 +2982,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'Revocation',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2781,10 +2996,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'Submission',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2794,10 +3010,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'Execution',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2807,10 +3024,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'ExecutionFailure',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2825,10 +3043,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'Deposit',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2838,10 +3057,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'OwnerAddition',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2851,10 +3071,11 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'OwnerRemoval',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -2864,7 +3085,8 @@ export class AssetProxyOwnerContract extends BaseContract {
                     },
                 ],
                 name: 'RequirementChange',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
         ] as ContractAbi;
@@ -2938,15 +3160,15 @@ export class AssetProxyOwnerContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('AssetProxyOwner', AssetProxyOwnerContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
+        super('AssetProxyOwner', AssetProxyOwnerContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>(
             AssetProxyOwnerContract.ABI(),
             this._web3Wrapper,
         );
     }
-}
+} 
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align

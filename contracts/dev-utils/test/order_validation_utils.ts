@@ -83,6 +83,7 @@ describe('OrderValidationUtils', () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             zrxAssetData,
         );
 
@@ -90,6 +91,7 @@ describe('OrderValidationUtils', () => {
             proxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            artifacts,
         );
         const exchangeWrapper = new ExchangeWrapper(exchange, provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
@@ -102,6 +104,7 @@ describe('OrderValidationUtils', () => {
             artifacts.DevUtils,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
             zrxAssetData,
         );

@@ -35,7 +35,7 @@ describe('Exchange libs', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         const makerAddress = accounts[0];
-        libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults);
+        libs = await TestLibsContract.deployFrom0xArtifactAsync(artifacts.TestLibs, provider, txDefaults, artifacts);
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,

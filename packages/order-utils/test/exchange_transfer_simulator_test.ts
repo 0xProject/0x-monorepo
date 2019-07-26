@@ -46,6 +46,7 @@ describe('ExchangeTransferSimulator', async () => {
             artifacts.ERC20Proxy,
             provider,
             txDefaults,
+            artifacts,
         );
         erc20ProxyAddress = erc20Proxy.address;
 
@@ -58,6 +59,7 @@ describe('ExchangeTransferSimulator', async () => {
             artifacts.DummyERC20Token,
             provider,
             txDefaults,
+            artifacts,
             name,
             symbol,
             decimals,

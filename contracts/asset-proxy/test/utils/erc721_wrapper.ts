@@ -29,6 +29,7 @@ export class ERC721Wrapper {
                     erc721Artifacts.DummyERC721Token,
                     this._provider,
                     txDefaults,
+                    artifacts,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
                 ),
@@ -41,6 +42,7 @@ export class ERC721Wrapper {
             artifacts.ERC721Proxy,
             this._provider,
             txDefaults,
+            artifacts,
         );
         this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;

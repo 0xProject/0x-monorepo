@@ -212,8 +212,8 @@ export class BaseContract {
             this._abiEncoderByFunctionSignature[functionSignature] = abiEncoder;
             this._web3Wrapper.abiDecoder.addABI(abi, contractName);
         });
-        _.each(abiDependencies, (abi, name) => {
-            this._web3Wrapper.abiDecoder.addABI(abi, name);
+        _.each(abiDependencies, (abiDependency, contractDependencyName) => {
+            this._web3Wrapper.abiDecoder.addABI(abiDependency, contractDependencyName);
         });
     }
 }

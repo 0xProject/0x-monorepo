@@ -137,6 +137,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         libsArtifacts.TestLibs,
         provider,
         txDefaults,
+        dependencyArtifacts,
     );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(

@@ -1,25 +1,17 @@
-import { artifacts as erc1155Artifacts } from '@0x/contracts-erc1155';
-import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
-import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
-import {
-    FillResults,
-    formatters,
-    OrderInfo,
-    orderUtils,
-    Web3ProviderEngine,
-} from '@0x/contracts-test-utils';
+import { FillResults, formatters, OrderInfo, orderUtils, Web3ProviderEngine } from '@0x/contracts-test-utils';
 import { SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { AbiEncoder, BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { MethodAbi, TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { artifacts, ExchangeContract } from '../../src';
+import { ExchangeContract } from '../../src';
 
 import { AbiDecodedFillOrderData } from './types';
 
 export class ExchangeWrapper {
     private readonly _exchange: ExchangeContract;
+    // tslint:disable no-unused-variable
     private readonly _web3Wrapper: Web3Wrapper;
     constructor(exchangeContract: ExchangeContract, provider: Web3ProviderEngine | ZeroExProvider) {
         this._exchange = exchangeContract;
@@ -186,7 +178,9 @@ export class ExchangeWrapper {
         assetProxyAddress: string,
         from: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txReceipt = await this._exchange.registerAssetProxy.awaitTransactionSuccessAsync(assetProxyAddress, { from });
+        const txReceipt = await this._exchange.registerAssetProxy.awaitTransactionSuccessAsync(assetProxyAddress, {
+            from,
+        });
         return txReceipt;
     }
     public async executeTransactionAsync(

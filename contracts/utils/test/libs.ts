@@ -24,6 +24,7 @@ describe('Libs', () => {
                     artifacts.TestConstants,
                     provider,
                     txDefaults,
+                    artifacts,
                 );
                 const isValid = await testConstants.assertValidZrxAssetData.callAsync();
                 expect(isValid).to.be.equal(true);

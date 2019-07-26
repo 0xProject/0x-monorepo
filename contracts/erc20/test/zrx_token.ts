@@ -26,7 +26,12 @@ describe('ZRXToken', () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         owner = accounts[0];
         spender = accounts[1];
-        zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(artifacts.ZRXToken, provider, txDefaults);
+        zrxToken = await ZRXTokenContract.deployFrom0xArtifactAsync(
+            artifacts.ZRXToken,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         MAX_UINT = constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
     });
     beforeEach(async () => {
