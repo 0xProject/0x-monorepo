@@ -9,6 +9,7 @@
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/SafeMath.json",
+        "generated-artifacts/TestAbi.json",
         "generated-artifacts/TestConstants.json",
         "generated-artifacts/TestLibAddressArray.json",
         "generated-artifacts/TestLibBytes.json",
