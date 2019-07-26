@@ -36,6 +36,7 @@
         "test/TestConstants.sol",
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol",
+        "test/TestOwnable.sol",
         "test/TestSafeMath.sol"
     ]
 }

@@ -17,6 +17,7 @@ import * as SafeMath from '../generated-artifacts/SafeMath.json';
 import * as TestConstants from '../generated-artifacts/TestConstants.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
+import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
 import * as TestSafeMath from '../generated-artifacts/TestSafeMath.json';
 export const artifacts = {
     LibAddress: LibAddress as ContractArtifact,
@@ -31,5 +32,6 @@ export const artifacts = {
     TestConstants: TestConstants as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
+    TestOwnable: TestOwnable as ContractArtifact,
     TestSafeMath: TestSafeMath as ContractArtifact,
 };

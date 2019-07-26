@@ -15,4 +15,5 @@ export * from '../generated-wrappers/safe_math';
 export * from '../generated-wrappers/test_constants';
 export * from '../generated-wrappers/test_lib_address_array';
 export * from '../generated-wrappers/test_lib_bytes';
+export * from '../generated-wrappers/test_ownable';
 export * from '../generated-wrappers/test_safe_math';
