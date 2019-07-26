@@ -24,7 +24,7 @@ import {
     SwapQuoteGetOutputOptsBase,
 } from '../types';
 import { assert } from '../utils/assert';
-import { exchangeWrappersUtils } from '../utils/exchange_wrappers_utils';
+import { ExchangeWrappersUtils } from '../utils/exchange_wrappers_utils';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 import { utils } from '../utils/utils';
 
@@ -33,6 +33,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
     public readonly networkId: number;
 
     private readonly _contractWrappers: ContractWrappers;
+    private readonly _exchangeWrappersUtils: ExchangeWrappersUtils;
 
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -41,6 +42,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         this.provider = provider;
         this.networkId = networkId;
+        this._exchangeWrappersUtils = new ExchangeWrappersUtils(provider, options);
         this._contractWrappers = new ContractWrappers(this.provider, {
             networkId,
         });
@@ -56,21 +58,21 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData) as ERC20AssetData;
             const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData) as ERC20AssetData;
 
+            const { orderData, to } = this._exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote.orders);
+
             const params: DydxExchangeWrappersParams = {
-                tradeOriginator: constants.NULL_ADDRESS,
-                // TODO: specify receiver
-                receiver: constants.NULL_ADDRESS,
+                tradeOriginator: constants.NULL_ADDRESS, // tradeOriginator is the CFL smart contract that is calling the exchange wrapper
+                receiver: opts.takerAddress || constants.NULL_ADDRESS,
                 makerToken: decodedMakerAssetData.tokenAddress,
                 takerToken: decodedTakerAssetData.tokenAddress,
                 requestedFillAmount: quote.takerAssetFillAmount,
-                orderData: exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote),
+                orderData,
             };
 
             return {
                 params,
                 methodAbi: constants.DYDX_EXCHANGE_WRAPPERS_METHOD_ABI,
-                // TODO: add recipient of dydx exchange wrappers parameters
-                to: '',
+                to,
                 ethAmount: smartContractParams.ethAmount,
             };
         } else {

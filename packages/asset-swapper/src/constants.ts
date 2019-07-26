@@ -1,5 +1,6 @@
 import { SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
+import { AbiType, MethodAbi } from 'ethereum-types';
 
 import {
     ForwarderSwapQuoteExecutionOpts,
@@ -9,7 +10,6 @@ import {
     SwapQuoteRequestOpts,
     SwapQuoterOpts,
 } from './types';
-import { MethodAbi, AbiType } from 'ethereum-protocol';
 
 const NULL_BYTES = '0x';
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000';

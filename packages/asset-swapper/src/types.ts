@@ -191,6 +191,7 @@ export interface SwapQuoteConsumerOpts {
 }
 
 export interface SwapQuoteGetExchangeWrappersParamsOpts extends SwapQuoteGetOutputOpts {
+    takerAddress?: string;
     useExchangeWrapperType: ExchangeWrapperType;
 }
 
