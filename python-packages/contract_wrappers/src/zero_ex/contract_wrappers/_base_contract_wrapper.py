@@ -96,6 +96,17 @@ class BaseContractWrapper:
             raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
 
+    def normalize_tx_params(self, tx_params):
+        """Normalize and return the given transaction parameters."""
+        if not tx_params:
+            tx_params = TxParams()
+        if not tx_params.from_:
+            tx_params.from_ = (
+                self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
+            )
+        tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
+        return tx_params
+
     def invoke_function_call(self, func, tx_params, view_only):
         """Invoke the given contract method."""
         if view_only:
@@ -105,13 +116,7 @@ class BaseContractWrapper:
                 "Cannot send transaction because no local private_key"
                 " or account found."
             )
-        if not tx_params:
-            tx_params = TxParams()
-        if not tx_params.from_:
-            tx_params.from_ = (
-                self._web3_eth.defaultAccount or self._web3_eth.accounts[0]
-            )
-        tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
+        tx_params = self.normalize_tx_params(tx_params)
         if self._private_key:
             res = self._sign_and_send_raw_direct(func, tx_params)
         else:
