@@ -35,6 +35,7 @@
         "src/interfaces/IOwnable.sol",
         "test/TestConstants.sol",
         "test/TestLibAddressArray.sol",
-        "test/TestLibBytes.sol"
+        "test/TestLibBytes.sol",
+        "test/TestSafeMath.sol"
     ]
 }

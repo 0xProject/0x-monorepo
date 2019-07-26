@@ -10,7 +10,7 @@ export enum SafeMathErrorCodes {
 }
 
 export class SafeMathError extends RevertError {
-    constructor(error?: SafeMathErrorCodes, a?: BigNumber | number | string, b?: BigNumber | number | string) {
+    constructor(error?: SafeMathErrorCodes, a?: BigNumber, b?: BigNumber) {
         super('SafeMathError', 'SafeMathError(uint8 error, uint256 a, uint256 b)', {
             error,
             a,
