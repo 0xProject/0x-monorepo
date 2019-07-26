@@ -50,7 +50,7 @@
         "@0x/utils": "^4.4.1",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
-        "@types/mocha": "^2.2.42",
+        "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "dirty-chai": "^2.0.1",
         "lodash.foreach": "^4.5.0",

@@ -60,7 +60,7 @@
         "@types/ethereumjs-tx": "^1.0.0",
         "@types/hdkey": "^0.7.0",
         "@types/lodash": "4.14.104",
-        "@types/mocha": "^2.2.42",
+        "@types/mocha": "^5.2.7",
         "@types/node": "*",
         "@types/sinon": "^2.2.2",
         "chai": "^4.0.1",

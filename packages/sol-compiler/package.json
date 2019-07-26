@@ -50,6 +50,7 @@
         "@types/require-from-string": "^1.2.0",
         "@types/semver": "5.5.0",
         "@types/web3-provider-engine": "^14.0.0",
+        "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
