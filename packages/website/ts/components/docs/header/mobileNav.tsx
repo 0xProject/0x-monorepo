@@ -30,7 +30,7 @@ export const MobileNav: React.FC<IMobileNavProps> = props => {
     const { navItems, isToggled, toggleMobileNav } = props;
 
     return (
-        <MediaQuery maxWidth={800}>
+        <MediaQuery maxWidth={1199}>
             <Wrap isToggled={isToggled}>
                 <Section>
                     <SearchInput isHome={false} />

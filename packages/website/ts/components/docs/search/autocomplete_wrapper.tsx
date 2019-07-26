@@ -76,7 +76,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             background-position: left 21px center;
             font-size: 1rem;
 
-            @media (min-width: 800px) {
+            @media (min-width: 1200px) {
                 position: absolute;
                 right: 30px;
                 top: -24px;
@@ -89,7 +89,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
                 border: 1px solid #dbdfdd;
                 border-bottom-color: ${colors.brandLight};
                 
-                @media (min-width: 800px) {
+                @media (min-width: 1200px) {
                     width: 900px;
                 }
             }
@@ -169,7 +169,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             `
             width: 100%;
 
-            @media (min-width: 800px) {
+            @media (min-width: 1200px) {
                 width: 900px;
                 right: 30px;
                 top: 28px;
