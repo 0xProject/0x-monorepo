@@ -61,10 +61,6 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             &--focused,
             &--open {
                 border-bottom-color: ${colors.brandLight};
-                
-                @media (max-width: 900px) {
-                    border-bottom-color: transparent;
-                }
             }
         `};
 
