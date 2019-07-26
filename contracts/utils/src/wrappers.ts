@@ -12,3 +12,5 @@ export * from '../generated-wrappers/safe_math';
 export * from '../generated-wrappers/test_constants';
 export * from '../generated-wrappers/test_lib_address_array';
 export * from '../generated-wrappers/test_lib_bytes';
+export * from '../generated-wrappers/test_log_decoding';
+export * from '../generated-wrappers/test_log_decoding_downstream';
