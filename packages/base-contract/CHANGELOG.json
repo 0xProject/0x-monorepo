@@ -3,7 +3,11 @@
         "version": "5.3.0",
         "changes": [
             {
-                "note": "Updated interface to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
                 "pr": 1995
             }
         ]

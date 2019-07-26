@@ -11,7 +11,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('TestLogDecoding', () => {
+describe('TestLogDecoding', () => {
     let testLogDecodingWithDependencies: TestLogDecodingContract;
     let testLogDecodingDeployedWithoutDependencies: TestLogDecodingContract;
     const expectedEvent = {
