@@ -18,11 +18,13 @@
 
 pragma solidity ^0.5.5;
 
+
 contract ITestLogDecodingDownstream {
 
     /// @dev Emits a local event
     function emitEvent() external;
 }
+
 
 contract TestLogDecodingDownstream is
     ITestLogDecodingDownstream

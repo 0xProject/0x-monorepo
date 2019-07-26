@@ -16,13 +16,13 @@ describe.only('TestLogDecoding', () => {
     let testLogDecodingDeployedWithoutDependencies: TestLogDecodingContract;
     const expectedEvent = {
         foo: new BigNumber(256),
-        bar: "0x1234",
-        car: "4321",
+        bar: '0x1234',
+        car: '4321',
     };
     const expectedDownstreamEvent = {
         lorem: new BigNumber(256),
-        ipsum: "4321",
-    }
+        ipsum: '4321',
+    };
     const emptyDependencyList = {};
 
     before(async () => {
@@ -30,13 +30,13 @@ describe.only('TestLogDecoding', () => {
             artifacts.TestLogDecoding,
             provider,
             txDefaults,
-            emptyDependencyList
+            emptyDependencyList,
         );
         testLogDecodingWithDependencies = await TestLogDecodingContract.deployFrom0xArtifactAsync(
             artifacts.TestLogDecoding,
             provider,
             txDefaults,
-            artifacts
+            artifacts,
         );
     });
     beforeEach(async () => {
@@ -50,21 +50,27 @@ describe.only('TestLogDecoding', () => {
         it('should decode locally emitted event args when no dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEvent.awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
+            // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
         });
         it('should not event args when no dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEventDownstream.awaitTransactionSuccessAsync();
-            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();//(emptyArgs);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();
         });
         it('should decode locally emitted event args when dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingWithDependencies.emitEvent.awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
+            // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
         });
         it('should decode downstream event args when dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingWithDependencies.emitEventDownstream.awaitTransactionSuccessAsync();
             expect(txReceipt.logs.length).to.be.equal(1);
-            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedDownstreamEvent);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(
+                expectedDownstreamEvent,
+            );
         });
     });
 });

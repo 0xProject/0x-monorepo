@@ -20,6 +20,7 @@ pragma solidity ^0.5.5;
 
 import "./TestLogDecodingDownstream.sol";
 
+
 contract TestLogDecoding {
 
     /// @dev arbitrary event; fields to not matter.
