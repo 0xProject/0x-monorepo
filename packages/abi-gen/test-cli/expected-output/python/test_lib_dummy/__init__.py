@@ -64,7 +64,7 @@ class PublicAddConstantMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
+        return self.contract.call(func=func, tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -74,7 +74,7 @@ class PublicAddConstantMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
 
 class PublicAddOneMethod:
     """Various interfaces to the publicAddOne method."""
@@ -102,7 +102,7 @@ class PublicAddOneMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
+        return self.contract.call(func=func, tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -112,7 +112,7 @@ class PublicAddOneMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy(BaseContractWrapper):

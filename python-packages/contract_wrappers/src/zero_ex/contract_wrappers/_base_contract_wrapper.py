@@ -107,16 +107,19 @@ class BaseContractWrapper:
         tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
         return tx_params
 
-    def invoke_function_call(self, func, tx_params, view_only):
-        """Invoke the given contract method."""
+    def call(self, func, tx_params):
+        """Execute given contract method as an eth_call."""
         tx_params = self.normalize_tx_params(tx_params)
-        if view_only:
-            return func.call(tx_params.as_dict())
+        return func.call(tx_params.as_dict())
+
+    def invoke_function_call(self, func, tx_params):
+        """Invoke the given contract method."""
         if not self._can_send_tx:
             raise Exception(
                 "Cannot send transaction because no local private_key"
                 " or account found."
             )
+        tx_params = self.normalize_tx_params(tx_params)
         if self._private_key:
             res = self._sign_and_send_raw_direct(func, tx_params)
         else:

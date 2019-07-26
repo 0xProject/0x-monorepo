@@ -48,7 +48,7 @@ class {{toPythonClassname this.name}}Method:
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.{{this.name}}({{> params}})
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=True)
+        return self.contract.call(func=func, tx_params=tx_params)
 
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -58,8 +58,6 @@ class {{toPythonClassname this.name}}Method:
         {{#if this.constant~}}
         {{#if this.devdoc.return}}
 {{makeReturnDocstringRole this.devdoc.return 8}}{{/if}}
-        {{else}}
-        :param view_only: whether to use transact() or call()
         {{/if}}
         """
         {{#if inputs}}
@@ -67,4 +65,4 @@ class {{toPythonClassname this.name}}Method:
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.{{this.name}}({{> params}})
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params, view_only=False)
+        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
