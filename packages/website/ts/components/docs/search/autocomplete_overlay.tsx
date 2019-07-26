@@ -3,10 +3,13 @@ import styled from 'styled-components';
 
 interface IAutocompleteOverlayProps {
     onClick: () => void;
+    shouldLockScroll?: boolean;
 }
 
-export const AutocompleteOverlay: React.FC<IAutocompleteOverlayProps> = ({ onClick }) => {
-    // useLockBodyScroll();
+export const AutocompleteOverlay: React.FC<IAutocompleteOverlayProps> = ({ onClick, shouldLockScroll }) => {
+    if (shouldLockScroll) {
+        useLockBodyScroll();
+    }
 
     return <Overlay onClick={onClick} />;
 };
@@ -28,7 +31,7 @@ const Overlay = styled.div<IAutocompleteOverlayProps>`
 `;
 
 // This could be extracted to reuse
-function useLockBodyScroll() {
+function useLockBodyScroll(): void {
     useLayoutEffect(() => {
         // Get original value of body styles
         const { maxHeight, overflowY } = window.getComputedStyle(document.body);

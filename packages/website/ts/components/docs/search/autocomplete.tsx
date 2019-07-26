@@ -125,7 +125,9 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
                     getSectionSuggestions={getSectionSuggestions}
                 />
             </AutocompleteWrapper>
-            {currentRefinement && <AutocompleteOverlay onClick={onSuggestionsClearRequested} />}
+            {currentRefinement && (
+                <AutocompleteOverlay onClick={onSuggestionsClearRequested} shouldLockScroll={!isHome} />
+            )}
         </>
     );
 };
