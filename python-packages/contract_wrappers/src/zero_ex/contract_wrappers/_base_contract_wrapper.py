@@ -112,7 +112,7 @@ class BaseContractWrapper:
         tx_params = self.normalize_tx_params(tx_params)
         return func.call(tx_params.as_dict())
 
-    def invoke_function_call(self, func, tx_params):
+    def send_transaction(self, func, tx_params):
         """Invoke the given contract method."""
         if not self._can_send_tx:
             raise Exception(

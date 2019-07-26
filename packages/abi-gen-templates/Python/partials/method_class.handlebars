@@ -65,4 +65,4 @@ class {{toPythonClassname this.name}}Method:
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.{{this.name}}({{> params}})
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)

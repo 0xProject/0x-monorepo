@@ -103,7 +103,7 @@ class SimpleRequireMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.simpleRequire()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class AcceptsAnArrayOfBytesMethod:
     """Various interfaces to the acceptsAnArrayOfBytes method."""
@@ -149,7 +149,7 @@ class AcceptsAnArrayOfBytesMethod:
         """
         (a) = self.validate_and_normalize_inputs(a)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.acceptsAnArrayOfBytes(a)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class EcrecoverFnMethod:
     """Various interfaces to the ecrecoverFn method."""
@@ -200,7 +200,7 @@ class EcrecoverFnMethod:
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.ecrecoverFn(_hash, v, r, s)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class AcceptsBytesMethod:
     """Various interfaces to the acceptsBytes method."""
@@ -237,7 +237,7 @@ class AcceptsBytesMethod:
         """
         (a) = self.validate_and_normalize_inputs(a)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.acceptsBytes(a)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class RevertWithConstantMethod:
     """Various interfaces to the revertWithConstant method."""
@@ -262,7 +262,7 @@ class RevertWithConstantMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.revertWithConstant()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class SimpleRevertMethod:
     """Various interfaces to the simpleRevert method."""
@@ -287,7 +287,7 @@ class SimpleRevertMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.simpleRevert()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class NestedStructOutputMethod:
     """Various interfaces to the nestedStructOutput method."""
@@ -312,7 +312,7 @@ class NestedStructOutputMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.nestedStructOutput()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class RequireWithConstantMethod:
     """Various interfaces to the requireWithConstant method."""
@@ -337,7 +337,7 @@ class RequireWithConstantMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.requireWithConstant()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class WithAddressInputMethod:
     """Various interfaces to the withAddressInput method."""
@@ -401,7 +401,7 @@ class WithAddressInputMethod:
         """
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.withAddressInput(x, a, b, y, c)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class StructInputMethod:
     """Various interfaces to the structInput method."""
@@ -437,7 +437,7 @@ class StructInputMethod:
         """
         (s) = self.validate_and_normalize_inputs(s)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.structInput(s)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class NonPureMethodMethod:
     """Various interfaces to the nonPureMethod method."""
@@ -461,7 +461,7 @@ class NonPureMethodMethod:
         :param tx_params: transaction parameters
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.nonPureMethod()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class SimplePureFunctionWithInputMethod:
     """Various interfaces to the simplePureFunctionWithInput method."""
@@ -499,7 +499,7 @@ class SimplePureFunctionWithInputMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.simplePureFunctionWithInput(x)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class NonPureMethodThatReturnsNothingMethod:
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
@@ -523,7 +523,7 @@ class NonPureMethodThatReturnsNothingMethod:
         :param tx_params: transaction parameters
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.nonPureMethodThatReturnsNothing()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class SimplePureFunctionMethod:
     """Various interfaces to the simplePureFunction method."""
@@ -548,7 +548,7 @@ class SimplePureFunctionMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.simplePureFunction()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class NestedStructInputMethod:
     """Various interfaces to the nestedStructInput method."""
@@ -584,7 +584,7 @@ class NestedStructInputMethod:
         """
         (n) = self.validate_and_normalize_inputs(n)
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.nestedStructInput(n)
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class StructOutputMethod:
     """Various interfaces to the structOutput method."""
@@ -613,7 +613,7 @@ class StructOutputMethod:
         :returns: a Struct struct
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.structOutput()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class PureFunctionWithConstantMethod:
     """Various interfaces to the pureFunctionWithConstant method."""
@@ -638,7 +638,7 @@ class PureFunctionWithConstantMethod:
 
         """
         func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.pureFunctionWithConstant()
-        return self.contract.invoke_function_call(func=func, tx_params=tx_params)
+        return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AbiGenDummy(BaseContractWrapper):
