@@ -10,12 +10,12 @@
         "generated-artifacts/LibEIP712.json",
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
-        "generated-artifacts/RichErrors.json",
         "generated-artifacts/SafeMath.json",
         "generated-artifacts/TestConstants.json",
         "generated-artifacts/TestLibAddressArray.json",
         "generated-artifacts/TestLibBytes.json",
         "generated-artifacts/TestOwnable.json",
+        "generated-artifacts/TestReentrancyGuard.json",
         "generated-artifacts/TestSafeMath.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]

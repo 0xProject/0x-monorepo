@@ -30,13 +30,13 @@
         "src/LibEIP712.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",
-        "src/RichErrors.sol",
         "src/SafeMath.sol",
         "src/interfaces/IOwnable.sol",
         "test/TestConstants.sol",
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol",
         "test/TestOwnable.sol",
+        "test/TestReentrancyGuard.sol",
         "test/TestSafeMath.sol"
     ]
 }
