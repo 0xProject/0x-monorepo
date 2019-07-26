@@ -5,6 +5,8 @@ import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
 
+import { SidebarWrapper } from 'ts/components/docs/sidebar/sidebar_wrapper';
+
 interface ITableOfContentsProps {
     contents: IContents[];
 }
@@ -18,11 +20,9 @@ export interface IContents {
 
 export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents }) => {
     return (
-        <ContentsAside>
-            <ContentsWrapper>
-                <Contents contents={contents} />
-            </ContentsWrapper>
-        </ContentsAside>
+        <SidebarWrapper>
+            <Contents contents={contents} />
+        </SidebarWrapper>
     );
 };
 
@@ -43,15 +43,6 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
         </ContentsList>
     );
 };
-
-const ContentsAside = styled.aside`
-    /* position: relative; */
-`;
-
-const ContentsWrapper = styled.div`
-    /* position: sticky; */
-    /* top: 154px; To make space for the header (react-headroom) when clicking on links */
-`;
 
 const ContentsList = styled.ul`
     li {
