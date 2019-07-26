@@ -44,4 +44,12 @@ contract TestLogDecoding {
         TestLogDecodingDownstream testLogDecodingDownstream = new TestLogDecodingDownstream();
         ITestLogDecodingDownstream(testLogDecodingDownstream).emitEvent();
     }
+
+    /// @dev Emits a local event and a downstream event
+    function emitEventsLocalAndDownstream()
+        public
+    {
+        emitEvent();
+        emitEventDownstream();
+    }
 }

@@ -55,8 +55,17 @@ describe('TestLogDecoding', () => {
         });
         it('should not event args when no dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEventDownstream.awaitTransactionSuccessAsync();
+            expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();
+        });
+        it('should decode args for local but not downstream event when no dependencies are passed into wrapper', async () => {
+            const txReceipt = await testLogDecodingDeployedWithoutDependencies.emitEventsLocalAndDownstream.awaitTransactionSuccessAsync();
+            expect(txReceipt.logs.length).to.be.equal(2);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[1] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.undefined();
         });
         it('should decode locally emitted event args when dependencies are passed into wrapper', async () => {
             const txReceipt = await testLogDecodingWithDependencies.emitEvent.awaitTransactionSuccessAsync();
@@ -69,6 +78,16 @@ describe('TestLogDecoding', () => {
             expect(txReceipt.logs.length).to.be.equal(1);
             // tslint:disable no-unnecessary-type-assertion
             expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(
+                expectedDownstreamEvent,
+            );
+        });
+        it('should decode args for both local and downstream events when dependencies are passed into wrapper', async () => {
+            const txReceipt = await testLogDecodingWithDependencies.emitEventsLocalAndDownstream.awaitTransactionSuccessAsync();
+            expect(txReceipt.logs.length).to.be.equal(2);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[0] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(expectedEvent);
+            // tslint:disable no-unnecessary-type-assertion
+            expect((txReceipt.logs[1] as LogWithDecodedArgs<DecodedLogArgs>).args).to.be.deep.equal(
                 expectedDownstreamEvent,
             );
         });
