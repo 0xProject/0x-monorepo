@@ -52,6 +52,7 @@
         "shx": "^0.2.2",
         "tslint": "5.11.0",
         "typedoc": "0.15.0",
+        "typedoc-plugin-markdown": "^2.1.0",
         "typescript": "3.0.1"
     },
     "dependencies": {
