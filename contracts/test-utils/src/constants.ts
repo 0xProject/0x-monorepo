@@ -70,5 +70,5 @@ export const constants = {
         'CANCEL_ORDERS_UP_TO',
         'SET_SIGNATURE_VALIDATOR_APPROVAL',
     ],
-    KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.SHA3_NULL)),
+    KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.KECCAK256_NULL)),
 };
