@@ -13986,9 +13986,9 @@ public-encrypt@^4.0.0:
     parse-asn1 "^5.0.0"
     randombytes "^2.0.1"
 
-publish-release@0xproject/publish-release#1.3.3-fork-updated-deps:
+"publish-release@https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed":
   version "1.3.3"
-  resolved "https://codeload.github.com/0xproject/publish-release/tar.gz/3f8be1105a356527f4b362ff456d94bf9a82f2ed"
+  resolved "https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed"
   dependencies:
     async "^0.9.0"
     ghauth "^2.0.0"
