@@ -19,7 +19,7 @@ declare global {
         type ContextDefinitionCallback<T> = (description: string, callback: SuiteCallback) => T;
 
         interface BlockchainContextDefinition {
-            reset: {
+            resets: {
                 only: BlockchainContextDefinitionCallback<ISuite>;
                 skip: BlockchainContextDefinitionCallback<void>;
                 (description: string, callback: BlockchainSuiteCallback): ISuite;
@@ -51,7 +51,7 @@ function defineBlockchainSuite<T>(
     );
 }
 
-function defineResetSuite<T>(
+function defineResetsSuite<T>(
     description: string,
     callback: Mocha.SuiteCallback,
     describeCall: Mocha.ContextDefinitionCallback<T>,
@@ -95,13 +95,13 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
         skip(description: string, callback: Mocha.BlockchainSuiteCallback): void {
             return defineBlockchainSuite(description, callback, describe.skip);
         },
-        reset: _.assign(
+        resets: _.assign(
             function(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
                 return defineBlockchainSuite(
                     description,
                     callback,
                     function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite {
-                        return defineResetSuite(_description, _callback, describe);
+                        return defineResetsSuite(_description, _callback, describe);
                     },
                 );
             },
@@ -111,7 +111,7 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
                         description,
                         callback,
                         function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite {
-                            return defineResetSuite(_description, _callback, describe.only);
+                            return defineResetsSuite(_description, _callback, describe.only);
                         },
                     );
                 },
@@ -120,7 +120,7 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
                         description,
                         callback,
                         function(_description: string, _callback: Mocha.SuiteCallback): void {
-                            return defineResetSuite(_description, _callback, describe.skip);
+                            return defineResetsSuite(_description, _callback, describe.skip);
                         },
                     );
                 },
