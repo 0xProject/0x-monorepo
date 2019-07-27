@@ -63,7 +63,7 @@
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
         "prompt": "^1.0.0",
-        "publish-release": "0xproject/publish-release#1.3.3-fork",
+        "publish-release": "0xproject/publish-release#1.3.3-fork-updated-deps",
         "rimraf": "^2.6.2",
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",
