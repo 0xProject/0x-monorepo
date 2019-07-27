@@ -14224,9 +14224,9 @@ react-helmet@^5.2.0:
     prop-types "^15.5.4"
     react-side-effect "^1.1.0"
 
-react-highlight@0xproject/react-highlight#react-peer-deps:
+"react-highlight@https://github.com/0xProject/react-highlight.git#a70c7631e09508dafc4719cbcc6f121074e1937d":
   version "1.0.0"
-  resolved "https://codeload.github.com/0xproject/react-highlight/tar.gz/a70c7631e09508dafc4719cbcc6f121074e1937d"
+  resolved "https://github.com/0xProject/react-highlight.git#a70c7631e09508dafc4719cbcc6f121074e1937d"
   dependencies:
     highlight.js "^9.11.0"
     highlightjs-solidity "^1.0.5"
@@ -14340,9 +14340,9 @@ react-router@^4.3.1:
     prop-types "^15.6.1"
     warning "^4.0.1"
 
-react-scroll@0xproject/react-scroll#pr-330-and-replace-state:
+"react-scroll@https://github.com/0xProject/react-scroll.git#d2afc2729dc09980e4113d8c38a1b012ba180d81":
   version "1.7.11"
-  resolved "https://codeload.github.com/0xproject/react-scroll/tar.gz/d2afc2729dc09980e4113d8c38a1b012ba180d81"
+  resolved "https://github.com/0xProject/react-scroll.git#d2afc2729dc09980e4113d8c38a1b012ba180d81"
   dependencies:
     lodash.throttle "^4.1.1"
     prop-types "^15.5.8"
