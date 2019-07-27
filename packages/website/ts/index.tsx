@@ -39,6 +39,7 @@ trackedTokenStorage.clearIfRequired();
 
 import 'less/all.less';
 import 'sass/modal_video.scss';
+import { constants } from 'ts/utils/constants';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
@@ -65,9 +66,6 @@ const LazySmartContractsDocumentation = createLazyComponent('Documentation', asy
 );
 const LazyConnectDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "connectDocs" */ 'ts/containers/connect_documentation'),
-);
-const LazyWeb3WrapperDocumentation = createLazyComponent('Documentation', async () =>
-    import(/* webpackChunkName: "web3WrapperDocs" */ 'ts/containers/web3_wrapper_documentation'),
 );
 const LazySolCompilerDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "solCompilerDocs" */ 'ts/containers/sol_compiler_documentation'),
@@ -228,6 +226,7 @@ render(
                                 />
                                 <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
                                 <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
+                                <Redirect from={WebsitePaths.Web3Wrapper} to={constants.URL_WEB3_WRAPPER_DOCS} />
                                 <Route component={NotFound as any} />
                             </Switch>
                         </div>
