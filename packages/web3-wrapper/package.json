@@ -20,7 +20,6 @@
         "run_mocha": "mocha --require source-map-support/register --require make-promises-safe lib/test/**/*_test.js --bail --exit",
         "test:coverage": "nyc npm run test --all && yarn coverage:report:lcov",
         "coverage:report:lcov": "nyc report --reporter=text-lcov > coverage/lcov.info",
-        "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
         "docs:md": "typedoc --excludePrivate --excludeProtected --excludeExternals --excludeNotExported --target ES5 --module commonjs --name Web3Wrapper --theme markdown --tsconfig typedoc-tsconfig.json $PROJECT_FILES"
     },
     "config": {
