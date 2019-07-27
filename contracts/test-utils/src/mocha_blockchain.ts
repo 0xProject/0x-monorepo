@@ -1,7 +1,8 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
-import * as mocha from 'mocha';
+// Import ambient declarations (and clobber Jest).
+import 'mocha';
 
 import { web3Wrapper } from './web3_wrapper';
 
@@ -42,7 +43,7 @@ function defineBlockchainSuite<T>(
     init();
     return describeCall(
         description,
-        function(this: mocha.ISuiteCallbackContext): void {
+        function(this: Mocha.ISuiteCallbackContext): void {
             callback.call(
                 this,
                 { web3Wrapper, blockchainLifecycle },
@@ -58,7 +59,7 @@ function defineResetsSuite<T>(
 ): T {
     return describeCall(
         description,
-        function(this: mocha.ISuiteCallbackContext): void {
+        function(this: Mocha.ISuiteCallbackContext): void {
             if (blockchainLifecycle !== undefined) {
                 const _blockchainLifecycle = blockchainLifecycle;
                 beforeEach(async () => {
