@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.0",
+        "changes": [
+            {
+                "note": "Added hexUtils",
+                "pr": 2001
+            }
+        ]
+    },
+    {
         "timestamp": 1563957393,
         "version": "4.4.1",
         "changes": [

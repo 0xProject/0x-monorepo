@@ -12,8 +12,7 @@ import {
     TraceInfoSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
-import { logUtils } from '@0x/utils';
-import { stripHexPrefix } from 'ethereumjs-util';
+import { hexUtils, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { costUtils } from './cost_utils';
@@ -67,7 +66,7 @@ export class ProfilerSubprovider extends TraceInfoSubprovider {
         logUtils.header('Final breakdown', '-');
         if (_.isString(receipt.contractAddress)) {
             const code = await this._web3Wrapper.getContractCodeAsync(receipt.contractAddress);
-            const codeBuff = Buffer.from(stripHexPrefix(code), 'hex');
+            const codeBuff = Buffer.from(hexUtils.stripHexPrefix(code), 'hex');
             const codeLength = codeBuff.length;
             const contractSizeCost = codeLength * DEPLOYED_BYTE_COST;
             totalCost += contractSizeCost + CREATE_COST;

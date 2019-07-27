@@ -7,6 +7,7 @@ export { providerUtils } from './provider_utils';
 export { BigNumber } from './configured_bignumber';
 export { AbiDecoder } from './abi_decoder';
 export { logUtils } from './log_utils';
+export { hexUtils } from './hex_utils';
 export { abiUtils } from './abi_utils';
 export { NULL_BYTES } from './constants';
 export { errorUtils } from './error_utils';

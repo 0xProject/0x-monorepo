@@ -11,8 +11,8 @@ import {
     TraceCollectionSubprovider,
     utils,
 } from '@0x/sol-tracing-utils';
+import { hexUtils } from '@0x/utils';
 import chalk from 'chalk';
-import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 import { getLogger, levels, Logger } from 'loglevel';
 
@@ -90,7 +90,7 @@ export class RevertTraceSubprovider extends TraceCollectionSubprovider {
                 this._logger.warn(errMsg);
                 continue;
             }
-            const bytecodeHex = stripHexPrefix(bytecode);
+            const bytecodeHex = hexUtils.stripHexPrefix(bytecode);
             const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
 
             const pcToSourceRange = parseSourceMap(

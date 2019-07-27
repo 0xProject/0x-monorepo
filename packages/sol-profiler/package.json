@@ -35,7 +35,6 @@
         "@0x/typescript-typings": "^4.2.4",
         "@0x/utils": "^4.4.1",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-util": "^6.1.0",
         "lodash": "^4.17.11",
         "web3-provider-engine": "14.0.6"
     },

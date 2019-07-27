@@ -1,6 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
+import { hexUtils } from '../../hex_utils';
 import { constants } from '../utils/constants';
 import { EncodingRules } from '../utils/rules';
 
@@ -210,7 +211,7 @@ export class Calldata {
             } else {
                 // This block has at least one word of value.
                 offsetStr = `0x${offset.toString(constants.HEX_BASE)}`.padEnd(offsetPadding);
-                valueStr = ethUtil
+                valueStr = hexUtils
                     .stripHexPrefix(
                         ethUtil.bufferToHex(
                             block.toBuffer().slice(evmWordStartIndex, constants.EVM_WORD_WIDTH_IN_BYTES),
@@ -228,7 +229,7 @@ export class Calldata {
             // This block has a value that is more than 1 word.
             for (let j = constants.EVM_WORD_WIDTH_IN_BYTES; j < size; j += constants.EVM_WORD_WIDTH_IN_BYTES) {
                 offsetStr = `0x${(offset + j).toString(constants.HEX_BASE)}`.padEnd(offsetPadding);
-                valueStr = ethUtil
+                valueStr = hexUtils
                     .stripHexPrefix(
                         ethUtil.bufferToHex(block.toBuffer().slice(j, j + constants.EVM_WORD_WIDTH_IN_BYTES)),
                     )

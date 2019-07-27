@@ -1,6 +1,5 @@
-import { promisify } from '@0x/utils';
+import { hexUtils, promisify } from '@0x/utils';
 import chalk from 'chalk';
-import { stripHexPrefix } from 'ethereumjs-util';
 import * as fs from 'fs';
 import { Collector } from 'istanbul';
 import * as _ from 'lodash';
@@ -101,7 +100,7 @@ export class TraceCollector {
         if (contractData === undefined) {
             return;
         }
-        const bytecodeHex = stripHexPrefix(bytecode);
+        const bytecodeHex = hexUtils.stripHexPrefix(bytecode);
         const sourceMap = isContractCreation ? contractData.sourceMap : contractData.sourceMapRuntime;
         const pcToSourceRange = parseSourceMap(contractData.sourceCodes, sourceMap, bytecodeHex, contractData.sources);
         _.map(contractData.sources, (_sourcePath: string, fileIndex: string) => {

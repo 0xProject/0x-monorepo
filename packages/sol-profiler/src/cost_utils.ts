@@ -1,7 +1,6 @@
 import { constants, TraceInfo } from '@0x/sol-tracing-utils';
-import { logUtils } from '@0x/utils';
+import { hexUtils, logUtils } from '@0x/utils';
 import { OpCode } from 'ethereum-types';
-import { stripHexPrefix } from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 const ZERO_BYTE_CALL_DATA_COST = 4;
@@ -19,7 +18,7 @@ export const costUtils = {
             return 0;
         }
         const callData = traceInfo.dataIfExists;
-        const callDataBuf = Buffer.from(stripHexPrefix(callData), 'hex');
+        const callDataBuf = Buffer.from(hexUtils.stripHexPrefix(callData), 'hex');
         const { true: zeroBytesCountIfExist, false: nonZeroBytesCountIfExist } = _.countBy(
             callDataBuf,
             byte => byte === 0,

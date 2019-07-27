@@ -1,5 +1,5 @@
 import { assert } from '@0x/assert';
-import { addressUtils } from '@0x/utils';
+import { addressUtils, hexUtils } from '@0x/utils';
 import EthereumTx = require('ethereumjs-tx');
 import ethUtil = require('ethereumjs-util');
 import HDNode = require('hdkey');
@@ -169,7 +169,7 @@ export class LedgerSubprovider extends BaseWalletSubprovider {
             const fullDerivationPath = derivedKeyInfo.derivationPath;
             const result = await this._ledgerClientIfExists.signPersonalMessage(
                 fullDerivationPath,
-                ethUtil.stripHexPrefix(data),
+                hexUtils.stripHexPrefix(data),
             );
             const lowestValidV = 27;
             const v = result.v - lowestValidV;
