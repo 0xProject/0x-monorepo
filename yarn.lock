@@ -1938,12 +1938,6 @@
   dependencies:
     bignumber.js "7.2.1"
 
-"@types/ethereumjs-tx@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@types/ethereumjs-tx/-/ethereumjs-tx-1.0.0.tgz#ae2ce90a145cc1a6849656db38baf0e793ff7927"
-  dependencies:
-    "@types/node" "*"
-
 "@types/events@*":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@types/events/-/events-1.2.0.tgz#81a6731ce4df43619e5c8c945383b3e62a89ea86"
@@ -4294,7 +4288,7 @@ buffer@^5.0.3, buffer@^5.0.5:
     base64-js "^1.0.2"
     ieee754 "^1.1.4"
 
-buffer@^5.1.0:
+buffer@^5.1.0, buffer@^5.2.1:
   version "5.2.1"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-5.2.1.tgz#dd57fa0f109ac59c602479044dca7b8b3d0b71d6"
   dependencies:
@@ -6889,12 +6883,17 @@ eth-query@^2.0.2, eth-query@^2.1.0, eth-query@^2.1.2:
     json-rpc-random-id "^1.0.0"
     xtend "^4.0.1"
 
-eth-sig-util@2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/eth-sig-util/-/eth-sig-util-2.0.2.tgz#bfdb274293620404b7631019dc3d7f17bb2e06f4"
+eth-sig-util@2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/eth-sig-util/-/eth-sig-util-2.1.2.tgz#9b357395b5ca07fae6b430d3e534cf0a0f1df118"
+  integrity sha512-bNgt7txkEmaNlLf+PrbwYIdp4KRkB3E7hW0/QwlBpgv920pVVyQnF0evoovfiRveNKM4OrtPYZTojjmsfuCUOw==
   dependencies:
+    buffer "^5.2.1"
+    elliptic "^6.4.0"
     ethereumjs-abi "0.6.5"
     ethereumjs-util "^5.1.1"
+    tweetnacl "^1.0.0"
+    tweetnacl-util "^0.15.0"
 
 eth-sig-util@^1.4.2:
   version "1.4.2"
@@ -6929,19 +6928,20 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereumjs-abi@0.6.5:
-  version "0.6.5"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.5.tgz#5a637ef16ab43473fa72a29ad90871405b3f5241"
-  dependencies:
-    bn.js "^4.10.0"
-    ethereumjs-util "^4.3.0"
-
-"ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@0.6.5, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.5"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#00ba8463a7f7a67fcad737ff9c2ebd95643427f7"
   dependencies:
     bn.js "^4.10.0"
     ethereumjs-util "^5.0.0"
+
+ethereumjs-abi@0.6.7:
+  version "0.6.7"
+  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.7.tgz#d1d1c5cdb8d910a7d97645ba9e93be5d153bba2e"
+  integrity sha512-EMLOA8ICO5yAaXDhjVEfYjsJIXYutY8ufTE93eEKwsVtp2usQreKwsDTJ9zvam3omYqNuffr8IONIqb2uUslGQ==
+  dependencies:
+    bn.js "^4.11.8"
+    ethereumjs-util "^6.0.0"
 
 ethereumjs-account@2.0.5:
   version "2.0.5"
@@ -6996,6 +6996,15 @@ ethereumjs-blockstream@6.0.0:
     source-map-support "0.5.6"
     uuid "3.2.1"
 
+ethereumjs-blockstream@6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/ethereumjs-blockstream/-/ethereumjs-blockstream-6.0.1.tgz#a0c0c775f154ea8f613604eea238548c35aa87a9"
+  integrity sha512-MgdBykwYt/53jGtTK7awyNi9Klp5TC9H+o7rSS6Dx24VOl4gq/zDc2H6SN6B70d+MawFfMKSPggVxVvRwoxgZg==
+  dependencies:
+    immutable "3.8.2"
+    source-map-support "0.5.6"
+    uuid "3.2.1"
+
 ethereumjs-common@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-0.6.1.tgz#ec98edf315a7f107afb6acc48e937a8266979fae"
@@ -7004,21 +7013,27 @@ ethereumjs-common@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.1.0.tgz#5ec9086c314d619d8f05e79a0525829fcb0e93cb"
 
-ethereumjs-tx@1.3.7:
+ethereumjs-common@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.3.0.tgz#ca7d152b615d5e1851fcf184d062bf14c62c18e6"
+  integrity sha512-/jdFHyHOIS3FiAnunwRZ+oNulFtNNSHyWii3PaNHReOUmBAxij7KMyZLKh0tE16JEsJtXOVz1ceYuq++ILzv+g==
+
+ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.7.tgz#88323a2d875b10549b8347e09f4862b546f3d89a"
   dependencies:
     ethereum-common "^0.0.18"
     ethereumjs-util "^5.0.0"
 
-ethereumjs-tx@^1.1.1, ethereumjs-tx@^1.2.0, ethereumjs-tx@^1.2.2, ethereumjs-tx@^1.3.3, ethereumjs-tx@^1.3.5:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.5.tgz#c5ab252977ed2b13fb2fca195fdfa95a7d54f858"
+ethereumjs-tx@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-2.1.0.tgz#36b9e6a46383b18941644ba5264e1b506115c002"
+  integrity sha512-q1PFhR5i93OjcoE0G3GGz7XvnpLiddcUSKr28hmMUzVHvvc/+PHmQTx4NrGQUUny7qBq9tEIcvMivdB7uphKtA==
   dependencies:
-    ethereum-common "^0.0.18"
-    ethereumjs-util "^5.0.0"
+    ethereumjs-common "^1.3.0"
+    ethereumjs-util "^6.0.0"
 
-ethereumjs-util@5.2.0, ethereumjs-util@^5.2.0:
+ethereumjs-util@5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-5.2.0.tgz#3e0c0d1741471acf1036052d048623dee54ad642"
   dependencies:
@@ -7030,7 +7045,7 @@ ethereumjs-util@5.2.0, ethereumjs-util@^5.2.0:
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
-ethereumjs-util@^4.0.1, ethereumjs-util@^4.3.0:
+ethereumjs-util@^4.0.1:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-4.5.0.tgz#3e9428b317eebda3d7260d854fddda954b1f1bc6"
   dependencies:
@@ -7064,6 +7079,23 @@ ethereumjs-util@^6.0.0, ethereumjs-util@^6.1.0:
     safe-buffer "^5.1.1"
     secp256k1 "^3.0.1"
 
+ethereumjs-vm@2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-vm/-/ethereumjs-vm-2.6.0.tgz#76243ed8de031b408793ac33907fb3407fe400c6"
+  integrity sha512-r/XIUik/ynGbxS3y+mvGnbOKnuLo40V5Mj1J25+HEO63aWYREIqvWeRO/hnROlMBE5WoniQmPmhiaN0ctiHaXw==
+  dependencies:
+    async "^2.1.2"
+    async-eventemitter "^0.2.2"
+    ethereumjs-account "^2.0.3"
+    ethereumjs-block "~2.2.0"
+    ethereumjs-common "^1.1.0"
+    ethereumjs-util "^6.0.0"
+    fake-merkle-patricia-tree "^1.0.1"
+    functional-red-black-tree "^1.0.1"
+    merkle-patricia-tree "^2.3.2"
+    rustbn.js "~0.2.0"
+    safe-buffer "^5.1.1"
+
 ethereumjs-vm@^2.0.2, ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/ethereumjs-vm/-/ethereumjs-vm-2.3.4.tgz#f635d7cb047571a1840a6e9a74d29de4488f8ad6"
@@ -7080,32 +7112,18 @@ ethereumjs-vm@^2.0.2, ethereumjs-vm@^2.1.0, ethereumjs-vm@^2.3.4:
     rustbn.js "~0.1.1"
     safe-buffer "^5.1.1"
 
-ethereumjs-vm@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-vm/-/ethereumjs-vm-2.6.0.tgz#76243ed8de031b408793ac33907fb3407fe400c6"
-  dependencies:
-    async "^2.1.2"
-    async-eventemitter "^0.2.2"
-    ethereumjs-account "^2.0.3"
-    ethereumjs-block "~2.2.0"
-    ethereumjs-common "^1.1.0"
-    ethereumjs-util "^6.0.0"
-    fake-merkle-patricia-tree "^1.0.1"
-    functional-red-black-tree "^1.0.1"
-    merkle-patricia-tree "^2.3.2"
-    rustbn.js "~0.2.0"
-    safe-buffer "^5.1.1"
-
-ethereumjs-wallet@0.6.2:
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.2.tgz#67244b6af3e8113b53d709124b25477b64aeccda"
+ethereumjs-wallet@0.6.3:
+  version "0.6.3"
+  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-0.6.3.tgz#b0eae6f327637c2aeb9ccb9047b982ac542e6ab1"
+  integrity sha512-qiXPiZOsStem+Dj/CQHbn5qex+FVkuPmGH7SvSnA9F3tdRDt8dLMyvIj3+U05QzVZNPYh4HXEdnzoYI4dZkr9w==
   dependencies:
     aes-js "^3.1.1"
     bs58check "^2.1.2"
-    ethereumjs-util "^5.2.0"
-    hdkey "^1.0.0"
+    ethereumjs-util "^6.0.0"
+    hdkey "^1.1.0"
+    randombytes "^2.0.6"
     safe-buffer "^5.1.2"
-    scrypt.js "^0.2.0"
+    scrypt.js "^0.3.0"
     utf8 "^3.0.0"
     uuid "^3.3.2"
 
@@ -8086,9 +8104,10 @@ ganache-cli@6.4.1:
     source-map-support "0.5.9"
     yargs "11.1.0"
 
-ganache-core@^2.5.3:
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.5.3.tgz#8c6f21d820a694826082dfbb2dc59f834a6874fc"
+ganache-core@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/ganache-core/-/ganache-core-2.6.0.tgz#19001547893ff9f6d494fcaed66c52edd808f3c0"
+  integrity sha512-TAT8XCjORmRpWko9QWKWGbdZ8/3nblKgralUWdySHXZyGBVRoHyEzjygMYZoblSXXCWuYEmx+T1u73Di1tE0mA==
   dependencies:
     abstract-leveldown "3.0.0"
     async "2.6.1"
@@ -8098,13 +8117,13 @@ ganache-core@^2.5.3:
     clone "2.1.2"
     debug "3.1.0"
     encoding-down "5.0.4"
-    eth-sig-util "2.0.2"
+    eth-sig-util "2.1.2"
     ethereumjs-abi "0.6.5"
     ethereumjs-account "2.0.5"
     ethereumjs-block "2.1.0"
     ethereumjs-tx "1.3.7"
     ethereumjs-util "5.2.0"
-    ethereumjs-vm "^2.6.0"
+    ethereumjs-vm "2.6.0"
     heap "0.2.6"
     level-sublevel "6.6.4"
     levelup "3.1.1"
@@ -8117,7 +8136,7 @@ ganache-core@^2.5.3:
     web3-provider-engine "14.1.0"
     websocket "1.0.26"
   optionalDependencies:
-    ethereumjs-wallet "0.6.2"
+    ethereumjs-wallet "0.6.3"
     web3 "1.0.0-beta.35"
 
 gauge@~1.2.5:
@@ -8843,9 +8862,10 @@ hdkey@^0.7.1:
     coinstring "^2.0.0"
     secp256k1 "^3.0.1"
 
-hdkey@^1.0.0:
+hdkey@^1.1.0:
   version "1.1.1"
-  resolved "https://registry.npmjs.org/hdkey/-/hdkey-1.1.1.tgz#c2b3bfd5883ff9529b72f2f08b28be0972a9f64a"
+  resolved "https://registry.yarnpkg.com/hdkey/-/hdkey-1.1.1.tgz#c2b3bfd5883ff9529b72f2f08b28be0972a9f64a"
+  integrity sha512-DvHZ5OuavsfWs5yfVJZestsnc3wzPvLWNk6c2nRUfo6X+OtxypGt20vDDf7Ba+MJzjL3KS1og2nw2eBbLCOUTA==
   dependencies:
     coinstring "^2.0.0"
     safe-buffer "^5.1.1"
@@ -14075,6 +14095,13 @@ randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5:
   dependencies:
     safe-buffer "^5.1.0"
 
+randombytes@^2.0.6:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
+  integrity sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==
+  dependencies:
+    safe-buffer "^5.1.0"
+
 randomfill@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/randomfill/-/randomfill-1.0.4.tgz#c92196fc86ab42be983f1bf31778224931d61458"
@@ -15430,12 +15457,21 @@ scrypt-js@2.0.4:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/scrypt-js/-/scrypt-js-2.0.4.tgz#32f8c5149f0797672e551c07e230f834b6af5f16"
 
-scrypt.js@0.2.0, scrypt.js@^0.2.0:
+scrypt.js@0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/scrypt.js/-/scrypt.js-0.2.0.tgz#af8d1465b71e9990110bedfc593b9479e03a8ada"
   dependencies:
     scrypt "^6.0.2"
     scryptsy "^1.2.1"
+
+scrypt.js@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/scrypt.js/-/scrypt.js-0.3.0.tgz#6c62d61728ad533c8c376a2e5e3e86d41a95c4c0"
+  integrity sha512-42LTc1nyFsyv/o0gcHtDztrn+aqpkaCNt5Qh7ATBZfhEZU7IC/0oT/qbBH+uRNoAPvs2fwiOId68FDEoSRA8/A==
+  dependencies:
+    scryptsy "^1.2.1"
+  optionalDependencies:
+    scrypt "^6.0.2"
 
 scrypt@^6.0.2:
   version "6.0.3"
@@ -17170,6 +17206,11 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
+tweetnacl-util@^0.15.0:
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/tweetnacl-util/-/tweetnacl-util-0.15.0.tgz#4576c1cee5e2d63d207fee52f1ba02819480bc75"
+  integrity sha1-RXbBzuXi1j0gf+5S8boCgZSAvHU=
+
 tweetnacl@0.13.2:
   version "0.13.2"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.13.2.tgz#453161770469d45cd266c36404e2bc99a8fa9944"
@@ -17177,6 +17218,11 @@ tweetnacl@0.13.2:
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
+
+tweetnacl@^1.0.0:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-1.0.1.tgz#2594d42da73cd036bd0d2a54683dd35a6b55ca17"
+  integrity sha512-kcoMoKTPYnoeS50tzoqjPY3Uv9axeuuFAZY9M/9zFnhoVvRfxz9K29IMPD7jGmt2c8SW7i3gT9WqDl2+nV7p4A==
 
 type-check@~0.3.2:
   version "0.3.2"
