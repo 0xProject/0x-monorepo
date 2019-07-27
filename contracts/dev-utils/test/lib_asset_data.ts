@@ -345,7 +345,7 @@ describe('LibAssetData', () => {
         it('should return a balance of MAX_UINT256 if the the StaticCallProxy assetData contains data for a successful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(1));
             const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
-            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const expectedResultHash = ethUtil.bufferToHex(ethUtil.keccak256(trueAsBuffer));
             const assetData = assetDataUtils.encodeStaticCallAssetData(
                 staticCallTarget.address,
                 staticCallData,
@@ -358,7 +358,7 @@ describe('LibAssetData', () => {
         it('should return a balance of 0 if the the StaticCallProxy assetData contains data for an unsuccessful staticcall', async () => {
             const staticCallData = staticCallTarget.isOddNumber.getABIEncodedTransactionData(new BigNumber(0));
             const trueAsBuffer = ethUtil.toBuffer('0x0000000000000000000000000000000000000000000000000000000000000001');
-            const expectedResultHash = ethUtil.bufferToHex(ethUtil.sha3(trueAsBuffer));
+            const expectedResultHash = ethUtil.bufferToHex(ethUtil.keccak256(trueAsBuffer));
             const assetData = assetDataUtils.encodeStaticCallAssetData(
                 staticCallTarget.address,
                 staticCallData,

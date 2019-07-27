@@ -53,7 +53,7 @@
         "@types/solidity-parser-antlr": "^0.2.3",
         "chalk": "^2.3.0",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-util": "^5.1.1",
+        "ethereumjs-util": "^6.1.0",
         "ethers": "~4.0.4",
         "glob": "^7.1.2",
         "istanbul": "^0.4.5",

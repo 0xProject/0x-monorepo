@@ -81,7 +81,7 @@
         "chalk": "^2.3.0",
         "chokidar": "^3.0.2",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-util": "^5.1.1",
+        "ethereumjs-util": "^6.1.0",
         "lodash": "^4.17.11",
         "mkdirp": "^0.5.1",
         "pluralize": "^7.0.0",

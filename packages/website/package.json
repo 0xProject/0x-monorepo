@@ -44,7 +44,7 @@
         "bowser": "^1.9.4",
         "deep-equal": "^1.0.1",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-util": "^5.1.1",
+        "ethereumjs-util": "^6.1.0",
         "find-versions": "^2.0.0",
         "jsonschema": "^1.2.0",
         "less": "^2.7.2",

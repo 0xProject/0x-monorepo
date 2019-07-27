@@ -230,7 +230,7 @@ export function printCompilationErrorsAndWarnings(solcErrors: solc.SolcError[]):
 export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffer {
     const contractSource = resolver.resolve(importPath);
     const dependencies = parseDependencies(contractSource);
-    const sourceHash = ethUtil.sha3(contractSource.source);
+    const sourceHash = ethUtil.keccak256(contractSource.source);
     if (dependencies.length === 0) {
         return sourceHash;
     } else {
@@ -238,7 +238,7 @@ export function getSourceTreeHash(resolver: Resolver, importPath: string): Buffe
             getSourceTreeHash(resolver, dependency),
         );
         const sourceTreeHashesBuffer = Buffer.concat([sourceHash, ...dependencySourceTreeHashes]);
-        const sourceTreeHash = ethUtil.sha3(sourceTreeHashesBuffer);
+        const sourceTreeHash = ethUtil.keccak256(sourceTreeHashesBuffer);
         return sourceTreeHash;
     }
 }

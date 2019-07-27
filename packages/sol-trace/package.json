@@ -35,7 +35,7 @@
         "@0x/typescript-typings": "^4.2.4",
         "chalk": "^2.3.0",
         "ethereum-types": "^2.1.4",
-        "ethereumjs-util": "^5.1.1",
+        "ethereumjs-util": "^6.1.0",
         "lodash": "^4.17.11",
         "loglevel": "^1.6.1",
         "web3-provider-engine": "14.0.6"

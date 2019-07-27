@@ -9,7 +9,7 @@ import { getOffsetToLocation } from './source_maps';
 const sourceHashToCoverageEntries: { [sourceHash: string]: CoverageEntriesDescription } = {};
 
 export const collectCoverageEntries = (contractSource: string, ignoreRegexp?: RegExp) => {
-    const sourceHash = ethUtil.sha3(contractSource).toString('hex');
+    const sourceHash = ethUtil.keccak256(contractSource).toString('hex');
     if (sourceHashToCoverageEntries[sourceHash] === undefined && contractSource !== undefined) {
         const ast = parser.parse(contractSource, { range: true });
         const offsetToLocation = getOffsetToLocation(contractSource);

@@ -80,8 +80,7 @@ export class MethodDataType extends AbstractSetDataType {
         const signature = this._computeSignature();
         const selector = ethUtil.bufferToHex(
             ethUtil.toBuffer(
-                ethUtil
-                    .sha3(signature)
+                ethUtil.keccak256(signature)
                     .slice(constants.HEX_SELECTOR_BYTE_OFFSET_IN_CALLDATA, constants.HEX_SELECTOR_LENGTH_IN_BYTES),
             ),
         );

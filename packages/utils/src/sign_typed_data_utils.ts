@@ -12,7 +12,7 @@ export const signTypedDataUtils = {
      * @return  A Buffer containing the hash of the typed data.
      */
     generateTypedDataHash(typedData: EIP712TypedData): Buffer {
-        return ethUtil.sha3(
+        return ethUtil.keccak256(
             Buffer.concat([
                 Buffer.from('1901', 'hex'),
                 signTypedDataUtils._structHash('EIP712Domain', typedData.domain, typedData.types),
@@ -50,12 +50,12 @@ export const signTypedDataUtils = {
         for (const field of types[primaryType]) {
             const value = data[field.name];
             if (field.type === 'string' || field.type === 'bytes') {
-                const hashValue = ethUtil.sha3(value as string);
+                const hashValue = ethUtil.keccak256(value as string);
                 encodedTypes.push('bytes32');
                 encodedValues.push(hashValue);
             } else if (types[field.type] !== undefined) {
                 encodedTypes.push('bytes32');
-                const hashValue = ethUtil.sha3(
+                const hashValue = ethUtil.keccak256(
                     // tslint:disable-next-line:no-unnecessary-type-assertion
                     signTypedDataUtils._encodeData(field.type, value as EIP712Object, types),
                 );
@@ -75,9 +75,9 @@ export const signTypedDataUtils = {
         return normalizedValue;
     },
     _typeHash(primaryType: string, types: EIP712Types): Buffer {
-        return ethUtil.sha3(signTypedDataUtils._encodeType(primaryType, types));
+        return ethUtil.keccak256(signTypedDataUtils._encodeType(primaryType, types));
     },
     _structHash(primaryType: string, data: EIP712Object, types: EIP712Types): Buffer {
-        return ethUtil.sha3(signTypedDataUtils._encodeData(primaryType, data, types));
+        return ethUtil.keccak256(signTypedDataUtils._encodeData(primaryType, data, types));
     },
 };

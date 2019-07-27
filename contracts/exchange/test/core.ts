@@ -251,8 +251,8 @@ describe('Exchange core', () => {
             });
 
             const v = ethUtil.toBuffer(signedOrder.signature.slice(0, 4));
-            const invalidR = ethUtil.sha3('invalidR');
-            const invalidS = ethUtil.sha3('invalidS');
+            const invalidR = ethUtil.keccak256('invalidR');
+            const invalidS = ethUtil.keccak256('invalidS');
             const signatureType = ethUtil.toBuffer(`0x${signedOrder.signature.slice(-2)}`);
             const invalidSigBuff = Buffer.concat([v, invalidR, invalidS, signatureType]);
             const invalidSigHex = `0x${invalidSigBuff.toString('hex')}`;

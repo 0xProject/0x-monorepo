@@ -68,7 +68,7 @@ export abstract class CalldataBlock {
 
     public computeHash(): Buffer {
         const rawData = this.getRawData();
-        const hash = ethUtil.sha3(rawData);
+        const hash = ethUtil.keccak256(rawData);
         return hash;
     }
 
