@@ -35,7 +35,7 @@ interface IDocsViewState {
     title: string;
 }
 
-export const DocsView: React.FC<IDocsViewProps> = props => {
+export const DocsView: React.FC<IDocsViewProps> = ({ match }) => {
     const [state, setState] = useState<IDocsViewState>({
         Component: null,
         contents: [],
@@ -43,17 +43,14 @@ export const DocsView: React.FC<IDocsViewProps> = props => {
     });
 
     const { Component, contents, title } = state;
-    const { page } = props.match.params;
+    const { page, type } = match.params;
 
-    useEffect(
-        () => {
-            void loadPageAsync(page);
-        },
-        [page],
-    );
+    useEffect(() => {
+        void loadPageAsync(page, type);
+    }, [page, type]);
 
-    const loadPageAsync = async (fileName: string) => {
-        const component = await import(`../../../md/new-docs/${fileName}.mdx`);
+    const loadPageAsync = async (fileName: string, dirName: string) => {
+        const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
 
         if (component) {
             setState({

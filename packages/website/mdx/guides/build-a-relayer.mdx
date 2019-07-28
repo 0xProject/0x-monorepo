@@ -1,11 +1,10 @@
 export const meta = {
-  id: 3523532,
-  title: 'Build a relayer',
-  description:
-    'A relayer is any party or entity which hosts an off-chain orderbook.',
-  tags: ['Relayer', 'Trader', 'Protocol Developer'],
-  topics: ['Coordinator Model', 'Mesh'],
-  difficulty: 'Advanced'
+    id: 3523532,
+    title: 'Build a relayer',
+    description: 'A relayer is any party or entity which hosts an off-chain orderbook.',
+    tags: ['Relayer', 'Trader', 'Protocol Developer'],
+    topics: ['Coordinator Model', 'Mesh'],
+    difficulty: 'Advanced',
 };
 
 They provide a way for users to add, remove and update this orderbook through an API, GUI or both. In doing so, relayers help traders discover counter-parties and ferry cryptographically signed orders between them. Once two parties agree on the terms of an order, the order is settled directly on the Ethereum blockchain via the 0x protocol smart contracts.
@@ -21,11 +20,11 @@ In 0x protocol, orders are transported off-chain over any arbitrary medium, mass
 The simplest example of a relayer is a website allowing users to create, discover and fill orders. The relayer must build out a UI and host a backend database to provide this functionality.
 
 <div align="center">
-  <img
-    src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/relayer_diagram.png"
-    style="padding-bottom: 20px; padding-top: 20px; max-width: 342px;"
-    width="80%"
-  />
+    <img
+        src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/relayer_diagram.png"
+        style={{ paddingBottom: '20px', paddingTop: '20px', maxWidth: '342px' }}
+        width="80%"
+    />
 </div>
 
 To simplify the process of interacting with the 0x protocol, we have written a Javascript/Typescript library called [0x.js](http://0x.org/docs/0x.js). This library helps relayers interact with the 0x protocol smart contracts through a higher-level, easier to use interface. It also provides many useful utilities for hashing, signing, validating, and serializing 0x orders. Additionally, we have built the [0x-launch-kit](https://github.com/0xproject/0x-launch-kit), an open-source, free-to-use API-only 0x relayer template that you can use as a starting point for your own project.
@@ -38,31 +37,31 @@ Below is an interface description of the 0x protocol order format:
 
 ```typescript
 interface Order {
-  senderAddress: string;
-  // Ethereum address of the Maker
-  makerAddress: string;
-  // Ethereum address of the Taker. If no address specified, anyone can fill the order.
-  takerAddress: string;
-  // How many ZRX the Maker will pay as a fee to the relayer
-  makerFee: BigNumber;
-  // How many ZRX the Taker will pay as a fee to the relayer
-  takerFee: BigNumber;
-  // The amount of an asset the Maker is offering to exchange
-  makerAssetAmount: BigNumber;
-  // The amount of an asset the Maker is willing to accept in return
-  takerAssetAmount: BigNumber;
-  // The identifying data about the asset the Maker is offering
-  makerAssetData: string;
-  // The identifying data about the asset the Maker is requesting in return
-  takerAssetData: string;
-  // A salt to guarantee OrderHash uniqueness. Usually a milisecond timestamp of when order was made
-  salt: BigNumber;
-  // The address of the 0x protocol exchange smart contract
-  exchangeAddress: string;
-  // The address (user or smart contract) that will receive the fees
-  feeRecipientAddress: string;
-  // When the order will expire (unix timestamp in seconds)
-  expirationTimeSeconds: BigNumber;
+    senderAddress: string;
+    // Ethereum address of the Maker
+    makerAddress: string;
+    // Ethereum address of the Taker. If no address specified, anyone can fill the order.
+    takerAddress: string;
+    // How many ZRX the Maker will pay as a fee to the relayer
+    makerFee: BigNumber;
+    // How many ZRX the Taker will pay as a fee to the relayer
+    takerFee: BigNumber;
+    // The amount of an asset the Maker is offering to exchange
+    makerAssetAmount: BigNumber;
+    // The amount of an asset the Maker is willing to accept in return
+    takerAssetAmount: BigNumber;
+    // The identifying data about the asset the Maker is offering
+    makerAssetData: string;
+    // The identifying data about the asset the Maker is requesting in return
+    takerAssetData: string;
+    // A salt to guarantee OrderHash uniqueness. Usually a milisecond timestamp of when order was made
+    salt: BigNumber;
+    // The address of the 0x protocol exchange smart contract
+    exchangeAddress: string;
+    // The address (user or smart contract) that will receive the fees
+    feeRecipientAddress: string;
+    // When the order will expire (unix timestamp in seconds)
+    expirationTimeSeconds: BigNumber;
 }
 ```
 

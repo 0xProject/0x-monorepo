@@ -1,14 +1,13 @@
 export const meta = {
-  id: '513',
-  title: 'Develop on Ethereum',
-  description:
-    'Welcome to the exciting world of building applications on the Ethereum Blockchain',
-  tags: ['Relayer', 'Trader'],
-  topics: ['Mesh', 'Protocol Developer'],
-  difficulty: 'Beginner'
+    id: '513',
+    title: 'Develop on Ethereum',
+    description: 'Welcome to the exciting world of building applications on the Ethereum Blockchain',
+    tags: ['Relayer', 'Trader'],
+    topics: ['Mesh', 'Protocol Developer'],
+    difficulty: 'Beginner',
 };
 
-# Ethereum Intro
+## Ethereum Intro
 
 Welcome to the exciting world of building applications on the [Ethereum Blockchain](https://www.ethereum.org/). With Ethereum you can deploy applications or "Smart Contracts" that perform operations and persist state using a decentralized network of computers. Ethereum is often described as a platform for programming digital money. A transaction executes and is confirmed and verified by hundreds of different machines (nodes) distributed around the world. If you want to understand the how blockchains fundamentally work checkout [this visual explanation](https://anders.com/blockchain/). If you'd like to read more about Ethereum specifically, visit this [beginners guide to Ethereum](https://blog.coinbase.com/a-beginners-guide-to-ethereum-46dd486ceecf).
 
@@ -24,38 +23,15 @@ As web browsers do not natively support interacting with the Ethereum Blockchain
 
 In order to interact with dApps (distributed applications) a user must have Ether in a wallet they control. The user cannot interact with dApps from an exchange such as Coinbase. They must control the private keys associated with their Ethereum address.
 
-### Development
+## Development
 
-<div align="center">
-  <a
-    href="https://codesandbox.io/s/github/0xproject/0x-codesandbox"
-    target="_blank"
-    rel="Sandbox">
-    <img
-      src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/sandbox.png"
-      style="padding-bottom: 20px; padding-top: 20px; max-width: 761px;"
-      width="80%"
-    />
-  </a>
-</div>
+### Test networks
 
-#### Test networks
-
-Development and testing are aided by running in your own local test Ethereum node. This allows you to quickly deploy and interact with contracts without spending real ETH. [Ganache](https://github.com/trufflesuite/ganache) simulates an Ethereum node locally and provides the same JSON RPC interface as a real node. Since there can still be small differences between it and a real Ethereum node (e.g [Geth](https://github.com/ethereum/go-ethereum) or [Parity](https://github.com/paritytech/parity-ethereum)) so we recommend you also test your application on a live testnet (i.e Kovan, Rinkeby, or Ropsten) before deploying on to the main Ethereum network.
+Development and testing are aided by running in your own local test Ethereum node. This allows you to quickly deploy and interact with contracts without spending real ETH. [Ganache](https://github.com/trufflesuite/ganache) simulates an Ethereum node locally and provides the same JSON RPC interface as a real node. Since there can still be small differences between it and a real Ethereum node (e.g [Geth](https://github.com/ethereum/go-ethereum) or [Parity](https://github.com/paritytech/parity-ethereum) so we recommend you also test your application on a live testnet (i.e Kovan, Rinkeby, or Ropsten) before deploying on to the main Ethereum network.
 
 Rather than spinning up your own Ethereum node infrastructure to connect to the network, many developers use [INFURA](https://infura.io/). They provide public, scalable Ethereum nodes as a service. Since Ethereum nodes were not designed to handle thousands of requests per second, Infura has built out infrastructure around the nodes to make them more performant.
 
 It can be difficult to get a sufficient amount of test Ether to deploy your contracts on test networks and begin testing them. Because of this, we have created a faucet which can dispense small amounts of Ether to your account. Navigate over to the [0x Portal](https://0x.org/portal/balances) with Metamask installed and click "Request" to receive some free test Ether (make sure you're connected to a testnet)!
-
-<div align="center">
-  <a href="https://0x.org/portal/balances">
-    <img
-      src="https://s3.eu-west-2.amazonaws.com/0x-wiki-images/network_screenshot.png"
-      style="padding-bottom: 20px; padding-top: 20px; max-width: 761px;"
-      width="80%"
-    />
-  </a>
-</div>
 
 ### Wrapped ETH
 
@@ -65,4 +41,4 @@ Now that you have a high-level overview of Ethereum Blockchain development, it i
 
 ### Next steps
 
-Now that you've got a basic understanding of what is involved when developing on Ethereum, you're now ready to go onto the next step of [Building a Relayer](#Build-A-Relayer). If you'd rather jump right in, you can skip straight to learning how to [Create, Validate and Fill Orders](https://0x.org/wiki#Create,-Validate,-Fill-Order) on 0x.
+Now that you've got a basic understanding of what is involved when developing on Ethereum, you're now ready to go onto the next step of [Building a Relayer](/docs/guides/build-a-relayer). If you'd rather jump right in, you can skip straight to learning how to [Create, Validate and Fill Orders](https://0x.org/wiki#Create,-Validate,-Fill-Order) on 0x.
