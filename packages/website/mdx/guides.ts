@@ -1,5 +1,5 @@
-const { adminClient, sharedSettings } = require('./constants');
-const { indexFiles, setIndexSettings } = require('./helpers');
+import { adminClient, sharedSettings } from './constants';
+import { indexFiles, setIndexSettings } from './helpers';
 
 const index = adminClient.initIndex('0x_guides_test');
 const dirName = 'guides';

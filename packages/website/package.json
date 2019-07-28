@@ -148,6 +148,7 @@
         "style-loader": "0.23.x",
         "terser-webpack-plugin": "^1.1.0",
         "to-vfile": "^6.0.0",
+        "ts-node": "^8.3.0",
         "tslint": "5.11.0",
         "tslint-config-0xproject": "^0.0.2",
         "typescript": "3.0.1",
