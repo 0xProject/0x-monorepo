@@ -1,0 +1,68 @@
+export const meta = {
+  id: 1,
+  title: '0x launch kit',
+  description:
+    'Launch a 0x relayer API backend in under a minute with Launch Kit. 0x-launch-kit-backend is an open-source, free-to-use 0x relayer template that you can use as a starting point for your own project.',
+  difficulty: 'Beginner',
+  isCommunity: true,
+  isFeatured: true,
+  tags: ['Relayer'],
+  type: 'Docker images'
+};
+
+# Title
+
+We designed the 0x protocol to be extensible exchange infrastructure for the entire crypto economy. 0x's functionality can be extended through extension contracts, which broaden how 0x orders can be filled. There are a variety ways to build extension contracts. An Extension contract can perform work on the users behalf. They can validate that users belong to a specific group. Extension contracts can even be written to join multiple Decentralised Finance projects together.
+
+0x allows for contracts to perform 0x operations, though before version 2 of the protocol there was no way to enforce that an order executed via a specific contract. The 0x order format now contains a field senderAddress. When this is defaulted to empty it is completely open for any anyone to fill. The Forwarder uses open orders with an unspecified sender address to perform a fill on behalf of the user. When the sender address is specified the 0x protocol ensures the operation originates from this address. For example it's possible to create a KYC (Know Your Customer) orderbook. This orderbook contains orders specifying the sender address as the KYC attestation contract. 0x protocol enforces all operations originate from the KYC contract in which all addresses have been validated by this contract.
+
+# Forwarder Contract
+
+Wrapping ETH into ERC-20 compliant wETH has been a large barrier to adoption for the greater Decentralised Finance ecosystem. The 0x core team wrote and deployed a Forwarder contract to address these issues. You have used the Forwarder Contract if you have purchased tokens through 0x Instant. The Forwarder is an example of an extension which performs work on the users behalf.
+
+Users send ETH and a set of orders to the Forwarder contract and these funds are used to trade on 0x. The Forwarder deposits the incoming ETH into wrapped ETH. It then calls fill order with the supplied orders, using the wrapped ETH as its source of funding. Finally it transfers all traded tokens back to the user.
+
+The Forwarder extends the behavior of trading on 0x. It presents a different interface where the user can specify the amount of tokens they wish to buy and use ETH to buy them. This is an improved user experience to interacting with the lower level 0x Exchange contract. From a user's perspective it appears as if they are buying tokens using ETH directly.
+
+Projects can use the Forwarder contract and a Relayers orders in their own integrations. We've seen great adoption of 0x Instant, which uses the Forwarder under the hood. These projects are able to use the affiliate fee in the Forwarder to collect fees in ETH for the trades they originate.
+
+# Dutch Auction Contract
+
+The price of an asset decreases over time and the buyer submits a matching order when they believe the asset is appropriately priced. The Dutch Auction contract guarantees the asset is exchanged for the current price, given the block time. The Dutch Auction contract is an example of an extension which validates some state before matching two orders.
+
+The Dutch Auction contract is powered by the 0x Exchange contracts matchOrders function and extends the order format to include additional data. When using match orders, two orders are passed in as parameters, known as the sell order and the buy order. The seller of the asset creates an order for the asset at the lowest price. When a buyer decides the asset is at an acceptable price, they create a matching order for that amount. The buyer submits both the sell order and the buy order to the Dutch Auction contract.
+
+# Cryptography used by 0x protocol
+
+Once an order maker has decided on all the details of the trade they wish to make, the last step is for them to cryptographically commit to the trade. 0x uses two fundamental building blocks of cryptography to make this happen. This section will introduce these building blocks and how 0x uses them.
+
+## Cryptographic hash function
+
+A cryptographic hash function is a function that maps an input of arbitrary size to an output of fixed size (a hash). It is a one-way function meaning that it is infeasible to invert. The input data is typically called the message and the output the message digest.
+
+0x uses a hash function to create an order digest (order hash) that uniquely identifies all the order fields chosen by the maker. Changing any of the fields of the order, will cause the order hash to change. Thanks to this property of hash functions, the order hash can be used as the unique identifier for an order. Another nice aspect of using a hash function is that all order hashes will have the same fixed length, regardless of the complexity or size of the order fields.
+
+We now have a unique, fixed-length identifier we can generate for every single permutation of a 0x order. The next step is to allow a maker to cryptographically commit to this representation of their 0x order.
+
+A digital signature is a mathematical scheme for verifying the authenticity and integrity of a digital message.
+
+- Authenticity - Was the message really authored by who we think?
+- Integrity - Are we sure the message wasn’t altered in transit
+
+0x uses a digital signature to allow order makers to cryptographically commit to the 0x order they authored. In this way, they can rest assured that they cannot be forced into filling any order except for the ones they’ve authored, and potential counter-parties can verify that the maker did indeed author the 0x order(s).
+
+In order for a 0x order to be considered valid and fillable, it must have all the stipulated fields listed above, and come with a digital signature from the maker attesting to all the field values. At this point, the 0x order is ready to be shared with potential counter-parties.
+
+# Off-chain relay, on-chain settlement
+
+Up until this point, the 0x order was created and is sitting on the order maker’s computer. In order to find a counter-party for the order, where does it need to go? Unlike other decentralized exchanges, 0x does not store orders on the blockchain. Instead orders are stored off-chain, and only trade settlement occurs on-chain.
+
+If the maker already knows their desired counter-party, they can simply send the 0x order directly to them (i.e., via email or an over-the-counter platform). If the maker doesn’t know of a counter-party willing to take the other side of the trade, the order can be submitted to a 0x relayer in hopes of finding a counter-party. A “relayer” is any entity that helps traders create, find and fill. Existing relayers can be found by browsing the Explore 0x page. Anyone can build a 0x relayer and begin earning fees for every 0x trade they facilitate.
+
+Once someone finds and wishes to fill the 0x order authored by the maker, they are able to fill it by submitting the order, along with the amount they wish to fill it for, to the blockchain. The 0x protocol’s settlement logic will verify the makers digital signature and that all the conditions of the trade are satisfied. If so, the assets involved will be atomically swapped between the maker and taker. If any of the orders conditions are not met, the fill request is rejected.
+
+<Component>Another component</Component>
+
+```solidity
+Source code
+```
