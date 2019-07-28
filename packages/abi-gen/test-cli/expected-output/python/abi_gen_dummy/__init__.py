@@ -721,9 +721,7 @@ class AbiGenDummy(BaseContractWrapper):
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         return (
-            self.contract_instance(self.contract_address, AbiGenDummy.abi())
-            .events.AnEvent()
-            .processReceipt(tx_receipt)
+            self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi=AbiGenDummy.abi()).events.AnEvent().processReceipt(tx_receipt)
         )
 
     @staticmethod

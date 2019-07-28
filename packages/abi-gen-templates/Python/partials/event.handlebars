@@ -7,7 +7,5 @@
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
         return (
-            self.contract_instance(self.contract_address, {{contractName}}.abi())
-            .events.{{name}}()
-            .processReceipt(tx_receipt)
+            self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi={{contractName}}.abi()).events.{{name}}().processReceipt(tx_receipt)
         )

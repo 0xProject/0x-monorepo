@@ -78,18 +78,6 @@ class BaseContractWrapper:
                 )
                 self._can_send_tx = True
 
-    def contract_instance(self, address: str, abi: dict):
-        """Get a contract instance.
-
-        :param address: string address of contract
-        :param abi: dict contract ABI
-
-        :returns: instance of contract
-        """
-        return self._web3_eth.contract(
-            address=to_checksum_address(address), abi=abi
-        )
-
     def validate_and_checksum_address(self, address: str):
         """Validate the given address, and return it's checksum address."""
         if not self._web3.isAddress(address):
