@@ -43,14 +43,15 @@ except ImportError:
 class PublicAddConstantMethod:
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddConstant method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='publicAddConstant',
             parameter_name='x',
             argument_value=x,
@@ -81,14 +82,15 @@ class PublicAddConstantMethod:
 class PublicAddOneMethod:
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='publicAddOne',
             parameter_name='x',
             argument_value=x,
@@ -149,8 +151,8 @@ class TestLibDummy(BaseContractWrapper):
         functions = self._web3_eth.contract(
             address=to_checksum_address(contract_address), abi=TestLibDummy.abi()
         ).functions
-        self.public_add_constant = PublicAddConstantMethod(self, functions.publicAddConstant)
-        self.public_add_one = PublicAddOneMethod(self, functions.publicAddOne)
+        self.public_add_constant = PublicAddConstantMethod(self, functions.publicAddConstant, validator)
+        self.public_add_one = PublicAddOneMethod(self, functions.publicAddOne, validator)
 
 
     @staticmethod

@@ -78,7 +78,7 @@ class {{contractName}}(BaseContractWrapper):
             address=to_checksum_address(contract_address), abi={{contractName}}.abi()
         ).functions
         {{#each methods}}
-        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(self, functions.{{this.name}})
+        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(self, functions.{{this.name}}, validator)
         {{/each}}
 
 {{#each events}}

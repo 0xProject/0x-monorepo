@@ -85,10 +85,11 @@ class Tuple0xcf8ad995(TypedDict):
 class SimpleRequireMethod:
     """Various interfaces to the simpleRequire method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying, same-named contract method.
@@ -110,14 +111,15 @@ class SimpleRequireMethod:
 class AcceptsAnArrayOfBytesMethod:
     """Various interfaces to the acceptsAnArrayOfBytes method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, a: List[bytes]):
         """Validate the inputs to the acceptsAnArrayOfBytes method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='acceptsAnArrayOfBytes',
             parameter_name='a',
             argument_value=a,
@@ -156,29 +158,30 @@ class AcceptsAnArrayOfBytesMethod:
 class EcrecoverFnMethod:
     """Various interfaces to the ecrecoverFn method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, _hash: bytes, v: int, r: bytes, s: bytes):
         """Validate the inputs to the ecrecoverFn method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='ecrecoverFn',
             parameter_name='hash',
             argument_value=_hash,
         )
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='ecrecoverFn',
             parameter_name='v',
             argument_value=v,
         )
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='ecrecoverFn',
             parameter_name='r',
             argument_value=r,
         )
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='ecrecoverFn',
             parameter_name='s',
             argument_value=s,
@@ -207,14 +210,15 @@ class EcrecoverFnMethod:
 class AcceptsBytesMethod:
     """Various interfaces to the acceptsBytes method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, a: bytes):
         """Validate the inputs to the acceptsBytes method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='acceptsBytes',
             parameter_name='a',
             argument_value=a,
@@ -244,10 +248,11 @@ class AcceptsBytesMethod:
 class RevertWithConstantMethod:
     """Various interfaces to the revertWithConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying, same-named contract method.
@@ -269,10 +274,11 @@ class RevertWithConstantMethod:
 class SimpleRevertMethod:
     """Various interfaces to the simpleRevert method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying, same-named contract method.
@@ -294,10 +300,11 @@ class SimpleRevertMethod:
 class NestedStructOutputMethod:
     """Various interfaces to the nestedStructOutput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
         """Execute underlying, same-named contract method.
@@ -319,10 +326,11 @@ class NestedStructOutputMethod:
 class RequireWithConstantMethod:
     """Various interfaces to the requireWithConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
         """Execute underlying, same-named contract method.
@@ -344,40 +352,41 @@ class RequireWithConstantMethod:
 class WithAddressInputMethod:
     """Various interfaces to the withAddressInput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: str, a: int, b: int, y: str, c: int):
         """Validate the inputs to the withAddressInput method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='x',
             argument_value=x,
         )
         x = self.contract.validate_and_checksum_address(x)
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='a',
             argument_value=a,
         )
         # safeguard against fractional inputs
         a = int(a)
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='b',
             argument_value=b,
         )
         # safeguard against fractional inputs
         b = int(b)
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='y',
             argument_value=y,
         )
         y = self.contract.validate_and_checksum_address(y)
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='c',
             argument_value=c,
@@ -408,14 +417,15 @@ class WithAddressInputMethod:
 class StructInputMethod:
     """Various interfaces to the structInput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
         """Validate the inputs to the structInput method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='structInput',
             parameter_name='s',
             argument_value=s,
@@ -444,10 +454,11 @@ class StructInputMethod:
 class NonPureMethodMethod:
     """Various interfaces to the nonPureMethod method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[int, Union[HexBytes, bytes]]:
         """Execute underlying, same-named contract method.
@@ -468,14 +479,15 @@ class NonPureMethodMethod:
 class SimplePureFunctionWithInputMethod:
     """Various interfaces to the simplePureFunctionWithInput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the simplePureFunctionWithInput method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='simplePureFunctionWithInput',
             parameter_name='x',
             argument_value=x,
@@ -506,10 +518,11 @@ class SimplePureFunctionWithInputMethod:
 class NonPureMethodThatReturnsNothingMethod:
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
         """Execute underlying, same-named contract method.
@@ -530,10 +543,11 @@ class NonPureMethodThatReturnsNothingMethod:
 class SimplePureFunctionMethod:
     """Various interfaces to the simplePureFunction method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying, same-named contract method.
@@ -555,14 +569,15 @@ class SimplePureFunctionMethod:
 class NestedStructInputMethod:
     """Various interfaces to the nestedStructInput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
         """Validate the inputs to the nestedStructInput method."""
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='nestedStructInput',
             parameter_name='n',
             argument_value=n,
@@ -591,10 +606,11 @@ class NestedStructInputMethod:
 class StructOutputMethod:
     """Various interfaces to the structOutput method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
         """Execute underlying, same-named contract method.
@@ -620,10 +636,11 @@ class StructOutputMethod:
 class PureFunctionWithConstantMethod:
     """Various interfaces to the pureFunctionWithConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying, same-named contract method.
@@ -694,23 +711,23 @@ class AbiGenDummy(BaseContractWrapper):
         functions = self._web3_eth.contract(
             address=to_checksum_address(contract_address), abi=AbiGenDummy.abi()
         ).functions
-        self.simple_require = SimpleRequireMethod(self, functions.simpleRequire)
-        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(self, functions.acceptsAnArrayOfBytes)
-        self.ecrecover_fn = EcrecoverFnMethod(self, functions.ecrecoverFn)
-        self.accepts_bytes = AcceptsBytesMethod(self, functions.acceptsBytes)
-        self.revert_with_constant = RevertWithConstantMethod(self, functions.revertWithConstant)
-        self.simple_revert = SimpleRevertMethod(self, functions.simpleRevert)
-        self.nested_struct_output = NestedStructOutputMethod(self, functions.nestedStructOutput)
-        self.require_with_constant = RequireWithConstantMethod(self, functions.requireWithConstant)
-        self.with_address_input = WithAddressInputMethod(self, functions.withAddressInput)
-        self.struct_input = StructInputMethod(self, functions.structInput)
-        self.non_pure_method = NonPureMethodMethod(self, functions.nonPureMethod)
-        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(self, functions.simplePureFunctionWithInput)
-        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(self, functions.nonPureMethodThatReturnsNothing)
-        self.simple_pure_function = SimplePureFunctionMethod(self, functions.simplePureFunction)
-        self.nested_struct_input = NestedStructInputMethod(self, functions.nestedStructInput)
-        self.struct_output = StructOutputMethod(self, functions.structOutput)
-        self.pure_function_with_constant = PureFunctionWithConstantMethod(self, functions.pureFunctionWithConstant)
+        self.simple_require = SimpleRequireMethod(self, functions.simpleRequire, validator)
+        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(self, functions.acceptsAnArrayOfBytes, validator)
+        self.ecrecover_fn = EcrecoverFnMethod(self, functions.ecrecoverFn, validator)
+        self.accepts_bytes = AcceptsBytesMethod(self, functions.acceptsBytes, validator)
+        self.revert_with_constant = RevertWithConstantMethod(self, functions.revertWithConstant, validator)
+        self.simple_revert = SimpleRevertMethod(self, functions.simpleRevert, validator)
+        self.nested_struct_output = NestedStructOutputMethod(self, functions.nestedStructOutput, validator)
+        self.require_with_constant = RequireWithConstantMethod(self, functions.requireWithConstant, validator)
+        self.with_address_input = WithAddressInputMethod(self, functions.withAddressInput, validator)
+        self.struct_input = StructInputMethod(self, functions.structInput, validator)
+        self.non_pure_method = NonPureMethodMethod(self, functions.nonPureMethod, validator)
+        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(self, functions.simplePureFunctionWithInput, validator)
+        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(self, functions.nonPureMethodThatReturnsNothing, validator)
+        self.simple_pure_function = SimplePureFunctionMethod(self, functions.simplePureFunction, validator)
+        self.nested_struct_input = NestedStructInputMethod(self, functions.nestedStructInput, validator)
+        self.struct_output = StructOutputMethod(self, functions.structOutput, validator)
+        self.pure_function_with_constant = PureFunctionWithConstantMethod(self, functions.pureFunctionWithConstant, validator)
 
     def get_an_event_event(
         self, tx_hash: Union[HexBytes, bytes]

@@ -2,16 +2,17 @@
 class {{toPythonClassname this.name}}Method:
     """Various interfaces to the {{this.name}} method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
         """Persist instance data."""
         self.contract = contract
         self.underlying_method = contract_function
+        self.validator = validator
 
     {{#if inputs}}
     def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
         """Validate the inputs to the {{this.name}} method."""
         {{#each this.inputs}}
-        self.contract.validator.assert_valid(
+        self.validator.assert_valid(
             method_name='{{../name}}',
             parameter_name='{{name}}',
             argument_value={{toPythonIdentifier name}},
