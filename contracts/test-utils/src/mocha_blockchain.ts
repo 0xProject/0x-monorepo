@@ -80,7 +80,18 @@ function defineBlockchainSuite<T>(
     describeCall: Mocha.ContextDefinitionCallback<T>,
 ): T {
     return describeCall(description, function(this: Mocha.ISuiteCallbackContext): void {
-        callback.call(this, BlockchainTestsEnvironment.create());
+        const env = BlockchainTestsEnvironment.create();
+        before(
+            async (): Promise<void> => {
+                return env.blockchainLifecycle.startAsync();
+            },
+        );
+        before(
+            async (): Promise<void> => {
+                return env.blockchainLifecycle.revertAsync();
+            },
+        );
+        callback.call(this, env);
     });
 }
 

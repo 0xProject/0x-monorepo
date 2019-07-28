@@ -29,7 +29,7 @@ blockchainTests('mocha blockchain extensions', env => {
                 });
             });
 
-            blockchainTests/*.only*/('only', () => {
+            blockchainTests('only', () => {
                 it.skip("can't test `only` :-(", () => {
                     // no-op.
                 });
