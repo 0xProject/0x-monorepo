@@ -79,15 +79,9 @@ function defineBlockchainSuite<T>(
     callback: Mocha.BlockchainSuiteCallback,
     describeCall: Mocha.ContextDefinitionCallback<T>,
 ): T {
-    return describeCall(
-        description,
-        function(this: Mocha.ISuiteCallbackContext): void {
-            callback.call(
-                this,
-                BlockchainTestsEnvironment.create(),
-            );
-        },
-    );
+    return describeCall(description, function(this: Mocha.ISuiteCallbackContext): void {
+        callback.call(this, BlockchainTestsEnvironment.create());
+    });
 }
 
 function defineResetsSuite<T>(
@@ -95,22 +89,18 @@ function defineResetsSuite<T>(
     callback: Mocha.SuiteCallback,
     describeCall: Mocha.ContextDefinitionCallback<T>,
 ): T {
-    return describeCall(
-        description,
-        function(this: Mocha.ISuiteCallbackContext): void {
-            const env = BlockchainTestsEnvironment.getInstance();
-            if (env !== undefined) {
-                const _blockchainLifecycle = env.blockchainLifecycle;
-                beforeEach(async () => {
-                    return _blockchainLifecycle.startAsync();
-                });
-                afterEach(async () => {
-                    return _blockchainLifecycle.revertAsync();
-                });
-            }
-            callback.call(this);
-        },
-    );
+    return describeCall(description, function(this: Mocha.ISuiteCallbackContext): void {
+        const env = BlockchainTestsEnvironment.getInstance();
+        if (env !== undefined) {
+            beforeEach(async () => {
+                return env.blockchainLifecycle.startAsync();
+            });
+            afterEach(async () => {
+                return env.blockchainLifecycle.revertAsync();
+            });
+        }
+        callback.call(this);
+    });
 }
 
 /**
@@ -128,50 +118,42 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
             return defineBlockchainSuite(description, callback, describe.skip);
         },
         optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
-            return defineBlockchainSuite(
-                description,
-                callback,
-                process.env.TEST_ALL ? describe : describe.skip,
-            );
+            return defineBlockchainSuite(description, callback, process.env.TEST_ALL ? describe : describe.skip);
         },
         resets: _.assign(
             function(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-                return defineBlockchainSuite(
-                    description,
-                    callback,
-                    function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite {
-                        return defineResetsSuite(_description, _callback, describe);
-                    },
-                );
+                return defineBlockchainSuite(description, callback, function(
+                    _description: string,
+                    _callback: Mocha.SuiteCallback,
+                ): Mocha.ISuite {
+                    return defineResetsSuite(_description, _callback, describe);
+                });
             },
             {
                 only(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-                    return defineBlockchainSuite(
-                        description,
-                        callback,
-                        function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite {
-                            return defineResetsSuite(_description, _callback, describe.only);
-                        },
-                    );
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: Mocha.SuiteCallback,
+                    ): Mocha.ISuite {
+                        return defineResetsSuite(_description, _callback, describe.only);
+                    });
                 },
                 skip(description: string, callback: Mocha.BlockchainSuiteCallback): void {
-                    return defineBlockchainSuite(
-                        description,
-                        callback,
-                        function(_description: string, _callback: Mocha.SuiteCallback): void {
-                            return defineResetsSuite(_description, _callback, describe.skip);
-                        },
-                    );
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: Mocha.SuiteCallback,
+                    ): void {
+                        return defineResetsSuite(_description, _callback, describe.skip);
+                    });
                 },
                 optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
                     const describeCall = process.env.TEST_ALL ? describe : describe.skip;
-                    return defineBlockchainSuite(
-                        description,
-                        callback,
-                        function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite | void {
-                            return defineResetsSuite(_description, _callback, describeCall);
-                        },
-                    );
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: Mocha.SuiteCallback,
+                    ): Mocha.ISuite | void {
+                        return defineResetsSuite(_description, _callback, describeCall);
+                    });
                 },
             },
         ),

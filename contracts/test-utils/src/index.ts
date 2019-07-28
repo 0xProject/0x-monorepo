@@ -45,5 +45,5 @@ export {
     Token,
     TransactionDataParams,
 } from './types';
-export { blockchainTests} from './mocha_blockchain';
+export { blockchainTests, BlockchainTestsEnvironment } from './mocha_blockchain';
 export { chaiSetup, expect } from './chai_setup';
