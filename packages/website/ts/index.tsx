@@ -205,13 +205,10 @@ render(
                                     path={`${WebsitePaths.AssetBuyer}/:version?`}
                                     component={LazyAssetBuyerDocumentation}
                                 />
-                                <Route
-                                    exact={true}
-                                    path={`${WebsitePaths.Docs}/guides`}
-                                    component={DocsGuides as any}
-                                />
-                                <Route path={`${WebsitePaths.Docs}/guides/:page`} component={DocsView as any} />
-                                <Route path={`${WebsitePaths.Docs}/tools`} component={DocsTools as any} />
+                                <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
+                                <Route exact={true} path={WebsitePaths.DocsTools} component={DocsTools as any} />
+                                <Route path={`${WebsitePaths.DocsGuides}/:page`} component={DocsView as any} />
+                                <Route path={`${WebsitePaths.DocsTools}/:page`} component={DocsView as any} />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}
                                 <Route
