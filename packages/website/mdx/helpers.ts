@@ -7,7 +7,7 @@ const filter = require('unist-util-filter');
 const { selectAll } = require('unist-util-select');
 const extractMdxMeta = require('extract-mdx-metadata');
 
-function processContentTree(tree: any, url: any, meta: any, index: any) {
+function processContentTree(tree: any, url: any, meta: any, index: any): void {
     const filteredTree = filter(tree, () => {
         return (node: any) => node.type === 'heading' || node.type === 'paragraph';
     });
@@ -22,7 +22,7 @@ function processContentTree(tree: any, url: any, meta: any, index: any) {
     }
 }
 
-export function setIndexSettings(index: any, settings: any) {
+export function setIndexSettings(index: any, settings: any): void {
     index.setSettings(settings, (err: any) => {
         if (err) {
             throw Error(`Error: ${err}`);
@@ -30,7 +30,7 @@ export function setIndexSettings(index: any, settings: any) {
     });
 }
 
-function pushObjectsToAlgolia(index: any, content: any) {
+function pushObjectsToAlgolia(index: any, content: any): void {
     index
         .saveObjects(content)
         .then(({ objectIDs }: { objectIDs: string[] }) =>
@@ -43,7 +43,7 @@ function pushObjectsToAlgolia(index: any, content: any) {
         });
 }
 
-function getContent(meta: any, url: any, formattedTextNodes: any) {
+function getContent(meta: any, url: string, formattedTextNodes: string[]): any {
     // META SHAPE TOOLS // const { description, difficulty, id, isCommunity, tags, title, type } = meta;
     // META SHAPE GUIDES // const {  description, difficulty, id, tags, title, topics } = meta;
     const content: any = [];
@@ -60,7 +60,7 @@ function getContent(meta: any, url: any, formattedTextNodes: any) {
     return content;
 }
 
-function formatTextNodes(textNodes: any) {
+function formatTextNodes(textNodes: any): string[] {
     const formattedTextNodes: any = []; // array structure: [ { line: [LINE_NUMBER], textContent: [MERGED_TEXT_VALUE] } ]
 
     textNodes.map((textNode: any) => {
@@ -80,7 +80,7 @@ function formatTextNodes(textNodes: any) {
     return formattedTextNodes;
 }
 
-async function processMdx(index: any, dirName: any, fileName: any) {
+async function processMdxAsync(index: any, dirName: any, fileName: any): Promise<void> {
     const filePath = `${dirName}/${fileName}`;
     const { name } = path.parse(filePath); // Name without file extension
     const url = `/docs/${dirName}/${name}`;
@@ -95,12 +95,11 @@ async function processMdx(index: any, dirName: any, fileName: any) {
         .process(file);
 }
 
-export async function indexFiles(index: any, dirName: any) {
+export async function indexFiles(index: any, dirName: string): Promise<void> {
     fs.readdir(dirName, async (err: string, items: any) => {
         // @ts-ignore
-        for (var i = 0; i < items.length; i++) {
-            const fileName = items[i];
-            await processMdx(index, dirName, fileName);
+        for (const fileName of items) {
+            await processMdxAsync(index, dirName, fileName);
         }
     });
 }
