@@ -33,6 +33,10 @@
             {
                 "note": "Add `hexConcat()` in `hex_utils.ts`",
                 "pr": 1885
+            },
+            {
+                "note": "Introduce Mocha blockchain extensions",
+                "pr": 2007
             }
         ]
     },
