@@ -1,8 +1,9 @@
-import algoliasearch from 'algoliasearch/lite';
+const algoliasearch = require('algoliasearch/lite');
 
-import { configs } from 'ts/utils/configs';
+const { configs } = require('ts/utils/configs');
 
-export const searchClient = algoliasearch(configs.ALGOLIA_APP_ID, configs.ALGOLIA_API_KEY_CLIENT);
+export const searchClient = algoliasearch(configs.ALGOLIA_APP_ID, configs.ALGOLIA_CLIENT_API_KEY);
+// export const adminClient = algoliasearch(configs.ALGOLIA_APP_ID, configs.ALGOLIA_ADMIN_API_KEY);
 
 export const searchIndex = {
     guides: '0x_guides_test',
