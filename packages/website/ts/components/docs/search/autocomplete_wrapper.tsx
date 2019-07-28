@@ -146,6 +146,17 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
         background-color: ${colors.white};
         flex-grow: 1;
 
+        max-height: calc(100vh - 200px);
+        overflow-y: scroll;
+
+        /* Slim scroll bar */
+        scrollbar-width: 1px; /* Firefox */
+        -ms-overflow-style: none; /* IE 10+ */
+        &::-webkit-scrollbar {
+            width: 1px;
+            background: transparent; /* Chrome/Safari/Webkit */
+        }
+
         &--focused,
         &--open {
             border: 1px solid #dbdfdd;
@@ -164,15 +175,6 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             !isHome &&
             `
             width: 100%;
-            max-height: calc(100vh - 200px);
-            overflow-y: scroll;
-
-            scrollbar-width: 1px; /* Firefox */
-            -ms-overflow-style: none;  /* IE 10+ */
-            &::-webkit-scrollbar {
-                width: 1px;
-                background: transparent; /* Chrome/Safari/Webkit */
-            }
 
             @media (min-width: 1200px) {
                 width: 900px;
