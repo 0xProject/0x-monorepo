@@ -529,7 +529,7 @@ contract MixinExchangeCore is
         address takerAddress,
         LibFillResults.FillResults memory fillResults
     )
-        private
+        internal
     {
         // Transfer taker -> maker
         _dispatchTransferFrom(

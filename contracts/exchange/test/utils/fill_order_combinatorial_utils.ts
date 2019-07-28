@@ -5,12 +5,11 @@ import {
     ERC721Wrapper,
     MultiAssetProxyContract,
 } from '@0x/contracts-asset-proxy';
-import { chaiSetup, constants, FillResults, orderUtils, signingUtils } from '@0x/contracts-test-utils';
+import { constants, expect, FillResults, orderUtils, signingUtils } from '@0x/contracts-test-utils';
 import { BalanceAndProxyAllowanceLazyStore, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { Order, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, errorUtils, providerUtils, RevertError, StringRevertError } from '@0x/utils';
 import { SupportedProvider, Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
 import { LogWithDecodedArgs, TxData } from 'ethereum-types';
 import * as _ from 'lodash';
 import 'make-promises-safe';
@@ -35,9 +34,6 @@ import {
 import { FillOrderError, FillOrderSimulator } from './fill_order_simulator';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
-
-chaiSetup.configure();
-const expect = chai.expect;
 
 const EMPTY_FILL_RESULTS = {
     takerAssetFilledAmount: constants.ZERO_AMOUNT,
