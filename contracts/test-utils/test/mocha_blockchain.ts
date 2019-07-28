@@ -1,7 +1,7 @@
 import * as _ from 'lodash';
 import * as process from 'process';
 
-import { blockchainTests, constants, expect } from '../src';
+import { blockchainTests, constants, describe, expect } from '../src';
 
 blockchainTests('mocha blockchain extensions', env => {
     describe('blockchainTests()', () => {
@@ -77,6 +77,16 @@ blockchainTests('mocha blockchain extensions', env => {
 
         describe('subtests', () => {
             require('./subtests/mocha_blockchain_1').append(env);
+        });
+    });
+
+    describe('describe extensions', () => {
+        describe('modifiers', () => {
+            describe.optional('optional', () => {
+                it('only runs this with `TEST_ALL` environment flag set', () => {
+                    expect(process.env.TEST_ALL).to.be.ok('');
+                });
+            });
         });
     });
 });

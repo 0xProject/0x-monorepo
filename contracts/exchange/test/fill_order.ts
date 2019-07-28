@@ -1,4 +1,4 @@
-import { blockchainTests } from '@0x/contracts-test-utils';
+import { blockchainTests, describe } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
 
 import {
@@ -664,7 +664,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
         }
     });
 
-    blockchainTests.optional('Combinatorially generated fills orders', () => {
+    describe.optional('Combinatorially generated fills orders', () => {
         const allFillScenarios = FillOrderCombinatorialUtils.generateFillOrderCombinations();
         for (const fillScenario of allFillScenarios) {
             const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;

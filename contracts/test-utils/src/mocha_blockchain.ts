@@ -11,34 +11,49 @@ import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 
 // tslint:disable: no-namespace only-arrow-functions no-unbound-method
 
-// Extend Mocha ambient definitions.
-declare global {
-    export namespace Mocha {
-        type BlockchainSuiteCallback = (this: ISuiteCallbackContext, env: BlockchainTestsEnvironment) => void;
-        type SuiteCallback = (this: ISuiteCallbackContext) => void;
-        type BlockchainContextDefinitionCallback<T> = (description: string, callback: BlockchainSuiteCallback) => T;
-        type ContextDefinitionCallback<T> = (description: string, callback: SuiteCallback) => T;
-
-        interface BlockchainContextDefinition {
-            resets: {
-                only: BlockchainContextDefinitionCallback<ISuite>;
-                skip: BlockchainContextDefinitionCallback<void>;
-                optional: BlockchainContextDefinitionCallback<ISuite | void>;
-                (description: string, callback: BlockchainSuiteCallback): ISuite;
-            };
-            only: BlockchainContextDefinitionCallback<ISuite>;
-            skip: BlockchainContextDefinitionCallback<void>;
-            optional: BlockchainContextDefinitionCallback<ISuite | void>;
-            (description: string, callback: BlockchainSuiteCallback): ISuite;
-        }
-    }
+export type ISuite = Mocha.ISuite;
+export type ISuiteCallbackContext = Mocha.ISuiteCallbackContext;
+export type SuiteCallback = (this: ISuiteCallbackContext) => void;
+export type ContextDefinitionCallback<T> = (description: string, callback: SuiteCallback) => T;
+export type BlockchainSuiteCallback = (this: ISuiteCallbackContext, env: BlockchainTestsEnvironment) => void;
+export type BlockchainContextDefinitionCallback<T> = (description: string, callback: BlockchainSuiteCallback) => T;
+export interface ContextDefinition extends Mocha.IContextDefinition {
+    optional: ContextDefinitionCallback<ISuite | void>;
 }
 
 /**
- * Describes the test environment prepared by `blockchainTests()`.
+ * Interface for `blockchainTests()`.
  */
-export class BlockchainTestsEnvironment {
-    private static _instance: BlockchainTestsEnvironment | undefined;
+export interface BlockchainContextDefinition {
+    resets: {
+        only: BlockchainContextDefinitionCallback<ISuite>;
+        skip: BlockchainContextDefinitionCallback<void>;
+        optional: BlockchainContextDefinitionCallback<ISuite | void>;
+        (description: string, callback: BlockchainSuiteCallback): ISuite;
+    };
+    only: BlockchainContextDefinitionCallback<ISuite>;
+    skip: BlockchainContextDefinitionCallback<void>;
+    optional: BlockchainContextDefinitionCallback<ISuite | void>;
+    (description: string, callback: BlockchainSuiteCallback): ISuite;
+}
+
+/**
+ * Describes the environment object passed into the `blockchainTests()` callback.
+ */
+export interface BlockchainTestsEnvironment {
+    blockchainLifecycle: BlockchainLifecycle;
+    provider: Web3ProviderEngine;
+    txDefaults: Partial<TxData>;
+    web3Wrapper: Web3Wrapper;
+    getChainIdAsync(): Promise<number>;
+    getAccountAddressesAsync(): Promise<string[]>;
+}
+
+/**
+ * Concret implementation of `BlockchainTestsEnvironment`.
+ */
+export class BlockchainTestsEnvironmentSingleton {
+    private static _instance: BlockchainTestsEnvironmentSingleton | undefined;
 
     public blockchainLifecycle: BlockchainLifecycle;
     public provider: Web3ProviderEngine;
@@ -46,16 +61,16 @@ export class BlockchainTestsEnvironment {
     public web3Wrapper: Web3Wrapper;
 
     // Create or retrieve the singleton instance of this class.
-    public static create(): BlockchainTestsEnvironment {
-        if (BlockchainTestsEnvironment._instance === undefined) {
-            BlockchainTestsEnvironment._instance = new BlockchainTestsEnvironment();
+    public static create(): BlockchainTestsEnvironmentSingleton {
+        if (BlockchainTestsEnvironmentSingleton._instance === undefined) {
+            BlockchainTestsEnvironmentSingleton._instance = new BlockchainTestsEnvironmentSingleton();
         }
-        return BlockchainTestsEnvironment._instance;
+        return BlockchainTestsEnvironmentSingleton._instance;
     }
 
     // Get the singleton instance of this class.
-    public static getInstance(): BlockchainTestsEnvironment | undefined {
-        return BlockchainTestsEnvironment._instance;
+    public static getInstance(): BlockchainTestsEnvironmentSingleton | undefined {
+        return BlockchainTestsEnvironmentSingleton._instance;
     }
 
     public async getChainIdAsync(): Promise<number> {
@@ -74,99 +89,99 @@ export class BlockchainTestsEnvironment {
     }
 }
 
+// The original `describe()` global provided by mocha.
+const mochaDescribe = (global as any).describe as Mocha.IContextDefinition;
+
+/**
+ * An augmented version of Mocha's `describe()`.
+ */
+export const describe = _.assign(mochaDescribe, {
+    optional(description: string, callback: SuiteCallback): ISuite | void {
+        const describeCall = process.env.TEST_ALL ? mochaDescribe : mochaDescribe.skip;
+        return describeCall(description, callback);
+    },
+}) as ContextDefinition;
+
+/**
+ * Like mocha's `describe()`, but sets up a blockchain environment on first call.
+ */
+export const blockchainTests: BlockchainContextDefinition = _.assign(
+    function(description: string, callback: BlockchainSuiteCallback): ISuite {
+        return defineBlockchainSuite(description, callback, describe);
+    },
+    {
+        only(description: string, callback: BlockchainSuiteCallback): ISuite {
+            return defineBlockchainSuite(description, callback, describe.only);
+        },
+        skip(description: string, callback: BlockchainSuiteCallback): void {
+            return defineBlockchainSuite(description, callback, describe.skip);
+        },
+        optional(description: string, callback: BlockchainSuiteCallback): ISuite | void {
+            return defineBlockchainSuite(description, callback, process.env.TEST_ALL ? describe : describe.skip);
+        },
+        resets: _.assign(
+            function(description: string, callback: BlockchainSuiteCallback): ISuite {
+                return defineBlockchainSuite(description, callback, function(
+                    _description: string,
+                    _callback: SuiteCallback,
+                ): ISuite {
+                    return defineResetsSuite(_description, _callback, describe);
+                });
+            },
+            {
+                only(description: string, callback: BlockchainSuiteCallback): ISuite {
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: SuiteCallback,
+                    ): ISuite {
+                        return defineResetsSuite(_description, _callback, describe.only);
+                    });
+                },
+                skip(description: string, callback: BlockchainSuiteCallback): void {
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: SuiteCallback,
+                    ): void {
+                        return defineResetsSuite(_description, _callback, describe.skip);
+                    });
+                },
+                optional(description: string, callback: BlockchainSuiteCallback): ISuite | void {
+                    return defineBlockchainSuite(description, callback, function(
+                        _description: string,
+                        _callback: SuiteCallback,
+                    ): ISuite | void {
+                        return defineResetsSuite(_description, _callback, describe.optional);
+                    });
+                },
+            },
+        ),
+    },
+) as BlockchainContextDefinition;
+
 function defineBlockchainSuite<T>(
     description: string,
-    callback: Mocha.BlockchainSuiteCallback,
-    describeCall: Mocha.ContextDefinitionCallback<T>,
+    callback: BlockchainSuiteCallback,
+    describeCall: ContextDefinitionCallback<T>,
 ): T {
-    const env = BlockchainTestsEnvironment.create();
-    return describeCall(description, function(this: Mocha.ISuiteCallbackContext): void {
-        before(
-            async (): Promise<void> => {
-                return env.blockchainLifecycle.startAsync();
-            },
-        );
-        before(
-            async (): Promise<void> => {
-                return env.blockchainLifecycle.revertAsync();
-            },
-        );
+    const env = BlockchainTestsEnvironmentSingleton.create();
+    return describeCall(description, function(this: ISuiteCallbackContext): void {
+        before(async () => env.blockchainLifecycle.startAsync());
+        before(async () => env.blockchainLifecycle.revertAsync());
         callback.call(this, env);
     });
 }
 
 function defineResetsSuite<T>(
     description: string,
-    callback: Mocha.SuiteCallback,
-    describeCall: Mocha.ContextDefinitionCallback<T>,
+    callback: SuiteCallback,
+    describeCall: ContextDefinitionCallback<T>,
 ): T {
-    return describeCall(description, function(this: Mocha.ISuiteCallbackContext): void {
-        const env = BlockchainTestsEnvironment.getInstance();
+    return describeCall(description, function(this: ISuiteCallbackContext): void {
+        const env = BlockchainTestsEnvironmentSingleton.getInstance();
         if (env !== undefined) {
-            beforeEach(async () => {
-                return env.blockchainLifecycle.startAsync();
-            });
-            afterEach(async () => {
-                return env.blockchainLifecycle.revertAsync();
-            });
+            beforeEach(async () => env.blockchainLifecycle.startAsync());
+            afterEach(async () => env.blockchainLifecycle.revertAsync());
         }
         callback.call(this);
     });
 }
-
-/**
- * Like mocha's `describe()`, but sets up a BlockchainLifecycle and Web3Wrapper.
- */
-export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
-    function(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-        return defineBlockchainSuite(description, callback, describe);
-    },
-    {
-        only(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-            return defineBlockchainSuite(description, callback, describe.only);
-        },
-        skip(description: string, callback: Mocha.BlockchainSuiteCallback): void {
-            return defineBlockchainSuite(description, callback, describe.skip);
-        },
-        optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
-            return defineBlockchainSuite(description, callback, process.env.TEST_ALL ? describe : describe.skip);
-        },
-        resets: _.assign(
-            function(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-                return defineBlockchainSuite(description, callback, function(
-                    _description: string,
-                    _callback: Mocha.SuiteCallback,
-                ): Mocha.ISuite {
-                    return defineResetsSuite(_description, _callback, describe);
-                });
-            },
-            {
-                only(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
-                    return defineBlockchainSuite(description, callback, function(
-                        _description: string,
-                        _callback: Mocha.SuiteCallback,
-                    ): Mocha.ISuite {
-                        return defineResetsSuite(_description, _callback, describe.only);
-                    });
-                },
-                skip(description: string, callback: Mocha.BlockchainSuiteCallback): void {
-                    return defineBlockchainSuite(description, callback, function(
-                        _description: string,
-                        _callback: Mocha.SuiteCallback,
-                    ): void {
-                        return defineResetsSuite(_description, _callback, describe.skip);
-                    });
-                },
-                optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
-                    const describeCall = process.env.TEST_ALL ? describe : describe.skip;
-                    return defineBlockchainSuite(description, callback, function(
-                        _description: string,
-                        _callback: Mocha.SuiteCallback,
-                    ): Mocha.ISuite | void {
-                        return defineResetsSuite(_description, _callback, describeCall);
-                    });
-                },
-            },
-        ),
-    },
-) as Mocha.BlockchainContextDefinition;
