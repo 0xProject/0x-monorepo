@@ -76,7 +76,7 @@ blockchainTests('mocha blockchain extensions', env => {
         });
 
         describe('subtests', () => {
-            require('./subtests/mocha_blockchain_1').define(env);
+            require('./subtests/mocha_blockchain_1').append(env);
         });
     });
 });
