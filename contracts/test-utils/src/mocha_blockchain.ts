@@ -1,20 +1,19 @@
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { Web3Wrapper } from '@0x/web3-wrapper';
+import { Web3ProviderEngine } from '@0x/subproviders';
+import { providerUtils } from '@0x/utils';
+import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 // Import ambient declarations (and clobber Jest).
 import 'mocha';
 
-import { web3Wrapper } from './web3_wrapper';
+import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 
 // tslint:disable: no-namespace only-arrow-functions no-unbound-method
+
+// Extend Mocha ambient definitions.
 declare global {
     export namespace Mocha {
-        export interface BlockchainSuiteState {
-            web3Wrapper: Web3Wrapper;
-            blockchainLifecycle: BlockchainLifecycle;
-        }
-
-        type BlockchainSuiteCallback = (this: ISuiteCallbackContext, state: BlockchainSuiteState) => void;
+        type BlockchainSuiteCallback = (this: ISuiteCallbackContext, env: BlockchainTestsEnvironment) => void;
         type SuiteCallback = (this: ISuiteCallbackContext) => void;
         type BlockchainContextDefinitionCallback<T> = (description: string, callback: BlockchainSuiteCallback) => T;
         type ContextDefinitionCallback<T> = (description: string, callback: SuiteCallback) => T;
@@ -32,21 +31,57 @@ declare global {
     }
 }
 
-// Singleton instance.
-let blockchainLifecycle: BlockchainLifecycle | undefined;
+/**
+ * Describes the test environment prepared by `blockchainTests()`.
+ */
+export class BlockchainTestsEnvironment {
+    private static _instance: BlockchainTestsEnvironment | undefined;
+
+    public blockchainLifecycle: BlockchainLifecycle;
+    public provider: Web3ProviderEngine;
+    public txDefaults: Partial<TxData>;
+    public web3Wrapper: Web3Wrapper;
+
+    // Create or retrieve the singleton instance of this class.
+    public static create(): BlockchainTestsEnvironment {
+        if (BlockchainTestsEnvironment._instance === undefined) {
+            BlockchainTestsEnvironment._instance = new BlockchainTestsEnvironment();
+        }
+        return BlockchainTestsEnvironment._instance;
+    }
+
+    // Get the singleton instance of this class.
+    public static getInstance(): BlockchainTestsEnvironment | undefined {
+        return BlockchainTestsEnvironment._instance;
+    }
+
+    public async getChainIdAsync(): Promise<number> {
+        return providerUtils.getChainIdAsync(this.provider);
+    }
+
+    public async getAccountAddressesAsync(): Promise<string[]> {
+        return this.web3Wrapper.getAvailableAddressesAsync();
+    }
+
+    protected constructor() {
+        this.blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+        this.provider = provider;
+        this.txDefaults = txDefaults;
+        this.web3Wrapper = web3Wrapper;
+    }
+}
 
 function defineBlockchainSuite<T>(
     description: string,
     callback: Mocha.BlockchainSuiteCallback,
     describeCall: Mocha.ContextDefinitionCallback<T>,
 ): T {
-    init();
     return describeCall(
         description,
         function(this: Mocha.ISuiteCallbackContext): void {
             callback.call(
                 this,
-                { web3Wrapper, blockchainLifecycle },
+                BlockchainTestsEnvironment.create(),
             );
         },
     );
@@ -60,8 +95,9 @@ function defineResetsSuite<T>(
     return describeCall(
         description,
         function(this: Mocha.ISuiteCallbackContext): void {
-            if (blockchainLifecycle !== undefined) {
-                const _blockchainLifecycle = blockchainLifecycle;
+            const env = BlockchainTestsEnvironment.getInstance();
+            if (env !== undefined) {
+                const _blockchainLifecycle = env.blockchainLifecycle;
                 beforeEach(async () => {
                     return _blockchainLifecycle.startAsync();
                 });
@@ -72,14 +108,6 @@ function defineResetsSuite<T>(
             callback.call(this);
         },
     );
-}
-
-function init(): void {
-    if (blockchainLifecycle !== undefined) {
-        return;
-    }
-    // Create the BlockchainLifecycle instance.
-    blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 }
 
 /**
