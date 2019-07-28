@@ -4,8 +4,8 @@ const BASE_URL = window.location.origin;
 const INFURA_API_KEY = 'T5WSC8cautR4KXyYgsRs';
 
 export const configs = {
-    ALGOLIA_APP_ID: '39X6WOJZKW',
-    ALGOLIA_API_KEY_CLIENT: '6acba761a34d99781628c6178af1e16c',
+    ALGOLIA_APP_ID: 'T7V7WKELRY',
+    ALGOLIA_API_KEY_CLIENT: '4c367b8cc6d6e175ae537cc61e4d8dfd',
     AMOUNT_DISPLAY_PRECSION: 5,
     BACKEND_BASE_PROD_URL: 'https://website-api.0x.org',
     BACKEND_BASE_STAGING_URL: 'https://staging-website-api.0x.org',
