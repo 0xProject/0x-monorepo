@@ -5,6 +5,7 @@ import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
 // Import ambient declarations (and clobber Jest).
 import 'mocha';
+import * as process from 'process';
 
 import { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 
@@ -22,10 +23,12 @@ declare global {
             resets: {
                 only: BlockchainContextDefinitionCallback<ISuite>;
                 skip: BlockchainContextDefinitionCallback<void>;
+                optional: BlockchainContextDefinitionCallback<ISuite | void>;
                 (description: string, callback: BlockchainSuiteCallback): ISuite;
             };
             only: BlockchainContextDefinitionCallback<ISuite>;
             skip: BlockchainContextDefinitionCallback<void>;
+            optional: BlockchainContextDefinitionCallback<ISuite | void>;
             (description: string, callback: BlockchainSuiteCallback): ISuite;
         }
     }
@@ -124,6 +127,13 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
         skip(description: string, callback: Mocha.BlockchainSuiteCallback): void {
             return defineBlockchainSuite(description, callback, describe.skip);
         },
+        optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
+            return defineBlockchainSuite(
+                description,
+                callback,
+                process.env.TEST_ALL ? describe : describe.skip,
+            );
+        },
         resets: _.assign(
             function(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite {
                 return defineBlockchainSuite(
@@ -150,6 +160,16 @@ export const blockchainTests: Mocha.BlockchainContextDefinition = _.assign(
                         callback,
                         function(_description: string, _callback: Mocha.SuiteCallback): void {
                             return defineResetsSuite(_description, _callback, describe.skip);
+                        },
+                    );
+                },
+                optional(description: string, callback: Mocha.BlockchainSuiteCallback): Mocha.ISuite | void {
+                    const describeCall = process.env.TEST_ALL ? describe : describe.skip;
+                    return defineBlockchainSuite(
+                        description,
+                        callback,
+                        function(_description: string, _callback: Mocha.SuiteCallback): Mocha.ISuite | void {
+                            return defineResetsSuite(_description, _callback, describeCall);
                         },
                     );
                 },
