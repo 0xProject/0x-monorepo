@@ -11,8 +11,10 @@ from typing import (  # pylint: disable=unused-import
     Union,
 )
 
+from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
@@ -66,6 +68,9 @@ class LibDummy(BaseContractWrapper):
             validator=validator,
             private_key=private_key,
         )
+        functions = self._web3_eth.contract(
+            address=to_checksum_address(contract_address), abi=LibDummy.abi()
+        ).functions
 
 
     @staticmethod

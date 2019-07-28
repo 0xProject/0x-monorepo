@@ -11,8 +11,10 @@ from typing import (  # pylint: disable=unused-import
     Union,
 )
 
+from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
@@ -41,9 +43,10 @@ except ImportError:
 class PublicAddConstantMethod:
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
         """Persist instance data."""
         self.contract = contract
+        self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddConstant method."""
@@ -63,8 +66,7 @@ class PublicAddConstantMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
-        return self.contract.call(func=func, tx_params=tx_params)
+        return self.contract.call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -73,15 +75,16 @@ class PublicAddConstantMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddConstant(x)
+        func = self.underlying_method(x)
         return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 class PublicAddOneMethod:
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, contract: BaseContractWrapper):
+    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction):
         """Persist instance data."""
         self.contract = contract
+        self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
@@ -101,8 +104,7 @@ class PublicAddOneMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
-        return self.contract.call(func=func, tx_params=tx_params)
+        return self.contract.call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -111,7 +113,7 @@ class PublicAddOneMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        func = self.contract.contract_instance(address=self.contract.contract_address, abi=self.contract.abi()).functions.publicAddOne(x)
+        func = self.underlying_method(x)
         return self.contract.send_transaction(func=func, tx_params=tx_params)
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
@@ -144,9 +146,12 @@ class TestLibDummy(BaseContractWrapper):
             validator=validator,
             private_key=private_key,
         )
+        functions = self._web3_eth.contract(
+            address=to_checksum_address(contract_address), abi=TestLibDummy.abi()
+        ).functions
+        self.public_add_constant = PublicAddConstantMethod(self, functions.publicAddConstant)
+        self.public_add_one = PublicAddOneMethod(self, functions.publicAddOne)
 
-        self.public_add_constant = PublicAddConstantMethod(self)
-        self.public_add_one = PublicAddOneMethod(self)
 
     @staticmethod
     def abi():
