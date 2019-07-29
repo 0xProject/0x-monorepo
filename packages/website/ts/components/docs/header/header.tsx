@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import Headroom from 'react-headroom';
 import MediaQuery from 'react-responsive';
 import styled, { css } from 'styled-components';

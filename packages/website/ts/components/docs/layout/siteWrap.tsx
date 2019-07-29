@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
 import { Header } from 'ts/components/docs/header/header';
@@ -22,9 +22,9 @@ interface IMainProps {
 
 export const SiteWrap: React.FC<ISiteWrapProps> = props => {
     const { children, theme = 'dark', isFullScreen } = props;
-    const [isMobileNavOpen, setIsMobileNavOpen] = useState<boolean>(false);
+    const [isMobileNavOpen, setIsMobileNavOpen] = React.useState<boolean>(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         document.documentElement.style.overflowY = 'auto';
         window.scrollTo(0, 0);
     }, []);

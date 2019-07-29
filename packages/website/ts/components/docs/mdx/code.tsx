@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 
@@ -15,7 +15,7 @@ interface ICodeProps {
 }
 
 export const Code: React.FC<ICodeProps> = ({ children, className = 'language-typescript', canRun = false }) => {
-    const [isCopied, setIsCopied] = useState<boolean>(false);
+    const [isCopied, setIsCopied] = React.useState<boolean>(false);
     const copyButtonText = isCopied ? 'Copied!' : 'Copy';
 
     // Passing in LANGUAGE to code in mdx results in classname 'language-<LANGUAGE>'

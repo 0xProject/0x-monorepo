@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { connectHits, InstantSearch } from 'react-instantsearch-dom';
 import styled from 'styled-components';
 
