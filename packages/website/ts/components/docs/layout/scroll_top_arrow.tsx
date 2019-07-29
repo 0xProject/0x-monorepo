@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { animateScroll } from 'react-scroll';
 import styled from 'styled-components';
 
@@ -8,10 +8,10 @@ import { colors } from 'ts/style/colors';
 import { fadeIn, fadeOut } from 'ts/style/keyframes';
 
 export const ScrollTopArrow = () => {
-    const [scrollY, setScrollY] = useState<number>(window.scrollY);
+    const [scrollY, setScrollY] = React.useState<number>(window.scrollY);
     const isArrowVisible = scrollY > 100;
 
-    useEffect(
+    React.useEffect(
         () => {
             const handleScroll = () => setScrollY(window.scrollY);
             window.addEventListener('scroll', debounce(handleScroll));

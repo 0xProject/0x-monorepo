@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Hits, InstantSearch } from 'react-instantsearch-dom';
 
 import { Columns } from 'ts/components/docs/layout/columns';

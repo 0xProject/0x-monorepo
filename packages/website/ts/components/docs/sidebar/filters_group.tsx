@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { connectRefinementList } from 'react-instantsearch-dom';
 
 import { Filter, IFilterProps } from 'ts/components/docs/sidebar/filter';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
@@ -15,7 +15,7 @@ interface ICollapse {
 }
 
 export const Collapse: React.FC<ICollapseProps> = props => {
-    const [isActive, setIsActive] = useState<boolean>(true);
+    const [isActive, setIsActive] = React.useState<boolean>(true);
     // @ts-ignore
     const [contentRef, { height }] = useDimensions();
 

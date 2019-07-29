@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
 
@@ -38,9 +38,9 @@ interface IAutoCompleteProps {
 }
 
 const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits = [], currentRefinement, refine }) => {
-    const [value, setValue] = useState<string>('');
+    const [value, setValue] = React.useState<string>('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         const handleEscapeKeyUp: any = (event: React.KeyboardEvent): void => {
             if (event.key === 'Escape') {
                 setValue('');

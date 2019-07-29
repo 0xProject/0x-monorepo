@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import styled, { keyframes } from 'styled-components';
 
 import { analytics } from 'ts/utils/analytics';
@@ -16,7 +16,7 @@ interface IHelpfulCtaProps {
 }
 
 export const HelpfulCta: React.FC<IHelpfulCtaProps> = ({ note, page, question }) => {
-    const [isClicked, setIsClicked] = useState<boolean>(false);
+    const [isClicked, setIsClicked] = React.useState<boolean>(false);
 
     const vote = (yesno: string) => {
         analytics.track('was_this_helpful_feedback', { yesno, page });

@@ -1,5 +1,5 @@
 import { Link as SmartLink } from '@0x/react-shared';
-import React from 'react';
+import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 

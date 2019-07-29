@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 
 import { CommunityLinks } from 'ts/components/docs/home/community_links';
 import { MiddleSection } from 'ts/components/docs/home/middle_section';

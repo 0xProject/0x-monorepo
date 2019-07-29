@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import * as React from 'react';
 import styled from 'styled-components';
 
 import { fadeIn } from 'ts/style/keyframes';
@@ -24,7 +24,7 @@ interface IArrowProps {
 }
 
 export const NewsletterForm: React.FC<IFormProps> = ({ color }) => {
-    const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+    const [isSubmitted, setIsSubmitted] = React.useState<boolean>(false);
     const emailInput = React.createRef<HTMLInputElement>();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {

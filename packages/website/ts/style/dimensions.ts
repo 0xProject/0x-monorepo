@@ -1,4 +1,4 @@
-import { useState, useCallback, useLayoutEffect } from 'react';
+import * as React from 'react';
 
 interface DimensionObject {
     width: number;
@@ -33,14 +33,14 @@ function getDimensionObject(node: HTMLElement): DimensionObject {
 }
 
 export function useDimensions({ liveMeasure = true }: UseDimensionsArgs = {}): UseDimensionsHook {
-    const [dimensions, setDimensions] = useState({});
-    const [node, setNode] = useState(null);
+    const [dimensions, setDimensions] = React.useState({});
+    const [node, setNode] = React.useState(null);
 
-    const ref = useCallback(node => {
+    const ref = React.useCallback(node => {
         setNode(node);
     }, []);
 
-    useLayoutEffect(
+    React.useLayoutEffect(
         // @ts-ignore
         () => {
             if (node) {

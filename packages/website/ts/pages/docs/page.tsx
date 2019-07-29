@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import * as React from 'react';
 import { match } from 'react-router-dom';
 
 import { MDXProvider } from '@mdx-js/react';
@@ -42,7 +42,7 @@ interface IDocsPageState {
 }
 
 export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
-    const [state, setState] = useState<IDocsPageState>({
+    const [state, setState] = React.useState<IDocsPageState>({
         Component: null,
         contents: [],
         title: '',
@@ -54,7 +54,7 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
     const isLoading = !Component && !wasNotFound;
     const { page, type } = match.params;
 
-    useEffect(
+    React.useEffect(
         () => {
             void loadPageAsync(page, type);
         },
