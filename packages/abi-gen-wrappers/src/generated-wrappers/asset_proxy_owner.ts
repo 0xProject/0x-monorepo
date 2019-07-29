@@ -2113,10 +2113,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce(
-            (accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }),
-            {},
-        );
+        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce<{
+            [contractName: string]: ContractAbi;
+        }>((accumulator, [key, value]) => ({ ...{ [key]: value.compilerOutput.abi } }), {});
         return AssetProxyOwnerContract.deployAsync(
             bytecode,
             abi,
