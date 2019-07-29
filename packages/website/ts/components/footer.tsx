@@ -1,4 +1,3 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';

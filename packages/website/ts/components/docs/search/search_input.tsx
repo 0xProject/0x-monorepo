@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Configure, Index, InstantSearch } from 'react-instantsearch-dom';
 
 import { AutoComplete } from 'ts/components/docs/search/autocomplete';
