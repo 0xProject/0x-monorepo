@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 import { Link } from '@0x/react-shared';
@@ -30,10 +30,10 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
     return (
         <ContentsList>
             {contents.map(content => {
-                const { children, id, title } = content;
+                const { children, id, level, title } = content;
                 return (
                     <li key={id}>
-                        <ContentLink containerId="" to={id}>
+                        <ContentLink containerId="" level={level} to={id}>
                             {title}
                         </ContentLink>
                         {children.length > 0 && <Contents contents={children} />}
@@ -45,37 +45,38 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
 };
 
 const ContentsList = styled.ul`
-    li {
-        margin-bottom: 1rem;
-
-        &:last-child {
-            margin-bottom: 0;
-        }
-    }
-
     ul {
-        border-left: 1px solid #e3e3e3;
-        padding-left: 0.7rem;
-        margin-top: 1rem;
-
-        span {
-            font-size: 0.7222rem;
-            line-height: 1.45;
-        }
+        margin-bottom: 1rem;
     }
 `;
 
-// Note (piotr): The links could also be styled by using the level prop we get from contents generated from mdx files
+const ContentLink = styled(Link)<{ level: number }>`
+    display: inline-block;
+    color: ${({ theme }) => theme.paragraphColor};
+    transition: all 250ms ease-in-out;
 
-const ContentLink = styled(Link)`
-    font-size: 0.8333rem;
-
-    span {
-        color: ${({ theme }) => theme.paragraphColor};
-        transition: color 250ms ease-in-out;
-    }
-
-    &.active span {
+    &.active {
         color: ${colors.brandDark};
     }
+
+    ${({ level }) =>
+        level === 2 &&
+        `
+        font-size: 0.8333rem;
+        margin-bottom: 1rem;
+
+    `}
+
+    ${({ level }) =>
+        level === 3 &&
+        `
+        font-size: 0.7222rem;
+        line-height: 1.45;
+        padding: 0.25rem 0 0.25rem 0.7rem;
+        border-left: 1px solid #e3e3e3;
+
+        &.active {
+            border-color: ${colors.brandDark};
+        }
+    `}
 `;
