@@ -1,4 +1,3 @@
-import { colors, Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { DocumentTitle } from 'ts/components/document_title';
@@ -6,7 +5,8 @@ import { Footer } from 'ts/components/old_footer';
 import { TopBar } from 'ts/components/top_bar/top_bar';
 import { Question } from 'ts/pages/faq/question';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { FAQQuestion, FAQSection, WebsitePaths } from 'ts/types';
+import { FAQQuestion, FAQSection, Styles, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { configs } from 'ts/utils/configs';
 import { constants } from 'ts/utils/constants';
 import { documentConstants } from 'ts/utils/document_meta_constants';

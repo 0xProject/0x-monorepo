@@ -1,8 +1,8 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
 import * as ReactDOM from 'react-dom';
 import ReactTooltip from 'react-tooltip';
+import { colors } from 'ts/utils/colors';
 
 interface CopyIconProps {
     data: string;
