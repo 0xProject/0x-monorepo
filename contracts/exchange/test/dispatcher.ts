@@ -29,6 +29,8 @@ import {
     TestAssetProxyDispatcherContract,
 } from '../src';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -72,6 +74,7 @@ describe('AssetProxyDispatcher', () => {
             artifacts.TestAssetProxyDispatcher,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
             await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(assetProxyDispatcher.address, {
@@ -134,6 +137,7 @@ describe('AssetProxyDispatcher', () => {
                 proxyArtifacts.ERC20Proxy,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
             );
             // Register new ERC20 Transfer Proxy contract
             return expectTransactionFailedAsync(

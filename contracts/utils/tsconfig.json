@@ -11,7 +11,9 @@
         "generated-artifacts/SafeMath.json",
         "generated-artifacts/TestConstants.json",
         "generated-artifacts/TestLibAddressArray.json",
-        "generated-artifacts/TestLibBytes.json"
+        "generated-artifacts/TestLibBytes.json",
+        "generated-artifacts/TestLogDecoding.json",
+        "generated-artifacts/TestLogDecodingDownstream.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

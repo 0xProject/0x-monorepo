@@ -63,6 +63,7 @@ export class {{contractName}}Contract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -76,13 +77,18 @@ export class {{contractName}}Contract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, {{> params inputs=ctor.inputs}});
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
+        return {{contractName}}Contract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, {{> params inputs=ctor.inputs}});
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         {{> typed_params inputs=ctor.inputs}}
     ): Promise<{{contractName}}Contract> {
         assert.isHexString('bytecode', bytecode);
@@ -111,7 +117,7 @@ export class {{contractName}}Contract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new {{contractName}}Contract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new {{contractName}}Contract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
         return contractInstance;
     }
@@ -213,8 +219,8 @@ export class {{contractName}}Contract extends BaseContract {
         );
         return logs;
     }{{/if}}
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults);
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
+        super('{{contractName}}', {{contractName}}Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);{{#if events}}
         this._subscriptionManager = new SubscriptionManager<{{contractName}}EventArgs, {{contractName}}Events>(
             {{contractName}}Contract.ABI(),

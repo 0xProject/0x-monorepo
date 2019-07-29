@@ -21,6 +21,8 @@ import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract, ExchangeWrapper, ExchangeWrapperContract, WhitelistContract } from '../src/';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -87,6 +89,7 @@ describe('Exchange transactions', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            dependencyArtifacts,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         exchangeWrapper = new ExchangeWrapper(exchange, provider);
@@ -219,6 +222,7 @@ describe('Exchange transactions', () => {
                     artifacts.ExchangeWrapper,
                     provider,
                     txDefaults,
+                    dependencyArtifacts,
                     exchange.address,
                 );
             });
@@ -333,6 +337,7 @@ describe('Exchange transactions', () => {
                 artifacts.Whitelist,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
                 exchange.address,
             );
             const isApproved = true;

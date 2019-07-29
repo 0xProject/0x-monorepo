@@ -51,6 +51,8 @@ import {
     TestStaticCallReceiverContract,
 } from '../src';
 
+import { dependencyArtifacts } from './utils/dependency_artifacts';
+
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
@@ -117,11 +119,13 @@ describe('Exchange core', () => {
             proxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.StaticCallProxy,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, zrxToken] = await erc20Wrapper.deployDummyTokensAsync(
@@ -136,17 +140,20 @@ describe('Exchange core', () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            dependencyArtifacts,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
         maliciousWallet = maliciousValidator = await TestStaticCallReceiverContract.deployFrom0xArtifactAsync(
             artifacts.TestStaticCallReceiver,
             provider,
             txDefaults,
+            dependencyArtifacts,
         );
         reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
             artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
+            dependencyArtifacts,
             exchange.address,
         );
 
@@ -349,6 +356,7 @@ describe('Exchange core', () => {
                 erc20Artifacts.DummyNoReturnERC20Token,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
                 constants.DUMMY_TOKEN_DECIMALS,
@@ -1474,6 +1482,7 @@ describe('Exchange core', () => {
                 proxyArtifacts.TestStaticCallTarget,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
             );
         });
         it('should revert if the staticcall is unsuccessful', async () => {

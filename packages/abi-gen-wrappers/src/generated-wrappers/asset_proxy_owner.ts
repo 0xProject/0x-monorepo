@@ -2096,6 +2096,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _owners: string[],
         _assetProxyContracts: string[],
         _required: BigNumber,
@@ -2112,11 +2113,16 @@ export class AssetProxyOwnerContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
         return AssetProxyOwnerContract.deployAsync(
             bytecode,
             abi,
             provider,
             txDefaults,
+            logDecodeDependenciesAbiOnly,
             _owners,
             _assetProxyContracts,
             _required,
@@ -2128,6 +2134,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _owners: string[],
         _assetProxyContracts: string[],
         _required: BigNumber,
@@ -2159,7 +2166,12 @@ export class AssetProxyOwnerContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`AssetProxyOwner successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new AssetProxyOwnerContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new AssetProxyOwnerContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [_owners, _assetProxyContracts, _required, _secondsTimeLocked];
         return contractInstance;
     }
@@ -2938,8 +2950,20 @@ export class AssetProxyOwnerContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('AssetProxyOwner', AssetProxyOwnerContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super(
+            'AssetProxyOwner',
+            AssetProxyOwnerContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<AssetProxyOwnerEventArgs, AssetProxyOwnerEvents>(
             AssetProxyOwnerContract.ABI(),

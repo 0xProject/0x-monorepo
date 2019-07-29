@@ -1041,6 +1041,7 @@ export class ForwarderContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
         _zrxAssetData: string,
         _wethAssetData: string,
@@ -1056,11 +1057,16 @@ export class ForwarderContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
         return ForwarderContract.deployAsync(
             bytecode,
             abi,
             provider,
             txDefaults,
+            logDecodeDependenciesAbiOnly,
             _exchange,
             _zrxAssetData,
             _wethAssetData,
@@ -1071,6 +1077,7 @@ export class ForwarderContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
         _zrxAssetData: string,
         _wethAssetData: string,
@@ -1101,7 +1108,12 @@ export class ForwarderContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Forwarder successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ForwarderContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new ForwarderContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [_exchange, _zrxAssetData, _wethAssetData];
         return contractInstance;
     }
@@ -1549,8 +1561,13 @@ export class ForwarderContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('Forwarder', ForwarderContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super('Forwarder', ForwarderContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

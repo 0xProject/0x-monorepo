@@ -37,6 +37,7 @@ import 'make-promises-safe';
 import { artifacts, ExchangeContract, ExchangeFillEventArgs } from '../../src';
 
 import { AssetWrapper } from './asset_wrapper';
+import { dependencyArtifacts } from './dependency_artifacts';
 import { ExchangeWrapper } from './exchange_wrapper';
 import { OrderFactoryFromScenario } from './order_factory_from_scenario';
 import { SimpleAssetBalanceAndProxyAllowanceFetcher } from './simple_asset_balance_and_proxy_allowance_fetcher';
@@ -101,6 +102,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         artifacts.Exchange,
         provider,
         txDefaults,
+        dependencyArtifacts,
         zrxAssetData,
     );
     const exchangeWrapper = new ExchangeWrapper(exchangeContract, provider);
@@ -135,6 +137,7 @@ export async function fillOrderCombinatorialUtilsFactoryAsync(
         libsArtifacts.TestLibs,
         provider,
         txDefaults,
+        dependencyArtifacts,
     );
 
     const fillOrderCombinatorialUtils = new FillOrderCombinatorialUtils(
