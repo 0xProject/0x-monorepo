@@ -7,11 +7,11 @@ import { Resource } from 'ts/components/docs/resource/resource';
 import { Separator } from 'ts/components/docs/separator';
 import { Filters } from 'ts/components/docs/sidebar/filters';
 
-import { searchClient, searchIndex } from 'ts/utils/algolia_search';
+import { searchClient, searchIndices } from 'ts/utils/algolia_search';
 
 export const DocsGuides: React.FC = () => (
     <DocsPageLayout title="Guides">
-        <InstantSearch searchClient={searchClient} indexName={searchIndex.guides}>
+        <InstantSearch searchClient={searchClient} indexName={searchIndices.guides}>
             <Columns>
                 <Filters filters={filters} />
                 <Separator />
