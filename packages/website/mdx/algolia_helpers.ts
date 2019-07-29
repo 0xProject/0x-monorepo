@@ -81,10 +81,10 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     return formattedTextNodes;
 }
 
-async function processMdxAsync(index: any, dirName: string, fileName: string, settings: Settings): Promise<void> {
-    const filePath = `${dirName}/${fileName}`;
+async function processMdxAsync(index: any, dirPath: string, fileName: string, settings: Settings): Promise<void> {
+    const filePath = `${dirPath}/${fileName}`;
     const { name } = path.parse(filePath); // Name without file extension
-    const url = `/docs/${dirName}/${name}`;
+    const url = `/docs/${dirPath}/${name}`;
 
     const rawContent = fs.readFileSync(filePath);
     const file = await read(filePath);
@@ -97,9 +97,11 @@ async function processMdxAsync(index: any, dirName: string, fileName: string, se
 }
 
 export async function indexFilesAsync(index: any, dirName: string, settings: Settings): Promise<void> {
-    fs.readdir(dirName, async (err: string, items: string[]) => {
+    const dirPath = `${__dirname}/${dirName}`;
+
+    fs.readdir(dirPath, async (err: string, items: string[]) => {
         for (const fileName of items) {
-            await processMdxAsync(index, dirName, fileName, settings);
+            await processMdxAsync(index, dirPath, fileName, settings);
         }
     });
 }
