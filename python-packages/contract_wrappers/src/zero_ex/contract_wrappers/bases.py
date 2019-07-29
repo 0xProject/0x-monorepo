@@ -9,7 +9,7 @@ from web3.providers.base import BaseProvider
 from .tx_params import TxParams
 
 
-class ValidatorBase:
+class Validator:
     """Base class for validating inputs to methods."""
 
     def __init__(
@@ -39,7 +39,7 @@ class ContractMethod:
         self,
         provider: BaseProvider,
         contract_address: str,
-        validator: ValidatorBase = None,
+        validator: Validator = None,
         private_key: str = None,
     ):
         """Instantiate the object.
@@ -59,7 +59,7 @@ class ContractMethod:
             contract_address
         )
         if validator is None:
-            validator = ValidatorBase(provider, contract_address, private_key)
+            validator = Validator(provider, contract_address, private_key)
         self.validator = validator
 
         self._can_send_tx = False

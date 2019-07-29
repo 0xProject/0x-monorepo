@@ -19,7 +19,7 @@ from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers.bases import ContractMethod, ValidatorBase
+from zero_ex.contract_wrappers.bases import ContractMethod, Validator
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
@@ -34,7 +34,7 @@ try:
     )
 except ImportError:
 
-    class LibDummyValidator(ValidatorBase):  # type: ignore
+    class LibDummyValidator(Validator):  # type: ignore
         """No-op input validator."""
 
 

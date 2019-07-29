@@ -19,7 +19,7 @@ from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers.bases import ContractMethod, ValidatorBase
+from zero_ex.contract_wrappers.bases import ContractMethod, Validator
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
@@ -34,7 +34,7 @@ try:
     )
 except ImportError:
 
-    class AbiGenDummyValidator(ValidatorBase):  # type: ignore
+    class AbiGenDummyValidator(Validator):  # type: ignore
         """No-op input validator."""
 
 
@@ -86,7 +86,7 @@ class Tuple0xcf8ad995(TypedDict):
 class SimpleRequireMethod(ContractMethod):
     """Various interfaces to the simpleRequire method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -112,7 +112,7 @@ class SimpleRequireMethod(ContractMethod):
 class AcceptsAnArrayOfBytesMethod(ContractMethod):
     """Various interfaces to the acceptsAnArrayOfBytes method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -159,7 +159,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
 class EcrecoverFnMethod(ContractMethod):
     """Various interfaces to the ecrecoverFn method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -211,7 +211,7 @@ class EcrecoverFnMethod(ContractMethod):
 class AcceptsBytesMethod(ContractMethod):
     """Various interfaces to the acceptsBytes method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -249,7 +249,7 @@ class AcceptsBytesMethod(ContractMethod):
 class RevertWithConstantMethod(ContractMethod):
     """Various interfaces to the revertWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -275,7 +275,7 @@ class RevertWithConstantMethod(ContractMethod):
 class SimpleRevertMethod(ContractMethod):
     """Various interfaces to the simpleRevert method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -301,7 +301,7 @@ class SimpleRevertMethod(ContractMethod):
 class NestedStructOutputMethod(ContractMethod):
     """Various interfaces to the nestedStructOutput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -327,7 +327,7 @@ class NestedStructOutputMethod(ContractMethod):
 class RequireWithConstantMethod(ContractMethod):
     """Various interfaces to the requireWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -353,7 +353,7 @@ class RequireWithConstantMethod(ContractMethod):
 class WithAddressInputMethod(ContractMethod):
     """Various interfaces to the withAddressInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -418,7 +418,7 @@ class WithAddressInputMethod(ContractMethod):
 class StructInputMethod(ContractMethod):
     """Various interfaces to the structInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -455,7 +455,7 @@ class StructInputMethod(ContractMethod):
 class NonPureMethodMethod(ContractMethod):
     """Various interfaces to the nonPureMethod method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -480,7 +480,7 @@ class NonPureMethodMethod(ContractMethod):
 class SimplePureFunctionWithInputMethod(ContractMethod):
     """Various interfaces to the simplePureFunctionWithInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -519,7 +519,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
 class NonPureMethodThatReturnsNothingMethod(ContractMethod):
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -544,7 +544,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
 class SimplePureFunctionMethod(ContractMethod):
     """Various interfaces to the simplePureFunction method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -570,7 +570,7 @@ class SimplePureFunctionMethod(ContractMethod):
 class NestedStructInputMethod(ContractMethod):
     """Various interfaces to the nestedStructInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -607,7 +607,7 @@ class NestedStructInputMethod(ContractMethod):
 class StructOutputMethod(ContractMethod):
     """Various interfaces to the structOutput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -637,7 +637,7 @@ class StructOutputMethod(ContractMethod):
 class PureFunctionWithConstantMethod(ContractMethod):
     """Various interfaces to the pureFunctionWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function

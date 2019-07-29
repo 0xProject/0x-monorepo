@@ -19,7 +19,7 @@ from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers.bases import ContractMethod, ValidatorBase
+from zero_ex.contract_wrappers.bases import ContractMethod, Validator
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
@@ -34,7 +34,7 @@ try:
     )
 except ImportError:
 
-    class TestLibDummyValidator(ValidatorBase):  # type: ignore
+    class TestLibDummyValidator(Validator):  # type: ignore
         """No-op input validator."""
 
 
@@ -44,7 +44,7 @@ except ImportError:
 class PublicAddConstantMethod(ContractMethod):
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
@@ -83,7 +83,7 @@ class PublicAddConstantMethod(ContractMethod):
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
