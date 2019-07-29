@@ -1,7 +1,7 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import { BaseContract,PromiseWithTransactionHash } from '@0x/base-contract';
+import { BaseContract, PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -23,7 +23,6 @@ import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
 // tslint:enable:no-unused-variable
 
-
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -34,8 +33,7 @@ export class IWalletContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean
-        > {
+        ): Promise<boolean> {
             assert.isString('hash', hash);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -46,10 +44,8 @@ export class IWalletContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = this as any as IWalletContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [hash,
-        signature
-        ]);
+            const self = (this as any) as IWalletContract;
+            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [hash, signature]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -58,35 +54,34 @@ export class IWalletContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
-        
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean
-        >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(
-                hash: string,
-                signature: string,
-            ): string {
+        getABIEncodedTransactionData(hash: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signature', signature);
-            const self = this as any as IWalletContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [hash,
-        signature
-        ]);
+            const self = (this as any) as IWalletContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,bytes)', [
+                hash,
+                signature,
+            ]);
             return abiEncodedTransactionData;
         },
     };
-public static async deployFrom0xArtifactAsync(
+    public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<IWalletContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -99,8 +94,11 @@ public static async deployFrom0xArtifactAsync(
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce((accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }), {});
-        return IWalletContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, );
+        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce(
+            (accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }),
+            {},
+        );
+        return IWalletContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
@@ -117,17 +115,13 @@ public static async deployFrom0xArtifactAsync(
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [] = BaseContract._formatABIDataItemList(
-            constructorAbi.inputs,
-            [],
-            BaseContract._bigNumberToString,
-        );
+        [] = BaseContract._formatABIDataItemList(constructorAbi.inputs, [], BaseContract._bigNumberToString);
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
         const txData = deployInfo.encode(bytecode, []);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            {data: txData},
+            { data: txData },
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -135,18 +129,22 @@ public static async deployFrom0xArtifactAsync(
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`IWallet successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new IWalletContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        const contractInstance = new IWalletContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
-
 
     /**
      * @returns      The contract ABI
      */
     public static ABI(): ContractAbi {
         const abi = [
-            { 
+            {
                 constant: true,
                 inputs: [
                     {
@@ -172,11 +170,16 @@ public static async deployFrom0xArtifactAsync(
         ] as ContractAbi;
         return abi;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
         super('IWallet', IWalletContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
-} 
+}
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
