@@ -6,15 +6,14 @@ import styled, { css, withTheme } from 'styled-components';
 import { Link } from '@0x/react-shared';
 
 import { Button } from 'ts/components/button';
-import { DropdownDevelopers } from 'ts/components/dropdowns/dropdown_developers';
 import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
 import { DropdownResources } from 'ts/components/dropdowns/dropdown_resources';
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
 import { MobileNav } from 'ts/components/mobileNav';
 import { FlexWrap } from 'ts/components/newLayout';
- import { IThemeValuesInterface } from 'ts/style/theme';
 
+import { IThemeValuesInterface } from 'ts/style/theme';
 import { zIndex } from 'ts/style/z_index';
 
 import { WebsitePaths } from 'ts/types';
@@ -41,8 +40,8 @@ interface DropdownWrapInterface {
 const navItems: NavItemProps[] = [
     {
         id: 'why',
-        url: WebsitePaths.Why,
         text: 'Why 0x',
+        url: WebsitePaths.Why,
     },
     {
         id: 'products',
@@ -51,10 +50,9 @@ const navItems: NavItemProps[] = [
         dropdownWidth: 280,
     },
     {
-        id: 'developers',
-        text: 'Developers',
-        dropdownComponent: DropdownDevelopers,
-        dropdownWidth: 480,
+        id: 'docs',
+        text: 'Docs',
+        url: WebsitePaths.Docs,
     },
     {
         id: 'resources',
@@ -64,8 +62,8 @@ const navItems: NavItemProps[] = [
     },
     {
         id: 'about',
-        url: WebsitePaths.AboutMission,
         text: 'About',
+        url: WebsitePaths.AboutMission,
     },
 ];
 
