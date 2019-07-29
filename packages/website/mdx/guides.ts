@@ -1,13 +1,8 @@
-import { adminClient, sharedSettings } from './constants';
-import { indexFiles, setIndexSettings } from './helpers';
+import { adminClient, searchIndex, settings } from '../ts/utils/algolia_search';
+import { indexFilesAsync, setIndexSettings } from './helpers';
 
-const index = adminClient.initIndex('0x_guides_test');
-const dirName = 'guides';
+const indexName = 'guides';
+const index = adminClient.initIndex(searchIndex[indexName]);
 
-const settings = {
-    ...sharedSettings,
-    attributesForFaceting: ['topics', 'difficulty'],
-};
-
-setIndexSettings(index, settings);
-indexFiles(index, dirName);
+setIndexSettings(index, settings[indexName]);
+indexFilesAsync(index, indexName);
