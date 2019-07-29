@@ -1132,9 +1132,10 @@ export class DummyERC20TokenContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce<{
-            [contractName: string]: ContractAbi;
-        }>((accumulator, [key, value]) => ({ ...{ [key]: value.compilerOutput.abi } }), {});
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
         return DummyERC20TokenContract.deployAsync(
             bytecode,
             abi,
