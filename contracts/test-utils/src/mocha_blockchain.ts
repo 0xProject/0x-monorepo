@@ -24,13 +24,11 @@ export interface ContextDefinition extends Mocha.IContextDefinition {
 /**
  * Interface for `blockchainTests()`.
  */
-export interface BlockchainContextDefinition {
-    resets: {
-        only: BlockchainContextDefinitionCallback<ISuite>;
-        skip: BlockchainContextDefinitionCallback<void>;
-        optional: BlockchainContextDefinitionCallback<ISuite | void>;
-        (description: string, callback: BlockchainSuiteCallback): ISuite;
-    };
+export interface BlockchainContextDefinition extends BlockchainContextDefinitionPartial {
+    resets: BlockchainContextDefinitionPartial;
+}
+
+interface BlockchainContextDefinitionPartial {
     only: BlockchainContextDefinitionCallback<ISuite>;
     skip: BlockchainContextDefinitionCallback<void>;
     optional: BlockchainContextDefinitionCallback<ISuite | void>;
