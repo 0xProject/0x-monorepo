@@ -3,7 +3,7 @@
 import pytest
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-from zero_ex.contract_wrappers._base_contract_wrapper import ContractMethod
+from zero_ex.contract_wrappers.bases import ContractMethod
 
 
 @pytest.fixture(scope="module")

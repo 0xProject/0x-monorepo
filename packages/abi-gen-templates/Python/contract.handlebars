@@ -19,7 +19,7 @@ from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import ContractMethod, ValidatorBase
+from zero_ex.contract_wrappers.bases import ContractMethod, ValidatorBase
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
