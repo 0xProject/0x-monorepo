@@ -61,7 +61,7 @@ class PublicAddConstantMethod(ContractMethod):
         return (x)
 
     def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -70,7 +70,7 @@ class PublicAddConstantMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -99,7 +99,7 @@ class PublicAddOneMethod(ContractMethod):
         return (x)
 
     def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -108,7 +108,7 @@ class PublicAddOneMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 

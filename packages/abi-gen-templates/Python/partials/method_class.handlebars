@@ -34,7 +34,7 @@ class {{toPythonClassname this.name}}Method(ContractMethod):
 
     {{/if}}
     def call(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> {{> return_type outputs=outputs type='call'~}}:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
         :param tx_params: transaction parameters
@@ -51,7 +51,7 @@ class {{toPythonClassname this.name}}Method(ContractMethod):
         return super().invoke_call(func=self.underlying_method({{> params}}), tx_params=tx_params)
 
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 {{sanitizeDevdocDetails this.name this.devdoc.details 8}}{{~#if this.devdoc.params~}}{{#each this.devdoc.params}}
 {{makeParameterDocstringRole @key this 8}}{{/each}}{{/if}}
         :param tx_params: transaction parameters

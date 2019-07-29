@@ -92,7 +92,7 @@ class SimpleRequireMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -100,7 +100,7 @@ class SimpleRequireMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -130,7 +130,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return (a)
 
     def call(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         a method that accepts an array of bytes
 
@@ -142,7 +142,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(a), tx_params=tx_params)
 
     def send_transaction(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         a method that accepts an array of bytes
 
@@ -187,7 +187,7 @@ class EcrecoverFnMethod(ContractMethod):
         return (_hash, v, r, s)
 
     def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -196,7 +196,7 @@ class EcrecoverFnMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(_hash, v, r, s), tx_params=tx_params)
 
     def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -224,7 +224,7 @@ class AcceptsBytesMethod(ContractMethod):
         return (a)
 
     def call(self, a: bytes, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -233,7 +233,7 @@ class AcceptsBytesMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(a), tx_params=tx_params)
 
     def send_transaction(self, a: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -251,7 +251,7 @@ class RevertWithConstantMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -259,7 +259,7 @@ class RevertWithConstantMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -276,7 +276,7 @@ class SimpleRevertMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -284,7 +284,7 @@ class SimpleRevertMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -301,7 +301,7 @@ class NestedStructOutputMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -309,7 +309,7 @@ class NestedStructOutputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -326,7 +326,7 @@ class RequireWithConstantMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -334,7 +334,7 @@ class RequireWithConstantMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -388,7 +388,7 @@ class WithAddressInputMethod(ContractMethod):
         return (x, a, b, y, c)
 
     def call(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> str:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -397,7 +397,7 @@ class WithAddressInputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(x, a, b, y, c), tx_params=tx_params)
 
     def send_transaction(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -424,7 +424,7 @@ class StructInputMethod(ContractMethod):
         return (s)
 
     def call(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -433,7 +433,7 @@ class StructInputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(s), tx_params=tx_params)
 
     def send_transaction(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -451,7 +451,7 @@ class NonPureMethodMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[int, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
         :returns: the return value of the underlying method.
@@ -459,7 +459,7 @@ class NonPureMethodMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
         """
@@ -486,7 +486,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         return (x)
 
     def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -495,7 +495,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -513,7 +513,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
         :returns: the return value of the underlying method.
@@ -521,7 +521,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
         """
@@ -537,7 +537,7 @@ class SimplePureFunctionMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -545,7 +545,7 @@ class SimplePureFunctionMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -571,7 +571,7 @@ class NestedStructInputMethod(ContractMethod):
         return (n)
 
     def call(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> None:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -580,7 +580,7 @@ class NestedStructInputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(n), tx_params=tx_params)
 
     def send_transaction(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
@@ -598,7 +598,7 @@ class StructOutputMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         a method that returns a struct
 
@@ -608,7 +608,7 @@ class StructOutputMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         a method that returns a struct
 
@@ -627,7 +627,7 @@ class PureFunctionWithConstantMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
@@ -635,7 +635,7 @@ class PureFunctionWithConstantMethod(ContractMethod):
         return super().invoke_call(func=self.underlying_method(), tx_params=tx_params)
 
     def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying, same-named contract method.
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
