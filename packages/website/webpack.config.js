@@ -7,6 +7,7 @@ const childProcess = require('child_process');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const mdxTableOfContents = require('mdx-table-of-contents');
 const remarkSlug = require('remark-slug');
+const remarkNormalizeHeadings = require('remark-normalize-headings');
 
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
@@ -80,7 +81,7 @@ const config = {
                     {
                         loader: '@mdx-js/loader',
                         options: {
-                            remarkPlugins: [remarkSlug],
+                            remarkPlugins: [remarkNormalizeHeadings, remarkSlug],
                             compilers: [mdxTableOfContents],
                         },
                     },
