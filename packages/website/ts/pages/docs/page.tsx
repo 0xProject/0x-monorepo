@@ -23,60 +23,83 @@ import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
+import { FullscreenMessage } from 'ts/pages/fullscreen_message';
+
 import { Paragraph } from 'ts/components/text';
 
-interface IDocsViewProps {
+import { colors } from 'ts/style/colors';
+
+interface IDocsPageProps {
     match: match<any>;
 }
 
-interface IDocsViewState {
+interface IDocsPageState {
     Component: React.ReactNode;
     contents: IContents[];
     title: string;
+    subtitle: string;
+    wasNotFound: boolean;
 }
 
-export const DocsView: React.FC<IDocsViewProps> = ({ match }) => {
-    const [state, setState] = useState<IDocsViewState>({
+export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
+    const [state, setState] = useState<IDocsPageState>({
         Component: null,
         contents: [],
         title: '',
+        subtitle: '',
+        wasNotFound: false,
     });
 
-    const { Component, contents, title } = state;
+    const { Component, contents, title, subtitle, wasNotFound } = state;
+    const isLoading = !Component && !wasNotFound;
     const { page, type } = match.params;
 
-    useEffect(() => {
-        void loadPageAsync(page, type);
-    }, [page, type]);
+    useEffect(
+        () => {
+            void loadPageAsync(page, type);
+        },
+        [page, type],
+    );
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
-        const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
+        try {
+            const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
 
-        if (component) {
             setState({
+                ...state,
                 Component: component.default,
                 contents: component.tableOfContents(),
                 title: component.meta.title,
             });
+        } catch (error) {
+            setState({ ...state, title: '404', wasNotFound: true });
         }
     };
 
     return (
-        <DocsPageLayout title={title} loading={!Component}>
-            <Columns>
-                <TableOfContents contents={contents} />
-                <Separator />
-                <ContentWrapper>
-                    <MDXProvider components={mdxComponents}>
-                        {/*
+        <DocsPageLayout title={title} subtitle={subtitle} loading={isLoading}>
+            {wasNotFound ? (
+                <FullscreenMessage
+                    headerText={'Not found'}
+                    headerTextColor={colors.brandDark}
+                    bodyText={"Hm... looks like we couldn't find what you are looking for."}
+                />
+            ) : (
+                <Columns>
+                    <TableOfContents contents={contents} />
+                    <Separator />
+                    <ContentWrapper>
+                        <MDXProvider components={mdxComponents}>
+                            {/*
                                 // @ts-ignore */}
-                        <Component />
-                    </MDXProvider>
-                    <NewsletterWidget />
-                    <HelpCallout />
-                    <HelpfulCta page={page} />
-                </ContentWrapper>
-            </Columns>
+                            <Component />
+                        </MDXProvider>
+                        <NewsletterWidget />
+                        <HelpCallout />
+                        <HelpfulCta page={page} />
+                    </ContentWrapper>
+                </Columns>
+            )}
         </DocsPageLayout>
     );
 };
