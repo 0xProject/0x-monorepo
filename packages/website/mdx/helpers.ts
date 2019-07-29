@@ -95,7 +95,7 @@ async function processMdxAsync(index: any, dirName: string, fileName: string): P
         .process(file);
 }
 
-export async function indexFiles(index: any, dirName: string): Promise<void> {
+export async function indexFilesAsync(index: any, dirName: string): Promise<void> {
     fs.readdir(dirName, async (err: string, items: string[]) => {
         for (const fileName of items) {
             await processMdxAsync(index, dirName, fileName);
