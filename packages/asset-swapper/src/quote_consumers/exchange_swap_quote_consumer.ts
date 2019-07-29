@@ -1,6 +1,6 @@
 import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
 import { assetDataUtils } from '@0x/order-utils';
-import { MarketOperation, ERC20AssetData } from '@0x/types';
+import { ERC20AssetData, MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from '@0x/web3-wrapper';
 import { MethodAbi } from 'ethereum-types';
