@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import _ from 'lodash';
 
+import { FiltersClear } from 'ts/components/docs/sidebar/filters_clear';
 import { FiltersGroup } from 'ts/components/docs/sidebar/filters_group';
 import { SidebarWrapper } from 'ts/components/docs/sidebar/sidebar_wrapper';
 
@@ -21,5 +22,6 @@ export const Filters: React.FC<IFiltersProps> = ({ filters }) => (
         {filters.map((filter: IFiltersGroupProps, index: number) => (
             <FiltersGroup key={`filter-${index}`} transformItems={transformItems} {...filter} />
         ))}
+        <FiltersClear />
     </SidebarWrapper>
 );

@@ -38,13 +38,5 @@ const FiltersGroupWrapper = styled.div`
 
     @media (max-width: 900px) {
         margin-bottom: 30px;
-
-        &:last-of-type {
-            margin-bottom: 0;
-
-            label:last-of-type {
-                margin-bottom: 0;
-            }
-        }
     }
 `;
