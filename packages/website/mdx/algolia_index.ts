@@ -2,7 +2,7 @@ import { adminClient, searchIndices, settings } from '../ts/utils/algolia_search
 
 import { indexFilesAsync } from './algolia_helpers';
 
-// Get args after command (i.e. ts-node) and path to file (i.e. ./index.ts)
+// Get args (index names - i.e. guides) after command (i.e. ts-node) and path to file (i.e. ./index.ts)
 const args = process.argv.slice(2);
 
 function processIndices(indices: string[]): void {
