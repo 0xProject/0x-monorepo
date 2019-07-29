@@ -1,14 +1,11 @@
 // tslint:disable:no-consecutive-blank-lines ordered-imports align trailing-comma
 // tslint:disable:whitespace no-unbound-method no-trailing-whitespace
 // tslint:disable:no-unused-variable
-import {
-    BaseContract,
+import { BaseContract,
     BlockRange,
     EventCallback,
     IndexedFilterValues,
-    SubscriptionManager,
-    PromiseWithTransactionHash,
-} from '@0x/base-contract';
+    SubscriptionManager,PromiseWithTransactionHash } from '@0x/base-contract';
 import { schemas } from '@0x/json-schemas';
 import {
     BlockParam,
@@ -86,6 +83,7 @@ export interface ExchangeAssetProxyRegisteredEventArgs extends DecodedLogArgs {
     assetProxy: string;
 }
 
+
 /* istanbul ignore next */
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
@@ -95,7 +93,8 @@ export class ExchangeContract extends BaseContract {
             index_0: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -105,8 +104,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('filled(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('filled(bytes32)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -115,179 +115,128 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('filled(bytes32)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('filled(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('filled(bytes32)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public batchFillOrders = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.batchFillOrders.estimateGasAsync.bind(
+                self,
+                orders,
+                takerAssetFillAmounts,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchFillOrders.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.batchFillOrders.sendTransactionAsync(orders,
+    takerAssetFillAmounts,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -299,11 +248,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -312,51 +261,30 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -365,7 +293,8 @@ export class ExchangeContract extends BaseContract {
             index_0: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -375,8 +304,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('cancelled(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('cancelled(bytes32)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -385,22 +315,24 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('cancelled(bytes32)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('cancelled(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelled(bytes32)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -409,32 +341,36 @@ export class ExchangeContract extends BaseContract {
             hash: string,
             signerAddress: string,
             signature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
+        assert.isString('hash', hash);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
+    signerAddress.toLowerCase(),
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.preSign.estimateGasAsync.bind(
+                self,
                 hash,
                 signerAddress.toLowerCase(),
-                signature,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.preSign.estimateGasAsync.bind(self, hash, signerAddress.toLowerCase(), signature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                signature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             hash: string,
@@ -444,27 +380,25 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.preSign.sendTransactionAsync(
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('hash', hash);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.preSign.sendTransactionAsync(hash,
+    signerAddress.toLowerCase(),
+    signature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             hash: string,
@@ -472,29 +406,28 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('hash', hash);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isString('hash', hash);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
+    signerAddress.toLowerCase(),
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             hash: string,
@@ -502,7 +435,8 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
@@ -514,12 +448,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
+        signerAddress.toLowerCase(),
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -528,248 +461,147 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('preSign(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
+        getABIEncodedTransactionData(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+            ): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('preSign(bytes32,address,bytes)', [hash,
+        signerAddress.toLowerCase(),
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public matchOrders = {
         async sendTransactionAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             leftSignature: string,
             rightSignature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [leftOrder, rightOrder, leftSignature, rightSignature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.matchOrders.estimateGasAsync.bind(self, leftOrder, rightOrder, leftSignature, rightSignature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        
+        
+        assert.isString('leftSignature', leftSignature);
+        assert.isString('rightSignature', rightSignature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
+    rightOrder,
+    leftSignature,
+    rightSignature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.matchOrders.estimateGasAsync.bind(
+                self,
+                leftOrder,
+                rightOrder,
+                leftSignature,
+                rightSignature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.matchOrders.sendTransactionAsync(
-                leftOrder,
-                rightOrder,
-                leftSignature,
-                rightSignature,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        
+        
+        assert.isString('leftSignature', leftSignature);
+        assert.isString('rightSignature', rightSignature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.matchOrders.sendTransactionAsync(leftOrder,
+    rightOrder,
+    leftSignature,
+    rightSignature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             leftSignature: string,
             rightSignature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('leftSignature', leftSignature);
-            assert.isString('rightSignature', rightSignature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [leftOrder, rightOrder, leftSignature, rightSignature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        
+        
+        assert.isString('leftSignature', leftSignature);
+        assert.isString('rightSignature', rightSignature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
+    rightOrder,
+    leftSignature,
+    rightSignature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             leftSignature: string,
             rightSignature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            left: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            right: {
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            };
-            leftMakerAssetSpreadAmount: BigNumber;
-        }> {
+        ): Promise<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
+        > {
+            
+            
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -780,11 +612,12 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [leftOrder, rightOrder, leftSignature, rightSignature],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
+        rightOrder,
+        leftSignature,
+        rightSignature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -793,227 +626,138 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                left: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                right: {
-                    makerAssetFilledAmount: BigNumber;
-                    takerAssetFilledAmount: BigNumber;
-                    makerFeePaid: BigNumber;
-                    takerFeePaid: BigNumber;
-                };
-                leftMakerAssetSpreadAmount: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{left: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};right: {makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber};leftMakerAssetSpreadAmount: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            leftOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            rightOrder: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            leftSignature: string,
-            rightSignature: string,
-        ): string {
+                leftOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                rightOrder: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                leftSignature: string,
+                rightSignature: string,
+            ): string {
+            
+            
             assert.isString('leftSignature', leftSignature);
             assert.isString('rightSignature', rightSignature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
-                [leftOrder, rightOrder, leftSignature, rightSignature],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)', [leftOrder,
+        rightOrder,
+        leftSignature,
+        rightSignature
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public fillOrderNoThrow = {
         async sendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.fillOrderNoThrow.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.fillOrderNoThrow.estimateGasAsync.bind(
+                self,
+                order,
+                takerAssetFillAmount,
+                signature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.fillOrderNoThrow.sendTransactionAsync(
-                order,
-                takerAssetFillAmount,
-                signature,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.fillOrderNoThrow.sendTransactionAsync(order,
+    takerAssetFillAmount,
+    signature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1024,11 +768,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1037,55 +781,40 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrderNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public assetProxies = {
-        async callAsync(index_0: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            index_0: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1095,8 +824,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1105,155 +835,106 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public batchCancelOrders = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            txData?: Partial<TxData> | undefined,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.batchCancelOrders.estimateGasAsync.bind(self, orders),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.batchCancelOrders.estimateGasAsync.bind(
+                self,
+                orders
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.batchCancelOrders.sendTransactionAsync(orders
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isArray('orders', orders);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1263,11 +944,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1276,199 +955,128 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            ): string {
             assert.isArray('orders', orders);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public batchFillOrKillOrders = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrKillOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.batchFillOrKillOrders.estimateGasAsync.bind(
+                self,
+                orders,
+                takerAssetFillAmounts,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchFillOrKillOrders.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.batchFillOrKillOrders.sendTransactionAsync(orders,
+    takerAssetFillAmounts,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1480,11 +1088,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1493,74 +1101,60 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public cancelOrdersUpTo = {
-        async sendTransactionAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.cancelOrdersUpTo.estimateGasAsync.bind(self, targetOrderEpoch),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            targetOrderEpoch: BigNumber,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.cancelOrdersUpTo.estimateGasAsync.bind(
+                self,
+                targetOrderEpoch
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
@@ -1568,45 +1162,51 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            targetOrderEpoch: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             targetOrderEpoch: BigNumber,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1616,8 +1216,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1626,181 +1227,128 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('cancelOrdersUpTo(uint256)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(targetOrderEpoch: BigNumber): string {
+        getABIEncodedTransactionData(
+                targetOrderEpoch: BigNumber,
+            ): string {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [
-                targetOrderEpoch,
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrdersUpTo(uint256)', [targetOrderEpoch
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public batchFillOrdersNoThrow = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.batchFillOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmounts, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.batchFillOrdersNoThrow.estimateGasAsync.bind(
+                self,
+                orders,
+                takerAssetFillAmounts,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.batchFillOrdersNoThrow.sendTransactionAsync(
-                orders,
-                takerAssetFillAmounts,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.batchFillOrdersNoThrow.sendTransactionAsync(orders,
+    takerAssetFillAmounts,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+    takerAssetFillAmounts,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmounts: BigNumber[],
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
@@ -1812,11 +1360,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1825,51 +1373,30 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            takerAssetFillAmounts: BigNumber[],
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmounts: BigNumber[],
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isArray('takerAssetFillAmounts', takerAssetFillAmounts);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])',
-                [orders, takerAssetFillAmounts, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('batchFillOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256[],bytes[])', [orders,
+        takerAssetFillAmounts,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1878,7 +1405,8 @@ export class ExchangeContract extends BaseContract {
             assetProxyId: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<string> {
+        ): Promise<string
+        > {
             assert.isString('assetProxyId', assetProxyId);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1888,8 +1416,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1898,22 +1427,24 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(assetProxyId: string): string {
+        getABIEncodedTransactionData(
+                assetProxyId: string,
+            ): string {
             assert.isString('assetProxyId', assetProxyId);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -1922,7 +1453,8 @@ export class ExchangeContract extends BaseContract {
             index_0: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1932,8 +1464,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transactions(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('transactions(bytes32)', [index_0
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -1942,176 +1475,129 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transactions(bytes32)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+            ): string {
             assert.isString('index_0', index_0);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transactions(bytes32)', [index_0]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transactions(bytes32)', [index_0
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public fillOrKillOrder = {
         async sendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.fillOrKillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.fillOrKillOrder.estimateGasAsync.bind(
+                self,
+                order,
+                takerAssetFillAmount,
+                signature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.fillOrKillOrder.sendTransactionAsync(
-                order,
-                takerAssetFillAmount,
-                signature,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.fillOrKillOrder.sendTransactionAsync(order,
+    takerAssetFillAmount,
+    signature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2122,11 +1608,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2135,50 +1621,30 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrKillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -2186,34 +1652,33 @@ export class ExchangeContract extends BaseContract {
         async sendTransactionAsync(
             validatorAddress: string,
             approval: boolean,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
+        assert.isString('validatorAddress', validatorAddress);
+        assert.isBoolean('approval', approval);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress.toLowerCase(),
+    approval
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.setSignatureValidatorApproval.estimateGasAsync.bind(
+                self,
                 validatorAddress.toLowerCase(),
-                approval,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.setSignatureValidatorApproval.estimateGasAsync.bind(
-                    self,
-                    validatorAddress.toLowerCase(),
-                    approval,
-                ),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                approval
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             validatorAddress: string,
@@ -2222,59 +1687,57 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.setSignatureValidatorApproval.sendTransactionAsync(
-                validatorAddress.toLowerCase(),
-                approval,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('validatorAddress', validatorAddress);
+        assert.isBoolean('approval', approval);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.setSignatureValidatorApproval.sendTransactionAsync(validatorAddress.toLowerCase(),
+    approval
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             validatorAddress: string,
             approval: boolean,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isString('validatorAddress', validatorAddress);
-            assert.isBoolean('approval', approval);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
-                validatorAddress.toLowerCase(),
-                approval,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isString('validatorAddress', validatorAddress);
+        assert.isBoolean('approval', approval);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress.toLowerCase(),
+    approval
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             validatorAddress: string,
             approval: boolean,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2285,11 +1748,10 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [
-                validatorAddress.toLowerCase(),
-                approval,
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress.toLowerCase(),
+        approval
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2298,26 +1760,27 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('setSignatureValidatorApproval(address,bool)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(validatorAddress: string, approval: boolean): string {
+        getABIEncodedTransactionData(
+                validatorAddress: string,
+                approval: boolean,
+            ): string {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'setSignatureValidatorApproval(address,bool)',
-                [validatorAddress.toLowerCase(), approval],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('setSignatureValidatorApproval(address,bool)', [validatorAddress.toLowerCase(),
+        approval
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -2327,7 +1790,8 @@ export class ExchangeContract extends BaseContract {
             index_1: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2338,11 +1802,10 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('allowedValidators(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('allowedValidators(address,address)', [index_0.toLowerCase(),
+        index_1.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2351,183 +1814,131 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('allowedValidators(address,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string, index_1: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('allowedValidators(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('allowedValidators(address,address)', [index_0.toLowerCase(),
+        index_1.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public marketSellOrders = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrders.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    takerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.marketSellOrders.estimateGasAsync.bind(
+                self,
+                orders,
+                takerAssetFillAmount,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.marketSellOrders.sendTransactionAsync(
-                orders,
-                takerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.marketSellOrders.sendTransactionAsync(orders,
+    takerAssetFillAmount,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    takerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -2539,11 +1950,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2552,73 +1963,40 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public getOrdersInfo = {
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>> {
+        ): Promise<Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>
+        > {
             assert.isArray('orders', orders);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -2628,11 +2006,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2641,44 +2017,24 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<
-                Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>
-            >(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<Array<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}>
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+            ): string {
             assert.isArray('orders', orders);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])',
-                [orders],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[])', [orders
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -2688,7 +2044,8 @@ export class ExchangeContract extends BaseContract {
             index_1: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2699,11 +2056,10 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('preSigned(bytes32,address)', [
-                index_0,
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('preSigned(bytes32,address)', [index_0,
+        index_1.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2712,31 +2068,36 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('preSigned(bytes32,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string, index_1: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('preSigned(bytes32,address)', [
-                index_0,
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('preSigned(bytes32,address)', [index_0,
+        index_1.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public owner = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -2745,7 +2106,7 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
+            const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('owner()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -2755,20 +2116,20 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as ExchangeContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
@@ -2780,7 +2141,8 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<boolean> {
+        ): Promise<boolean
+        > {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
@@ -2792,12 +2154,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+        signerAddress.toLowerCase(),
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -2806,185 +2167,134 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<boolean>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<boolean
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
+        getABIEncodedTransactionData(
+                hash: string,
+                signerAddress: string,
+                signature: string,
+            ): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [
-                hash,
-                signerAddress.toLowerCase(),
-                signature,
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('isValidSignature(bytes32,address,bytes)', [hash,
+        signerAddress.toLowerCase(),
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public marketBuyOrdersNoThrow = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrdersNoThrow.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    makerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.marketBuyOrdersNoThrow.estimateGasAsync.bind(
+                self,
+                orders,
+                makerAssetFillAmount,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.marketBuyOrdersNoThrow.sendTransactionAsync(
-                orders,
-                makerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.marketBuyOrdersNoThrow.sendTransactionAsync(orders,
+    makerAssetFillAmount,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    makerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -2996,11 +2306,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3009,200 +2319,135 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                makerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public fillOrder = {
         async sendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.fillOrder.estimateGasAsync.bind(self, order, takerAssetFillAmount, signature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.fillOrder.estimateGasAsync.bind(
+                self,
+                order,
+                takerAssetFillAmount,
+                signature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.fillOrder.sendTransactionAsync(order, takerAssetFillAmount, signature, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.fillOrder.sendTransactionAsync(order,
+    takerAssetFillAmount,
+    signature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+    takerAssetFillAmount,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             takerAssetFillAmount: BigNumber,
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -3213,11 +2458,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3226,50 +2471,30 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-            );
+            const abiEncoder = self._lookupAbiEncoder('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            takerAssetFillAmount: BigNumber,
-            signature: string,
-        ): string {
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+                takerAssetFillAmount: BigNumber,
+                signature: string,
+            ): string {
+            
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)',
-                [order, takerAssetFillAmount, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),uint256,bytes)', [order,
+        takerAssetFillAmount,
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -3279,34 +2504,39 @@ export class ExchangeContract extends BaseContract {
             signerAddress: string,
             data: string,
             signature: string,
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
+        assert.isBigNumber('salt', salt);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('data', data);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
+    signerAddress.toLowerCase(),
+    data,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.executeTransaction.estimateGasAsync.bind(
+                self,
                 salt,
                 signerAddress.toLowerCase(),
                 data,
-                signature,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.executeTransaction.estimateGasAsync.bind(self, salt, signerAddress.toLowerCase(), data, signature),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+                signature
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             salt: BigNumber,
@@ -3317,29 +2547,27 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.executeTransaction.sendTransactionAsync(
-                salt,
-                signerAddress.toLowerCase(),
-                data,
-                signature,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isBigNumber('salt', salt);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('data', data);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.executeTransaction.sendTransactionAsync(salt,
+    signerAddress.toLowerCase(),
+    data,
+    signature
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
             salt: BigNumber,
@@ -3348,31 +2576,30 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isBigNumber('salt', salt);
-            assert.isString('signerAddress', signerAddress);
-            assert.isString('data', data);
-            assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
-                salt,
-                signerAddress.toLowerCase(),
-                data,
-                signature,
-            ]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isBigNumber('salt', salt);
+        assert.isString('signerAddress', signerAddress);
+        assert.isString('data', data);
+        assert.isString('signature', signature);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
+    signerAddress.toLowerCase(),
+    data,
+    signature
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             salt: BigNumber,
@@ -3381,7 +2608,8 @@ export class ExchangeContract extends BaseContract {
             signature: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isBigNumber('salt', salt);
             assert.isString('signerAddress', signerAddress);
             assert.isString('data', data);
@@ -3394,13 +2622,12 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [
-                salt,
-                signerAddress.toLowerCase(),
-                data,
-                signature,
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
+        signerAddress.toLowerCase(),
+        data,
+        signature
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3409,51 +2636,63 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('executeTransaction(uint256,address,bytes,bytes)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(salt: BigNumber, signerAddress: string, data: string, signature: string): string {
+        getABIEncodedTransactionData(
+                salt: BigNumber,
+                signerAddress: string,
+                data: string,
+                signature: string,
+            ): string {
             assert.isBigNumber('salt', salt);
             assert.isString('signerAddress', signerAddress);
             assert.isString('data', data);
             assert.isString('signature', signature);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'executeTransaction(uint256,address,bytes,bytes)',
-                [salt, signerAddress.toLowerCase(), data, signature],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('executeTransaction(uint256,address,bytes,bytes)', [salt,
+        signerAddress.toLowerCase(),
+        data,
+        signature
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public registerAssetProxy = {
-        async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('assetProxy', assetProxy);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.registerAssetProxy.estimateGasAsync.bind(self, assetProxy.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            assetProxy: string,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isString('assetProxy', assetProxy);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.registerAssetProxy.estimateGasAsync.bind(
+                self,
+                assetProxy.toLowerCase()
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             assetProxy: string,
@@ -3461,45 +2700,51 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('assetProxy', assetProxy);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('assetProxy', assetProxy);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.registerAssetProxy.sendTransactionAsync(assetProxy.toLowerCase()
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('assetProxy', assetProxy);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            assetProxy: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isString('assetProxy', assetProxy);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
             assetProxy: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
             assert.isString('assetProxy', assetProxy);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -3509,8 +2754,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3519,46 +2765,35 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(assetProxy: string): string {
+        getABIEncodedTransactionData(
+                assetProxy: string,
+            ): string {
             assert.isString('assetProxy', assetProxy);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [
-                assetProxy.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('registerAssetProxy(address)', [assetProxy.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public getOrderInfo = {
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }> {
+        ): Promise<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}
+        > {
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3567,11 +2802,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3580,173 +2813,107 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-            );
+            const abiEncoder = self._lookupAbiEncoder('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                orderStatus: number;
-                orderHash: string;
-                orderTakerAssetFilledAmount: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{orderStatus: number;orderHash: string;orderTakerAssetFilledAmount: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(order: {
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-        }): string {
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            ): string {
+            
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('getOrderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public cancelOrder = {
         async sendTransactionAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
-            txData?: Partial<TxData> | undefined,
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.cancelOrder.estimateGasAsync.bind(self, order),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.cancelOrder.estimateGasAsync.bind(
+                self,
+                order
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.cancelOrder.sendTransactionAsync(order, txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.cancelOrder.sendTransactionAsync(order
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            order: {
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            },
+            order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<void> {
+        ): Promise<void
+        > {
+            
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3755,11 +2922,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3768,39 +2933,24 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-            );
+            const abiEncoder = self._lookupAbiEncoder('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(order: {
-            makerAddress: string;
-            takerAddress: string;
-            feeRecipientAddress: string;
-            senderAddress: string;
-            makerAssetAmount: BigNumber;
-            takerAssetAmount: BigNumber;
-            makerFee: BigNumber;
-            takerFee: BigNumber;
-            expirationTimeSeconds: BigNumber;
-            salt: BigNumber;
-            makerAssetData: string;
-            takerAssetData: string;
-        }): string {
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
-                [order],
-            );
+        getABIEncodedTransactionData(
+                order: {makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string},
+            ): string {
+            
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('cancelOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))', [order
+        ]);
             return abiEncodedTransactionData;
         },
     };
@@ -3810,7 +2960,8 @@ export class ExchangeContract extends BaseContract {
             index_1: string,
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<BigNumber> {
+        ): Promise<BigNumber
+        > {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -3821,11 +2972,10 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('orderEpoch(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('orderEpoch(address,address)', [index_0.toLowerCase(),
+        index_1.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -3834,31 +2984,36 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('orderEpoch(address,address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<BigNumber>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<BigNumber
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(index_0: string, index_1: string): string {
+        getABIEncodedTransactionData(
+                index_0: string,
+                index_1: string,
+            ): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('orderEpoch(address,address)', [
-                index_0.toLowerCase(),
-                index_1.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('orderEpoch(address,address)', [index_0.toLowerCase(),
+        index_1.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public ZRX_ASSET_DATA = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -3867,7 +3022,7 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
+            const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('ZRX_ASSET_DATA()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -3877,178 +3032,125 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('ZRX_ASSET_DATA()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as ExchangeContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ZRX_ASSET_DATA()', []);
             return abiEncodedTransactionData;
         },
     };
     public marketSellOrdersNoThrow = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketSellOrdersNoThrow.estimateGasAsync.bind(self, orders, takerAssetFillAmount, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    takerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.marketSellOrdersNoThrow.estimateGasAsync.bind(
+                self,
+                orders,
+                takerAssetFillAmount,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.marketSellOrdersNoThrow.sendTransactionAsync(
-                orders,
-                takerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.marketSellOrdersNoThrow.sendTransactionAsync(orders,
+    takerAssetFillAmount,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    takerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             takerAssetFillAmount: BigNumber,
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4060,11 +3162,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4073,56 +3175,39 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                takerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isBigNumber('takerAssetFillAmount', takerAssetFillAmount);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, takerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        takerAssetFillAmount,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public EIP712_DOMAIN_HASH = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -4131,7 +3216,7 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
+            const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -4141,178 +3226,125 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('EIP712_DOMAIN_HASH()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as ExchangeContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
         },
     };
     public marketBuyOrders = {
         async sendTransactionAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
-            txData?: Partial<TxData> | undefined,
+        txData?: Partial<TxData> | undefined,
         ): Promise<string> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.marketBuyOrders.estimateGasAsync.bind(self, orders, makerAssetFillAmount, signatures),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    makerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.marketBuyOrders.estimateGasAsync.bind(
+                self,
+                orders,
+                makerAssetFillAmount,
+                signatures
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.marketBuyOrders.sendTransactionAsync(
-                orders,
-                makerAssetFillAmount,
-                signatures,
-                txData,
-            );
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.marketBuyOrders.sendTransactionAsync(orders,
+    makerAssetFillAmount,
+    signatures
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
         async estimateGasAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             txData?: Partial<TxData> | undefined,
         ): Promise<number> {
-            assert.isArray('orders', orders);
-            assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
-            assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        assert.isArray('orders', orders);
+        assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
+        assert.isArray('signatures', signatures);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+    makerAssetFillAmount,
+    signatures
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
         async callAsync(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
+            orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
             makerAssetFillAmount: BigNumber,
             signatures: string[],
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
-        ): Promise<{
-            makerAssetFilledAmount: BigNumber;
-            takerAssetFilledAmount: BigNumber;
-            makerFeePaid: BigNumber;
-            takerFeePaid: BigNumber;
-        }> {
+        ): Promise<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        > {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
@@ -4324,11 +3356,11 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments(
-                'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4337,56 +3369,39 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder(
-                'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-            );
+            const abiEncoder = self._lookupAbiEncoder('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{
-                makerAssetFilledAmount: BigNumber;
-                takerAssetFilledAmount: BigNumber;
-                makerFeePaid: BigNumber;
-                takerFeePaid: BigNumber;
-            }>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<{makerAssetFilledAmount: BigNumber;takerAssetFilledAmount: BigNumber;makerFeePaid: BigNumber;takerFeePaid: BigNumber}
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
         getABIEncodedTransactionData(
-            orders: Array<{
-                makerAddress: string;
-                takerAddress: string;
-                feeRecipientAddress: string;
-                senderAddress: string;
-                makerAssetAmount: BigNumber;
-                takerAssetAmount: BigNumber;
-                makerFee: BigNumber;
-                takerFee: BigNumber;
-                expirationTimeSeconds: BigNumber;
-                salt: BigNumber;
-                makerAssetData: string;
-                takerAssetData: string;
-            }>,
-            makerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): string {
+                orders: Array<{makerAddress: string;takerAddress: string;feeRecipientAddress: string;senderAddress: string;makerAssetAmount: BigNumber;takerAssetAmount: BigNumber;makerFee: BigNumber;takerFee: BigNumber;expirationTimeSeconds: BigNumber;salt: BigNumber;makerAssetData: string;takerAssetData: string}>,
+                makerAssetFillAmount: BigNumber,
+                signatures: string[],
+            ): string {
             assert.isArray('orders', orders);
             assert.isBigNumber('makerAssetFillAmount', makerAssetFillAmount);
             assert.isArray('signatures', signatures);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments(
-                'marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])',
-                [orders, makerAssetFillAmount, signatures],
-            );
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[])', [orders,
+        makerAssetFillAmount,
+        signatures
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public currentContextAddress = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -4395,7 +3410,7 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
+            const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('currentContextAddress()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -4405,44 +3420,51 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('currentContextAddress()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as ExchangeContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('currentContextAddress()', []);
             return abiEncodedTransactionData;
         },
     };
     public transferOwnership = {
-        async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-                self.transferOwnership.estimateGasAsync.bind(self, newOwner.toLowerCase()),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
-            return txHash;
+        async sendTransactionAsync(
+            newOwner: string,
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        assert.isString('newOwner', newOwner);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+            self.transferOwnership.estimateGasAsync.bind(
+                self,
+                newOwner.toLowerCase()
+            ),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+    
+        const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
+        return txHash;
         },
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -4450,41 +3472,51 @@ export class ExchangeContract extends BaseContract {
             pollingIntervalMs?: number,
             timeoutMs?: number,
         ): PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as ExchangeContract;
-            const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase(), txData);
-            return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
-                txHashPromise,
-                (async (): Promise<TransactionReceiptWithDecodedLogs> => {
-                    // When the transaction hash resolves, wait for it to be mined.
-                    return self._web3Wrapper.awaitTransactionSuccessAsync(
-                        await txHashPromise,
-                        pollingIntervalMs,
-                        timeoutMs,
-                    );
-                })(),
-            );
+        assert.isString('newOwner', newOwner);
+        const self = this as any as ExchangeContract;
+        const txHashPromise = self.transferOwnership.sendTransactionAsync(newOwner.toLowerCase()
+    , txData);
+        return new PromiseWithTransactionHash<TransactionReceiptWithDecodedLogs>(
+            txHashPromise,
+            (async (): Promise<TransactionReceiptWithDecodedLogs> => {
+                // When the transaction hash resolves, wait for it to be mined.
+                return self._web3Wrapper.awaitTransactionSuccessAsync(
+                    await txHashPromise,
+                    pollingIntervalMs,
+                    timeoutMs,
+                );
+            })(),
+        );
         },
-        async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
-            assert.isString('newOwner', newOwner);
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
-            const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...txData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            if (txDataWithDefaults.from !== undefined) {
-                txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
-            }
-
-            const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
-            return gas;
+        async estimateGasAsync(
+            newOwner: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<number> {
+        assert.isString('newOwner', newOwner);
+        const self = this as any as ExchangeContract;
+        const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()
+    ]);
+        const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+            {
+                to: self.address,
+                ...txData,
+                data: encodedData,
+            },
+            self._web3Wrapper.getContractDefaults(),
+        );
+        if (txDataWithDefaults.from !== undefined) {
+            txDataWithDefaults.from = txDataWithDefaults.from.toLowerCase();
+        }
+        
+        const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
+        return gas;
         },
-        async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+        async callAsync(
+            newOwner: string,
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<void
+        > {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -4494,8 +3526,9 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
-            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()]);
+            const self = this as any as ExchangeContract;
+            const encodedData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()
+        ]);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
                     to: self.address,
@@ -4504,29 +3537,33 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<void
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(newOwner: string): string {
+        getABIEncodedTransactionData(
+                newOwner: string,
+            ): string {
             assert.isString('newOwner', newOwner);
-            const self = (this as any) as ExchangeContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [
-                newOwner.toLowerCase(),
-            ]);
+            const self = this as any as ExchangeContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('transferOwnership(address)', [newOwner.toLowerCase()
+        ]);
             return abiEncodedTransactionData;
         },
     };
     public VERSION = {
-        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<string
+        > {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
                 schemas.numberSchema,
@@ -4535,7 +3572,7 @@ export class ExchangeContract extends BaseContract {
             if (defaultBlock !== undefined) {
                 assert.isBlockParam('defaultBlock', defaultBlock);
             }
-            const self = (this as any) as ExchangeContract;
+            const self = this as any as ExchangeContract;
             const encodedData = self._strictEncodeArguments('VERSION()', []);
             const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
                 {
@@ -4545,31 +3582,31 @@ export class ExchangeContract extends BaseContract {
                 },
                 self._web3Wrapper.getContractDefaults(),
             );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
+            callDataWithDefaults.from = callDataWithDefaults.from ? callDataWithDefaults.from.toLowerCase() : callDataWithDefaults.from;
+        
             const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
             BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
             const abiEncoder = self._lookupAbiEncoder('VERSION()');
             // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<string>(rawCallResult);
+            const result = abiEncoder.strictDecodeReturnValue<string
+        >(rawCallResult);
             // tslint:enable boolean-naming
             return result;
         },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as ExchangeContract;
+        getABIEncodedTransactionData(
+            ): string {
+            const self = this as any as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('VERSION()', []);
             return abiEncodedTransactionData;
         },
     };
-    private readonly _subscriptionManager: SubscriptionManager<ExchangeEventArgs, ExchangeEvents>;
-    public static async deployFrom0xArtifactAsync(
+private readonly _subscriptionManager: SubscriptionManager<ExchangeEventArgs, ExchangeEvents>;
+public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
-        _zrxAssetData: string,
+        logDecodeDependencies: { [contractName: string]: (ContractArtifact | SimpleContractArtifact) },
+            _zrxAssetData: string,
     ): Promise<ExchangeContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -4582,18 +3619,9 @@ export class ExchangeContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce(
-            (accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }),
-            {},
-        );
-        return ExchangeContract.deployAsync(
-            bytecode,
-            abi,
-            provider,
-            txDefaults,
-            logDecodeDependenciesAbiOnly,
-            _zrxAssetData,
-        );
+        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce((accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }), {});
+        return ExchangeContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly, _zrxAssetData
+);
     }
     public static async deployAsync(
         bytecode: string,
@@ -4601,7 +3629,7 @@ export class ExchangeContract extends BaseContract {
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
         logDecodeDependencies: { [contractName: string]: ContractAbi },
-        _zrxAssetData: string,
+            _zrxAssetData: string,
     ): Promise<ExchangeContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -4611,17 +3639,20 @@ export class ExchangeContract extends BaseContract {
         ]);
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const constructorAbi = BaseContract._lookupConstructorAbi(abi);
-        [_zrxAssetData] = BaseContract._formatABIDataItemList(
+        [_zrxAssetData
+] = BaseContract._formatABIDataItemList(
             constructorAbi.inputs,
-            [_zrxAssetData],
+            [_zrxAssetData
+],
             BaseContract._bigNumberToString,
         );
         const iface = new ethers.utils.Interface(abi);
         const deployInfo = iface.deployFunction;
-        const txData = deployInfo.encode(bytecode, [_zrxAssetData]);
+        const txData = deployInfo.encode(bytecode, [_zrxAssetData
+]);
         const web3Wrapper = new Web3Wrapper(provider);
         const txDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-            { data: txData },
+            {data: txData},
             txDefaults,
             web3Wrapper.estimateGasAsync.bind(web3Wrapper),
         );
@@ -4629,22 +3660,19 @@ export class ExchangeContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Exchange successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ExchangeContract(
-            txReceipt.contractAddress as string,
-            provider,
-            txDefaults,
-            logDecodeDependencies,
-        );
-        contractInstance.constructorArgs = [_zrxAssetData];
+        const contractInstance = new ExchangeContract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
+        contractInstance.constructorArgs = [_zrxAssetData
+];
         return contractInstance;
     }
+
 
     /**
      * @returns      The contract ABI
      */
     public static ABI(): ContractAbi {
         const abi = [
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -4663,7 +3691,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -4718,7 +3746,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -4751,14 +3779,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -4777,7 +3805,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -4794,12 +3822,13 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'preSign',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -4854,7 +3883,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'rightOrder',
@@ -4908,7 +3937,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'leftSignature',
@@ -4945,7 +3974,7 @@ export class ExchangeContract extends BaseContract {
                                         name: 'takerFeePaid',
                                         type: 'uint256',
                                     },
-                                ],
+                                ]
                             },
                             {
                                 name: 'right',
@@ -4967,20 +3996,20 @@ export class ExchangeContract extends BaseContract {
                                         name: 'takerFeePaid',
                                         type: 'uint256',
                                     },
-                                ],
+                                ]
                             },
                             {
                                 name: 'leftMakerAssetSpreadAmount',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5035,7 +4064,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -5068,14 +4097,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5094,7 +4123,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5149,16 +4178,17 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                 ],
                 name: 'batchCancelOrders',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5213,7 +4243,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -5246,14 +4276,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5262,12 +4292,13 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'cancelOrdersUpTo',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5322,7 +4353,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmounts',
@@ -5355,14 +4386,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5381,7 +4412,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5400,7 +4431,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5455,7 +4486,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -5488,14 +4519,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5508,12 +4539,13 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'setSignatureValidatorApproval',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5536,7 +4568,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5591,7 +4623,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -5624,14 +4656,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5686,7 +4718,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                 ],
                 name: 'getOrdersInfo',
@@ -5707,14 +4739,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'orderTakerAssetFilledAmount',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5737,9 +4769,10 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'owner',
                 outputs: [
                     {
@@ -5751,7 +4784,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -5778,7 +4811,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5833,7 +4866,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'makerAssetFillAmount',
@@ -5866,14 +4899,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5928,7 +4961,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -5961,14 +4994,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -5989,12 +5022,13 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'executeTransaction',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -6003,12 +5037,13 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'registerAssetProxy',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -6063,7 +5098,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                 ],
                 name: 'getOrderInfo',
@@ -6084,14 +5119,14 @@ export class ExchangeContract extends BaseContract {
                                 name: 'orderTakerAssetFilledAmount',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -6146,16 +5181,17 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                 ],
                 name: 'cancelOrder',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
                 inputs: [
                     {
@@ -6178,9 +5214,10 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'ZRX_ASSET_DATA',
                 outputs: [
                     {
@@ -6192,7 +5229,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -6247,7 +5284,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'takerAssetFillAmount',
@@ -6280,16 +5317,17 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'EIP712_DOMAIN_HASH',
                 outputs: [
                     {
@@ -6301,7 +5339,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -6356,7 +5394,7 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerAssetData',
                                 type: 'bytes',
                             },
-                        ],
+                        ]
                     },
                     {
                         name: 'makerAssetFillAmount',
@@ -6389,16 +5427,17 @@ export class ExchangeContract extends BaseContract {
                                 name: 'takerFeePaid',
                                 type: 'uint256',
                             },
-                        ],
+                        ]
                     },
                 ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'currentContextAddress',
                 outputs: [
                     {
@@ -6410,7 +5449,7 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 constant: false,
                 inputs: [
                     {
@@ -6419,14 +5458,16 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'transferOwnership',
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'function',
             },
-            {
+            { 
                 constant: true,
-                inputs: [],
+                inputs: [
+                ],
                 name: 'VERSION',
                 outputs: [
                     {
@@ -6438,19 +5479,20 @@ export class ExchangeContract extends BaseContract {
                 stateMutability: 'view',
                 type: 'function',
             },
-            {
+            { 
                 inputs: [
                     {
                         name: '_zrxAssetData',
                         type: 'bytes',
                     },
                 ],
-                outputs: [],
+                outputs: [
+                ],
                 payable: false,
                 stateMutability: 'nonpayable',
                 type: 'constructor',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -6470,10 +5512,11 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'SignatureValidatorApproval',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -6533,10 +5576,11 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'Fill',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -6571,10 +5615,11 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'Cancel',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -6594,10 +5639,11 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'CancelUpTo',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
-            {
+            { 
                 anonymous: false,
                 inputs: [
                     {
@@ -6612,7 +5658,8 @@ export class ExchangeContract extends BaseContract {
                     },
                 ],
                 name: 'AssetProxyRegistered',
-                outputs: [],
+                outputs: [
+                ],
                 type: 'event',
             },
         ] as ContractAbi;
@@ -6686,12 +5733,7 @@ export class ExchangeContract extends BaseContract {
         );
         return logs;
     }
-    constructor(
-        address: string,
-        supportedProvider: SupportedProvider,
-        txDefaults?: Partial<TxData>,
-        logDecodeDependencies?: { [contractName: string]: ContractAbi },
-    ) {
+    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>, logDecodeDependencies?: { [contractName: string]: ContractAbi }) {
         super('Exchange', ExchangeContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ExchangeEventArgs, ExchangeEvents>(
@@ -6699,7 +5741,7 @@ export class ExchangeContract extends BaseContract {
             this._web3Wrapper,
         );
     }
-}
+} 
 
 // tslint:disable:max-file-line-count
 // tslint:enable:no-unbound-method no-parameter-reassignment no-consecutive-blank-lines ordered-imports align
