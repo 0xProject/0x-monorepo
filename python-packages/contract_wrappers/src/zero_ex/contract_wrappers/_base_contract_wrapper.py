@@ -32,7 +32,7 @@ class ValidatorBase:
         """
 
 
-class BaseContractWrapper:
+class ContractMethod:
     """Base class for wrapping an Ethereum smart contract method."""
 
     def __init__(
@@ -95,12 +95,12 @@ class BaseContractWrapper:
         tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
         return tx_params
 
-    def call(self, func, tx_params):
+    def invoke_call(self, func, tx_params):
         """Execute given contract method as an eth_call."""
         tx_params = self.normalize_tx_params(tx_params)
         return func.call(tx_params.as_dict())
 
-    def send_transaction(self, func, tx_params):
+    def invoke_send_transaction(self, func, tx_params):
         """Invoke the given contract method."""
         if not self._can_send_tx:
             raise Exception(

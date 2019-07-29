@@ -14,11 +14,12 @@ from typing import (  # pylint: disable=unused-import
 from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3 import Web3
 from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper, ValidatorBase
+from zero_ex.contract_wrappers._base_contract_wrapper import ContractMethod, ValidatorBase
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
@@ -40,14 +41,13 @@ except ImportError:
 
 
 
-class PublicAddConstantMethod:
+class PublicAddConstantMethod(ContractMethod):
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
         """Persist instance data."""
-        self.contract = contract
+        super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
-        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddConstant method."""
@@ -67,7 +67,7 @@ class PublicAddConstantMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        return self.contract.call(func=self.underlying_method(x), tx_params=tx_params)
+        return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -77,16 +77,15 @@ class PublicAddConstantMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.underlying_method(x)
-        return self.contract.send_transaction(func=func, tx_params=tx_params)
+        return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
-class PublicAddOneMethod:
+class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
         """Persist instance data."""
-        self.contract = contract
+        super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
-        self.validator = validator
 
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
@@ -106,7 +105,7 @@ class PublicAddOneMethod:
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        return self.contract.call(func=self.underlying_method(x), tx_params=tx_params)
+        return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -116,10 +115,10 @@ class PublicAddOneMethod:
         """
         (x) = self.validate_and_normalize_inputs(x)
         func = self.underlying_method(x)
-        return self.contract.send_transaction(func=func, tx_params=tx_params)
+        return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
-class TestLibDummy(BaseContractWrapper):
+class TestLibDummy:
     """Wrapper class for TestLibDummy Solidity contract."""
     public_add_constant: PublicAddConstantMethod
     public_add_one: PublicAddOneMethod
@@ -139,20 +138,17 @@ class TestLibDummy(BaseContractWrapper):
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
         """
+        self.contract_address = contract_address
+
         if not validator:
             validator = TestLibDummyValidator(provider, contract_address, private_key)
 
-        super().__init__(
-            provider=provider,
-            contract_address=contract_address,
-            validator=validator,
-            private_key=private_key,
-        )
-        functions = self._web3_eth.contract(
-            address=to_checksum_address(contract_address), abi=TestLibDummy.abi()
-        ).functions
-        self.public_add_constant = PublicAddConstantMethod(self, functions.publicAddConstant, validator)
-        self.public_add_one = PublicAddOneMethod(self, functions.publicAddOne, validator)
+        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
+            provider
+        ).eth
+        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=TestLibDummy.abi()).functions
+        self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator, private_key)
+        self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator, private_key)
 
 
     @staticmethod

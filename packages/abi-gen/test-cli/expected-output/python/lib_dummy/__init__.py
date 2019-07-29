@@ -14,11 +14,12 @@ from typing import (  # pylint: disable=unused-import
 from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3 import Web3
 from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper, ValidatorBase
+from zero_ex.contract_wrappers._base_contract_wrapper import ContractMethod, ValidatorBase
 from zero_ex.contract_wrappers.tx_params import TxParams
 
 
@@ -41,7 +42,7 @@ except ImportError:
 
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
-class LibDummy(BaseContractWrapper):
+class LibDummy:
     """Wrapper class for LibDummy Solidity contract."""
 
     def __init__(
@@ -59,18 +60,15 @@ class LibDummy(BaseContractWrapper):
             via Web3.py's `eth.account.signTransaction()`:code:, before being
             sent via `eth.sendRawTransaction()`:code:.
         """
+        self.contract_address = contract_address
+
         if not validator:
             validator = LibDummyValidator(provider, contract_address, private_key)
 
-        super().__init__(
-            provider=provider,
-            contract_address=contract_address,
-            validator=validator,
-            private_key=private_key,
-        )
-        functions = self._web3_eth.contract(
-            address=to_checksum_address(contract_address), abi=LibDummy.abi()
-        ).functions
+        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
+            provider
+        ).eth
+        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=LibDummy.abi()).functions
 
 
     @staticmethod

@@ -1,12 +1,11 @@
 
-class {{toPythonClassname this.name}}Method:
+class {{toPythonClassname this.name}}Method(ContractMethod):
     """Various interfaces to the {{this.name}} method."""
 
-    def __init__(self, contract: BaseContractWrapper, contract_function: ContractFunction, validator: ValidatorBase):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: ValidatorBase=None, private_key=None):
         """Persist instance data."""
-        self.contract = contract
+        super().__init__(provider, contract_address, validator, private_key)
         self.underlying_method = contract_function
-        self.validator = validator
 
     {{#if inputs}}
     def validate_and_normalize_inputs(self, {{> typed_params inputs=inputs}}):
@@ -18,7 +17,7 @@ class {{toPythonClassname this.name}}Method:
             argument_value={{toPythonIdentifier name}},
         )
         {{#if (equal type 'address')}}
-        {{toPythonIdentifier this.name}} = self.contract.validate_and_checksum_address({{toPythonIdentifier this.name}})
+        {{toPythonIdentifier this.name}} = self.validate_and_checksum_address({{toPythonIdentifier this.name}})
         {{else if (equal type 'uint256')}}
         # safeguard against fractional inputs
         {{toPythonIdentifier this.name}} = int({{toPythonIdentifier this.name}})
@@ -49,7 +48,7 @@ class {{toPythonClassname this.name}}Method:
         {{#if inputs}}
         ({{> params }}) = self.validate_and_normalize_inputs({{> params}})
         {{/if}}
-        return self.contract.call(func=self.underlying_method({{> params}}), tx_params=tx_params)
+        return super().invoke_call(func=self.underlying_method({{> params}}), tx_params=tx_params)
 
     def send_transaction(self, {{#if inputs}}{{> typed_params inputs=inputs}}, {{/if}}tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying, same-named contract method.
@@ -66,4 +65,4 @@ class {{toPythonClassname this.name}}Method:
         {{/if}}
         tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method({{> params}})
-        return self.contract.send_transaction(func=func, tx_params=tx_params)
+        return super().invoke_send_transaction(func=func, tx_params=tx_params)
