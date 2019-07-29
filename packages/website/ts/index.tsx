@@ -12,8 +12,8 @@ import { trackedTokenStorage } from 'ts/local_storage/tracked_token_storage';
 import { tradeHistoryStorage } from 'ts/local_storage/trade_history_storage';
 import { DocsGuides } from 'ts/pages/docs/guides';
 import { DocsHome } from 'ts/pages/docs/home';
+import { DocsPage } from 'ts/pages/docs/page';
 import { DocsTools } from 'ts/pages/docs/tools';
-import { DocsView } from 'ts/pages/docs/view';
 import { store } from 'ts/redux/store';
 import { WebsiteLegacyPaths, WebsitePaths } from 'ts/types';
 import { muiTheme } from 'ts/utils/mui_theme';
@@ -220,7 +220,7 @@ render(
                                     path={`${WebsitePaths.AssetSwapper}/:version?`}
                                     component={LazyAssetSwapperDocumentation}
                                 />
-                                <Route path={`${WebsitePaths.Docs}/:type/:page`} component={DocsView as any} />
+                                <Route path={`${WebsitePaths.Docs}/:type/:page`} component={DocsPage as any} />
                                 <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
                                 <Route exact={true} path={WebsitePaths.DocsTools} component={DocsTools as any} />
                                 <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />
