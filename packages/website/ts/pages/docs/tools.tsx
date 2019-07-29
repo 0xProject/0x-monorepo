@@ -13,7 +13,7 @@ import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 
-import { searchClient, searchIndex } from 'ts/utils/algolia_search';
+import { searchClient, searchIndices } from 'ts/utils/algolia_search';
 
 interface IHitsProps {
     hits: IHit[];
@@ -37,7 +37,7 @@ interface IHit {
 export const DocsTools: React.FC = () => {
     return (
         <DocsPageLayout title="Tools">
-            <InstantSearch searchClient={searchClient} indexName={searchIndex.tools}>
+            <InstantSearch searchClient={searchClient} indexName={searchIndices.tools}>
                 <Columns>
                     <Filters filters={filters} />
                     <Separator />
