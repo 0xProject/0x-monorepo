@@ -29,7 +29,6 @@ import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 export type DummyERC721TokenEventArgs =
@@ -1446,7 +1445,7 @@ export class DummyERC721TokenContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        artifactDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _name: string,
         _symbol: string,
     ): Promise<DummyERC721TokenContract> {
@@ -1461,18 +1460,16 @@ export class DummyERC721TokenContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const abiDependencies = _.mapValues(
-            artifactDependencies,
-            (artifactDependency: ContractArtifact | SimpleContractArtifact) => {
-                return artifactDependency.compilerOutput.abi;
-            },
+        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce(
+            (accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }),
+            {},
         );
         return DummyERC721TokenContract.deployAsync(
             bytecode,
             abi,
             provider,
             txDefaults,
-            abiDependencies,
+            logDecodeDependenciesAbiOnly,
             _name,
             _symbol,
         );
@@ -1482,7 +1479,7 @@ export class DummyERC721TokenContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        abiDependencies: { [contractName: string]: ContractAbi },
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _name: string,
         _symbol: string,
     ): Promise<DummyERC721TokenContract> {
@@ -1516,7 +1513,7 @@ export class DummyERC721TokenContract extends BaseContract {
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
-            abiDependencies,
+            logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_name, _symbol];
         return contractInstance;

@@ -21,7 +21,6 @@ import { SimpleContractArtifact } from '@0x/types';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { assert } from '@0x/assert';
 import * as ethers from 'ethers';
-import * as _ from 'lodash';
 // tslint:enable:no-unused-variable
 
 /* istanbul ignore next */
@@ -90,7 +89,7 @@ export class IValidatorContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        artifactDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<IValidatorContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -103,20 +102,18 @@ export class IValidatorContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        const abiDependencies = _.mapValues(
-            artifactDependencies,
-            (artifactDependency: ContractArtifact | SimpleContractArtifact) => {
-                return artifactDependency.compilerOutput.abi;
-            },
+        const logDecodeDependenciesAbiOnly = Object.entries(logDecodeDependencies).reduce(
+            (accumulator, [key, value]) => Object.assign(accumulator, { [key]: value.compilerOutput.abi }),
+            {},
         );
-        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, abiDependencies);
+        return IValidatorContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
-        abiDependencies: { [contractName: string]: ContractAbi },
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
     ): Promise<IValidatorContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -144,7 +141,7 @@ export class IValidatorContract extends BaseContract {
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
-            abiDependencies,
+            logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
         return contractInstance;
