@@ -151,11 +151,11 @@ describe('ExchangeSwapQuoteConsumer', () => {
         describe('valid swap quote', async () => {
             // TODO(david) Check for valid MethodAbi
             it('provide correct and optimized smart contract params for a marketSell SwapQuote', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketSellSwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
                 const { takerAssetFillAmount, signatures, type } = params as ExchangeMarketSellSmartContractParams;
                 expect(type).to.deep.equal(MarketOperation.Sell);
                 expect(takerAssetFillAmount).to.bignumber.equal(
@@ -165,11 +165,11 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 expect(signatures).to.deep.equal(orderSignatures);
             });
             it('provide correct and optimized smart contract params for a marketBuy SwapQuote', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
                 const { makerAssetFillAmount, signatures, type } = params as ExchangeMarketBuySmartContractParams;
                 expect(type).to.deep.equal(MarketOperation.Buy);
                 expect(makerAssetFillAmount).to.bignumber.equal(
@@ -188,14 +188,14 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 let takerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, to } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketSellSwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
-                    to,
+                    to: toAddress,
                     data: calldataHexString,
                     gas: 4000000,
                 });
@@ -209,14 +209,14 @@ describe('ExchangeSwapQuoteConsumer', () => {
                 let takerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, to } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.exchange.address);
+                expect(toAddress).to.deep.equal(contractWrappers.exchange.address);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
-                    to,
+                    to: toAddress,
                     data: calldataHexString,
                     gas: 4000000,
                 });

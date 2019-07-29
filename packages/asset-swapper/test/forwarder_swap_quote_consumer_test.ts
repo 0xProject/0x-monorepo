@@ -248,11 +248,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
 
         describe('valid swap quote', async () => {
             it('provide correct and optimized smart contract params with default options for a marketSell SwapQuote (no affiliate fees)', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketSellSwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.forwarder.address);
+                expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
                 const {
                     feeSignatures,
                     feePercentage,
@@ -268,11 +268,11 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 expect(feeSignatures).to.deep.equal([]);
             });
             it('provide correct and optimized smart contract params with default options for a marketBuy SwapQuote (no affiliate fees)', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.forwarder.address);
+                expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
                 const {
                     makerAssetFillAmount,
                     feeSignatures,
@@ -292,11 +292,14 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 expect(feeSignatures).to.deep.equal([]);
             });
             it('provide correct and optimized smart contract params with affiliate fees for a marketSell SwapQuote', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketSellSwapQuote, {
-                    feePercentage: 0.05,
-                    feeRecipient,
-                });
-                expect(to).to.deep.equal(contractWrappers.forwarder.address);
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                    marketSellSwapQuote,
+                    {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
+                );
+                expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
                 const {
                     feeSignatures,
                     feePercentage,
@@ -312,11 +315,14 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 expect(feeSignatures).to.deep.equal([]);
             });
             it('provide correct and optimized smart contract params with affiliate fees for a marketBuy SwapQuote', async () => {
-                const { to, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(marketBuySwapQuote, {
-                    feePercentage: 0.05,
-                    feeRecipient,
-                });
-                expect(to).to.deep.equal(contractWrappers.forwarder.address);
+                const { toAddress, params } = await swapQuoteConsumer.getSmartContractParamsOrThrowAsync(
+                    marketBuySwapQuote,
+                    {
+                        feePercentage: 0.05,
+                        feeRecipient,
+                    },
+                );
+                expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
                 const {
                     makerAssetFillAmount,
                     feeSignatures,
@@ -367,14 +373,14 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 let takerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, to } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketSellSwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractWrappers.forwarder.address);
+                expect(toAddress).to.deep.equal(contractWrappers.forwarder.address);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
-                    to,
+                    to: toAddress,
                     data: calldataHexString,
                     value: marketSellSwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount,
                     gas: 4000000,
@@ -389,14 +395,14 @@ describe('ForwarderSwapQuoteConsumer', () => {
                 let takerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
-                const { calldataHexString, to } = await swapQuoteConsumer.getCalldataOrThrowAsync(
+                const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
                     marketBuySwapQuote,
                     {},
                 );
-                expect(to).to.deep.equal(contractAddresses.forwarder);
+                expect(toAddress).to.deep.equal(contractAddresses.forwarder);
                 await web3Wrapper.sendTransactionAsync({
                     from: takerAddress,
-                    to,
+                    to: toAddress,
                     data: calldataHexString,
                     value: marketBuySwapQuote.worstCaseQuoteInfo.totalTakerTokenAmount,
                     gas: 4000000,
