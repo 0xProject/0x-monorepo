@@ -146,8 +146,11 @@ class TestLibDummy:
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
         ).eth
+
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=TestLibDummy.abi()).functions
+
         self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator, private_key)
+
         self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator, private_key)
 
 

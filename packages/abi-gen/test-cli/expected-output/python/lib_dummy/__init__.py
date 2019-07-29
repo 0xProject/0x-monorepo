@@ -68,6 +68,7 @@ class LibDummy:
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
         ).eth
+
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=LibDummy.abi()).functions
 
 

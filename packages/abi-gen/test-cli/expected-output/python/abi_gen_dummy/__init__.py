@@ -691,23 +691,41 @@ class AbiGenDummy:
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
         ).eth
+
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=AbiGenDummy.abi()).functions
+
         self.simple_require = SimpleRequireMethod(provider, contract_address, functions.simpleRequire, validator, private_key)
+
         self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(provider, contract_address, functions.acceptsAnArrayOfBytes, validator, private_key)
+
         self.ecrecover_fn = EcrecoverFnMethod(provider, contract_address, functions.ecrecoverFn, validator, private_key)
+
         self.accepts_bytes = AcceptsBytesMethod(provider, contract_address, functions.acceptsBytes, validator, private_key)
+
         self.revert_with_constant = RevertWithConstantMethod(provider, contract_address, functions.revertWithConstant, validator, private_key)
+
         self.simple_revert = SimpleRevertMethod(provider, contract_address, functions.simpleRevert, validator, private_key)
+
         self.nested_struct_output = NestedStructOutputMethod(provider, contract_address, functions.nestedStructOutput, validator, private_key)
+
         self.require_with_constant = RequireWithConstantMethod(provider, contract_address, functions.requireWithConstant, validator, private_key)
+
         self.with_address_input = WithAddressInputMethod(provider, contract_address, functions.withAddressInput, validator, private_key)
+
         self.struct_input = StructInputMethod(provider, contract_address, functions.structInput, validator, private_key)
+
         self.non_pure_method = NonPureMethodMethod(provider, contract_address, functions.nonPureMethod, validator, private_key)
+
         self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(provider, contract_address, functions.simplePureFunctionWithInput, validator, private_key)
+
         self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(provider, contract_address, functions.nonPureMethodThatReturnsNothing, validator, private_key)
+
         self.simple_pure_function = SimplePureFunctionMethod(provider, contract_address, functions.simplePureFunction, validator, private_key)
+
         self.nested_struct_input = NestedStructInputMethod(provider, contract_address, functions.nestedStructInput, validator, private_key)
+
         self.struct_output = StructOutputMethod(provider, contract_address, functions.structOutput, validator, private_key)
+
         self.pure_function_with_constant = PureFunctionWithConstantMethod(provider, contract_address, functions.pureFunctionWithConstant, validator, private_key)
 
     def get_an_event_event(
@@ -718,9 +736,7 @@ class AbiGenDummy:
         :param tx_hash: hash of transaction emitting AnEvent event
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
-        return (
-            self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi=AbiGenDummy.abi()).events.AnEvent().processReceipt(tx_receipt)
-        )
+        return self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi=AbiGenDummy.abi()).events.AnEvent().processReceipt(tx_receipt)
 
     @staticmethod
     def abi():

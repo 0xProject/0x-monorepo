@@ -74,11 +74,13 @@ class {{contractName}}:
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
         ).eth
+
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi={{contractName}}.abi()).functions
+
         {{#each methods}}
         self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(provider, contract_address, functions.{{this.name}}, validator, private_key)
-        {{/each}}
 
+        {{/each}}
 {{#each events}}
 {{> event contractName=../contractName}}
 {{/each}}
