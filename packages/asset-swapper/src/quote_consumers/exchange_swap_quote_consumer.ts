@@ -56,8 +56,12 @@ export class ExchangeSwapQuoteConsumer
         if (quote.type === MarketOperation.Sell && opts.useExchangeWrapperType === ExchangeWrapperType.Dydx) {
             const smartContractParams = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
-            const decodedMakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.makerAssetData) as ERC20AssetData;
-            const decodedTakerAssetData = assetDataUtils.decodeAssetDataOrThrow(quote.takerAssetData) as ERC20AssetData;
+            const decodedMakerAssetData = (assetDataUtils.decodeAssetDataOrThrow(
+                quote.makerAssetData,
+            ) as any) as ERC20AssetData;
+            const decodedTakerAssetData = (assetDataUtils.decodeAssetDataOrThrow(
+                quote.takerAssetData,
+            ) as any) as ERC20AssetData;
 
             const { orderData, to } = this._exchangeWrappersUtils.generateDydxExchangeWrapperOrderData(quote.orders);
 
