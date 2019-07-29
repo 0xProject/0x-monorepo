@@ -33,6 +33,7 @@
         "src/SafeMath.sol",
         "src/interfaces/IOwnable.sol",
         "test/TestConstants.sol",
+        "test/TestLibAddress.sol",
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol",
         "test/TestOwnable.sol",
