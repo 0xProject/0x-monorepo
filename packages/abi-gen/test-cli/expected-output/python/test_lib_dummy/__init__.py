@@ -67,7 +67,8 @@ class PublicAddConstantMethod(ContractMethod):
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).call(tx_params.as_dict())
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
@@ -105,7 +106,8 @@ class PublicAddOneMethod(ContractMethod):
 
         """
         (x) = self.validate_and_normalize_inputs(x)
-        return super().invoke_call(func=self.underlying_method(x), tx_params=tx_params)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).call(tx_params.as_dict())
 
     def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.

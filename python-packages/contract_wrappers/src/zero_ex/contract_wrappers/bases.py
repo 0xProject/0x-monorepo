@@ -84,7 +84,7 @@ class ContractMethod:
             raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
 
-    def normalize_tx_params(self, tx_params):
+    def normalize_tx_params(self, tx_params) -> TxParams:
         """Normalize and return the given transaction parameters."""
         if not tx_params:
             tx_params = TxParams()
@@ -94,11 +94,6 @@ class ContractMethod:
             )
         tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
         return tx_params
-
-    def invoke_call(self, func, tx_params):
-        """Execute given contract method as an eth_call."""
-        tx_params = self.normalize_tx_params(tx_params)
-        return func.call(tx_params.as_dict())
 
     def invoke_send_transaction(self, func, tx_params):
         """Invoke the given contract method."""
