@@ -7,7 +7,7 @@ import { Link } from '@0x/react-shared';
 import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_overlay';
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
 
-import { searchIndex } from 'ts/utils/algolia_search';
+import { searchIndices } from 'ts/utils/algolia_search';
 
 interface IHit {
     description: string;
@@ -87,7 +87,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
     };
 
     const renderSectionTitle = (section: any): React.ReactNode => {
-        const { tools, guides } = searchIndex;
+        const { tools, guides } = searchIndices;
 
         const titles: { [key: string]: string } = {
             [tools]: 'Tools',

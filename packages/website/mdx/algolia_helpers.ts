@@ -7,7 +7,7 @@ const filter = require('unist-util-filter');
 const { selectAll } = require('unist-util-select');
 const extractMdxMeta = require('extract-mdx-metadata');
 
-function processContentTree(tree: Node[], url: string, meta: Meta, index: any): void {
+function processContentTree(tree: Node[], url: string, meta: Meta, index: any, settings: Settings): void {
     const filteredTree = filter(tree, () => {
         return (node: Node) => node.type === 'heading' || node.type === 'paragraph';
     });
@@ -18,11 +18,12 @@ function processContentTree(tree: Node[], url: string, meta: Meta, index: any): 
         const formattedTextNodes = formatTextNodes(textNodes);
         const content = getContent(meta, url, formattedTextNodes);
 
+        setIndexSettings(index, settings);
         pushObjectsToAlgolia(index, content);
     }
 }
 
-export function setIndexSettings(index: any, settings: Settings): void {
+function setIndexSettings(index: any, settings: Settings): void {
     index.setSettings(settings, (err: string) => {
         if (err) {
             throw Error(`Error: ${err}`);
@@ -80,7 +81,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     return formattedTextNodes;
 }
 
-async function processMdxAsync(index: any, dirName: string, fileName: string): Promise<void> {
+async function processMdxAsync(index: any, dirName: string, fileName: string, settings: Settings): Promise<void> {
     const filePath = `${dirName}/${fileName}`;
     const { name } = path.parse(filePath); // Name without file extension
     const url = `/docs/${dirName}/${name}`;
@@ -91,14 +92,14 @@ async function processMdxAsync(index: any, dirName: string, fileName: string): P
 
     await remark()
         .use(mdx)
-        .use(() => (tree: Node[]) => processContentTree(tree, url, meta, index))
+        .use(() => (tree: Node[]) => processContentTree(tree, url, meta, index, settings))
         .process(file);
 }
 
-export async function indexFilesAsync(index: any, dirName: string): Promise<void> {
+export async function indexFilesAsync(index: any, dirName: string, settings: Settings): Promise<void> {
     fs.readdir(dirName, async (err: string, items: string[]) => {
         for (const fileName of items) {
-            await processMdxAsync(index, dirName, fileName);
+            await processMdxAsync(index, dirName, fileName, settings);
         }
     });
 }
