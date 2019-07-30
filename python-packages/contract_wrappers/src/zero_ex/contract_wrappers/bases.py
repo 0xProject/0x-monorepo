@@ -42,12 +42,8 @@ class ContractMethod:
         :param contract_address: Where the contract has been deployed to.
         :param validator: Used to validate method inputs.
         """
-        self._provider = provider
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
-        self.contract_address = self.validate_and_checksum_address(
-            contract_address
-        )
         if validator is None:
             validator = Validator(provider, contract_address)
         self.validator = validator
