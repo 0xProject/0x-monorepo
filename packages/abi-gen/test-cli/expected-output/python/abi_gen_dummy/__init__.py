@@ -109,6 +109,11 @@ class SimpleRequireMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
 class AcceptsAnArrayOfBytesMethod(ContractMethod):
     """Various interfaces to the acceptsAnArrayOfBytes method."""
 
@@ -155,6 +160,12 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).transact(tx_params.as_dict())
+
+    def estimate_gas(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
 
 class EcrecoverFnMethod(ContractMethod):
     """Various interfaces to the ecrecoverFn method."""
@@ -208,6 +219,12 @@ class EcrecoverFnMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(_hash, v, r, s).transact(tx_params.as_dict())
 
+    def estimate_gas(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(_hash, v, r, s).estimateGas(tx_params.as_dict())
+
 class AcceptsBytesMethod(ContractMethod):
     """Various interfaces to the acceptsBytes method."""
 
@@ -246,6 +263,12 @@ class AcceptsBytesMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).transact(tx_params.as_dict())
 
+    def estimate_gas(self, a: bytes, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+
 class RevertWithConstantMethod(ContractMethod):
     """Various interfaces to the revertWithConstant method."""
 
@@ -271,6 +294,11 @@ class RevertWithConstantMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class SimpleRevertMethod(ContractMethod):
     """Various interfaces to the simpleRevert method."""
@@ -298,6 +326,11 @@ class SimpleRevertMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
 class NestedStructOutputMethod(ContractMethod):
     """Various interfaces to the nestedStructOutput method."""
 
@@ -324,6 +357,11 @@ class NestedStructOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
 class RequireWithConstantMethod(ContractMethod):
     """Various interfaces to the requireWithConstant method."""
 
@@ -349,6 +387,11 @@ class RequireWithConstantMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class WithAddressInputMethod(ContractMethod):
     """Various interfaces to the withAddressInput method."""
@@ -415,6 +458,12 @@ class WithAddressInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x, a, b, y, c).transact(tx_params.as_dict())
 
+    def estimate_gas(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x, a, b, y, c).estimateGas(tx_params.as_dict())
+
 class StructInputMethod(ContractMethod):
     """Various interfaces to the structInput method."""
 
@@ -452,6 +501,12 @@ class StructInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(s).transact(tx_params.as_dict())
 
+    def estimate_gas(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (s) = self.validate_and_normalize_inputs(s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(s).estimateGas(tx_params.as_dict())
+
 class NonPureMethodMethod(ContractMethod):
     """Various interfaces to the nonPureMethod method."""
 
@@ -476,6 +531,11 @@ class NonPureMethodMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class SimplePureFunctionWithInputMethod(ContractMethod):
     """Various interfaces to the simplePureFunctionWithInput method."""
@@ -516,6 +576,12 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).transact(tx_params.as_dict())
 
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+
 class NonPureMethodThatReturnsNothingMethod(ContractMethod):
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
 
@@ -540,6 +606,11 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class SimplePureFunctionMethod(ContractMethod):
     """Various interfaces to the simplePureFunction method."""
@@ -566,6 +637,11 @@ class SimplePureFunctionMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class NestedStructInputMethod(ContractMethod):
     """Various interfaces to the nestedStructInput method."""
@@ -604,6 +680,12 @@ class NestedStructInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(n).transact(tx_params.as_dict())
 
+    def estimate_gas(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (n) = self.validate_and_normalize_inputs(n)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(n).estimateGas(tx_params.as_dict())
+
 class StructOutputMethod(ContractMethod):
     """Various interfaces to the structOutput method."""
 
@@ -634,6 +716,11 @@ class StructOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
 
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
 class PureFunctionWithConstantMethod(ContractMethod):
     """Various interfaces to the pureFunctionWithConstant method."""
 
@@ -659,6 +746,11 @@ class PureFunctionWithConstantMethod(ContractMethod):
         """
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AbiGenDummy:

@@ -293,6 +293,34 @@ Fill order_1 and order_2 together:
 ...     signatures=[signature_1, signature_2],
 ...     tx_params=TxParams(from_=taker_address))
 HexBytes('0x...')
+
+Estimating gas consumption
+--------------------------
+
+Before executing a transaction, you may want to get an estimate of how much gas
+will be consumed.
+
+>>> exchange.cancel_order.estimate_gas(
+...     order=Order(
+...         makerAddress=maker_address,
+...         takerAddress='0x0000000000000000000000000000000000000000',
+...         exchangeAddress=exchange_address,
+...         senderAddress='0x0000000000000000000000000000000000000000',
+...         feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...         makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         salt=random.randint(1, 100000000000000000),
+...         makerFee=0,
+...         takerFee=0,
+...         makerAssetAmount=1000000000000000000,
+...         takerAssetAmount=500000000000000000000,
+...         expirationTimeSeconds=round(
+...             (datetime.utcnow() + timedelta(days=1)).timestamp()
+...         )
+...     ),
+...     tx_params=TxParams(from_=maker_address),
+... )
+73825
 """
 
 from .tx_params import TxParams

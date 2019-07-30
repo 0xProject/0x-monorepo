@@ -80,6 +80,12 @@ class PublicAddConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).transact(tx_params.as_dict())
 
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
 
@@ -118,6 +124,12 @@ class PublicAddOneMethod(ContractMethod):
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).transact(tx_params.as_dict())
+
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy:
