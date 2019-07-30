@@ -31,6 +31,7 @@ export const signatureUtils = {
      * @param   signature     A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].
      *          E.g [vrs][SignatureType.EIP712]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   signatureValidationOpts Optional additional information to pass to signature validation functions.
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     async isValidSignatureAsync(
@@ -103,6 +104,7 @@ export const signatureUtils = {
      * @param   supportedProvider      Web3 provider to use for all JSON RPC requests
      * @param   data          The hex encoded data signed by the supplied signature
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   exchangeAddress The address of the Exchange contract to validate the signature against.
      * @return  Whether the data was preSigned by the supplied signerAddress
      */
     async isValidPresignedSignatureAsync(
@@ -159,6 +161,7 @@ export const signatureUtils = {
      * @param   data          The hex encoded data signed by the supplied signature.
      * @param   signature     A hex encoded presigned 0x Protocol signature made up of: [SignatureType.Presigned]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
+     * @param   exchangeAddress The address of the Exchange contract to validate the signature against.
      * @return  Whether the data was preSigned by the supplied signerAddress.
      */
     async isValidValidatorSignatureAsync(
