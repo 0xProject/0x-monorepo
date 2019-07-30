@@ -1,4 +1,5 @@
 import { ERC721TokenContract, ERC721TokenEventArgs, ERC721TokenEvents } from '@0x/abi-gen-wrappers';
+import { SubscriptionManager } from '@0x/base-contract';
 import { ERC721Token } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
@@ -20,7 +21,6 @@ import { assert } from '../utils/assert';
 import { constants } from '../utils/constants';
 import { utils } from '../utils/utils';
 
-import { ContractWrapper } from './contract_wrapper';
 import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
 
 /**
@@ -28,26 +28,27 @@ import { ERC721ProxyWrapper } from './erc721_proxy_wrapper';
  * All ERC721 method calls are supported, along with some convenience methods for getting/setting allowances
  * to the 0x ERC721 Proxy smart contract.
  */
-export class ERC721TokenWrapper extends ContractWrapper {
+export class ERC721TokenWrapper {
     public abi: ContractAbi = ERC721Token.compilerOutput.abi;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _subscriptionManager: SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>;
+    private readonly _blockPollingIntervalMs?: number;
     private readonly _tokenContractsByAddress: { [address: string]: ERC721TokenContract };
     private readonly _erc721ProxyWrapper: ERC721ProxyWrapper;
     /**
      * Instantiate ERC721TokenWrapper
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
      * @param erc721ProxyWrapper The ERC721ProxyWrapper instance to use
-     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc721ProxyWrapper: ERC721ProxyWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc721ProxyWrapper: ERC721ProxyWrapper, blockPollingIntervalMs?: number) {
+        this._web3Wrapper = web3Wrapper;
         this._tokenContractsByAddress = {};
         this._erc721ProxyWrapper = erc721ProxyWrapper;
+        this._blockPollingIntervalMs = blockPollingIntervalMs;
+        this._subscriptionManager = new SubscriptionManager<ERC721TokenEventArgs, ERC721TokenEvents>(
+            ERC721TokenContract.ABI(),
+            web3Wrapper,
+        );
     }
     /**
      * Count all NFTs assigned to an owner
@@ -398,13 +399,14 @@ export class ERC721TokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const subscriptionToken = this._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedTokenAddress,
             eventName,
             indexFilterValues,
             ERC721Token.compilerOutput.abi,
             callback,
             isVerbose,
+            this._blockPollingIntervalMs,
         );
         return subscriptionToken;
     }
@@ -414,13 +416,13 @@ export class ERC721TokenWrapper extends ContractWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        super._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     /**
      * Gets historical logs without creating a subscription
@@ -442,7 +444,7 @@ export class ERC721TokenWrapper extends ContractWrapper {
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         const normalizedTokenAddress = tokenAddress.toLowerCase();
-        const logs = await this._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedTokenAddress,
             eventName,
             blockRange,

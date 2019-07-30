@@ -61,17 +61,20 @@ describe('AssetProxyOwner', () => {
             proxyArtifacts.MixinAuthorizable,
             provider,
             txDefaults,
+            artifacts,
         );
         erc721Proxy = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
             proxyArtifacts.MixinAuthorizable,
             provider,
             txDefaults,
+            artifacts,
         );
         const defaultAssetProxyContractAddresses: string[] = [];
         testAssetProxyOwner = await TestAssetProxyOwnerContract.deployFrom0xArtifactAsync(
             artifacts.TestAssetProxyOwner,
             provider,
             txDefaults,
+            artifacts,
             owners,
             defaultAssetProxyContractAddresses,
             REQUIRED_APPROVALS,
@@ -105,6 +108,7 @@ describe('AssetProxyOwner', () => {
                 artifacts.AssetProxyOwner,
                 provider,
                 txDefaults,
+                artifacts,
                 owners,
                 assetProxyContractAddresses,
                 REQUIRED_APPROVALS,
@@ -122,6 +126,7 @@ describe('AssetProxyOwner', () => {
                     artifacts.AssetProxyOwner,
                     provider,
                     txDefaults,
+                    artifacts,
                     owners,
                     assetProxyContractAddresses,
                     REQUIRED_APPROVALS,

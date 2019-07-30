@@ -1,5 +1,27 @@
 [
     {
+        "version": "5.3.0",
+        "changes": [
+            {
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
+                "pr": 1995
+            }
+        ]
+    },
+    {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Add SubscriptionManager",
+                "pr": 1970
+            }
+        ]
+    },
+    {
         "timestamp": 1563957393,
         "version": "5.1.2",
         "changes": [

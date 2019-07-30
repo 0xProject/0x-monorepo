@@ -1,4 +1,3 @@
-import { DocsInfo, DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -7,6 +6,9 @@ import { Dispatcher } from 'ts/redux/dispatcher';
 import { State } from 'ts/redux/reducer';
 import { DocPackages, ScreenWidths } from 'ts/types';
 import { Translate } from 'ts/utils/translate';
+
+import { DocsInfoConfig, SupportedDocJson } from '../types';
+import { DocsInfo } from '../utils/docs_info';
 
 /* tslint:disable:no-var-requires */
 const IntroMarkdown1 = require('md/docs/migrations/1/introduction');

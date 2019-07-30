@@ -77,7 +77,6 @@ TODO.md
 
 packages/website/public/bundle*
 packages/dev-tools-pages/public/bundle*
-packages/react-docs/example/public/bundle*
 
 # server cli
 packages/testnet-faucets/server/

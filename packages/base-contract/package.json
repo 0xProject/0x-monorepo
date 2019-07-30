@@ -32,9 +32,10 @@
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
+        "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "make-promises-safe": "^1.1.0",
-        "mocha": "^4.1.0",
+        "mocha": "^6.2.0",
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
@@ -47,8 +48,12 @@
         "@0x/utils": "^4.4.1",
         "@0x/web3-wrapper": "^6.0.8",
         "ethereum-types": "^2.1.4",
+        "ethereumjs-blockstream": "6.0.0",
+        "ethereumjs-util": "^5.1.1",
         "ethers": "~4.0.4",
-        "lodash": "^4.17.11"
+        "js-sha3": "^0.7.0",
+        "lodash": "^4.17.11",
+        "uuid": "^3.3.2"
     },
     "publishConfig": {
         "access": "public"

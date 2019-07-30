@@ -31,6 +31,7 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
+    ERC1155ProxyContract,
     ERC1155ProxyWrapper,
     ERC20ProxyContract,
     ERC20Wrapper,
@@ -71,7 +72,7 @@ describe('Asset Transfer Proxies', () => {
     let erc721AFromTokenId: BigNumber;
     let erc721BFromTokenId: BigNumber;
 
-    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
     let erc1155ProxyWrapper: ERC1155ProxyWrapper;
     let erc1155Contract: ERC1155MintableContract;
     let erc1155Contract2: ERC1155MintableContract;
@@ -100,6 +101,7 @@ describe('Asset Transfer Proxies', () => {
             artifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            artifacts,
         );
 
         // Configure ERC20Proxy
@@ -172,6 +174,7 @@ describe('Asset Transfer Proxies', () => {
             erc20Artifacts.DummyNoReturnERC20Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -181,6 +184,7 @@ describe('Asset Transfer Proxies', () => {
             erc20Artifacts.DummyMultipleReturnERC20Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -223,6 +227,7 @@ describe('Asset Transfer Proxies', () => {
             erc721Artifacts.DummyERC721Receiver,
             provider,
             txDefaults,
+            artifacts,
         );
 
         await erc721Wrapper.setBalancesAndAllowancesAsync();

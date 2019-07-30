@@ -32,6 +32,7 @@ const DECIMALS_DEFAULT = 18;
 const MAX_WETH_FILL_PERCENTAGE = 95;
 
 describe(ContractName.Forwarder, () => {
+    const dependencyArtifacts = { ...artifacts, ...erc20Artifacts, ...exchangeArtifacts };
     let makerAddress: string;
     let owner: string;
     let takerAddress: string;
@@ -88,7 +89,12 @@ describe(ContractName.Forwarder, () => {
         const erc721Balances = await erc721Wrapper.getBalancesAsync();
         erc721MakerAssetIds = erc721Balances[makerAddress][erc721Token.address];
 
-        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(erc20Artifacts.WETH9, provider, txDefaults);
+        wethContract = await WETH9Contract.deployFrom0xArtifactAsync(
+            erc20Artifacts.WETH9,
+            provider,
+            txDefaults,
+            dependencyArtifacts,
+        );
         weth = new DummyERC20TokenContract(wethContract.address, provider);
         erc20Wrapper.addDummyTokenContract(weth);
 
@@ -98,6 +104,7 @@ describe(ContractName.Forwarder, () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
+            dependencyArtifacts,
             zrxAssetData,
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
@@ -131,6 +138,7 @@ describe(ContractName.Forwarder, () => {
             artifacts.Forwarder,
             provider,
             txDefaults,
+            dependencyArtifacts,
             exchangeInstance.address,
             zrxAssetData,
             wethAssetData,
@@ -169,6 +177,7 @@ describe(ContractName.Forwarder, () => {
                 exchangeArtifacts.Exchange,
                 provider,
                 txDefaults,
+                dependencyArtifacts,
                 zrxAssetData,
             );
             return expectContractCreationFailedAsync(
@@ -176,6 +185,7 @@ describe(ContractName.Forwarder, () => {
                     artifacts.Forwarder,
                     provider,
                     txDefaults,
+                    dependencyArtifacts,
                     exchangeInstance.address,
                     zrxAssetData,
                     wethAssetData,

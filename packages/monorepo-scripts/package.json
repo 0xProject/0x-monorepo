@@ -63,7 +63,7 @@
         "opn": "^5.3.0",
         "promisify-child-process": "^1.0.5",
         "prompt": "^1.0.0",
-        "publish-release": "0xproject/publish-release",
+        "publish-release": "https://github.com/0xProject/publish-release.git#3f8be1105a356527f4b362ff456d94bf9a82f2ed",
         "rimraf": "^2.6.2",
         "semver": "5.5.0",
         "semver-diff": "^2.1.0",

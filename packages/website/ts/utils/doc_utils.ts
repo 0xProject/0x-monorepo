@@ -1,4 +1,4 @@
-import { DocAgnosticFormat, GeneratedDocJson } from '@0x/react-docs';
+import { DocAgnosticFormat, GeneratedDocJson } from '@0x/types';
 import { fetchAsync, logUtils } from '@0x/utils';
 import * as _ from 'lodash';
 import { S3FileObject, VersionToFilePath } from 'ts/types';

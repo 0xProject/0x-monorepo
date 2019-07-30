@@ -92,6 +92,7 @@ describe('LibAssetData', () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             constants.NULL_BYTES,
         );
 
@@ -99,26 +100,31 @@ describe('LibAssetData', () => {
             proxyArtifacts.ERC20Proxy,
             provider,
             txDefaults,
+            artifacts,
         );
         erc721Proxy = await ERC721ProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.ERC721Proxy,
             provider,
             txDefaults,
+            artifacts,
         );
         erc1155Proxy = await ERC1155ProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.ERC1155Proxy,
             provider,
             txDefaults,
+            artifacts,
         );
         multiAssetProxy = await MultiAssetProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            artifacts,
         );
         staticCallProxy = await StaticCallProxyContract.deployFrom0xArtifactAsync(
             proxyArtifacts.StaticCallProxy,
             provider,
             txDefaults,
+            artifacts,
         );
 
         await exchange.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address);
@@ -131,6 +137,7 @@ describe('LibAssetData', () => {
             artifacts.LibAssetData,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
         );
 
@@ -138,6 +145,7 @@ describe('LibAssetData', () => {
             proxyArtifacts.TestStaticCallTarget,
             provider,
             txDefaults,
+            artifacts,
         );
 
         [tokenOwnerAddress] = await web3Wrapper.getAvailableAddressesAsync();
@@ -146,6 +154,7 @@ describe('LibAssetData', () => {
             erc20Artifacts.DummyERC20Token,
             provider,
             txDefaults,
+            artifacts,
             'Dummy',
             'DUM',
             new BigNumber(1),
@@ -156,6 +165,7 @@ describe('LibAssetData', () => {
             erc721Artifacts.DummyERC721Token,
             provider,
             txDefaults,
+            artifacts,
             'Dummy',
             'DUM',
         );
@@ -172,6 +182,7 @@ describe('LibAssetData', () => {
             erc1155Artifacts.ERC1155Mintable,
             provider,
             txDefaults,
+            artifacts,
         );
 
         const logDecoder = new LogDecoder(web3Wrapper, erc1155Artifacts);

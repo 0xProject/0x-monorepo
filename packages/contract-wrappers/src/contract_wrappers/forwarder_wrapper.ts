@@ -17,17 +17,16 @@ import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 import { decorators } from '../utils/decorators';
 import { utils } from '../utils/utils';
 
-import { ContractWrapper } from './contract_wrapper';
-
 /**
  * This class includes the functionality related to interacting with the Forwarder contract.
  */
-export class ForwarderWrapper extends ContractWrapper {
+export class ForwarderWrapper {
     public abi: ContractAbi = Forwarder.compilerOutput.abi;
     public address: string;
     public zrxTokenAddress: string;
     public etherTokenAddress: string;
-    private _forwarderContractIfExists?: ForwarderContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _forwarderContract: ForwarderContract;
 
     /**
      * Instantiate ForwarderWrapper
@@ -49,12 +48,17 @@ export class ForwarderWrapper extends ContractWrapper {
         zrxTokenAddress?: string,
         etherTokenAddress?: string,
     ) {
-        super(web3Wrapper, networkId);
+        this._web3Wrapper = web3Wrapper;
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).exchange : address;
         this.zrxTokenAddress =
             zrxTokenAddress === undefined ? _getDefaultContractAddresses(networkId).zrxToken : zrxTokenAddress;
         this.etherTokenAddress =
             etherTokenAddress === undefined ? _getDefaultContractAddresses(networkId).etherToken : etherTokenAddress;
+        this._forwarderContract = new ForwarderContract(
+            this.address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
     }
     /**
      * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
@@ -106,11 +110,9 @@ export class ForwarderWrapper extends ContractWrapper {
         // compile signatures
         const signatures = _.map(optimizedMarketOrders, order => order.signature);
         const feeSignatures = _.map(optimizedFeeOrders, order => order.signature);
-        // get contract
-        const forwarderContractInstance = await this._getForwarderContractAsync();
         // validate transaction
         if (orderTransactionOpts.shouldValidate) {
-            await forwarderContractInstance.marketSellOrdersWithEth.callAsync(
+            await this._forwarderContract.marketSellOrdersWithEth.callAsync(
                 optimizedMarketOrders,
                 signatures,
                 optimizedFeeOrders,
@@ -127,7 +129,7 @@ export class ForwarderWrapper extends ContractWrapper {
             );
         }
         // send transaction
-        const txHash = await forwarderContractInstance.marketSellOrdersWithEth.sendTransactionAsync(
+        const txHash = await this._forwarderContract.marketSellOrdersWithEth.sendTransactionAsync(
             optimizedMarketOrders,
             signatures,
             optimizedFeeOrders,
@@ -196,11 +198,9 @@ export class ForwarderWrapper extends ContractWrapper {
         // compile signatures
         const signatures = _.map(optimizedMarketOrders, order => order.signature);
         const feeSignatures = _.map(optimizedFeeOrders, order => order.signature);
-        // get contract
-        const forwarderContractInstance = await this._getForwarderContractAsync();
         // validate transaction
         if (orderTransactionOpts.shouldValidate) {
-            await forwarderContractInstance.marketBuyOrdersWithEth.callAsync(
+            await this._forwarderContract.marketBuyOrdersWithEth.callAsync(
                 optimizedMarketOrders,
                 makerAssetFillAmount,
                 signatures,
@@ -218,7 +218,7 @@ export class ForwarderWrapper extends ContractWrapper {
             );
         }
         // send transaction
-        const txHash = await forwarderContractInstance.marketBuyOrdersWithEth.sendTransactionAsync(
+        const txHash = await this._forwarderContract.marketBuyOrdersWithEth.sendTransactionAsync(
             optimizedMarketOrders,
             makerAssetFillAmount,
             signatures,
@@ -235,17 +235,5 @@ export class ForwarderWrapper extends ContractWrapper {
             },
         );
         return txHash;
-    }
-    private async _getForwarderContractAsync(): Promise<ForwarderContract> {
-        if (this._forwarderContractIfExists !== undefined) {
-            return this._forwarderContractIfExists;
-        }
-        const contractInstance = new ForwarderContract(
-            this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
-        );
-        this._forwarderContractIfExists = contractInstance;
-        return this._forwarderContractIfExists;
     }
 }

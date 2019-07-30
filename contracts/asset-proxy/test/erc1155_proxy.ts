@@ -23,7 +23,7 @@ import { LogWithDecodedArgs } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { ERC1155ProxyWrapper, ERC721ProxyContract } from '../src';
+import { artifacts, ERC1155ProxyContract, ERC1155ProxyWrapper } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -51,7 +51,7 @@ describe('ERC1155Proxy', () => {
     let receiver: string;
     let receiverContract: string;
     // contracts & wrappers
-    let erc1155Proxy: ERC721ProxyContract;
+    let erc1155Proxy: ERC1155ProxyContract;
     let erc1155Receiver: DummyERC1155ReceiverContract;
     let erc1155ProxyWrapper: ERC1155ProxyWrapper;
     let erc1155Contract: ERC1155MintableContract;
@@ -89,6 +89,7 @@ describe('ERC1155Proxy', () => {
             erc1155Artifacts.DummyERC1155Receiver,
             provider,
             txDefaults,
+            artifacts,
         );
         receiverContract = erc1155Receiver.address;
         await erc1155ProxyWrapper.setBalancesAndAllowancesAsync();

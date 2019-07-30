@@ -25,17 +25,17 @@ import {
 import { decorators } from '../utils/decorators';
 import { TransactionEncoder } from '../utils/transaction_encoder';
 
-import { ContractWrapper } from './contract_wrapper';
 /**
  * This class includes all the functionality related to filling or cancelling orders through
  * the 0x V2 Coordinator extension contract.
  */
-export class CoordinatorWrapper extends ContractWrapper {
+export class CoordinatorWrapper {
     public abi: ContractAbi = Coordinator.compilerOutput.abi;
     public networkId: number;
     public address: string;
     public exchangeAddress: string;
     public registryAddress: string;
+    private readonly _web3Wrapper: Web3Wrapper;
     private readonly _contractInstance: CoordinatorContract;
     private readonly _registryInstance: CoordinatorRegistryContract;
     private readonly _exchangeInstance: ExchangeContract;
@@ -60,13 +60,12 @@ export class CoordinatorWrapper extends ContractWrapper {
         exchangeAddress?: string,
         registryAddress?: string,
     ) {
-        super(web3Wrapper, networkId);
         this.networkId = networkId;
-
         const contractAddresses = getContractAddressesForNetworkOrThrow(networkId);
         this.address = address === undefined ? contractAddresses.coordinator : address;
         this.exchangeAddress = exchangeAddress === undefined ? contractAddresses.coordinator : exchangeAddress;
         this.registryAddress = registryAddress === undefined ? contractAddresses.coordinatorRegistry : registryAddress;
+        this._web3Wrapper = web3Wrapper;
 
         this._contractInstance = new CoordinatorContract(
             this.address,

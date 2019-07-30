@@ -11,15 +11,14 @@ import { BalanceAndAllowance, OrderAndTraderInfo, TraderInfo } from '../types';
 import { assert } from '../utils/assert';
 import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
-import { ContractWrapper } from './contract_wrapper';
-
 /**
  * This class includes the functionality related to interacting with the OrderValidator contract.
  */
-export class OrderValidatorWrapper extends ContractWrapper {
+export class OrderValidatorWrapper {
     public abi: ContractAbi = OrderValidator.compilerOutput.abi;
     public address: string;
-    private _orderValidatorContractIfExists?: OrderValidatorContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _orderValidatorContract: OrderValidatorContract;
     /**
      * Instantiate OrderValidatorWrapper
      * @param web3Wrapper Web3Wrapper instance to use.
@@ -28,8 +27,13 @@ export class OrderValidatorWrapper extends ContractWrapper {
      * will default to the known address corresponding to the networkId.
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
-        super(web3Wrapper, networkId);
+        this._web3Wrapper = web3Wrapper;
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).orderValidator : address;
+        this._orderValidatorContract = new OrderValidatorContract(
+            this.address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
     }
     /**
      * Get an object conforming to OrderAndTraderInfo containing on-chain information of the provided order and address
@@ -40,8 +44,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
     public async getOrderAndTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<OrderAndTraderInfo> {
         assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
         assert.isETHAddressHex('takerAddress', takerAddress);
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const orderAndTraderInfo = await OrderValidatorContractInstance.getOrderAndTraderInfo.callAsync(
+        const orderAndTraderInfo = await this._orderValidatorContract.getOrderAndTraderInfo.callAsync(
             order,
             takerAddress,
         );
@@ -66,8 +69,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
             assert.isETHAddressHex(`takerAddresses[${index}]`, takerAddress),
         );
         assert.assert(orders.length === takerAddresses.length, 'Expected orders.length to equal takerAddresses.length');
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const ordersAndTradersInfo = await OrderValidatorContractInstance.getOrdersAndTradersInfo.callAsync(
+        const ordersAndTradersInfo = await this._orderValidatorContract.getOrdersAndTradersInfo.callAsync(
             orders,
             takerAddresses,
         );
@@ -91,8 +93,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
     public async getTraderInfoAsync(order: SignedOrder, takerAddress: string): Promise<TraderInfo> {
         assert.doesConformToSchema('order', order, schemas.signedOrderSchema);
         assert.isETHAddressHex('takerAddress', takerAddress);
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const result = await OrderValidatorContractInstance.getTraderInfo.callAsync(order, takerAddress);
+        const result = await this._orderValidatorContract.getTraderInfo.callAsync(order, takerAddress);
         return result;
     }
     /**
@@ -107,8 +108,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
             assert.isETHAddressHex(`takerAddresses[${index}]`, takerAddress),
         );
         assert.assert(orders.length === takerAddresses.length, 'Expected orders.length to equal takerAddresses.length');
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const result = await OrderValidatorContractInstance.getTradersInfo.callAsync(orders, takerAddresses);
+        const result = await this._orderValidatorContract.getTradersInfo.callAsync(orders, takerAddresses);
         return result;
     }
     /**
@@ -120,8 +120,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
     public async getBalanceAndAllowanceAsync(address: string, assetData: string): Promise<BalanceAndAllowance> {
         assert.isETHAddressHex('address', address);
         assert.isHexString('assetData', assetData);
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const balanceAndAllowance = await OrderValidatorContractInstance.getBalanceAndAllowance.callAsync(
+        const balanceAndAllowance = await this._orderValidatorContract.getBalanceAndAllowance.callAsync(
             address,
             assetData,
         );
@@ -140,8 +139,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
     public async getBalancesAndAllowancesAsync(address: string, assetDatas: string[]): Promise<BalanceAndAllowance[]> {
         assert.isETHAddressHex('address', address);
         _.forEach(assetDatas, (assetData, index) => assert.isHexString(`assetDatas[${index}]`, assetData));
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const balancesAndAllowances = await OrderValidatorContractInstance.getBalancesAndAllowances.callAsync(
+        const balancesAndAllowances = await this._orderValidatorContract.getBalancesAndAllowances.callAsync(
             address,
             assetDatas,
         );
@@ -165,20 +163,7 @@ export class OrderValidatorWrapper extends ContractWrapper {
     public async getERC721TokenOwnerAsync(tokenAddress: string, tokenId: BigNumber): Promise<string | undefined> {
         assert.isETHAddressHex('tokenAddress', tokenAddress);
         assert.isBigNumber('tokenId', tokenId);
-        const OrderValidatorContractInstance = await this._getOrderValidatorContractAsync();
-        const result = await OrderValidatorContractInstance.getERC721TokenOwner.callAsync(tokenAddress, tokenId);
+        const result = await this._orderValidatorContract.getERC721TokenOwner.callAsync(tokenAddress, tokenId);
         return result;
-    }
-    private async _getOrderValidatorContractAsync(): Promise<OrderValidatorContract> {
-        if (this._orderValidatorContractIfExists !== undefined) {
-            return this._orderValidatorContractIfExists;
-        }
-        const contractInstance = new OrderValidatorContract(
-            this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
-        );
-        this._orderValidatorContractIfExists = contractInstance;
-        return this._orderValidatorContractIfExists;
     }
 }

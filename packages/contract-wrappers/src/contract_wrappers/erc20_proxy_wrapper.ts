@@ -8,15 +8,14 @@ import * as _ from 'lodash';
 import { assert } from '../utils/assert';
 import { _getDefaultContractAddresses } from '../utils/contract_addresses';
 
-import { ContractWrapper } from './contract_wrapper';
-
 /**
  * This class includes the functionality related to interacting with the ERC20Proxy contract.
  */
-export class ERC20ProxyWrapper extends ContractWrapper {
+export class ERC20ProxyWrapper {
     public abi: ContractAbi = ERC20Proxy.compilerOutput.abi;
     public address: string;
-    private _erc20ProxyContractIfExists?: ERC20ProxyContract;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _erc20ProxyContract: ERC20ProxyContract;
     /**
      * Instantiate ERC20ProxyWrapper
      * @param web3Wrapper Web3Wrapper instance to use
@@ -25,19 +24,23 @@ export class ERC20ProxyWrapper extends ContractWrapper {
      * default to the known address corresponding to the networkId.
      */
     constructor(web3Wrapper: Web3Wrapper, networkId: number, address?: string) {
-        super(web3Wrapper, networkId);
+        this._web3Wrapper = web3Wrapper;
         this.address = address === undefined ? _getDefaultContractAddresses(networkId).erc20Proxy : address;
+        this._erc20ProxyContract = new ERC20ProxyContract(
+            this.address,
+            this._web3Wrapper.getProvider(),
+            this._web3Wrapper.getContractDefaults(),
+        );
     }
     /**
      * Get the 4 bytes ID of this asset proxy
      * @return  Proxy id
      */
     public async getProxyIdAsync(): Promise<AssetProxyId> {
-        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
         // Note(albrow): Below is a TSLint false positive. Code won't compile if
         // you remove the type assertion.
         /* tslint:disable-next-line:no-unnecessary-type-assertion */
-        const proxyId = (await ERC20ProxyContractInstance.getProxyId.callAsync()) as AssetProxyId;
+        const proxyId = (await this._erc20ProxyContract.getProxyId.callAsync()) as AssetProxyId;
         return proxyId;
     }
     /**
@@ -48,8 +51,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
     public async isAuthorizedAsync(exchangeContractAddress: string): Promise<boolean> {
         assert.isETHAddressHex('exchangeContractAddress', exchangeContractAddress);
         const normalizedExchangeContractAddress = exchangeContractAddress.toLowerCase();
-        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
-        const isAuthorized = await ERC20ProxyContractInstance.authorized.callAsync(normalizedExchangeContractAddress);
+        const isAuthorized = await this._erc20ProxyContract.authorized.callAsync(normalizedExchangeContractAddress);
         return isAuthorized;
     }
     /**
@@ -57,20 +59,7 @@ export class ERC20ProxyWrapper extends ContractWrapper {
      * @return  The list of authorized addresses.
      */
     public async getAuthorizedAddressesAsync(): Promise<string[]> {
-        const ERC20ProxyContractInstance = this._getERC20ProxyContract();
-        const authorizedAddresses = await ERC20ProxyContractInstance.getAuthorizedAddresses.callAsync();
+        const authorizedAddresses = await this._erc20ProxyContract.getAuthorizedAddresses.callAsync();
         return authorizedAddresses;
-    }
-    private _getERC20ProxyContract(): ERC20ProxyContract {
-        if (this._erc20ProxyContractIfExists !== undefined) {
-            return this._erc20ProxyContractIfExists;
-        }
-        const contractInstance = new ERC20ProxyContract(
-            this.address,
-            this._web3Wrapper.getProvider(),
-            this._web3Wrapper.getContractDefaults(),
-        );
-        this._erc20ProxyContractIfExists = contractInstance;
-        return this._erc20ProxyContractIfExists;
     }
 }

@@ -7,8 +7,9 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import * as ChaiBigNumber from 'chai-bignumber';
 import * as dirtyChai from 'dirty-chai';
+import * as Sinon from 'sinon';
 
-import { AbiGenDummyContract, artifacts, TestLibDummyContract } from '../src';
+import { AbiGenDummyContract, AbiGenDummyEvents, artifacts, TestLibDummyContract } from '../src';
 
 const txDefaults = {
     from: devConstants.TESTRPC_FIRST_ADDRESS,
@@ -29,7 +30,12 @@ describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
     before(async () => {
         providerUtils.startProviderEngine(provider);
-        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
+        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(
+            artifacts.AbiGenDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         await blockchainLifecycle.startAsync();
     });
     after(async () => {
@@ -92,6 +98,36 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
+    describe('event subscription', () => {
+        const indexFilterValues = {};
+        const emptyCallback = () => {}; // tslint:disable-line:no-empty
+        let stubs: Sinon.SinonStub[] = [];
+
+        afterEach(() => {
+            stubs.forEach(s => s.restore());
+            stubs = [];
+        });
+        it('should return a subscription token', done => {
+            const subscriptionToken = abiGenDummy.subscribe(
+                AbiGenDummyEvents.Withdrawal,
+                indexFilterValues,
+                emptyCallback,
+            );
+            expect(subscriptionToken).to.be.a('string');
+            done();
+        });
+        it('should allow unsubscribeAll to be called successfully after an error', done => {
+            abiGenDummy.subscribe(AbiGenDummyEvents.Withdrawal, indexFilterValues, emptyCallback);
+            stubs.push(
+                Sinon.stub((abiGenDummy as any)._web3Wrapper, 'getBlockIfExistsAsync').throws(
+                    new Error('JSON RPC error'),
+                ),
+            );
+            abiGenDummy.unsubscribeAll();
+            done();
+        });
+    });
+
     describe('withAddressInput', () => {
         it('should normalize address inputs to lowercase', async () => {
             const xAddress = devConstants.TESTRPC_FIRST_ADDRESS.toUpperCase();
@@ -115,7 +151,12 @@ describe('Lib dummy contract', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(artifacts.TestLibDummy, provider, txDefaults);
+        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

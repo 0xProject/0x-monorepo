@@ -1,5 +1,27 @@
 [
     {
+        "version": "10.1.0",
+        "changes": [
+            {
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
+                "pr": 1995
+            }
+        ]
+    },
+    {
+        "version": "10.0.0",
+        "changes": [
+            {
+                "note": "Constructors for `ERC20TokenWrapper`, `ERC721TokenWrapper`, and `EtherTokenWrapper` no longer accept networkId",
+                "pr": 1970
+            }
+        ]
+    },
+    {
         "version": "9.1.8",
         "changes": [
             {

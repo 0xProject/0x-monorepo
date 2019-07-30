@@ -1,4 +1,5 @@
 import { WETH9Contract, WETH9EventArgs, WETH9Events } from '@0x/abi-gen-wrappers';
+import { SubscriptionManager } from '@0x/base-contract';
 import { WETH9 } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
 import { BigNumber } from '@0x/utils';
@@ -10,15 +11,17 @@ import { BlockRange, ContractWrappersError, EventCallback, IndexedFilterValues, 
 import { assert } from '../utils/assert';
 import { utils } from '../utils/utils';
 
-import { ContractWrapper } from './contract_wrapper';
 import { ERC20TokenWrapper } from './erc20_token_wrapper';
 
 /**
  * This class includes all the functionality related to interacting with a wrapped Ether ERC20 token contract.
  * The caller can convert ETH into the equivalent number of wrapped ETH ERC20 tokens and back.
  */
-export class EtherTokenWrapper extends ContractWrapper {
+export class EtherTokenWrapper {
     public abi: ContractAbi = WETH9.compilerOutput.abi;
+    private readonly _web3Wrapper: Web3Wrapper;
+    private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
+    private readonly _blockPollingIntervalMs?: number;
     private readonly _etherTokenContractsByAddress: {
         [address: string]: WETH9Contract;
     } = {};
@@ -26,18 +29,16 @@ export class EtherTokenWrapper extends ContractWrapper {
     /**
      * Instantiate EtherTokenWrapper.
      * @param web3Wrapper Web3Wrapper instance to use
-     * @param networkId Desired networkId
      * @param erc20TokenWrapper The ERC20TokenWrapper instance to use
-     * @param blockPollingIntervalMs The block polling interval to use for active subscriptions
      */
-    constructor(
-        web3Wrapper: Web3Wrapper,
-        networkId: number,
-        erc20TokenWrapper: ERC20TokenWrapper,
-        blockPollingIntervalMs?: number,
-    ) {
-        super(web3Wrapper, networkId, blockPollingIntervalMs);
+    constructor(web3Wrapper: Web3Wrapper, erc20TokenWrapper: ERC20TokenWrapper, blockPollingIntervalMs?: number) {
+        this._web3Wrapper = web3Wrapper;
         this._erc20TokenWrapper = erc20TokenWrapper;
+        this._blockPollingIntervalMs = blockPollingIntervalMs;
+        this._subscriptionManager = new SubscriptionManager<WETH9EventArgs, WETH9Events>(
+            WETH9Contract.ABI(),
+            web3Wrapper,
+        );
     }
     /**
      * Deposit ETH into the Wrapped ETH smart contract and issues the equivalent number of wrapped ETH tokens
@@ -138,7 +139,7 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('blockRange', blockRange, schemas.blockRangeSchema);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
-        const logs = await this._getLogsAsync<ArgsType>(
+        const logs = await this._subscriptionManager.getLogsAsync<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             blockRange,
@@ -169,13 +170,14 @@ export class EtherTokenWrapper extends ContractWrapper {
         assert.doesBelongToStringEnum('eventName', eventName, WETH9Events);
         assert.doesConformToSchema('indexFilterValues', indexFilterValues, schemas.indexFilterValuesSchema);
         assert.isFunction('callback', callback);
-        const subscriptionToken = this._subscribe<ArgsType>(
+        const subscriptionToken = this._subscriptionManager.subscribe<ArgsType>(
             normalizedEtherTokenAddress,
             eventName,
             indexFilterValues,
             WETH9.compilerOutput.abi,
             callback,
             isVerbose,
+            this._blockPollingIntervalMs,
         );
         return subscriptionToken;
     }
@@ -185,13 +187,13 @@ export class EtherTokenWrapper extends ContractWrapper {
      */
     public unsubscribe(subscriptionToken: string): void {
         assert.isValidSubscriptionToken('subscriptionToken', subscriptionToken);
-        this._unsubscribe(subscriptionToken);
+        this._subscriptionManager.unsubscribe(subscriptionToken);
     }
     /**
      * Cancels all existing subscriptions
      */
     public unsubscribeAll(): void {
-        super._unsubscribeAll();
+        this._subscriptionManager.unsubscribeAll();
     }
     private async _getEtherTokenContractAsync(etherTokenAddress: string): Promise<WETH9Contract> {
         let etherTokenContract = this._etherTokenContractsByAddress[etherTokenAddress];

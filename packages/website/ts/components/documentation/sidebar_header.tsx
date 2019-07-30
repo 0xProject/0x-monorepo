@@ -1,10 +1,10 @@
-import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { VersionDropDown } from 'ts/components/documentation/version_drop_down';
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';
 import { ScreenWidths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 export interface SidebarHeaderProps {
     screenWidth: ScreenWidths;

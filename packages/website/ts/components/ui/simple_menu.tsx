@@ -1,7 +1,7 @@
-import { Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
+import { Link } from 'ts/components/documentation/shared/link';
 
 import { Container } from 'ts/components/ui/container';
 import { Text } from 'ts/components/ui/text';

@@ -1,5 +1,13 @@
 [
     {
+        "version": "5.0.0",
+        "changes": [
+            {
+                "note": "Remove eth-lightwallet subprovider"
+            }
+        ]
+    },
+    {
         "version": "4.1.2",
         "changes": [
             {

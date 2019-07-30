@@ -6,12 +6,9 @@ import { Provider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { constants } from '../constants';
-import { ExchangeSwapQuoteConsumer } from '../quote_consumers/exchange_swap_quote_consumer';
-import { ForwarderSwapQuoteConsumer } from '../quote_consumers/forwarder_swap_quote_consumer';
 import {
-    SmartContractParams,
+    ConsumerType,
     SwapQuote,
-    SwapQuoteConsumerBase,
     SwapQuoteConsumerError,
     SwapQuoteExecutionOpts,
     SwapQuoteGetOutputOpts,
@@ -83,14 +80,12 @@ export const swapQuoteConsumerUtils = {
             return optimizedOrder;
         });
     },
-    async getConsumerForSwapQuoteAsync(
+    async getConsumerTypeForSwapQuoteAsync(
         quote: SwapQuote,
         contractWrappers: ContractWrappers,
         provider: Provider,
-        exchangeConsumer: ExchangeSwapQuoteConsumer,
-        forwarderConsumer: ForwarderSwapQuoteConsumer,
         opts: Partial<SwapQuoteGetOutputOpts>,
-    ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
+    ): Promise<ConsumerType> {
         const wethAssetData = assetDataUtils.getEtherTokenAssetData(contractWrappers);
         if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
@@ -108,14 +103,14 @@ export const swapQuoteConsumerUtils = {
             );
             if (isEnoughEthAndWethBalance[1]) {
                 // should be more gas efficient to use exchange consumer, so if possible use it.
-                return exchangeConsumer;
+                return ConsumerType.Exchange;
             } else if (isEnoughEthAndWethBalance[0] && !isEnoughEthAndWethBalance[1]) {
-                return forwarderConsumer;
+                return ConsumerType.Forwarder;
             }
             // Note: defaulting to forwarderConsumer if takerAddress is null or not enough balance of either wEth or Eth
-            return forwarderConsumer;
+            return ConsumerType.Forwarder;
         } else {
-            return exchangeConsumer;
+            return ConsumerType.Exchange;
         }
     },
 };

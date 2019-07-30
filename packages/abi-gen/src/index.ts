@@ -107,49 +107,43 @@ function registerTypeScriptHelpers(): void {
 }
 
 function registerPythonHelpers(): void {
-    Handlebars.registerHelper('equal', (lhs, rhs, options) => {
+    Handlebars.registerHelper('equal', (lhs: any, rhs: any) => {
         return lhs === rhs;
     });
-    Handlebars.registerHelper('safeString', (str, options) => new Handlebars.SafeString(str));
+    Handlebars.registerHelper('safeString', (str: string) => new Handlebars.SafeString(str));
     Handlebars.registerHelper('parameterType', utils.solTypeToPyType.bind(utils));
     Handlebars.registerHelper('returnType', utils.solTypeToPyType.bind(utils));
     Handlebars.registerHelper('toPythonIdentifier', utils.toPythonIdentifier.bind(utils));
-    Handlebars.registerHelper(
-        'sanitizeDevdocDetails',
-        (methodName: string, devdocDetails: string, indent: number, options) => {
-            // wrap to 80 columns, assuming given indent, so that generated
-            // docstrings can pass pycodestyle checks.
-            if (devdocDetails === undefined || devdocDetails.length === 0) {
-                return '';
-            }
-            const columnsPerRow = 80;
-            return new Handlebars.SafeString(
-                `\n${cliFormat.wrap(devdocDetails || '', {
-                    paddingLeft: ' '.repeat(indent),
-                    width: columnsPerRow,
-                    ansi: false,
-                })}\n`,
-            );
-        },
-    );
-    Handlebars.registerHelper(
-        'makeParameterDocstringRole',
-        (name: string, description: string, indent: number, options) => {
-            let docstring = `:param ${name}:`;
-            if (description && description.length > 0) {
-                docstring = `${docstring} ${description}`;
-            }
-            return new Handlebars.SafeString(utils.wrapPythonDocstringRole(docstring, indent));
-        },
-    );
+    Handlebars.registerHelper('sanitizeDevdocDetails', (_methodName: string, devdocDetails: string, indent: number) => {
+        // wrap to 80 columns, assuming given indent, so that generated
+        // docstrings can pass pycodestyle checks.
+        if (devdocDetails === undefined || devdocDetails.length === 0) {
+            return '';
+        }
+        const columnsPerRow = 80;
+        return new Handlebars.SafeString(
+            `\n${cliFormat.wrap(devdocDetails || '', {
+                paddingLeft: ' '.repeat(indent),
+                width: columnsPerRow,
+                ansi: false,
+            })}\n`,
+        );
+    });
+    Handlebars.registerHelper('makeParameterDocstringRole', (name: string, description: string, indent: number) => {
+        let docstring = `:param ${name}:`;
+        if (description && description.length > 0) {
+            docstring = `${docstring} ${description}`;
+        }
+        return new Handlebars.SafeString(utils.wrapPythonDocstringRole(docstring, indent));
+    });
     Handlebars.registerHelper(
         'makeReturnDocstringRole',
-        (description: string, indent: number, options) =>
+        (description: string, indent: number) =>
             new Handlebars.SafeString(utils.wrapPythonDocstringRole(`:returns: ${description}`, indent)),
     );
     Handlebars.registerHelper(
         'makeEventParameterDocstringRole',
-        (eventName: string, indent: number, options) =>
+        (eventName: string, indent: number) =>
             new Handlebars.SafeString(
                 utils.wrapPythonDocstringRole(
                     `:param tx_hash: hash of transaction emitting ${eventName} event`,
@@ -157,7 +151,7 @@ function registerPythonHelpers(): void {
                 ),
             ),
     );
-    Handlebars.registerHelper('tupleDefinitions', (abisJSON: string, options) => {
+    Handlebars.registerHelper('tupleDefinitions', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
         // build an array of objects, each of which has one key, the Python
         // name of a tuple, with a string value holding the Python
@@ -204,7 +198,7 @@ function registerPythonHelpers(): void {
         }
         return new Handlebars.SafeString(tupleDeclarations.join('\n\n'));
     });
-    Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string, options) => {
+    Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
         // see if any ABIs accept params of type bytes, and if so then emit
         // explanatory documentation string.
