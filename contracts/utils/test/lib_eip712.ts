@@ -81,11 +81,6 @@ describe('LibEIP712', () => {
 
     describe('_hashEIP712Message', () => {
         it('should correctly hash empty input', async () => {
-            /*
-            const expectedHash = hashEIP712Message(constants.NULL_BYTES32, constants.NULL_BYTES32);
-            const actualHash = await lib.externalHashEIP712Message.callAsync(constants.NULL_BYTES32, constants.NULL_BYTES32);
-            expect(actualHash).to.be.eq(expectedHash);
-             */
             await testHashEIP712MessageAsync(lib, constants.NULL_BYTES32, constants.NULL_BYTES32);
         });
     });

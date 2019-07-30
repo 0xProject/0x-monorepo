@@ -26,29 +26,42 @@ contract TestReentrancyGuard is
 {
     uint256 internal counter = 2;
 
+    /// @dev Exposes the nonReentrant modifier publicly.
+    /// @param shouldBeAttacked True if the contract should be attacked.
+    /// @return True if successful.
     function guarded(bool shouldBeAttacked)
         external
         nonReentrant
+        returns (bool)
     {
         if (shouldBeAttacked) {
-            this.exploitive();
+            return this.exploitive();
         } else {
-            this.nonExploitive();
+            return this.nonExploitive();
         }
     }
 
+    /// @dev This is a function that will reenter the current contract.
+    /// @return True if successful.
     function exploitive()
         external
+        returns (bool)
     {
         if (counter > 0) {
             counter--;
             this.guarded(true);
         } else {
             counter = 2;
+            return true;
         }
     }
 
+    /// @dev This is a function that will not reenter the current contract.
+    /// @return True if successful.
     function nonExploitive()
         external
-    {} // solhint-disable-line no-empty-blocks
+        returns (bool)
+    {
+        return true;
+    }
 }

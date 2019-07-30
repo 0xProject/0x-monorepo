@@ -1,10 +1,4 @@
-import {
-    EIP712DomainWithDefaultSchema,
-    EIP712Object,
-    EIP712ObjectValue,
-    EIP712TypedData,
-    EIP712Types,
-} from '@0x/types';
+import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
@@ -45,7 +39,7 @@ export const signTypedDataUtils = {
                     { name: 'chainId', type: 'uint256' },
                     { name: 'verifyingContractAddress', type: 'address' },
                 ],
-            } as EIP712Types,
+            },
         );
     },
     _findDependencies(primaryType: string, types: EIP712Types, found: string[] = []): string[] {

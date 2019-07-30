@@ -34,7 +34,8 @@ describe('ReentrancyGuard', () => {
         });
 
         it('should succeed if reentrancy does not occur', async () => {
-            return expect(guard.guarded.sendTransactionAsync(false)).to.be.fulfilled('');
+            const isSuccessful = await guard.guarded.callAsync(false);
+            expect(isSuccessful).to.be.true();
         });
     });
 });

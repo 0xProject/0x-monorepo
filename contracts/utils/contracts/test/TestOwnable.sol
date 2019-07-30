@@ -9,5 +9,8 @@ contract TestOwnable is
     function externalOnlyOwner()
         external
         onlyOwner
-    {} // solhint-disable-line no-empty-blocks
+        returns (bool)
+    {
+        return true;
+    }
 }

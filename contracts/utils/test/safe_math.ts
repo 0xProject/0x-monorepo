@@ -55,6 +55,35 @@ describe('SafeMath', () => {
         });
     });
 
+    describe('_safeDiv', () => {
+        it('should return the correct value if both values are the same', async () => {
+            const result = await safeMath.externalSafeDiv.callAsync(toBN(1), toBN(1));
+            expect(result).bignumber.to.be.eq(toBN(1));
+        });
+
+        it('should return the correct value if the values are different', async () => {
+            const result = await safeMath.externalSafeDiv.callAsync(toBN(3), toBN(2));
+            expect(result).bignumber.to.be.eq(toBN(1));
+        });
+
+        it('should return zero if the numerator is smaller than the denominator', async () => {
+            const result = await safeMath.externalSafeDiv.callAsync(toBN(2), toBN(3));
+            expect(result).bignumber.to.be.eq(constants.ZERO_AMOUNT);
+        });
+
+        it('should return zero if first argument is zero', async () => {
+            const result = await safeMath.externalSafeDiv.callAsync(constants.ZERO_AMOUNT, toBN(1));
+            expect(result).bignumber.to.be.eq(constants.ZERO_AMOUNT);
+        });
+
+        it('should return zero if second argument is zero', async () => {
+            const errMessage = 'VM Exception while processing transaction: invalid opcode';
+            return expect(safeMath.externalSafeDiv.callAsync(toBN(1), constants.ZERO_AMOUNT)).to.be.rejectedWith(
+                errMessage,
+            );
+        });
+    });
+
     describe('_safeSub', () => {
         it('should throw if the subtraction underflows', async () => {
             const a = toBN(0);

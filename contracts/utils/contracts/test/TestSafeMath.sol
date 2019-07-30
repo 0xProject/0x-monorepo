@@ -32,6 +32,14 @@ contract TestSafeMath is
         return _safeMul(a, b);
     }
 
+    function externalSafeDiv(uint256 a, uint256 b)
+        external
+        pure
+        returns (uint256)
+    {
+        return _safeDiv(a, b);
+    }
+
     function externalSafeSub(uint256 a, uint256 b)
         external
         pure

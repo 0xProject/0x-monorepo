@@ -20,7 +20,7 @@ describe('Ownable', () => {
         owner = await accounts[0];
         nonOwner = await accounts[1];
         await blockchainLifecycle.startAsync();
-        // Deploy SafeMath from the owner address
+        // Deploy Ownable from the owner address
         txDefaults.from = owner;
         ownable = await TestOwnableContract.deployFrom0xArtifactAsync(artifacts.TestOwnable, provider, txDefaults);
     });
@@ -29,30 +29,31 @@ describe('Ownable', () => {
         await blockchainLifecycle.revertAsync();
     });
 
-    // tslint:disable:no-unused-expression
     describe('onlyOwner', () => {
-        it('should throw if sender is not owner', async () => {
+        it('should throw if sender is not the owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
             return expect(ownable.externalOnlyOwner.callAsync({ from: nonOwner })).to.revertWith(expectedError);
         });
 
-        it('should succeed if sender is owner', async () => {
-            return expect(ownable.externalOnlyOwner.callAsync({ from: owner })).to.be.fulfilled('');
+        it('should succeed if sender is the owner', async () => {
+            const isSuccessful = await ownable.externalOnlyOwner.callAsync({ from: owner });
+            expect(isSuccessful).to.be.true();
         });
     });
 
     describe('transferOwnership', () => {
         it('should not transfer ownership if the specified new owner is the zero address', async () => {
-            await expect(ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner })).to.be.fulfilled('');
+            expect(
+                ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner }),
+            ).to.be.fulfilled('');
             const updatedOwner = await ownable.owner.callAsync();
             expect(updatedOwner).to.be.eq(owner);
         });
 
         it('should transfer ownership if the specified new owner is not the zero address', async () => {
-            await expect(ownable.transferOwnership.sendTransactionAsync(nonOwner, { from: owner })).to.be.fulfilled('');
+            expect(ownable.transferOwnership.sendTransactionAsync(nonOwner, { from: owner })).to.be.fulfilled('');
             const updatedOwner = await ownable.owner.callAsync();
             expect(updatedOwner).to.be.eq(nonOwner);
         });
     });
-    // tslint:enable:no-unused-expression
 });

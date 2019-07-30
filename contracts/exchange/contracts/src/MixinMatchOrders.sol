@@ -17,7 +17,6 @@ pragma experimental ABIEncoderV2;
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
-import "@0x/contracts-utils/contracts/src/RichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
