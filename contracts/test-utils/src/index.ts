@@ -26,7 +26,7 @@ export { OrderFactory } from './order_factory';
 export { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from './combinatorial_utils';
 export { TransactionFactory } from './transaction_factory';
 export { testWithReferenceFuncAsync } from './test_with_reference';
-export { hexConcat } from './hex_utils';
+export { hexConcat, hexRandom } from './hex_utils';
 export {
     BatchMatchedFillResults,
     BatchMatchOrder,
