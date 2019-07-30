@@ -27,9 +27,11 @@ describe('Authorizable', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
+
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
+
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [owner, address, notOwner] = _.slice(accounts, 0, 3);
@@ -39,18 +41,22 @@ describe('Authorizable', () => {
             txDefaults,
         );
     });
+
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
     });
+
     afterEach(async () => {
         await blockchainLifecycle.revertAsync();
     });
+
     describe('addAuthorizedAddress', () => {
         it('should revert if not called by owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner });
             return expect(tx).to.revertWith(expectedError);
         });
+
         it('should allow owner to add an authorized address', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,
@@ -168,6 +174,7 @@ describe('Authorizable', () => {
                 RevertReason.AuthorizedAddressMismatch,
             );
         });
+
         it('should allow owner to remove an authorized address', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,

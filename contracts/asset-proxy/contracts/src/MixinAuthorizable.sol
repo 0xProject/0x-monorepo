@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -44,6 +44,10 @@ contract MixinAuthorizable is
         external
         onlyOwner
     {
+        require(
+            target != address(0),
+            "ZERO_CANT_BE_AUTHORIZED"
+        );
         require(
             !authorized[target],
             "TARGET_ALREADY_AUTHORIZED"
