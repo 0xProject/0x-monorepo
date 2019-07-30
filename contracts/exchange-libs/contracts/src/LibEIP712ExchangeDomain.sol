@@ -49,16 +49,4 @@ contract LibEIP712ExchangeDomain {
             verifyingContractAddress
         );
     }
-
-    /// @dev Calculates EIP712 encoding for a hash struct in the EIP712 domain
-    ///      of the Exchange contract.
-    /// @param hashStruct The EIP712 hash struct.
-    /// @return EIP712 hash applied to the Exchange EIP712 Domain.
-    function _hashEIP712ExchangeMessage(bytes32 hashStruct)
-        internal
-        view
-        returns (bytes32 result)
-    {
-        return LibEIP712.hashEIP712Message(EIP712_EXCHANGE_DOMAIN_HASH, hashStruct);
-    }
 }
