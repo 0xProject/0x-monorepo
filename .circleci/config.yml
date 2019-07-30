@@ -225,7 +225,8 @@ jobs:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: yarn wsrun test:circleci @0x/contracts-test-utils
-            - run: yarn wsrun test:circleci @0x/abi-gen
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - run: yarn wsrun test:circleci-3.0 @0x/abi-gen
             - run: yarn wsrun test:circleci @0x/assert
             - run: yarn wsrun test:circleci @0x/base-contract
             # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
@@ -238,10 +239,11 @@ jobs:
             - run: yarn wsrun test:circleci @0x/subproviders
             - run: yarn wsrun test:circleci @0x/web3-wrapper
             - run: yarn wsrun test:circleci @0x/utils
-            - save_cache:
-                  key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/abi-gen/coverage/lcov.info
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - save_cache:
+            #       key: coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/packages/abi-gen/coverage/lcov.info
             - save_cache:
                   key: coverage-assert-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -514,9 +516,10 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
+            # TODO(dorothy-zbornak): Re-enable after updating this package for 3.0.
+            # - restore_cache:
+            #       keys:
+            #           - coverage-abi-gen-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-assert-{{ .Environment.CIRCLE_SHA1 }}

@@ -1747,9 +1747,14 @@ describe('ERC1155Proxy', () => {
                 nftNotOwnerBalance,
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                maxUintValue,
+                valueMultiplier,
+            );
             // execute transfer
             // note - this will overflow because we are trying to transfer `maxUintValue * 2` of the 2nd token
-            await expectTransactionFailedAsync(
+            await expect(
                 erc1155ProxyWrapper.transferFromAsync(
                     spender,
                     receiver,
@@ -1760,8 +1765,7 @@ describe('ERC1155Proxy', () => {
                     receiverCallbackData,
                     authorized,
                 ),
-                RevertReason.Uint256Overflow,
-            );
+            ).to.revertWith(expectedError);
         });
         it('should revert if transferring > 1 instances of a non-fungible token (valueMultiplier field >1)', async () => {
             // setup test parameters
