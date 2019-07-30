@@ -1,9 +1,10 @@
-import { EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0x/types';
+import { EIP712DomainWithDefaultSchema, EIP712Object, EIP712ObjectValue, EIP712TypedData, EIP712Types } from '@0x/types';
 import * as ethUtil from 'ethereumjs-util';
 import * as ethers from 'ethers';
 import * as _ from 'lodash';
 
 import { BigNumber } from './configured_bignumber';
+
 
 export const signTypedDataUtils = {
     /**
@@ -18,6 +19,28 @@ export const signTypedDataUtils = {
                 signTypedDataUtils._structHash('EIP712Domain', typedData.domain, typedData.types),
                 signTypedDataUtils._structHash(typedData.primaryType, typedData.message, typedData.types),
             ]),
+        );
+    },
+    /**
+     * Generates the hash of a EIP712 Domain with the default schema
+     * @param  domain An EIP712 domain with the default schema containing a name, version, chain id,
+     *                and verifying address.
+     * @return A buffer that contains the hash of the domain.
+     */
+    generateDomainHash(domain: EIP712Object): Buffer {
+        return signTypedDataUtils._structHash(
+            'EIP712Domain',
+            domain,
+            // HACK(jalextowle): When we consolidate our testing packages into test-utils, we can use a constant
+            // to eliminate code duplication. At the moment, there isn't a good way to do that because of cyclic-dependencies.
+            {
+                EIP712Domain: [
+                    { name: 'name', type: 'string' },
+                    { name: 'version', type: 'string' },
+                    { name: 'chainId', type: 'uint256' },
+                    { name: 'verifyingContractAddress', type: 'address' },
+                ]
+            } as EIP712Types,
         );
     },
     _findDependencies(primaryType: string, types: EIP712Types, found: string[] = []): string[] {
