@@ -13,9 +13,9 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    TestExchangeIsolatedContract,
-    TestExchangeIsolatedDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
-    TestExchangeIsolatedFillEventArgs as FillEventArgs,
+    TestIsolatedExchangeContract,
+    TestIsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
+    TestIsolatedExchangeFillEventArgs as FillEventArgs,
 } from '../src';
 
 blockchainTests.resets.only('Isolated fillOrder() tests', env => {
@@ -43,24 +43,29 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
         },
     };
     let takerAddress: string;
-    let testExchange: TestExchangeIsolatedContract;
+    let testExchange: TestIsolatedExchangeContract;
     let logDecoder: LogDecoder;
     let nextSaltValue = 1;
 
     before(async () => {
         [ takerAddress ] = await env.getAccountAddressesAsync();
-        testExchange = await TestExchangeIsolatedContract.deployFrom0xArtifactAsync(
-            artifacts.TestExchangeIsolated,
+        testExchange = await TestIsolatedExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.TestIsolatedExchange,
             env.provider,
             env.txDefaults,
         );
         logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
     });
 
+    interface IsolatedExchangeAssetBalances {
+        [assetData: string]: {[address: string]: BigNumber};
+    }
+
     interface IsolatedFillOrderAsyncResults {
         fillResults: FillResults;
         fillEventArgs: FillEventArgs;
-        transferFromCallArgs: DispatchTransferFromCallArgs[];
+        transferFromCalls: DispatchTransferFromCallArgs[];
+        balances: IsolatedExchangeAssetBalances;
     }
 
     async function isolatedFillOrderAsync(
@@ -83,15 +88,35 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
                 signature,
             ),
         );
+        // Parse logs.
         const fillEventArgs = (receipt.logs[0] as LogWithDecodedArgs<FillEventArgs>).args;
-        const transferFromCallArgs =
+        const transferFromCalls =
             (receipt.logs.slice(1) as Array<LogWithDecodedArgs<DispatchTransferFromCallArgs>>).map(
                 log => log.args,
             );
+        // Extract addresses involved in transfers.
+        const addresses = _.uniq(_.flatten(transferFromCalls.map(c => [c.from, c.to])));
+        // Extract assets involved in transfers.
+        const assets = _.uniq(transferFromCalls.map(c => c.assetData));
+        // Query balances of addresses and assets involved in transfers.
+        const balances = await (async () => {
+            const result: IsolatedExchangeAssetBalances = {};
+            for (const assetData of assets) {
+                result[assetData] = _.zipObject(
+                    addresses,
+                    await testExchange.getMultipleRawAssetBalanceChanges.callAsync(
+                        assetData,
+                        addresses,
+                    ),
+                );
+            }
+            return result;
+        })();
         return {
             fillResults,
             fillEventArgs,
-            transferFromCallArgs,
+            transferFromCalls,
+            balances,
         };
     }
 
@@ -107,9 +132,9 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
     it('works', async () => {
         const order = createOrder({
             makerAssetAmount: toBN(1),
-            takerAssetAmount: toBN(1),
+            takerAssetAmount: toBN(2),
         });
-        const results = await isolatedFillOrderAsync(order, 1);
+        const results = await isolatedFillOrderAsync(order, 2);
         console.log(results);
     });
 });

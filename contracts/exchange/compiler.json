@@ -39,8 +39,8 @@
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",
-        "test/TestExchangeIsolated.sol",
         "test/TestExchangeMath.sol",
+        "test/TestIsolatedExchange.sol",
         "test/TestLibExchangeRichErrorDecoder.sol",
         "test/TestSignatureValidator.sol",
         "test/TestValidatorWallet.sol"
