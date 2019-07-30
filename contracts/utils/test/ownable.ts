@@ -42,12 +42,10 @@ describe('Ownable', () => {
     });
 
     describe('transferOwnership', () => {
-        it('should not transfer ownership if the specified new owner is the zero address', async () => {
-            expect(
-                ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner }),
-            ).to.be.fulfilled('');
-            const updatedOwner = await ownable.owner.callAsync();
-            expect(updatedOwner).to.be.eq(owner);
+        it('should revert if the specified new owner is the zero address', async () => {
+            const expectedError = new OwnableRevertErrors.TransferOwnerToZeroError();
+            const tx = ownable.transferOwnership.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should transfer ownership if the specified new owner is not the zero address', async () => {
