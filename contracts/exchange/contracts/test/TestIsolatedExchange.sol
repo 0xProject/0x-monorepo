@@ -49,7 +49,7 @@ contract TestIsolatedExchange is
 
     /// @dev Convenience function to get the `rawAssetBalances` for
     ///      multiple addresses.
-    function getMultipleRawAssetBalanceChanges(
+    function getRawAssetBalances(
         bytes calldata assetData,
         address[] calldata addresses
     )
