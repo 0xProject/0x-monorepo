@@ -2,7 +2,7 @@
 
 from typing import Any
 
-from eth_utils import to_checksum_address
+from eth_utils import is_address, to_checksum_address
 from web3 import Web3
 from web3.providers.base import BaseProvider
 
@@ -42,15 +42,15 @@ class ContractMethod:
         :param contract_address: Where the contract has been deployed to.
         :param validator: Used to validate method inputs.
         """
-        self._web3 = Web3(provider)
-        self._web3_eth = self._web3.eth  # pylint: disable=no-member
+        self._web3_eth = Web3(provider).eth  # pylint: disable=no-member
         if validator is None:
             validator = Validator(provider, contract_address)
         self.validator = validator
 
-    def validate_and_checksum_address(self, address: str):
+    @staticmethod
+    def validate_and_checksum_address(address: str):
         """Validate the given address, and return it's checksum address."""
-        if not self._web3.isAddress(address):
+        if not is_address(address):
             raise TypeError("Invalid address provided: {}".format(address))
         return to_checksum_address(address)
 
