@@ -9,6 +9,11 @@
             {
                 "note": "Added tests for decoding log arguments when artifact dependencies are included/excluded.",
                 "pr": 1995
+            },
+            
+            {
+                "note": "Added tests for`getABIDecodedTransactionData` and `getABIDecodedReturnData` in contract wrappers.",
+                "pr": 2018
             }
         ],
         "timestamp": 1564604963
