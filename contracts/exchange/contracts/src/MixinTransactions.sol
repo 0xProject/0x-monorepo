@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/ITransactions.sol";
@@ -28,9 +29,12 @@ import "./LibExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
+    LibEIP712ExchangeDomain,
     ISignatureValidator,
     ITransactions
 {
+    using LibZeroExTransaction for LibZeroExTransaction.ZeroExTransaction;
+
     // Mapping of transaction hash => executed
     // This prevents transactions from being executed more than once.
     mapping (bytes32 => bool) public transactionsExecuted;
@@ -82,7 +86,7 @@ contract MixinTransactions is
         internal
         returns (bytes memory)
     {
-        bytes32 transactionHash = LibZeroExTransaction.getTransactionHash(transaction);
+        bytes32 transactionHash = transaction.getTransactionHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time

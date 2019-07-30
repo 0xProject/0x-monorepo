@@ -25,6 +25,7 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
 import "./interfaces/IExchangeRichErrors.sol";
@@ -35,11 +36,14 @@ import "./MixinTransactions.sol";
 
 contract MixinSignatureValidator is
     ReentrancyGuard,
+    LibEIP712ExchangeDomain,
     LibEIP1271,
     ISignatureValidator,
     MixinTransactions
 {
     using LibBytes for bytes;
+    using LibOrder for LibOrder.Order;
+    using LibZeroExTransaction for LibZeroExTransaction.ZeroExTransaction;
 
     // Magic bytes to be returned by `Wallet` signature type validators.
     // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
@@ -134,7 +138,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes32 orderHash = LibOrder.getOrderHash(order);
+        bytes32 orderHash = order.getOrderHash(EIP712_EXCHANGE_DOMAIN_HASH);
         return _isValidOrderWithHashSignature(
             order,
             orderHash,
@@ -154,7 +158,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes32 transactionHash = LibZeroExTransaction.getTransactionHash(transaction);
+        bytes32 transactionHash = transaction.getTransactionHash(EIP712_EXCHANGE_DOMAIN_HASH);
         isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,

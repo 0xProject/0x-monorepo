@@ -19,9 +19,11 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./interfaces/IExchangeRichErrors.sol";
 import "./LibExchangeRichErrors.sol";
@@ -30,11 +32,14 @@ import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
+    LibEIP712ExchangeDomain,
     IExchangeCore,
-    LibMath,
     MixinAssetProxyDispatcher,
     MixinSignatureValidator
 {
+    using LibOrder for LibOrder.Order;
+    using LibSafeMath for uint256;
+
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
 
@@ -121,7 +126,7 @@ contract MixinExchangeCore is
         returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Compute the order hash
-        orderInfo.orderHash = LibOrder.getOrderHash(order);
+        orderInfo.orderHash = order.getOrderHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
         // Fetch filled amount
         orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
@@ -200,8 +205,8 @@ contract MixinExchangeCore is
         );
 
         // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = _safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        uint256 remainingTakerAssetAmount = order.takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
         fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
@@ -263,7 +268,7 @@ contract MixinExchangeCore is
         internal
     {
         // Update state
-        filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
+        filled[orderHash] = orderTakerAssetFilledAmount.safeAdd(fillResults.takerAssetFilledAmount);
 
         // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
         // All this logic is equivalent to:

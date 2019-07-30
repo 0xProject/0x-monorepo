@@ -19,8 +19,10 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "./interfaces/IExchangeCore.sol";
 import "./interfaces/IExchangeRichErrors.sol";
@@ -33,6 +35,8 @@ contract MixinWrapperFunctions is
     IWrapperFunctions,
     MixinExchangeCore
 {
+    using LibSafeMath for uint256;
+
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -186,7 +190,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
@@ -196,7 +200,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            fillResults = LibFillResults._addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -230,11 +234,11 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = makerAssetFillAmount.safeSub(fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountFloor(
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
@@ -248,7 +252,7 @@ contract MixinWrapperFunctions is
             );
 
             // Update amounts filled and fees paid by maker and taker
-            fillResults = LibFillResults._addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {

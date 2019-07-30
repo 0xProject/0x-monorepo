@@ -29,6 +29,7 @@ contract MixinMatchOrders is
     IMatchOrders
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     /// @dev Match complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point, and
@@ -163,8 +164,8 @@ contract MixinMatchOrders is
         // AND
         // <rightOrder.makerAssetAmount> / <rightOrder.takerAssetAmount> >= <leftOrder.takerAssetAmount> / <leftOrder.makerAssetAmount>
         // These equations can be combined to get the following:
-        if (_safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
-            _safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+        if (leftOrder.makerAssetAmount.safeMul(rightOrder.makerAssetAmount) <
+            leftOrder.takerAssetAmount.safeMul(rightOrder.takerAssetAmount)) {
             LibRichErrors._rrevert(LibExchangeRichErrors.NegativeSpreadError(
                 leftOrderInfo.orderHash,
                 rightOrderInfo.orderHash
@@ -245,33 +246,29 @@ contract MixinMatchOrders is
             );
 
             // Update the orderInfo structs with the updated takerAssetFilledAmount
-            leftOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
-                leftOrderInfo.orderTakerAssetFilledAmount,
+            leftOrderInfo.orderTakerAssetFilledAmount = leftOrderInfo.orderTakerAssetFilledAmount.safeAdd(
                 matchResults.left.takerAssetFilledAmount
             );
-            rightOrderInfo.orderTakerAssetFilledAmount = _safeAdd(
-                rightOrderInfo.orderTakerAssetFilledAmount,
+            rightOrderInfo.orderTakerAssetFilledAmount = rightOrderInfo.orderTakerAssetFilledAmount.safeAdd(
                 matchResults.right.takerAssetFilledAmount
             );
 
             // Aggregate the new fill results with the previous fill results for the current orders.
-            leftFillResults = LibFillResults._addFillResults(
+            leftFillResults = LibFillResults.addFillResults(
                 leftFillResults,
                 matchResults.left
             );
-            rightFillResults = LibFillResults._addFillResults(
+            rightFillResults = LibFillResults.addFillResults(
                 rightFillResults,
                 matchResults.right
             );
 
             // Update the profit in the left and right maker assets using the profits from
             // the match.
-            batchMatchedFillResults.profitInLeftMakerAsset = _safeAdd(
-                batchMatchedFillResults.profitInLeftMakerAsset,
+            batchMatchedFillResults.profitInLeftMakerAsset = batchMatchedFillResults.profitInLeftMakerAsset.safeAdd(
                 matchResults.profitInLeftMakerAsset
             );
-            batchMatchedFillResults.profitInRightMakerAsset = _safeAdd(
-                batchMatchedFillResults.profitInRightMakerAsset,
+            batchMatchedFillResults.profitInRightMakerAsset = batchMatchedFillResults.profitInRightMakerAsset.safeAdd(
                 matchResults.profitInRightMakerAsset
             );
 
@@ -368,7 +365,12 @@ contract MixinMatchOrders is
             takerAddress,
             rightSignature
         );
-        _assertValidMatch(leftOrder, rightOrder);
+        _assertValidMatch(
+            leftOrder,
+            rightOrder,
+            leftOrderInfo,
+            rightOrderInfo
+        );
 
         // Compute proportional fill amounts
         matchedFillResults = LibFillResults.calculateMatchedFillResults(
@@ -493,10 +495,7 @@ contract MixinMatchOrders is
                 leftOrder.takerFeeAssetData,
                 takerAddress,
                 leftFeeRecipientAddress,
-                _safeAdd(
-                    matchedFillResults.left.takerFeePaid,
-                    matchedFillResults.right.takerFeePaid
-                )
+                matchedFillResults.left.takerFeePaid.safeAdd(matchedFillResults.right.takerFeePaid)
             );
         } else {
             // Right taker fee -> right fee recipient
