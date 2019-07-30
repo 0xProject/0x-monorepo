@@ -1,11 +1,4 @@
-import {
-    addressUtils,
-    blockchainTests,
-    expect,
-    hexRandom,
-    OrderStatus,
-    orderUtils,
-} from '@0x/contracts-test-utils';
+import { addressUtils, blockchainTests, expect, hexRandom, OrderStatus, orderUtils } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertError } from '@0x/utils';
 import * as _ from 'lodash';

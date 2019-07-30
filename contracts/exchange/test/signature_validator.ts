@@ -10,7 +10,6 @@ import {
     orderUtils,
     TransactionFactory,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import {
     assetDataUtils,
     ExchangeRevertErrors,
