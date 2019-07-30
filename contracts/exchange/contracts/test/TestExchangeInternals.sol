@@ -19,6 +19,8 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/Exchange.sol";
 
 
@@ -39,17 +41,6 @@ contract TestExchangeInternals is
         Exchange(chainId)
     {}
 
-    function calculateFillResults(
-        Order memory order,
-        uint256 takerAssetFilledAmount
-    )
-        public
-        pure
-        returns (FillResults memory fillResults)
-    {
-        return _calculateFillResults(order, takerAssetFilledAmount);
-    }
-
     /// @dev Call `_updateFilledState()` but first set `filled[order]` to
     ///      `orderTakerAssetFilledAmount`.
     function testUpdateFilledState(
@@ -57,7 +48,7 @@ contract TestExchangeInternals is
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         public
     {
