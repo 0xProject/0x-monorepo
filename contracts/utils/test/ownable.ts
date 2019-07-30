@@ -37,7 +37,7 @@ describe('Ownable', () => {
         });
 
         it('should succeed if sender is owner', async () => {
-            expect(ownable.externalOnlyOwner.callAsync({ from: owner })).to.be.fulfilled;
+            return expect(ownable.externalOnlyOwner.callAsync({ from: owner })).to.be.fulfilled('');
         });
     });
 
