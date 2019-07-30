@@ -56,6 +56,7 @@ export const constants = {
         takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
     },
     WORD_LENGTH: 32,
+    ADDRESS_LENGTH: 20,
     ZERO_AMOUNT: new BigNumber(0),
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
     TIME_BUFFER: new BigNumber(1000),
