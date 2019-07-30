@@ -95,13 +95,9 @@ describe('MixinSignatureValidator', () => {
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
         await web3Wrapper.awaitTransactionSuccessAsync(
-            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
-                testValidator.address,
-                true,
-                {
-                    from: notSignerAddress,
-                },
-            ),
+            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(testValidator.address, true, {
+                from: notSignerAddress,
+            }),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
 
