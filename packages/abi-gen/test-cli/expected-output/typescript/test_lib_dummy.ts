@@ -66,6 +66,20 @@ export class TestLibDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('publicAddConstant(uint256)', [x]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('publicAddConstant(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public publicAddOne = {
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -105,6 +119,20 @@ export class TestLibDummyContract extends BaseContract {
             const self = (this as any) as TestLibDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('publicAddOne(uint256)', [x]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as TestLibDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('publicAddOne(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

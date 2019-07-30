@@ -88,6 +88,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRequire()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRequire()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public acceptsAnArrayOfBytes = {
         async callAsync(a: string[], callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -127,6 +141,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('acceptsAnArrayOfBytes(bytes[])', [a]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsAnArrayOfBytes(bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public withdraw = {
@@ -228,6 +256,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public ecrecoverFn = {
         async callAsync(
@@ -289,6 +331,20 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('ecrecoverFn(bytes32,uint8,bytes32,bytes32)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public acceptsBytes = {
         async callAsync(a: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -329,6 +385,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('acceptsBytes(bytes)', [a]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('acceptsBytes(bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public revertWithConstant = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -367,6 +437,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('revertWithConstant()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('revertWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public simpleRevert = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -404,6 +488,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRevert()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simpleRevert()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public nestedStructOutput = {
@@ -452,6 +550,36 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('nestedStructOutput()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            returnData: string,
+        ): {
+            innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+            description: string;
+        } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<{
+                innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+                description: string;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): {
+            innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+            description: string;
+        } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructOutput()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                innerStruct: { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string };
+                description: string;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public requireWithConstant = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -489,6 +617,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('requireWithConstant()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('requireWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public withAddressInput = {
@@ -552,6 +694,20 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('withAddressInput(address,uint256,uint256,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public structInput = {
         async callAsync(
@@ -601,6 +757,20 @@ export class AbiGenDummyContract extends BaseContract {
                 [s],
             );
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structInput((bytes,uint32,bytes[],string))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public nonPureMethod = {
@@ -696,6 +866,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethod()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethod()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethod()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public simplePureFunctionWithInput = {
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -735,6 +919,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunctionWithInput(uint256)', [x]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunctionWithInput(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public nonPureMethodThatReturnsNothing = {
@@ -830,6 +1028,20 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethodThatReturnsNothing()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nonPureMethodThatReturnsNothing()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public simplePureFunction = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -867,6 +1079,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunction()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('simplePureFunction()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public nestedStructInput = {
@@ -932,6 +1158,20 @@ export class AbiGenDummyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('nestedStructInput(((bytes,uint32,bytes[],string),string))');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public structOutput = {
         async callAsync(
@@ -978,6 +1218,34 @@ export class AbiGenDummyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('structOutput()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            returnData: string,
+        ): { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structOutput()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<{
+                someBytes: string;
+                anInteger: number;
+                aDynamicArrayOfBytes: string[];
+                aString: string;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): { someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('structOutput()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                someBytes: string;
+                anInteger: number;
+                aDynamicArrayOfBytes: string[];
+                aString: string;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public pureFunctionWithConstant = {
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -1015,6 +1283,20 @@ export class AbiGenDummyContract extends BaseContract {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('pureFunctionWithConstant()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('pureFunctionWithConstant()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<AbiGenDummyEventArgs, AbiGenDummyEvents>;
