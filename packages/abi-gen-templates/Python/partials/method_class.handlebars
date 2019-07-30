@@ -2,9 +2,9 @@
 class {{toPythonClassname this.name}}Method(ContractMethod):
     """Various interfaces to the {{this.name}} method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     {{#if inputs}}

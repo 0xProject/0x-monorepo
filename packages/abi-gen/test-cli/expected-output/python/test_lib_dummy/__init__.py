@@ -44,9 +44,9 @@ except ImportError:
 class PublicAddConstantMethod(ContractMethod):
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -77,15 +77,16 @@ class PublicAddConstantMethod(ContractMethod):
 
         """
         (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(x)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -116,6 +117,7 @@ class PublicAddOneMethod(ContractMethod):
 
         """
         (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(x)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
@@ -130,20 +132,17 @@ class TestLibDummy:
         provider: BaseProvider,
         contract_address: str,
         validator: TestLibDummyValidator = None,
-        private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
         :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
+        :param validator: for validation of method inputs.
         """
         self.contract_address = contract_address
 
         if not validator:
-            validator = TestLibDummyValidator(provider, contract_address, private_key)
+            validator = TestLibDummyValidator(provider, contract_address)
 
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
@@ -151,9 +150,9 @@ class TestLibDummy:
 
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=TestLibDummy.abi()).functions
 
-        self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator, private_key)
+        self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator)
 
-        self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator, private_key)
+        self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator)
 
 
     @staticmethod

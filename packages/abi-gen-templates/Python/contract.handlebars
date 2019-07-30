@@ -56,20 +56,17 @@ class {{contractName}}:
         provider: BaseProvider,
         contract_address: str,
         validator: {{contractName}}Validator = None,
-        private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
         :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
+        :param validator: for validation of method inputs.
         """
         self.contract_address = contract_address
 
         if not validator:
-            validator = {{contractName}}Validator(provider, contract_address, private_key)
+            validator = {{contractName}}Validator(provider, contract_address)
 
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
@@ -78,7 +75,7 @@ class {{contractName}}:
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi={{contractName}}.abi()).functions
 
         {{#each methods}}
-        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(provider, contract_address, functions.{{this.name}}, validator, private_key)
+        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(provider, contract_address, functions.{{this.name}}, validator)
 
         {{/each}}
 {{#each events}}

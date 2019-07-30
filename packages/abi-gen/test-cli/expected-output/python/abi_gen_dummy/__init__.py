@@ -86,9 +86,9 @@ class Tuple0xcf8ad995(TypedDict):
 class SimpleRequireMethod(ContractMethod):
     """Various interfaces to the simpleRequire method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -106,15 +106,16 @@ class SimpleRequireMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class AcceptsAnArrayOfBytesMethod(ContractMethod):
     """Various interfaces to the acceptsAnArrayOfBytes method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: List[bytes]):
@@ -153,15 +154,16 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
 
         """
         (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(a)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class EcrecoverFnMethod(ContractMethod):
     """Various interfaces to the ecrecoverFn method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, _hash: bytes, v: int, r: bytes, s: bytes):
@@ -205,15 +207,16 @@ class EcrecoverFnMethod(ContractMethod):
 
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(_hash, v, r, s)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class AcceptsBytesMethod(ContractMethod):
     """Various interfaces to the acceptsBytes method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, a: bytes):
@@ -243,15 +246,16 @@ class AcceptsBytesMethod(ContractMethod):
 
         """
         (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(a)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class RevertWithConstantMethod(ContractMethod):
     """Various interfaces to the revertWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -269,15 +273,16 @@ class RevertWithConstantMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class SimpleRevertMethod(ContractMethod):
     """Various interfaces to the simpleRevert method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -295,15 +300,16 @@ class SimpleRevertMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class NestedStructOutputMethod(ContractMethod):
     """Various interfaces to the nestedStructOutput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
@@ -321,15 +327,16 @@ class NestedStructOutputMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class RequireWithConstantMethod(ContractMethod):
     """Various interfaces to the requireWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
@@ -347,15 +354,16 @@ class RequireWithConstantMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class WithAddressInputMethod(ContractMethod):
     """Various interfaces to the withAddressInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: str, a: int, b: int, y: str, c: int):
@@ -412,15 +420,16 @@ class WithAddressInputMethod(ContractMethod):
 
         """
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(x, a, b, y, c)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class StructInputMethod(ContractMethod):
     """Various interfaces to the structInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
@@ -449,15 +458,16 @@ class StructInputMethod(ContractMethod):
 
         """
         (s) = self.validate_and_normalize_inputs(s)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(s)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class NonPureMethodMethod(ContractMethod):
     """Various interfaces to the nonPureMethod method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[int, Union[HexBytes, bytes]]:
@@ -474,15 +484,16 @@ class NonPureMethodMethod(ContractMethod):
 
         :param tx_params: transaction parameters
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class SimplePureFunctionWithInputMethod(ContractMethod):
     """Various interfaces to the simplePureFunctionWithInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, x: int):
@@ -513,15 +524,16 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
 
         """
         (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(x)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class NonPureMethodThatReturnsNothingMethod(ContractMethod):
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
@@ -538,15 +550,16 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
 
         :param tx_params: transaction parameters
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class SimplePureFunctionMethod(ContractMethod):
     """Various interfaces to the simplePureFunction method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
@@ -564,15 +577,16 @@ class SimplePureFunctionMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class NestedStructInputMethod(ContractMethod):
     """Various interfaces to the nestedStructInput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
@@ -601,15 +615,16 @@ class NestedStructInputMethod(ContractMethod):
 
         """
         (n) = self.validate_and_normalize_inputs(n)
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method(n)
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class StructOutputMethod(ContractMethod):
     """Various interfaces to the structOutput method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
@@ -631,15 +646,16 @@ class StructOutputMethod(ContractMethod):
         :param tx_params: transaction parameters
         :returns: a Struct struct
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
 class PureFunctionWithConstantMethod(ContractMethod):
     """Various interfaces to the pureFunctionWithConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None, private_key=None):
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
         """Persist instance data."""
-        super().__init__(provider, contract_address, validator, private_key)
+        super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> int:
@@ -657,6 +673,7 @@ class PureFunctionWithConstantMethod(ContractMethod):
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
         func = self.underlying_method()
         return super().invoke_send_transaction(func=func, tx_params=tx_params)
 
@@ -690,20 +707,17 @@ class AbiGenDummy:
         provider: BaseProvider,
         contract_address: str,
         validator: AbiGenDummyValidator = None,
-        private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
         :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
+        :param validator: for validation of method inputs.
         """
         self.contract_address = contract_address
 
         if not validator:
-            validator = AbiGenDummyValidator(provider, contract_address, private_key)
+            validator = AbiGenDummyValidator(provider, contract_address)
 
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider
@@ -711,39 +725,39 @@ class AbiGenDummy:
 
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=AbiGenDummy.abi()).functions
 
-        self.simple_require = SimpleRequireMethod(provider, contract_address, functions.simpleRequire, validator, private_key)
+        self.simple_require = SimpleRequireMethod(provider, contract_address, functions.simpleRequire, validator)
 
-        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(provider, contract_address, functions.acceptsAnArrayOfBytes, validator, private_key)
+        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(provider, contract_address, functions.acceptsAnArrayOfBytes, validator)
 
-        self.ecrecover_fn = EcrecoverFnMethod(provider, contract_address, functions.ecrecoverFn, validator, private_key)
+        self.ecrecover_fn = EcrecoverFnMethod(provider, contract_address, functions.ecrecoverFn, validator)
 
-        self.accepts_bytes = AcceptsBytesMethod(provider, contract_address, functions.acceptsBytes, validator, private_key)
+        self.accepts_bytes = AcceptsBytesMethod(provider, contract_address, functions.acceptsBytes, validator)
 
-        self.revert_with_constant = RevertWithConstantMethod(provider, contract_address, functions.revertWithConstant, validator, private_key)
+        self.revert_with_constant = RevertWithConstantMethod(provider, contract_address, functions.revertWithConstant, validator)
 
-        self.simple_revert = SimpleRevertMethod(provider, contract_address, functions.simpleRevert, validator, private_key)
+        self.simple_revert = SimpleRevertMethod(provider, contract_address, functions.simpleRevert, validator)
 
-        self.nested_struct_output = NestedStructOutputMethod(provider, contract_address, functions.nestedStructOutput, validator, private_key)
+        self.nested_struct_output = NestedStructOutputMethod(provider, contract_address, functions.nestedStructOutput, validator)
 
-        self.require_with_constant = RequireWithConstantMethod(provider, contract_address, functions.requireWithConstant, validator, private_key)
+        self.require_with_constant = RequireWithConstantMethod(provider, contract_address, functions.requireWithConstant, validator)
 
-        self.with_address_input = WithAddressInputMethod(provider, contract_address, functions.withAddressInput, validator, private_key)
+        self.with_address_input = WithAddressInputMethod(provider, contract_address, functions.withAddressInput, validator)
 
-        self.struct_input = StructInputMethod(provider, contract_address, functions.structInput, validator, private_key)
+        self.struct_input = StructInputMethod(provider, contract_address, functions.structInput, validator)
 
-        self.non_pure_method = NonPureMethodMethod(provider, contract_address, functions.nonPureMethod, validator, private_key)
+        self.non_pure_method = NonPureMethodMethod(provider, contract_address, functions.nonPureMethod, validator)
 
-        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(provider, contract_address, functions.simplePureFunctionWithInput, validator, private_key)
+        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(provider, contract_address, functions.simplePureFunctionWithInput, validator)
 
-        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(provider, contract_address, functions.nonPureMethodThatReturnsNothing, validator, private_key)
+        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(provider, contract_address, functions.nonPureMethodThatReturnsNothing, validator)
 
-        self.simple_pure_function = SimplePureFunctionMethod(provider, contract_address, functions.simplePureFunction, validator, private_key)
+        self.simple_pure_function = SimplePureFunctionMethod(provider, contract_address, functions.simplePureFunction, validator)
 
-        self.nested_struct_input = NestedStructInputMethod(provider, contract_address, functions.nestedStructInput, validator, private_key)
+        self.nested_struct_input = NestedStructInputMethod(provider, contract_address, functions.nestedStructInput, validator)
 
-        self.struct_output = StructOutputMethod(provider, contract_address, functions.structOutput, validator, private_key)
+        self.struct_output = StructOutputMethod(provider, contract_address, functions.structOutput, validator)
 
-        self.pure_function_with_constant = PureFunctionWithConstantMethod(provider, contract_address, functions.pureFunctionWithConstant, validator, private_key)
+        self.pure_function_with_constant = PureFunctionWithConstantMethod(provider, contract_address, functions.pureFunctionWithConstant, validator)
 
     def get_an_event_event(
         self, tx_hash: Union[HexBytes, bytes]

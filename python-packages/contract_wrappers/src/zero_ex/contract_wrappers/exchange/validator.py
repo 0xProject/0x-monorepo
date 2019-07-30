@@ -13,14 +13,9 @@ from .types import order_to_jsdict
 class ExchangeValidator(Validator):
     """Validate inputs to Exchange methods."""
 
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        private_key: str = None,
-    ):
+    def __init__(self, provider: BaseProvider, contract_address: str):
         """Initialize the class."""
-        super().__init__(provider, contract_address, private_key)
+        super().__init__(provider, contract_address)
         self.contract_address = contract_address
 
     def assert_valid(

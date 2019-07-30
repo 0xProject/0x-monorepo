@@ -50,20 +50,17 @@ class LibDummy:
         provider: BaseProvider,
         contract_address: str,
         validator: LibDummyValidator = None,
-        private_key: str = None,
     ):
         """Get an instance of wrapper for smart contract.
 
         :param provider: instance of :class:`web3.providers.base.BaseProvider`
         :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
+        :param validator: for validation of method inputs.
         """
         self.contract_address = contract_address
 
         if not validator:
-            validator = LibDummyValidator(provider, contract_address, private_key)
+            validator = LibDummyValidator(provider, contract_address)
 
         self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
             provider

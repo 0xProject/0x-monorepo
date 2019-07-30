@@ -12,12 +12,7 @@ from .tx_params import TxParams
 class Validator:
     """Base class for validating inputs to methods."""
 
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        private_key: str = None,
-    ):
+    def __init__(self, provider: BaseProvider, contract_address: str):
         """Initialize the instance."""
 
     def assert_valid(
@@ -40,26 +35,21 @@ class ContractMethod:
         provider: BaseProvider,
         contract_address: str,
         validator: Validator = None,
-        private_key: str = None,
     ):
         """Instantiate the object.
 
         :param provider: Instance of :class:`web3.providers.base.BaseProvider`
         :param contract_address: Where the contract has been deployed to.
         :param validator: Used to validate method inputs.
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
         """
         self._provider = provider
-        self._private_key = private_key
         self._web3 = Web3(provider)
         self._web3_eth = self._web3.eth  # pylint: disable=no-member
         self.contract_address = self.validate_and_checksum_address(
             contract_address
         )
         if validator is None:
-            validator = Validator(provider, contract_address, private_key)
+            validator = Validator(provider, contract_address)
         self.validator = validator
 
         self._can_send_tx = False
@@ -68,14 +58,6 @@ class ContractMethod:
         else:
             middleware_stack = getattr(self._web3, "middleware_stack")
             if middleware_stack.get("sign_and_send_raw_middleware"):
-                self._can_send_tx = True
-            elif private_key:
-                self._private_key = private_key
-                self._web3_eth.defaultAccount = to_checksum_address(
-                    self._web3_eth.account.privateKeyToAccount(
-                        private_key
-                    ).address
-                )
                 self._can_send_tx = True
 
     def validate_and_checksum_address(self, address: str):
@@ -99,20 +81,8 @@ class ContractMethod:
         """Invoke the given contract method."""
         if not self._can_send_tx:
             raise Exception(
-                "Cannot send transaction because no local private_key"
-                " or account found."
+                "Cannot send transaction because no account found."
             )
         tx_params = self.normalize_tx_params(tx_params)
-        if self._private_key:
-            res = self._sign_and_send_raw_direct(func, tx_params)
-        else:
-            res = func.transact(tx_params.as_dict())
-        return res
-
-    def _sign_and_send_raw_direct(self, func, tx_params):
-        transaction = func.buildTransaction(tx_params.as_dict())
-        signed_tx = self._web3_eth.account.signTransaction(
-            transaction, private_key=self._private_key
-        )
-        return self._web3_eth.sendRawTransaction(signed_tx.rawTransaction)
+        return func.transact(tx_params.as_dict())
 
