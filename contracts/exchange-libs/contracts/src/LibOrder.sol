@@ -19,12 +19,13 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-contract LibOrder is
-    LibEIP712ExchangeDomain
-{
+library LibOrder {
+
+    using LibOrder for Order;
+
     // Hash for the EIP712 Order Schema:
     // keccak256(abi.encodePacked(
     //     "Order(",
@@ -44,7 +45,7 @@ contract LibOrder is
     //     "bytes takerFeeAssetData",
     //     ")"
     // ))
-    bytes32 constant public EIP712_ORDER_SCHEMA_HASH =
+    bytes32 constant internal _EIP712_ORDER_SCHEMA_HASH =
         0xf80322eb8376aafb64eadf8f0d7623f22130fd9491a221e902b713cb984a7534;
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
@@ -87,24 +88,27 @@ contract LibOrder is
     /// @dev Calculates Keccak-256 hash of the order.
     /// @param order The order structure.
     /// @return Keccak-256 EIP712 hash of the order.
-    function getOrderHash(Order memory order)
-        public
-        view
+    function getOrderHash(Order memory order, bytes32 eip712ExchangeDomainHash)
+        internal
+        pure
         returns (bytes32 orderHash)
     {
-        orderHash = _hashEIP712ExchangeMessage(_hashOrder(order));
+        orderHash = LibEIP712.hashEIP712Message(
+            eip712ExchangeDomainHash,
+            order.hashOrder()
+        );
         return orderHash;
     }
 
     /// @dev Calculates EIP712 hash of the order.
     /// @param order The order structure.
     /// @return EIP712 hash of the order.
-    function _hashOrder(Order memory order)
+    function hashOrder(Order memory order)
         internal
         pure
         returns (bytes32 result)
     {
-        bytes32 schemaHash = EIP712_ORDER_SCHEMA_HASH;
+        bytes32 schemaHash = _EIP712_ORDER_SCHEMA_HASH;
         bytes memory makerAssetData = order.makerAssetData;
         bytes memory takerAssetData = order.takerAssetData;
         bytes memory makerFeeAssetData = order.makerFeeAssetData;
