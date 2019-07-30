@@ -49,7 +49,7 @@ describe('Ownable', () => {
         });
 
         it('should transfer ownership if the specified new owner is not the zero address', async () => {
-            expect(ownable.transferOwnership.sendTransactionAsync(nonOwner, { from: owner })).to.be.fulfilled;
+            await expect(ownable.transferOwnership.sendTransactionAsync(nonOwner, { from: owner })).to.be.fulfilled('');
             const updatedOwner = await ownable.owner.callAsync();
             expect(updatedOwner).to.be.eq(nonOwner);
         });
