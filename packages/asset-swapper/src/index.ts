@@ -20,7 +20,6 @@ export {
     ConstructorStateMutability,
 } from 'ethereum-types';
 
-// TODO(dave4506): if this lives under the 0x.js library, then these type exports should be removed in favor of minimizing redundancy
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
