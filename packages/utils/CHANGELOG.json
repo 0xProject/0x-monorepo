@@ -3,7 +3,11 @@
         "version": "4.5.0",
         "changes": [
             {
-                "note": "updated to include `strictDecode` for decoding method arguments",
+                "note": "Updated to include `strictDecode` for decoding method arguments",
+                "pr": 2018
+            },
+            {
+                "note": "Throw exception when trying to decode beyond boundaries of calldata",
                 "pr": 2018
             }
         ]

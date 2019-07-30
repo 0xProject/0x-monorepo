@@ -806,7 +806,8 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const dataType = new AbiEncoder.Int(testDataItem);
             const args = new BigNumber(0);
             const encodedArgs = dataType.encode(args, encodingRules);
-            const encodedArgsTruncated = encodedArgs.substr(0, 60);
+            const truncatedCalldataLength = 60;
+            const encodedArgsTruncated = encodedArgs.substr(0, truncatedCalldataLength);
             // Encode Args and validate result
             expect(() => {
                 dataType.decode(encodedArgsTruncated);

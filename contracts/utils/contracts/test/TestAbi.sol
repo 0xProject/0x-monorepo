@@ -22,86 +22,28 @@ pragma experimental ABIEncoderV2;
 
 contract TestAbi {
 
+    /// @dev complex input is dynamic and more difficult to decode than simple input.
     struct ComplexInput {
         uint256 foo;
         bytes bar;
         string car;
     }
 
+    /// @dev complex input is dynamic and more difficult to decode than simple input.
     struct ComplexOutput {
         ComplexInput input;
         bytes lorem;
         bytes ipsum;
         string dolor;
     }
-    
-    function noInputNoOutput()
-        public
-        pure
-    {
-        // NOP
-        require(true == true);
-    }
 
-    function noInputSimpleOutput()
-        public
-        pure
-        returns (uint256)
-    {
-        return 1991;
-    }
-
-    function simpleInputNoOutput(uint256)
-        public
-        pure
-    {
-        // NOP
-        require(true == true);
-    }
-
-    function simpleInputSimpleOutput(uint256)
-        public
-        pure
-        returns (uint256)
-    {
-        return 1991;
-    }
-
-    function complexInputComplexOutput(ComplexInput memory complexInput)
-        public
-        pure
-        returns (ComplexOutput memory)
-    {
-        return ComplexOutput({
-            input: complexInput,
-            lorem: hex'12345678',
-            ipsum: hex'87654321',
-            dolor: "amet"
-        });
-    }
-
-    function multiInputMultiOutput(
-        uint256,
-        bytes memory,
-        string memory
-    )
-        public
-        pure
-        returns (
-            bytes memory,
-            bytes memory,
-            string memory
-        )
-    {
-        return (
-            hex'12345678',
-            hex'87654321',
-            "amet"
-        );
-    }
-
+    /// @dev The fallback function calls into this contract and executes one of the above functions.
+    /// This allows us to test `getABIDecodedTransactionData` and `getABIDecodedReturnData` that is
+    /// include in contract wrappers.
+    // solhint-disable no-complex-fallback
     function ()
         external
+        payable
     {
         address addr = address(this);
         assembly {
@@ -137,5 +79,76 @@ contract TestAbi {
             // return call results
             return(0, returndatasize())
         }
+    }
+    
+    /// @dev Tests decoding when both input and output are empty.
+    function noInputNoOutput()
+        public
+        pure
+    {
+        // NOP
+        require(true == true);
+    }
+
+    /// @dev Tests decoding when input is empty and output is non-empty.
+    function noInputSimpleOutput()
+        public
+        pure
+        returns (uint256)
+    {
+        return 1991;
+    }
+
+    /// @dev Tests decoding when input is not empty but output is empty.
+    function simpleInputNoOutput(uint256)
+        public
+        pure
+    {
+        // NOP
+        require(true == true);
+    }
+
+    /// @dev Tests decoding when both input and output are non-empty.
+    function simpleInputSimpleOutput(uint256)
+        public
+        pure
+        returns (uint256)
+    {
+        return 1991;
+    }
+
+    /// @dev Tests decoding when the input and output are complex.
+    function complexInputComplexOutput(ComplexInput memory complexInput)
+        public
+        pure
+        returns (ComplexOutput memory)
+    {
+        return ComplexOutput({
+            input: complexInput,
+            lorem: hex'12345678',
+            ipsum: hex'87654321',
+            dolor: "amet"
+        });
+    }
+
+    /// @dev Tests decoding when the input and output are complex and have more than one argument.
+    function multiInputMultiOutput(
+        uint256,
+        bytes memory,
+        string memory
+    )
+        public
+        pure
+        returns (
+            bytes memory,
+            bytes memory,
+            string memory
+        )
+    {
+        return (
+            hex'12345678',
+            hex'87654321',
+            "amet"
+        );
     }
 }

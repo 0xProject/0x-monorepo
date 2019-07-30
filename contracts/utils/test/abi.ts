@@ -2,7 +2,6 @@ import { chaiSetup, provider, txDefaults, web3Wrapper } from '@0x/contracts-test
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
-import { DecodedLogArgs, LogWithDecodedArgs } from 'ethereum-types';
 
 import { artifacts, TestAbiContract } from '../src';
 
@@ -11,7 +10,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe.only('TestAbi', () => {
+describe('TestAbi', () => {
     let testAbi: TestAbiContract;
     const runTestAsync = async (contractMethod: any, input: any, output: any) => {
         const transaction = contractMethod.getABIEncodedTransactionData(input);
@@ -64,14 +63,14 @@ describe.only('TestAbi', () => {
                 car: 'zoom zoom',
             };
             const output = {
-                input: input,
+                input,
                 lorem: '0x12345678',
                 ipsum: '0x87654321',
                 dolor: 'amet',
             };
             await runTestAsync(testAbi.complexInputComplexOutput, input, output);
         });
-        it('should successfully encode/decode (complex input / complex output)', async () => {
+        it('should successfully encode/decode (multi-input / multi-output)', async () => {
             const input = [new BigNumber(1991), '0x1234', 'zoom zoom'];
             const output = ['0x12345678', '0x87654321', 'amet'];
             const transaction = testAbi.multiInputMultiOutput.getABIEncodedTransactionData(
