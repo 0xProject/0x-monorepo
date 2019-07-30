@@ -1,5 +1,14 @@
 [
     {
+        "version": "8.3.0",
+        "changes": [
+            {
+                "note": "Fix isValidValidatorSignatureAsync",
+                "pr": 2017
+            }
+        ]
+    },
+    {
         "version": "8.2.3",
         "changes": [
             {
