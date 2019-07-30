@@ -70,6 +70,20 @@ export class EthBalanceCheckerContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(returnData: string): BigNumber[] {
+            const self = (this as any) as EthBalanceCheckerContract;
+            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber[]>(returnData);
+            return abiDecodedReturnData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber[] {
+            const self = (this as any) as EthBalanceCheckerContract;
+            const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber[]>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
