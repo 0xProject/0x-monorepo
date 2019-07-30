@@ -591,7 +591,9 @@ workflows:
             #           - build-3.0
             - submit-coverage-3.0:
                   requires:
-                      - test-python
+                      - test-contracts-ganache-3.0
+                      - test-rest-3.0
+                      - static-tests-3.0
             # Disabled for 3.0
             # - test-python:
             #       requires:
