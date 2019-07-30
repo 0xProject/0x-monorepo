@@ -107,8 +107,7 @@ class SimpleRequireMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class AcceptsAnArrayOfBytesMethod(ContractMethod):
     """Various interfaces to the acceptsAnArrayOfBytes method."""
@@ -155,8 +154,7 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(a)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
 
 class EcrecoverFnMethod(ContractMethod):
     """Various interfaces to the ecrecoverFn method."""
@@ -208,8 +206,7 @@ class EcrecoverFnMethod(ContractMethod):
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(_hash, v, r, s)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(_hash, v, r, s).transact(tx_params.as_dict())
 
 class AcceptsBytesMethod(ContractMethod):
     """Various interfaces to the acceptsBytes method."""
@@ -247,8 +244,7 @@ class AcceptsBytesMethod(ContractMethod):
         """
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(a)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
 
 class RevertWithConstantMethod(ContractMethod):
     """Various interfaces to the revertWithConstant method."""
@@ -274,8 +270,7 @@ class RevertWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class SimpleRevertMethod(ContractMethod):
     """Various interfaces to the simpleRevert method."""
@@ -301,8 +296,7 @@ class SimpleRevertMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class NestedStructOutputMethod(ContractMethod):
     """Various interfaces to the nestedStructOutput method."""
@@ -328,8 +322,7 @@ class NestedStructOutputMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class RequireWithConstantMethod(ContractMethod):
     """Various interfaces to the requireWithConstant method."""
@@ -355,8 +348,7 @@ class RequireWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class WithAddressInputMethod(ContractMethod):
     """Various interfaces to the withAddressInput method."""
@@ -421,8 +413,7 @@ class WithAddressInputMethod(ContractMethod):
         """
         (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(x, a, b, y, c)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(x, a, b, y, c).transact(tx_params.as_dict())
 
 class StructInputMethod(ContractMethod):
     """Various interfaces to the structInput method."""
@@ -459,8 +450,7 @@ class StructInputMethod(ContractMethod):
         """
         (s) = self.validate_and_normalize_inputs(s)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(s)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(s).transact(tx_params.as_dict())
 
 class NonPureMethodMethod(ContractMethod):
     """Various interfaces to the nonPureMethod method."""
@@ -485,8 +475,7 @@ class NonPureMethodMethod(ContractMethod):
         :param tx_params: transaction parameters
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class SimplePureFunctionWithInputMethod(ContractMethod):
     """Various interfaces to the simplePureFunctionWithInput method."""
@@ -525,8 +514,7 @@ class SimplePureFunctionWithInputMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(x)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
 
 class NonPureMethodThatReturnsNothingMethod(ContractMethod):
     """Various interfaces to the nonPureMethodThatReturnsNothing method."""
@@ -551,8 +539,7 @@ class NonPureMethodThatReturnsNothingMethod(ContractMethod):
         :param tx_params: transaction parameters
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class SimplePureFunctionMethod(ContractMethod):
     """Various interfaces to the simplePureFunction method."""
@@ -578,8 +565,7 @@ class SimplePureFunctionMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class NestedStructInputMethod(ContractMethod):
     """Various interfaces to the nestedStructInput method."""
@@ -616,8 +602,7 @@ class NestedStructInputMethod(ContractMethod):
         """
         (n) = self.validate_and_normalize_inputs(n)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(n)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(n).transact(tx_params.as_dict())
 
 class StructOutputMethod(ContractMethod):
     """Various interfaces to the structOutput method."""
@@ -647,8 +632,7 @@ class StructOutputMethod(ContractMethod):
         :returns: a Struct struct
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 class PureFunctionWithConstantMethod(ContractMethod):
     """Various interfaces to the pureFunctionWithConstant method."""
@@ -674,8 +658,7 @@ class PureFunctionWithConstantMethod(ContractMethod):
 
         """
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method()
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AbiGenDummy:

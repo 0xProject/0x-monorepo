@@ -52,14 +52,6 @@ class ContractMethod:
             validator = Validator(provider, contract_address)
         self.validator = validator
 
-        self._can_send_tx = False
-        if self._web3_eth.defaultAccount or self._web3_eth.accounts:
-            self._can_send_tx = True
-        else:
-            middleware_stack = getattr(self._web3, "middleware_stack")
-            if middleware_stack.get("sign_and_send_raw_middleware"):
-                self._can_send_tx = True
-
     def validate_and_checksum_address(self, address: str):
         """Validate the given address, and return it's checksum address."""
         if not self._web3.isAddress(address):
@@ -76,13 +68,3 @@ class ContractMethod:
             )
         tx_params.from_ = self.validate_and_checksum_address(tx_params.from_)
         return tx_params
-
-    def invoke_send_transaction(self, func, tx_params):
-        """Invoke the given contract method."""
-        if not self._can_send_tx:
-            raise Exception(
-                "Cannot send transaction because no account found."
-            )
-        tx_params = self.normalize_tx_params(tx_params)
-        return func.transact(tx_params.as_dict())
-

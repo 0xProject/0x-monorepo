@@ -78,8 +78,7 @@ class PublicAddConstantMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(x)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
 
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
@@ -118,8 +117,7 @@ class PublicAddOneMethod(ContractMethod):
         """
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
-        func = self.underlying_method(x)
-        return super().invoke_send_transaction(func=func, tx_params=tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
 
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy:
