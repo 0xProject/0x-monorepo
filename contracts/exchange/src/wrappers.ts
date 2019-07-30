@@ -17,7 +17,7 @@ export * from '../generated-wrappers/i_wrapper_functions';
 export * from '../generated-wrappers/reentrant_erc20_token';
 export * from '../generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../generated-wrappers/test_exchange_internals';
-export * from '../generated-wrappers/test_exchange_isolated_fill_order';
+export * from '../generated-wrappers/test_exchange_isolated';
 export * from '../generated-wrappers/test_exchange_math';
 export * from '../generated-wrappers/test_lib_exchange_rich_error_decoder';
 export * from '../generated-wrappers/test_signature_validator';

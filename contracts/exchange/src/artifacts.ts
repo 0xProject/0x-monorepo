@@ -19,7 +19,7 @@ import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.jso
 import * as ReentrantERC20Token from '../generated-artifacts/ReentrantERC20Token.json';
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
-import * as TestExchangeIsolatedFillOrder from '../generated-artifacts/TestExchangeIsolatedFillOrder.json';
+import * as TestExchangeIsolated from '../generated-artifacts/TestExchangeIsolated.json';
 import * as TestExchangeMath from '../generated-artifacts/TestExchangeMath.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
@@ -40,8 +40,8 @@ export const artifacts = {
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
-    TestExchangeIsolatedFillOrder: TestExchangeIsolatedFillOrder as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
+    TestExchangeIsolated: TestExchangeIsolated as ContractArtifact,
     TestExchangeMath: TestExchangeMath as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
