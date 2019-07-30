@@ -1,5 +1,19 @@
 [
     {
+        "timestamp": 1563193019,
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Added optimization utils to consumer output",
+                "pr": 1988
+            },
+            {
+                "note": "Expanded test coverage",
+                "pr": 1980
+            }
+        ]
+    },
+    {
         "timestamp": 1563957393,
         "version": "0.0.5",
         "changes": [

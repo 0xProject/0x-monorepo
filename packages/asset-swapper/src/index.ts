@@ -36,6 +36,7 @@ export {
     SwapQuote,
     SwapQuoteConsumerOpts,
     CalldataInfo,
+    ConsumerType,
     SwapQuoteGetOutputOpts,
     SwapQuoteExecutionOpts,
     SwapQuoteInfo,
