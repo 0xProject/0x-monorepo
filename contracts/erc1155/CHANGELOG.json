@@ -1,5 +1,14 @@
 [
     {
+        "version": "1.1.11",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deployFrom0xArtifactAsync to include artifact dependencies.",
+                "pr": 1995
+            }
+        ]
+    },
+    {
         "timestamp": 1563957393,
         "version": "1.1.10",
         "changes": [

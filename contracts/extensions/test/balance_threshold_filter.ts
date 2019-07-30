@@ -130,6 +130,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             zrxAssetData,
         );
         exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
@@ -148,6 +149,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
+            artifacts,
             exchangeInstance.address,
             erc721BalanceThresholdAsset.address,
             erc721alanceThreshold,
@@ -157,6 +159,7 @@ describe(ContractName.BalanceThresholdFilter, () => {
             artifacts.BalanceThresholdFilter,
             provider,
             txDefaults,
+            artifacts,
             exchangeInstance.address,
             erc20BalanceThresholdAsset.address,
             erc20BalanceThreshold,

@@ -3,7 +3,11 @@
         "version": "8.3.0",
         "changes": [
             {
-                "note": "Fix isValidValidatorSignatureAsync",
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Fix isValidValidatorSignatureAsync", 
                 "pr": 2017
             }
         ]

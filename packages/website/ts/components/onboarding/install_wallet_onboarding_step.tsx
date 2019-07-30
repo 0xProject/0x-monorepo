@@ -1,8 +1,8 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Image } from 'ts/components/ui/image';
 import { Text } from 'ts/components/ui/text';
+import { colors } from 'ts/utils/colors';
 import { utils } from 'ts/utils/utils';
 
 export interface InstallWalletOnboardingStepProps {}

@@ -48,6 +48,7 @@ describe('ERC721Token', () => {
             artifacts.DummyERC721Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
         );
@@ -55,6 +56,7 @@ describe('ERC721Token', () => {
             artifacts.DummyERC721Receiver,
             provider,
             txDefaults,
+            artifacts,
         );
         logDecoder = new LogDecoder(web3Wrapper, artifacts);
         await web3Wrapper.awaitTransactionSuccessAsync(
@@ -176,6 +178,7 @@ describe('ERC721Token', () => {
                 artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
@@ -190,6 +193,7 @@ describe('ERC721Token', () => {
                 artifacts.InvalidERC721Receiver,
                 provider,
                 txDefaults,
+                artifacts,
             );
             const from = owner;
             const to = invalidErc721Receiver.address;
@@ -237,6 +241,7 @@ describe('ERC721Token', () => {
                 artifacts.DummyERC721Token,
                 provider,
                 txDefaults,
+                artifacts,
                 constants.DUMMY_TOKEN_NAME,
                 constants.DUMMY_TOKEN_SYMBOL,
             );
@@ -251,6 +256,7 @@ describe('ERC721Token', () => {
                 artifacts.InvalidERC721Receiver,
                 provider,
                 txDefaults,
+                artifacts,
             );
             const from = owner;
             const to = invalidErc721Receiver.address;

@@ -53,10 +53,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
-        const { to, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
-
         const { orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient } = params;
 
         let args: any[];
@@ -66,11 +65,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
         } else {
             args = [orders, signatures, feeOrders, feeSignatures, feePercentage, feeRecipient];
         }
-        const calldataHexString = abiEncoder.encode(args);
+        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
         return {
             calldataHexString,
             methodAbi,
-            to,
+            toAddress,
             ethAmount,
         };
     }
@@ -150,7 +149,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         return {
             params,
-            to: this._contractWrappers.forwarder.address,
+            toAddress: this._contractWrappers.forwarder.address,
             ethAmount: ethAmount || worstCaseQuoteInfo.totalTakerTokenAmount,
             methodAbi,
         };

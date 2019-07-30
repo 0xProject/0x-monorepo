@@ -9,7 +9,6 @@ import {
     IndexedFilterValues,
 } from '@0x/contract-wrappers';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
-import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
@@ -43,6 +42,7 @@ import {
     BlockchainCallErrs,
     BlockchainErrs,
     ContractInstance,
+    EtherscanLinkSuffixes,
     Fill,
     InjectedProvider,
     InjectedProviderObservable,
@@ -258,11 +258,7 @@ export class Blockchain {
         this._showFlashMessageIfLedger();
         const txHash = await this._web3Wrapper.sendTransactionAsync(transaction);
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
-            txHash,
-            this.networkId,
-            EtherscanLinkSuffixes.Tx,
-        );
+        const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
         this._dispatcher.showFlashMessage(
             React.createElement(AssetSendCompleted, {
                 etherScanLinkIfExists,
@@ -288,11 +284,7 @@ export class Blockchain {
             },
         );
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
-        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
-            txHash,
-            this.networkId,
-            EtherscanLinkSuffixes.Tx,
-        );
+        const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
         this._dispatcher.showFlashMessage(
             React.createElement(AssetSendCompleted, {
                 etherScanLinkIfExists,
@@ -622,11 +614,7 @@ export class Blockchain {
     private async _showEtherScanLinkAndAwaitTransactionMinedAsync(
         txHash: string,
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const etherScanLinkIfExists = sharedUtils.getEtherScanLinkIfExists(
-            txHash,
-            this.networkId,
-            EtherscanLinkSuffixes.Tx,
-        );
+        const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
         this._dispatcher.showFlashMessage(
             React.createElement(TransactionSubmitted, {
                 etherScanLinkIfExists,

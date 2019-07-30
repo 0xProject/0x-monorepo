@@ -101,6 +101,7 @@ describe('Asset Transfer Proxies', () => {
             artifacts.MultiAssetProxy,
             provider,
             txDefaults,
+            artifacts,
         );
 
         // Configure ERC20Proxy
@@ -173,6 +174,7 @@ describe('Asset Transfer Proxies', () => {
             erc20Artifacts.DummyNoReturnERC20Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -182,6 +184,7 @@ describe('Asset Transfer Proxies', () => {
             erc20Artifacts.DummyMultipleReturnERC20Token,
             provider,
             txDefaults,
+            artifacts,
             constants.DUMMY_TOKEN_NAME,
             constants.DUMMY_TOKEN_SYMBOL,
             constants.DUMMY_TOKEN_DECIMALS,
@@ -224,6 +227,7 @@ describe('Asset Transfer Proxies', () => {
             erc721Artifacts.DummyERC721Receiver,
             provider,
             txDefaults,
+            artifacts,
         );
 
         await erc721Wrapper.setBalancesAndAllowancesAsync();

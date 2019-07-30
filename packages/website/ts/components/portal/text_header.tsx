@@ -1,5 +1,5 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 import { Text } from 'ts/components/ui/text';
 

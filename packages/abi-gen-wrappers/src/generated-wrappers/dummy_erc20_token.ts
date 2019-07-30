@@ -1115,6 +1115,7 @@ export class DummyERC20TokenContract extends BaseContract {
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _name: string,
         _symbol: string,
         _decimals: BigNumber,
@@ -1131,11 +1132,16 @@ export class DummyERC20TokenContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
         return DummyERC20TokenContract.deployAsync(
             bytecode,
             abi,
             provider,
             txDefaults,
+            logDecodeDependenciesAbiOnly,
             _name,
             _symbol,
             _decimals,
@@ -1147,6 +1153,7 @@ export class DummyERC20TokenContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _name: string,
         _symbol: string,
         _decimals: BigNumber,
@@ -1178,7 +1185,12 @@ export class DummyERC20TokenContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`DummyERC20Token successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new DummyERC20TokenContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new DummyERC20TokenContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [_name, _symbol, _decimals, _totalSupply];
         return contractInstance;
     }
@@ -1574,8 +1586,20 @@ export class DummyERC20TokenContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('DummyERC20Token', DummyERC20TokenContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super(
+            'DummyERC20Token',
+            DummyERC20TokenContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<DummyERC20TokenEventArgs, DummyERC20TokenEvents>(
             DummyERC20TokenContract.ABI(),

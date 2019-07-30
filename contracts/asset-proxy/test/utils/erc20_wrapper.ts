@@ -37,6 +37,7 @@ export class ERC20Wrapper {
                     erc20Artifacts.DummyERC20Token,
                     this._provider,
                     txDefaults,
+                    artifacts,
                     constants.DUMMY_TOKEN_NAME,
                     constants.DUMMY_TOKEN_SYMBOL,
                     decimals,
@@ -51,6 +52,7 @@ export class ERC20Wrapper {
             artifacts.ERC20Proxy,
             this._provider,
             txDefaults,
+            artifacts,
         );
         this._proxyIdIfExists = await this._proxyContract.getProxyId.callAsync();
         return this._proxyContract;

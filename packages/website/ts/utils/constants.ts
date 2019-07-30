@@ -1,6 +1,7 @@
-import { ALink } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
-import { Key, WebsitePaths } from 'ts/types';
+import { ALink, Key, Networks, WebsitePaths } from 'ts/types';
+
+import { SupportedDocJson } from '../types';
 
 const URL_FORUM = 'https://forum.0x.org';
 const URL_ZEROEX_CHAT = 'https://discord.gg/d3FTX3M';
@@ -132,4 +133,25 @@ export const constants = {
             shouldOpenInNewTab: true,
         },
     ] as ALink[],
+    TYPES_SECTION_NAME: 'types',
+    EXTERNAL_EXPORTS_SECTION_NAME: 'external exports',
+    TYPE_TO_SYNTAX: {
+        [SupportedDocJson.SolDoc]: 'solidity',
+        [SupportedDocJson.TypeDoc]: 'typescript',
+    } as { [supportedDocType: string]: string },
+    DOCS_SCROLL_DURATION_MS: 0,
+    SCROLL_CONTAINER_ID: 'scroll_container',
+    SCROLL_TOP_ID: 'pageScrollTop',
+    NETWORK_NAME_BY_ID: {
+        1: Networks.Mainnet,
+        3: Networks.Ropsten,
+        4: Networks.Rinkeby,
+        42: Networks.Kovan,
+    } as { [symbol: number]: string },
+    NETWORK_ID_BY_NAME: {
+        [Networks.Mainnet]: 1,
+        [Networks.Ropsten]: 3,
+        [Networks.Rinkeby]: 4,
+        [Networks.Kovan]: 42,
+    } as { [networkName: string]: number },
 };

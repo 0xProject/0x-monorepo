@@ -1,4 +1,3 @@
-import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 
@@ -7,7 +6,7 @@ import { defaultMenuItemEntries, Menu } from 'ts/components/portal/menu';
 import { Identicon } from 'ts/components/ui/identicon';
 import { Text } from 'ts/components/ui/text';
 import { colors } from 'ts/style/colors';
-import { ProviderType, WebsitePaths } from 'ts/types';
+import { ProviderType, Styles, WebsitePaths } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 const IDENTICON_DIAMETER = 45;

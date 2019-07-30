@@ -74,6 +74,7 @@ describe('Coordinator tests', () => {
             exchangeArtifacts.Exchange,
             provider,
             txDefaults,
+            artifacts,
             assetDataUtils.encodeERC20AssetData(zrxToken.address),
         );
 
@@ -91,6 +92,7 @@ describe('Coordinator tests', () => {
             artifacts.Coordinator,
             provider,
             txDefaults,
+            artifacts,
             exchange.address,
         );
 

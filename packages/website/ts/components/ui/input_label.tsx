@@ -1,5 +1,6 @@
-import { colors, Styles } from '@0x/react-shared';
 import * as React from 'react';
+import { Styles } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 export interface InputLabelProps {
     text: string | Element | React.ReactNode;

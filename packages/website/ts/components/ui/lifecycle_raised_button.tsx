@@ -1,7 +1,7 @@
-import { colors } from '@0x/react-shared';
 import { errorUtils } from '@0x/utils';
 import RaisedButton from 'material-ui/RaisedButton';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 const COMPLETE_STATE_SHOW_LENGTH_MS = 2000;
 

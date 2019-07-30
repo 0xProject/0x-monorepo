@@ -1,4 +1,3 @@
-import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button } from 'ts/components/ui/button';
@@ -6,6 +5,7 @@ import { Container } from 'ts/components/ui/container';
 import { DropDown, DropdownMouseEvent } from 'ts/components/ui/drop_down';
 import { Text } from 'ts/components/ui/text';
 import { styled } from 'ts/style/theme';
+import { colors } from 'ts/utils/colors';
 
 interface ActiveNodeProps {
     className?: string;

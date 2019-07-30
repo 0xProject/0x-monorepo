@@ -1,7 +1,7 @@
-import { colors } from '@0x/react-shared';
 import { darken } from 'polished';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
+import { colors } from 'ts/utils/colors';
 
 export type TextTag = 'p' | 'div' | 'span' | 'label' | 'h1' | 'h2' | 'h3' | 'h4' | 'i' | 'span';
 
