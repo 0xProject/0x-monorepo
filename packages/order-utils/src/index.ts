@@ -67,12 +67,16 @@ export {
     EIP712DomainWithDefaultSchema,
     ZeroExTransaction,
     SignedZeroExTransaction,
+    ValidatorSignature,
 } from '@0x/types';
 
 export {
     TypedDataError,
     TradeSide,
     TransferType,
+    SignatureValidationOpts,
+    ValidatorSignatureOpts,
+    PresignedSignatureOpts,
     FindFeeOrdersThatCoverFeesForTargetOrdersOpts,
     FindOrdersThatCoverMakerAssetFillAmountOpts,
     FindOrdersThatCoverTakerAssetFillAmountOpts,

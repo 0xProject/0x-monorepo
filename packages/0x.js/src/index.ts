@@ -6,6 +6,9 @@ export {
     generatePseudoRandomSalt,
     orderHashUtils,
     transactionHashUtils,
+    SignatureValidationOpts,
+    ValidatorSignatureOpts,
+    PresignedSignatureOpts,
 } from '@0x/order-utils';
 
 export {
@@ -105,6 +108,7 @@ export {
     DutchAuctionDetails,
     ZeroExTransaction,
     SignedZeroExTransaction,
+    ValidatorSignature,
 } from '@0x/types';
 
 export {
