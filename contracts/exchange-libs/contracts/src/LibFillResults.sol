@@ -19,13 +19,15 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./LibMath.sol";
 import "./LibOrder.sol";
 
 
-contract LibFillResults is
-    LibMath
-{
+library LibFillResults {
+
+    using LibSafeMath for uint256;
+
     struct BatchMatchedFillResults {
         FillResults[] left;              // Fill results for left orders
         FillResults[] right;             // Fill results for right orders
@@ -55,23 +57,23 @@ contract LibFillResults is
         LibOrder.Order memory order,
         uint256 takerAssetFilledAmount
     )
-        public
+        internal
         pure
         returns (FillResults memory fillResults)
     {
         // Compute proportional transfer amounts
         fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = _safeGetPartialAmountFloor(
+        fillResults.makerAssetFilledAmount = LibMath.safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.makerAssetAmount
         );
-        fillResults.makerFeePaid = _safeGetPartialAmountFloor(
+        fillResults.makerFeePaid = LibMath.safeGetPartialAmountFloor(
             fillResults.makerAssetFilledAmount,
             order.makerAssetAmount,
             order.makerFee
         );
-        fillResults.takerFeePaid = _safeGetPartialAmountFloor(
+        fillResults.takerFeePaid = LibMath.safeGetPartialAmountFloor(
             takerAssetFilledAmount,
             order.takerAssetAmount,
             order.takerFee
@@ -98,19 +100,19 @@ contract LibFillResults is
         uint256 rightOrderTakerAssetFilledAmount,
         bool shouldMaximallyFillOrders
     )
-        public
+        internal
         pure
         returns (MatchedFillResults memory matchedFillResults)
     {
         // Derive maker asset amounts for left & right orders, given store taker assert amounts
-        uint256 leftTakerAssetAmountRemaining = _safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
-        uint256 leftMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
+        uint256 leftTakerAssetAmountRemaining = leftOrder.takerAssetAmount.safeSub(leftOrderTakerAssetFilledAmount);
+        uint256 leftMakerAssetAmountRemaining = LibMath.safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
             leftTakerAssetAmountRemaining
         );
-        uint256 rightTakerAssetAmountRemaining = _safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
-        uint256 rightMakerAssetAmountRemaining = _safeGetPartialAmountFloor(
+        uint256 rightTakerAssetAmountRemaining = rightOrder.takerAssetAmount.safeSub(rightOrderTakerAssetFilledAmount);
+        uint256 rightMakerAssetAmountRemaining = LibMath.safeGetPartialAmountFloor(
             rightOrder.makerAssetAmount,
             rightOrder.takerAssetAmount,
             rightTakerAssetAmountRemaining
@@ -138,24 +140,24 @@ contract LibFillResults is
         }
 
         // Compute fees for left order
-        matchedFillResults.left.makerFeePaid = _safeGetPartialAmountFloor(
+        matchedFillResults.left.makerFeePaid = LibMath.safeGetPartialAmountFloor(
             matchedFillResults.left.makerAssetFilledAmount,
             leftOrder.makerAssetAmount,
             leftOrder.makerFee
         );
-        matchedFillResults.left.takerFeePaid = _safeGetPartialAmountFloor(
+        matchedFillResults.left.takerFeePaid = LibMath.safeGetPartialAmountFloor(
             matchedFillResults.left.takerAssetFilledAmount,
             leftOrder.takerAssetAmount,
             leftOrder.takerFee
         );
 
         // Compute fees for right order
-        matchedFillResults.right.makerFeePaid = _safeGetPartialAmountFloor(
+        matchedFillResults.right.makerFeePaid = LibMath.safeGetPartialAmountFloor(
             matchedFillResults.right.makerAssetFilledAmount,
             rightOrder.makerAssetAmount,
             rightOrder.makerFee
         );
-        matchedFillResults.right.takerFeePaid = _safeGetPartialAmountFloor(
+        matchedFillResults.right.takerFeePaid = LibMath.safeGetPartialAmountFloor(
             matchedFillResults.right.takerAssetFilledAmount,
             rightOrder.takerAssetAmount,
             rightOrder.takerFee
@@ -163,6 +165,23 @@ contract LibFillResults is
 
         // Return fill results
         return matchedFillResults;
+    }
+
+    /// @dev Adds properties of both FillResults instances.
+    /// @param fillResults1 The first FillResults.
+    /// @param fillResults2 The second FillResults.
+    /// @return The sum of both fill results.
+    function addFillResults(FillResults memory fillResults1, FillResults memory fillResults2)
+        internal
+        pure
+        returns (FillResults memory totalFillResults)
+    {
+        totalFillResults.makerAssetFilledAmount = fillResults1.makerAssetFilledAmount.safeAdd(fillResults2.makerAssetFilledAmount);
+        totalFillResults.takerAssetFilledAmount = fillResults1.takerAssetFilledAmount.safeAdd(fillResults2.takerAssetFilledAmount);
+        totalFillResults.makerFeePaid = fillResults1.makerFeePaid.safeAdd(fillResults2.makerFeePaid);
+        totalFillResults.takerFeePaid = fillResults1.takerFeePaid.safeAdd(fillResults2.takerFeePaid);
+
+        return totalFillResults;
     }
 
     /// @dev Calculates part of the matched fill results for a given situation using the fill strategy that only
@@ -182,7 +201,7 @@ contract LibFillResults is
         uint256 rightMakerAssetAmountRemaining,
         uint256 rightTakerAssetAmountRemaining
     )
-        internal
+        private
         pure
         returns (MatchedFillResults memory matchedFillResults)
     {
@@ -211,7 +230,7 @@ contract LibFillResults is
             matchedFillResults.right.makerAssetFilledAmount = leftTakerAssetAmountRemaining;
             // Round up to ensure the maker's exchange rate does not exceed the price specified by the order.
             // We favor the maker when the exchange rate must be rounded.
-            matchedFillResults.right.takerAssetFilledAmount = _safeGetPartialAmountCeil(
+            matchedFillResults.right.takerAssetFilledAmount = LibMath.safeGetPartialAmountCeil(
                 rightOrder.takerAssetAmount,
                 rightOrder.makerAssetAmount,
                 leftTakerAssetAmountRemaining // matchedFillResults.right.makerAssetFilledAmount
@@ -229,8 +248,7 @@ contract LibFillResults is
         }
 
         // Calculate amount given to taker
-        matchedFillResults.profitInLeftMakerAsset = _safeSub(
-            matchedFillResults.left.makerAssetFilledAmount,
+        matchedFillResults.profitInLeftMakerAsset = matchedFillResults.left.makerAssetFilledAmount.safeSub(
             matchedFillResults.right.takerAssetFilledAmount
         );
 
@@ -254,7 +272,7 @@ contract LibFillResults is
         uint256 rightMakerAssetAmountRemaining,
         uint256 rightTakerAssetAmountRemaining
     )
-        internal
+        private
         pure
         returns (MatchedFillResults memory matchedFillResults)
     {
@@ -292,7 +310,7 @@ contract LibFillResults is
             // Round down to ensure the right maker's exchange rate does not exceed the price specified by the order.
             // We favor the right maker when the exchange rate must be rounded and the profit is being paid in the
             // right maker asset.
-            matchedFillResults.right.makerAssetFilledAmount = _safeGetPartialAmountFloor(
+            matchedFillResults.right.makerAssetFilledAmount = LibMath.safeGetPartialAmountFloor(
                 rightOrder.makerAssetAmount,
                 rightOrder.takerAssetAmount,
                 leftMakerAssetAmountRemaining
@@ -310,16 +328,14 @@ contract LibFillResults is
 
         // Calculate amount given to taker in the left order's maker asset if the left spread will be part of the profit.
         if (doesLeftMakerAssetProfitExist) {
-            matchedFillResults.profitInLeftMakerAsset = _safeSub(
-                matchedFillResults.left.makerAssetFilledAmount,
+            matchedFillResults.profitInLeftMakerAsset = matchedFillResults.left.makerAssetFilledAmount.safeSub(
                 matchedFillResults.right.takerAssetFilledAmount
             );
         }
 
         // Calculate amount given to taker in the right order's maker asset if the right spread will be part of the profit.
         if (doesRightMakerAssetProfitExist) {
-            matchedFillResults.profitInRightMakerAsset = _safeSub(
-                matchedFillResults.right.makerAssetFilledAmount,
+            matchedFillResults.profitInRightMakerAsset = matchedFillResults.right.makerAssetFilledAmount.safeSub(
                 matchedFillResults.left.takerAssetFilledAmount
             );
         }
@@ -341,7 +357,7 @@ contract LibFillResults is
         uint256 rightMakerAssetAmountRemaining,
         uint256 rightTakerAssetAmountRemaining
     )
-        internal
+        private
         pure
         returns (MatchedFillResults memory matchedFillResults)
     {
@@ -366,7 +382,7 @@ contract LibFillResults is
         uint256 rightMakerAssetAmountRemaining,
         uint256 rightTakerAssetAmountRemaining
     )
-        internal
+        private
         pure
         returns (MatchedFillResults memory matchedFillResults)
     {
@@ -376,29 +392,12 @@ contract LibFillResults is
         // Round down to ensure the left maker's exchange rate does not exceed the price specified by the order.
         // We favor the left maker when the exchange rate must be rounded and the profit is being paid in the
         // left maker asset.
-        matchedFillResults.left.makerAssetFilledAmount = _safeGetPartialAmountFloor(
+        matchedFillResults.left.makerAssetFilledAmount = LibMath.safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
             rightMakerAssetAmountRemaining
         );
 
         return matchedFillResults;
-    }
-
-    /// @dev Adds properties of both FillResults instances.
-    /// @param fillResults1 The first FillResults.
-    /// @param fillResults2 The second FillResults.
-    /// @return The sum of both fill results.
-    function _addFillResults(FillResults memory fillResults1, FillResults memory fillResults2)
-        internal
-        pure
-        returns (FillResults memory totalFillResults)
-    {
-        totalFillResults.makerAssetFilledAmount = _safeAdd(fillResults1.makerAssetFilledAmount, fillResults2.makerAssetFilledAmount);
-        totalFillResults.takerAssetFilledAmount = _safeAdd(fillResults1.takerAssetFilledAmount, fillResults2.takerAssetFilledAmount);
-        totalFillResults.makerFeePaid = _safeAdd(fillResults1.makerFeePaid, fillResults2.makerFeePaid);
-        totalFillResults.takerFeePaid = _safeAdd(fillResults1.takerFeePaid, fillResults2.takerFeePaid);
-
-        return totalFillResults;
     }
 }
