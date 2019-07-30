@@ -16,6 +16,7 @@ export {
     DataItem,
     StateMutability,
     EventParameter,
+    TupleDataItem,
     ConstructorStateMutability,
 } from 'ethereum-types';
 
