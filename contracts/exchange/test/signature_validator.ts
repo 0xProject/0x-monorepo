@@ -94,6 +94,16 @@ describe('MixinSignatureValidator', () => {
             ),
             constants.AWAIT_TRANSACTION_MINED_MS,
         );
+        await web3Wrapper.awaitTransactionSuccessAsync(
+            await signatureValidator.setSignatureValidatorApproval.sendTransactionAsync(
+                testValidator.address,
+                true,
+                {
+                    from: notSignerAddress,
+                },
+            ),
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
 
         const defaultOrderParams = {
             ...constants.STATIC_ORDER_PARAMS,
@@ -359,6 +369,15 @@ describe('MixinSignatureValidator', () => {
                 signatureHex,
             );
             expect(isValidSignature).to.be.true();
+
+            const isValidSignatureTs = await signatureUtils.isValidSignatureAsync(
+                provider,
+                orderHashHex,
+                signatureHex,
+                signerAddress,
+                { exchangeAddress: signatureValidator.address },
+            );
+            expect(isValidSignatureTs).to.be.true();
         });
 
         it('should return false when SignatureType=Validator, signature is invalid and validator is approved', async () => {
@@ -375,6 +394,15 @@ describe('MixinSignatureValidator', () => {
                 signatureHex,
             );
             expect(isValidSignature).to.be.false();
+
+            const isValidSignatureTs = await signatureUtils.isValidSignatureAsync(
+                provider,
+                orderHashHex,
+                signatureHex,
+                notSignerAddress,
+                { exchangeAddress: signatureValidator.address },
+            );
+            expect(isValidSignatureTs).to.be.false();
         });
 
         it('should revert when `isValidSignature` attempts to update state and SignatureType=Validator', async () => {
@@ -410,6 +438,12 @@ describe('MixinSignatureValidator', () => {
                 signatureHex,
             );
             expect(isValidSignature).to.be.false();
+
+            expect(
+                signatureUtils.isValidSignatureAsync(provider, orderHashHex, signatureHex, signerAddress, {
+                    exchangeAddress: signatureValidator.address,
+                }),
+            ).to.be.rejected();
         });
 
         it('should return true when SignatureType=Presigned and signer has presigned hash', async () => {

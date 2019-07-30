@@ -195,7 +195,7 @@ export const signatureUtils = {
             );
         }
 
-        const validatorContract = new IValidatorContract(validatorSignature.signature, provider);
+        const validatorContract = new IValidatorContract(validatorSignature.validatorAddress, provider);
         const isValid = await validatorContract.isValidSignature.callAsync(
             data,
             signerAddress,
