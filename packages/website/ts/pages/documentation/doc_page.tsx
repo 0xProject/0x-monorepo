@@ -41,6 +41,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
     [DocPackages.AssetBuyer]: 'asset-buyer',
+    [DocPackages.AssetSwapper]: 'asset-swapper',
     [DocPackages.Migrations]: 'migrations',
 };
 

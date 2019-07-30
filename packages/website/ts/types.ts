@@ -473,6 +473,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
+    AssetSwapper = '/docs/asset-swapper',
     Migrations = '/docs/migrations',
     Careers = '/careers',
     Credits = '/credits',
@@ -497,6 +498,7 @@ export enum DocPackages {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    AssetSwapper = 'ASSET_SWAPPER',
     Migrations = 'MIGRATIONS',
 }
 
@@ -560,6 +562,7 @@ export enum Key {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    AssetSwapper = 'ASSET_SWAPPER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',

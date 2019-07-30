@@ -172,6 +172,14 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
                 to: WebsitePaths.AssetBuyer,
             },
         },
+        {
+            description:
+                'Coonvenience package for discovering and performing swaps for any ERC20 Assets',
+            link: {
+                title: '@0x/asset-swapper',
+                to: WebsitePaths.AssetSwapper,
+            },
+        },
     ],
     [Categories.ZeroExProtocolPython]: [
         {

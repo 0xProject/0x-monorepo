@@ -77,7 +77,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
     /**
      * Given a SwapQuote, returns 'SmartContractParamsInfo' for a forwarder extension call. See type definition of CalldataInfo for more information.
      * @param quote An object that conforms to SwapQuote. See type definition for more information.
-     * @param opts  Options for getting CalldataInfo. See type definition for more information.
+     * @param opts  Options for getting SmartContractParams. See type definition for more information.
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
