@@ -7,7 +7,7 @@
                 "pr": 1995
             },
             {
-                "note": "Fix isValidValidatorSignatureAsync", 
+                "note": "Fix isValidValidatorSignatureAsync",
                 "pr": 2017
             }
         ]
