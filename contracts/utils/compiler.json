@@ -37,6 +37,7 @@
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol",
         "test/TestLibEIP712.sol",
+        "test/TestLibRichErrors.sol",
         "test/TestOwnable.sol",
         "test/TestReentrancyGuard.sol",
         "test/TestSafeMath.sol"

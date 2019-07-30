@@ -18,6 +18,7 @@ import * as TestLibAddress from '../generated-artifacts/TestLibAddress.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
 import * as TestLibEIP712 from '../generated-artifacts/TestLibEIP712.json';
+import * as TestLibRichErrors from '../generated-artifacts/TestLibRichErrors.json';
 import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
 import * as TestReentrancyGuard from '../generated-artifacts/TestReentrancyGuard.json';
 import * as TestSafeMath from '../generated-artifacts/TestSafeMath.json';
@@ -35,6 +36,7 @@ export const artifacts = {
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
     TestLibEIP712: TestLibEIP712 as ContractArtifact,
+    TestLibRichErrors: TestLibRichErrors as ContractArtifact,
     TestOwnable: TestOwnable as ContractArtifact,
     TestReentrancyGuard: TestReentrancyGuard as ContractArtifact,
     TestSafeMath: TestSafeMath as ContractArtifact,
