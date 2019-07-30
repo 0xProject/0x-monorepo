@@ -34,7 +34,7 @@ describe('ReentrancyGuard', () => {
         });
 
         it('should succeed if reentrancy does not occur', async () => {
-            expect(guard.guarded.sendTransactionAsync(false)).to.be.fulfilled; // tslint:disable-line:no-unused-expression
+            return expect(guard.guarded.sendTransactionAsync(false)).to.be.fulfilled('');
         });
     });
 });
