@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.2.0",
+        "changes": [
+            {
+                "note": "Fix isValidValidatorSignatureAsync",
+                "pr": 2017
+            }
+        ]
+    },
+    {
         "timestamp": 1563957393,
         "version": "2.1.9",
         "changes": [
