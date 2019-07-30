@@ -20,11 +20,7 @@ describe('SafeMath', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         // Deploy SafeMath
-        safeMath = await TestSafeMathContract.deployFrom0xArtifactAsync(
-            artifacts.TestSafeMath,
-            provider,
-            txDefaults,
-        );
+        safeMath = await TestSafeMathContract.deployFrom0xArtifactAsync(artifacts.TestSafeMath, provider, txDefaults);
     });
 
     after(async () => {
@@ -53,7 +49,7 @@ describe('SafeMath', () => {
             return expect(safeMath.externalSafeMul.callAsync(a, b)).to.revertWith(expectedError);
         });
 
-        it('should calculate correct value for values that don\'t overflow', async () => {
+        it("should calculate correct value for values that don't overflow", async () => {
             const result = await safeMath.externalSafeMul.callAsync(toBN(15), toBN(13));
             expect(result).bignumber.to.be.eq(toBN(195));
         });

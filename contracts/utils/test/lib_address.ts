@@ -16,11 +16,7 @@ describe('LibAddress', () => {
         await blockchainLifecycle.startAsync();
         nonContract = (await web3Wrapper.getAvailableAddressesAsync())[0];
         // Deploy LibAddress
-        lib = await TestLibAddressContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibAddress,
-            provider,
-            txDefaults,
-        );
+        lib = await TestLibAddressContract.deployFrom0xArtifactAsync(artifacts.TestLibAddress, provider, txDefaults);
     });
 
     after(async () => {

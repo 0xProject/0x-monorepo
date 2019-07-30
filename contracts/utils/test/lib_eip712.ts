@@ -52,12 +52,11 @@ async function testHashEIP712MessageAsync(
     domainHash: string,
     hashStruct: string,
 ): Promise<void> {
-    const input = '0x1901'.concat(domainHash.slice(2, domainHash.length).concat(hashStruct.slice(2, hashStruct.length)));
-    const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
-    const actualHash = await lib.externalHashEIP712Message.callAsync(
-        domainHash,
-        hashStruct,
+    const input = '0x1901'.concat(
+        domainHash.slice(2, domainHash.length).concat(hashStruct.slice(2, hashStruct.length)),
     );
+    const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
+    const actualHash = await lib.externalHashEIP712Message.callAsync(domainHash, hashStruct);
     expect(actualHash).to.be.eq(expectedHash);
 }
 
@@ -67,11 +66,7 @@ describe('LibEIP712', () => {
     before(async () => {
         await blockchainLifecycle.startAsync();
         // Deploy SafeMath
-        lib = await TestLibEIP712Contract.deployFrom0xArtifactAsync(
-            artifacts.TestLibEIP712,
-            provider,
-            txDefaults,
-        );
+        lib = await TestLibEIP712Contract.deployFrom0xArtifactAsync(artifacts.TestLibEIP712, provider, txDefaults);
     });
 
     after(async () => {
@@ -80,13 +75,7 @@ describe('LibEIP712', () => {
 
     describe('_hashEIP712Domain', async () => {
         it('should correctly hash empty input', async () => {
-            await testHashEIP712DomainAsync(
-                lib,
-                '',
-                '',
-                0,
-                constants.NULL_ADDRESS,
-            );
+            await testHashEIP712DomainAsync(lib, '', '', 0, constants.NULL_ADDRESS);
         });
     });
 
@@ -97,11 +86,7 @@ describe('LibEIP712', () => {
             const actualHash = await lib.externalHashEIP712Message.callAsync(constants.NULL_BYTES32, constants.NULL_BYTES32);
             expect(actualHash).to.be.eq(expectedHash);
              */
-            await testHashEIP712MessageAsync(
-                lib,
-                constants.NULL_BYTES32,
-                constants.NULL_BYTES32,
-            );
+            await testHashEIP712MessageAsync(lib, constants.NULL_BYTES32, constants.NULL_BYTES32);
         });
     });
 });
