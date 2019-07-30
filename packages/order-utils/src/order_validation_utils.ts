@@ -194,6 +194,7 @@ export class OrderValidationUtils {
             orderHash,
             signedOrder.signature,
             signedOrder.makerAddress,
+            { exchangeAddress: signedOrder.exchangeAddress },
         );
         if (!isValidSignature) {
             throw new Error(RevertReason.InvalidOrderSignature);

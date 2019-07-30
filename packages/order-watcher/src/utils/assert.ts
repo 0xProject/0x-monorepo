@@ -7,7 +7,7 @@ import { BigNumber } from '@0x/utils';
 // tslint:enable:no-unused-variable
 import { SupportedProvider } from 'ethereum-types';
 
-import { signatureUtils } from '@0x/order-utils';
+import { signatureUtils, SignatureValidationOpts } from '@0x/order-utils';
 
 export const assert = {
     ...sharedAssert,
@@ -16,12 +16,14 @@ export const assert = {
         orderHash: string,
         signature: string,
         signerAddress: string,
+        signatureValidationOpts: SignatureValidationOpts,
     ): Promise<void> {
         const isValid = await signatureUtils.isValidSignatureAsync(
             supportedProvider,
             orderHash,
             signature,
             signerAddress,
+            signatureValidationOpts,
         );
         assert.assert(isValid, `Expected order with hash '${orderHash}' to have a valid signature`);
     },
