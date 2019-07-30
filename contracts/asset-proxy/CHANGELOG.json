@@ -1,5 +1,14 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable",
+                "pr": 2019
+            }
+        ]
+    },
+    {
         "timestamp": 1563193019,
         "version": "2.2.2",
         "changes": [

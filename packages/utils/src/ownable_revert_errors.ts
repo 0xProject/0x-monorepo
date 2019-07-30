@@ -16,10 +16,7 @@ export class TransferOwnerToZeroError extends RevertError {
     }
 }
 
-const types = [
-    OnlyOwnerError,
-    TransferOwnerToZeroError,
-];
+const types = [OnlyOwnerError, TransferOwnerToZeroError];
 
 // Register the types we've defined.
 for (const type of types) {

@@ -1,7 +1,6 @@
 import { BigNumber } from './configured_bignumber';
 import { RevertError } from './revert_error';
 
-
 export enum SafeMathErrorCodes {
     Uint256AdditionOverflow,
     Uint256MultiplicationOverflow,
