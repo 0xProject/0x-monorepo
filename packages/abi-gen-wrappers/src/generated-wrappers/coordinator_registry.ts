@@ -46,7 +46,16 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorRegistryContract extends BaseContract {
+    /**
+     * Called by a Coordinator operator to set the endpoint of their Coordinator.
+     */
     public setCoordinatorEndpoint = {
+        /**
+         * Sends the transaction
+         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -67,6 +76,13 @@ export class CoordinatorRegistryContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
@@ -88,6 +104,12 @@ export class CoordinatorRegistryContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -107,6 +129,10 @@ export class CoordinatorRegistryContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         */
         async callAsync(
             coordinatorEndpoint: string,
             callData: Partial<CallData> = {},
@@ -143,6 +169,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -152,7 +183,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets the endpoint for a Coordinator.
+     */
     public getCoordinatorEndpoint = {
+        /**
+         * Calls the method
+         * @param coordinatorOperator         operator of the Coordinator endpoint.
+         */
         async callAsync(
             coordinatorOperator: string,
             callData: Partial<CallData> = {},
@@ -191,6 +229,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param coordinatorOperator         operator of the Coordinator endpoint.
+         */
         getABIEncodedTransactionData(coordinatorOperator: string): string {
             assert.isString('coordinatorOperator', coordinatorOperator);
             const self = (this as any) as CoordinatorRegistryContract;

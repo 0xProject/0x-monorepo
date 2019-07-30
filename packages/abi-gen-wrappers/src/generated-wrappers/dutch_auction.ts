@@ -27,7 +27,16 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class DutchAuctionContract extends BaseContract {
+    /**
+     * Calculates the Auction Details for the given order
+     */
     public getAuctionDetails = {
+        /**
+         * Sends the transaction
+         * @param order         The sell order
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             order: {
                 makerAddress: string;
@@ -66,6 +75,13 @@ export class DutchAuctionContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param order         The sell order
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             order: {
                 makerAddress: string;
@@ -99,6 +115,12 @@ export class DutchAuctionContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param order         The sell order
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             order: {
                 makerAddress: string;
@@ -136,6 +158,11 @@ export class DutchAuctionContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param order         The sell order
+         * @returns AuctionDetails
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -203,6 +230,11 @@ export class DutchAuctionContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         The sell order
+         */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
             takerAddress: string;
@@ -225,7 +257,33 @@ export class DutchAuctionContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Matches the buy and sell orders at an amount given the following: the current block time, the auction
+     * start time and the auction begin amount. The sell order is a an order at the lowest amount
+     * at the end of the auction. Excess from the match is transferred to the seller.
+     * Over time the price moves from beginAmount to endAmount given the current block.timestamp.
+     * sellOrder.expiryTimeSeconds is the end time of the auction.
+     * sellOrder.takerAssetAmount is the end amount of the auction (lowest possible amount).
+     * sellOrder.makerAssetData is the ABI encoded Asset Proxy data with the following data appended
+     * buyOrder.makerAssetData is the buyers bid on the auction, must meet the amount for the current block timestamp
+     * (uint256 beginTimeSeconds, uint256 beginAmount).
+     * This function reverts in the following scenarios:
+     * * Auction has not started (auctionDetails.currentTimeSeconds < auctionDetails.beginTimeSeconds)
+     * * Auction has expired (auctionDetails.endTimeSeconds < auctionDetails.currentTimeSeconds)
+     * * Amount is invalid: Buy order amount is too low (buyOrder.makerAssetAmount < auctionDetails.currentAmount)
+     * * Amount is invalid: Invalid begin amount (auctionDetails.beginAmount > auctionDetails.endAmount)
+     * * Any failure in the 0x Match Orders
+     */
     public matchOrders = {
+        /**
+         * Sends the transaction
+         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
+         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
+         * @param buySignature         Proof that order was created by the buyer.
+         * @param sellSignature         Proof that order was created by the seller.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             buyOrder: {
                 makerAddress: string;
@@ -282,6 +340,16 @@ export class DutchAuctionContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
+         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
+         * @param buySignature         Proof that order was created by the buyer.
+         * @param sellSignature         Proof that order was created by the seller.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             buyOrder: {
                 makerAddress: string;
@@ -339,6 +407,15 @@ export class DutchAuctionContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
+         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
+         * @param buySignature         Proof that order was created by the buyer.
+         * @param sellSignature         Proof that order was created by the seller.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             buyOrder: {
                 makerAddress: string;
@@ -394,6 +471,14 @@ export class DutchAuctionContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
+         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
+         * @param buySignature         Proof that order was created by the buyer.
+         * @param sellSignature         Proof that order was created by the seller.
+         * @returns matchedFillResults amounts filled and fees paid by maker and taker of matched orders.
+         */
         async callAsync(
             buyOrder: {
                 makerAddress: string;
@@ -493,6 +578,14 @@ export class DutchAuctionContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
+         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
+         * @param buySignature         Proof that order was created by the buyer.
+         * @param sellSignature         Proof that order was created by the seller.
+         */
         getABIEncodedTransactionData(
             buyOrder: {
                 makerAddress: string;

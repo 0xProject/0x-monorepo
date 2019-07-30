@@ -62,6 +62,9 @@ export interface MultiAssetProxyAssetProxyRegisteredEventArgs extends DecodedLog
 // tslint:disable-next-line:class-name
 export class MultiAssetProxyContract extends BaseContract {
     public assetProxies = {
+        /**
+         * Calls the method
+         */
         async callAsync(index_0: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -94,6 +97,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as MultiAssetProxyContract;
@@ -101,7 +108,16 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Authorizes an address.
+     */
     public addAuthorizedAddress = {
+        /**
+         * Sends the transaction
+         * @param target         Address to authorize.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -122,6 +138,13 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to authorize.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
@@ -143,6 +166,12 @@ export class MultiAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to authorize.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -162,6 +191,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to authorize.
+         */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -194,6 +227,11 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to authorize.
+         */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -204,6 +242,9 @@ export class MultiAssetProxyContract extends BaseContract {
         },
     };
     public authorities = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -240,6 +281,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
             const self = (this as any) as MultiAssetProxyContract;
@@ -247,7 +292,15 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets an asset proxy.
+     */
     public getAssetProxy = {
+        /**
+         * Calls the method
+         * @param assetProxyId         Id of the asset proxy.
+         * @returns The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
+         */
         async callAsync(
             assetProxyId: string,
             callData: Partial<CallData> = {},
@@ -284,6 +337,11 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetProxyId         Id of the asset proxy.
+         */
         getABIEncodedTransactionData(assetProxyId: string): string {
             assert.isString('assetProxyId', assetProxyId);
             const self = (this as any) as MultiAssetProxyContract;
@@ -291,7 +349,16 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Removes authorizion of an address.
+     */
     public removeAuthorizedAddress = {
+        /**
+         * Sends the transaction
+         * @param target         Address to remove authorization from.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -312,6 +379,13 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to remove authorization from.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
@@ -333,6 +407,12 @@ export class MultiAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to remove authorization from.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -352,6 +432,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to remove authorization from.
+         */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -384,6 +468,11 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to remove authorization from.
+         */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as MultiAssetProxyContract;
@@ -394,6 +483,9 @@ export class MultiAssetProxyContract extends BaseContract {
         },
     };
     public owner = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -425,13 +517,27 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Removes authorizion of an address.
+     */
     public removeAuthorizedAddressAtIndex = {
+        /**
+         * Sends the transaction
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             target: string,
             index: BigNumber,
@@ -460,6 +566,14 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             index: BigNumber,
@@ -487,6 +601,13 @@ export class MultiAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             target: string,
             index: BigNumber,
@@ -514,6 +635,11 @@ export class MultiAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         */
         async callAsync(
             target: string,
             index: BigNumber,
@@ -555,6 +681,12 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         */
         getABIEncodedTransactionData(target: string, index: BigNumber): string {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -566,7 +698,14 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets the proxy id associated with the proxy address.
+     */
     public getProxyId = {
+        /**
+         * Calls the method
+         * @returns Proxy id.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -598,6 +737,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
@@ -605,6 +748,9 @@ export class MultiAssetProxyContract extends BaseContract {
         },
     };
     public authorized = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -641,6 +787,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as MultiAssetProxyContract;
@@ -650,7 +800,17 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Registers an asset proxy to its asset proxy id.
+     * Once an asset proxy is registered, it cannot be unregistered.
+     */
     public registerAssetProxy = {
+        /**
+         * Sends the transaction
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
@@ -671,6 +831,13 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData>,
@@ -692,6 +859,12 @@ export class MultiAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
@@ -711,6 +884,10 @@ export class MultiAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param assetProxy         Address of new asset proxy to register.
+         */
         async callAsync(
             assetProxy: string,
             callData: Partial<CallData> = {},
@@ -747,6 +924,11 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetProxy         Address of new asset proxy to register.
+         */
         getABIEncodedTransactionData(assetProxy: string): string {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as MultiAssetProxyContract;
@@ -756,7 +938,14 @@ export class MultiAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets all authorized addresses.
+     */
     public getAuthorizedAddresses = {
+        /**
+         * Calls the method
+         * @returns Array of authorized addresses.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -788,6 +977,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
@@ -795,6 +988,11 @@ export class MultiAssetProxyContract extends BaseContract {
         },
     };
     public transferOwnership = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
@@ -815,6 +1013,12 @@ export class MultiAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
@@ -836,6 +1040,11 @@ export class MultiAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;
@@ -855,6 +1064,9 @@ export class MultiAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -887,6 +1099,10 @@ export class MultiAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as MultiAssetProxyContract;

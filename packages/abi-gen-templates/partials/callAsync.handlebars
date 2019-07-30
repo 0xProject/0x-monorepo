@@ -1,3 +1,10 @@
+/**
+ * Calls the method
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+{{#if devdoc.return}}
+ * @returns {{devdoc.return}}
+{{/if}}
+ */
 async callAsync(
 {{> typed_params inputs=inputs}}
     callData: Partial<CallData> = {},
@@ -34,6 +41,11 @@ async callAsync(
     // tslint:enable boolean-naming
     return result;
 },
+
+/**
+ * Returns the ABI encoded transaction data
+{{> params_docstring inputs=inputs docstrings=devdoc.params}}
+ */
 getABIEncodedTransactionData(
     {{> typed_params inputs=inputs}}
     ): string {

@@ -27,7 +27,24 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ForwarderContract extends BaseContract {
+    /**
+     * Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
+     * Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+     * Any ETH not spent will be refunded to sender.
+     */
     public marketBuyOrdersWithEth = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -109,6 +126,19 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -177,6 +207,18 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -248,6 +290,17 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -365,6 +418,17 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -423,7 +487,19 @@ export class ForwarderContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Withdraws assets from this contract. The contract requires a ZRX balance in order to
+     * function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
+     * used to withdraw assets that were accidentally sent to this contract.
+     */
     public withdrawAsset = {
+        /**
+         * Sends the transaction
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param amount         Amount of ERC20 token to withdraw.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             assetData: string,
             amount: BigNumber,
@@ -449,6 +525,14 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param amount         Amount of ERC20 token to withdraw.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetData: string,
             amount: BigNumber,
@@ -472,6 +556,13 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param amount         Amount of ERC20 token to withdraw.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             assetData: string,
             amount: BigNumber,
@@ -496,6 +587,11 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param amount         Amount of ERC20 token to withdraw.
+         */
         async callAsync(
             assetData: string,
             amount: BigNumber,
@@ -534,6 +630,12 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param amount         Amount of ERC20 token to withdraw.
+         */
         getABIEncodedTransactionData(assetData: string, amount: BigNumber): string {
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);
@@ -546,6 +648,9 @@ export class ForwarderContract extends BaseContract {
         },
     };
     public owner = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -577,13 +682,34 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ForwarderContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
+     * Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+     * 5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
+     * Any ETH not spent will be refunded to sender.
+     */
     public marketSellOrdersWithEth = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -654,6 +780,18 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -719,6 +857,17 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -780,6 +929,16 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -887,6 +1046,16 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures         Proofs that feeOrders have been created by makers.
+         * @param feePercentage         Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
+         * @param feeRecipient         Address that will receive ETH when orders are filled.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -936,6 +1105,11 @@ export class ForwarderContract extends BaseContract {
         },
     };
     public transferOwnership = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -956,6 +1130,12 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
@@ -977,6 +1157,11 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -996,6 +1181,9 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1028,6 +1216,10 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;

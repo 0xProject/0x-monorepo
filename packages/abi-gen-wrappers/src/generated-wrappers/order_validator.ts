@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class OrderValidatorContract extends BaseContract {
     public getOrderAndTraderInfo = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -111,6 +114,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -138,6 +145,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalanceAndAllowance = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             target: string,
             assetData: string,
@@ -179,6 +189,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(target: string, assetData: string): string {
             assert.isString('target', target);
             assert.isString('assetData', assetData);
@@ -191,6 +205,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getOrdersAndTradersInfo = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -275,6 +292,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -303,6 +324,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTradersInfo = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -381,6 +405,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -409,6 +437,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getERC721TokenOwner = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             token: string,
             tokenId: BigNumber,
@@ -450,6 +481,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(token: string, tokenId: BigNumber): string {
             assert.isString('token', token);
             assert.isBigNumber('tokenId', tokenId);
@@ -462,6 +497,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalancesAndAllowances = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             target: string,
             assetData: string[],
@@ -503,6 +541,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(target: string, assetData: string[]): string {
             assert.isString('target', target);
             assert.isArray('assetData', assetData);
@@ -515,6 +557,9 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTraderInfo = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -588,6 +633,10 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;

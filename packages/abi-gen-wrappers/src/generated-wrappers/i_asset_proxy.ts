@@ -27,7 +27,16 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IAssetProxyContract extends BaseContract {
+    /**
+     * Authorizes an address.
+     */
     public addAuthorizedAddress = {
+        /**
+         * Sends the transaction
+         * @param target         Address to authorize.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -48,6 +57,13 @@ export class IAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to authorize.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
@@ -69,6 +85,12 @@ export class IAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to authorize.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -88,6 +110,10 @@ export class IAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to authorize.
+         */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -120,6 +146,11 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to authorize.
+         */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -129,7 +160,16 @@ export class IAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Removes authorizion of an address.
+     */
     public removeAuthorizedAddress = {
+        /**
+         * Sends the transaction
+         * @param target         Address to remove authorization from.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -150,6 +190,13 @@ export class IAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to remove authorization from.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             txData?: Partial<TxData>,
@@ -171,6 +218,12 @@ export class IAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to remove authorization from.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -190,6 +243,10 @@ export class IAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to remove authorization from.
+         */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -222,6 +279,11 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to remove authorization from.
+         */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
             const self = (this as any) as IAssetProxyContract;
@@ -231,7 +293,17 @@ export class IAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Removes authorizion of an address.
+     */
     public removeAuthorizedAddressAtIndex = {
+        /**
+         * Sends the transaction
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             target: string,
             index: BigNumber,
@@ -260,6 +332,14 @@ export class IAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             target: string,
             index: BigNumber,
@@ -287,6 +367,13 @@ export class IAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             target: string,
             index: BigNumber,
@@ -314,6 +401,11 @@ export class IAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         */
         async callAsync(
             target: string,
             index: BigNumber,
@@ -355,6 +447,12 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param target         Address to remove authorization from.
+         * @param index         Index of target in authorities array.
+         */
         getABIEncodedTransactionData(target: string, index: BigNumber): string {
             assert.isString('target', target);
             assert.isBigNumber('index', index);
@@ -366,7 +464,19 @@ export class IAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Transfers assets. Either succeeds or throws.
+     */
     public transferFrom = {
+        /**
+         * Sends the transaction
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param from         Address to transfer asset from.
+         * @param to         Address to transfer asset to.
+         * @param amount         Amount of asset to transfer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             assetData: string,
             from: string,
@@ -401,6 +511,16 @@ export class IAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param from         Address to transfer asset from.
+         * @param to         Address to transfer asset to.
+         * @param amount         Amount of asset to transfer.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetData: string,
             from: string,
@@ -434,6 +554,15 @@ export class IAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param from         Address to transfer asset from.
+         * @param to         Address to transfer asset to.
+         * @param amount         Amount of asset to transfer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             assetData: string,
             from: string,
@@ -467,6 +596,13 @@ export class IAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param from         Address to transfer asset from.
+         * @param to         Address to transfer asset to.
+         * @param amount         Amount of asset to transfer.
+         */
         async callAsync(
             assetData: string,
             from: string,
@@ -514,6 +650,14 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetData         Byte array encoded for the respective asset proxy.
+         * @param from         Address to transfer asset from.
+         * @param to         Address to transfer asset to.
+         * @param amount         Amount of asset to transfer.
+         */
         getABIEncodedTransactionData(assetData: string, from: string, to: string, amount: BigNumber): string {
             assert.isString('assetData', assetData);
             assert.isString('from', from);
@@ -527,7 +671,14 @@ export class IAssetProxyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets the proxy id associated with the proxy address.
+     */
     public getProxyId = {
+        /**
+         * Calls the method
+         * @returns Proxy id.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -559,13 +710,24 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as IAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets all authorized addresses.
+     */
     public getAuthorizedAddresses = {
+        /**
+         * Calls the method
+         * @returns Array of authorized addresses.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -597,6 +759,10 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as IAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
@@ -604,6 +770,11 @@ export class IAssetProxyContract extends BaseContract {
         },
     };
     public transferOwnership = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
@@ -624,6 +795,12 @@ export class IAssetProxyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
@@ -645,6 +822,11 @@ export class IAssetProxyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;
@@ -664,6 +846,9 @@ export class IAssetProxyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -696,6 +881,10 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as IAssetProxyContract;

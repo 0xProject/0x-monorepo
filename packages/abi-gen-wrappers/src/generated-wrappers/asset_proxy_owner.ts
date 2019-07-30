@@ -118,6 +118,9 @@ export interface AssetProxyOwnerRequirementChangeEventArgs extends DecodedLogArg
 // tslint:disable-next-line:class-name
 export class AssetProxyOwnerContract extends BaseContract {
     public owners = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -154,6 +157,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -161,7 +168,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows to remove an owner. Transaction has to be sent by wallet.
+     */
     public removeOwner = {
+        /**
+         * Sends the transaction
+         * @param owner         Address of owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -182,6 +198,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param owner         Address of owner.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
@@ -203,6 +226,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param owner         Address of owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -222,6 +251,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param owner         Address of owner.
+         */
         async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('owner', owner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -254,6 +287,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param owner         Address of owner.
+         */
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -263,7 +301,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows an owner to revoke a confirmation for a transaction.
+     */
     public revokeConfirmation = {
+        /**
+         * Sends the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -284,6 +331,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param transactionId         Transaction ID.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
@@ -305,6 +359,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -324,6 +384,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -360,6 +424,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -370,6 +439,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public isOwner = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -406,6 +478,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -414,6 +490,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public confirmations = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: BigNumber,
             index_1: string,
@@ -455,6 +534,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: BigNumber, index_1: string): string {
             assert.isBigNumber('index_0', index_0);
             assert.isString('index_1', index_1);
@@ -466,7 +549,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows execution of `removeAuthorizedAddressAtIndex` without time lock.
+     */
     public executeRemoveAuthorizedAddressAtIndex = {
+        /**
+         * Sends the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -489,6 +581,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param transactionId         Transaction ID.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
@@ -513,6 +612,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -534,6 +639,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -572,6 +681,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -583,6 +697,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public secondsTimeLocked = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -614,13 +731,26 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('secondsTimeLocked()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns total number of transactions after filers are applied.
+     */
     public getTransactionCount = {
+        /**
+         * Calls the method
+         * @param pending         Include pending transactions.
+         * @param executed         Include executed transactions.
+         * @returns Total number of transactions after filters are applied.
+         */
         async callAsync(
             pending: boolean,
             executed: boolean,
@@ -659,6 +789,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param pending         Include pending transactions.
+         * @param executed         Include executed transactions.
+         */
         getABIEncodedTransactionData(pending: boolean, executed: boolean): string {
             assert.isBoolean('pending', pending);
             assert.isBoolean('executed', executed);
@@ -670,7 +806,18 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Registers or deregisters an AssetProxy to be able to execute
+     * `removeAuthorizedAddressAtIndex` without a timelock.
+     */
     public registerAssetProxy = {
+        /**
+         * Sends the transaction
+         * @param assetProxyContract         Address of AssetProxy contract.
+         * @param isRegistered         Status of approval for AssetProxy contract.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             assetProxyContract: string,
             isRegistered: boolean,
@@ -699,6 +846,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param assetProxyContract         Address of AssetProxy contract.
+         * @param isRegistered         Status of approval for AssetProxy contract.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetProxyContract: string,
             isRegistered: boolean,
@@ -726,6 +881,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param assetProxyContract         Address of AssetProxy contract.
+         * @param isRegistered         Status of approval for AssetProxy contract.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             assetProxyContract: string,
             isRegistered: boolean,
@@ -753,6 +915,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param assetProxyContract         Address of AssetProxy contract.
+         * @param isRegistered         Status of approval for AssetProxy contract.
+         */
         async callAsync(
             assetProxyContract: string,
             isRegistered: boolean,
@@ -794,6 +961,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetProxyContract         Address of AssetProxy contract.
+         * @param isRegistered         Status of approval for AssetProxy contract.
+         */
         getABIEncodedTransactionData(assetProxyContract: string, isRegistered: boolean): string {
             assert.isString('assetProxyContract', assetProxyContract);
             assert.isBoolean('isRegistered', isRegistered);
@@ -805,7 +978,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows to add a new owner. Transaction has to be sent by wallet.
+     */
     public addOwner = {
+        /**
+         * Sends the transaction
+         * @param owner         Address of new owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -826,6 +1008,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param owner         Address of new owner.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             owner: string,
             txData?: Partial<TxData>,
@@ -847,6 +1036,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param owner         Address of new owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -866,6 +1061,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param owner         Address of new owner.
+         */
         async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('owner', owner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -898,6 +1097,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param owner         Address of new owner.
+         */
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -905,7 +1109,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns the confirmation status of a transaction.
+     */
     public isConfirmed = {
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         * @returns Confirmation status.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -942,6 +1154,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -949,7 +1166,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Changes the duration of the time lock for transactions.
+     */
     public changeTimeLock = {
+        /**
+         * Sends the transaction
+         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData> | undefined,
@@ -973,6 +1199,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
             txData?: Partial<TxData>,
@@ -994,6 +1227,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(_secondsTimeLocked: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1013,6 +1252,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         */
         async callAsync(
             _secondsTimeLocked: BigNumber,
             callData: Partial<CallData> = {},
@@ -1049,6 +1292,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         */
         getABIEncodedTransactionData(_secondsTimeLocked: BigNumber): string {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1059,6 +1307,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public isAssetProxyRegistered = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -1095,6 +1346,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1104,7 +1359,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns number of confirmations of a transaction.
+     */
     public getConfirmationCount = {
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         * @returns Number of confirmations.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -1141,6 +1404,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1151,6 +1419,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public transactions = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -1187,6 +1458,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1194,7 +1469,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns list of owners.
+     */
     public getOwners = {
+        /**
+         * Calls the method
+         * @returns List of owner addresses.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1226,13 +1508,28 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getOwners()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns list of transaction IDs in defined range.
+     */
     public getTransactionIds = {
+        /**
+         * Calls the method
+         * @param from         Index start position of transaction array.
+         * @param to         Index end position of transaction array.
+         * @param pending         Include pending transactions.
+         * @param executed         Include executed transactions.
+         * @returns Returns array of transaction IDs.
+         */
         async callAsync(
             from: BigNumber,
             to: BigNumber,
@@ -1280,6 +1577,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param from         Index start position of transaction array.
+         * @param to         Index end position of transaction array.
+         * @param pending         Include pending transactions.
+         * @param executed         Include executed transactions.
+         */
         getABIEncodedTransactionData(from: BigNumber, to: BigNumber, pending: boolean, executed: boolean): string {
             assert.isBigNumber('from', from);
             assert.isBigNumber('to', to);
@@ -1293,7 +1598,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Returns array with owner addresses, which confirmed transaction.
+     */
     public getConfirmations = {
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         * @returns Returns array of owner addresses.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -1330,6 +1643,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1338,6 +1656,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public transactionCount = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1369,13 +1690,26 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('transactionCount()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows to change the number of required confirmations. Transaction has to be sent by wallet.
+     */
     public changeRequirement = {
+        /**
+         * Sends the transaction
+         * @param _required         Number of required confirmations.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1396,6 +1730,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _required         Number of required confirmations.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _required: BigNumber,
             txData?: Partial<TxData>,
@@ -1417,6 +1758,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _required         Number of required confirmations.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1436,6 +1783,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _required         Number of required confirmations.
+         */
         async callAsync(
             _required: BigNumber,
             callData: Partial<CallData> = {},
@@ -1472,6 +1823,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _required         Number of required confirmations.
+         */
         getABIEncodedTransactionData(_required: BigNumber): string {
             assert.isBigNumber('_required', _required);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1479,7 +1835,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows an owner to confirm a transaction.
+     */
     public confirmTransaction = {
+        /**
+         * Sends the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1500,6 +1865,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param transactionId         Transaction ID.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
@@ -1521,6 +1893,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1540,6 +1918,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -1576,6 +1958,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1585,7 +1972,18 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows an owner to submit and confirm a transaction.
+     */
     public submitTransaction = {
+        /**
+         * Sends the transaction
+         * @param destination         Transaction target address.
+         * @param value         Transaction ether value.
+         * @param data         Transaction data payload.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             destination: string,
             value: BigNumber,
@@ -1617,6 +2015,15 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param destination         Transaction target address.
+         * @param value         Transaction ether value.
+         * @param data         Transaction data payload.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             destination: string,
             value: BigNumber,
@@ -1647,6 +2054,14 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param destination         Transaction target address.
+         * @param value         Transaction ether value.
+         * @param data         Transaction data payload.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             destination: string,
             value: BigNumber,
@@ -1677,6 +2092,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param destination         Transaction target address.
+         * @param value         Transaction ether value.
+         * @param data         Transaction data payload.
+         * @returns Returns transaction ID.
+         */
         async callAsync(
             destination: string,
             value: BigNumber,
@@ -1721,6 +2143,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param destination         Transaction target address.
+         * @param value         Transaction ether value.
+         * @param data         Transaction data payload.
+         */
         getABIEncodedTransactionData(destination: string, value: BigNumber, data: string): string {
             assert.isString('destination', destination);
             assert.isBigNumber('value', value);
@@ -1735,6 +2164,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public confirmationTimes = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: BigNumber,
             callData: Partial<CallData> = {},
@@ -1771,6 +2203,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1779,6 +2215,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public MAX_OWNER_COUNT = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1810,6 +2249,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('MAX_OWNER_COUNT()', []);
@@ -1817,6 +2260,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
     };
     public required = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1848,13 +2294,27 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('required()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows to replace an owner with a new owner. Transaction has to be sent by wallet.
+     */
     public replaceOwner = {
+        /**
+         * Sends the transaction
+         * @param owner         Address of owner to be replaced.
+         * @param newOwner         Address of new owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             owner: string,
             newOwner: string,
@@ -1883,6 +2343,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param owner         Address of owner to be replaced.
+         * @param newOwner         Address of new owner.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             owner: string,
             newOwner: string,
@@ -1910,6 +2378,13 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param owner         Address of owner to be replaced.
+         * @param newOwner         Address of new owner.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(owner: string, newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
@@ -1933,6 +2408,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param owner         Address of owner to be replaced.
+         * @param newOwner         Address of new owner.
+         */
         async callAsync(
             owner: string,
             newOwner: string,
@@ -1974,6 +2454,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param owner         Address of owner to be replaced.
+         * @param newOwner         Address of new owner.
+         */
         getABIEncodedTransactionData(owner: string, newOwner: string): string {
             assert.isString('owner', owner);
             assert.isString('newOwner', newOwner);
@@ -1985,7 +2471,16 @@ export class AssetProxyOwnerContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Allows anyone to execute a confirmed transaction.
+     */
     public executeTransaction = {
+        /**
+         * Sends the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2006,6 +2501,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param transactionId         Transaction ID.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
             txData?: Partial<TxData>,
@@ -2027,6 +2529,12 @@ export class AssetProxyOwnerContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param transactionId         Transaction ID.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2046,6 +2554,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param transactionId         Transaction ID.
+         */
         async callAsync(
             transactionId: BigNumber,
             callData: Partial<CallData> = {},
@@ -2082,6 +2594,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transactionId         Transaction ID.
+         */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
             const self = (this as any) as AssetProxyOwnerContract;

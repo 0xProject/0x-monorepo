@@ -71,6 +71,9 @@ export interface WETH9WithdrawalEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class WETH9Contract extends BaseContract {
     public name = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -102,6 +105,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
@@ -109,6 +116,11 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public approve = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
@@ -130,6 +142,12 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             guy: string,
             wad: BigNumber,
@@ -153,6 +171,11 @@ export class WETH9Contract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
@@ -173,6 +196,9 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(
             guy: string,
             wad: BigNumber,
@@ -211,6 +237,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(guy: string, wad: BigNumber): string {
             assert.isString('guy', guy);
             assert.isBigNumber('wad', wad);
@@ -223,6 +253,9 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public totalSupply = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -254,6 +287,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
@@ -261,6 +298,11 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public transferFrom = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             src: string,
             dst: string,
@@ -292,6 +334,12 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             src: string,
             dst: string,
@@ -322,6 +370,11 @@ export class WETH9Contract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             src: string,
             dst: string,
@@ -352,6 +405,9 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(
             src: string,
             dst: string,
@@ -396,6 +452,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(src: string, dst: string, wad: BigNumber): string {
             assert.isString('src', src);
             assert.isString('dst', dst);
@@ -410,6 +470,11 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public withdraw = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -430,6 +495,12 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
@@ -451,6 +522,11 @@ export class WETH9Contract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -470,6 +546,9 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(wad: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isBigNumber('wad', wad);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -502,6 +581,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(wad: BigNumber): string {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as WETH9Contract;
@@ -510,6 +593,9 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public decimals = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -541,6 +627,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
@@ -548,6 +638,9 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public balanceOf = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -584,6 +677,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as WETH9Contract;
@@ -594,6 +691,9 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public symbol = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -625,6 +725,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
@@ -632,6 +736,11 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public transfer = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -653,6 +762,12 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             dst: string,
             wad: BigNumber,
@@ -676,6 +791,11 @@ export class WETH9Contract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -696,6 +816,9 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(
             dst: string,
             wad: BigNumber,
@@ -734,6 +857,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(dst: string, wad: BigNumber): string {
             assert.isString('dst', dst);
             assert.isBigNumber('wad', wad);
@@ -746,6 +873,11 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public deposit = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
@@ -765,6 +897,12 @@ export class WETH9Contract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
@@ -784,6 +922,11 @@ export class WETH9Contract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
             const self = (this as any) as WETH9Contract;
             const encodedData = self._strictEncodeArguments('deposit()', []);
@@ -802,6 +945,9 @@ export class WETH9Contract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -833,6 +979,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
@@ -840,6 +990,9 @@ export class WETH9Contract extends BaseContract {
         },
     };
     public allowance = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             index_1: string,
@@ -881,6 +1034,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);

@@ -1,4 +1,10 @@
 public {{languageSpecificName}} = {
+    /**
+     * Sends the transaction
+    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+     * @param txData    Additional data for transaction
+     * @returns         The hash of the transaction
+     */
     async sendTransactionAsync(
     {{> typed_params inputs=inputs}}
     txData?: Partial<TxData> | undefined,
@@ -27,6 +33,13 @@ public {{languageSpecificName}} = {
     const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
     return txHash;
     },
+    /**
+     * Sends the transaction and wait for it to succeed
+    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+     * @param txData                Additional data for transaction
+     * @param pollingIntervalMs     Interval at which to poll for success
+     * @returns                     A promise that resolves when the transaction is successful
+     */
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
         txData?: Partial<TxData>,
@@ -54,6 +67,12 @@ public {{languageSpecificName}} = {
         })(),
     );
     },
+    /**
+     * Estimate gas to send the transaction
+    {{> params_docstring inputs=inputs docstrings=devdoc.params}}
+     * @param txData    Additional data for transaction
+     * @returns         The hash of the transaction
+     */
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}
         txData?: Partial<TxData> | undefined,

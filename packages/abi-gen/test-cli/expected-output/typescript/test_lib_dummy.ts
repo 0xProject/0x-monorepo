@@ -28,6 +28,9 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class TestLibDummyContract extends BaseContract {
     public publicAddConstant = {
+        /**
+         * Calls the method
+         */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -60,6 +63,10 @@ export class TestLibDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
             const self = (this as any) as TestLibDummyContract;
@@ -68,6 +75,9 @@ export class TestLibDummyContract extends BaseContract {
         },
     };
     public publicAddOne = {
+        /**
+         * Calls the method
+         */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -100,6 +110,10 @@ export class TestLibDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
             const self = (this as any) as TestLibDummyContract;

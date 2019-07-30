@@ -54,7 +54,17 @@ export interface ERC20TokenApprovalEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ERC20TokenContract extends BaseContract {
+    /**
+     * `msg.sender` approves `_spender` to spend `_value` tokens
+     */
     public approve = {
+        /**
+         * Sends the transaction
+         * @param _spender         The address of the account able to transfer the tokens
+         * @param _value         The amount of wei to be approved for transfer
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _spender: string,
             _value: BigNumber,
@@ -83,6 +93,14 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _spender         The address of the account able to transfer the tokens
+         * @param _value         The amount of wei to be approved for transfer
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _spender: string,
             _value: BigNumber,
@@ -106,6 +124,13 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _spender         The address of the account able to transfer the tokens
+         * @param _value         The amount of wei to be approved for transfer
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             _spender: string,
             _value: BigNumber,
@@ -133,6 +158,12 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _spender         The address of the account able to transfer the tokens
+         * @param _value         The amount of wei to be approved for transfer
+         * @returns Always true if the call has enough gas to complete execution
+         */
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -174,6 +205,12 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _spender         The address of the account able to transfer the tokens
+         * @param _value         The amount of wei to be approved for transfer
+         */
         getABIEncodedTransactionData(_spender: string, _value: BigNumber): string {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -185,7 +222,14 @@ export class ERC20TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Query total supply of token
+     */
     public totalSupply = {
+        /**
+         * Calls the method
+         * @returns Total supply of token
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -217,13 +261,28 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * send `value` token to `to` from `from` on the condition it is approved by `from`
+     */
     public transferFrom = {
+        /**
+         * Sends the transaction
+         * @param _from         The address of the sender
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _from: string,
             _to: string,
@@ -255,6 +314,15 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _from         The address of the sender
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _from: string,
             _to: string,
@@ -285,6 +353,14 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _from         The address of the sender
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             _from: string,
             _to: string,
@@ -315,6 +391,13 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _from         The address of the sender
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @returns True if transfer was successful
+         */
         async callAsync(
             _from: string,
             _to: string,
@@ -359,6 +442,13 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _from         The address of the sender
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         */
         getABIEncodedTransactionData(_from: string, _to: string, _value: BigNumber): string {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -372,7 +462,15 @@ export class ERC20TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Query the balance of owner
+     */
     public balanceOf = {
+        /**
+         * Calls the method
+         * @param _owner         The address from which the balance will be retrieved
+         * @returns Balance of owner
+         */
         async callAsync(
             _owner: string,
             callData: Partial<CallData> = {},
@@ -409,6 +507,11 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _owner         The address from which the balance will be retrieved
+         */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
             const self = (this as any) as ERC20TokenContract;
@@ -416,7 +519,17 @@ export class ERC20TokenContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * send `value` token to `to` from `msg.sender`
+     */
     public transfer = {
+        /**
+         * Sends the transaction
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _to: string,
             _value: BigNumber,
@@ -442,6 +555,14 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _to: string,
             _value: BigNumber,
@@ -465,6 +586,13 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -485,6 +613,12 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         * @returns True if transfer was successful
+         */
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -523,6 +657,12 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _to         The address of the recipient
+         * @param _value         The amount of token to be transferred
+         */
         getABIEncodedTransactionData(_to: string, _value: BigNumber): string {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -535,6 +675,12 @@ export class ERC20TokenContract extends BaseContract {
         },
     };
     public allowance = {
+        /**
+         * Calls the method
+         * @param _owner         The address of the account owning tokens
+         * @param _spender         The address of the account able to transfer the tokens
+         * @returns Amount of remaining tokens allowed to spent
+         */
         async callAsync(
             _owner: string,
             _spender: string,
@@ -576,6 +722,12 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _owner         The address of the account owning tokens
+         * @param _spender         The address of the account able to transfer the tokens
+         */
         getABIEncodedTransactionData(_owner: string, _spender: string): string {
             assert.isString('_owner', _owner);
             assert.isString('_spender', _spender);

@@ -27,7 +27,15 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class EthBalanceCheckerContract extends BaseContract {
+    /**
+     * Batch fetches ETH balances
+     */
     public getEthBalances = {
+        /**
+         * Calls the method
+         * @param addresses         Array of addresses.
+         * @returns Array of ETH balances.
+         */
         async callAsync(
             addresses: string[],
             callData: Partial<CallData> = {},
@@ -64,6 +72,11 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param addresses         Array of addresses.
+         */
         getABIEncodedTransactionData(addresses: string[]): string {
             assert.isArray('addresses', addresses);
             const self = (this as any) as EthBalanceCheckerContract;

@@ -27,7 +27,17 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IValidatorContract extends BaseContract {
+    /**
+     * Verifies that a signature is valid.
+     */
     public isValidSignature = {
+        /**
+         * Calls the method
+         * @param hash         Message hash that is signed.
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof of signing.
+         * @returns Validity of order signature.
+         */
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -72,6 +82,13 @@ export class IValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param hash         Message hash that is signed.
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof of signing.
+         */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);

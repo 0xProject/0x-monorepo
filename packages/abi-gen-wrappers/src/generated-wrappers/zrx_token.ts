@@ -55,6 +55,9 @@ export interface ZRXTokenApprovalEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class ZRXTokenContract extends BaseContract {
     public name = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -86,6 +89,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
@@ -93,6 +100,11 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public approve = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _spender: string,
             _value: BigNumber,
@@ -121,6 +133,12 @@ export class ZRXTokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _spender: string,
             _value: BigNumber,
@@ -144,6 +162,11 @@ export class ZRXTokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             _spender: string,
             _value: BigNumber,
@@ -171,6 +194,9 @@ export class ZRXTokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -212,6 +238,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(_spender: string, _value: BigNumber): string {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -224,6 +254,9 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public totalSupply = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -255,13 +288,28 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * ERC20 transferFrom, modified such that an allowance of MAX_UINT represents an unlimited allowance.
+     */
     public transferFrom = {
+        /**
+         * Sends the transaction
+         * @param _from         Address to transfer from.
+         * @param _to         Address to transfer to.
+         * @param _value         Amount to transfer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _from: string,
             _to: string,
@@ -293,6 +341,15 @@ export class ZRXTokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param _from         Address to transfer from.
+         * @param _to         Address to transfer to.
+         * @param _value         Amount to transfer.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _from: string,
             _to: string,
@@ -323,6 +380,14 @@ export class ZRXTokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param _from         Address to transfer from.
+         * @param _to         Address to transfer to.
+         * @param _value         Amount to transfer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             _from: string,
             _to: string,
@@ -353,6 +418,13 @@ export class ZRXTokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param _from         Address to transfer from.
+         * @param _to         Address to transfer to.
+         * @param _value         Amount to transfer.
+         * @returns Success of transfer.
+         */
         async callAsync(
             _from: string,
             _to: string,
@@ -397,6 +469,13 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param _from         Address to transfer from.
+         * @param _to         Address to transfer to.
+         * @param _value         Amount to transfer.
+         */
         getABIEncodedTransactionData(_from: string, _to: string, _value: BigNumber): string {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -411,6 +490,9 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public decimals = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -442,6 +524,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
@@ -449,6 +535,9 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public balanceOf = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             _owner: string,
             callData: Partial<CallData> = {},
@@ -485,6 +574,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
             const self = (this as any) as ZRXTokenContract;
@@ -493,6 +586,9 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public symbol = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -524,6 +620,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
@@ -531,6 +631,11 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public transfer = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             _to: string,
             _value: BigNumber,
@@ -556,6 +661,12 @@ export class ZRXTokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _to: string,
             _value: BigNumber,
@@ -579,6 +690,11 @@ export class ZRXTokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -599,6 +715,9 @@ export class ZRXTokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -637,6 +756,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(_to: string, _value: BigNumber): string {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -649,6 +772,9 @@ export class ZRXTokenContract extends BaseContract {
         },
     };
     public allowance = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             _owner: string,
             _spender: string,
@@ -690,6 +816,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(_owner: string, _spender: string): string {
             assert.isString('_owner', _owner);
             assert.isString('_spender', _spender);

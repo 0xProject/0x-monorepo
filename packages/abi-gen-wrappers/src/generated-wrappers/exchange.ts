@@ -91,6 +91,9 @@ export interface ExchangeAssetProxyRegisteredEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class ExchangeContract extends BaseContract {
     public filled = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -127,6 +130,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as ExchangeContract;
@@ -134,7 +141,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple calls of fillOrder.
+     */
     public batchFillOrders = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -178,6 +196,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -221,6 +248,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -263,6 +298,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -331,6 +373,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -361,6 +410,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public cancelled = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -397,6 +449,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as ExchangeContract;
@@ -404,7 +460,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Approves a hash on-chain using any valid signature type.
+     * After presigning a hash, the preSign signature type will become valid for that hash and signer.
+     */
     public preSign = {
+        /**
+         * Sends the transaction
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             hash: string,
             signerAddress: string,
@@ -436,6 +503,14 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             hash: string,
             signerAddress: string,
@@ -466,6 +541,13 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             hash: string,
             signerAddress: string,
@@ -496,6 +578,11 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         */
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -540,6 +627,12 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
@@ -553,7 +646,22 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Match two complementary orders that have a profitable spread.
+     * Each order is filled at their respective price point. However, the calculations are
+     * carried out as though the orders are both being filled at the right order's price point.
+     * The profit made by the left order goes to the taker (who matched the two orders).
+     */
     public matchOrders = {
+        /**
+         * Sends the transaction
+         * @param leftOrder         First order to match.
+         * @param rightOrder         Second order to match.
+         * @param leftSignature         Proof that order was created by the left maker.
+         * @param rightSignature         Proof that order was created by the right maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             leftOrder: {
                 makerAddress: string;
@@ -610,6 +718,16 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param leftOrder         First order to match.
+         * @param rightOrder         Second order to match.
+         * @param leftSignature         Proof that order was created by the left maker.
+         * @param rightSignature         Proof that order was created by the right maker.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             leftOrder: {
                 makerAddress: string;
@@ -667,6 +785,15 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param leftOrder         First order to match.
+         * @param rightOrder         Second order to match.
+         * @param leftSignature         Proof that order was created by the left maker.
+         * @param rightSignature         Proof that order was created by the right maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             leftOrder: {
                 makerAddress: string;
@@ -722,6 +849,14 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param leftOrder         First order to match.
+         * @param rightOrder         Second order to match.
+         * @param leftSignature         Proof that order was created by the left maker.
+         * @param rightSignature         Proof that order was created by the right maker.
+         * @returns matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
+         */
         async callAsync(
             leftOrder: {
                 makerAddress: string;
@@ -821,6 +956,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param leftOrder         First order to match.
+         * @param rightOrder         Second order to match.
+         * @param leftSignature         Proof that order was created by the left maker.
+         * @param rightSignature         Proof that order was created by the right maker.
+         */
         getABIEncodedTransactionData(
             leftOrder: {
                 makerAddress: string;
@@ -863,7 +1006,19 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Fills the input order.
+     * Returns false if the transaction would otherwise revert.
+     */
     public fillOrderNoThrow = {
+        /**
+         * Sends the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             order: {
                 makerAddress: string;
@@ -906,6 +1061,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             order: {
                 makerAddress: string;
@@ -948,6 +1112,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             order: {
                 makerAddress: string;
@@ -989,6 +1161,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @returns Amounts filled and fees paid by maker and taker.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -1056,6 +1235,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -1085,6 +1271,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public assetProxies = {
+        /**
+         * Calls the method
+         */
         async callAsync(index_0: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.isString('index_0', index_0);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1117,6 +1306,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as ExchangeContract;
@@ -1124,7 +1317,16 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously cancels multiple orders in a single transaction.
+     */
     public batchCancelOrders = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1164,6 +1366,13 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1198,6 +1407,12 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1236,6 +1451,10 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1290,6 +1509,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -1315,7 +1539,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple calls of fillOrKill.
+     */
     public batchFillOrKillOrders = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1359,6 +1594,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1402,6 +1646,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1444,6 +1696,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1512,6 +1771,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -1541,7 +1807,17 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
+     * and senderAddress equal to msg.sender (or null address if msg.sender == makerAddress).
+     */
     public cancelOrdersUpTo = {
+        /**
+         * Sends the transaction
+         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
@@ -1562,6 +1838,13 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
             txData?: Partial<TxData>,
@@ -1583,6 +1866,12 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
@@ -1602,6 +1891,10 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         */
         async callAsync(
             targetOrderEpoch: BigNumber,
             callData: Partial<CallData> = {},
@@ -1638,6 +1931,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         */
         getABIEncodedTransactionData(targetOrderEpoch: BigNumber): string {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
             const self = (this as any) as ExchangeContract;
@@ -1647,7 +1945,19 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Fills an order with specified parameters and ECDSA signature.
+     * Returns false if the transaction would otherwise revert.
+     */
     public batchFillOrdersNoThrow = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1691,6 +2001,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1734,6 +2053,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1776,6 +2103,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -1844,6 +2178,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
+         * @param signatures         Proofs that orders have been created by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -1873,7 +2214,15 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets an asset proxy.
+     */
     public getAssetProxy = {
+        /**
+         * Calls the method
+         * @param assetProxyId         Id of the asset proxy.
+         * @returns The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
+         */
         async callAsync(
             assetProxyId: string,
             callData: Partial<CallData> = {},
@@ -1910,6 +2259,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetProxyId         Id of the asset proxy.
+         */
         getABIEncodedTransactionData(assetProxyId: string): string {
             assert.isString('assetProxyId', assetProxyId);
             const self = (this as any) as ExchangeContract;
@@ -1918,6 +2272,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public transactions = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             callData: Partial<CallData> = {},
@@ -1954,6 +2311,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
             const self = (this as any) as ExchangeContract;
@@ -1961,7 +2322,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Fills the input order. Reverts if exact takerAssetFillAmount not filled.
+     */
     public fillOrKillOrder = {
+        /**
+         * Sends the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             order: {
                 makerAddress: string;
@@ -2004,6 +2376,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             order: {
                 makerAddress: string;
@@ -2046,6 +2427,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             order: {
                 makerAddress: string;
@@ -2087,6 +2476,12 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -2154,6 +2549,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -2182,7 +2584,17 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
+     */
     public setSignatureValidatorApproval = {
+        /**
+         * Sends the transaction
+         * @param validatorAddress         Address of Validator contract.
+         * @param approval         Approval or disapproval of  Validator contract.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             validatorAddress: string,
             approval: boolean,
@@ -2215,6 +2627,14 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param validatorAddress         Address of Validator contract.
+         * @param approval         Approval or disapproval of  Validator contract.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             validatorAddress: string,
             approval: boolean,
@@ -2242,6 +2662,13 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param validatorAddress         Address of Validator contract.
+         * @param approval         Approval or disapproval of  Validator contract.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             validatorAddress: string,
             approval: boolean,
@@ -2269,6 +2696,11 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param validatorAddress         Address of Validator contract.
+         * @param approval         Approval or disapproval of  Validator contract.
+         */
         async callAsync(
             validatorAddress: string,
             approval: boolean,
@@ -2310,6 +2742,12 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param validatorAddress         Address of Validator contract.
+         * @param approval         Approval or disapproval of  Validator contract.
+         */
         getABIEncodedTransactionData(validatorAddress: string, approval: boolean): string {
             assert.isString('validatorAddress', validatorAddress);
             assert.isBoolean('approval', approval);
@@ -2322,6 +2760,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public allowedValidators = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             index_1: string,
@@ -2363,6 +2804,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
@@ -2374,7 +2819,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+     */
     public marketSellOrders = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2418,6 +2874,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2461,6 +2926,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2503,6 +2976,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been created by makers.
+         * @returns Amounts filled and fees paid by makers and taker.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2571,6 +3051,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been created by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -2600,7 +3087,15 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Fetches information for all passed in orders.
+     */
     public getOrdersInfo = {
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @returns Array of OrderInfo instances that correspond to each order.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2657,6 +3152,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -2683,6 +3183,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public preSigned = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             index_1: string,
@@ -2724,6 +3227,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
@@ -2736,6 +3243,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public owner = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -2767,13 +3277,27 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Verifies that a hash has been signed by the given signer.
+     */
     public isValidSignature = {
+        /**
+         * Calls the method
+         * @param hash         Any 32 byte hash.
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         * @returns True if the address recovered from the provided signature matches the input signer address.
+         */
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -2818,6 +3342,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param hash         Any 32 byte hash.
+         * @param signerAddress         Address that should have signed the given hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
@@ -2831,7 +3362,19 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
+     * Returns false if the transaction would otherwise revert.
+     */
     public marketBuyOrdersNoThrow = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2875,6 +3418,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2918,6 +3470,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -2960,6 +3520,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @returns Amounts filled and fees paid by makers and taker.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -3028,6 +3595,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -3057,7 +3631,18 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Fills the input order.
+     */
     public fillOrder = {
+        /**
+         * Sends the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             order: {
                 makerAddress: string;
@@ -3100,6 +3685,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             order: {
                 makerAddress: string;
@@ -3137,6 +3731,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             order: {
                 makerAddress: string;
@@ -3178,6 +3780,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         * @returns Amounts filled and fees paid by maker and taker.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -3245,6 +3854,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         Order struct containing order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signature         Proof that order has been created by maker.
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -3273,7 +3889,19 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Executes an exchange method call in the context of signer.
+     */
     public executeTransaction = {
+        /**
+         * Sends the transaction
+         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress         Address of transaction signer.
+         * @param data         AbiV2 encoded calldata.
+         * @param signature         Proof of signer transaction by signer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -3308,6 +3936,16 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress         Address of transaction signer.
+         * @param data         AbiV2 encoded calldata.
+         * @param signature         Proof of signer transaction by signer.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -3341,6 +3979,15 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress         Address of transaction signer.
+         * @param data         AbiV2 encoded calldata.
+         * @param signature         Proof of signer transaction by signer.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -3374,6 +4021,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress         Address of transaction signer.
+         * @param data         AbiV2 encoded calldata.
+         * @param signature         Proof of signer transaction by signer.
+         */
         async callAsync(
             salt: BigNumber,
             signerAddress: string,
@@ -3421,6 +4075,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress         Address of transaction signer.
+         * @param data         AbiV2 encoded calldata.
+         * @param signature         Proof of signer transaction by signer.
+         */
         getABIEncodedTransactionData(salt: BigNumber, signerAddress: string, data: string, signature: string): string {
             assert.isBigNumber('salt', salt);
             assert.isString('signerAddress', signerAddress);
@@ -3434,7 +4096,17 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Registers an asset proxy to its asset proxy id.
+     * Once an asset proxy is registered, it cannot be unregistered.
+     */
     public registerAssetProxy = {
+        /**
+         * Sends the transaction
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
@@ -3455,6 +4127,13 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetProxy: string,
             txData?: Partial<TxData>,
@@ -3476,6 +4155,12 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param assetProxy         Address of new asset proxy to register.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
@@ -3495,6 +4180,10 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param assetProxy         Address of new asset proxy to register.
+         */
         async callAsync(
             assetProxy: string,
             callData: Partial<CallData> = {},
@@ -3531,6 +4220,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param assetProxy         Address of new asset proxy to register.
+         */
         getABIEncodedTransactionData(assetProxy: string): string {
             assert.isString('assetProxy', assetProxy);
             const self = (this as any) as ExchangeContract;
@@ -3540,7 +4234,15 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Gets information about an order: status, hash, and amount filled.
+     */
     public getOrderInfo = {
+        /**
+         * Calls the method
+         * @param order         Order to gather information on.
+         * @returns OrderInfo Information about the order and its state.         See LibOrder.OrderInfo for a complete description.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -3598,6 +4300,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         Order to gather information on.
+         */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
             takerAddress: string;
@@ -3620,7 +4327,17 @@ export class ExchangeContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * After calling, the order can not be filled anymore.
+     * Throws if order is invalid or sender does not have permission to cancel.
+     */
     public cancelOrder = {
+        /**
+         * Sends the transaction
+         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             order: {
                 makerAddress: string;
@@ -3659,6 +4376,13 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             order: {
                 makerAddress: string;
@@ -3692,6 +4416,12 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             order: {
                 makerAddress: string;
@@ -3729,6 +4459,10 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -3782,6 +4516,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
             takerAddress: string;
@@ -3805,6 +4544,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public orderEpoch = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             index_0: string,
             index_1: string,
@@ -3846,6 +4588,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
             assert.isString('index_1', index_1);
@@ -3858,6 +4604,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public ZRX_ASSET_DATA = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -3889,13 +4638,29 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('ZRX_ASSET_DATA()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+     * Returns false if the transaction would otherwise revert.
+     */
     public marketSellOrdersNoThrow = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -3939,6 +4704,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -3982,6 +4756,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4024,6 +4806,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @returns Amounts filled and fees paid by makers and taker.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4092,6 +4881,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
+         * @param signatures         Proofs that orders have been signed by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -4122,6 +4918,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public EIP712_DOMAIN_HASH = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -4153,13 +4952,28 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+     */
     public marketBuyOrders = {
+        /**
+         * Sends the transaction
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4203,6 +5017,15 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4246,6 +5069,14 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4288,6 +5119,13 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         * @returns Amounts filled and fees paid by makers and taker.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -4356,6 +5194,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param orders         Array of order specifications.
+         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
+         * @param signatures         Proofs that orders have been signed by makers.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -4386,6 +5231,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public currentContextAddress = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -4417,6 +5265,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('currentContextAddress()', []);
@@ -4424,6 +5276,11 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public transferOwnership = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
@@ -4444,6 +5301,12 @@ export class ExchangeContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
@@ -4465,6 +5328,11 @@ export class ExchangeContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
@@ -4484,6 +5352,9 @@ export class ExchangeContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -4516,6 +5387,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ExchangeContract;
@@ -4526,6 +5401,9 @@ export class ExchangeContract extends BaseContract {
         },
     };
     public VERSION = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -4557,6 +5435,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('VERSION()', []);

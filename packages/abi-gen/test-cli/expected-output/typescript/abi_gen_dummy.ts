@@ -52,6 +52,9 @@ export interface AbiGenDummyAnEventEventArgs extends DecodedLogArgs {
 // tslint:disable-next-line:class-name
 export class AbiGenDummyContract extends BaseContract {
     public simpleRequire = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -83,13 +86,24 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRequire()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * a method that accepts an array of bytes
+     */
     public acceptsAnArrayOfBytes = {
+        /**
+         * Calls the method
+         * @param a         the array of bytes being accepted
+         */
         async callAsync(a: string[], callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isArray('a', a);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -122,6 +136,11 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param a         the array of bytes being accepted
+         */
         getABIEncodedTransactionData(a: string[]): string {
             assert.isArray('a', a);
             const self = (this as any) as AbiGenDummyContract;
@@ -130,6 +149,11 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public withdraw = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
@@ -150,6 +174,12 @@ export class AbiGenDummyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             wad: BigNumber,
             txData?: Partial<TxData>,
@@ -171,6 +201,11 @@ export class AbiGenDummyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
@@ -190,6 +225,9 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(wad: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isBigNumber('wad', wad);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -222,6 +260,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(wad: BigNumber): string {
             assert.isBigNumber('wad', wad);
             const self = (this as any) as AbiGenDummyContract;
@@ -230,6 +272,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public ecrecoverFn = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             hash: string,
             v: number | BigNumber,
@@ -277,6 +322,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(hash: string, v: number | BigNumber, r: string, s: string): string {
             assert.isString('hash', hash);
             assert.isNumberOrBigNumber('v', v);
@@ -291,6 +340,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public acceptsBytes = {
+        /**
+         * Calls the method
+         */
         async callAsync(a: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('a', a);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -323,6 +375,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(a: string): string {
             assert.isString('a', a);
             const self = (this as any) as AbiGenDummyContract;
@@ -331,6 +387,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public revertWithConstant = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -362,6 +421,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('revertWithConstant()', []);
@@ -369,6 +432,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public simpleRevert = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -400,6 +466,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simpleRevert()', []);
@@ -407,6 +477,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public nestedStructOutput = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
@@ -447,6 +520,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nestedStructOutput()', []);
@@ -454,6 +531,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public requireWithConstant = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -485,6 +565,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('requireWithConstant()', []);
@@ -492,6 +576,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public withAddressInput = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             x: string,
             a: BigNumber,
@@ -539,6 +626,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(x: string, a: BigNumber, b: BigNumber, y: string, c: BigNumber): string {
             assert.isString('x', x);
             assert.isBigNumber('a', a);
@@ -554,6 +645,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public structInput = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             s: { someBytes: string; anInteger: number | BigNumber; aDynamicArrayOfBytes: string[]; aString: string },
             callData: Partial<CallData> = {},
@@ -589,6 +683,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(s: {
             someBytes: string;
             anInteger: number | BigNumber;
@@ -604,6 +702,11 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public nonPureMethod = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
@@ -623,6 +726,12 @@ export class AbiGenDummyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
@@ -642,6 +751,11 @@ export class AbiGenDummyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethod()', []);
@@ -660,6 +774,9 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -691,6 +808,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethod()', []);
@@ -698,6 +819,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public simplePureFunctionWithInput = {
+        /**
+         * Calls the method
+         */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -730,6 +854,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
             const self = (this as any) as AbiGenDummyContract;
@@ -738,6 +866,11 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public nonPureMethodThatReturnsNothing = {
+        /**
+         * Sends the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
@@ -757,6 +890,12 @@ export class AbiGenDummyContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
             pollingIntervalMs?: number,
@@ -776,6 +915,11 @@ export class AbiGenDummyContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
             const self = (this as any) as AbiGenDummyContract;
             const encodedData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
@@ -794,6 +938,9 @@ export class AbiGenDummyContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -825,6 +972,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('nonPureMethodThatReturnsNothing()', []);
@@ -832,6 +983,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public simplePureFunction = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -863,6 +1017,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('simplePureFunction()', []);
@@ -870,6 +1028,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public nestedStructInput = {
+        /**
+         * Calls the method
+         */
         async callAsync(
             n: {
                 innerStruct: {
@@ -916,6 +1077,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(n: {
             innerStruct: {
                 someBytes: string;
@@ -933,7 +1098,14 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * a method that returns a struct
+     */
     public structOutput = {
+        /**
+         * Calls the method
+         * @returns a Struct struct
+         */
         async callAsync(
             callData: Partial<CallData> = {},
             defaultBlock?: BlockParam,
@@ -973,6 +1145,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('structOutput()', []);
@@ -980,6 +1156,9 @@ export class AbiGenDummyContract extends BaseContract {
         },
     };
     public pureFunctionWithConstant = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -1011,6 +1190,10 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('pureFunctionWithConstant()', []);

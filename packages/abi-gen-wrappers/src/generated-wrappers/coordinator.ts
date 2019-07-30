@@ -27,7 +27,15 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorContract extends BaseContract {
+    /**
+     * Recovers the address of a signer given a hash and signature.
+     */
     public getSignerAddress = {
+        /**
+         * Calls the method
+         * @param hash         Any 32 byte hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         */
         async callAsync(
             hash: string,
             signature: string,
@@ -66,6 +74,12 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param hash         Any 32 byte hash.
+         * @param signature         Proof that the hash has been signed by signer.
+         */
         getABIEncodedTransactionData(hash: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signature', signature);
@@ -77,7 +91,15 @@ export class CoordinatorContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
+     */
     public getTransactionHash = {
+        /**
+         * Calls the method
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @returns EIP712 hash of the transaction with the domain separator of this contract.
+         */
         async callAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             callData: Partial<CallData> = {},
@@ -115,6 +137,11 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         */
         getABIEncodedTransactionData(transaction: { salt: BigNumber; signerAddress: string; data: string }): string {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments(
@@ -124,7 +151,15 @@ export class CoordinatorContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Calculated the EIP712 hash of the Coordinator approval mesasage using the domain separator of this contract.
+     */
     public getCoordinatorApprovalHash = {
+        /**
+         * Calls the method
+         * @param approval         Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
+         * @returns EIP712 hash of the Coordinator approval message with the domain separator of this contract.
+         */
         async callAsync(
             approval: {
                 txOrigin: string;
@@ -168,6 +203,11 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param approval         Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
+         */
         getABIEncodedTransactionData(approval: {
             txOrigin: string;
             transactionHash: string;
@@ -182,7 +222,20 @@ export class CoordinatorContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Executes a 0x transaction that has been signed by the feeRecipients that correspond to each order in the transaction's Exchange calldata.
+     */
     public executeTransaction = {
+        /**
+         * Sends the transaction
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async sendTransactionAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -229,6 +282,17 @@ export class CoordinatorContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends the transaction and wait for it to succeed
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         * @param txData                Additional data for transaction
+         * @param pollingIntervalMs     Interval at which to poll for success
+         * @returns                     A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -264,6 +328,16 @@ export class CoordinatorContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimate gas to send the transaction
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         * @param txData    Additional data for transaction
+         * @returns         The hash of the transaction
+         */
         async estimateGasAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -302,6 +376,14 @@ export class CoordinatorContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Calls the method
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         */
         async callAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -356,6 +438,15 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         */
         getABIEncodedTransactionData(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -382,6 +473,9 @@ export class CoordinatorContract extends BaseContract {
         },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -413,13 +507,29 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_EXCHANGE_DOMAIN_HASH()', []);
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Validates that the 0x transaction has been approved by all of the feeRecipients
+     * that correspond to each order in the transaction's Exchange calldata.
+     */
     public assertValidCoordinatorApprovals = {
+        /**
+         * Calls the method
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         */
         async callAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -474,6 +584,15 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param transaction         0x transaction containing salt, signerAddress, and data.
+         * @param txOrigin         Required signer of Ethereum transaction calling this function.
+         * @param transactionSignature         Proof that the transaction has been signed by the signer.
+         * @param approvalExpirationTimeSeconds         Array of expiration times in seconds for which each corresponding approval signature expires.
+         * @param approvalSignatures         Array of signatures that correspond to the feeRecipients of each order in the transaction's Exchange calldata.
+         */
         getABIEncodedTransactionData(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
             txOrigin: string,
@@ -499,7 +618,15 @@ export class CoordinatorContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    /**
+     * Decodes the orders from Exchange calldata representing any fill method.
+     */
     public decodeOrdersFromFillData = {
+        /**
+         * Calls the method
+         * @param data         Exchange calldata representing a fill method.
+         * @returns The orders from the Exchange calldata.
+         */
         async callAsync(
             data: string,
             callData: Partial<CallData> = {},
@@ -566,6 +693,11 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         * @param data         Exchange calldata representing a fill method.
+         */
         getABIEncodedTransactionData(data: string): string {
             assert.isString('data', data);
             const self = (this as any) as CoordinatorContract;
@@ -574,6 +706,9 @@ export class CoordinatorContract extends BaseContract {
         },
     };
     public EIP712_COORDINATOR_DOMAIN_HASH = {
+        /**
+         * Calls the method
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -605,6 +740,10 @@ export class CoordinatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+
+        /**
+         * Returns the ABI encoded transaction data
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as CoordinatorContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('EIP712_COORDINATOR_DOMAIN_HASH()', []);
