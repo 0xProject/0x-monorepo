@@ -4,8 +4,10 @@ import * as _ from 'lodash';
 
 import { IsolatedExchangeWrapper, Order } from './utils/isolated_exchange_wrapper';
 
+
 blockchainTests.resets.only('Isolated fillOrder() tests', env => {
     const TOMORROW = Math.floor(_.now() / 1000) + 60 * 60 * 24;
+    const ERC20_ASSET_DATA_LENGTH = 24;
     const DEFAULT_ORDER: Order = {
         senderAddress: constants.NULL_ADDRESS,
         makerAddress: randomAddress(),
@@ -14,13 +16,13 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
         takerFee: constants.ZERO_AMOUNT,
         makerAssetAmount: constants.ZERO_AMOUNT,
         takerAssetAmount: constants.ZERO_AMOUNT,
-        makerAssetData: constants.NULL_BYTES,
-        takerAssetData: constants.NULL_BYTES,
-        makerFeeAssetData: constants.NULL_BYTES,
-        takerFeeAssetData: constants.NULL_BYTES,
         salt: constants.ZERO_AMOUNT,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: toBN(TOMORROW),
+        makerAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
+        takerAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
+        makerFeeAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
+        takerFeeAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
     };
     let takerAddress: string;
     let testExchange: IsolatedExchangeWrapper;
@@ -38,14 +40,16 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
         return _.assign({}, DEFAULT_ORDER, { salt: toBN(nextSaltValue++) }, details);
     }
 
-    it('works', async () => {
-        const order = createOrder({
-            makerAssetAmount: toBN(1),
-            takerAssetAmount: toBN(2),
+    for (const i of _.times(100)) {
+        it('works', async () => {
+            const order = createOrder({
+                makerAssetAmount: toBN(1),
+                takerAssetAmount: toBN(2),
+            });
+            const results = await testExchange.fillOrderAsync(order, 2);
+            // console.log(results, testExchange.getOrderHash(order));
         });
-        const results = await testExchange.fillOrderAsync(order, 2);
-        console.log(results, testExchange.getOrderHash(order));
-    });
+    }
 });
 
 function toBN(num: BigNumber | string | number): BigNumber {

@@ -48,19 +48,22 @@ contract TestIsolatedExchange is
     {}
 
     /// @dev Convenience function to get the `rawAssetBalances` for
-    ///      multiple addresses.
+    ///      multiple assets and addresses.
     function getRawAssetBalances(
-        bytes calldata assetData,
+        bytes[] calldata assets,
         address[] calldata addresses
     )
         external
-        returns (int256[] memory balances)
+        returns (int256[][] memory balances)
     {
-        balances = new int256[](addresses.length);
-        mapping(address => int256) storage assetBalances =
-            rawAssetBalances[keccak256(assetData)];
-        for (uint i = 0; i < addresses.length; i++) {
-            balances[i] = assetBalances[addresses[i]];
+        balances = new int256[][](assets.length);
+        for (uint assetIdx = 0; assetIdx < assets.length; ++assetIdx) {
+            balances[assetIdx] = new int256[](addresses.length);
+            mapping(address => int256) storage assetBalances =
+                rawAssetBalances[keccak256(assets[assetIdx])];
+            for (uint addrIdx = 0; addrIdx < addresses.length; ++addrIdx) {
+                balances[assetIdx][addrIdx] = assetBalances[addresses[addrIdx]];
+            }
         }
     }
 
