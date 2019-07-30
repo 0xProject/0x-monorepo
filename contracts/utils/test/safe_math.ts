@@ -134,7 +134,7 @@ describe('SafeMath', () => {
             expect(result).bignumber.to.be.eq(constants.ZERO_AMOUNT);
         });
 
-        it('should return second argument if it is greater than the first', async () => {
+        it('should return second argument if it is less than the first', async () => {
             const result = await safeMath.externalMaxUint256.callAsync(toBN(13), constants.ZERO_AMOUNT);
             expect(result).bignumber.to.be.eq(toBN(13));
         });
