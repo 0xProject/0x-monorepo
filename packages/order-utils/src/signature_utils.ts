@@ -76,8 +76,8 @@ export const signatureUtils = {
             }
 
             case SignatureType.Validator: {
-                const exchangeAddress = signatureValidationOpts &&
-                    (signatureValidationOpts as ValidatorSignatureOpts).exchangeAddress;
+                const exchangeAddress =
+                    signatureValidationOpts && (signatureValidationOpts as ValidatorSignatureOpts).exchangeAddress;
                 const isValid = await signatureUtils.isValidValidatorSignatureAsync(
                     provider,
                     data,
@@ -89,8 +89,8 @@ export const signatureUtils = {
             }
 
             case SignatureType.PreSigned: {
-                const exchangeAddress = signatureValidationOpts &&
-                    (signatureValidationOpts as PresignedSignatureOpts).exchangeAddress;
+                const exchangeAddress =
+                    signatureValidationOpts && (signatureValidationOpts as PresignedSignatureOpts).exchangeAddress;
                 return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress, exchangeAddress);
             }
 

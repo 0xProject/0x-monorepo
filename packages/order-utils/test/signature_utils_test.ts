@@ -159,7 +159,7 @@ describe('Signature utils', () => {
     });
     describe('#parseValidatorSignature', () => {
         const ethSignSignature =
-                '0x1c3582f06356a1314dbf1c0e534c4d8e92e59b056ee607a7ff5a825f5f2cc5e6151c5cc7fdd420f5608e4d5bef108e42ad90c7a4b408caef32e24374cf387b0d7603';
+            '0x1c3582f06356a1314dbf1c0e534c4d8e92e59b056ee607a7ff5a825f5f2cc5e6151c5cc7fdd420f5608e4d5bef108e42ad90c7a4b408caef32e24374cf387b0d7603';
         const validatorAddress = '0x63ac26ad9477d6be19a5fabe394bcc4886057c53';
         const signature = `${ethSignSignature}${validatorAddress.substr(2)}05`;
         it('throws if signature type is not Validator type signature', () => {
