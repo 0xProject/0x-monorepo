@@ -28,11 +28,7 @@ import "../src/LibFillResults.sol";
 
 // solhint-disable no-empty-blocks
 contract TestLibs is
-    LibEIP712ExchangeDomain,
-    LibMath,
-    LibOrder,
-    LibZeroExTransaction,
-    LibFillResults
+    LibEIP712ExchangeDomain
 {
     constructor (uint256 chainId)
         public
@@ -48,7 +44,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = _getPartialAmountFloor(
+        partialAmount = LibMath.getPartialAmountFloor(
             numerator,
             denominator,
             target
@@ -65,7 +61,7 @@ contract TestLibs is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = _getPartialAmountCeil(
+        partialAmount = LibMath.getPartialAmountCeil(
             numerator,
             denominator,
             target
@@ -116,7 +112,7 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = _isRoundingErrorFloor(
+        isError = LibMath.isRoundingErrorFloor(
             numerator,
             denominator,
             target
@@ -133,28 +129,12 @@ contract TestLibs is
         pure
         returns (bool isError)
     {
-        isError = _isRoundingErrorCeil(
+        isError = LibMath.isRoundingErrorCeil(
             numerator,
             denominator,
             target
         );
         return isError;
-    }
-
-    function getOrderSchemaHash()
-        public
-        pure
-        returns (bytes32)
-    {
-        return EIP712_ORDER_SCHEMA_HASH;
-    }
-
-    function getDomainSeparatorSchemaHash()
-        public
-        pure
-        returns (bytes32)
-    {
-        return EIP712_DOMAIN_SEPARATOR_SCHEMA_HASH;
     }
 
     function getDomainSeparator()
@@ -165,12 +145,12 @@ contract TestLibs is
         return EIP712_EXCHANGE_DOMAIN_HASH;
     }
 
-    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
+    function addFillResults(LibFillResults.FillResults memory totalFillResults, LibFillResults.FillResults memory singleFillResults)
         public
         pure
-        returns (FillResults memory)
+        returns (LibFillResults.FillResults memory)
     {
-        _addFillResults(totalFillResults, singleFillResults);
+        LibFillResults.addFillResults(totalFillResults, singleFillResults);
         return totalFillResults;
     }
 }
