@@ -25,6 +25,10 @@
             {
                 "note": "Updated RichErrors to the library pattern, and implemented RichErrors for all remaining reverts and requires",
                 "pr": 1913
+            },
+            {
+                "note": "Added unit tests for all of the internal functions in the package",
+                "pr": 2014
             }
         ]
     },
