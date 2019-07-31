@@ -1,11 +1,22 @@
+import * as React from 'react';
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
-import { docs} from 'ts/style/docs';
+import { docs } from 'ts/style/docs';
 
-export const Table = styled.table`
+export const Table: React.FC = ({ children }) => (
+    <TableWrapper>
+        <TableInner>{children}</TableInner>
+    </TableWrapper>
+);
+
+const TableWrapper = styled.div`
+    overflow-x: scroll;
+    margin-bottom: ${docs.marginBottom};
+`;
+
+export const TableInner = styled.table`
     border: 1px solid #cfcfcf;
-    margin-bottom:  ${docs.marginBottom};
     width: 100%;
 
     th {

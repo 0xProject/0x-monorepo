@@ -26,6 +26,7 @@ export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY
 export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
 
 export const searchIndices: ISearchIndices = {
+    'core-concepts': '0x_core_concepts_test',
     guides: '0x_guides_test',
     tools: '0x_tools_test',
 };
@@ -39,6 +40,10 @@ const sharedSettings = {
 };
 
 export const settings: ISettingsIndex = {
+    'core-concepts': {
+        ...sharedSettings,
+        attributesForFaceting: [],
+    },
     guides: {
         ...sharedSettings,
         attributesForFaceting: ['topics', 'difficulty'],

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 

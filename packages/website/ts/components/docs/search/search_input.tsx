@@ -15,5 +15,6 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
         <Configure hitsPerPage={5} distinct={true} />
         <Index indexName={searchIndices.tools} />
         <Index indexName={searchIndices.guides} />
+        <Index indexName={searchIndices['core-concepts']} />
     </InstantSearch>
 );

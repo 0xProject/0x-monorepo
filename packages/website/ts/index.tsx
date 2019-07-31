@@ -221,6 +221,7 @@ render(
                                     component={LazyAssetSwapperDocumentation}
                                 />
                                 <Route path={`${WebsitePaths.Docs}/:type/:page`} component={DocsPage as any} />
+                                <Route exact={true} path={WebsitePaths.DocsCoreConcepts} component={DocsPage as any} />
                                 <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
                                 <Route exact={true} path={WebsitePaths.DocsTools} component={DocsTools as any} />
                                 <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />

@@ -4,7 +4,6 @@ import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_overlay';
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
 
@@ -89,8 +88,10 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
 
     const renderSectionTitle = (section: any): React.ReactNode => {
         const { tools, guides } = searchIndices;
+        const coreConcepts = searchIndices['core-concepts'];
 
         const titles: { [key: string]: string } = {
+            [coreConcepts]: 'Core concepts',
             [tools]: 'Tools',
             [guides]: 'Guides',
         };
