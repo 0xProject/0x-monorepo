@@ -36,38 +36,13 @@ contract TestIsolatedExchange is
         uint256 amount
     );
 
-    /// @dev Raw asset balances of addresses based on asset data hash.
-    ///      These start at 0 and are allowed to be negative.
-    ///      Updated by `_dispatchTransferFrom()`.
-    mapping(bytes32 => mapping(address => int256)) public rawAssetBalances;
-
     // solhint-disable no-empty-blocks
     constructor ()
         public
         Exchange(1337)
     {}
 
-    /// @dev Convenience function to get the `rawAssetBalances` for
-    ///      multiple assets and addresses.
-    function getRawAssetBalances(
-        bytes[] calldata assets,
-        address[] calldata addresses
-    )
-        external
-        returns (int256[][] memory balances)
-    {
-        balances = new int256[][](assets.length);
-        for (uint assetIdx = 0; assetIdx < assets.length; ++assetIdx) {
-            balances[assetIdx] = new int256[](addresses.length);
-            mapping(address => int256) storage assetBalances =
-                rawAssetBalances[keccak256(assets[assetIdx])];
-            for (uint addrIdx = 0; addrIdx < addresses.length; ++addrIdx) {
-                balances[assetIdx][addrIdx] = assetBalances[addresses[addrIdx]];
-            }
-        }
-    }
-
-    /// @dev Overriden to only log arguments and track raw asset balances.
+    /// @dev Overriden to only log arguments.
     function _dispatchTransferFrom(
         bytes32 orderHash,
         bytes memory assetData,
@@ -84,11 +59,6 @@ contract TestIsolatedExchange is
             to,
             amount
         );
-
-        mapping(address => int256) storage assetBalances =
-            rawAssetBalances[keccak256(assetData)];
-        assetBalances[from] = _subAssetAmount(assetBalances[from], amount);
-        assetBalances[to] = _addAssetAmount(assetBalances[to], amount);
     }
 
     /// @dev Overriden to simplify signature validation.
@@ -105,15 +75,5 @@ contract TestIsolatedExchange is
     {
         // '0x01' in the first byte is valid.
         return signature.length == 2 && signature[0] == 0x01;
-    }
-
-    function _subAssetAmount(int256 a, uint256 b) private pure returns (int256 r) {
-        r = a - int256(b);
-        require(r <= a, "ASSET_AMOUNT_UNDERFLOW");
-    }
-
-    function _addAssetAmount(int256 a, uint256 b) private pure returns (int256 r) {
-        r = a + int256(b);
-        require(r >= a, "ASSET_AMOUNT_OVERFLOW");
     }
 }

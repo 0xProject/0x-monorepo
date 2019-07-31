@@ -1,4 +1,4 @@
-import { FillResults, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
+import { constants, FillResults, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { OrderWithoutDomain, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -13,20 +13,6 @@ import {
     TestIsolatedExchangeFillEventArgs as FillEventArgs,
 } from '../../src';
 
-/**
- * @dev Create a signature for the `TestIsolatedExchange` contract that will pass.
- */
-export function createGoodSignature(type: SignatureType = SignatureType.EIP712): string {
-    return `0x01${Buffer.from([type]).toString('hex')}`;
-}
-
-/**
- * @dev Create a signature for the `TestIsolatedExchange` contract that will fail.
- */
-export function createBadSignature(type: SignatureType = SignatureType.EIP712): string {
-    return `0x00${Buffer.from([type]).toString('hex')}`;
-}
-
 export interface AssetBalances {
     [assetData: string]: { [address: string]: BigNumber };
 }
@@ -36,28 +22,10 @@ export interface IsolatedExchangeEvents {
     transferFromCalls: DispatchTransferFromCallArgs[];
 }
 
-export interface EventsAndBalances {
-    events: IsolatedExchangeEvents;
-    balances: AssetBalances;
-}
-
-export interface IsolatedFillOrderResults extends EventsAndBalances {
-    fillResults: FillResults;
-}
-
 export type Order = OrderWithoutDomain;
 
 export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();
 export const DEFAULT_BAD_SIGNATURE = createBadSignature();
-
-interface CallAndSendResult<TResult> extends EventsAndBalances {
-    result: TResult;
-}
-
-interface TransactionContractFunction<TResult> {
-    callAsync: (...args: any[]) => Promise<TResult>;
-    sendTransactionAsync: (...args: any[]) => Promise<string>;
-}
 
 /**
  * @dev Convenience wrapper for the `TestIsolatedExchange` contract.
@@ -66,6 +34,8 @@ export class IsolatedExchangeWrapper {
     public static readonly CHAIN_ID = 1337;
     public instance: TestIsolatedExchangeContract;
     public logDecoder: LogDecoder;
+    public lastTxEvents: IsolatedExchangeEvents = createEmptyEvents();
+    public lastTxBalanceChanges: AssetBalances = {};
 
     public static async deployAsync(
         web3Wrapper: Web3Wrapper,
@@ -100,20 +70,14 @@ export class IsolatedExchangeWrapper {
         takerAssetFillAmount: BigNumber | number,
         signature: string = DEFAULT_GOOD_SIGNATURE,
         txOpts?: TxData,
-    ): Promise<IsolatedFillOrderResults> {
-        const _takerAssetFillAmount = new BigNumber(takerAssetFillAmount);
-        const results = await this._callAndSendExchangeFunctionAsync<FillResults>(
+    ): Promise<FillResults> {
+        return this._callAndSendExchangeFunctionAsync<FillResults>(
             this.instance.fillOrder,
             order,
-            _takerAssetFillAmount,
+            new BigNumber(takerAssetFillAmount),
             signature,
             txOpts,
         );
-        return {
-            fillResults: results.result,
-            events: results.events,
-            balances: results.balances,
-        };
     }
 
     public getOrderHash(order: Order): string {
@@ -124,59 +88,58 @@ export class IsolatedExchangeWrapper {
         return orderHashUtils.getOrderHashHex(_.assign(order, { domain }));
     }
 
-    public async getAssetBalanceAsync(assetData: string, address: string): Promise<BigNumber[]> {
-        return this.getAssetBalancesAsync(assetData, [ address ]);
-    }
-
-    public async getAssetBalancesAsync(assetData: string, addresses: string[]): Promise<BigNumber[]> {
-        return (await this.instance.getRawAssetBalances.callAsync([ assetData ], addresses))[0];
-    }
-
-    public async getBalancesAsync(assets: string[], addresses: string[]):
-            Promise<AssetBalances> {
-        const callResults = await this.instance.getRawAssetBalances.callAsync(assets, addresses);
-        const result: AssetBalances = {};
-        for (const i of _.times(assets.length)) {
-            const assetData = assets[i];
-            result[assetData] = {};
-            for (const j of _.times(addresses.length)) {
-                const address = addresses[j];
-                result[assetData][address] = callResults[i][j];
+    public getBalanceChange(assetData: string, address: string): BigNumber {
+        if (assetData in this.lastTxBalanceChanges) {
+            const balances = this.lastTxBalanceChanges[assetData];
+            if (address in balances) {
+                return balances[address];
             }
         }
-        return result;
-    }
-
-    protected async _getBalancesFromTransferFromCallsAsync(
-        calls: DispatchTransferFromCallArgs[],
-    ): Promise<AssetBalances> {
-        // Extract addresses involved in transfers.
-        const addresses = _.uniq(_.flatten(calls.map(c => [c.from, c.to])));
-        // Extract assets involved in transfers.
-        const assets = _.uniq(calls.map(c => c.assetData));
-        // Query balances of addresses and assets involved in transfers.
-        return this.getBalancesAsync(assets, addresses);
+        return constants.ZERO_AMOUNT;
     }
 
     protected async _callAndSendExchangeFunctionAsync<TResult>(
         instanceMethod: TransactionContractFunction<TResult>,
         // tslint:disable-next-line: trailing-comma
         ...args: any[]
-    ): Promise<CallAndSendResult<TResult>> {
+    ): Promise<TResult> {
+        this.lastTxEvents = createEmptyEvents();
+        this.lastTxBalanceChanges = {};
         // Call to get the return value.
-        const result = await instanceMethod.callAsync.call(this.instance, ...args);
+        const result = await instanceMethod.callAsync(...args);
         // Transact to execute it.
         const receipt = await this.logDecoder.getTxWithDecodedLogsAsync(
             await this.instance.fillOrder.sendTransactionAsync.call(this.instance, ...args),
         );
-        const events = extractEvents(receipt.logs);
-        const balances = await this._getBalancesFromTransferFromCallsAsync(events.transferFromCalls);
-        return {
-            result,
-            events,
-            balances,
-        };
+        this.lastTxEvents = extractEvents(receipt.logs);
+        this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(
+            this.lastTxEvents.transferFromCalls,
+        );
+        return result;
     }
+}
+
+interface TransactionContractFunction<TResult> {
+    callAsync: (...args: any[]) => Promise<TResult>;
+    sendTransactionAsync: (...args: any[]) => Promise<string>;
+}
+
+/**
+ * @dev Create a signature for the `TestIsolatedExchange` contract that will pass.
+ */
+export function createGoodSignature(type: SignatureType = SignatureType.EIP712): string {
+    return `0x01${Buffer.from([type]).toString('hex')}`;
+}
+
+/**
+ * @dev Create a signature for the `TestIsolatedExchange` contract that will fail.
+ */
+export function createBadSignature(type: SignatureType = SignatureType.EIP712): string {
+    return `0x00${Buffer.from([type]).toString('hex')}`;
+}
+
+function createEmptyEvents(): IsolatedExchangeEvents {
+    return { fillEvents: [], transferFromCalls: [] };
 }
 
 function extractEvents(logs: LogEntry[]): IsolatedExchangeEvents {
@@ -187,4 +150,20 @@ function extractEvents(logs: LogEntry[]): IsolatedExchangeEvents {
             'DispatchTransferFromCalled',
         ),
     };
+}
+
+// Executes transferFrom calls to compute relative balances for addresses.
+function getBalanceChangesFromTransferFromCalls(
+    calls: DispatchTransferFromCallArgs[],
+): AssetBalances {
+    const changes: AssetBalances = {};
+    for (const call of calls) {
+        const { assetData, from, to, amount } = call;
+        const balances = changes[assetData] = changes[assetData ] || {};
+        const fromBalance = balances[from] || constants.ZERO_AMOUNT;
+        const toBalance = balances[to] || constants.ZERO_AMOUNT;
+        balances[from] = fromBalance.minus(amount);
+        balances[to] = toBalance.plus(amount);
+    }
+    return changes;
 }

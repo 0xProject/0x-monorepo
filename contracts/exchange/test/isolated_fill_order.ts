@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 
 import { IsolatedExchangeWrapper, Order } from './utils/isolated_exchange_wrapper';
 
-
 blockchainTests.resets.only('Isolated fillOrder() tests', env => {
     const TOMORROW = Math.floor(_.now() / 1000) + 60 * 60 * 24;
     const ERC20_ASSET_DATA_LENGTH = 24;
@@ -47,7 +46,6 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
                 takerAssetAmount: toBN(2),
             });
             const results = await testExchange.fillOrderAsync(order, 2);
-            // console.log(results, testExchange.getOrderHash(order));
         });
     }
 });
