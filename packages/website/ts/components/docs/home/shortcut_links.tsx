@@ -4,7 +4,8 @@ import styled from 'styled-components';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 
 import { colors } from 'ts/style/colors';
 

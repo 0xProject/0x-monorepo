@@ -1,6 +1,7 @@
 import * as React from 'react';
 
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 
 interface IInlineLinkProps {
     children: React.ReactNode;
