@@ -12,6 +12,9 @@ export interface ContractAddresses {
     dutchAuction: string;
     coordinatorRegistry: string;
     coordinator: string;
+    multiAssetProxy: string;
+    staticCallProxy: string;
+    erc1155Proxy: string;
 }
 
 export enum NetworkId {
@@ -37,6 +40,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         dutchAuction: '0xa3856622276a64fee0f17f67329fac24368d4aae',
         coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
         coordinator: '0xa14857e8930acd9a882d33ec20559beb5479c8a6',
+        multiAssetProxy: '0xef701d5389ae74503d633396c4d654eabedc9d78',
+        staticCallProxy: NULL_ADDRESS,
+        erc1155Proxy: NULL_ADDRESS,
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -50,6 +56,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
         coordinatorRegistry: '0x403cc23e88c17c4652fb904784d1af640a6722d9',
         coordinator: '0x2ba02e03ee0029311e0f43715307870a3e701b53',
+        multiAssetProxy: '0xab8fbd189c569ccdee3a4d929bb7f557be4028f6',
+        staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
+        erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
     },
     4: {
         exchange: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
@@ -63,6 +72,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
         coordinatorRegistry: '0x1084b6a398e47907bae43fec3ff4b677db6e4fee',
         coordinator: '0x2ba02e03ee0029311e0f43715307870a3e701b53',
+        multiAssetProxy: '0xb34cde0ad3a83d04abebc0b66e75196f22216621',
+        staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
+        erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -76,6 +88,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         dutchAuction: '0xe5f862f7811af180990025b6259b02feb0a0b8dc',
         coordinatorRegistry: '0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5',
         coordinator: '0x2ba02e03ee0029311e0f43715307870a3e701b53',
+        multiAssetProxy: '0xf6313a772c222f51c28f2304c0703b8cf5428fd8',
+        staticCallProxy: '0x48e94bdb9033640d45ea7c721e25f380f8bffa43',
+        erc1155Proxy: '0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -90,6 +105,9 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         dutchAuction: '0x7e3f4e1deb8d3a05d9d2da87d9521268d0ec3239',
         coordinatorRegistry: '0xaa86dda78e9434aca114b6676fc742a18d15a1cc',
         coordinator: '0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29',
+        multiAssetProxy: NULL_ADDRESS,
+        staticCallProxy: NULL_ADDRESS,
+        erc1155Proxy: NULL_ADDRESS,
     },
 };
 
