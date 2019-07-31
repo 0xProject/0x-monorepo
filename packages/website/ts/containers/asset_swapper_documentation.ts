@@ -1,8 +1,7 @@
-import { DocsInfoConfig, SupportedDocJson } from '@0x/react-docs';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { DocPage as DocPageComponent, DocPageProps } from 'ts/pages/documentation/doc_page';
-import { DocPackages } from 'ts/types';
+import { DocPackages, DocsInfoConfig, SupportedDocJson } from 'ts/types';
 
 import { getMapStateToProps, mapDispatchToProps } from '../utils/documentation_container';
 
