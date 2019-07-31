@@ -54,12 +54,9 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
     const isLoading = !Component && !wasNotFound;
     const { page, type } = match.params;
 
-    React.useEffect(
-        () => {
-            void loadPageAsync(page, type);
-        },
-        [page, type],
-    );
+    React.useEffect(() => {
+        void loadPageAsync(page, type);
+    }, [page, type]);
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
