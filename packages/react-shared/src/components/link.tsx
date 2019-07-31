@@ -20,6 +20,7 @@ export interface BaseLinkProps {
 
 export interface ScrollLinkProps extends BaseLinkProps {
     containerId?: string;
+    offset?: number;
     onActivityChanged?: (isActive: boolean) => void;
 }
 
@@ -115,10 +116,11 @@ export class Link extends React.Component<LinkProps, LinkState> {
                     >
                         <ScrollLink
                             to={this.props.to}
-                            offset={0}
+                            offset={this.props.offset}
                             spy={true}
                             hashSpy={true}
                             duration={constants.DOCS_SCROLL_DURATION_MS}
+                            smooth={constants.DOCS_SCROLL_DURATION_MS > 0}
                             containerId={this.props.containerId}
                             className={this.props.className}
                             style={styleWithDefault}
