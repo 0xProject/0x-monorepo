@@ -1,25 +1,24 @@
 import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
 import {
-    BatchMatchedFillResults,
-    chaiSetup,
     ERC1155HoldingsByOwner,
-    FillResults,
-    MatchedFillResults,
+    expect,
     OrderStatus,
 } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { AssetProxyId, SignedOrder } from '@0x/types';
+import {
+    AssetProxyId,
+    BatchMatchedFillResults,
+    FillResults,
+    MatchedFillResults,
+    SignedOrder,
+} from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import * as chai from 'chai';
 import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { ExchangeWrapper } from './exchange_wrapper';
 
 const ZERO = new BigNumber(0);
-
-chaiSetup.configure();
-const expect = chai.expect;
 
 export interface IndividualERC1155Holdings {
     fungible: {

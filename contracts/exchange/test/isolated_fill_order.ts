@@ -2,19 +2,24 @@ import {
     blockchainTests,
     constants,
     expect,
-    FillResults,
     hexRandom,
 } from '@0x/contracts-test-utils';
+import { FillResults } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
-import { AssetBalances, IsolatedExchangeWrapper, Orderish } from './utils/isolated_exchange_wrapper';
+import {
+    AssetBalances,
+    createGoodAssetData,
+    IsolatedExchangeWrapper,
+    Orderish,
+} from './utils/isolated_exchange_wrapper';
 import { calculateFillResults } from './utils/reference_functions';
 
 blockchainTests.resets.only('Isolated fillOrder() tests', env => {
     const { ZERO_AMOUNT } = constants;
     const TOMORROW = Math.floor(_.now() / 1000) + 60 * 60 * 24;
-    const ERC20_ASSET_DATA_LENGTH = 24;
+    const ONE_ETHER = new BigNumber(10).pow(18);
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const DEFAULT_ORDER: Orderish = {
         senderAddress: constants.NULL_ADDRESS,
@@ -22,15 +27,15 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
         takerAddress: constants.NULL_ADDRESS,
         makerFee: ZERO_AMOUNT,
         takerFee: ZERO_AMOUNT,
-        makerAssetAmount: ZERO_AMOUNT,
-        takerAssetAmount: ZERO_AMOUNT,
+        makerAssetAmount: ONE_ETHER,
+        takerAssetAmount: ONE_ETHER.times(2),
         salt: ZERO_AMOUNT,
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: new BigNumber(TOMORROW),
-        makerAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
-        takerAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
-        makerFeeAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
-        takerFeeAssetData: hexRandom(ERC20_ASSET_DATA_LENGTH),
+        makerAssetData: createGoodAssetData(),
+        takerAssetData: createGoodAssetData(),
+        makerFeeAssetData: createGoodAssetData(),
+        takerFeeAssetData: createGoodAssetData(),
     };
     let takerAddress: string;
     let exchange: IsolatedExchangeWrapper;
@@ -107,11 +112,40 @@ blockchainTests.resets.only('Isolated fillOrder() tests', env => {
         return balances;
     }
 
-    it('can fully fill an order', async () => {
-        const order = createOrder({
-            makerAssetAmount: new BigNumber(1),
-            takerAssetAmount: new BigNumber(2),
+    describe('full fills', () => {
+        it('can fully fill an order', async () => {
+            const order = createOrder();
+            return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount);
         });
-        return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount);
+
+        it('can\'t overfill an order', async () => {
+            const order = createOrder();
+            return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount.times(1.01));
+        });
+
+        it('pays maker and taker fees', async () => {
+            const order = createOrder({
+                makerFee: ONE_ETHER.times(0.025),
+                takerFee: ONE_ETHER.times(0.035),
+            });
+            return fillOrderAndAssertResultsAsync(order, order.takerAssetAmount);
+        });
+    });
+
+    describe('partial fills', () => {
+        const takerAssetFillAmount = DEFAULT_ORDER.takerAssetAmount.dividedToIntegerBy(2);
+
+        it('can partially fill an order', async () => {
+            const order = createOrder();
+            return fillOrderAndAssertResultsAsync(order, takerAssetFillAmount);
+        });
+
+        it('pays maker and taker fees', async () => {
+            const order = createOrder({
+                makerFee: ONE_ETHER.times(0.025),
+                takerFee: ONE_ETHER.times(0.035),
+            });
+            return fillOrderAndAssertResultsAsync(order, takerAssetFillAmount);
+        });
     });
 });

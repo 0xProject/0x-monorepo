@@ -117,6 +117,14 @@
             {
                 "note": "Rewrote _dispatchTransferFrom in Solidity",
                 "pr": 2020
+            },
+            {
+                "note": "Add `TestIsolatedExchange` contract and `IsolatedExchangeWrapper` test class",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `test/utils/reference_functions.ts` for `calculateFillResults`",
+                "pr": "TODO"
             }
         ]
     },

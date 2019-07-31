@@ -82,13 +82,6 @@ export interface FillScenario {
     takerStateScenario: TraderStateScenario;
 }
 
-export interface FillResults {
-    makerAssetFilledAmount: BigNumber;
-    takerAssetFilledAmount: BigNumber;
-    makerFeePaid: BigNumber;
-    takerFeePaid: BigNumber;
-}
-
 export interface OrderScenario {
     takerScenario: TakerScenario;
     feeRecipientScenario: FeeRecipientAddressScenario;

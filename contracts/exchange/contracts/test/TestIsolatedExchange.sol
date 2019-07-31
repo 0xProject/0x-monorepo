@@ -42,7 +42,7 @@ contract TestIsolatedExchange is
         Exchange(1337)
     {}
 
-    /// @dev Overriden to only log arguments.
+    /// @dev Overriden to only log arguments and revert on certain assetDatas.
     function _dispatchTransferFrom(
         bytes32 orderHash,
         bytes memory assetData,
@@ -59,6 +59,11 @@ contract TestIsolatedExchange is
             to,
             amount
         );
+
+        // Fail if the first byte is 0.
+        if (assetData.length > 0 && assetData[0] == 0x00) {
+            revert('TRANSFER_FAILED');
+        }
     }
 
     /// @dev Overriden to simplify signature validation.

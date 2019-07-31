@@ -4,7 +4,6 @@ import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     chaiSetup,
     constants,
-    FillResults,
     getLatestBlockTimestampAsync,
     LogDecoder,
     OrderFactory,
@@ -21,7 +20,7 @@ import {
     orderHashUtils,
     transactionHashUtils,
 } from '@0x/order-utils';
-import { EIP712DomainWithDefaultSchema, OrderStatus, RevertReason } from '@0x/types';
+import { EIP712DomainWithDefaultSchema, FillResults, OrderStatus, RevertReason } from '@0x/types';
 import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
 import * as chai from 'chai';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';

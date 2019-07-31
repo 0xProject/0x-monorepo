@@ -1,8 +1,9 @@
-import { constants, FillResults, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
+import { constants, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { OrderWithoutDomain, SignatureType } from '@0x/types';
+import { FillResults, OrderWithoutDomain, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
+import * as crypto from 'crypto';
 import { LogEntry } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -141,6 +142,22 @@ export function createGoodSignature(type: SignatureType = SignatureType.EIP712):
  */
 export function createBadSignature(type: SignatureType = SignatureType.EIP712): string {
     return `0x00${Buffer.from([type]).toString('hex')}`;
+}
+
+const ERC20_ASSET_DATA_LENGTH = 24;
+
+/**
+ * Create asset data for the `TestIsolatedExchange` contract that will pass.
+ */
+export function createGoodAssetData(length: number = ERC20_ASSET_DATA_LENGTH): string {
+    return `0x01${crypto.randomBytes(length - 1).toString('hex')}`;
+}
+
+/**
+ * Create asset data for the `TestIsolatedExchange` contract that will fail.
+ */
+export function createBadAssetData(length: number = ERC20_ASSET_DATA_LENGTH): string {
+    return `0x00${crypto.randomBytes(length - 1).toString('hex')}`;
 }
 
 function createEmptyEvents(): IsolatedExchangeEvents {

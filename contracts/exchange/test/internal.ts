@@ -1,27 +1,17 @@
 import {
+    blockchainTests,
     bytes32Values,
-    chaiSetup,
     constants,
-    FillResults,
-    provider,
+    expect,
     testCombinatoriallyWithReferenceFuncAsync,
-    txDefaults,
     uint256Values,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { Order, RevertReason, SignedOrder } from '@0x/types';
+import { FillResults, Order, RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, SafeMathRevertErrors } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { artifacts, TestExchangeInternalsContract, TestExchangeMathContract } from '../src';
-
-chaiSetup.configure();
-const expect = chai.expect;
-
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 const { MAX_UINT256 } = constants;
 
@@ -53,35 +43,28 @@ const emptySignedOrder: SignedOrder = {
 
 const safeMathErrorForCall = new SafeMathRevertErrors.SafeMathError();
 
-describe('Exchange math internal functions', () => {
+// TODO(dorothy-zbornak): Move this to `exchange-libs` and `utils`.
+blockchainTests.resets('Exchange math internal functions', env => {
     let chainId: number;
     let testExchange: TestExchangeMathContract;
     let divisionByZeroErrorForCall: Error | undefined;
     let roundingErrorForCall: Error | undefined;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
+        chainId = await env.getChainIdAsync();
         emptyOrder.domain.chainId = chainId;
         emptySignedOrder.domain.chainId = chainId;
 
         testExchange = await TestExchangeMathContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeMath,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
         );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
         roundingErrorForCall = new Error(RevertReason.RoundingError);
         divisionByZeroErrorForCall = new LibMathRevertErrors.DivisionByZeroError();
         roundingErrorForCall = new LibMathRevertErrors.RoundingError();
     });
-    // Note(albrow): Don't forget to add beforeEach and afterEach calls to reset
-    // the blockchain state for any tests which modify it!
 
     async function referenceIsRoundingErrorFloorAsync(
         numerator: BigNumber,
@@ -314,7 +297,8 @@ describe('Exchange math internal functions', () => {
     });
 });
 
-describe('Exchange core internal functions', () => {
+// TODO(dorothy-zbornak): Add _settleOrder, _dispatchTransferFrom
+blockchainTests.resets('Exchange core internal functions', env => {
     let chainId: number;
     let testExchange: TestExchangeInternalsContract;
     let safeMathErrorForSendTransaction: Error | undefined;
@@ -322,20 +306,14 @@ describe('Exchange core internal functions', () => {
     let roundingErrorForCall: Error | undefined;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
+        chainId = await providerUtils.getChainIdAsync(env.provider);
         emptyOrder.domain.chainId = chainId;
         emptySignedOrder.domain.chainId = chainId;
 
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             new BigNumber(chainId),
         );
         divisionByZeroErrorForCall = new Error(RevertReason.DivisionByZero);
@@ -393,6 +371,7 @@ describe('Exchange core internal functions', () => {
         return product.dividedToIntegerBy(denominator);
     }
 
+    // TODO(dorothy-zbornak): Move this to `exchange-libs`.
     describe('addFillResults', async () => {
         function makeFillResults(value: BigNumber): FillResults {
             return {
@@ -505,15 +484,7 @@ describe('Exchange core internal functions', () => {
         );
     });
 
-    describe('updateFilledState', async () => {
-        // Note(albrow): Since updateFilledState modifies the state by calling
-        // sendTransaction, we must reset the state after each test.
-        beforeEach(async () => {
-            await blockchainLifecycle.startAsync();
-        });
-        afterEach(async () => {
-            await blockchainLifecycle.revertAsync();
-        });
+    blockchainTests.resets('updateFilledState', async ({ web3Wrapper }) => {
         async function referenceUpdateFilledStateAsync(
             takerAssetFilledAmount: BigNumber,
             orderTakerAssetFilledAmount: BigNumber,
