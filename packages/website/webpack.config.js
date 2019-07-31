@@ -19,7 +19,7 @@ const config = {
         publicPath: '/',
     },
     externals: {
-        zeroExInstant: 'zeroExInstant'
+        zeroExInstant: 'zeroExInstant',
     },
     devtool: 'source-map',
     resolve: {
@@ -56,6 +56,10 @@ const config = {
                 exclude: /node_modules/,
             },
             {
+                test: /\.scss$/,
+                use: ['style-loader', 'css-loader', 'sass-loader'],
+            },
+            {
                 test: /\.css$/,
                 loaders: ['style-loader', 'css-loader'],
             },
@@ -63,16 +67,14 @@ const config = {
                 test: /\.svg$/,
                 use: [
                     {
-                        loader: "react-svg-loader",
+                        loader: 'react-svg-loader',
                         options: {
                             svgo: {
-                                plugins: [
-                                    { removeViewBox: false }
-                                ],
-                            }
-                        }
-                    }
-                ]
+                                plugins: [{ removeViewBox: false }],
+                            },
+                        },
+                    },
+                ],
             },
         ],
     },
@@ -109,8 +111,8 @@ const config = {
         // Source: https://github.com/webpack/webpack-dev-server/issues/1491
         https: {
             spdy: {
-                protocols: ['http/1.1']
-            }
+                protocols: ['http/1.1'],
+            },
         },
     },
 };
@@ -119,9 +121,7 @@ module.exports = (_env, argv) => {
     let plugins = [];
     if (argv.mode === 'development') {
         config.mode = 'development';
-        plugins.concat([
-            new BundleAnalyzerPlugin(),
-        ]);
+        plugins.concat([new BundleAnalyzerPlugin()]);
     } else {
         config.mode = 'production';
         plugins = plugins.concat([
