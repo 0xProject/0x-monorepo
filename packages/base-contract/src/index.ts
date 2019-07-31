@@ -11,6 +11,7 @@ import {
     DataItem,
     MethodAbi,
     SupportedProvider,
+    TransactionReceiptWithDecodedLogs,
     TxData,
     TxDataPayable,
 } from 'ethereum-types';
@@ -61,6 +62,7 @@ export class BaseContract {
     public address: string;
     public contractName: string;
     public constructorArgs: any[] = [];
+    public txReceipt?: TransactionReceiptWithDecodedLogs;
     protected static _formatABIDataItemList(
         abis: DataItem[],
         values: any[],
