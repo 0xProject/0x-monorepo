@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 import { Heading } from 'ts/components/text';
 
+import { docs} from 'ts/style/docs';
+
 const H1 = styled(Heading).attrs({
     size: 'large',
-    marginBottom: '1.875rem',
+    marginBottom: docs.marginBottom,
 })``;
 
 const H2 = styled(Heading).attrs({

@@ -1,10 +1,11 @@
 import styled from 'styled-components';
 
 import { colors } from 'ts/style/colors';
+import { docs} from 'ts/style/docs';
 
 export const Table = styled.table`
     border: 1px solid #cfcfcf;
-    margin-bottom: 1.875rem;
+    margin-bottom:  ${docs.marginBottom};
     width: 100%;
 
     th {
