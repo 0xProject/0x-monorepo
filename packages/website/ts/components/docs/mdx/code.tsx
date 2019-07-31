@@ -6,6 +6,7 @@ import { Button } from 'ts/components/button';
 import { CodeRun } from 'ts/components/docs/mdx/code_run';
 
 import { colors } from 'ts/style/colors';
+import { docs} from 'ts/style/docs';
 import { styled } from 'ts/style/theme';
 
 interface ICodeProps {
@@ -63,7 +64,7 @@ const BORDER_RADIUS = '4px';
 const CodeWrapper = styled.div`
     clear: both;
     max-width: 100%;
-    margin-bottom: 1.875rem;
+    margin-bottom: ${docs.marginBottom};
     padding: ${GUTTER};
     background-color: ${colors.backgroundLight};
     border-radius: 0 ${BORDER_RADIUS} ${BORDER_RADIUS};

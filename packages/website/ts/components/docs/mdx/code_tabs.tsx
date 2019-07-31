@@ -9,6 +9,7 @@ import {
 } from 'react-tabs';
 
 import { colors } from 'ts/style/colors';
+import { docs } from 'ts/style/docs';
 
 interface ITabProps {
     children: React.ReactNode;
@@ -38,7 +39,7 @@ export const CodeTabs: React.FC<ICodeTabsProps> = ({ children, tabs }) => {
 export const Tabs = styled(OriginalTabs).attrs({
     selectedTabClassName: 'is-active',
 })<ITabProps>`
-    margin-bottom: 1.875rem;
+    margin-bottom: ${docs.marginBottom};
     position: relative;
 `;
 

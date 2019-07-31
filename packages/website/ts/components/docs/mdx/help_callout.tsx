@@ -6,6 +6,7 @@ import { Link } from '@0x/react-shared';
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
+import { docs} from 'ts/style/docs';
 
 export interface IHelpCalloutProps {
     heading?: string;
@@ -40,6 +41,6 @@ const HelpCalloutWrapper = styled.div`
     display: flex;
     align-items: center;
     padding: 25px 30px;
-    margin-bottom: 1.875rem;
+    margin-bottom: ${docs.marginBottom};
     background-color: ${colors.backgroundLight};
 `;

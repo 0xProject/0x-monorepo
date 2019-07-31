@@ -20,6 +20,7 @@ export interface BaseLinkProps {
 
 export interface ScrollLinkProps extends BaseLinkProps {
     containerId?: string;
+    duration: number;
     offset?: number;
     onActivityChanged?: (isActive: boolean) => void;
 }
@@ -48,6 +49,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
         textDecoration: 'none',
         fontColor: 'inherit',
         containerId: constants.SCROLL_CONTAINER_ID,
+        duration: constants.DOCS_SCROLL_DURATION_MS,
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
@@ -119,8 +121,8 @@ export class Link extends React.Component<LinkProps, LinkState> {
                             offset={this.props.offset}
                             spy={true}
                             hashSpy={true}
-                            duration={constants.DOCS_SCROLL_DURATION_MS}
-                            smooth={constants.DOCS_SCROLL_DURATION_MS > 0}
+                            duration={this.props.duration}
+                            smooth={this.props.duration > 0}
                             containerId={this.props.containerId}
                             className={this.props.className}
                             style={styleWithDefault}

@@ -1,9 +1,11 @@
 import styled from 'styled-components';
 
+import { docs} from 'ts/style/docs';
+
 export const OrderedList = styled.ol`
     list-style-type: none;
     counter-reset: tutorialSteps;
-    margin-bottom: 1.875rem;
+    margin-bottom:  ${docs.marginBottom};
 
     li {
         display: flex;
