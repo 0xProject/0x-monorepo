@@ -119,6 +119,7 @@ export class {{contractName}}Contract extends BaseContract {
         logUtils.log(`{{contractName}} successfully deployed at ${txReceipt.contractAddress}`);
         const contractInstance = new {{contractName}}Contract(txReceipt.contractAddress as string, provider, txDefaults, logDecodeDependencies);
         contractInstance.constructorArgs = [{{> params inputs=ctor.inputs}}];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 
