@@ -37,6 +37,22 @@
             {
                 "note": "Introduce Mocha blockchain extensions",
                 "pr": 2007
+            },
+            {
+                "note": "Move `*FillResults` types to `@0x/types`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `log_utils.ts`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add `haxRandom()` to `hex_utils.ts`",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`",
+                "pr": "TODO"
             }
         ]
     },

@@ -29,7 +29,6 @@ export { TransactionFactory } from './transaction_factory';
 export { testWithReferenceFuncAsync } from './test_with_reference';
 export { hexConcat, hexRandom } from './hex_utils';
 export {
-    BatchMatchedFillResults,
     BatchMatchOrder,
     ContractName,
     ERC20BalancesByOwner,
@@ -37,10 +36,8 @@ export {
     ERC1155HoldingsByOwner,
     ERC1155NonFungibleHoldingsByOwner,
     ERC721TokenIdsByOwner,
-    FillResults,
     MarketBuyOrders,
     MarketSellOrders,
-    MatchedFillResults,
     OrderInfo,
     OrderStatus,
     Token,

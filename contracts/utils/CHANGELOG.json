@@ -33,6 +33,10 @@
             {
                 "note": "Updated Ownable to revert when the owner attempts to transfer ownership to the zero address",
                 "pr": 2019
+            },
+            {
+                "note": "Add reference functions for `SafeMath` functions.",
+                "pr": "2031"
             }
         ]
     },

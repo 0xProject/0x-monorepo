@@ -143,24 +143,3 @@ export interface MatchOrder {
     leftSignature: string;
     rightSignature: string;
 }
-
-export interface FillResults {
-    makerAssetFilledAmount: BigNumber;
-    takerAssetFilledAmount: BigNumber;
-    makerFeePaid: BigNumber;
-    takerFeePaid: BigNumber;
-}
-
-export interface MatchedFillResults {
-    left: FillResults;
-    right: FillResults;
-    profitInLeftMakerAsset: BigNumber;
-    profitInRightMakerAsset: BigNumber;
-}
-
-export interface BatchMatchedFillResults {
-    left: FillResults[];
-    right: FillResults[];
-    profitInLeftMakerAsset: BigNumber;
-    profitInRightMakerAsset: BigNumber;
-}

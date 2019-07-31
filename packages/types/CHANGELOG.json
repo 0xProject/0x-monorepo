@@ -5,6 +5,10 @@
             {
                 "note": "Add `OrderStatus` type",
                 "pr": 1761
+            },
+            {
+                "note": "Add `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "pr": "TODO"
             }
         ]
     },
