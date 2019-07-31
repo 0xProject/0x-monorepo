@@ -21,7 +21,8 @@
         "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"${npm_package_config_snapshot_name}-${npm_package_version}.zip\" ${npm_package_config_snapshot_name}",
         "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
         "publish:snapshot": "aws s3 cp ${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket} && aws s3 cp ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-latest.zip",
-        "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest"
+        "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest",
+        "test_contract_configs": "node ./lib/test_contract_configs.js"
     },
     "config": {
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
