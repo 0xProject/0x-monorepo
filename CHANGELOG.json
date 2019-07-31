@@ -1,6 +1,5 @@
 [
     {
-        "timestamp": 1563193019,
         "version": "1.0.0",
         "changes": [
             {
@@ -11,7 +10,8 @@
                 "note": "Expanded test coverage",
                 "pr": 1980
             }
-        ]
+        ],
+        "timestamp": 1564604963
     },
     {
         "timestamp": 1563957393,
