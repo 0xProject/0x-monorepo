@@ -8,6 +8,7 @@
         "generated-artifacts/LibBytes.json",
         "generated-artifacts/LibEIP1271.json",
         "generated-artifacts/LibEIP712.json",
+        "generated-artifacts/MixinAuthorizable.json",
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/SafeMath.json",

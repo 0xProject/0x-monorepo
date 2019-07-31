@@ -45,6 +45,10 @@ contract MixinAuthorizable is
         onlyOwner
     {
         require(
+            target != address(0),
+            "ZERO_CANT_BE_AUTHORIZED"
+        );
+        require(
             !authorized[target],
             "TARGET_ALREADY_AUTHORIZED"
         );
