@@ -11,7 +11,6 @@ import * as LibBytes from '../generated-artifacts/LibBytes.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
-import * as TestAbi from '../generated-artifacts/TestAbi.json';
 import * as TestConstants from '../generated-artifacts/TestConstants.json';
 import * as TestLibAddressArray from '../generated-artifacts/TestLibAddressArray.json';
 import * as TestLibBytes from '../generated-artifacts/TestLibBytes.json';
@@ -29,5 +28,4 @@ export const artifacts = {
     TestLibBytes: TestLibBytes as ContractArtifact,
     TestLogDecoding: TestLogDecoding as ContractArtifact,
     TestLogDecodingDownstream: TestLogDecodingDownstream as ContractArtifact,
-    TestAbi: TestAbi as ContractArtifact,
 };

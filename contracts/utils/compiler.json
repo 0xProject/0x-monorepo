@@ -30,7 +30,6 @@
         "src/ReentrancyGuard.sol",
         "src/SafeMath.sol",
         "src/interfaces/IOwnable.sol",
-        "test/TestAbi.sol",
         "test/TestConstants.sol",
         "test/TestLibAddressArray.sol",
         "test/TestLibBytes.sol",
