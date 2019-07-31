@@ -108,20 +108,18 @@ export class ModalVideo extends React.Component<ModalVideoProps, ModalVideoState
         this.state = {
             isOpen: false,
         };
-        this.closeModal = this.closeModal.bind(this);
-        this.updateFocus = this.updateFocus.bind(this);
     }
 
-    public openModal(): void {
+    public openModal = (): void => {
         this.setState({ isOpen: true });
-    }
+    };
 
-    public closeModal(): void {
+    public closeModal = (): void => {
         this.setState({ isOpen: false });
         if (typeof this.props.onClose === 'function') {
             this.props.onClose();
         }
-    }
+    };
 
     public keydownHandler(e: any): void {
         if (e.keyCode === 27) {
@@ -147,7 +145,7 @@ export class ModalVideo extends React.Component<ModalVideoProps, ModalVideoState
         }
     }
 
-    public updateFocus(e: any): void {
+    public updateFocus = (e: any): void => {
         if (e.keyCode === 9) {
             e.preventDefault();
             e.stopPropagation();
@@ -157,7 +155,7 @@ export class ModalVideo extends React.Component<ModalVideoProps, ModalVideoState
                 this.modal.focus();
             }
         }
-    }
+    };
 
     public getQueryString(obj: any): string {
         let url = '';

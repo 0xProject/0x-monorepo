@@ -7,7 +7,6 @@ import { Icon } from 'ts/components/icon';
 
 import { HeroAnimation } from 'ts/components/heroAnimation';
 import { ModalVideo } from 'ts/components/modals/modal_video';
-import { WebsitePaths } from 'ts/types';
 
 // const announcement = {
 //     headline: 'Vote on ZEIP-24 & ZEIP-39',
@@ -55,11 +54,11 @@ export class SectionLandingHero extends React.Component<SectionlandingHeroProps,
         );
     }
 
-    private _closeModalVideo = (): void => {
+    private readonly _closeModalVideo = (): void => {
         this.setState({ isVideoOpen: false });
     };
 
-    private _openModalVideo = (): void => {
+    private readonly _openModalVideo = (): void => {
         this.setState({ isVideoOpen: true });
     };
 }
