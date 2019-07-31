@@ -65,7 +65,7 @@ describe('LibEIP712', () => {
 
     before(async () => {
         await blockchainLifecycle.startAsync();
-        // Deploy SafeMath
+        // Deploy LibEIP712
         lib = await TestLibEIP712Contract.deployFrom0xArtifactAsync(artifacts.TestLibEIP712, provider, txDefaults);
     });
 
@@ -77,11 +77,35 @@ describe('LibEIP712', () => {
         it('should correctly hash empty input', async () => {
             await testHashEIP712DomainAsync(lib, '', '', 0, constants.NULL_ADDRESS);
         });
+
+        it('should correctly hash non-empty input', async () => {
+            await testHashEIP712DomainAsync(lib, '_hashEIP712Domain', '1.0', 62, lib.address);
+        });
+
+        it('should correctly hash non-empty input', async () => {
+            await testHashEIP712DomainAsync(lib, '_hashEIP712Domain', '2.0', 0, lib.address);
+        });
     });
 
     describe('_hashEIP712Message', () => {
         it('should correctly hash empty input', async () => {
             await testHashEIP712MessageAsync(lib, constants.NULL_BYTES32, constants.NULL_BYTES32);
+        });
+
+        it('should correctly hash non-empty input', async () => {
+            await testHashEIP712MessageAsync(
+                lib,
+                '0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6', // keccak256(abi.encode(1))
+                '0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace', // keccak256(abi.encode(2))
+            );
+        });
+
+        it('should correctly hash non-empty input', async () => {
+            await testHashEIP712MessageAsync(
+                lib,
+                '0x405787fa12a823e0f2b7631cc41b3ba8828b3321ca811111fa75cd3aa3bb5ace', // keccak256(abi.encode(2))
+                '0xc2575a0e9e593c00f959f8c92f12db2869c3395a3b0502d05e2516446f71f85b', // keccak256(abi.encode(3))
+            );
         });
     });
 });

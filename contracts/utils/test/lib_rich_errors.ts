@@ -10,7 +10,7 @@ chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-describe('LibEIP712', () => {
+describe('LibRichErrors', () => {
     let lib: TestLibRichErrorsContract;
 
     before(async () => {
