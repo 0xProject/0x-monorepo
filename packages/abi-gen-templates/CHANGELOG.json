@@ -9,6 +9,10 @@
             {
                 "note": "Updated interface to `deployAsync` to include log decode dependencies.",
                 "pr": 1995
+            },
+            {
+                "note": "Updated template to set the `txReceipt` to the contract instance after successful deployment.",
+                "pr": 2024
             }
         ]
     },

@@ -5,6 +5,10 @@
             {
                 "note": "Add subscribe/unsubscribe methods for events",
                 "pr": 1970
+            },
+            {
+                "note": "Exposing `txReceipt` to newly deployed contract instances.",
+                "pr": 2024
             }
         ]
     },
