@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import { Link } from '@0x/react-shared';
 
 import { colors } from 'ts/style/colors';
+import { docs } from 'ts/style/docs';
 
 import { SidebarWrapper } from 'ts/components/docs/sidebar/sidebar_wrapper';
 
@@ -34,7 +35,13 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
                 return (
                     <li key={id}>
                         {/* containerId is set to an empty string to make body element the scroll container */}
-                        <ContentLink containerId="" offset={-116} level={level} to={id}>
+                        <ContentLink
+                            containerId=""
+                            duration={docs.scrollDuration}
+                            offset={-docs.headerOffset}
+                            level={level}
+                            to={id}
+                        >
                             {title}
                         </ContentLink>
                         {children.length > 0 && <Contents contents={children} />}

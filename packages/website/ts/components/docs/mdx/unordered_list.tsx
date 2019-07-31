@@ -1,8 +1,10 @@
 import styled from 'styled-components';
 
+import { docs } from 'ts/style/docs';
+
 export const UnorderedList = styled.ul`
     list-style-type: disc;
-    margin-bottom: 1.875rem;
+    margin-bottom: ${docs.marginBottom};
     padding-left: 1rem;
 
     li {
