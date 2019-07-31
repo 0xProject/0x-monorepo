@@ -20,7 +20,7 @@ export interface BaseLinkProps {
 
 export interface ScrollLinkProps extends BaseLinkProps {
     containerId?: string;
-    duration: number;
+    duration?: number;
     offset?: number;
     onActivityChanged?: (isActive: boolean) => void;
 }
