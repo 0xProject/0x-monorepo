@@ -1,6 +1,6 @@
 [
     {
-        "version": "0.0.6",
+        "version": "0.0.5",
         "changes": [
             {
                 "note": "Updated calls to <contract wrapper>.deployFrom0xArtifactAsync to include artifact dependencies.",
