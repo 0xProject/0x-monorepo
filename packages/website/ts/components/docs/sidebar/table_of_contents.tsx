@@ -55,7 +55,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     color: ${({ theme }) => theme.paragraphColor};
     transition: all 250ms ease-in-out;
 
-    &.active {
+    &.active span {
         color: ${colors.brandDark};
     }
 
