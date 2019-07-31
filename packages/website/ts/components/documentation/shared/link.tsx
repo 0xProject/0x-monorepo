@@ -50,6 +50,7 @@ export class Link extends React.Component<LinkProps, LinkState> {
         fontColor: 'inherit',
         containerId: constants.SCROLL_CONTAINER_ID,
         duration: constants.DOCS_SCROLL_DURATION_MS,
+        offset: 0,
     };
     private _outerReactScrollSpan: HTMLSpanElement | null;
     constructor(props: LinkProps) {
