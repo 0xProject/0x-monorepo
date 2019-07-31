@@ -773,7 +773,6 @@ contract MixinMatchOrders is
             takerAddress,
             matchedFillResults.profitInLeftMakerAsset
         );
-
         _dispatchTransferFrom(
             rightOrderHash,
             rightOrder.makerAssetData,

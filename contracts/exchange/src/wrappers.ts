@@ -19,6 +19,7 @@ export * from '../generated-wrappers/reentrancy_tester';
 export * from '../generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../generated-wrappers/test_exchange_internals';
 export * from '../generated-wrappers/test_lib_exchange_rich_error_decoder';
+export * from '../generated-wrappers/test_match_orders';
 export * from '../generated-wrappers/test_signature_validator';
 export * from '../generated-wrappers/test_validator_wallet';
 export * from '../generated-wrappers/test_wrapper_functions';

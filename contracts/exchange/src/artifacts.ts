@@ -21,6 +21,7 @@ import * as ReentrancyTester from '../generated-artifacts/ReentrancyTester.json'
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
+import * as TestMatchOrders from '../generated-artifacts/TestMatchOrders.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
@@ -29,6 +30,7 @@ export const artifacts = {
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Whitelist: Whitelist as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
+    MixinMatchOrders: MixinMatchOrders as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
@@ -43,6 +45,7 @@ export const artifacts = {
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
+    TestMatchOrders: TestMatchOrders as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
     TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
