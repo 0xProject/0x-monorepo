@@ -3,6 +3,7 @@ const path = require('path');
 const { read } = require('to-vfile');
 const remark = require('remark');
 const mdx = require('remark-mdx');
+const slugify = require('slugify');
 const filter = require('unist-util-filter');
 const { selectAll } = require('unist-util-select');
 const extractMdxMeta = require('extract-mdx-metadata');
@@ -45,16 +46,19 @@ function pushObjectsToAlgolia(index: any, content: Content): void {
 }
 
 function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]): any {
-    // META SHAPE TOOLS // const { description, difficulty, id, isCommunity, tags, title, type } = meta;
-    // META SHAPE GUIDES // const {  description, difficulty, id, tags, title, topics } = meta;
+    // META SHAPE TOOLS // const { description, difficulty, isCommunity, tags, title, type } = meta;
+    // META SHAPE GUIDES // const {  description, difficulty, tags, title, topics } = meta;
     const content: Content[] = [];
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
+        const titleSlug = slugify(meta.title, { lower: true });
+
         content.push({
             ...meta,
             url,
             textContent: node.textContent,
-            objectID: `${meta.id}_${index}`,
+            id: titleSlug,
+            objectID: `${titleSlug}_${index}`,
         });
     });
 
@@ -113,7 +117,6 @@ export async function indexFilesAsync(index: any, dirName: string, settings: Set
 }
 
 interface Meta {
-    id: number | string;
     title: string;
     description: string;
     difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
@@ -127,6 +130,7 @@ interface Meta {
 interface Content extends Meta {
     url: string;
     textContent: string;
+    id: string;
     objectID: string;
 }
 
