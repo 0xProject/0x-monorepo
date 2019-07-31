@@ -1,4 +1,4 @@
-import { BigNumber } from '@0x/utils';
+import { BigNumber } from '@0x/util';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -15,6 +15,8 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
     '0xb2fd4d29c1390b71b8795ae81196bfd60293adf99f9d32a0aff06288fcdac55f',
     '0x23cb7121166b9a2f93ae0b7c05bde02eae50d64449b2cbb42bc84e9d38d6cc89',
 ];
+
+const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
 
 export const constants = {
     BASE_16: 16,
@@ -43,7 +45,8 @@ export const constants = {
     NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT: 4,
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     NULL_BYTES32: '0x0000000000000000000000000000000000000000000000000000000000000000',
-    UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
+    UNLIMITED_ALLOWANCE_IN_BASE_UNITS: MAX_UINT256,
+    MAX_UINT256,
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
     INITIAL_ERC20_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
     INITIAL_ERC20_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
