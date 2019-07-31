@@ -3,7 +3,8 @@ import Headroom from 'react-headroom';
 import MediaQuery from 'react-responsive';
 import styled, { css } from 'styled-components';
 
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 
 import { MobileNav } from 'ts/components/docs/header/mobileNav';
 import { SearchInput } from 'ts/components/docs/search/search_input';

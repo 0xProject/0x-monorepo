@@ -1,6 +1,7 @@
 // Note (Piotr): This component is not used anymore, leaving it for now if we cahnge our minds
 
-// import { Link } from '@0x/react-shared';
+// import { Link } from 'ts/components/documentation/shared/link';
+
 // import * as _ from 'lodash';
 // import * as React from 'react';
 // import styled, { withTheme } from 'styled-components';

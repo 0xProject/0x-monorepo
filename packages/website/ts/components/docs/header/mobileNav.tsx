@@ -2,7 +2,8 @@ import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 
 import { Button } from 'ts/components/button';
 import { SearchInput } from 'ts/components/docs/search/search_input';

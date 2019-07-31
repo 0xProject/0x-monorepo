@@ -2,7 +2,8 @@ import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
 
-import { Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 
 import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_overlay';
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
