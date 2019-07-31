@@ -22,7 +22,8 @@ export interface IsolatedExchangeEvents {
     transferFromCalls: DispatchTransferFromCallArgs[];
 }
 
-export type Order = OrderWithoutDomain;
+export type Orderish = OrderWithoutDomain;
+export type Numberish = string | number | BigNumber;
 
 export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();
 export const DEFAULT_BAD_SIGNATURE = createBadSignature();
@@ -65,9 +66,13 @@ export class IsolatedExchangeWrapper {
         this.logDecoder = new LogDecoder(web3Wrapper, artifacts);
     }
 
+    public async getTakerAssetFilledAmountAsync(order: Orderish): Promise<BigNumber> {
+        return this.instance.filled.callAsync(this.getOrderHash(order));
+    }
+
     public async fillOrderAsync(
-        order: Order,
-        takerAssetFillAmount: BigNumber | number,
+        order: Orderish,
+        takerAssetFillAmount: Numberish,
         signature: string = DEFAULT_GOOD_SIGNATURE,
         txOpts?: TxData,
     ): Promise<FillResults> {
@@ -80,7 +85,7 @@ export class IsolatedExchangeWrapper {
         );
     }
 
-    public getOrderHash(order: Order): string {
+    public getOrderHash(order: Orderish): string {
         const domain = {
             verifyingContractAddress: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
@@ -125,14 +130,14 @@ interface TransactionContractFunction<TResult> {
 }
 
 /**
- * @dev Create a signature for the `TestIsolatedExchange` contract that will pass.
+ * Create a signature for the `TestIsolatedExchange` contract that will pass.
  */
 export function createGoodSignature(type: SignatureType = SignatureType.EIP712): string {
     return `0x01${Buffer.from([type]).toString('hex')}`;
 }
 
 /**
- * @dev Create a signature for the `TestIsolatedExchange` contract that will fail.
+ * Create a signature for the `TestIsolatedExchange` contract that will fail.
  */
 export function createBadSignature(type: SignatureType = SignatureType.EIP712): string {
     return `0x00${Buffer.from([type]).toString('hex')}`;

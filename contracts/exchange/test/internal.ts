@@ -23,7 +23,7 @@ const expect = chai.expect;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
-const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
+const { MAX_UINT256 } = constants;
 
 const emptyOrder: Order = {
     senderAddress: constants.NULL_ADDRESS,
