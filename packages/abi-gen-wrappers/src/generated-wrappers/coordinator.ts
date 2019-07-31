@@ -683,6 +683,7 @@ export class CoordinatorContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_exchange];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

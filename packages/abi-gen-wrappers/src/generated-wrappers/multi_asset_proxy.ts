@@ -956,6 +956,7 @@ export class MultiAssetProxyContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

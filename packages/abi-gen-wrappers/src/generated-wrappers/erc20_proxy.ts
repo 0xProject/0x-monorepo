@@ -759,6 +759,7 @@ export class ERC20ProxyContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

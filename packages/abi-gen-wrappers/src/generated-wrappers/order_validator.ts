@@ -689,6 +689,7 @@ export class OrderValidatorContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_exchange, _zrxAssetData];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

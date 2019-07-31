@@ -1192,6 +1192,7 @@ export class DummyERC20TokenContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_name, _symbol, _decimals, _totalSupply];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

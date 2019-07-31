@@ -266,6 +266,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

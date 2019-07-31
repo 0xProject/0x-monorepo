@@ -2173,6 +2173,7 @@ export class AssetProxyOwnerContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_owners, _assetProxyContracts, _required, _secondsTimeLocked];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

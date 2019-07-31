@@ -607,6 +607,7 @@ export class DutchAuctionContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_exchange];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

@@ -952,6 +952,7 @@ export class WETH9Contract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

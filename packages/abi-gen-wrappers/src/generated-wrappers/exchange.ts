@@ -4636,6 +4636,7 @@ export class ExchangeContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_zrxAssetData];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

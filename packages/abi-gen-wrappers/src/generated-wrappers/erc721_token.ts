@@ -1040,6 +1040,7 @@ export class ERC721TokenContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

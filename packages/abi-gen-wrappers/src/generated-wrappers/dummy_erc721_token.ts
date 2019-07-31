@@ -1516,6 +1516,7 @@ export class DummyERC721TokenContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_name, _symbol];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 

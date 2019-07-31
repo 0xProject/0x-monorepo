@@ -1115,6 +1115,7 @@ export class ForwarderContract extends BaseContract {
             logDecodeDependencies,
         );
         contractInstance.constructorArgs = [_exchange, _zrxAssetData, _wethAssetData];
+        contractInstance.txReceipt = txReceipt;
         return contractInstance;
     }
 
