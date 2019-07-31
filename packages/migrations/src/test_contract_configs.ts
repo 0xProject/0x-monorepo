@@ -7,6 +7,7 @@ import { logUtils, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 
+// NOTE: add your own Infura Project ID to RPC urls before running
 const networkIdToRpcUrl = {
     1: 'https://mainnet.infura.io/v3/',
     3: 'https://ropsten.infura.io/v3/',
@@ -101,6 +102,13 @@ async function testContractConfigsAsync(provider: SupportedProvider): Promise<vo
     // Verify MultiAssetProxy configs
     const multiAssetProxyOwner = await multiAssetProxy.owner.callAsync();
     warnIfMismatch(multiAssetProxyOwner, assetProxyOwner.address, 'Unexpected MultiAssetProxy owner');
+
+    const multiAssetProxyAuthorizedAddresses = await multiAssetProxy.getAuthorizedAddresses.callAsync();
+    warnIfMismatch(
+        multiAssetProxyAuthorizedAddresses.length,
+        1,
+        'Unexpected number of authorized addresses in MultiAssetProxy',
+    );
 
     const isExchangeAuthorizedInMultiAssetProxy = await multiAssetProxy.authorized.callAsync(exchange.address);
     warnIfMismatch(isExchangeAuthorizedInMultiAssetProxy, true, 'Exchange not authorized in MultiAssetProxy');
