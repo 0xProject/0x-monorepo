@@ -13,7 +13,7 @@
         "clean": "shx rm -rf generated"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/{Exchange,ERC20Token}.json"
+        "abis": "../contract-artifacts/artifacts/{AssetProxyOwner,Coordinator,CoordinatorRegistry,DummyERC20Token,DummyERC721Token,DutchAuction,ERC20Proxy,ERC20Token,ERC721Proxy,ERC721Token,EthBalanceChecker,Exchange,Forwarder,IAssetProxy,IValidator,IWallet,MultiAssetProxy,OrderValidator,WETH9,ZRXToken}.json"
     },
     "repository": {
         "type": "git",

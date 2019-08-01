@@ -15,7 +15,7 @@ from setuptools import find_packages, setup
 from setuptools.command.test import test as TestCommand
 
 
-BLACK_COMMAND = "black --line-length 79"
+BLACK_COMMAND = "black --line-length 79 "
 
 
 class PreInstallCommand(distutils.command.build_py.build_py):
@@ -26,42 +26,66 @@ class PreInstallCommand(distutils.command.build_py.build_py):
     def run(self):
         """Copy files from TS build area to local src, & `black` them."""
         pkgdir = path.dirname(path.realpath(argv[0]))
-        copy(
-            path.join(
-                pkgdir,
-                "..",
-                "..",
-                "packages",
-                "python-contract-wrappers",
-                "generated",
-                "erc20_token",
-                "__init__.py",
-            ),
-            path.join(
-                pkgdir, "src", "zero_ex", "contract_wrappers", "erc20_token"
-            ),
-        )
-        copy(
-            path.join(
-                pkgdir,
-                "..",
-                "..",
-                "packages",
-                "python-contract-wrappers",
-                "generated",
-                "exchange",
-                "__init__.py",
-            ),
-            path.join(
-                pkgdir, "src", "zero_ex", "contract_wrappers", "exchange"
-            ),
-        )
+        contracts = [
+            "asset_proxy_owner",
+            "coordinator",
+            "coordinator_registry",
+            "dummy_erc20_token",
+            "dummy_erc721_token",
+            "dutch_auction",
+            "erc20_proxy",
+            "erc20_token",
+            "erc721_proxy",
+            "erc721_token",
+            "eth_balance_checker",
+            "exchange",
+            "forwarder",
+            "i_asset_proxy",
+            "i_validator",
+            "i_wallet",
+            "multi_asset_proxy",
+            "order_validator",
+            "weth9",
+            "zrx_token",
+        ]
+        for contract in contracts:
+            copy(
+                path.join(
+                    pkgdir,
+                    "..",
+                    "..",
+                    "packages",
+                    "python-contract-wrappers",
+                    "generated",
+                    contract,
+                    "__init__.py",
+                ),
+                path.join(
+                    pkgdir, "src", "zero_ex", "contract_wrappers", contract
+                ),
+            )
+            copy(
+                path.join(
+                    pkgdir,
+                    "..",
+                    "..",
+                    "packages",
+                    "python-contract-wrappers",
+                    "generated",
+                    contract,
+                    "__init__.py",
+                ),
+                path.join(
+                    pkgdir, "src", "zero_ex", "contract_wrappers", contract
+                ),
+            )
         if find_spec("black") is None:
             subprocess.check_call("pip install black".split())  # nosec
-        black_command = (
-            BLACK_COMMAND
-            + " src/zero_ex/contract_wrappers/erc20_token/__init__.py"
-            + " src/zero_ex/contract_wrappers/exchange/__init__.py"
+        black_command = BLACK_COMMAND + " ".join(
+            [
+                f"src/zero_ex/contract_wrappers/{contract}/__init__.py"
+                for contract in contracts
+            ]
         )
         print(f"Running command `{black_command}`...")
         subprocess.check_call(black_command.split())  # nosec
