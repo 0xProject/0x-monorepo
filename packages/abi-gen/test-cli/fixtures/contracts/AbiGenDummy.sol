@@ -137,6 +137,18 @@ contract AbiGenDummy
     function nestedStructInput(NestedStruct memory n) public pure {}
     function nestedStructOutput() public pure returns(NestedStruct memory) {}
 
+    struct StructNotDirectlyUsedAnywhere {
+        uint256 aField;
+    }
+
+    struct NestedStructWithInnerStructNotUsedElsewhere {
+        StructNotDirectlyUsedAnywhere innerStruct;
+    }
+
+    function methodUsingNestedStructWithInnerStructNotUsedElsewhere()
+        public pure returns(NestedStructWithInnerStructNotUsedElsewhere  memory)
+    {}
+
     uint someState;
     function nonPureMethod() public returns(uint) { return someState += 1; }
     function nonPureMethodThatReturnsNothing() public { someState += 1; }

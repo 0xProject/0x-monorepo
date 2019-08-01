@@ -406,6 +406,53 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    public methodUsingNestedStructWithInnerStructNotUsedElsewhere = {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<{ innerStruct: { aField: BigNumber } }> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments(
+                'methodUsingNestedStructWithInnerStructNotUsedElsewhere()',
+                [],
+            );
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'methodUsingNestedStructWithInnerStructNotUsedElsewhere()',
+                [],
+            );
+            return abiEncodedTransactionData;
+        },
+    };
     public nestedStructOutput = {
         async callAsync(
             callData: Partial<CallData> = {},
@@ -1262,6 +1309,32 @@ export class AbiGenDummyContract extends BaseContract {
                 inputs: [],
                 name: 'simpleRevert',
                 outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'methodUsingNestedStructWithInnerStructNotUsedElsewhere',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'tuple',
+                        components: [
+                            {
+                                name: 'innerStruct',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'aField',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',
