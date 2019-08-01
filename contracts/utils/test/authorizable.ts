@@ -1,10 +1,4 @@
-import {
-    chaiSetup,
-    constants,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
+import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { AuthorizableRevertErrors, BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
@@ -140,14 +134,18 @@ describe('Authorizable', () => {
             );
             const index = new BigNumber(1);
             const expectedError = new AuthorizableRevertErrors.IndexOutOfBoundsError(index, constants.ZERO_AMOUNT);
-            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, { from: owner });
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                from: owner,
+            });
             return expect(tx).to.revertWith(expectedError);
         });
 
         it('should revert if owner attempts to remove an address that is not authorized', async () => {
             const index = new BigNumber(0);
             const expectedError = new AuthorizableRevertErrors.TargetNotAuthorizedError(address);
-            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, { from: owner });
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
+                from: owner,
+            });
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -166,7 +164,9 @@ describe('Authorizable', () => {
             );
             const address1Index = new BigNumber(0);
             const expectedError = new AuthorizableRevertErrors.AuthorizedAddressMismatchError(address1, address2);
-            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, { from: owner });
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
+                from: owner,
+            });
             return expect(tx).to.revertWith(expectedError);
         });
 
