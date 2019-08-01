@@ -41,8 +41,8 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         coordinatorRegistry: '0x45797531b873fd5e519477a070a955764c1a5b07',
         coordinator: '0xa14857e8930acd9a882d33ec20559beb5479c8a6',
         multiAssetProxy: '0xef701d5389ae74503d633396c4d654eabedc9d78',
-        staticCallProxy: NULL_ADDRESS,
-        erc1155Proxy: NULL_ADDRESS,
+        staticCallProxy: '0x3517b88c19508c08650616019062b898ab65ed29',
+        erc1155Proxy: '0x7eefbd48fd63d441ec7435d024ec7c5131019add',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
