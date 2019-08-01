@@ -73,6 +73,40 @@ contract TestLibs is
         return partialAmount;
     }
 
+    function safeGetPartialAmountFloor(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        partialAmount = _safeGetPartialAmountFloor(
+            numerator,
+            denominator,
+            target
+        );
+        return partialAmount;
+    }
+
+    function safeGetPartialAmountCeil(
+        uint256 numerator,
+        uint256 denominator,
+        uint256 target
+    )
+        public
+        pure
+        returns (uint256 partialAmount)
+    {
+        partialAmount = _safeGetPartialAmountCeil(
+            numerator,
+            denominator,
+            target
+        );
+        return partialAmount;
+    }
+
     function isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,

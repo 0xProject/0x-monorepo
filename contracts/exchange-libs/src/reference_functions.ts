@@ -21,8 +21,11 @@ export function isRoundingErrorFloor(
     if (numerator.eq(0) || target.eq(0)) {
         return false;
     }
-    const remainder = numerator.multipliedBy(target).mod(denominator);
-    return safeMul(new BigNumber(1000), remainder).gte(safeMul(numerator, target));
+    const remainder = numerator.times(target).mod(denominator);
+    // Need to do this separately because solidity evaluates RHS of the comparison expression first.
+    const rhs = safeMul(numerator, target);
+    const lhs = safeMul(new BigNumber(1000), remainder);
+    return lhs.gte(rhs);
 }
 
 export function isRoundingErrorCeil(
@@ -36,9 +39,12 @@ export function isRoundingErrorCeil(
     if (numerator.eq(0) || target.eq(0)) {
         return false;
     }
-    let remainder = numerator.multipliedBy(target).mod(denominator);
+    let remainder = numerator.times(target).mod(denominator);
     remainder = safeSub(denominator, remainder).mod(denominator);
-    return safeMul(new BigNumber(1000), remainder).gte(safeMul(numerator, target));
+    // Need to do this separately because solidity evaluates RHS of the comparison expression first.
+    const rhs = safeMul(numerator, target);
+    const lhs = safeMul(new BigNumber(1000), remainder);
+    return lhs.gte(rhs);
 }
 
 export function safeGetPartialAmountFloor(
@@ -46,9 +52,6 @@ export function safeGetPartialAmountFloor(
     denominator: BigNumber,
     target: BigNumber,
 ): BigNumber {
-    if (denominator.eq(0)) {
-        throw new LibMathRevertErrors.DivisionByZeroError();
-    }
     if (isRoundingErrorFloor(numerator, denominator, target)) {
         throw new LibMathRevertErrors.RoundingError(numerator, denominator, target);
     }
@@ -63,9 +66,6 @@ export function safeGetPartialAmountCeil(
     denominator: BigNumber,
     target: BigNumber,
 ): BigNumber {
-    if (denominator.eq(0)) {
-        throw new LibMathRevertErrors.DivisionByZeroError();
-    }
     if (isRoundingErrorCeil(numerator, denominator, target)) {
         throw new LibMathRevertErrors.RoundingError(numerator, denominator, target);
     }
@@ -83,9 +83,6 @@ export function getPartialAmountFloor(
     denominator: BigNumber,
     target: BigNumber,
 ): BigNumber {
-    if (denominator.eq(0)) {
-        throw new LibMathRevertErrors.DivisionByZeroError();
-    }
     return safeDiv(
         safeMul(numerator, target),
         denominator,
@@ -97,9 +94,6 @@ export function getPartialAmountCeil(
     denominator: BigNumber,
     target: BigNumber,
 ): BigNumber {
-    if (denominator.eq(0)) {
-        throw new LibMathRevertErrors.DivisionByZeroError();
-    }
     return safeDiv(
         safeAdd(
             safeMul(numerator, target),

@@ -57,6 +57,14 @@
             {
                 "note": "Add reference functions for `LibMath` and `LibFillResults`",
                 "pr": "TODO"
+            },
+            {
+                "note": "Bring in revamped `LibMath` tests from the `contracts-exchange` package.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Remove unecessary zero-denominator checks in `LibMath`.",
+                "pr": "TODO"
             }
         ]
     },

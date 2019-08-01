@@ -41,10 +41,6 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
-        }
-
         if (_isRoundingErrorFloor(
                 numerator,
                 denominator,
@@ -79,10 +75,6 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
-        }
-
         if (_isRoundingErrorCeil(
                 numerator,
                 denominator,
@@ -122,10 +114,6 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
-        }
-
         partialAmount = _safeDiv(
             _safeMul(numerator, target),
             denominator
@@ -147,10 +135,6 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
-        }
-
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
