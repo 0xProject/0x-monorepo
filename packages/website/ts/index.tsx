@@ -96,6 +96,9 @@ const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', asyn
 const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
 );
+const LazyAssetSwapperDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "assetSwapperDocs" */ 'ts/containers/asset_swapper_documentation'),
+);
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
 const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
@@ -204,6 +207,10 @@ render(
                                 <Route
                                     path={`${WebsitePaths.AssetBuyer}/:version?`}
                                     component={LazyAssetBuyerDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.AssetSwapper}/:version?`}
+                                    component={LazyAssetSwapperDocumentation}
                                 />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}

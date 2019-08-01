@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-erc1155",
-    "version": "1.1.10",
+    "version": "1.1.11",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,14 +47,14 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/tokens/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^3.1.1",
-        "@0x/contracts-gen": "^1.0.11",
-        "@0x/dev-utils": "^2.2.5",
-        "@0x/sol-compiler": "^3.1.10",
+        "@0x/abi-gen": "^3.1.2",
+        "@0x/contracts-gen": "^1.0.12",
+        "@0x/dev-utils": "^2.2.6",
+        "@0x/sol-compiler": "^3.1.11",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
-        "@types/node": "*",
         "@types/mocha": "^5.2.7",
+        "@types/node": "*",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
@@ -68,13 +68,13 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.1.2",
-        "@0x/contracts-test-utils": "^3.1.11",
-        "@0x/contracts-utils": "^3.1.10",
+        "@0x/base-contract": "^5.3.0",
+        "@0x/contracts-test-utils": "^3.1.12",
+        "@0x/contracts-utils": "^3.2.0",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
-        "@0x/web3-wrapper": "^6.0.8",
+        "@0x/utils": "^4.4.2",
+        "@0x/web3-wrapper": "^6.0.9",
         "ethereum-types": "^2.1.4",
         "lodash": "^4.17.11"
     },
