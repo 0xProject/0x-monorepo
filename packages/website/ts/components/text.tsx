@@ -71,7 +71,7 @@ export const Paragraph = styled.p<ParagraphProps>`
     color: ${props => props.color || props.theme.paragraphColor};
     opacity: ${props => (typeof props.isMuted === 'boolean' ? 0.75 : props.isMuted)};
     text-align: ${props => (props.textAlign ? props.textAlign : props.isCentered && 'center')};
-    line-height: 1.4;
+    line-height: 1.5;
 `;
 
 Paragraph.defaultProps = {
