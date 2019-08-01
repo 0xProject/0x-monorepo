@@ -2264,13 +2264,6 @@ export class AbiGenDummyContract extends BaseContract {
                 type: 'function',
             },
             {
-                inputs: [],
-                outputs: [],
-                payable: true,
-                stateMutability: 'payable',
-                type: 'fallback',
-            },
-            {
                 anonymous: false,
                 inputs: [
                     {

@@ -153,50 +153,6 @@ contract AbiGenDummy
         bytes ipsum;
         string dolor;
     }
-
-    /// @dev The fallback function calls into this contract and executes one of the above functions.
-    /// This allows us to test `getABIDecodedTransactionData` and `getABIDecodedReturnData` that is
-    /// include in contract wrappers.
-    // solhint-disable no-complex-fallback
-    function ()
-        external
-        payable
-    {
-        address addr = address(this);
-        assembly {
-            // copy calldata to memory
-            calldatacopy(
-                0x0,
-                0x0,
-                calldatasize()
-            )
-            // execute transaction
-            let success := call(
-                gas,                    // send all gas.
-                addr,                   // call into this contract.
-                0,                      // don't send any ether.
-                0x0,                    // input is `txData`.
-                calldatasize(),         // input length is that of `txData`.
-                0x0,                    // any return data goes at mem address 0x0.
-                0                       // there is no fixed return value size.
-            )
-
-            // copy return data to memory
-            returndatacopy(
-                0x0,
-                0x0,
-                returndatasize()
-            )
-
-            // rethrow any exceptions
-            if iszero(success) {
-                revert(0, returndatasize())
-            }
-
-            // return call results
-            return(0, returndatasize())
-        }
-    }
     
     /// @dev Tests decoding when both input and output are empty.
     function noInputNoOutput()
