@@ -39,7 +39,7 @@ const scrollableContainerStyles = `
     bottom: 0px;
     right: 0px;
     overflow-x: hidden;
-    overflow-y: scroll;
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 `;
 
