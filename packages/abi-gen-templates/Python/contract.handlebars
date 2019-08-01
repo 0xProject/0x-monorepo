@@ -34,7 +34,9 @@ try:
     )
 except ImportError:
 
-    class {{contractName}}Validator(Validator):  # type: ignore
+    class {{contractName}}Validator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 

@@ -34,7 +34,9 @@ try:
     )
 except ImportError:
 
-    class AbiGenDummyValidator(Validator):  # type: ignore
+    class AbiGenDummyValidator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 
