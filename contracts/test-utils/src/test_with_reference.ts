@@ -1,34 +1,7 @@
+import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { expect } from './chai_setup';
-
-class Value<T> {
-    public value: T;
-    constructor(value: T) {
-        this.value = value;
-    }
-}
-
-// tslint:disable-next-line: max-classes-per-file
-class ErrorMessage {
-    public error: string;
-    constructor(message: string) {
-        this.error = message;
-    }
-}
-
-type PromiseResult<T> = Value<T> | ErrorMessage;
-
-// TODO(albrow): This seems like a generic utility function that could exist in
-// lodash. We should replace it by a library implementation, or move it to our
-// own.
-async function evaluatePromiseAsync<T>(promise: Promise<T>): Promise<PromiseResult<T>> {
-    try {
-        return new Value<T>(await promise);
-    } catch (e) {
-        return new ErrorMessage(e.message);
-    }
-}
 
 export async function testWithReferenceFuncAsync<P0, R>(
     referenceFunc: (p0: P0) => Promise<R>,
@@ -88,36 +61,86 @@ export async function testWithReferenceFuncAsync(
     testFuncAsync: (...args: any[]) => Promise<any>,
     values: any[],
 ): Promise<void> {
-    // Measure correct behaviour
-    const expected = await evaluatePromiseAsync(referenceFuncAsync(...values));
+    // Measure correct behavior
+    let expected: any;
+    let expectedError: Error | undefined;
+    try {
+        expected = await referenceFuncAsync(...values);
+    } catch (err) {
+        expectedError = err;
+    }
+    // Measure actual behavior
+    let actual: any;
+    let actualError: Error | undefined;
+    try {
+        actual = await testFuncAsync(...values);
+    } catch (err) {
+        actualError = err;
+    }
 
-    // Measure actual behaviour
-    const actual = await evaluatePromiseAsync(testFuncAsync(...values));
-
-    // Compare behaviour
-    if (expected instanceof ErrorMessage) {
-        // If we expected an error, check if the actual error message contains the
-        // expected error message.
-        if (!(actual instanceof ErrorMessage)) {
-            throw new Error(
-                `Expected error containing ${expected.error} but got no error\n\tTest case: ${_getTestCaseString(
-                    referenceFuncAsync,
-                    values,
-                )}`,
+    const testCaseString = _getTestCaseString(referenceFuncAsync, values);
+    // Compare behavior
+    if (expectedError !== undefined) {
+        // Expecting an error.
+        if (actualError === undefined) {
+            return expect.fail(
+                actualError,
+                expectedError,
+                `${testCaseString}: expected failure but instead succeeded`,
+            );
+        } else {
+            if (expectedError instanceof RevertError) {
+                // Expecting a RevertError.
+                if (actualError instanceof RevertError) {
+                    if (!actualError.equals(expectedError)) {
+                        return expect.fail(
+                            actualError,
+                            expectedError,
+                            `${testCaseString}: expected error ${actualError.toString()} to equal ${expectedError.toString()}`,
+                        );
+                    }
+                } else {
+                    return expect.fail(
+                        actualError,
+                        expectedError,
+                        `${testCaseString}: expected a RevertError but received an Error`,
+                    );
+                }
+            } else {
+                // Expecing any Error type.
+                if (actualError.message !== expectedError.message) {
+                    return expect.fail(
+                        actualError,
+                        expectedError,
+                        `${testCaseString}: expected error message '${actualError.message}' to equal '${expectedError.message}'`,
+                    );
+                }
+            }
+        }
+    } else {
+        // Not expecting an error.
+        if (actualError !== undefined) {
+            return expect.fail(
+                actualError,
+                expectedError,
+                `${testCaseString}: expected success but instead failed`,
             );
         }
-        expect(actual.error).to.contain(
-            expected.error,
-            `${actual.error}\n\tTest case: ${_getTestCaseString(referenceFuncAsync, values)}`,
-        );
-    } else {
-        // If we do not expect an error, compare actual and expected directly.
-        expect(actual).to.deep.equal(expected, `Test case ${_getTestCaseString(referenceFuncAsync, values)}`);
+        if (expected instanceof BigNumber) {
+            // Technically we can do this with `deep.eq`, but this prints prettier
+            // error messages for BigNumbers.
+            expect(actual).to.bignumber.eq(expected, testCaseString);
+        } else {
+            expect(actual).to.deep.eq(expected, testCaseString);
+        }
     }
 }
 
 function _getTestCaseString(referenceFuncAsync: (...args: any[]) => Promise<any>, values: any[]): string {
     const paramNames = _getParameterNames(referenceFuncAsync);
+    while (paramNames.length < values.length) {
+        paramNames.push(`${paramNames.length}`);
+    }
     return JSON.stringify(_.zipObject(paramNames, values));
 }
 
