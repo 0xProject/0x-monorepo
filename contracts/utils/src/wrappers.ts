@@ -4,6 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/authorizable';
+export * from '../generated-wrappers/i_authorizable';
 export * from '../generated-wrappers/i_ownable';
 export * from '../generated-wrappers/lib_address';
 export * from '../generated-wrappers/lib_bytes';

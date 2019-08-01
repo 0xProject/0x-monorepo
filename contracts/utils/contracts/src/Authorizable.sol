@@ -18,8 +18,10 @@
 
 pragma solidity ^0.5.9;
 
-import "./Ownable.sol";
 import "./interfaces/IAuthorizable.sol";
+import "./LibAuthorizableRichErrors.sol";
+import "./LibRichErrors.sol";
+import "./Ownable.sol";
 
 
 contract Authorizable is
@@ -28,10 +30,9 @@ contract Authorizable is
 {
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
-        require(
-            authorized[msg.sender],
-            "SENDER_NOT_AUTHORIZED"
-        );
+        if (!authorized[msg.sender]) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
+        }
         _;
     }
 
@@ -44,14 +45,15 @@ contract Authorizable is
         external
         onlyOwner
     {
-        require(
-            target != address(0),
-            "ZERO_CANT_BE_AUTHORIZED"
-        );
-        require(
-            !authorized[target],
-            "TARGET_ALREADY_AUTHORIZED"
-        );
+        // Ensure that the target is not the zero address.
+        if (target == address(0)) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.ZeroCantBeAuthorizedError());
+        }
+
+        // Ensure that the target is not already authorized.
+        if (authorized[target]) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetAlreadyAuthorizedError(target));
+        }
 
         authorized[target] = true;
         authorities.push(target);
@@ -64,10 +66,9 @@ contract Authorizable is
         external
         onlyOwner
     {
-        require(
-            authorized[target],
-            "TARGET_NOT_AUTHORIZED"
-        );
+        if (!authorized[target]) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
+        }
 
         delete authorized[target];
         for (uint256 i = 0; i < authorities.length; i++) {
@@ -90,18 +91,21 @@ contract Authorizable is
         external
         onlyOwner
     {
-        require(
-            authorized[target],
-            "TARGET_NOT_AUTHORIZED"
-        );
-        require(
-            index < authorities.length,
-            "INDEX_OUT_OF_BOUNDS"
-        );
-        require(
-            authorities[index] == target,
-            "AUTHORIZED_ADDRESS_MISMATCH"
-        );
+        if (!authorized[target]) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
+        }
+        if (index >= authorities.length) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.IndexOutOfBoundsError(
+                index,
+                authorities.length
+            ));
+        }
+        if (authorities[index] != target) {
+            LibRichErrors._rrevert(LibAuthorizableRichErrors.AuthorizedAddressMismatchError(
+                authorities[index],
+                target
+            ));
+        }
 
         delete authorized[target];
         authorities[index] = authorities[authorities.length - 1];

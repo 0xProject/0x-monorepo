@@ -32,6 +32,7 @@
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",
         "src/SafeMath.sol",
+        "src/interfaces/IAuthorizable.sol",
         "src/interfaces/IOwnable.sol",
         "test/TestConstants.sol",
         "test/TestLibAddress.sol",

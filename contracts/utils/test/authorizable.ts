@@ -1,14 +1,12 @@
 import {
     chaiSetup,
     constants,
-    expectTransactionFailedAsync,
     provider,
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { RevertReason } from '@0x/types';
-import { BigNumber, OwnableRevertErrors } from '@0x/utils';
+import { AuthorizableRevertErrors, BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
@@ -51,7 +49,7 @@ describe('Authorizable', () => {
     });
 
     describe('addAuthorizedAddress', () => {
-        it('should throw if not called by owner', async () => {
+        it('should revert if not called by owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(notOwner, { from: notOwner });
             return expect(tx).to.revertWith(expectedError);
@@ -67,28 +65,26 @@ describe('Authorizable', () => {
             expect(isAuthorized).to.be.true();
         });
 
-        it('should throw if owner attempts to authorize the zero address', async () => {
-            return expectTransactionFailedAsync(
-                authorizable.addAuthorizedAddress.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner }),
-                RevertReason.ZeroCantBeAuthorized,
-            );
+        it('should revert if owner attempts to authorize the zero address', async () => {
+            const expectedError = new AuthorizableRevertErrors.ZeroCantBeAuthorizedError();
+            const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(constants.NULL_ADDRESS, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if owner attempts to authorize a duplicate address', async () => {
+        it('should revert if owner attempts to authorize a duplicate address', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,
                 { from: owner },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
-            return expectTransactionFailedAsync(
-                authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner }),
-                RevertReason.TargetAlreadyAuthorized,
-            );
+            const expectedError = new AuthorizableRevertErrors.TargetAlreadyAuthorizedError(address);
+            const tx = authorizable.addAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
     describe('removeAuthorizedAddress', () => {
-        it('should throw if not called by owner', async () => {
+        it('should revert if not called by owner', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,
                 { from: owner },
@@ -114,18 +110,15 @@ describe('Authorizable', () => {
             expect(isAuthorized).to.be.false();
         });
 
-        it('should throw if owner attempts to remove an address that is not authorized', async () => {
-            return expectTransactionFailedAsync(
-                authorizable.removeAuthorizedAddress.sendTransactionAsync(address, {
-                    from: owner,
-                }),
-                RevertReason.TargetNotAuthorized,
-            );
+        it('should revert if owner attempts to remove an address that is not authorized', async () => {
+            const expectedError = new AuthorizableRevertErrors.TargetNotAuthorizedError(address);
+            const tx = authorizable.removeAuthorizedAddress.sendTransactionAsync(address, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
     describe('removeAuthorizedAddressAtIndex', () => {
-        it('should throw if not called by owner', async () => {
+        it('should revert if not called by owner', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,
                 { from: owner },
@@ -139,32 +132,26 @@ describe('Authorizable', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if index is >= authorities.length', async () => {
+        it('should revert if index is >= authorities.length', async () => {
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
                 address,
                 { from: owner },
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const index = new BigNumber(1);
-            return expectTransactionFailedAsync(
-                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
-                    from: owner,
-                }),
-                RevertReason.IndexOutOfBounds,
-            );
+            const expectedError = new AuthorizableRevertErrors.IndexOutOfBoundsError(index, constants.ZERO_AMOUNT);
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if owner attempts to remove an address that is not authorized', async () => {
+        it('should revert if owner attempts to remove an address that is not authorized', async () => {
             const index = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, {
-                    from: owner,
-                }),
-                RevertReason.TargetNotAuthorized,
-            );
+            const expectedError = new AuthorizableRevertErrors.TargetNotAuthorizedError(address);
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address, index, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if address at index does not match target', async () => {
+        it('should revert if address at index does not match target', async () => {
             const address1 = address;
             const address2 = notOwner;
             await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
@@ -178,12 +165,9 @@ describe('Authorizable', () => {
                 constants.AWAIT_TRANSACTION_MINED_MS,
             );
             const address1Index = new BigNumber(0);
-            return expectTransactionFailedAsync(
-                authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, {
-                    from: owner,
-                }),
-                RevertReason.AuthorizedAddressMismatch,
-            );
+            const expectedError = new AuthorizableRevertErrors.AuthorizedAddressMismatchError(address1, address2);
+            const tx = authorizable.removeAuthorizedAddressAtIndex.sendTransactionAsync(address2, address1Index, { from: owner });
+            return expect(tx).to.revertWith(expectedError);
         });
 
         it('should allow owner to remove an authorized address', async () => {

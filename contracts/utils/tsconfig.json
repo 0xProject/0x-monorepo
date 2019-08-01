@@ -4,6 +4,7 @@
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
         "generated-artifacts/Authorizable.json",
+        "generated-artifacts/IAuthorizable.json",
         "generated-artifacts/IOwnable.json",
         "generated-artifacts/LibAddress.json",
         "generated-artifacts/LibBytes.json",

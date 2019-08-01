@@ -1,3 +1,4 @@
+import * as AuthorizableRevertErrors from './authorizable_revert_errors';
 import * as LibAddressArrayRevertErrors from './lib_address_array_revert_errors';
 import * as LibBytesRevertErrors from './lib_bytes_revert_errors';
 import * as OwnableRevertErrors from './ownable_revert_errors';
@@ -32,6 +33,7 @@ export {
 } from './revert_error';
 
 export {
+    AuthorizableRevertErrors,
     LibAddressArrayRevertErrors,
     LibBytesRevertErrors,
     OwnableRevertErrors,

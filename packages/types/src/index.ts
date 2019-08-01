@@ -268,7 +268,6 @@ export enum RevertReason {
     SenderNotAuthorized = 'SENDER_NOT_AUTHORIZED',
     TargetNotAuthorized = 'TARGET_NOT_AUTHORIZED',
     TargetAlreadyAuthorized = 'TARGET_ALREADY_AUTHORIZED',
-    ZeroCantBeAuthorized = 'ZERO_CANT_BE_AUTHORIZED',
     IndexOutOfBounds = 'INDEX_OUT_OF_BOUNDS',
     AuthorizedAddressMismatch = 'AUTHORIZED_ADDRESS_MISMATCH',
     OnlyContractOwner = 'ONLY_CONTRACT_OWNER',
