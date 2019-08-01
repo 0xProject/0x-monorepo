@@ -38,6 +38,7 @@ tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
 import 'less/all.less';
+import 'sass/modal_video.scss';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
