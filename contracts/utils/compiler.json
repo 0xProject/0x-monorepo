@@ -24,11 +24,11 @@
         }
     },
     "contracts": [
+        "src/Authorizable.sol",
         "src/LibAddress.sol",
         "src/LibBytes.sol",
         "src/LibEIP1271.sol",
         "src/LibEIP712.sol",
-        "src/MixinAuthorizable.sol",
         "src/Ownable.sol",
         "src/ReentrancyGuard.sol",
         "src/SafeMath.sol",

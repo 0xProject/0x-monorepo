@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/interfaces/IOwnable.sol";
+import "./IOwnable.sol";
 
 
 contract IAuthorizable is
@@ -54,7 +54,7 @@ contract IAuthorizable is
         uint256 index
     )
         external;
-    
+
     /// @dev Gets all authorized addresses.
     /// @return Array of authorized addresses.
     function getAuthorizedAddresses()

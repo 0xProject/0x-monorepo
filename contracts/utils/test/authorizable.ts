@@ -12,7 +12,7 @@ import { BigNumber, OwnableRevertErrors } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { artifacts, MixinAuthorizableContract } from '../src';
+import { artifacts, AuthorizableContract } from '../src';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -22,7 +22,7 @@ describe('Authorizable', () => {
     let owner: string;
     let notOwner: string;
     let address: string;
-    let authorizable: MixinAuthorizableContract;
+    let authorizable: AuthorizableContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -35,8 +35,8 @@ describe('Authorizable', () => {
     before(async () => {
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
         [owner, address, notOwner] = _.slice(accounts, 0, 3);
-        authorizable = await MixinAuthorizableContract.deployFrom0xArtifactAsync(
-            artifacts.MixinAuthorizable,
+        authorizable = await AuthorizableContract.deployFrom0xArtifactAsync(
+            artifacts.Authorizable,
             provider,
             txDefaults,
         );
