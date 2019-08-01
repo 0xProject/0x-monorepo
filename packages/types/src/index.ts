@@ -831,3 +831,9 @@ export interface BatchMatchedFillResults {
     profitInLeftMakerAsset: BigNumber;
     profitInRightMakerAsset: BigNumber;
 }
+
+export interface OrderInfo {
+    orderStatus: number;
+    orderHash: string;
+    orderTakerAssetFilledAmount: BigNumber;
+}

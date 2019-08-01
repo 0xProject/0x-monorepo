@@ -7,7 +7,7 @@
                 "pr": 1761
             },
             {
-                "note": "Add `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
+                "note": "Add `OrderInfo`, `FillResults`, `MatchedFillResults`, `BatchMatchedFillResults` types",
                 "pr": "TODO"
             }
         ]
