@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.5.0",
+        "changes": [
+            {
+                "note": "Add `SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero`",
+                "pr": "TODO"
+            }
+        ]
+    },
+    {
         "version": "4.4.0",
         "changes": [
             {

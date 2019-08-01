@@ -37,6 +37,10 @@
             {
                 "note": "Add reference functions for `SafeMath` functions.",
                 "pr": "2031"
+            },
+            {
+                "note": "Throw a `SafeMathError` in `SafeMath._safeDiv()` when denominator is zero.",
+                "pr": "2031"
             }
         ]
     },

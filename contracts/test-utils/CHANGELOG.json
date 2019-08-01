@@ -53,7 +53,15 @@
             {
                 "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`",
                 "pr": "TODO"
-            }
+            },
+            {
+                "note": "Make `testCombinatoriallyWithReferenceFuncAsync` non-async",
+                "pr": "TODO"
+            },
+            {
+                "note": "Update `testWithReferenceFuncAsync` to work with `RevertErrors`",
+                "pr": "TODO"
+            },
         ]
     },
     {
