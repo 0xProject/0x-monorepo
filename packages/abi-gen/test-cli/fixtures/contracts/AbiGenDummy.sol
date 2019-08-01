@@ -138,4 +138,10 @@ contract AbiGenDummy
     uint someState;
     function nonPureMethod() public returns(uint) { return someState += 1; }
     function nonPureMethodThatReturnsNothing() public { someState += 1; }
+
+    function methodReturningMultipleValues()
+        public pure returns (uint256, string memory)
+    {
+        return (1, "hello");
+    }
 }

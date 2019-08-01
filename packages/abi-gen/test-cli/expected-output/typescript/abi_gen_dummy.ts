@@ -933,6 +933,44 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    public methodReturningMultipleValues = {
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[BigNumber, string]> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
+            return abiEncodedTransactionData;
+        },
+    };
     public structOutput = {
         async callAsync(
             callData: Partial<CallData> = {},
@@ -1397,6 +1435,24 @@ export class AbiGenDummyContract extends BaseContract {
                 ],
                 name: 'nestedStructInput',
                 outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'methodReturningMultipleValues',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint256',
+                    },
+                    {
+                        name: '',
+                        type: 'string',
+                    },
+                ],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',
