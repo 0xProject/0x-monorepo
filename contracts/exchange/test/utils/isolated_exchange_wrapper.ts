@@ -156,7 +156,7 @@ export function createBadSignature(type: SignatureType = SignatureType.EIP712): 
     return `0x00${Buffer.from([type]).toString('hex')}`;
 }
 
-const ERC20_ASSET_DATA_LENGTH = 24;
+const ERC20_ASSET_DATA_LENGTH = 36;
 
 /**
  * Create asset data for the `IsolatedExchange` contract that will pass.

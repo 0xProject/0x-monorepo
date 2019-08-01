@@ -31,26 +31,6 @@ contract TestExchangeInternals is
         Exchange(chainId)
     {}
 
-    /// @dev Adds properties of both FillResults instances.
-    ///      Modifies the first FillResults instance specified.
-    ///      Note that this function has been modified from the original
-    //       internal version to return the FillResults.
-    /// @param totalFillResults Fill results instance that will be added onto.
-    /// @param singleFillResults Fill results instance that will be added to totalFillResults.
-    /// @return newTotalFillResults The result of adding singleFillResults to totalFilResults.
-    function addFillResults(FillResults memory totalFillResults, FillResults memory singleFillResults)
-        public
-        pure
-        returns (FillResults memory)
-    {
-        _addFillResults(totalFillResults, singleFillResults);
-        return totalFillResults;
-    }
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
     function calculateFillResults(
         Order memory order,
         uint256 takerAssetFilledAmount
@@ -62,12 +42,9 @@ contract TestExchangeInternals is
         return _calculateFillResults(order, takerAssetFilledAmount);
     }
 
-    /// @dev Updates state with results of a fill order.
-    /// @param order that was filled.
-    /// @param takerAddress Address of taker who filled the order.
-    /// @param orderTakerAssetFilledAmount Amount of order already filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function updateFilledState(
+    /// @dev Call `_updateFilledState()` but first set `filled[order]` to
+    ///      `orderTakerAssetFilledAmount`.
+    function testUpdateFilledState(
         Order memory order,
         address takerAddress,
         bytes32 orderHash,
@@ -76,6 +53,7 @@ contract TestExchangeInternals is
     )
         public
     {
+        filled[getOrderHash(order)] = orderTakerAssetFilledAmount;
         _updateFilledState(
             order,
             takerAddress,

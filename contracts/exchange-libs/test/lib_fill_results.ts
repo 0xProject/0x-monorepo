@@ -24,8 +24,9 @@ blockchainTests('LibFillResults', env => {
 
     describe('addFillResults', () => {
         function makeFillResults(value: BigNumber): FillResults {
-            // We reuse values across fields, but this is fine because
-            // `addFillResults()` never does any math between them.
+            // HACK(dorothy-zbornak): We reuse values across fields,
+            // but this is fine because `addFillResults()` never does
+            // any math between them.
             return {
                 makerAssetFilledAmount: value,
                 takerAssetFilledAmount: value,
@@ -54,6 +55,8 @@ blockchainTests('LibFillResults', env => {
             );
         }
 
+        // TODO(dorothy-zbornak): Do we really need these?
+        // Just a couple edge cases would likely suffice.
         describe.optional('combinatorial tests', () => {
             testCombinatoriallyWithReferenceFunc(
                 'addFillResults',

@@ -9,6 +9,8 @@ import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 
+import { calculateFillResults } from '../src/reference_functions';
+
 import {
     AssetBalances,
     createBadAssetData,
@@ -18,9 +20,8 @@ import {
     IsolatedExchangeWrapper,
     Order,
 } from './utils/isolated_exchange_wrapper';
-import { calculateFillResults } from './utils/reference_functions';
 
-blockchainTests.only('Isolated fillOrder() tests', env => {
+blockchainTests('Isolated fillOrder() tests', env => {
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const getCurrentTime = () => Math.floor(_.now() / 1000);
     const { ZERO_AMOUNT } = constants;
