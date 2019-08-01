@@ -971,6 +971,49 @@ export class AbiGenDummyContract extends BaseContract {
             return abiEncodedTransactionData;
         },
     };
+    public methodReturningArrayOfStructs = {
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<
+                Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
+            >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
+            return abiEncodedTransactionData;
+        },
+    };
     public structOutput = {
         async callAsync(
             callData: Partial<CallData> = {},
@@ -1451,6 +1494,38 @@ export class AbiGenDummyContract extends BaseContract {
                     {
                         name: '',
                         type: 'string',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'methodReturningArrayOfStructs',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'someBytes',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'anInteger',
+                                type: 'uint32',
+                            },
+                            {
+                                name: 'aDynamicArrayOfBytes',
+                                type: 'bytes[]',
+                            },
+                            {
+                                name: 'aString',
+                                type: 'string',
+                            },
+                        ],
                     },
                 ],
                 payable: false,

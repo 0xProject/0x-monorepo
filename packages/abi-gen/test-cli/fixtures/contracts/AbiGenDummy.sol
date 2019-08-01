@@ -127,6 +127,8 @@ contract AbiGenDummy
     /// @return a Struct struct
     function structOutput() public pure returns(Struct memory s) {}
 
+    function methodReturningArrayOfStructs() public pure returns(Struct[] memory) {}
+
     struct NestedStruct {
         Struct innerStruct;
         string description;

@@ -179,7 +179,7 @@ function registerPythonHelpers(): void {
                 parameters = parameters.concat((abi as MethodAbi).outputs);
             }
             for (const parameter of parameters) {
-                if (parameter.type === 'tuple') {
+                if (parameter.type === 'tuple' || parameter.type === 'tuple[]') {
                     tupleDefinitions[
                         utils.makePythonTupleName((parameter as TupleDataItem).components)
                     ] = utils.makePythonTupleClassBody((parameter as TupleDataItem).components);
