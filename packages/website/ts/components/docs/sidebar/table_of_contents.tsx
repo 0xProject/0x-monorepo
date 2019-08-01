@@ -60,8 +60,11 @@ const ContentsList = styled.ul`
 
 const ContentLink = styled(Link)<{ level: number }>`
     display: inline-block;
-    color: ${({ theme }) => theme.paragraphColor};
-    transition: all 250ms ease-in-out;
+
+    span {
+        color: ${colors.textDarkSecondary};
+        transition: all 250ms ease-in-out;
+    }
 
     &.active span {
         color: ${colors.brandDark};
