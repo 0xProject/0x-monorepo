@@ -11,7 +11,7 @@ export const Table: React.FC = ({ children }) => (
 );
 
 const TableWrapper = styled.div`
-    overflow-x: scroll;
+    overflow-x: auto;
     margin-bottom: ${docs.marginBottom};
 `;
 
