@@ -1,10 +1,6 @@
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import { chaiSetup } from './chai_setup';
-
-chaiSetup.configure();
-const expect = chai.expect;
+import { expect } from './chai_setup';
 
 class Value<T> {
     public value: T;

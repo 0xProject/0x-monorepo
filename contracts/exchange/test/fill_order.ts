@@ -1,8 +1,5 @@
-import { chaiSetup, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
-import { logUtils } from '@0x/utils';
+import { blockchainTests, describe } from '@0x/contracts-test-utils';
 import * as _ from 'lodash';
-import { env } from 'process';
 
 import {
     AllowanceAmountScenario,
@@ -20,15 +17,6 @@ import {
     FillOrderCombinatorialUtils,
     fillOrderCombinatorialUtilsFactoryAsync,
 } from './utils/fill_order_combinatorial_utils';
-
-chaiSetup.configure();
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-let describeOptional = describe;
-if (env.TEST_ALL === undefined || env.TEST_ALL === '0') {
-    describeOptional = describe.skip;
-    logUtils.warn(`Combinatorial tests are disabled. Run with "TEST_ALL=1" env variable to enable.`);
-}
 
 const defaultFillScenario = {
     orderScenario: {
@@ -59,22 +47,13 @@ const defaultFillScenario = {
     },
 };
 
-describe('FillOrder Tests', () => {
+blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
     let fillOrderCombinatorialUtils: FillOrderCombinatorialUtils;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
         fillOrderCombinatorialUtils = await fillOrderCombinatorialUtilsFactoryAsync(web3Wrapper, txDefaults);
     });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
+
     describe('Fill tests', () => {
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             const fillScenario = {
@@ -685,7 +664,7 @@ describe('FillOrder Tests', () => {
         }
     });
 
-    describeOptional('Combinatorially generated fills orders', () => {
+    describe.optional('Combinatorially generated fills orders', () => {
         const allFillScenarios = FillOrderCombinatorialUtils.generateFillOrderCombinations();
         for (const fillScenario of allFillScenarios) {
             const description = `Combinatorial OrderFill: ${JSON.stringify(fillScenario)}`;

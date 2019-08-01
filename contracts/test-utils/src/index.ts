@@ -1,5 +1,4 @@
 export { AbstractAssetWrapper } from './abstract_asset_wrapper';
-export { chaiSetup } from './chai_setup';
 export { constants } from './constants';
 export {
     expectContractCallFailedAsync,
@@ -46,3 +45,5 @@ export {
     Token,
     TransactionDataParams,
 } from './types';
+export { blockchainTests, BlockchainTestsEnvironment, describe } from './mocha_blockchain';
+export { chaiSetup, expect } from './chai_setup';
