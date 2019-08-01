@@ -9,7 +9,7 @@ interface BaseTextInterface extends PaddingInterface {
 }
 
 interface HeadingProps extends BaseTextInterface {
-    asElement?: 'h1' | 'h2' | 'h3' | 'h4';
+    asElement?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
     maxWidth?: string;
     fontWeight?: string;
     isCentered?: boolean;

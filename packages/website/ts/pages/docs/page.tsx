@@ -5,7 +5,7 @@ import { MDXProvider } from '@mdx-js/react';
 
 import { Code } from 'ts/components/docs/mdx/code';
 import { CodeTabs } from 'ts/components/docs/mdx/code_tabs';
-import { H1, H2, H3, H4 } from 'ts/components/docs/mdx/headings';
+import { H1, H2, H3, H4, H5, H6 } from 'ts/components/docs/mdx/headings';
 import { HelpCallout } from 'ts/components/docs/mdx/help_callout';
 import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
 import { InlineCode } from 'ts/components/docs/mdx/inline_code';
@@ -107,6 +107,8 @@ const mdxComponents = {
     h2: H2,
     h3: H3,
     h4: H4,
+    h5: H5,
+    h6: H6,
     hr: Separator,
     inlineCode: InlineCode,
     a: InlineLink,

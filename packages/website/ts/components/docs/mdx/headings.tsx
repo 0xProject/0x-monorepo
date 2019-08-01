@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { Heading } from 'ts/components/text';
 
-import { docs} from 'ts/style/docs';
+import { docs } from 'ts/style/docs';
 
 const H1 = styled(Heading).attrs({
     size: 'large',
@@ -32,4 +32,16 @@ const H4 = styled(Heading).attrs({
     marginBottom: '1rem',
 })``;
 
-export { H1, H2, H3, H4 };
+const H5 = styled(Heading).attrs({
+    asElement: 'h5',
+    fontWeight: '300',
+    marginBottom: '1rem',
+})``;
+
+const H6 = styled(Heading).attrs({
+    asElement: 'h6',
+    fontWeight: '300',
+    marginBottom: '1rem',
+})``;
+
+export { H1, H2, H3, H4, H5, H6 };
