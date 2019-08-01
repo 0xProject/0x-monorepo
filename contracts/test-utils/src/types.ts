@@ -119,12 +119,6 @@ export enum ContractName {
     BalanceThresholdFilter = 'BalanceThresholdFilter',
 }
 
-export interface OrderInfo {
-    orderStatus: number;
-    orderHash: string;
-    orderTakerAssetFilledAmount: BigNumber;
-}
-
 export interface CancelOrder {
     order: OrderWithoutDomain;
     takerAssetCancelAmount: BigNumber;

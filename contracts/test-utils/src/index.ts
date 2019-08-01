@@ -38,7 +38,6 @@ export {
     ERC721TokenIdsByOwner,
     MarketBuyOrders,
     MarketSellOrders,
-    OrderInfo,
     OrderStatus,
     Token,
     TransactionDataParams,

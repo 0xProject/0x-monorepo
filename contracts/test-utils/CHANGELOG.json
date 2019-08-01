@@ -39,7 +39,7 @@
                 "pr": 2007
             },
             {
-                "note": "Move `*FillResults` types to `@0x/types`",
+                "note": "Move `*FillResults`, `OrderInfo` types to `@0x/types`",
                 "pr": "TODO"
             },
             {
