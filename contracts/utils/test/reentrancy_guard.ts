@@ -28,7 +28,7 @@ describe('ReentrancyGuard', () => {
     });
 
     describe('nonReentrant', () => {
-        it('should throw if reentrancy occurs', async () => {
+        it('should revert if reentrancy occurs', async () => {
             const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
             return expect(guard.guarded.sendTransactionAsync(true)).to.revertWith(expectedError);
         });

@@ -175,7 +175,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
-        it('should throw when taker is specified and order is claimed by other', async () => {
+        it('should revert when taker is specified and order is claimed by other', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -186,7 +186,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if makerAssetAmount is 0', async () => {
+        it('should revert if makerAssetAmount is 0', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -198,7 +198,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if takerAssetAmount is 0', async () => {
+        it('should revert if takerAssetAmount is 0', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -210,7 +210,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if takerAssetFillAmount is 0', async () => {
+        it('should revert if takerAssetFillAmount is 0', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerAssetFillAmountScenario: TakerAssetFillAmountScenario.Zero,
@@ -218,7 +218,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if an order is expired', async () => {
+        it('should revert if an order is expired', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
@@ -331,7 +331,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioSuccessAsync(fillScenario);
         });
 
-        it('should throw if maker balance is too low to fill order', async () => {
+        it('should revert if maker balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -342,7 +342,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker balance is too low to fill order', async () => {
+        it('should revert if taker balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {
@@ -353,7 +353,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if maker allowances are too low to fill order', async () => {
+        it('should revert if maker allowances are too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -364,7 +364,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker allowances are too low to fill order', async () => {
+        it('should revert if taker allowances are too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {
@@ -375,7 +375,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if maker fee balance is too low to fill order', async () => {
+        it('should revert if maker fee balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -386,7 +386,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker fee balance is too low to fill order', async () => {
+        it('should revert if taker fee balance is too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {
@@ -397,7 +397,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if maker fee allowances are too low to fill order', async () => {
+        it('should revert if maker fee allowances are too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 makerStateScenario: {
@@ -408,7 +408,7 @@ describe('FillOrder Tests', () => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if taker fee allowances are too low to fill order', async () => {
+        it('should revert if taker fee allowances are too low to fill order', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 takerStateScenario: {

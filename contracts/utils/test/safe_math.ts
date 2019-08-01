@@ -76,7 +76,7 @@ describe('SafeMath', () => {
             expect(result).bignumber.to.be.eq(constants.ZERO_AMOUNT);
         });
 
-        it('should return zero if second argument is zero', async () => {
+        it('should revert if second argument is zero', async () => {
             const errMessage = 'VM Exception while processing transaction: invalid opcode';
             return expect(safeMath.externalSafeDiv.callAsync(toBN(1), constants.ZERO_AMOUNT)).to.be.rejectedWith(
                 errMessage,
@@ -85,7 +85,7 @@ describe('SafeMath', () => {
     });
 
     describe('_safeSub', () => {
-        it('should throw if the subtraction underflows', async () => {
+        it('should revert if the subtraction underflows', async () => {
             const a = toBN(0);
             const b = toBN(1);
             const expectedError = new SafeMathRevertErrors.SafeMathError(
@@ -108,7 +108,7 @@ describe('SafeMath', () => {
     });
 
     describe('_safeAdd', () => {
-        it('should throw if the addition overflows', async () => {
+        it('should revert if the addition overflows', async () => {
             const a = toBN('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); // The largest uint256 number
             const b = toBN(1);
             const expectedError = new SafeMathRevertErrors.SafeMathError(

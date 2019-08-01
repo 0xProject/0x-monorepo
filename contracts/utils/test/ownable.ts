@@ -30,7 +30,7 @@ describe('Ownable', () => {
     });
 
     describe('onlyOwner', () => {
-        it('should throw if sender is not the owner', async () => {
+        it('should revert if sender is not the owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(nonOwner, owner);
             return expect(ownable.externalOnlyOwner.callAsync({ from: nonOwner })).to.revertWith(expectedError);
         });
