@@ -7,6 +7,7 @@ import { colors } from 'ts/style/colors';
 export const FiltersClear = styled(ClearRefinements)`
     button {
         border: none;
+        background: none;
         cursor: pointer;
         padding: 0;
         font-size: 0.83rem;
