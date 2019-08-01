@@ -107,7 +107,7 @@ async function processMdxAsync(
 }
 
 export async function indexFilesAsync(index: any, dirName: string, settings: Settings): Promise<void> {
-    const dirPath = `${__dirname}/${dirName}`;
+    const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
 
     fs.readdir(dirPath, async (err: string, items: string[]) => {
         for (const fileName of items) {

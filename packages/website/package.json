@@ -17,7 +17,7 @@
         "deploy_dogfood": "npm run build:prod; aws s3 sync ./public/. s3://dogfood.0xproject.com --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_staging": "npm run build:prod; aws s3 sync ./public/. s3://staging-0xproject --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
         "deploy_live": "DEPLOY_ROLLBAR_SOURCEMAPS=true npm run build:prod; aws s3 sync ./public/. s3://0x.org --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers --exclude *.map.js",
-        "index_docs": "npx ts-node -O '{\"module\": \"commonjs\"}' mdx/algolia_index.ts"
+        "index_docs": "npx ts-node -O '{\"module\": \"commonjs\"}' ts/utils/algolia_index.ts"
     },
     "author": "Fabio Berger",
     "license": "Apache-2.0",
