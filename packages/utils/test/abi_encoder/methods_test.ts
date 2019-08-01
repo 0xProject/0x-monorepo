@@ -282,4 +282,16 @@ describe('ABI Encoder: Method Encoding / Decoding', () => {
         const customDecodingRules = { shouldConvertStructsToObjects: true }; // custom to improve readability
         runTest(method, methodArgs, expectedEncoding, defaultEncodingRules, customDecodingRules);
     });
+    it('Should throw if decoding calldata where selector does not match the method', async () => {
+        const method = AbiEncoder.createMethod('foobar');
+        const methodSelector = method.getSelector();
+        const badMethodSelector = '0x01020304';
+        expect(() => method.decode(badMethodSelector)).to.throw(`Tried to decode calldata, but it was missing the function selector. Expected prefix '${methodSelector}'. Got '${badMethodSelector}'.`);
+    });
+    it('Should throw if strict decoding calldata where selector does not match the method', async () => {
+        const method = AbiEncoder.createMethod('foobar');
+        const methodSelector = method.getSelector();
+        const badMethodSelector = '0x01020304';
+        expect(() => method.strictDecode<void>(badMethodSelector)).to.throw(`Tried to decode calldata, but it was missing the function selector. Expected prefix '${methodSelector}'. Got '${badMethodSelector}'.`);
+    });
 });
