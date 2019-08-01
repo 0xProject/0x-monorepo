@@ -1,6 +1,6 @@
 import { constants, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
-import { FillResults, OrderWithoutDomain, SignatureType } from '@0x/types';
+import { FillResults, OrderInfo, OrderWithoutDomain, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
@@ -23,7 +23,7 @@ export interface IsolatedExchangeEvents {
     transferFromCalls: DispatchTransferFromCallArgs[];
 }
 
-export type Orderish = OrderWithoutDomain;
+export type Order = OrderWithoutDomain;
 export type Numberish = string | number | BigNumber;
 
 export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();
@@ -67,12 +67,20 @@ export class IsolatedExchangeWrapper {
         this.logDecoder = new LogDecoder(web3Wrapper, artifacts);
     }
 
-    public async getTakerAssetFilledAmountAsync(order: Orderish): Promise<BigNumber> {
+    public async getTakerAssetFilledAmountAsync(order: Order): Promise<BigNumber> {
         return this.instance.filled.callAsync(this.getOrderHash(order));
     }
 
+    public async cancelOrderAsync(order: Order, txOpts?: TxData): Promise<void> {
+        await this.instance.cancelOrder.awaitTransactionSuccessAsync(order, txOpts);
+    }
+
+    public async cancelOrdersUpToAsync(epoch: BigNumber, txOpts?: TxData): Promise<void> {
+        await this.instance.cancelOrdersUpTo.awaitTransactionSuccessAsync(epoch, txOpts);
+    }
+
     public async fillOrderAsync(
-        order: Orderish,
+        order: Order,
         takerAssetFillAmount: Numberish,
         signature: string = DEFAULT_GOOD_SIGNATURE,
         txOpts?: TxData,
@@ -86,12 +94,16 @@ export class IsolatedExchangeWrapper {
         );
     }
 
-    public getOrderHash(order: Orderish): string {
+    public getOrderHash(order: Order): string {
         const domain = {
             verifyingContractAddress: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
         };
         return orderHashUtils.getOrderHashHex(_.assign(order, { domain }));
+    }
+
+    public async getOrderInfoAsync(order: Order): Promise<OrderInfo> {
+        return this.instance.getOrderInfo.callAsync(order);
     }
 
     public getBalanceChange(assetData: string, address: string): BigNumber {

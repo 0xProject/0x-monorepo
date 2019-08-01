@@ -4,7 +4,6 @@ import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import {
     BatchMatchOrder,
     LogDecoder,
-    OrderInfo,
     orderUtils,
     Web3ProviderEngine,
 } from '@0x/contracts-test-utils';
@@ -12,6 +11,7 @@ import {
     BatchMatchedFillResults,
     FillResults,
     MatchedFillResults,
+    OrderInfo,
     SignedOrder,
     SignedZeroExTransaction,
 } from '@0x/types';
