@@ -46,8 +46,8 @@ function pushObjectsToAlgolia(index: any, content: Content): void {
 }
 
 function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]): any {
-    // META SHAPE TOOLS // const { description, difficulty, isCommunity, tags, title, type } = meta;
-    // META SHAPE GUIDES // const {  description, difficulty, tags, title, topics } = meta;
+    // META SHAPE TOOLS // const { description, difficulty, isCommunity, subtitle, tags, title, type } = meta;
+    // META SHAPE GUIDES // const {  description, difficulty, subtitle, tags, title, topics } = meta;
     const content: Content[] = [];
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
@@ -117,14 +117,15 @@ export async function indexFilesAsync(index: any, dirName: string, settings: Set
 }
 
 interface Meta {
-    title: string;
     description: string;
-    difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+    title: string;
+    subtitle?: string;
+    difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
     isCommunity?: boolean;
     isFeatured?: boolean;
-    tags: string[];
-    topics: string[];
-    type: string;
+    tags?: string[];
+    topics?: string[];
+    type?: string;
 }
 
 interface Content extends Meta {

@@ -12,22 +12,32 @@ interface IHeroProps {
 }
 
 export const Hero: React.FC<IHeroProps> = ({ isHome = false, subtitle, title }) => (
-    <HeroWrapper isHome={isHome}>
+    <HeroWrapper subtitle={subtitle}>
         <Heading size={isHome ? 'large' : 'medium'} isCentered={true} marginBottom={isHome || subtitle ? '30px' : '0'}>
             {title}
         </Heading>
-        {subtitle && <Paragraph isCentered={true}>{subtitle}</Paragraph>}
+        {subtitle && (
+            <Paragraph marginBottom="0" isCentered={true}>
+                {subtitle}
+            </Paragraph>
+        )}
         {isHome && <SearchInput isHome={true} />}
     </HeroWrapper>
 );
 
-const HeroWrapper = styled.div<{ isHome: boolean }>`
+const HeroWrapper = styled.div<{ subtitle: string }>`
     background-color: ${colors.backgroundLight};
-    padding-top: ${({ isHome }) => isHome && `63px`};
-    padding-bottom: 80px;
-    margin-bottom: 60px;
-    min-height: ${({ isHome }) => (isHome ? '21.875rem' : '13.222rem')};
+
     display: flex;
     flex-direction: column;
     justify-content: center;
+
+    margin-bottom: 60px;
+    padding-top: 36px;
+    padding-bottom: 96px;
+
+    @media (max-width: 768px) {
+        padding-top: 12px;
+        padding-bottom: 72px;
+    }
 `;

@@ -66,6 +66,7 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
                 ...state,
                 Component: component.default,
                 contents: component.tableOfContents(),
+                subtitle: component.meta.subtitle,
                 title: component.meta.title,
             });
         } catch (error) {

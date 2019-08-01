@@ -31,7 +31,6 @@ export const TableInner = styled.table`
         padding: 14px 20px 13px;
         border-bottom: 1px solid #cfcfcf;
         font-size: 0.777777778rem;
-        opacity: 0.76;
         line-height: 1.428571429;
     }
 
