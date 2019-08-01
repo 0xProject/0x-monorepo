@@ -80,7 +80,6 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
         return (
             <Link to={hit.url}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
-                <br />
                 <Snippet attribute={attributeToSnippet} hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
         );
