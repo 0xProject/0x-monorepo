@@ -34,8 +34,8 @@ blockchainTests.only('Isolated fillOrder() tests', env => {
         feeRecipientAddress: randomAddress(),
         makerAssetAmount: ONE_ETHER,
         takerAssetAmount: ONE_ETHER.times(2),
-        makerFee: ONE_ETHER.times(0.015),
-        takerFee: ONE_ETHER.times(0.025),
+        makerFee: ONE_ETHER.times(0.0015),
+        takerFee: ONE_ETHER.times(0.0025),
         salt: ZERO_AMOUNT,
         expirationTimeSeconds: new BigNumber(TOMORROW),
         makerAssetData: createGoodAssetData(),
@@ -68,12 +68,14 @@ blockchainTests.only('Isolated fillOrder() tests', env => {
     async function fillOrderAndAssertResultsAsync(
         order: Order,
         takerAssetFillAmount: BigNumber,
+        signature?: string,
     ): Promise<FillOrderAndAssertResultsResults> {
         const orderInfo = await exchange.getOrderInfoAsync(order);
         const efr = calculateExpectedFillResults(order, orderInfo, takerAssetFillAmount);
         const eoi = calculateExpectedOrderInfo(order, orderInfo, efr);
         const efb = calculateExpectedFillBalances(order, efr);
-        const fillResults = await exchange.fillOrderAsync(order, takerAssetFillAmount);
+        // Fill the order.
+        const fillResults = await exchange.fillOrderAsync(order, takerAssetFillAmount, signature);
         const newOrderInfo = await exchange.getOrderInfoAsync(order);
         // Check returned fillResults.
         expect(fillResults.makerAssetFilledAmount)
@@ -545,8 +547,8 @@ blockchainTests.only('Isolated fillOrder() tests', env => {
             const takerAssetFillAmounts = splitAmount(order.takerAssetAmount);
             const goodSignature = createGoodSignature(SignatureType.EthSign);
             const badSignature = createBadSignature(SignatureType.EthSign);
-            await exchange.fillOrderAsync(order, takerAssetFillAmounts[0], goodSignature);
-            await exchange.fillOrderAsync(order, takerAssetFillAmounts[1], badSignature);
+            await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[0], goodSignature);
+            await fillOrderAndAssertResultsAsync(order, takerAssetFillAmounts[1], badSignature);
         });
     });
 });
