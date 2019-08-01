@@ -5,13 +5,11 @@ import {
     uint256Values,
 } from '@0x/contracts-test-utils';
 import { BigNumber } from '@0x/utils';
-import * as _ from 'lodash';
 
 import { artifacts, ReferenceFunctions, TestLibsContract } from '../src';
 
-const CHAIN_ID = 1337;
-
 blockchainTests('LibMath', env => {
+    const CHAIN_ID = 1337;
     let libsContract: TestLibsContract;
 
     before(async () => {

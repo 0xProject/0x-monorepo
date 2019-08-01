@@ -59,7 +59,11 @@
                 "pr": "TODO"
             },
             {
-                "note": "Bring in revamped `LibMath` tests from the `contracts-exchange` package.",
+                "note": "Move in revamped `LibMath` tests from the `contracts-exchange` package.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Move in revamped `LibFillResults` tests from the `contracts-exchange` package.",
                 "pr": "TODO"
             },
             {
