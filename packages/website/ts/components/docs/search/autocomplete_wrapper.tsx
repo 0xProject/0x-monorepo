@@ -112,7 +112,6 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
 
     .react-autosuggest__section-title {
         position: relative;
-        /* min-width: 180px; */
 
         p {
             position: absolute;
@@ -190,9 +189,8 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
     }
 
     .react-autosuggest__suggestion {
-        border-bottom: 1px solid #eee;
-
         @media (max-width: 900px) {
+            border-bottom: 1px solid #eee;
             margin-right: 0;
         }
 
