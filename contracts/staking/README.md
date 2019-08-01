@@ -27,19 +27,26 @@ These contracts connect to each other and the broader 0x ecosystem like this:
 
 ![](images/architecture.png)
 
-## Architecture (Catastrophic Failure Mode)
-
-If a vulnerability is discovered in the staking contract.
+## Architecture (Kill Switch)
+If a vulnerability is discovered in the staking contract, operations may be halted to conduct forensics:
 
 1. The 0x Exchange contract stops charging protocol fees
-2. The staking contract is set to read-only mode (clients may still query balances)
-3. Vaults are detached from the staking contract
-4. Users may withdraw their assets directly from vaults
-5. If state is corrupted, the staking storage is detached from the logic contract and a new storage contract is deployed
+2. The staking contract is set to read-only mode
+3. Vaults may be detached from the staking contract, depending on the vulnerability.
 
-Steps 1-3 are triggered immediately upon discovering a potential failure. Steps 4-5 are triggered if the internal staking state has been corrupted; in this worst-case scenario, the staking contract must be re-deployed — users withdraw their funds from the vaults and re-stake under a new staking contract.
+![](images/architecture_kill_switch.png)
+
+
+## Architecture (Catastrophic Failures)
+
+In this worst-case scenario, state has been irreperably corrupted and the staking contracts must be re-deployed. Users withdraw their funds from the vaults and re-stake under the new system, at will.
+
+4. Vaults enter "Catostrophic Failure Mode" allowing users to withdraw their ZRX and Rewards.
+5. A Balance Oracle is deployed for determining the Reward balance of each user. (*)
 
 ![](images/architecture_failure_mode.png)
+
+(*) A Balance Oracle is implemented retroactively, and depends on how state has been corrupted. For example, if state used to compute rewards is not corrupted, then it would be used by the oracle. Conversely, if this state is corrupted, we may need to reconstruct balances from previous state. (No balance oracle is required for ZRX.)
 
 ## Contracts Directory Structure
 
