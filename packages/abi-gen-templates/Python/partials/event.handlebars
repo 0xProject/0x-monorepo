@@ -6,8 +6,4 @@
 {{makeEventParameterDocstringRole name 8}}
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
-        return (
-            self._get_contract_instance(self.contract_address)
-            .events.{{name}}()
-            .processReceipt(tx_receipt)
-        )
+        return self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi={{contractName}}.abi()).events.{{name}}().processReceipt(tx_receipt)

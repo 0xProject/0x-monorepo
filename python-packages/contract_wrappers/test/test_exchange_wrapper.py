@@ -77,7 +77,7 @@ def test_exchange_wrapper__fill_order(
     )
     order_signature = sign_hash_to_bytes(ganache_provider, maker, order_hash)
 
-    tx_hash = exchange_wrapper.fill_order(
+    tx_hash = exchange_wrapper.fill_order.send_transaction(
         order=order,
         taker_asset_fill_amount=order["takerAssetAmount"],
         signature=order_signature,
@@ -114,7 +114,7 @@ def test_exchange_wrapper__batch_fill_orders(
         for order_hash in order_hashes
     ]
     taker_amounts = [order["takerAssetAmount"] for order in orders]
-    tx_hash = exchange_wrapper.batch_fill_orders(
+    tx_hash = exchange_wrapper.batch_fill_orders.send_transaction(
         orders=orders,
         taker_asset_fill_amounts=taker_amounts,
         signatures=order_signatures,

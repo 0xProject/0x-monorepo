@@ -319,7 +319,7 @@ book.  Now let's have the taker fill it:
 ...     provider=eth_node,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
 ... )
->>> exchange.fill_order(
+>>> exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill
 ...     signature=order['signature'].replace('0x', '').encode('utf-8'),
@@ -333,7 +333,7 @@ Cancelling
 Note that the above fill was partial: it only filled half of the order.  Now
 we'll have our maker cancel the remaining order:
 
->>> exchange.cancel_order(
+>>> exchange.cancel_order.send_transaction(
 ...     order=order,
 ...     tx_params=TxParams(from_=maker_address)
 ... )
