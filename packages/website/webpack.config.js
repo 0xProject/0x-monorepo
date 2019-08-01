@@ -28,6 +28,7 @@ const config = {
         alias: {
             ts: path.join(__dirname, '/ts'),
             less: path.join(__dirname, '/less'),
+            sass: path.join(__dirname, '/sass'),
             md: path.join(__dirname, '/md'),
         },
     },
