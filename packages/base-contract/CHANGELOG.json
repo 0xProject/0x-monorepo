@@ -10,7 +10,8 @@
                 "note": "Updated interface to `deployAsync` to include log decode dependencies.",
                 "pr": 1995
             }
-        ]
+        ],
+        "timestamp": 1564604963
     },
     {
         "version": "5.2.0",

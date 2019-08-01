@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-gen",
-    "version": "1.0.11",
+    "version": "1.0.12",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,7 +30,7 @@
         "@0x/sol-resolver": "^2.0.9",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
+        "@0x/utils": "^4.4.2",
         "ethereum-types": "^2.1.4",
         "lodash": "^4.17.11",
         "prettier": "^1.16.3",

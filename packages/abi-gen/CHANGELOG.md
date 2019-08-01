@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v3.1.2 - _July 31, 2019_
+
+    * Dependencies updated
+
 ## v3.1.1 - _July 24, 2019_
 
     * Python method parameters are now in snake case (#1919)
