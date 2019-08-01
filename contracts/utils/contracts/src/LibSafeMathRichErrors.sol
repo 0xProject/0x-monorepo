@@ -10,7 +10,8 @@ library LibSafeMathRichErrors {
     enum SafeMathErrorCodes {
         UINT256_ADDITION_OVERFLOW,
         UINT256_MULTIPLICATION_OVERFLOW,
-        UINT256_SUBTRACTION_UNDERFLOW
+        UINT256_SUBTRACTION_UNDERFLOW,
+        UINT256_DIVISION_BY_ZERO
     }
 
     // solhint-disable func-name-mixedcase
