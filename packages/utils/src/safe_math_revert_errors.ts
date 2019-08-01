@@ -5,6 +5,7 @@ export enum SafeMathErrorCodes {
     Uint256AdditionOverflow,
     Uint256MultiplicationOverflow,
     Uint256SubtractionUnderflow,
+    Uint256DivisionByZero,
 }
 
 export class SafeMathError extends RevertError {
