@@ -3,7 +3,7 @@
         "version": "3.2.0",
         "changes": [
             {
-                "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable",
+                "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
                 "pr": 2019
             }
         ]
