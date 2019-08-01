@@ -70,12 +70,12 @@ export class EthBalanceCheckerContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getEthBalances(address[])', [addresses]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber[] {
+        getABIDecodedTransactionData(callData: string): BigNumber[] {
             const self = (this as any) as EthBalanceCheckerContract;
             const abiEncoder = self._lookupAbiEncoder('getEthBalances(address[])');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber[]>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber[]>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber[] {
             const self = (this as any) as EthBalanceCheckerContract;

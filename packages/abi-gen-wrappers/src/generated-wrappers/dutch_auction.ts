@@ -225,7 +225,7 @@ export class DutchAuctionContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(
-            returnData: string,
+            callData: string,
         ): {
             beginTimeSeconds: BigNumber;
             endTimeSeconds: BigNumber;
@@ -239,15 +239,15 @@ export class DutchAuctionContract extends BaseContract {
                 'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
             );
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<{
+            const abiDecodedCallData = abiEncoder.strictDecode<{
                 beginTimeSeconds: BigNumber;
                 endTimeSeconds: BigNumber;
                 beginAmount: BigNumber;
                 endAmount: BigNumber;
                 currentAmount: BigNumber;
                 currentTimeSeconds: BigNumber;
-            }>(returnData);
-            return abiDecodedReturnData;
+            }>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(
             returnData: string,
@@ -585,7 +585,7 @@ export class DutchAuctionContract extends BaseContract {
             return abiEncodedTransactionData;
         },
         getABIDecodedTransactionData(
-            returnData: string,
+            callData: string,
         ): {
             left: {
                 makerAssetFilledAmount: BigNumber;
@@ -606,7 +606,7 @@ export class DutchAuctionContract extends BaseContract {
                 'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
             );
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<{
+            const abiDecodedCallData = abiEncoder.strictDecode<{
                 left: {
                     makerAssetFilledAmount: BigNumber;
                     takerAssetFilledAmount: BigNumber;
@@ -620,8 +620,8 @@ export class DutchAuctionContract extends BaseContract {
                     takerFeePaid: BigNumber;
                 };
                 leftMakerAssetSpreadAmount: BigNumber;
-            }>(returnData);
-            return abiDecodedReturnData;
+            }>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(
             returnData: string,

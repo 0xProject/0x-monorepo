@@ -107,12 +107,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as WETH9Contract;
@@ -235,12 +235,12 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as WETH9Contract;
@@ -287,12 +287,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as WETH9Contract;
@@ -450,12 +450,12 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as WETH9Contract;
@@ -564,12 +564,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as WETH9Contract;
@@ -616,12 +616,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): number {
+        getABIDecodedTransactionData(callData: string): number {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('decimals()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<number>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<number>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): number {
             const self = (this as any) as WETH9Contract;
@@ -676,12 +676,12 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as WETH9Contract;
@@ -728,12 +728,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as WETH9Contract;
@@ -856,12 +856,12 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as WETH9Contract;
@@ -964,12 +964,12 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('deposit()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as WETH9Contract;
@@ -1031,12 +1031,12 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as WETH9Contract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as WETH9Contract;

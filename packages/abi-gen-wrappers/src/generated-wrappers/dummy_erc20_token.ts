@@ -91,12 +91,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('name()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -236,12 +236,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
@@ -288,12 +288,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('totalSupply()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
@@ -451,12 +451,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
@@ -503,12 +503,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('decimals()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
@@ -561,12 +561,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('balanceOf(address)', [_owner.toLowerCase()]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
@@ -613,12 +613,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -665,12 +665,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('symbol()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -779,12 +779,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('mint(uint256)', [_value]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('mint(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
@@ -911,12 +911,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): boolean {
+        getABIDecodedTransactionData(callData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<boolean>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): boolean {
             const self = (this as any) as DummyERC20TokenContract;
@@ -978,12 +978,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
@@ -1123,12 +1123,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('setBalance(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
@@ -1239,12 +1239,12 @@ export class DummyERC20TokenContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as DummyERC20TokenContract;
@@ -1291,12 +1291,12 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('MAX_MINT_AMOUNT()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): BigNumber {
+        getABIDecodedTransactionData(callData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;
             const abiEncoder = self._lookupAbiEncoder('MAX_MINT_AMOUNT()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<BigNumber>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): BigNumber {
             const self = (this as any) as DummyERC20TokenContract;

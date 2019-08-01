@@ -151,12 +151,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): void {
+        getABIDecodedTransactionData(callData: string): void {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<void>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as CoordinatorRegistryContract;
@@ -213,12 +213,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedTransactionData(returnData: string): string {
+        getABIDecodedTransactionData(callData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
             const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecode<string>(returnData);
-            return abiDecodedReturnData;
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
         },
         getABIDecodedReturnData(returnData: string): string {
             const self = (this as any) as CoordinatorRegistryContract;
