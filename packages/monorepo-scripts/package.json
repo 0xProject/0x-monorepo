@@ -49,7 +49,7 @@
     },
     "dependencies": {
         "@0x/types": "^2.4.1",
-        "@0x/utils": "^4.4.1",
+        "@0x/utils": "^4.4.2",
         "@lerna/batch-packages": "^3.0.0-beta.18",
         "@types/depcheck": "^0.6.0",
         "async-child-process": "^1.1.1",

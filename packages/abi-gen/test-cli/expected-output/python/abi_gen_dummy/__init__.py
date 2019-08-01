@@ -11,35 +11,16 @@ from typing import (  # pylint: disable=unused-import
     Union,
 )
 
+from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3 import Web3
+from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper
+from zero_ex.contract_wrappers.bases import ContractMethod, Validator
 from zero_ex.contract_wrappers.tx_params import TxParams
-
-
-class AbiGenDummyValidatorBase:
-    """Base class for validating inputs to AbiGenDummy methods."""
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        private_key: str = None,
-    ):
-        """Initialize the instance."""
-
-    def assert_valid(
-        self, method_name: str, parameter_name: str, argument_value: Any
-    ):
-        """Raise an exception if method input is not valid.
-
-        :param method_name: Name of the method whose input is to be validated.
-        :param parameter_name: Name of the parameter whose input is to be
-            validated.
-        :param argument_value: Value of argument to parameter to be validated.
-        """
 
 
 # Try to import a custom validator class definition; if there isn't one,
@@ -53,7 +34,7 @@ try:
     )
 except ImportError:
 
-    class AbiGenDummyValidator(AbiGenDummyValidatorBase):  # type: ignore
+    class AbiGenDummyValidator(Validator):  # type: ignore
         """No-op input validator."""
 
 
@@ -102,81 +83,47 @@ class Tuple0xcf8ad995(TypedDict):
     aString: str
 
 
-# pylint: disable=too-many-public-methods
-class AbiGenDummy(BaseContractWrapper):
-    """Wrapper class for AbiGenDummy Solidity contract.
+class SimpleRequireMethod(ContractMethod):
+    """Various interfaces to the simpleRequire method."""
 
-    All method parameters of type `bytes`:code: should be encoded as UTF-8,
-    which can be accomplished via `str.encode("utf_8")`:code:.
-    """
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
 
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        validator: AbiGenDummyValidator = None,
-        private_key: str = None,
-    ):
-        """Get an instance of wrapper for smart contract.
-
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
-        :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
-        """
-        super().__init__(
-            provider=provider,
-            contract_address=contract_address,
-            private_key=private_key,
-        )
-
-        if not validator:
-            validator = AbiGenDummyValidator(provider, contract_address, private_key)
-
-        self.validator = validator
-
-    def _get_contract_instance(self, token_address):
-        """Get an instance of the smart contract at a specific address.
-
-        :returns: contract object
-        """
-        return self._contract_instance(
-            address=token_address, abi=AbiGenDummy.abi()
-        )
-
-    def simple_require(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simpleRequire(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
 
-    def accepts_an_array_of_bytes(
-        self,
-        a: List[bytes],
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
 
-        a method that accepts an array of bytes
-
-        :param a: the array of bytes being accepted
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class AcceptsAnArrayOfBytesMethod(ContractMethod):
+    """Various interfaces to the acceptsAnArrayOfBytes method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, a: List[bytes]):
+        """Validate the inputs to the acceptsAnArrayOfBytes method."""
         self.validator.assert_valid(
             method_name='acceptsAnArrayOfBytes',
             parameter_name='a',
@@ -186,32 +133,50 @@ class AbiGenDummy(BaseContractWrapper):
             bytes.fromhex(a_element.decode("utf-8"))
             for a_element in a
         ]
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.acceptsAnArrayOfBytes(
-            a
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (a)
 
-    def withdraw(
-        self,
-        wad: int,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[None, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
+    def call(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
 
+        a method that accepts an array of bytes
+
+        :param a: the array of bytes being accepted
         :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
 
-        :returns: if param `view_only`:code: is `True`:code:, then returns the
-            value returned from the underlying function; else returns the
-            transaction hash.
         """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).call(tx_params.as_dict())
+
+    def send_transaction(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        a method that accepts an array of bytes
+
+        :param a: the array of bytes being accepted
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
+
+    def estimate_gas(self, a: List[bytes], tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+
+class WithdrawMethod(ContractMethod):
+    """Various interfaces to the withdraw method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, wad: int):
+        """Validate the inputs to the withdraw method."""
         self.validator.assert_valid(
             method_name='withdraw',
             parameter_name='wad',
@@ -219,30 +184,43 @@ class AbiGenDummy(BaseContractWrapper):
         )
         # safeguard against fractional inputs
         wad = int(wad)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.withdraw(
-            wad
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=view_only
-        )
+        return (wad)
 
-    def ecrecover_fn(
-        self,
-        _hash: bytes,
-        v: int,
-        r: bytes,
-        s: bytes,
-        tx_params: Optional[TxParams] = None,
-    ) -> str:
-        """Execute underlying, same-named contract method.
+    def call(self, wad: int, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
-
+        :returns: the return value of the underlying method.
         """
+        (wad) = self.validate_and_normalize_inputs(wad)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(wad).call(tx_params.as_dict())
+
+    def send_transaction(self, wad: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+        """
+        (wad) = self.validate_and_normalize_inputs(wad)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(wad).transact(tx_params.as_dict())
+
+    def estimate_gas(self, wad: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (wad) = self.validate_and_normalize_inputs(wad)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(wad).estimateGas(tx_params.as_dict())
+
+class EcrecoverFnMethod(ContractMethod):
+    """Various interfaces to the ecrecoverFn method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, _hash: bytes, v: int, r: bytes, s: bytes):
+        """Validate the inputs to the ecrecoverFn method."""
         self.validator.assert_valid(
             method_name='ecrecoverFn',
             parameter_name='hash',
@@ -263,143 +241,218 @@ class AbiGenDummy(BaseContractWrapper):
             parameter_name='s',
             argument_value=s,
         )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.ecrecoverFn(
-            _hash,
-            v,
-            r,
-            s
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (_hash, v, r, s)
 
-    def accepts_bytes(
-        self,
-        a: bytes,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(_hash, v, r, s).call(tx_params.as_dict())
+
+    def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(_hash, v, r, s).transact(tx_params.as_dict())
+
+    def estimate_gas(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(_hash, v, r, s).estimateGas(tx_params.as_dict())
+
+class AcceptsBytesMethod(ContractMethod):
+    """Various interfaces to the acceptsBytes method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, a: bytes):
+        """Validate the inputs to the acceptsBytes method."""
         self.validator.assert_valid(
             method_name='acceptsBytes',
             parameter_name='a',
             argument_value=a,
         )
         a = bytes.fromhex(a.decode("utf-8"))
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.acceptsBytes(
-            a
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (a)
 
-    def revert_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def call(self, a: bytes, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.revertWithConstant(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).call(tx_params.as_dict())
 
-    def simple_revert(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def send_transaction(self, a: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simpleRevert(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
 
-    def nested_struct_output(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> Tuple0xc9bdd2d5:
-        """Execute underlying, same-named contract method.
+    def estimate_gas(self, a: bytes, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
 
-        :param tx_params: transaction parameters
+class RevertWithConstantMethod(ContractMethod):
+    """Various interfaces to the revertWithConstant method."""
 
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nestedStructOutput(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
 
-    def require_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.requireWithConstant(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
 
-    def with_address_input(
-        self,
-        x: str,
-        a: int,
-        b: int,
-        y: str,
-        c: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> str:
-        """Execute underlying, same-named contract method.
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
         """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class SimpleRevertMethod(ContractMethod):
+    """Various interfaces to the simpleRevert method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class NestedStructOutputMethod(ContractMethod):
+    """Various interfaces to the nestedStructOutput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xc9bdd2d5:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class RequireWithConstantMethod(ContractMethod):
+    """Various interfaces to the requireWithConstant method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class WithAddressInputMethod(ContractMethod):
+    """Various interfaces to the withAddressInput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, x: str, a: int, b: int, y: str, c: int):
+        """Validate the inputs to the withAddressInput method."""
         self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='x',
             argument_value=x,
         )
-        x = self._validate_and_checksum_address(x)
+        x = self.validate_and_checksum_address(x)
         self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='a',
@@ -419,7 +472,7 @@ class AbiGenDummy(BaseContractWrapper):
             parameter_name='y',
             argument_value=y,
         )
-        y = self._validate_and_checksum_address(y)
+        y = self.validate_and_checksum_address(y)
         self.validator.assert_valid(
             method_name='withAddressInput',
             parameter_name='c',
@@ -427,81 +480,117 @@ class AbiGenDummy(BaseContractWrapper):
         )
         # safeguard against fractional inputs
         c = int(c)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.withAddressInput(
-            x,
-            a,
-            b,
-            y,
-            c
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (x, a, b, y, c)
 
-    def struct_input(
-        self,
-        s: Tuple0xcf8ad995,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def call(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> str:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x, a, b, y, c).call(tx_params.as_dict())
+
+    def send_transaction(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x, a, b, y, c).transact(tx_params.as_dict())
+
+    def estimate_gas(self, x: str, a: int, b: int, y: str, c: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x, a, b, y, c) = self.validate_and_normalize_inputs(x, a, b, y, c)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x, a, b, y, c).estimateGas(tx_params.as_dict())
+
+class StructInputMethod(ContractMethod):
+    """Various interfaces to the structInput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, s: Tuple0xcf8ad995):
+        """Validate the inputs to the structInput method."""
         self.validator.assert_valid(
             method_name='structInput',
             parameter_name='s',
             argument_value=s,
         )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.structInput(
-            s
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (s)
 
-    def non_pure_method(
-        self,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[int, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
-
-        :returns: if param `view_only`:code: is `True`:code:, then returns the
-            value returned from the underlying function; else returns the
-            transaction hash.
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nonPureMethod(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=view_only
-        )
-
-    def simple_pure_function_with_input(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
+    def call(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
+        (s) = self.validate_and_normalize_inputs(s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(s).call(tx_params.as_dict())
+
+    def send_transaction(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (s) = self.validate_and_normalize_inputs(s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(s).transact(tx_params.as_dict())
+
+    def estimate_gas(self, s: Tuple0xcf8ad995, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (s) = self.validate_and_normalize_inputs(s)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(s).estimateGas(tx_params.as_dict())
+
+class NonPureMethodMethod(ContractMethod):
+    """Various interfaces to the nonPureMethod method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Union[int, Union[HexBytes, bytes]]:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+        :returns: the return value of the underlying method.
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class SimplePureFunctionWithInputMethod(ContractMethod):
+    """Various interfaces to the simplePureFunctionWithInput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the simplePureFunctionWithInput method."""
         self.validator.assert_valid(
             method_name='simplePureFunctionWithInput',
             parameter_name='x',
@@ -509,125 +598,289 @@ class AbiGenDummy(BaseContractWrapper):
         )
         # safeguard against fractional inputs
         x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simplePureFunctionWithInput(
-            x
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (x)
 
-    def non_pure_method_that_returns_nothing(
-        self,
-        tx_params: Optional[TxParams] = None,
-        view_only: bool = False,
-    ) -> Union[None, Union[HexBytes, bytes]]:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-        :param view_only: whether to use transact() or call()
-
-        :returns: if param `view_only`:code: is `True`:code:, then returns the
-            value returned from the underlying function; else returns the
-            transaction hash.
-        """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nonPureMethodThatReturnsNothing(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=view_only
-        )
-
-    def simple_pure_function(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.simplePureFunction(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).call(tx_params.as_dict())
 
-    def nested_struct_input(
-        self,
-        n: Tuple0xc9bdd2d5,
-        tx_params: Optional[TxParams] = None,
-    ) -> None:
-        """Execute underlying, same-named contract method.
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
 
         """
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
+
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+
+class NonPureMethodThatReturnsNothingMethod(ContractMethod):
+    """Various interfaces to the nonPureMethodThatReturnsNothing method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Union[None, Union[HexBytes, bytes]]:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+        :returns: the return value of the underlying method.
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class SimplePureFunctionMethod(ContractMethod):
+    """Various interfaces to the simplePureFunction method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class NestedStructInputMethod(ContractMethod):
+    """Various interfaces to the nestedStructInput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, n: Tuple0xc9bdd2d5):
+        """Validate the inputs to the nestedStructInput method."""
         self.validator.assert_valid(
             method_name='nestedStructInput',
             parameter_name='n',
             argument_value=n,
         )
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.nestedStructInput(
-            n
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (n)
 
-    def struct_output(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> Tuple0xcf8ad995:
-        """Execute underlying, same-named contract method.
+    def call(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (n) = self.validate_and_normalize_inputs(n)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(n).call(tx_params.as_dict())
+
+    def send_transaction(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (n) = self.validate_and_normalize_inputs(n)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(n).transact(tx_params.as_dict())
+
+    def estimate_gas(self, n: Tuple0xc9bdd2d5, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (n) = self.validate_and_normalize_inputs(n)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(n).estimateGas(tx_params.as_dict())
+
+class StructOutputMethod(ContractMethod):
+    """Various interfaces to the structOutput method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0xcf8ad995:
+        """Execute underlying contract method via eth_call.
 
         a method that returns a struct
 
         :param tx_params: transaction parameters
         :returns: a Struct struct
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.structOutput(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
 
-    def pure_function_with_constant(
-        self,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        a method that returns a struct
+
+        :param tx_params: transaction parameters
+        :returns: a Struct struct
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class PureFunctionWithConstantMethod(ContractMethod):
+    """Various interfaces to the pureFunctionWithConstant method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.pureFunctionWithConstant(
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
+class AbiGenDummy:
+    """Wrapper class for AbiGenDummy Solidity contract.
+
+    All method parameters of type `bytes`:code: should be encoded as UTF-8,
+    which can be accomplished via `str.encode("utf_8")`:code:.
+    """
+    simple_require: SimpleRequireMethod
+    accepts_an_array_of_bytes: AcceptsAnArrayOfBytesMethod
+    withdraw: WithdrawMethod
+    ecrecover_fn: EcrecoverFnMethod
+    accepts_bytes: AcceptsBytesMethod
+    revert_with_constant: RevertWithConstantMethod
+    simple_revert: SimpleRevertMethod
+    nested_struct_output: NestedStructOutputMethod
+    require_with_constant: RequireWithConstantMethod
+    with_address_input: WithAddressInputMethod
+    struct_input: StructInputMethod
+    non_pure_method: NonPureMethodMethod
+    simple_pure_function_with_input: SimplePureFunctionWithInputMethod
+    non_pure_method_that_returns_nothing: NonPureMethodThatReturnsNothingMethod
+    simple_pure_function: SimplePureFunctionMethod
+    nested_struct_input: NestedStructInputMethod
+    struct_output: StructOutputMethod
+    pure_function_with_constant: PureFunctionWithConstantMethod
+
+    def __init__(
+        self,
+        provider: BaseProvider,
+        contract_address: str,
+        validator: AbiGenDummyValidator = None,
+    ):
+        """Get an instance of wrapper for smart contract.
+
+        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param contract_address: where the contract has been deployed
+        :param validator: for validation of method inputs.
+        """
+        self.contract_address = contract_address
+
+        if not validator:
+            validator = AbiGenDummyValidator(provider, contract_address)
+
+        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
+            provider
+        ).eth
+
+        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=AbiGenDummy.abi()).functions
+
+        self.simple_require = SimpleRequireMethod(provider, contract_address, functions.simpleRequire, validator)
+
+        self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(provider, contract_address, functions.acceptsAnArrayOfBytes, validator)
+
+        self.withdraw = WithdrawMethod(provider, contract_address, functions.withdraw, validator)
+
+        self.ecrecover_fn = EcrecoverFnMethod(provider, contract_address, functions.ecrecoverFn, validator)
+
+        self.accepts_bytes = AcceptsBytesMethod(provider, contract_address, functions.acceptsBytes, validator)
+
+        self.revert_with_constant = RevertWithConstantMethod(provider, contract_address, functions.revertWithConstant, validator)
+
+        self.simple_revert = SimpleRevertMethod(provider, contract_address, functions.simpleRevert, validator)
+
+        self.nested_struct_output = NestedStructOutputMethod(provider, contract_address, functions.nestedStructOutput, validator)
+
+        self.require_with_constant = RequireWithConstantMethod(provider, contract_address, functions.requireWithConstant, validator)
+
+        self.with_address_input = WithAddressInputMethod(provider, contract_address, functions.withAddressInput, validator)
+
+        self.struct_input = StructInputMethod(provider, contract_address, functions.structInput, validator)
+
+        self.non_pure_method = NonPureMethodMethod(provider, contract_address, functions.nonPureMethod, validator)
+
+        self.simple_pure_function_with_input = SimplePureFunctionWithInputMethod(provider, contract_address, functions.simplePureFunctionWithInput, validator)
+
+        self.non_pure_method_that_returns_nothing = NonPureMethodThatReturnsNothingMethod(provider, contract_address, functions.nonPureMethodThatReturnsNothing, validator)
+
+        self.simple_pure_function = SimplePureFunctionMethod(provider, contract_address, functions.simplePureFunction, validator)
+
+        self.nested_struct_input = NestedStructInputMethod(provider, contract_address, functions.nestedStructInput, validator)
+
+        self.struct_output = StructOutputMethod(provider, contract_address, functions.structOutput, validator)
+
+        self.pure_function_with_constant = PureFunctionWithConstantMethod(provider, contract_address, functions.pureFunctionWithConstant, validator)
+
     def get_withdrawal_event(
         self, tx_hash: Union[HexBytes, bytes]
     ) -> Tuple[AttributeDict]:
@@ -636,11 +889,7 @@ class AbiGenDummy(BaseContractWrapper):
         :param tx_hash: hash of transaction emitting Withdrawal event
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
-        return (
-            self._get_contract_instance(self.contract_address)
-            .events.Withdrawal()
-            .processReceipt(tx_receipt)
-        )
+        return self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi=AbiGenDummy.abi()).events.Withdrawal().processReceipt(tx_receipt)
     def get_an_event_event(
         self, tx_hash: Union[HexBytes, bytes]
     ) -> Tuple[AttributeDict]:
@@ -649,11 +898,7 @@ class AbiGenDummy(BaseContractWrapper):
         :param tx_hash: hash of transaction emitting AnEvent event
         """
         tx_receipt = self._web3_eth.getTransactionReceipt(tx_hash)
-        return (
-            self._get_contract_instance(self.contract_address)
-            .events.AnEvent()
-            .processReceipt(tx_receipt)
-        )
+        return self._web3_eth.contract(address=to_checksum_address(self.contract_address), abi=AbiGenDummy.abi()).events.AnEvent().processReceipt(tx_receipt)
 
     @staticmethod
     def abi():
