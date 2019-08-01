@@ -131,6 +131,10 @@ export interface ForwarderMarketSellSmartContractParams
     extends Omit<ExchangeMarketSellSmartContractParams, 'takerAssetFillAmount'>,
         ForwarderSmartContractParamsBase {}
 
+export interface AssetSwapperGetOptions extends SwapQuoteRequestOpts, SwapQuoteGetOutputOpts {}
+
+export interface AssetSwapperExecutionOptions extends SwapQuoteRequestOpts, SwapQuoteExecutionOpts {}
+
 /**
  * Represents all the parameters to interface with 0x forwarder extension contract marketSell and marketBuy functions.
  */
@@ -164,6 +168,8 @@ export interface SwapQuoteConsumerBase<T> {
 export interface SwapQuoteConsumerOpts {
     networkId: number;
 }
+
+export interface AssetSwapperOpts extends SwapQuoteConsumerOpts, SwapQuoterOpts {}
 
 /**
  * Represents the options provided to a generic SwapQuoteConsumer

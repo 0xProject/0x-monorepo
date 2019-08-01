@@ -41,7 +41,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOptsBase>,
+        opts: Partial<SwapQuoteGetOutputOptsBase> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
@@ -120,7 +120,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOptsBase>,
+        opts: Partial<SwapQuoteExecutionOptsBase> = {},
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
 

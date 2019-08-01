@@ -49,7 +49,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
+        opts: Partial<ForwarderSwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
@@ -81,7 +81,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<ForwarderSwapQuoteGetOutputOpts>,
+        opts: Partial<ForwarderSwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<ForwarderSmartContractParams>> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 
@@ -162,7 +162,7 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
      */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<ForwarderSwapQuoteExecutionOpts>,
+        opts: Partial<ForwarderSwapQuoteExecutionOpts> = {},
     ): Promise<string> {
         assert.isValidForwarderSwapQuote('quote', quote, this._getEtherTokenAssetDataOrThrow());
 

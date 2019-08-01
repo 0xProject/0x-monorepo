@@ -23,6 +23,7 @@ export {
 export { SignedOrder } from '@0x/types';
 export { BigNumber } from '@0x/utils';
 
+export { AssetSwapper } from './asset-swapper';
 export { SwapQuoteConsumer } from './quote_consumers/swap_quote_consumer';
 export { SwapQuoter } from './swap_quoter';
 export { InsufficientAssetLiquidityError } from './errors';
@@ -31,6 +32,9 @@ export { BasicOrderProvider } from './order_providers/basic_order_provider';
 export { StandardRelayerAPIOrderProvider } from './order_providers/standard_relayer_api_order_provider';
 
 export {
+    AssetSwapperExecutionOptions,
+    AssetSwapperGetOptions,
+    AssetSwapperOpts,
     SwapQuoterError,
     SwapQuoterOpts,
     SwapQuote,

@@ -51,7 +51,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async getCalldataOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -65,7 +65,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async getSmartContractParamsOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SmartContractParamsInfo<SmartContractParams>> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -79,7 +79,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
      */
     public async executeSwapQuoteOrThrowAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteExecutionOpts>,
+        opts: Partial<SwapQuoteExecutionOpts> = {},
     ): Promise<string> {
         assert.isValidSwapQuote('quote', quote);
         const consumer = await this._getConsumerForSwapQuoteAsync(quote, opts);
@@ -88,7 +88,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
     private async _getConsumerForSwapQuoteAsync(
         quote: SwapQuote,
-        opts: Partial<SwapQuoteGetOutputOpts>,
+        opts: Partial<SwapQuoteGetOutputOpts> = {},
     ): Promise<SwapQuoteConsumerBase<SmartContractParams>> {
         const useConsumerType =
             opts.useConsumerType ||
