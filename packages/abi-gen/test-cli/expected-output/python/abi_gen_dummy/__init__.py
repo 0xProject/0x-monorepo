@@ -56,6 +56,24 @@ class Tuple0x1b9da225(TypedDict):
 
     innerStruct: Tuple0x246f9407
 
+class Tuple0x246f9407(TypedDict):
+    """Python representation of a tuple or struct.
+
+    A tuple found in an ABI may have been written in Solidity as a literal
+    tuple, or it may have been written as a parameter with a Solidity
+    `struct`:code: data type; there's no way to tell which, based solely on the
+    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
+    ABI.  This class represents a tuple that appeared in a method definition.
+    Its name is derived from a hash of that tuple's field names, and every
+    method whose ABI refers to a tuple with that same list of field names will
+    have a generated wrapper method that refers to this class.
+
+    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
+    accomplished via `str.encode("utf_8")`:code:
+    """
+
+    aField: int
+
 class Tuple0xc9bdd2d5(TypedDict):
     """Python representation of a tuple or struct.
 
