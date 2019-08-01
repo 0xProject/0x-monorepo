@@ -147,7 +147,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
         flex-grow: 1;
 
         max-height: calc(100vh - 200px);
-        overflow-y: scroll;
+        overflow-y: auto;
 
         /* Slim scroll bar */
         scrollbar-width: 1px; /* Firefox */
