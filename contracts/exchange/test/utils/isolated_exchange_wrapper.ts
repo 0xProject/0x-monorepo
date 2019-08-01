@@ -9,9 +9,9 @@ import * as _ from 'lodash';
 
 import {
     artifacts,
-    TestIsolatedExchangeContract,
-    TestIsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
-    TestIsolatedExchangeFillEventArgs as FillEventArgs,
+    IsolatedExchangeContract,
+    IsolatedExchangeDispatchTransferFromCalledEventArgs as DispatchTransferFromCallArgs,
+    IsolatedExchangeFillEventArgs as FillEventArgs,
 } from '../../src';
 
 export interface AssetBalances {
@@ -30,11 +30,11 @@ export const DEFAULT_GOOD_SIGNATURE = createGoodSignature();
 export const DEFAULT_BAD_SIGNATURE = createBadSignature();
 
 /**
- * @dev Convenience wrapper for the `TestIsolatedExchange` contract.
+ * @dev Convenience wrapper for the `IsolatedExchange` contract.
  */
 export class IsolatedExchangeWrapper {
     public static readonly CHAIN_ID = 1337;
-    public instance: TestIsolatedExchangeContract;
+    public instance: IsolatedExchangeContract;
     public logDecoder: LogDecoder;
     public lastTxEvents: IsolatedExchangeEvents = createEmptyEvents();
     public lastTxBalanceChanges: AssetBalances = {};
@@ -44,8 +44,8 @@ export class IsolatedExchangeWrapper {
         txDefaults: Partial<TxData> = testTxDefaults,
     ): Promise<IsolatedExchangeWrapper> {
         const provider = web3Wrapper.getProvider();
-        const instance = await TestIsolatedExchangeContract.deployFrom0xArtifactAsync(
-            artifacts.TestIsolatedExchange,
+        const instance = await IsolatedExchangeContract.deployFrom0xArtifactAsync(
+            artifacts.IsolatedExchange,
             provider,
             txDefaults,
         );
@@ -58,11 +58,11 @@ export class IsolatedExchangeWrapper {
         txDefaults: Partial<TxData> = testTxDefaults,
     ): IsolatedExchangeWrapper {
         const provider = web3Wrapper.getProvider();
-        const instance = new TestIsolatedExchangeContract(address, provider, txDefaults);
+        const instance = new IsolatedExchangeContract(address, provider, txDefaults);
         return new IsolatedExchangeWrapper(web3Wrapper, instance);
     }
 
-    public constructor(web3Wrapper: Web3Wrapper, instance: TestIsolatedExchangeContract) {
+    public constructor(web3Wrapper: Web3Wrapper, instance: IsolatedExchangeContract) {
         this.instance = instance;
         this.logDecoder = new LogDecoder(web3Wrapper, artifacts);
     }
@@ -143,14 +143,14 @@ interface TransactionContractFunction<TResult> {
 }
 
 /**
- * Create a signature for the `TestIsolatedExchange` contract that will pass.
+ * Create a signature for the `IsolatedExchange` contract that will pass.
  */
 export function createGoodSignature(type: SignatureType = SignatureType.EIP712): string {
     return `0x01${Buffer.from([type]).toString('hex')}`;
 }
 
 /**
- * Create a signature for the `TestIsolatedExchange` contract that will fail.
+ * Create a signature for the `IsolatedExchange` contract that will fail.
  */
 export function createBadSignature(type: SignatureType = SignatureType.EIP712): string {
     return `0x00${Buffer.from([type]).toString('hex')}`;
@@ -159,14 +159,14 @@ export function createBadSignature(type: SignatureType = SignatureType.EIP712): 
 const ERC20_ASSET_DATA_LENGTH = 24;
 
 /**
- * Create asset data for the `TestIsolatedExchange` contract that will pass.
+ * Create asset data for the `IsolatedExchange` contract that will pass.
  */
 export function createGoodAssetData(length: number = ERC20_ASSET_DATA_LENGTH): string {
     return `0x01${crypto.randomBytes(length - 1).toString('hex')}`;
 }
 
 /**
- * Create asset data for the `TestIsolatedExchange` contract that will fail.
+ * Create asset data for the `IsolatedExchange` contract that will fail.
  */
 export function createBadAssetData(length: number = ERC20_ASSET_DATA_LENGTH): string {
     return `0x00${crypto.randomBytes(length - 1).toString('hex')}`;

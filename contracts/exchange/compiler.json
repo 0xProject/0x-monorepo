@@ -36,11 +36,11 @@
         "src/interfaces/ITransactions.sol",
         "src/interfaces/IWallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
+        "test/IsolatedExchange.sol",
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",
         "test/TestExchangeMath.sol",
-        "test/TestIsolatedExchange.sol",
         "test/TestLibExchangeRichErrorDecoder.sol",
         "test/TestSignatureValidator.sol",
         "test/TestValidatorWallet.sol"

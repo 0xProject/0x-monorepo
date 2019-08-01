@@ -24,7 +24,9 @@ import "../src/Exchange.sol";
 
 /// @dev A version of the Exchange contract with simplified signature validation
 ///      and a `_dispatchTransferFrom()` that only logs arguments.
-contract TestIsolatedExchange is
+///      See the `IsolatedExchangeWrapper` and `isolated_fill_order` tests
+///      for example usage.
+contract IsolatedExchange is
     Exchange
 {
     // solhint-disable no-unused-vars

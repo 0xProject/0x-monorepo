@@ -16,11 +16,11 @@ import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
+import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as ReentrantERC20Token from '../generated-artifacts/ReentrantERC20Token.json';
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestExchangeMath from '../generated-artifacts/TestExchangeMath.json';
-import * as TestIsolatedExchange from '../generated-artifacts/TestIsolatedExchange.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
@@ -42,7 +42,7 @@ export const artifacts = {
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestExchangeMath: TestExchangeMath as ContractArtifact,
-    TestIsolatedExchange: TestIsolatedExchange as ContractArtifact,
+    IsolatedExchange: IsolatedExchange as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
