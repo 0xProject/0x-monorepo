@@ -64,4 +64,6 @@ export const constants = {
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
     TIME_BUFFER: new BigNumber(1000),
     KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.SHA3_NULL)),
+    MAX_UINT256_ROOT: new BigNumber('340282366920938463463374607431768211456'),
+    ONE_ETHER: new BigNumber(1e18),
 };

@@ -51,7 +51,7 @@
                 "pr": "TODO"
             },
             {
-                "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`",
+                "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`, `MAX_UINT256_ROOT`, `ONE_ETHER`",
                 "pr": "TODO"
             },
             {
