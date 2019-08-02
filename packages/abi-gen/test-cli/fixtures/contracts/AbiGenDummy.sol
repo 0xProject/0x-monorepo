@@ -139,6 +139,8 @@ contract AbiGenDummy
     function nonPureMethod() public returns(uint) { return someState += 1; }
     function nonPureMethodThatReturnsNothing() public { someState += 1; }
 
+    // begin tests for `decodeTransactionData`, `decodeReturnData`
+
     /// @dev complex input is dynamic and more difficult to decode than simple input.
     struct ComplexInput {
         uint256 foo;
@@ -224,4 +226,6 @@ contract AbiGenDummy
             "amet"
         );
     }
+
+    // end tests for `decodeTransactionData`, `decodeReturnData`
 }
