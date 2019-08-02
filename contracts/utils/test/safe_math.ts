@@ -77,10 +77,14 @@ describe('SafeMath', () => {
         });
 
         it('should revert if second argument is zero', async () => {
-            const errMessage = 'VM Exception while processing transaction: invalid opcode';
-            return expect(safeMath.externalSafeDiv.callAsync(toBigNumber(1), constants.ZERO_AMOUNT)).to.be.rejectedWith(
-                errMessage,
+            const a = toBigNumber(1);
+            const b = toBigNumber(0);
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero,
+                a,
+                b,
             );
+            return expect(safeMath.externalSafeDiv.callAsync(a, b)).to.revertWith(expectedError);
         });
     });
 
