@@ -113,6 +113,10 @@
             {
                 "note": "Updated RichErrors to the library pattern",
                 "pr": 1913
+            },
+            {
+                "note": "Rewrote _dispatchTransferFrom in Solidity",
+                "pr": 2020
             }
         ]
     },
