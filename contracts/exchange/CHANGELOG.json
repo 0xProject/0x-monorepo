@@ -120,23 +120,23 @@
             },
             {
                 "note": "Add `TestIsolatedExchange` contract and `IsolatedExchangeWrapper` test class",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Add `ReferenceFunctions` as package export.",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Remove `TestExchangeMath.sol`. Exchange math functions are now tested in the `exchange-libs` package and reference implementations are available there as well.",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Remove functions from `TestExchangeInternals.sol` that are no longer tested in this package.",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Remove `_assertValidFill()`",
-                "pr": "TODO"
+                "pr": 2031
             }
         ]
     },

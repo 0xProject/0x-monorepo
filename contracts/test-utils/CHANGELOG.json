@@ -40,27 +40,27 @@
             },
             {
                 "note": "Move `*FillResults`, `OrderInfo` types to `@0x/types`",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Add `log_utils.ts`",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Add `haxRandom()` to `hex_utils.ts`",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Add the constants: `MAX_UINT256`, `ADDRESS_LENGTH`, `MAX_UINT256_ROOT`, `ONE_ETHER`",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Make `testCombinatoriallyWithReferenceFuncAsync` non-async",
-                "pr": "TODO"
+                "pr": 2031
             },
             {
                 "note": "Update `testWithReferenceFuncAsync` to work with `RevertErrors`",
-                "pr": "TODO"
+                "pr": 2031
             }
         ]
     },
