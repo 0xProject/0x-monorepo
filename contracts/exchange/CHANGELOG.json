@@ -133,6 +133,10 @@
             {
                 "note": "Remove functions from `TestExchangeInternals.sol` that are no longer tested in this package.",
                 "pr": "TODO"
+            },
+            {
+                "note": "Remove `_assertValidFill()`",
+                "pr": "TODO"
             }
         ]
     },

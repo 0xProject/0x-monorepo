@@ -1,3 +1,4 @@
+import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     blockchainTests,
     constants,
@@ -6,7 +7,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, LibMathRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { calculateFillResults } from '../src/reference_functions';
@@ -24,8 +25,7 @@ import {
 blockchainTests('Isolated fillOrder() tests', env => {
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const getCurrentTime = () => Math.floor(_.now() / 1000);
-    const { ZERO_AMOUNT } = constants;
-    const ONE_ETHER = new BigNumber(10).pow(18);
+    const { ZERO_AMOUNT, ONE_ETHER, MAX_UINT256_ROOT } = constants;
     const ONE_DAY = 60 * 60 * 24;
     const TOMORROW = getCurrentTime() + ONE_DAY;
     const DEFAULT_ORDER: Order = {
@@ -464,6 +464,61 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 .to.revertWith(expectedError);
         });
 
+        it('can\'t fill an order that results in a `makerAssetFilledAmount` overflow.', async () => {
+            // All values need to be large to ensure we don't trigger a Rounding.
+            const order = createOrder({
+                makerAssetAmount: MAX_UINT256_ROOT.times(2),
+                takerAssetAmount: MAX_UINT256_ROOT,
+            });
+            const takerAssetFillAmount = MAX_UINT256_ROOT;
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                takerAssetFillAmount,
+                order.makerAssetAmount,
+            );
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
+                .to.revertWith(expectedError);
+        });
+
+        it('can\'t fill an order that results in a `makerFeePaid` overflow.', async () => {
+            // All values need to be large to ensure we don't trigger a Rounding.
+            const order = createOrder({
+                makerAssetAmount: MAX_UINT256_ROOT,
+                takerAssetAmount: MAX_UINT256_ROOT,
+                makerFee: MAX_UINT256_ROOT.times(11),
+            });
+            const takerAssetFillAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
+            const makerAssetFilledAmount = LibReferenceFunctions.getPartialAmountFloor(
+                takerAssetFillAmount,
+                order.takerAssetAmount,
+                order.makerAssetAmount,
+            );
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                makerAssetFilledAmount,
+                order.makerFee,
+            );
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
+                .to.revertWith(expectedError);
+        });
+
+        it('can\'t fill an order that results in a `takerFeePaid` overflow.', async () => {
+            // All values need to be large to ensure we don't trigger a Rounding.
+            const order = createOrder({
+                makerAssetAmount: MAX_UINT256_ROOT,
+                takerAssetAmount: MAX_UINT256_ROOT,
+                takerFee: MAX_UINT256_ROOT.times(11),
+            });
+            const takerAssetFillAmount = MAX_UINT256_ROOT.dividedToIntegerBy(10);
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                takerAssetFillAmount,
+                order.takerFee,
+            );
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
+                .to.revertWith(expectedError);
+        });
+
         it('can\'t fill an order with a bad signature', async () => {
             const order = createOrder();
             const signature = createBadSignature();
@@ -529,6 +584,11 @@ blockchainTests('Isolated fillOrder() tests', env => {
     });
 
     describe('permitted fills', () => {
+        it('should allow takerAssetFillAmount to be zero', async () => {
+            const order = createOrder();
+            return fillOrderAndAssertResultsAsync(order, constants.ZERO_AMOUNT);
+        });
+
         it('can fill an order if taker is `takerAddress`', async () => {
             const order = createOrder({
                 takerAddress,

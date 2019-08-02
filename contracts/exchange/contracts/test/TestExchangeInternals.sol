@@ -26,6 +26,14 @@ import "../src/Exchange.sol";
 contract TestExchangeInternals is
     Exchange
 {
+    event DispatchTransferFromCalled(
+        bytes32 orderHash,
+        bytes assetData,
+        address from,
+        address to,
+        uint256 amount
+    );
+
     constructor (uint256 chainId)
         public
         Exchange(chainId)
@@ -60,6 +68,36 @@ contract TestExchangeInternals is
             orderHash,
             orderTakerAssetFilledAmount,
             fillResults
+        );
+    }
+
+    function settleOrder(
+        bytes32 orderHash,
+        LibOrder.Order memory order,
+        address takerAddress,
+        LibFillResults.FillResults memory fillResults
+    )
+        public
+    {
+        _settleOrder(orderHash, order, takerAddress, fillResults);
+    }
+
+    /// @dev Overidden to only log arguments so we can test `_settleOrder()`.
+    function _dispatchTransferFrom(
+        bytes32 orderHash,
+        bytes memory assetData,
+        address from,
+        address to,
+        uint256 amount
+    )
+        internal
+    {
+        emit DispatchTransferFromCalled(
+            orderHash,
+            assetData,
+            from,
+            to,
+            amount
         );
     }
 }
