@@ -1286,7 +1286,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should throw if left order is not fillable', async () => {
+        it('Should revert if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1305,7 +1305,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('Should throw if right order is not fillable', async () => {
+        it('Should revert if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1324,7 +1324,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if there is not a positive spread', async () => {
+        it('should revert if there is not a positive spread', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1342,7 +1342,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if the left maker asset is not equal to the right taker asset ', async () => {
+        it('should revert if the left maker asset is not equal to the right taker asset ', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -1373,7 +1373,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if the right maker asset is not equal to the left taker asset', async () => {
+        it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),
@@ -2416,7 +2416,7 @@ describe('matchOrders', () => {
             );
         });
 
-        it('Should throw if left order is not fillable', async () => {
+        it('Should revert if left order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -2435,7 +2435,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('Should throw if right order is not fillable', async () => {
+        it('Should revert if right order is not fillable', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -2454,7 +2454,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if there is not a positive spread', async () => {
+        it('should revert if there is not a positive spread', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -2472,7 +2472,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if the left maker asset is not equal to the right taker asset ', async () => {
+        it('should revert if the left maker asset is not equal to the right taker asset ', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -2503,7 +2503,7 @@ describe('matchOrders', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if the right maker asset is not equal to the left taker asset', async () => {
+        it('should revert if the right maker asset is not equal to the left taker asset', async () => {
             // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 takerAssetData: assetDataUtils.encodeERC20AssetData(defaultERC20MakerAssetAddress),

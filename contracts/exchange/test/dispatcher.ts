@@ -114,7 +114,7 @@ describe('AssetProxyDispatcher', () => {
             expect(proxyAddress).to.be.equal(erc721Proxy.address);
         });
 
-        it('should throw if a proxy with the same id is already registered', async () => {
+        it('should revert if a proxy with the same id is already registered', async () => {
             // Initial registration
             await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
                 from: owner,
@@ -134,7 +134,7 @@ describe('AssetProxyDispatcher', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if requesting address is not owner', async () => {
+        it('should revert if requesting address is not owner', async () => {
             const expectedError = new OwnableRevertErrors.OnlyOwnerError(notOwner, owner);
             const tx = assetProxyDispatcher.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, {
                 from: notOwner,
@@ -250,7 +250,7 @@ describe('AssetProxyDispatcher', () => {
             expect(newBalances).to.deep.equal(erc20Balances);
         });
 
-        it('should throw if dispatching to unregistered proxy', async () => {
+        it('should revert if dispatching to unregistered proxy', async () => {
             // Construct metadata for ERC20 proxy
             const encodedAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
             // Perform a transfer from makerAddress to takerAddress

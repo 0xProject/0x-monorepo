@@ -166,7 +166,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
-        it('should throw if transfer reverts', async () => {
+        it('should revert if transfer reverts', async () => {
             // setup test parameters
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = spenderInitialFungibleBalance.plus(1);
@@ -187,7 +187,7 @@ describe('ERC1155Token', () => {
             );
             return expect(tx).to.revertWith(expectedError);
         });
-        it('should throw if callback reverts', async () => {
+        it('should revert if callback reverts', async () => {
             // setup test parameters
             const tokenToTransfer = fungibleToken;
             const valueToTransfer = fungibleValueToTransfer;
@@ -342,7 +342,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it('should throw if transfer reverts', async () => {
+        it('should revert if transfer reverts', async () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [spenderInitialFungibleBalance.plus(1)];
@@ -363,7 +363,7 @@ describe('ERC1155Token', () => {
             );
             return expect(tx).to.revertWith(expectedError);
         });
-        it('should throw if callback reverts', async () => {
+        it('should revert if callback reverts', async () => {
             // setup test parameters
             const tokensToTransfer = [fungibleToken];
             const valuesToTransfer = [fungibleValueToTransfer];
@@ -417,7 +417,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, [tokenToTransfer], expectedFinalBalances);
         });
-        it('should throw if trying to transfer tokens via safeTransferFrom by an unapproved account', async () => {
+        it('should revert if trying to transfer tokens via safeTransferFrom by an unapproved account', async () => {
             // check approval not set
             const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
             expect(isApprovedForAllCheck).to.be.false();
@@ -470,7 +470,7 @@ describe('ERC1155Token', () => {
             ];
             await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
-        it('should throw if trying to transfer tokens via safeBatchTransferFrom by an unapproved account', async () => {
+        it('should revert if trying to transfer tokens via safeBatchTransferFrom by an unapproved account', async () => {
             // check approval not set
             const isApprovedForAllCheck = await erc1155Wrapper.isApprovedForAllAsync(spender, delegatedSpender);
             expect(isApprovedForAllCheck).to.be.false();

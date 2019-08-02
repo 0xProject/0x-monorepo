@@ -380,7 +380,7 @@ describe('Exchange core', () => {
             });
         });
 
-        it('should throw if fully filled', async () => {
+        it('should revert if fully filled', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
@@ -423,7 +423,7 @@ describe('Exchange core', () => {
             ).to.be.bignumber.equal(signedOrder.takerFee);
         });
 
-        it('should throw if order is expired', async () => {
+        it('should revert if order is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
@@ -742,14 +742,14 @@ describe('Exchange core', () => {
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
 
-        it('should throw if not sent by maker', async () => {
+        it('should revert if not sent by maker', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.InvalidMakerError(orderHash, takerAddress);
             const tx = exchangeWrapper.cancelOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if makerAssetAmount is 0', async () => {
+        it('should revert if makerAssetAmount is 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(0),
             });
@@ -762,7 +762,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if takerAssetAmount is 0', async () => {
+        it('should revert if takerAssetAmount is 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(0),
             });
@@ -800,7 +800,7 @@ describe('Exchange core', () => {
             expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
-        it('should throw if already cancelled', async () => {
+        it('should revert if already cancelled', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
@@ -808,7 +808,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if order is expired', async () => {
+        it('should revert if order is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
@@ -819,7 +819,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if rounding error is greater than 0.1%', async () => {
+        it('should revert if rounding error is greater than 0.1%', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1001),
                 takerAssetAmount: new BigNumber(3),
@@ -936,7 +936,7 @@ describe('Exchange core', () => {
     });
 
     describe('Testing Exchange of ERC721 Tokens', () => {
-        it('should throw when maker does not own the token with id makerAssetId', async () => {
+        it('should revert when maker does not own the token with id makerAssetId', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721TakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[1];
@@ -963,7 +963,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when taker does not own the token with id takerAssetId', async () => {
+        it('should revert when taker does not own the token with id takerAssetId', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721MakerAssetIds[1];
@@ -990,7 +990,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when makerAssetAmount is greater than 1', async () => {
+        it('should revert when makerAssetAmount is greater than 1', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
@@ -1017,7 +1017,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when takerAssetAmount is greater than 1', async () => {
+        it('should revert when takerAssetAmount is greater than 1', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             const takerAssetId = erc721TakerAssetIds[0];
@@ -1044,7 +1044,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw on partial fill', async () => {
+        it('should revert on partial fill', async () => {
             // Construct Exchange parameters
             const makerAssetId = erc721MakerAssetIds[0];
             signedOrder = await orderFactory.newSignedOrderAsync({

@@ -234,7 +234,7 @@ describe('Exchange wrappers', () => {
             );
         });
 
-        it('should throw if a signedOrder is expired', async () => {
+        it('should revert if a signedOrder is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
@@ -245,7 +245,7 @@ describe('Exchange wrappers', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw if entire takerAssetFillAmount not filled', async () => {
+        it('should revert if entire takerAssetFillAmount not filled', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
@@ -815,7 +815,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw if a single signedOrder does not fill the expected amount', async () => {
+            it('should revert if a single signedOrder does not fill the expected amount', async () => {
                 const takerAssetFillAmounts: BigNumber[] = [];
                 _.forEach(signedOrders, signedOrder => {
                     const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
@@ -922,7 +922,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should not throw if an order is invalid and fill the remaining orders', async () => {
+            it('should not revert if an order is invalid and fill the remaining orders', async () => {
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
 
@@ -1132,7 +1132,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same takerAssetAddress', async () => {
+            it('should revert when a signedOrder does not use the same takerAssetAddress', async () => {
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({
@@ -1510,7 +1510,7 @@ describe('Exchange wrappers', () => {
                 expect(newBalances).to.be.deep.equal(erc20Balances);
             });
 
-            it('should throw when a signedOrder does not use the same makerAssetAddress', async () => {
+            it('should revert when a signedOrder does not use the same makerAssetAddress', async () => {
                 signedOrders = [
                     await orderFactory.newSignedOrderAsync(),
                     await orderFactory.newSignedOrderAsync({

@@ -495,7 +495,7 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when SignatureType=Validator, signature is valid and validator is not approved', async () => {
+        it('should revert when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
             await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
                 validatorWallet.address,
@@ -702,7 +702,7 @@ describe('MixinSignatureValidator', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should throw when SignatureType=Validator, signature is valid and validator is not approved', async () => {
+        it('should revert when SignatureType=Validator, signature is valid and validator is not approved', async () => {
             // Set approval of signature validator to false
             await signatureValidator.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
                 validatorWallet.address,

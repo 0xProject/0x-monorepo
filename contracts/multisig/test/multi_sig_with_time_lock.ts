@@ -241,13 +241,13 @@ describe('MultiSigWalletWithTimeLock', () => {
                 multiSigWrapper = new MultiSigWrapper(multiSig, provider);
             });
 
-            it('should throw when not called by wallet', async () => {
+            it('should revert when not called by wallet', async () => {
                 return expectTransactionFailedWithoutReasonAsync(
                     multiSig.changeTimeLock.sendTransactionAsync(SECONDS_TIME_LOCKED, { from: owners[0] }),
                 );
             });
 
-            it('should throw without enough confirmations', async () => {
+            it('should revert without enough confirmations', async () => {
                 const destination = multiSig.address;
                 const changeTimeLockData = multiSig.changeTimeLock.getABIEncodedTransactionData(SECONDS_TIME_LOCKED);
                 const res = await multiSigWrapper.submitTransactionAsync(destination, changeTimeLockData, owners[0]);
@@ -325,7 +325,7 @@ describe('MultiSigWalletWithTimeLock', () => {
                 await multiSigWrapper.confirmTransactionAsync(txId, owners[1]);
             });
 
-            it('should throw if it has enough confirmations but is not past the time lock', async () => {
+            it('should revert if it has enough confirmations but is not past the time lock', async () => {
                 return expectTransactionFailedAsync(
                     multiSig.executeTransaction.sendTransactionAsync(txId, { from: owners[0] }),
                     RevertReason.TimeLockIncomplete,

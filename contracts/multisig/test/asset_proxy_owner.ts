@@ -115,7 +115,7 @@ describe('AssetProxyOwner', () => {
             expect(isErc20ProxyRegistered).to.equal(true);
             expect(isErc721ProxyRegistered).to.equal(true);
         });
-        it('should throw if a null address is included in assetProxyContracts', async () => {
+        it('should revert if a null address is included in assetProxyContracts', async () => {
             const assetProxyContractAddresses = [erc20Proxy.address, constants.NULL_ADDRESS];
             return expectContractCreationFailedAsync(
                 (AssetProxyOwnerContract.deployFrom0xArtifactAsync(
@@ -158,7 +158,7 @@ describe('AssetProxyOwner', () => {
     });
 
     describe('registerAssetProxy', () => {
-        it('should throw if not called by multisig', async () => {
+        it('should revert if not called by multisig', async () => {
             const isRegistered = true;
             return expectTransactionFailedWithoutReasonAsync(
                 testAssetProxyOwner.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, isRegistered, {
@@ -338,7 +338,7 @@ describe('AssetProxyOwner', () => {
         });
 
         describe('executeRemoveAuthorizedAddressAtIndex', () => {
-            it('should throw without the required confirmations', async () => {
+            it('should revert without the required confirmations', async () => {
                 const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
                     authorized,
                     erc20Index,
@@ -359,7 +359,7 @@ describe('AssetProxyOwner', () => {
                 );
             });
 
-            it('should throw if tx destination is not registered', async () => {
+            it('should revert if tx destination is not registered', async () => {
                 const removeAuthorizedAddressAtIndexData = erc721Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
                     authorized,
                     erc721Index,
@@ -382,7 +382,7 @@ describe('AssetProxyOwner', () => {
                 );
             });
 
-            it('should throw if tx data is not for removeAuthorizedAddressAtIndex', async () => {
+            it('should revert if tx data is not for removeAuthorizedAddressAtIndex', async () => {
                 const newAuthorized = owners[1];
                 const addAuthorizedAddressData = erc20Proxy.addAuthorizedAddress.getABIEncodedTransactionData(
                     newAuthorized,
@@ -468,7 +468,7 @@ describe('AssetProxyOwner', () => {
                 expect(isAuthorizedAfter).to.equal(false);
             });
 
-            it('should throw if already executed', async () => {
+            it('should revert if already executed', async () => {
                 const removeAuthorizedAddressAtIndexData = erc20Proxy.removeAuthorizedAddressAtIndex.getABIEncodedTransactionData(
                     authorized,
                     erc20Index,

@@ -6,14 +6,20 @@
         "generated-artifacts/IOwnable.json",
         "generated-artifacts/LibAddress.json",
         "generated-artifacts/LibBytes.json",
+        "generated-artifacts/LibEIP1271.json",
         "generated-artifacts/LibEIP712.json",
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
-        "generated-artifacts/RichErrors.json",
         "generated-artifacts/SafeMath.json",
         "generated-artifacts/TestConstants.json",
+        "generated-artifacts/TestLibAddress.json",
         "generated-artifacts/TestLibAddressArray.json",
-        "generated-artifacts/TestLibBytes.json"
+        "generated-artifacts/TestLibBytes.json",
+        "generated-artifacts/TestLibEIP712.json",
+        "generated-artifacts/TestLibRichErrors.json",
+        "generated-artifacts/TestOwnable.json",
+        "generated-artifacts/TestReentrancyGuard.json",
+        "generated-artifacts/TestSafeMath.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }
