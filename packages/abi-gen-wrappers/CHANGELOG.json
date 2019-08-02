@@ -1,5 +1,14 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
+                "pr": 2018
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {

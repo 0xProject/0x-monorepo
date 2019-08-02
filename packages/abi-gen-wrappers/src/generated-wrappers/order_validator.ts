@@ -136,6 +136,80 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+            {
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+                    {
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+            {
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrderAndTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    { orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber },
+                    {
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getBalanceAndAllowance = {
         async callAsync(
@@ -188,6 +262,20 @@ export class OrderValidatorContract extends BaseContract {
                 assetData,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): [BigNumber, BigNumber] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, BigNumber]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): [BigNumber, BigNumber] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalanceAndAllowance(address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, BigNumber]>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public getOrdersAndTradersInfo = {
@@ -301,6 +389,80 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+            Array<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    Array<{
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }>
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+            Array<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>
+        ] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getOrdersAndTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    Array<{ orderStatus: number; orderHash: string; orderTakerAssetFilledAmount: BigNumber }>,
+                    Array<{
+                        makerBalance: BigNumber;
+                        makerAllowance: BigNumber;
+                        takerBalance: BigNumber;
+                        takerAllowance: BigNumber;
+                        makerZrxBalance: BigNumber;
+                        makerZrxAllowance: BigNumber;
+                        takerZrxBalance: BigNumber;
+                        takerZrxAllowance: BigNumber;
+                    }>
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getTradersInfo = {
         async callAsync(
@@ -407,6 +569,68 @@ export class OrderValidatorContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): Array<{
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        }> {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                Array<{
+                    makerBalance: BigNumber;
+                    makerAllowance: BigNumber;
+                    takerBalance: BigNumber;
+                    takerAllowance: BigNumber;
+                    makerZrxBalance: BigNumber;
+                    makerZrxAllowance: BigNumber;
+                    takerZrxBalance: BigNumber;
+                    takerZrxAllowance: BigNumber;
+                }>
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): Array<{
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        }> {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTradersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],address[])',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                Array<{
+                    makerBalance: BigNumber;
+                    makerAllowance: BigNumber;
+                    takerBalance: BigNumber;
+                    takerAllowance: BigNumber;
+                    makerZrxBalance: BigNumber;
+                    makerZrxAllowance: BigNumber;
+                    takerZrxBalance: BigNumber;
+                    takerZrxAllowance: BigNumber;
+                }>
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getERC721TokenOwner = {
         async callAsync(
@@ -460,6 +684,20 @@ export class OrderValidatorContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getERC721TokenOwner(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public getBalancesAndAllowances = {
         async callAsync(
@@ -512,6 +750,20 @@ export class OrderValidatorContract extends BaseContract {
                 assetData,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): [BigNumber[], BigNumber[]] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber[], BigNumber[]]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): [BigNumber[], BigNumber[]] {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('getBalancesAndAllowances(address,bytes[])');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber[], BigNumber[]]>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public getTraderInfo = {
@@ -612,6 +864,64 @@ export class OrderValidatorContract extends BaseContract {
                 [order, takerAddress.toLowerCase()],
             );
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): {
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        } {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): {
+            makerBalance: BigNumber;
+            makerAllowance: BigNumber;
+            takerBalance: BigNumber;
+            takerAllowance: BigNumber;
+            makerZrxBalance: BigNumber;
+            makerZrxAllowance: BigNumber;
+            takerZrxBalance: BigNumber;
+            takerZrxAllowance: BigNumber;
+        } {
+            const self = (this as any) as OrderValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getTraderInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                makerBalance: BigNumber;
+                makerAllowance: BigNumber;
+                takerBalance: BigNumber;
+                takerAllowance: BigNumber;
+                makerZrxBalance: BigNumber;
+                makerZrxAllowance: BigNumber;
+                takerZrxBalance: BigNumber;
+                takerZrxAllowance: BigNumber;
+            }>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

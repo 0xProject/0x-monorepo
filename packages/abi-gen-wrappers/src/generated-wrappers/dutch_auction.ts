@@ -224,6 +224,56 @@ export class DutchAuctionContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): {
+            beginTimeSeconds: BigNumber;
+            endTimeSeconds: BigNumber;
+            beginAmount: BigNumber;
+            endAmount: BigNumber;
+            currentAmount: BigNumber;
+            currentTimeSeconds: BigNumber;
+        } {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{
+                beginTimeSeconds: BigNumber;
+                endTimeSeconds: BigNumber;
+                beginAmount: BigNumber;
+                endAmount: BigNumber;
+                currentAmount: BigNumber;
+                currentTimeSeconds: BigNumber;
+            }>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): {
+            beginTimeSeconds: BigNumber;
+            endTimeSeconds: BigNumber;
+            beginAmount: BigNumber;
+            endAmount: BigNumber;
+            currentAmount: BigNumber;
+            currentTimeSeconds: BigNumber;
+        } {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'getAuctionDetails((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes))',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                beginTimeSeconds: BigNumber;
+                endTimeSeconds: BigNumber;
+                beginAmount: BigNumber;
+                endAmount: BigNumber;
+                currentAmount: BigNumber;
+                currentTimeSeconds: BigNumber;
+            }>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public matchOrders = {
         async sendTransactionAsync(
@@ -533,6 +583,84 @@ export class DutchAuctionContract extends BaseContract {
                 [buyOrder, sellOrder, buySignature, sellSignature],
             );
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): {
+            left: {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            };
+            right: {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            };
+            leftMakerAssetSpreadAmount: BigNumber;
+        } {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{
+                left: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                right: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                leftMakerAssetSpreadAmount: BigNumber;
+            }>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): {
+            left: {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            };
+            right: {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            };
+            leftMakerAssetSpreadAmount: BigNumber;
+        } {
+            const self = (this as any) as DutchAuctionContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes),bytes,bytes)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{
+                left: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                right: {
+                    makerAssetFilledAmount: BigNumber;
+                    takerAssetFilledAmount: BigNumber;
+                    makerFeePaid: BigNumber;
+                    takerFeePaid: BigNumber;
+                };
+                leftMakerAssetSpreadAmount: BigNumber;
+            }>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(
