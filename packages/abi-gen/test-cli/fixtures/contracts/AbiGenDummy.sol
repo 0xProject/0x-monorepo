@@ -158,4 +158,7 @@ contract AbiGenDummy
     {
         return (1, "hello");
     }
+
+    function overloadedMethod(int a) public pure {}
+    function overloadedMethod(string memory a) public pure {}
 }
