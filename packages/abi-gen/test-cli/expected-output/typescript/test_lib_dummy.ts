@@ -29,7 +29,7 @@ import * as ethers from 'ethers';
 export class TestLibDummyContract extends BaseContract {
     public publicAddConstant = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
@@ -65,7 +65,7 @@ export class TestLibDummyContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
@@ -76,7 +76,7 @@ export class TestLibDummyContract extends BaseContract {
     };
     public publicAddOne = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
@@ -112,7 +112,7 @@ export class TestLibDummyContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);

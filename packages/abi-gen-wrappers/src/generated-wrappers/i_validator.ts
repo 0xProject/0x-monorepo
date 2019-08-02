@@ -32,7 +32,7 @@ export class IValidatorContract extends BaseContract {
      */
     public isValidSignature = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param hash         Message hash that is signed.
          * @param signerAddress         Address that should have signed the given hash.
          * @param signature         Proof of signing.
@@ -84,7 +84,7 @@ export class IValidatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param hash         Message hash that is signed.
          * @param signerAddress         Address that should have signed the given hash.
          * @param signature         Proof of signing.

@@ -51,7 +51,7 @@ export class CoordinatorRegistryContract extends BaseContract {
      */
     public setCoordinatorEndpoint = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param coordinatorEndpoint         endpoint of the Coordinator.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
@@ -77,7 +77,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param coordinatorEndpoint         endpoint of the Coordinator.
          * @param txData                Additional data for transaction
          * @param pollingIntervalMs     Interval at which to poll for success
@@ -105,7 +105,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param coordinatorEndpoint         endpoint of the Coordinator.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
@@ -130,7 +130,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param coordinatorEndpoint         endpoint of the Coordinator.
          */
         async callAsync(
@@ -171,7 +171,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorEndpoint         endpoint of the Coordinator.
          */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
@@ -188,7 +188,7 @@ export class CoordinatorRegistryContract extends BaseContract {
      */
     public getCoordinatorEndpoint = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param coordinatorOperator         operator of the Coordinator endpoint.
          */
         async callAsync(
@@ -231,7 +231,7 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param coordinatorOperator         operator of the Coordinator endpoint.
          */
         getABIEncodedTransactionData(coordinatorOperator: string): string {

@@ -1,6 +1,6 @@
 public {{languageSpecificName}} = {
     /**
-     * Sends the transaction
+     * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
      * @param txData    Additional data for transaction
      * @returns         The hash of the transaction
@@ -34,7 +34,7 @@ public {{languageSpecificName}} = {
     return txHash;
     },
     /**
-     * Sends the transaction and wait for it to succeed
+     * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
      * @param txData                Additional data for transaction
      * @param pollingIntervalMs     Interval at which to poll for success
@@ -68,7 +68,7 @@ public {{languageSpecificName}} = {
     );
     },
     /**
-     * Estimate gas to send the transaction
+     * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
      * @param txData    Additional data for transaction
      * @returns         The hash of the transaction

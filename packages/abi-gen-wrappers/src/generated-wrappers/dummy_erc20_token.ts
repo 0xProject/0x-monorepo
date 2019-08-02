@@ -56,7 +56,7 @@ export interface DummyERC20TokenApprovalEventArgs extends DecodedLogArgs {
 export class DummyERC20TokenContract extends BaseContract {
     public name = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -91,7 +91,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -104,7 +104,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public approve = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _spender         The address of the account able to transfer the tokens
          * @param _value         The amount of wei to be approved for transfer
          * @param txData    Additional data for transaction
@@ -139,7 +139,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _spender         The address of the account able to transfer the tokens
          * @param _value         The amount of wei to be approved for transfer
          * @param txData                Additional data for transaction
@@ -170,7 +170,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _spender         The address of the account able to transfer the tokens
          * @param _value         The amount of wei to be approved for transfer
          * @param txData    Additional data for transaction
@@ -204,7 +204,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _spender         The address of the account able to transfer the tokens
          * @param _value         The amount of wei to be approved for transfer
          * @returns Always true if the call has enough gas to complete execution
@@ -252,7 +252,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _spender         The address of the account able to transfer the tokens
          * @param _value         The amount of wei to be approved for transfer
          */
@@ -272,7 +272,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public totalSupply = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @returns Total supply of token
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
@@ -308,7 +308,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -321,7 +321,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public transferFrom = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _from         Address to transfer from.
          * @param _to         Address to transfer to.
          * @param _value         Amount to transfer.
@@ -360,7 +360,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _from         Address to transfer from.
          * @param _to         Address to transfer to.
          * @param _value         Amount to transfer.
@@ -399,7 +399,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _from         Address to transfer from.
          * @param _to         Address to transfer to.
          * @param _value         Amount to transfer.
@@ -437,7 +437,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _from         Address to transfer from.
          * @param _to         Address to transfer to.
          * @param _value         Amount to transfer.
@@ -489,7 +489,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _from         Address to transfer from.
          * @param _to         Address to transfer to.
          * @param _value         Amount to transfer.
@@ -509,7 +509,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public decimals = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -544,7 +544,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -557,7 +557,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public balanceOf = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _owner         The address from which the balance will be retrieved
          * @returns Balance of owner
          */
@@ -599,7 +599,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _owner         The address from which the balance will be retrieved
          */
         getABIEncodedTransactionData(_owner: string): string {
@@ -611,7 +611,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public owner = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -646,7 +646,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -656,7 +656,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public symbol = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -691,7 +691,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;
@@ -704,7 +704,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public mint = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _value         Amount of tokens to mint
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
@@ -730,7 +730,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _value         Amount of tokens to mint
          * @param txData                Additional data for transaction
          * @param pollingIntervalMs     Interval at which to poll for success
@@ -758,7 +758,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _value         Amount of tokens to mint
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
@@ -783,7 +783,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _value         Amount of tokens to mint
          */
         async callAsync(_value: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
@@ -820,7 +820,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _value         Amount of tokens to mint
          */
         getABIEncodedTransactionData(_value: BigNumber): string {
@@ -835,7 +835,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public transfer = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _to         The address of the recipient
          * @param _value         The amount of token to be transferred
          * @param txData    Additional data for transaction
@@ -867,7 +867,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _to         The address of the recipient
          * @param _value         The amount of token to be transferred
          * @param txData                Additional data for transaction
@@ -898,7 +898,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _to         The address of the recipient
          * @param _value         The amount of token to be transferred
          * @param txData    Additional data for transaction
@@ -925,7 +925,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _to         The address of the recipient
          * @param _value         The amount of token to be transferred
          * @returns True if transfer was successful
@@ -970,7 +970,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _to         The address of the recipient
          * @param _value         The amount of token to be transferred
          */
@@ -987,7 +987,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public allowance = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _owner         The address of the account owning tokens
          * @param _spender         The address of the account able to transfer the tokens
          * @returns Amount of remaining tokens allowed to spent
@@ -1035,7 +1035,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _owner         The address of the account owning tokens
          * @param _spender         The address of the account able to transfer the tokens
          */
@@ -1055,7 +1055,7 @@ export class DummyERC20TokenContract extends BaseContract {
      */
     public setBalance = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _target         Address or which balance will be updated
          * @param _value         New balance of target address
          * @param txData    Additional data for transaction
@@ -1090,7 +1090,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _target         Address or which balance will be updated
          * @param _value         New balance of target address
          * @param txData                Additional data for transaction
@@ -1121,7 +1121,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _target         Address or which balance will be updated
          * @param _value         New balance of target address
          * @param txData    Additional data for transaction
@@ -1155,7 +1155,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _target         Address or which balance will be updated
          * @param _value         New balance of target address
          */
@@ -1202,7 +1202,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _target         Address or which balance will be updated
          * @param _value         New balance of target address
          */
@@ -1219,7 +1219,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public transferOwnership = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
          */
@@ -1244,7 +1244,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param txData                Additional data for transaction
          * @param pollingIntervalMs     Interval at which to poll for success
          * @returns                     A promise that resolves when the transaction is successful
@@ -1271,7 +1271,7 @@ export class DummyERC20TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
          */
@@ -1295,7 +1295,7 @@ export class DummyERC20TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
@@ -1331,7 +1331,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -1344,7 +1344,7 @@ export class DummyERC20TokenContract extends BaseContract {
     };
     public MAX_MINT_AMOUNT = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1379,7 +1379,7 @@ export class DummyERC20TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC20TokenContract;

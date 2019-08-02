@@ -34,7 +34,7 @@ export class ForwarderContract extends BaseContract {
      */
     public marketBuyOrdersWithEth = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
          * @param signatures         Proofs that orders have been created by makers.
@@ -127,7 +127,7 @@ export class ForwarderContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
          * @param signatures         Proofs that orders have been created by makers.
@@ -208,7 +208,7 @@ export class ForwarderContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
          * @param signatures         Proofs that orders have been created by makers.
@@ -291,7 +291,7 @@ export class ForwarderContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
          * @param signatures         Proofs that orders have been created by makers.
@@ -420,7 +420,7 @@ export class ForwarderContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount         Desired amount of makerAsset to purchase.
          * @param signatures         Proofs that orders have been created by makers.
@@ -494,7 +494,7 @@ export class ForwarderContract extends BaseContract {
      */
     public withdrawAsset = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param assetData         Byte array encoded for the respective asset proxy.
          * @param amount         Amount of ERC20 token to withdraw.
          * @param txData    Additional data for transaction
@@ -526,7 +526,7 @@ export class ForwarderContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param assetData         Byte array encoded for the respective asset proxy.
          * @param amount         Amount of ERC20 token to withdraw.
          * @param txData                Additional data for transaction
@@ -557,7 +557,7 @@ export class ForwarderContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param assetData         Byte array encoded for the respective asset proxy.
          * @param amount         Amount of ERC20 token to withdraw.
          * @param txData    Additional data for transaction
@@ -588,7 +588,7 @@ export class ForwarderContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param assetData         Byte array encoded for the respective asset proxy.
          * @param amount         Amount of ERC20 token to withdraw.
          */
@@ -632,7 +632,7 @@ export class ForwarderContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param assetData         Byte array encoded for the respective asset proxy.
          * @param amount         Amount of ERC20 token to withdraw.
          */
@@ -649,7 +649,7 @@ export class ForwarderContract extends BaseContract {
     };
     public owner = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -684,7 +684,7 @@ export class ForwarderContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ForwarderContract;
@@ -700,7 +700,7 @@ export class ForwarderContract extends BaseContract {
      */
     public marketSellOrdersWithEth = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param signatures         Proofs that orders have been created by makers.
          * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -781,7 +781,7 @@ export class ForwarderContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param signatures         Proofs that orders have been created by makers.
          * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -858,7 +858,7 @@ export class ForwarderContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param signatures         Proofs that orders have been created by makers.
          * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -930,7 +930,7 @@ export class ForwarderContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param signatures         Proofs that orders have been created by makers.
          * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -1048,7 +1048,7 @@ export class ForwarderContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param orders         Array of order specifications used containing desired makerAsset and WETH as takerAsset.
          * @param signatures         Proofs that orders have been created by makers.
          * @param feeOrders         Array of order specifications containing ZRX as makerAsset and WETH as takerAsset. Used to purchase ZRX for primary order fees.
@@ -1106,7 +1106,7 @@ export class ForwarderContract extends BaseContract {
     };
     public transferOwnership = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
          */
@@ -1131,7 +1131,7 @@ export class ForwarderContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param txData                Additional data for transaction
          * @param pollingIntervalMs     Interval at which to poll for success
          * @returns                     A promise that resolves when the transaction is successful
@@ -1158,7 +1158,7 @@ export class ForwarderContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param txData    Additional data for transaction
          * @returns         The hash of the transaction
          */
@@ -1182,7 +1182,7 @@ export class ForwarderContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
@@ -1218,7 +1218,7 @@ export class ForwarderContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);

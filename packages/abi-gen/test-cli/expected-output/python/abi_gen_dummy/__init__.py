@@ -240,8 +240,15 @@ class AbiGenDummy(BaseContractWrapper):
     ) -> str:
         """Execute underlying, same-named contract method.
 
-        :param tx_params: transaction parameters
+        test that devdocs will be generated and     that multiline devdocs will
+        look okay
 
+        :param hash: description of some hash
+        :param r: ECDSA r output
+        :param s: ECDSA s output
+        :param v: some v, recovery id
+        :param tx_params: transaction parameters
+        :returns: the signerAddress that created this signature
         """
         self.validator.assert_valid(
             method_name='ecrecoverFn',

@@ -69,7 +69,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public getApproved = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _tokenId         The NFT to find the approved address for
          * @returns The approved address for this NFT, or the zero address if there is none
          */
@@ -111,7 +111,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _tokenId         The NFT to find the approved address for
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
@@ -128,7 +128,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public approve = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _approved         The new approved NFT controller
          * @param _tokenId         The NFT to approve
          * @param txData    Additional data for transaction
@@ -163,7 +163,7 @@ export class ERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _approved         The new approved NFT controller
          * @param _tokenId         The NFT to approve
          * @param txData                Additional data for transaction
@@ -194,7 +194,7 @@ export class ERC721TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _approved         The new approved NFT controller
          * @param _tokenId         The NFT to approve
          * @param txData    Additional data for transaction
@@ -228,7 +228,7 @@ export class ERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _approved         The new approved NFT controller
          * @param _tokenId         The NFT to approve
          */
@@ -275,7 +275,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _approved         The new approved NFT controller
          * @param _tokenId         The NFT to approve
          */
@@ -298,7 +298,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public transferFrom = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -337,7 +337,7 @@ export class ERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -376,7 +376,7 @@ export class ERC721TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -414,7 +414,7 @@ export class ERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -465,7 +465,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -489,7 +489,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public safeTransferFrom1 = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -528,7 +528,7 @@ export class ERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -567,7 +567,7 @@ export class ERC721TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -605,7 +605,7 @@ export class ERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -656,7 +656,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -680,7 +680,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public ownerOf = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _tokenId         The identifier for an NFT
          * @returns The address of the owner of the NFT
          */
@@ -722,7 +722,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _tokenId         The identifier for an NFT
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
@@ -738,7 +738,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public balanceOf = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _owner         An address for whom to query the balance
          * @returns The number of NFTs owned by &#x60;_owner&#x60;, possibly zero
          */
@@ -780,7 +780,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _owner         An address for whom to query the balance
          */
         getABIEncodedTransactionData(_owner: string): string {
@@ -796,7 +796,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public setApprovalForAll = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _operator         Address to add to the set of authorized operators
          * @param _approved         True if the operator is approved, false to revoke approval
          * @param txData    Additional data for transaction
@@ -831,7 +831,7 @@ export class ERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _operator         Address to add to the set of authorized operators
          * @param _approved         True if the operator is approved, false to revoke approval
          * @param txData                Additional data for transaction
@@ -866,7 +866,7 @@ export class ERC721TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _operator         Address to add to the set of authorized operators
          * @param _approved         True if the operator is approved, false to revoke approval
          * @param txData    Additional data for transaction
@@ -900,7 +900,7 @@ export class ERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _operator         Address to add to the set of authorized operators
          * @param _approved         True if the operator is approved, false to revoke approval
          */
@@ -947,7 +947,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _operator         Address to add to the set of authorized operators
          * @param _approved         True if the operator is approved, false to revoke approval
          */
@@ -973,7 +973,7 @@ export class ERC721TokenContract extends BaseContract {
      */
     public safeTransferFrom2 = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -1022,7 +1022,7 @@ export class ERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -1065,7 +1065,7 @@ export class ERC721TokenContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -1107,7 +1107,7 @@ export class ERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -1162,7 +1162,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _from         The current owner of the NFT
          * @param _to         The new owner
          * @param _tokenId         The NFT to transfer
@@ -1183,7 +1183,7 @@ export class ERC721TokenContract extends BaseContract {
     };
     public isApprovedForAll = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param _owner         The address that owns the NFTs
          * @param _operator         The address that acts on behalf of the owner
          * @returns True if &#x60;_operator&#x60; is an approved operator for &#x60;_owner&#x60;, false otherwise
@@ -1231,7 +1231,7 @@ export class ERC721TokenContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param _owner         The address that owns the NFTs
          * @param _operator         The address that acts on behalf of the owner
          */

@@ -32,7 +32,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public getSignerAddress = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param hash         Any 32 byte hash.
          * @param signature         Proof that the hash has been signed by signer.
          */
@@ -76,7 +76,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param hash         Any 32 byte hash.
          * @param signature         Proof that the hash has been signed by signer.
          */
@@ -96,7 +96,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public getTransactionHash = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @returns EIP712 hash of the transaction with the domain separator of this contract.
          */
@@ -139,7 +139,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          */
         getABIEncodedTransactionData(transaction: { salt: BigNumber; signerAddress: string; data: string }): string {
@@ -156,7 +156,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public getCoordinatorApprovalHash = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param approval         Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
          * @returns EIP712 hash of the Coordinator approval message with the domain separator of this contract.
          */
@@ -205,7 +205,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param approval         Coordinator approval message containing the transaction hash, transaction signature, and expiration of the approval.
          */
         getABIEncodedTransactionData(approval: {
@@ -227,7 +227,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public executeTransaction = {
         /**
-         * Sends the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -283,7 +283,7 @@ export class CoordinatorContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends the transaction and wait for it to succeed
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -329,7 +329,7 @@ export class CoordinatorContract extends BaseContract {
             );
         },
         /**
-         * Estimate gas to send the transaction
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -377,7 +377,7 @@ export class CoordinatorContract extends BaseContract {
             return gas;
         },
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -440,7 +440,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -474,7 +474,7 @@ export class CoordinatorContract extends BaseContract {
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -509,7 +509,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as CoordinatorContract;
@@ -523,7 +523,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public assertValidCoordinatorApprovals = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -586,7 +586,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param transaction         0x transaction containing salt, signerAddress, and data.
          * @param txOrigin         Required signer of Ethereum transaction calling this function.
          * @param transactionSignature         Proof that the transaction has been signed by the signer.
@@ -623,7 +623,7 @@ export class CoordinatorContract extends BaseContract {
      */
     public decodeOrdersFromFillData = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          * @param data         Exchange calldata representing a fill method.
          * @returns The orders from the Exchange calldata.
          */
@@ -695,7 +695,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          * @param data         Exchange calldata representing a fill method.
          */
         getABIEncodedTransactionData(data: string): string {
@@ -707,7 +707,7 @@ export class CoordinatorContract extends BaseContract {
     };
     public EIP712_COORDINATOR_DOMAIN_HASH = {
         /**
-         * Calls the method
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -742,7 +742,7 @@ export class CoordinatorContract extends BaseContract {
         },
 
         /**
-         * Returns the ABI encoded transaction data
+         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as CoordinatorContract;
