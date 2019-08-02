@@ -121,11 +121,23 @@ contract AbiGenDummy
         string aString;
     }
 
+    struct SimpleStruct {
+        uint256 anInteger;
+        string aString;
+    }
+
     function structInput(Struct memory s) public pure {}
 
     /// @dev a method that returns a struct
     /// @return a Struct struct
     function structOutput() public pure returns(Struct memory s) {}
+
+    function simpleStructOutput() public pure returns(SimpleStruct memory) {
+        return SimpleStruct({
+            anInteger: 5,
+            aString: 'abc'
+        });
+    }
 
     struct NestedStruct {
         Struct innerStruct;

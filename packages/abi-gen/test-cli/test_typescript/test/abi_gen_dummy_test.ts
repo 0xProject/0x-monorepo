@@ -94,6 +94,17 @@ describe('AbiGenDummy Contract', () => {
         });
     });
 
+    describe('struct handling', () => {
+        const sampleStruct = {
+            anInteger: new BigNumber(5),
+            aString: 'abc',
+        };
+        it('should be able to handle struct output', async () => {
+            const result = await abiGenDummy.simpleStructOutput.callAsync();
+            expect(result).to.deep.equal(sampleStruct);
+        });
+    });
+
     describe('ecrecoverFn', () => {
         it('should implement ecrecover', async () => {
             const signerAddress = devConstants.TESTRPC_FIRST_ADDRESS;
