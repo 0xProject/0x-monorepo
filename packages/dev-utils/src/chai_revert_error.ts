@@ -138,5 +138,5 @@ function assertIsPromiseLike(_chai: Chai, maybePromise: any): void {
     if (maybePromise.then instanceof Function && maybePromise.catch instanceof Function) {
         return;
     }
-    chaiFail(_chai, `Expected ${maybePromise} to be a promise`, new Promise(() => 1), maybePromise);
+    chaiFail(_chai, `Expected ${maybePromise} to be a promise`, Promise.resolve(), maybePromise);
 }
