@@ -350,18 +350,27 @@ export const utils = {
             hangingIndent: ' '.repeat(columnsPerIndent),
         });
     },
-    extractTupleDefinitions(parameter: DataItem, tupleDefinitions: { [pythonTupleName: string]: string }): void {
+    extractTuples(
+        parameter: DataItem,
+        tupleDefinitions: { [pythonTupleName: string]: string }, // output
+        tupleDependencies: Array<[string, string]>, // output
+    ): void {
         if (parameter.type === 'tuple' || parameter.type === 'tuple[]') {
             const tupleDataItem = parameter as TupleDataItem; // tslint:disable-line:no-unnecessary-type-assertion
             // without the above cast (which tslint complains about), tsc says
             //     Argument of type 'DataItem[] | undefined' is not assignable to parameter of type 'DataItem[]'.
             //     Type 'undefined' is not assignable to type 'DataItem[]'
             // when the code below tries to access tupleDataItem.components.
-            tupleDefinitions[utils.makePythonTupleName(tupleDataItem.components)] = utils.makePythonTupleClassBody(
-                tupleDataItem.components,
-            );
+            const pythonTupleName = utils.makePythonTupleName(tupleDataItem.components);
+            tupleDefinitions[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
             for (const component of tupleDataItem.components) {
-                utils.extractTupleDefinitions(component, tupleDefinitions);
+                if (component.type === 'tuple' || component.type === 'tuple[]') {
+                    tupleDependencies.push([
+                        utils.makePythonTupleName((component as TupleDataItem).components), // tslint:disable-line:no-unnecessary-type-assertion
+                        pythonTupleName,
+                    ]);
+                    utils.extractTuples(component, tupleDefinitions, tupleDependencies);
+                }
             }
         }
     },

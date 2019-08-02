@@ -17,6 +17,7 @@ import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
+import toposort = require('toposort');
 import * as yargs from 'yargs';
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
@@ -157,6 +158,7 @@ function registerPythonHelpers(): void {
         // definition of that tuple. Using a key-value object conveniently
         // filters duplicate references to the same tuple.
         const tupleDefinitions: { [pythonTupleName: string]: string } = {};
+        const tupleDependencies: Array<[string, string]> = [];
         for (const abi of abis) {
             let parameters: DataItem[] = [];
             if (abi.hasOwnProperty('inputs')) {
@@ -178,11 +180,18 @@ function registerPythonHelpers(): void {
                 parameters = parameters.concat((abi as MethodAbi).outputs);
             }
             for (const parameter of parameters) {
-                utils.extractTupleDefinitions(parameter, tupleDefinitions);
+                utils.extractTuples(parameter, tupleDefinitions, tupleDependencies);
+            }
+        }
+        const tuplesToDeclare = [];
+        tuplesToDeclare.push(...toposort(tupleDependencies));
+        for (const pythonTupleName in tupleDefinitions) {
+            if (!tuplesToDeclare.includes(pythonTupleName)) {
+                tuplesToDeclare.push(pythonTupleName);
             }
         }
         const tupleDeclarations = [];
-        for (const pythonTupleName in tupleDefinitions) {
+        for (const pythonTupleName of tuplesToDeclare) {
             if (tupleDefinitions[pythonTupleName]) {
                 tupleDeclarations.push(
                     `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    A tuple found in an ABI may have been written in Solidity as a literal\n    tuple, or it may have been written as a parameter with a Solidity\n    \`struct\`:code: data type; there's no way to tell which, based solely on the\n    ABI, and the name of a Solidity \`struct\`:code: is not conveyed through the\n    ABI.  This class represents a tuple that appeared in a method definition.\n    Its name is derived from a hash of that tuple's field names, and every\n    method whose ABI refers to a tuple with that same list of field names will\n    have a generated wrapper method that refers to this class.\n\n    Any members of type \`bytes\`:code: should be encoded as UTF-8, which can be\n    accomplished via \`str.encode("utf_8")\`:code:\n    """${
@@ -191,7 +200,7 @@ function registerPythonHelpers(): void {
                 );
             }
         }
-        return new Handlebars.SafeString(tupleDeclarations.join('\n\n'));
+        return new Handlebars.SafeString(tupleDeclarations.join('\n\n\n'));
     });
     Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
