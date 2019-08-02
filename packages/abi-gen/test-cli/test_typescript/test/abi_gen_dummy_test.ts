@@ -96,11 +96,13 @@ describe('AbiGenDummy Contract', () => {
 
     describe('struct handling', () => {
         const sampleStruct = {
+            aDynamicArrayOfBytes: ['0x3078313233', '0x3078333231'],
             anInteger: new BigNumber(5),
             aString: 'abc',
+            someBytes: '0x3078313233',
         };
         it('should be able to handle struct output', async () => {
-            const result = await abiGenDummy.simpleStructOutput.callAsync();
+            const result = await abiGenDummy.structOutput.callAsync();
             expect(result).to.deep.equal(sampleStruct);
         });
     });

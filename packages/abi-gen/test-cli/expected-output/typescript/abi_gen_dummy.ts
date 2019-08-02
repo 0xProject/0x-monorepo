@@ -157,63 +157,6 @@ export class AbiGenDummyContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
-    public simpleStructOutput = {
-        async callAsync(
-            callData: Partial<CallData> = {},
-            defaultBlock?: BlockParam,
-        ): Promise<{ anInteger: BigNumber; aString: string }> {
-            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
-                schemas.addressSchema,
-                schemas.numberSchema,
-                schemas.jsNumber,
-            ]);
-            if (defaultBlock !== undefined) {
-                assert.isBlockParam('defaultBlock', defaultBlock);
-            }
-            const self = (this as any) as AbiGenDummyContract;
-            const encodedData = self._strictEncodeArguments('simpleStructOutput()', []);
-            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
-                {
-                    to: self.address,
-                    ...callData,
-                    data: encodedData,
-                },
-                self._web3Wrapper.getContractDefaults(),
-            );
-            callDataWithDefaults.from = callDataWithDefaults.from
-                ? callDataWithDefaults.from.toLowerCase()
-                : callDataWithDefaults.from;
-
-            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
-            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
-            const abiEncoder = self._lookupAbiEncoder('simpleStructOutput()');
-            // tslint:disable boolean-naming
-            const result = abiEncoder.strictDecodeReturnValue<{ anInteger: BigNumber; aString: string }>(rawCallResult);
-            // tslint:enable boolean-naming
-            return result;
-        },
-        getABIEncodedTransactionData(): string {
-            const self = (this as any) as AbiGenDummyContract;
-            const abiEncodedTransactionData = self._strictEncodeArguments('simpleStructOutput()', []);
-            return abiEncodedTransactionData;
-        },
-        getABIDecodedTransactionData(callData: string): { anInteger: BigNumber; aString: string } {
-            const self = (this as any) as AbiGenDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('simpleStructOutput()');
-            // tslint:disable boolean-naming
-            const abiDecodedCallData = abiEncoder.strictDecode<{ anInteger: BigNumber; aString: string }>(callData);
-            return abiDecodedCallData;
-        },
-        getABIDecodedReturnData(returnData: string): { anInteger: BigNumber; aString: string } {
-            const self = (this as any) as AbiGenDummyContract;
-            const abiEncoder = self._lookupAbiEncoder('simpleStructOutput()');
-            // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{ anInteger: BigNumber; aString: string }>(
-                returnData,
-            );
-            return abiDecodedReturnData;
-        },
-    };
     public simpleInputSimpleOutput = {
         async callAsync(
             index_0: BigNumber,
@@ -1821,30 +1764,6 @@ export class AbiGenDummyContract extends BaseContract {
                 ],
                 name: 'acceptsAnArrayOfBytes',
                 outputs: [],
-                payable: false,
-                stateMutability: 'pure',
-                type: 'function',
-            },
-            {
-                constant: true,
-                inputs: [],
-                name: 'simpleStructOutput',
-                outputs: [
-                    {
-                        name: '',
-                        type: 'tuple',
-                        components: [
-                            {
-                                name: 'anInteger',
-                                type: 'uint256',
-                            },
-                            {
-                                name: 'aString',
-                                type: 'string',
-                            },
-                        ],
-                    },
-                ],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',

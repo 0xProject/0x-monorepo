@@ -38,26 +38,6 @@ except ImportError:
         """No-op input validator."""
 
 
-class Tuple0x7bd8239b(TypedDict):
-    """Python representation of a tuple or struct.
-
-    A tuple found in an ABI may have been written in Solidity as a literal
-    tuple, or it may have been written as a parameter with a Solidity
-    `struct`:code: data type; there's no way to tell which, based solely on the
-    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
-    ABI.  This class represents a tuple that appeared in a method definition.
-    Its name is derived from a hash of that tuple's field names, and every
-    method whose ABI refers to a tuple with that same list of field names will
-    have a generated wrapper method that refers to this class.
-
-    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
-    accomplished via `str.encode("utf_8")`:code:
-    """
-
-    anInteger: int
-
-    aString: str
-
 class Tuple0xc9bdd2d5(TypedDict):
     """Python representation of a tuple or struct.
 
@@ -232,37 +212,6 @@ class AcceptsAnArrayOfBytesMethod(ContractMethod):
         (a) = self.validate_and_normalize_inputs(a)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(a).estimateGas(tx_params.as_dict())
-
-class SimpleStructOutputMethod(ContractMethod):
-    """Various interfaces to the simpleStructOutput method."""
-
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
-        """Persist instance data."""
-        super().__init__(provider, contract_address, validator)
-        self.underlying_method = contract_function
-
-    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0x7bd8239b:
-        """Execute underlying contract method via eth_call.
-
-        :param tx_params: transaction parameters
-
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().call(tx_params.as_dict())
-
-    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
-        """Execute underlying contract method via eth_sendTransaction.
-
-        :param tx_params: transaction parameters
-
-        """
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().transact(tx_params.as_dict())
-
-    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
-        """Estimate gas consumption of method call."""
-        tx_params = super().normalize_tx_params(tx_params)
-        return self.underlying_method().estimateGas(tx_params.as_dict())
 
 class SimpleInputSimpleOutputMethod(ContractMethod):
     """Various interfaces to the simpleInputSimpleOutput method."""
@@ -1180,7 +1129,6 @@ class AbiGenDummy:
     """
     simple_require: SimpleRequireMethod
     accepts_an_array_of_bytes: AcceptsAnArrayOfBytesMethod
-    simple_struct_output: SimpleStructOutputMethod
     simple_input_simple_output: SimpleInputSimpleOutputMethod
     withdraw: WithdrawMethod
     multi_input_multi_output: MultiInputMultiOutputMethod
@@ -1230,8 +1178,6 @@ class AbiGenDummy:
         self.simple_require = SimpleRequireMethod(provider, contract_address, functions.simpleRequire, validator)
 
         self.accepts_an_array_of_bytes = AcceptsAnArrayOfBytesMethod(provider, contract_address, functions.acceptsAnArrayOfBytes, validator)
-
-        self.simple_struct_output = SimpleStructOutputMethod(provider, contract_address, functions.simpleStructOutput, validator)
 
         self.simple_input_simple_output = SimpleInputSimpleOutputMethod(provider, contract_address, functions.simpleInputSimpleOutput, validator)
 
@@ -1300,7 +1246,7 @@ class AbiGenDummy:
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '[{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleStructOutput","outputs":[{"components":[{"name":"anInteger","type":"uint256"},{"name":"aString","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"},{"name":"index_1","type":"bytes"},{"name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"name":"","type":"bytes"},{"name":"","type":"bytes"},{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"address"},{"name":"a","type":"uint256"},{"name":"b","type":"uint256"},{"name":"y","type":"address"},{"name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"input","type":"tuple"},{"name":"lorem","type":"bytes"},{"name":"ipsum","type":"bytes"},{"name":"dolor","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"param","type":"uint8"}],"name":"AnEvent","type":"event"}]'  # noqa: E501 (line-too-long)
+            '[{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"},{"name":"index_1","type":"bytes"},{"name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"name":"","type":"bytes"},{"name":"","type":"bytes"},{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"address"},{"name":"a","type":"uint256"},{"name":"b","type":"uint256"},{"name":"y","type":"address"},{"name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"input","type":"tuple"},{"name":"lorem","type":"bytes"},{"name":"ipsum","type":"bytes"},{"name":"dolor","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"param","type":"uint8"}],"name":"AnEvent","type":"event"}]'  # noqa: E501 (line-too-long)
         )
 
 # pylint: disable=too-many-lines

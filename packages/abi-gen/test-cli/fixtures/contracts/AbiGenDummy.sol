@@ -121,21 +121,20 @@ contract AbiGenDummy
         string aString;
     }
 
-    struct SimpleStruct {
-        uint256 anInteger;
-        string aString;
-    }
-
     function structInput(Struct memory s) public pure {}
 
     /// @dev a method that returns a struct
     /// @return a Struct struct
-    function structOutput() public pure returns(Struct memory s) {}
+    function structOutput() public pure returns(Struct memory s) {
+        bytes[] memory byteArray = new bytes[](2);
+        byteArray[0] = '0x123';
+        byteArray[1] = '0x321';
 
-    function simpleStructOutput() public pure returns(SimpleStruct memory) {
-        return SimpleStruct({
+        return Struct({
+            someBytes: '0x123',
             anInteger: 5,
-            aString: 'abc'
+            aDynamicArrayOfBytes: byteArray,
+            aString: "abc"
         });
     }
 
