@@ -1,10 +1,5 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import {
-    blockchainTests,
-    constants,
-    expect,
-    hexRandom,
-} from '@0x/contracts-test-utils';
+import { blockchainTests, constants, expect, hexRandom } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, LibMathRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, SignatureType } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
@@ -50,7 +45,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
     let nextSaltValue = 1;
 
     before(async () => {
-        [ takerAddress, notTakerAddress ] = await env.getAccountAddressesAsync();
+        [takerAddress, notTakerAddress] = await env.getAccountAddressesAsync();
         exchange = await IsolatedExchangeWrapper.deployAsync(
             env.web3Wrapper,
             _.assign(env.txDefaults, { from: takerAddress }),
@@ -79,14 +74,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
         const fillResults = await exchange.fillOrderAsync(order, takerAssetFillAmount, signature);
         const newOrderInfo = await exchange.getOrderInfoAsync(order);
         // Check returned fillResults.
-        expect(fillResults.makerAssetFilledAmount)
-            .to.bignumber.eq(efr.makerAssetFilledAmount);
-        expect(fillResults.takerAssetFilledAmount)
-            .to.bignumber.eq(efr.takerAssetFilledAmount);
-        expect(fillResults.makerFeePaid)
-            .to.bignumber.eq(efr.makerFeePaid);
-        expect(fillResults.takerFeePaid)
-            .to.bignumber.eq(efr.takerFeePaid);
+        expect(fillResults.makerAssetFilledAmount).to.bignumber.eq(efr.makerAssetFilledAmount);
+        expect(fillResults.takerAssetFilledAmount).to.bignumber.eq(efr.takerAssetFilledAmount);
+        expect(fillResults.makerFeePaid).to.bignumber.eq(efr.makerFeePaid);
+        expect(fillResults.takerFeePaid).to.bignumber.eq(efr.takerFeePaid);
         // Check balances.
         for (const assetData of Object.keys(efb)) {
             for (const address of Object.keys(efb[assetData])) {
@@ -98,13 +89,11 @@ blockchainTests('Isolated fillOrder() tests', env => {
         }
         // Check order info.
         expect(newOrderInfo.orderStatus).to.eq(eoi.orderStatus);
-        expect(newOrderInfo.orderTakerAssetFilledAmount)
-            .to.bignumber.eq(eoi.orderTakerAssetFilledAmount);
+        expect(newOrderInfo.orderTakerAssetFilledAmount).to.bignumber.eq(eoi.orderTakerAssetFilledAmount);
         // Check that there wasn't an overfill.
-        expect(
-            newOrderInfo.orderTakerAssetFilledAmount.lte(order.takerAssetAmount),
-            'checking for overfill',
-        ).to.be.ok('');
+        expect(newOrderInfo.orderTakerAssetFilledAmount.lte(order.takerAssetAmount), 'checking for overfill').to.be.ok(
+            '',
+        );
         return {
             fillResults,
             orderInfo: newOrderInfo,
@@ -116,24 +105,17 @@ blockchainTests('Isolated fillOrder() tests', env => {
         orderInfo: OrderInfo,
         takerAssetFillAmount: BigNumber,
     ): FillResults {
-        const remainingTakerAssetAmount = order.takerAssetAmount.minus(
-            orderInfo.orderTakerAssetFilledAmount,
-        );
-        return calculateFillResults(
-            order,
-            BigNumber.min(takerAssetFillAmount, remainingTakerAssetAmount),
-        );
+        const remainingTakerAssetAmount = order.takerAssetAmount.minus(orderInfo.orderTakerAssetFilledAmount);
+        return calculateFillResults(order, BigNumber.min(takerAssetFillAmount, remainingTakerAssetAmount));
     }
 
-    function calculateExpectedOrderInfo(
-        order: Order,
-        orderInfo: OrderInfo,
-        fillResults: FillResults,
-    ): OrderInfo {
-        const orderTakerAssetFilledAmount =
-            orderInfo.orderTakerAssetFilledAmount.plus(fillResults.takerAssetFilledAmount);
-        const orderStatus = orderTakerAssetFilledAmount.gte(order.takerAssetAmount) ?
-            OrderStatus.FullyFilled : OrderStatus.Fillable;
+    function calculateExpectedOrderInfo(order: Order, orderInfo: OrderInfo, fillResults: FillResults): OrderInfo {
+        const orderTakerAssetFilledAmount = orderInfo.orderTakerAssetFilledAmount.plus(
+            fillResults.takerAssetFilledAmount,
+        );
+        const orderStatus = orderTakerAssetFilledAmount.gte(order.takerAssetAmount)
+            ? OrderStatus.FullyFilled
+            : OrderStatus.Fillable;
         return {
             orderHash: exchange.getOrderHash(order),
             orderStatus,
@@ -141,10 +123,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
         };
     }
 
-    function calculateExpectedFillBalances(
-        order: Order,
-        fillResults: FillResults,
-    ): AssetBalances {
+    function calculateExpectedFillBalances(order: Order, fillResults: FillResults): AssetBalances {
         const balances: AssetBalances = {};
         const addBalance = (assetData: string, address: string, amount: BigNumber) => {
             balances[assetData] = balances[assetData] || {};
@@ -176,7 +155,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
             expect(orderInfo.orderStatus).to.eq(OrderStatus.FullyFilled);
         });
 
-        it('can\'t overfill an order', async () => {
+        it("can't overfill an order", async () => {
             const order = createOrder();
             const { orderInfo } = await fillOrderAndAssertResultsAsync(order, order.takerAssetAmount.times(1.01));
             expect(orderInfo.orderStatus).to.eq(OrderStatus.FullyFilled);
@@ -266,7 +245,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
             expect(orderInfos[1].orderStatus).to.eq(OrderStatus.Fillable);
         });
 
-        it('can\'t overfill an order in two fills', async () => {
+        it("can't overfill an order in two fills", async () => {
             const order = createOrder();
             const fillAmounts = splitAmount(order.takerAssetAmount);
             fillAmounts[0] = fillAmounts[0].times(1.01);
@@ -320,7 +299,7 @@ blockchainTests('Isolated fillOrder() tests', env => {
     });
 
     describe('bad fills', () => {
-        it('can\'t fill an order with zero takerAssetAmount', async () => {
+        it("can't fill an order with zero takerAssetAmount", async () => {
             const order = createOrder({
                 takerAssetAmount: ZERO_AMOUNT,
             });
@@ -328,11 +307,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 exchange.getOrderHash(order),
                 OrderStatus.InvalidTakerAssetAmount,
             );
-            return expect(exchange.fillOrderAsync(order, ONE_ETHER))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, ONE_ETHER)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order with zero makerAssetAmount', async () => {
+        it("can't fill an order with zero makerAssetAmount", async () => {
             const order = createOrder({
                 makerAssetAmount: ZERO_AMOUNT,
             });
@@ -340,22 +318,20 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 exchange.getOrderHash(order),
                 OrderStatus.InvalidMakerAssetAmount,
             );
-            return expect(exchange.fillOrderAsync(order, ONE_ETHER))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, ONE_ETHER)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that is fully filled', async () => {
+        it("can't fill an order that is fully filled", async () => {
             const order = createOrder();
             const expectedError = new ExchangeRevertErrors.OrderStatusError(
                 exchange.getOrderHash(order),
                 OrderStatus.FullyFilled,
             );
             await exchange.fillOrderAsync(order, order.takerAssetAmount);
-            return expect(exchange.fillOrderAsync(order, 1))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, 1)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that is expired', async () => {
+        it("can't fill an order that is expired", async () => {
             const order = createOrder({
                 expirationTimeSeconds: new BigNumber(getCurrentTime() - 60),
             });
@@ -363,11 +339,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 exchange.getOrderHash(order),
                 OrderStatus.Expired,
             );
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that is cancelled by `cancelOrder()`', async () => {
+        it("can't fill an order that is cancelled by `cancelOrder()`", async () => {
             const order = createOrder({
                 makerAddress: notTakerAddress,
             });
@@ -376,11 +351,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 OrderStatus.Cancelled,
             );
             await exchange.cancelOrderAsync(order, { from: notTakerAddress });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that is cancelled by `cancelOrdersUpTo()`', async () => {
+        it("can't fill an order that is cancelled by `cancelOrdersUpTo()`", async () => {
             const order = createOrder({
                 makerAddress: notTakerAddress,
             });
@@ -389,11 +363,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 OrderStatus.Cancelled,
             );
             await exchange.cancelOrdersUpToAsync(order.salt, { from: notTakerAddress });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order if taker is not `takerAddress`', async () => {
+        it("can't fill an order if taker is not `takerAddress`", async () => {
             const order = createOrder({
                 takerAddress: randomAddress(),
             });
@@ -401,11 +374,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 exchange.getOrderHash(order),
                 takerAddress,
             );
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order if sender is not `senderAddress`', async () => {
+        it("can't fill an order if sender is not `senderAddress`", async () => {
             const order = createOrder({
                 senderAddress: randomAddress(),
             });
@@ -413,11 +385,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 exchange.getOrderHash(order),
                 takerAddress,
             );
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order with a taker amount that results in a maker asset rounding error', async () => {
+        it("can't fill an order with a taker amount that results in a maker asset rounding error", async () => {
             const order = createOrder({
                 makerAssetAmount: new BigNumber(100),
                 takerAssetAmount: ONE_ETHER,
@@ -428,11 +399,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order with a taker amount that results in a maker fee rounding error', async () => {
+        it("can't fill an order with a taker amount that results in a maker fee rounding error", async () => {
             const order = createOrder({
                 makerAssetAmount: ONE_ETHER.times(2),
                 takerAssetAmount: ONE_ETHER,
@@ -444,11 +414,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 order.makerAssetAmount,
                 order.makerFee,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order with a taker amount that results in a taker fee rounding error', async () => {
+        it("can't fill an order with a taker amount that results in a taker fee rounding error", async () => {
             const order = createOrder({
                 makerAssetAmount: ONE_ETHER.times(2),
                 takerAssetAmount: ONE_ETHER,
@@ -460,11 +429,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 order.takerAssetAmount,
                 order.takerFee,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that results in a `makerAssetFilledAmount` overflow.', async () => {
+        it("can't fill an order that results in a `makerAssetFilledAmount` overflow.", async () => {
             // All values need to be large to ensure we don't trigger a Rounding.
             const order = createOrder({
                 makerAssetAmount: MAX_UINT256_ROOT.times(2),
@@ -476,11 +444,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 takerAssetFillAmount,
                 order.makerAssetAmount,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that results in a `makerFeePaid` overflow.', async () => {
+        it("can't fill an order that results in a `makerFeePaid` overflow.", async () => {
             // All values need to be large to ensure we don't trigger a Rounding.
             const order = createOrder({
                 makerAssetAmount: MAX_UINT256_ROOT,
@@ -498,11 +465,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 makerAssetFilledAmount,
                 order.makerFee,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order that results in a `takerFeePaid` overflow.', async () => {
+        it("can't fill an order that results in a `takerFeePaid` overflow.", async () => {
             // All values need to be large to ensure we don't trigger a Rounding.
             const order = createOrder({
                 makerAssetAmount: MAX_UINT256_ROOT,
@@ -515,11 +481,10 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 takerAssetFillAmount,
                 order.takerFee,
             );
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmount)).to.revertWith(expectedError);
         });
 
-        it('can\'t fill an order with a bad signature', async () => {
+        it("can't fill an order with a bad signature", async () => {
             const order = createOrder();
             const signature = createBadSignature();
             const expectedError = new ExchangeRevertErrors.SignatureError(
@@ -528,11 +493,12 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 order.makerAddress,
                 signature,
             );
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount, signature))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount, signature)).to.revertWith(
+                expectedError,
+            );
         });
 
-        it('can\'t complementary fill an order with a bad signature that is always checked', async () => {
+        it("can't complementary fill an order with a bad signature that is always checked", async () => {
             const order = createOrder();
             const takerAssetFillAmounts = splitAmount(order.takerAssetAmount);
             const goodSignature = createGoodSignature(SignatureType.Wallet);
@@ -544,42 +510,39 @@ blockchainTests('Isolated fillOrder() tests', env => {
                 badSignature,
             );
             await exchange.fillOrderAsync(order, takerAssetFillAmounts[0], goodSignature);
-            return expect(exchange.fillOrderAsync(order, takerAssetFillAmounts[1], badSignature))
-                .to.revertWith(expectedError);
+            return expect(exchange.fillOrderAsync(order, takerAssetFillAmounts[1], badSignature)).to.revertWith(
+                expectedError,
+            );
         });
 
         const TRANSFER_ERROR = 'TRANSFER_FAILED';
 
-        it('can\'t fill an order with a maker asset that fails to transfer', async () => {
+        it("can't fill an order with a maker asset that fails to transfer", async () => {
             const order = createOrder({
                 makerAssetData: createBadAssetData(),
             });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(TRANSFER_ERROR);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(TRANSFER_ERROR);
         });
 
-        it('can\'t fill an order with a taker asset that fails to transfer', async () => {
+        it("can't fill an order with a taker asset that fails to transfer", async () => {
             const order = createOrder({
                 takerAssetData: createBadAssetData(),
             });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(TRANSFER_ERROR);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(TRANSFER_ERROR);
         });
 
-        it('can\'t fill an order with a maker fee asset that fails to transfer', async () => {
+        it("can't fill an order with a maker fee asset that fails to transfer", async () => {
             const order = createOrder({
                 makerFeeAssetData: createBadAssetData(),
             });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(TRANSFER_ERROR);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(TRANSFER_ERROR);
         });
 
-        it('can\'t fill an order with a taker fee asset that fails to transfer', async () => {
+        it("can't fill an order with a taker fee asset that fails to transfer", async () => {
             const order = createOrder({
                 takerFeeAssetData: createBadAssetData(),
             });
-            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount))
-                .to.revertWith(TRANSFER_ERROR);
+            return expect(exchange.fillOrderAsync(order, order.takerAssetAmount)).to.revertWith(TRANSFER_ERROR);
         });
     });
 

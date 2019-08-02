@@ -3,18 +3,12 @@ import { LibMathRevertErrors } from '@0x/order-utils';
 import { FillResults } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
-const {
-    safeAdd,
-    safeSub,
-    safeMul,
-    safeDiv,
-} = ReferenceFunctions;
+const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
 
-export function isRoundingErrorFloor(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): boolean {
+/**
+ * Checks if rounding error >= 0.1% when rounding down.
+ */
+export function isRoundingErrorFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
     if (denominator.eq(0)) {
         throw new LibMathRevertErrors.DivisionByZeroError();
     }
@@ -28,11 +22,10 @@ export function isRoundingErrorFloor(
     return lhs.gte(rhs);
 }
 
-export function isRoundingErrorCeil(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): boolean {
+/**
+ * Checks if rounding error >= 0.1% when rounding up.
+ */
+export function isRoundingErrorCeil(numerator: BigNumber, denominator: BigNumber, target: BigNumber): boolean {
     if (denominator.eq(0)) {
         throw new LibMathRevertErrors.DivisionByZeroError();
     }
@@ -47,66 +40,46 @@ export function isRoundingErrorCeil(
     return lhs.gte(rhs);
 }
 
-export function safeGetPartialAmountFloor(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): BigNumber {
+/**
+ * Calculates partial value given a numerator and denominator rounded down.
+ *      Reverts if rounding error is >= 0.1%
+ */
+export function safeGetPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
     if (isRoundingErrorFloor(numerator, denominator, target)) {
         throw new LibMathRevertErrors.RoundingError(numerator, denominator, target);
     }
-    return safeDiv(
-        safeMul(numerator, target),
-        denominator,
-    );
+    return safeDiv(safeMul(numerator, target), denominator);
 }
 
-export function safeGetPartialAmountCeil(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): BigNumber {
+/**
+ * Calculates partial value given a numerator and denominator rounded down.
+ *      Reverts if rounding error is >= 0.1%
+ */
+export function safeGetPartialAmountCeil(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
     if (isRoundingErrorCeil(numerator, denominator, target)) {
         throw new LibMathRevertErrors.RoundingError(numerator, denominator, target);
     }
-    return safeDiv(
-        safeAdd(
-            safeMul(numerator, target),
-            safeSub(denominator, new BigNumber(1)),
-        ),
-        denominator,
-    );
+    return safeDiv(safeAdd(safeMul(numerator, target), safeSub(denominator, new BigNumber(1))), denominator);
 }
 
-export function getPartialAmountFloor(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): BigNumber {
-    return safeDiv(
-        safeMul(numerator, target),
-        denominator,
-    );
+/**
+ * Calculates partial value given a numerator and denominator rounded down.
+ */
+export function getPartialAmountFloor(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+    return safeDiv(safeMul(numerator, target), denominator);
 }
 
-export function getPartialAmountCeil(
-    numerator: BigNumber,
-    denominator: BigNumber,
-    target: BigNumber,
-): BigNumber {
-    return safeDiv(
-        safeAdd(
-            safeMul(numerator, target),
-            safeSub(denominator, new BigNumber(1)),
-        ),
-        denominator,
-    );
+/**
+ * Calculates partial value given a numerator and denominator rounded down.
+ */
+export function getPartialAmountCeil(numerator: BigNumber, denominator: BigNumber, target: BigNumber): BigNumber {
+    return safeDiv(safeAdd(safeMul(numerator, target), safeSub(denominator, new BigNumber(1))), denominator);
 }
 
-export function addFillResults(
-    a: FillResults,
-    b: FillResults,
-): FillResults {
+/**
+ * Adds properties of two `FillResults`.
+ */
+export function addFillResults(a: FillResults, b: FillResults): FillResults {
     return {
         makerAssetFilledAmount: safeAdd(a.makerAssetFilledAmount, b.makerAssetFilledAmount),
         takerAssetFilledAmount: safeAdd(a.takerAssetFilledAmount, b.takerAssetFilledAmount),

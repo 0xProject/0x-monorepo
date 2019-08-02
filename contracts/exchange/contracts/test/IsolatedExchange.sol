@@ -64,7 +64,7 @@ contract IsolatedExchange is
 
         // Fail if the first byte is 0.
         if (assetData.length > 0 && assetData[0] == 0x00) {
-            revert('TRANSFER_FAILED');
+            revert("TRANSFER_FAILED");
         }
     }
 

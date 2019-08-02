@@ -19,8 +19,8 @@ import {
     artifacts,
     ReferenceFunctions,
     TestExchangeInternalsContract,
-    TestExchangeInternalsFillEventArgs,
     TestExchangeInternalsDispatchTransferFromCalledEventArgs,
+    TestExchangeInternalsFillEventArgs,
 } from '../src';
 
 blockchainTests('Exchange core internal functions', env => {
@@ -50,7 +50,7 @@ blockchainTests('Exchange core internal functions', env => {
     let senderAddress: string;
 
     before(async () => {
-        [ senderAddress ] = await env.getAccountAddressesAsync();
+        [senderAddress] = await env.getAccountAddressesAsync();
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
             env.provider,
@@ -114,11 +114,7 @@ blockchainTests('Exchange core internal functions', env => {
         describe('explicit tests', () => {
             const MAX_UINT256_ROOT = constants.MAX_UINT256_ROOT;
             function makeOrder(details?: Partial<Order>): Order {
-                return _.assign(
-                    {},
-                    EMPTY_ORDER,
-                    details,
-                );
+                return _.assign({}, EMPTY_ORDER, details);
             }
 
             it('matches the output of the reference function', async () => {
@@ -146,8 +142,9 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount,
                     order.makerAssetAmount,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if computing `fillResults.makerFeePaid` overflows', async () => {
@@ -168,8 +165,9 @@ blockchainTests('Exchange core internal functions', env => {
                     makerAssetFilledAmount,
                     order.makerFee,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if computing `fillResults.takerFeePaid` overflows', async () => {
@@ -185,8 +183,9 @@ blockchainTests('Exchange core internal functions', env => {
                     takerAssetFilledAmount,
                     order.takerFee,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if `order.makerAssetAmount` is 0', async () => {
@@ -196,8 +195,9 @@ blockchainTests('Exchange core internal functions', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if `order.takerAssetAmount` is 0', async () => {
@@ -207,8 +207,9 @@ blockchainTests('Exchange core internal functions', env => {
                 });
                 const takerAssetFilledAmount = ONE_ETHER;
                 const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', async () => {
@@ -222,8 +223,9 @@ blockchainTests('Exchange core internal functions', env => {
                     order.takerAssetAmount,
                     order.makerAssetAmount,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if there is a rounding error computing `makerFeePaid`', async () => {
@@ -243,8 +245,9 @@ blockchainTests('Exchange core internal functions', env => {
                     order.makerAssetAmount,
                     order.makerFee,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
 
             it('reverts if there is a rounding error computing `takerFeePaid`', async () => {
@@ -264,8 +267,9 @@ blockchainTests('Exchange core internal functions', env => {
                     order.makerAssetAmount,
                     order.takerFee,
                 );
-                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount))
-                    .to.revertWith(expectedError);
+                return expect(testExchange.calculateFillResults.callAsync(order, takerAssetFilledAmount)).to.revertWith(
+                    expectedError,
+                );
             });
         });
     });
@@ -299,10 +303,7 @@ blockchainTests('Exchange core internal functions', env => {
             takerAssetFillAmount: BigNumber,
         ): Promise<void> {
             const orderHash = randomHash();
-            const fillResults = ReferenceFunctions.calculateFillResults(
-                order,
-                takerAssetFillAmount,
-            );
+            const fillResults = ReferenceFunctions.calculateFillResults(order, takerAssetFillAmount);
             const expectedFilledState = orderTakerAssetFilledAmount.plus(takerAssetFillAmount);
             // CAll `testUpdateFilledState()`, which will set the `filled`
             // state for this order to `orderTakerAssetFilledAmount` before
@@ -321,6 +322,7 @@ blockchainTests('Exchange core internal functions', env => {
             // Assert the `filled` state for this order.
             expect(actualFilledState).to.bignumber.eq(expectedFilledState);
             // Assert the logs.
+            // tslint:disable-next-line: no-unnecessary-type-assertion
             const fillEvent = receipt.logs[0] as LogWithDecodedArgs<TestExchangeInternalsFillEventArgs>;
             expect(fillEvent.event).to.eq('Fill');
             expect(fillEvent.args.makerAddress).to.eq(order.makerAddress);
@@ -363,13 +365,15 @@ blockchainTests('Exchange core internal functions', env => {
                 orderTakerAssetFilledAmount,
                 takerAssetFillAmount,
             );
-            return expect(testExchange.testUpdateFilledState.awaitTransactionSuccessAsync(
-                order,
-                randomAddress(),
-                randomHash(),
-                orderTakerAssetFilledAmount,
-                fillResults,
-            )).to.revertWith(expectedError);
+            return expect(
+                testExchange.testUpdateFilledState.awaitTransactionSuccessAsync(
+                    order,
+                    randomAddress(),
+                    randomHash(),
+                    orderTakerAssetFilledAmount,
+                    fillResults,
+                ),
+            ).to.revertWith(expectedError);
         });
     });
 
@@ -402,14 +406,11 @@ blockchainTests('Exchange core internal functions', env => {
                 takerFeePaid: ONE_ETHER.times(0.025),
             };
             const receipt = await logDecoder.getTxWithDecodedLogsAsync(
-                await testExchange.settleOrder.sendTransactionAsync(
-                    orderHash,
-                    order,
-                    takerAddress,
-                    fillResults,
-                ),
+                await testExchange.settleOrder.sendTransactionAsync(orderHash, order, takerAddress, fillResults),
             );
-            const logs = receipt.logs as Array<LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>>;
+            const logs = receipt.logs as Array<
+                LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
+            >;
             expect(logs.length === 4);
             expect(_.every(logs, log => log.event === 'DispatchTransferFromCalled')).to.be.true();
             // taker -> maker

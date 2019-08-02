@@ -83,11 +83,7 @@ export async function testWithReferenceFuncAsync(
     if (expectedError !== undefined) {
         // Expecting an error.
         if (actualError === undefined) {
-            return expect.fail(
-                actualError,
-                expectedError,
-                `${testCaseString}: expected failure but instead succeeded`,
-            );
+            return expect.fail(actualError, expectedError, `${testCaseString}: expected failure but instead succeeded`);
         } else {
             if (expectedError instanceof RevertError) {
                 // Expecting a RevertError.
@@ -112,7 +108,9 @@ export async function testWithReferenceFuncAsync(
                     return expect.fail(
                         actualError,
                         expectedError,
-                        `${testCaseString}: expected error message '${actualError.message}' to equal '${expectedError.message}'`,
+                        `${testCaseString}: expected error message '${actualError.message}' to equal '${
+                            expectedError.message
+                        }'`,
                     );
                 }
             }
@@ -120,11 +118,7 @@ export async function testWithReferenceFuncAsync(
     } else {
         // Not expecting an error.
         if (actualError !== undefined) {
-            return expect.fail(
-                actualError,
-                expectedError,
-                `${testCaseString}: expected success but instead failed`,
-            );
+            return expect.fail(actualError, expectedError, `${testCaseString}: expected success but instead failed`);
         }
         if (expected instanceof BigNumber) {
             // Technically we can do this with `deep.eq`, but this prints prettier

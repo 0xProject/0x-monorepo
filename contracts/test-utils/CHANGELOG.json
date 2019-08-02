@@ -61,7 +61,7 @@
             {
                 "note": "Update `testWithReferenceFuncAsync` to work with `RevertErrors`",
                 "pr": "TODO"
-            },
+            }
         ]
     },
     {

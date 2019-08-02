@@ -1,9 +1,5 @@
 import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
-import {
-    constants,
-    describe,
-    expect,
-} from '@0x/contracts-test-utils';
+import { constants, describe, expect } from '@0x/contracts-test-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
 import { OrderWithoutDomain as Order } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
@@ -33,11 +29,7 @@ describe('Reference functions', () => {
     describe('calculateFillResults', () => {
         const MAX_UINT256_ROOT = constants.MAX_UINT256_ROOT;
         function makeOrder(details?: Partial<Order>): Order {
-            return _.assign(
-                {},
-                EMPTY_ORDER,
-                details,
-            );
+            return _.assign({}, EMPTY_ORDER, details);
         }
 
         it('reverts if computing `fillResults.makerAssetFilledAmount` overflows', () => {
@@ -52,8 +44,7 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if computing `fillResults.makerFeePaid` overflows', () => {
@@ -74,8 +65,7 @@ describe('Reference functions', () => {
                 makerAssetFilledAmount,
                 order.makerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if computing `fillResults.takerFeePaid` overflows', () => {
@@ -91,8 +81,7 @@ describe('Reference functions', () => {
                 takerAssetFilledAmount,
                 order.takerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if `order.makerAssetAmount` is 0', () => {
@@ -102,8 +91,7 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if `order.takerAssetAmount` is 0', () => {
@@ -113,8 +101,7 @@ describe('Reference functions', () => {
             });
             const takerAssetFilledAmount = ONE_ETHER;
             const expectedError = new LibMathRevertErrors.DivisionByZeroError();
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerAsssetFilledAmount`', () => {
@@ -128,8 +115,7 @@ describe('Reference functions', () => {
                 order.takerAssetAmount,
                 order.makerAssetAmount,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `makerFeePaid`', () => {
@@ -149,8 +135,7 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.makerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
 
         it('reverts if there is a rounding error computing `takerFeePaid`', () => {
@@ -170,8 +155,7 @@ describe('Reference functions', () => {
                 order.makerAssetAmount,
                 order.takerFee,
             );
-            return expect(() => calculateFillResults(order, takerAssetFilledAmount))
-                .to.throw(expectedError.message);
+            return expect(() => calculateFillResults(order, takerAssetFilledAmount)).to.throw(expectedError.message);
         });
     });
 });

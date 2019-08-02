@@ -28,8 +28,9 @@ describe('testWithReferenceFuncAsync', () => {
     });
 
     it('fails when both succeed and actual != expected', async () => {
-        return expect(testWithReferenceFuncAsync(alwaysValueFunc(3), divAsync, [1, 2]))
-            .to.be.rejectedWith('{"x":1,"y":2}: expected 0.5 to deeply equal 3');
+        return expect(testWithReferenceFuncAsync(alwaysValueFunc(3), divAsync, [1, 2])).to.be.rejectedWith(
+            '{"x":1,"y":2}: expected 0.5 to deeply equal 3',
+        );
     });
 
     it('passes when both fail and error messages are the same', async () => {
@@ -44,9 +45,7 @@ describe('testWithReferenceFuncAsync', () => {
         const notError = new Error(notErrorMessage);
         return expect(
             testWithReferenceFuncAsync(alwaysFailFunc(notError), alwaysFailFunc(error), [1, 2]),
-        ).to.be.rejectedWith(
-            `{"x":1,"y":2}: expected error message '${errorMessage}' to equal '${notErrorMessage}'`,
-        );
+        ).to.be.rejectedWith(`{"x":1,"y":2}: expected error message '${errorMessage}' to equal '${notErrorMessage}'`);
     });
 
     it('passes when both fail with compatible RevertErrors', async () => {
@@ -58,34 +57,32 @@ describe('testWithReferenceFuncAsync', () => {
     it('fails when both fail with incompatible RevertErrors', async () => {
         const error1 = new StringRevertError('whoopsie');
         const error2 = new StringRevertError('not whoopsie');
-        return expect(testWithReferenceFuncAsync(alwaysFailFunc(error1), alwaysFailFunc(error2), [1, 1]))
-            .to.be.rejectedWith(
-                `{"x":1,"y":1}: expected error StringRevertError({ message: 'not whoopsie' }) to equal StringRevertError({ message: 'whoopsie' })`,
-            );
+        return expect(
+            testWithReferenceFuncAsync(alwaysFailFunc(error1), alwaysFailFunc(error2), [1, 1]),
+        ).to.be.rejectedWith(
+            `{"x":1,"y":1}: expected error StringRevertError({ message: 'not whoopsie' }) to equal StringRevertError({ message: 'whoopsie' })`,
+        );
     });
 
     it('fails when reference function fails with a RevertError but test function fails with a regular Error', async () => {
         const error1 = new StringRevertError('whoopsie');
         const error2 = new Error('whoopsie');
-        return expect(testWithReferenceFuncAsync(alwaysFailFunc(error1), alwaysFailFunc(error2), [1, 1]))
-            .to.be.rejectedWith(
-                `{"x":1,"y":1}: expected a RevertError but received an Error`,
-            );
+        return expect(
+            testWithReferenceFuncAsync(alwaysFailFunc(error1), alwaysFailFunc(error2), [1, 1]),
+        ).to.be.rejectedWith(`{"x":1,"y":1}: expected a RevertError but received an Error`);
     });
 
     it('fails when referenceFunc succeeds and testFunc fails', async () => {
         const error = new Error('whoopsie');
-        return expect(testWithReferenceFuncAsync(alwaysValueFunc(0), alwaysFailFunc(error), [1, 2]))
-            .to.be.rejectedWith(
-                `{"x":1,"y":2}: expected success but instead failed`,
-            );
+        return expect(testWithReferenceFuncAsync(alwaysValueFunc(0), alwaysFailFunc(error), [1, 2])).to.be.rejectedWith(
+            `{"x":1,"y":2}: expected success but instead failed`,
+        );
     });
 
     it('fails when referenceFunc fails and testFunc succeeds', async () => {
         const error = new Error('whoopsie');
-        return expect(testWithReferenceFuncAsync(alwaysFailFunc(error), divAsync, [1, 2]))
-            .to.be.rejectedWith(
-                '{"x":1,"y":2}: expected failure but instead succeeded',
-            );
+        return expect(testWithReferenceFuncAsync(alwaysFailFunc(error), divAsync, [1, 2])).to.be.rejectedWith(
+            '{"x":1,"y":2}: expected failure but instead succeeded',
+        );
     });
 });

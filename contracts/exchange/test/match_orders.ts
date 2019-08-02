@@ -270,17 +270,9 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const _isRoundingErrorCeil = isRoundingErrorCeil(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
             expect(_isRoundingErrorCeil).to.be.true();
-            const _isRoundingErrorFloor = isRoundingErrorFloor(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
             expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the left maker received a slightly better sell price.
@@ -336,17 +328,9 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.takerAssetAmount;
             const denominator = signedOrderRight.makerAssetAmount;
             const target = signedOrderLeft.takerAssetAmount;
-            const _isRoundingErrorFloor = isRoundingErrorFloor(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
             expect(_isRoundingErrorFloor).to.be.true();
-            const _isRoundingErrorCeil = isRoundingErrorCeil(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
             expect(_isRoundingErrorCeil).to.be.false();
             // Match signedOrderLeft isRoundingErrorFloor right maker received a slightly better purchase price.
             // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
@@ -1414,17 +1398,9 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const _isRoundingErrorCeil = isRoundingErrorCeil(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
             expect(_isRoundingErrorCeil).to.be.true();
-            const _isRoundingErrorFloor = isRoundingErrorFloor(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
             expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the left maker received a slightly better sell price.
@@ -1480,17 +1456,9 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.makerAssetAmount;
             const denominator = signedOrderRight.takerAssetAmount;
             const target = signedOrderLeft.makerAssetAmount;
-            const _isRoundingErrorCeil = isRoundingErrorCeil(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
             expect(_isRoundingErrorCeil).to.be.false();
-            const _isRoundingErrorFloor = isRoundingErrorFloor(
-                numerator,
-                denominator,
-                target,
-            );
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
             expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the right maker received a slightly better purchase price.

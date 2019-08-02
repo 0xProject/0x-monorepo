@@ -130,9 +130,7 @@ export class IsolatedExchangeWrapper {
             await this.instance.fillOrder.sendTransactionAsync.call(this.instance, ...args),
         );
         this.lastTxEvents = extractEvents(receipt.logs);
-        this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(
-            this.lastTxEvents.transferFromCalls,
-        );
+        this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(this.lastTxEvents.transferFromCalls);
         return result;
     }
 }
@@ -179,21 +177,16 @@ function createEmptyEvents(): IsolatedExchangeEvents {
 function extractEvents(logs: LogEntry[]): IsolatedExchangeEvents {
     return {
         fillEvents: filterLogsToArguments<FillEventArgs>(logs, 'Fill'),
-        transferFromCalls: filterLogsToArguments<DispatchTransferFromCallArgs>(
-            logs,
-            'DispatchTransferFromCalled',
-        ),
+        transferFromCalls: filterLogsToArguments<DispatchTransferFromCallArgs>(logs, 'DispatchTransferFromCalled'),
     };
 }
 
 // Executes transferFrom calls to compute relative balances for addresses.
-function getBalanceChangesFromTransferFromCalls(
-    calls: DispatchTransferFromCallArgs[],
-): AssetBalances {
+function getBalanceChangesFromTransferFromCalls(calls: DispatchTransferFromCallArgs[]): AssetBalances {
     const changes: AssetBalances = {};
     for (const call of calls) {
         const { assetData, from, to, amount } = call;
-        const balances = changes[assetData] = changes[assetData ] || {};
+        const balances = (changes[assetData] = changes[assetData] || {});
         const fromBalance = balances[from] || constants.ZERO_AMOUNT;
         const toBalance = balances[to] || constants.ZERO_AMOUNT;
         balances[from] = fromBalance.minus(amount);
