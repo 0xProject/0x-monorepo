@@ -1,33 +1,36 @@
-import { chaiSetup, constants, provider, txDefaults, web3Wrapper } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
 import { artifacts, TestSafeMathContract } from '../src';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+import * as ReferenceFunctions from '../src/reference_functions';
 
 function toBigNumber(a: number | string): BigNumber {
     return new BigNumber(a);
 }
 
-describe('SafeMath', () => {
+blockchainTests('SafeMath', env => {
+    const { ONE_ETHER } = constants;
     let safeMath: TestSafeMathContract;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
         // Deploy SafeMath
-        safeMath = await TestSafeMathContract.deployFrom0xArtifactAsync(artifacts.TestSafeMath, provider, txDefaults);
-    });
-
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
+        safeMath = await TestSafeMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestSafeMath,
+            env.provider,
+            env.txDefaults,
+        );
     });
 
     describe('_safeMul', () => {
+        it('should match the output of the reference function', async () => {
+            const a = ONE_ETHER;
+            const b = ONE_ETHER.times(2);
+            const expected = ReferenceFunctions.safeMul(a, b);
+            const actual = await safeMath.externalSafeMul.callAsync(a, b);
+            expect(actual).bignumber.to.be.eq(expected);
+        });
+
         it('should return zero if first argument is zero', async () => {
             const result = await safeMath.externalSafeMul.callAsync(constants.ZERO_AMOUNT, toBigNumber(1));
             expect(result).bignumber.to.be.eq(constants.ZERO_AMOUNT);
@@ -56,6 +59,14 @@ describe('SafeMath', () => {
     });
 
     describe('_safeDiv', () => {
+        it('should match the output of the reference function', async () => {
+            const a = ONE_ETHER;
+            const b = ONE_ETHER.times(2);
+            const expected = ReferenceFunctions.safeDiv(a, b);
+            const actual = await safeMath.externalSafeDiv.callAsync(a, b);
+            expect(actual).bignumber.to.be.eq(expected);
+        });
+
         it('should return the correct value if both values are the same', async () => {
             const result = await safeMath.externalSafeDiv.callAsync(toBigNumber(1), toBigNumber(1));
             expect(result).bignumber.to.be.eq(toBigNumber(1));
@@ -89,6 +100,14 @@ describe('SafeMath', () => {
     });
 
     describe('_safeSub', () => {
+        it('should match the output of the reference function', async () => {
+            const a = ONE_ETHER;
+            const b = ONE_ETHER.dividedToIntegerBy(2);
+            const expected = ReferenceFunctions.safeSub(a, b);
+            const actual = await safeMath.externalSafeSub.callAsync(a, b);
+            expect(actual).bignumber.to.be.eq(expected);
+        });
+
         it('should revert if the subtraction underflows', async () => {
             const a = toBigNumber(0);
             const b = toBigNumber(1);
@@ -112,6 +131,14 @@ describe('SafeMath', () => {
     });
 
     describe('_safeAdd', () => {
+        it('should match the output of the reference function', async () => {
+            const a = ONE_ETHER;
+            const b = ONE_ETHER.dividedToIntegerBy(2);
+            const expected = ReferenceFunctions.safeAdd(a, b);
+            const actual = await safeMath.externalSafeAdd.callAsync(a, b);
+            expect(actual).bignumber.to.be.eq(expected);
+        });
+
         it('should revert if the addition overflows', async () => {
             const a = toBigNumber('0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'); // The largest uint256 number
             const b = toBigNumber(1);
