@@ -33,7 +33,7 @@ describe('Reference functions', () => {
         }
 
         it('reverts if computing `fillResults.makerAssetFilledAmount` overflows', () => {
-            // All values need to be large to ensure we don't trigger a RondingError.
+            // All values need to be large to ensure we don't trigger a RoundingError.
             const order = makeOrder({
                 makerAssetAmount: MAX_UINT256_ROOT.times(2),
                 takerAssetAmount: MAX_UINT256_ROOT,
@@ -48,7 +48,7 @@ describe('Reference functions', () => {
         });
 
         it('reverts if computing `fillResults.makerFeePaid` overflows', () => {
-            // All values need to be large to ensure we don't trigger a RondingError.
+            // All values need to be large to ensure we don't trigger a RoundingError.
             const order = makeOrder({
                 makerAssetAmount: MAX_UINT256_ROOT,
                 takerAssetAmount: MAX_UINT256_ROOT,
@@ -69,7 +69,7 @@ describe('Reference functions', () => {
         });
 
         it('reverts if computing `fillResults.takerFeePaid` overflows', () => {
-            // All values need to be large to ensure we don't trigger a RondingError.
+            // All values need to be large to ensure we don't trigger a RoundingError.
             const order = makeOrder({
                 makerAssetAmount: MAX_UINT256_ROOT,
                 takerAssetAmount: MAX_UINT256_ROOT,
