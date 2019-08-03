@@ -17,6 +17,8 @@
         "migrate:v2:snapshot": "run-s build script:migrate:v2:snapshot",
         "script:migrate:v2": "node ./lib/migrate.js",
         "script:migrate:v2:snapshot": "node ./lib/migrate_snapshot.js",
+        "s3:sync": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "docs:md": "ts-doc-gen --sourceDir=./src --output=./docs --tsconfig=./typedoc-tsconfig.json; yarn s3:sync",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES",
         "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"${npm_package_config_snapshot_name}-${npm_package_version}.zip\" ${npm_package_config_snapshot_name}",
         "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
@@ -38,6 +40,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@0x/dev-utils": "^2.3.1",
+        "@0x/ts-doc-gen": "^0.0.6",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.4.1",
         "@types/yargs": "^11.0.0",
@@ -45,7 +48,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "tslint": "5.11.0",
-        "typedoc": "0.13.0",
+        "typedoc": "^0.15.0",
         "typescript": "3.0.1",
         "web3-provider-engine": "14.0.6",
         "yargs": "^10.0.3"

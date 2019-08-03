@@ -1,0 +1,2026 @@
+> # Class: Web3Wrapper
+
+An alternative to the Web3.js library that provides a consistent, clean, promise-based interface.
+
+## Hierarchy
+
+* **Web3Wrapper**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Properties
+
+* [abiDecoder](#abidecoder)
+* [isZeroExWeb3Wrapper](#iszeroexweb3wrapper)
+
+### Methods
+
+* [awaitTransactionMinedAsync](#awaittransactionminedasync)
+* [awaitTransactionSuccessAsync](#awaittransactionsuccessasync)
+* [callAsync](#callasync)
+* [doesContractExistAtAddressAsync](#doescontractexistataddressasync)
+* [estimateGasAsync](#estimategasasync)
+* [getAvailableAddressesAsync](#getavailableaddressesasync)
+* [getBalanceInWeiAsync](#getbalanceinweiasync)
+* [getBlockIfExistsAsync](#getblockifexistsasync)
+* [getBlockNumberAsync](#getblocknumberasync)
+* [getBlockTimestampAsync](#getblocktimestampasync)
+* [getBlockWithTransactionDataAsync](#getblockwithtransactiondataasync)
+* [getContractCodeAsync](#getcontractcodeasync)
+* [getContractDefaults](#getcontractdefaults)
+* [getLogsAsync](#getlogsasync)
+* [getNetworkIdAsync](#getnetworkidasync)
+* [getNodeTypeAsync](#getnodetypeasync)
+* [getNodeVersionAsync](#getnodeversionasync)
+* [getProvider](#getprovider)
+* [getTransactionByHashAsync](#gettransactionbyhashasync)
+* [getTransactionReceiptIfExistsAsync](#gettransactionreceiptifexistsasync)
+* [getTransactionTraceAsync](#gettransactiontraceasync)
+* [increaseTimeAsync](#increasetimeasync)
+* [isSenderAddressAvailableAsync](#issenderaddressavailableasync)
+* [mineBlockAsync](#mineblockasync)
+* [revertSnapshotAsync](#revertsnapshotasync)
+* [sendRawPayloadAsync](#sendrawpayloadasync)
+* [sendTransactionAsync](#sendtransactionasync)
+* [setHeadAsync](#setheadasync)
+* [setProvider](#setprovider)
+* [signMessageAsync](#signmessageasync)
+* [signTypedDataAsync](#signtypeddataasync)
+* [takeSnapshotAsync](#takesnapshotasync)
+* [isAddress](#static-isaddress)
+* [toBaseUnitAmount](#static-tobaseunitamount)
+* [toUnitAmount](#static-tounitamount)
+* [toWei](#static-towei)
+
+## Constructors
+
+###  constructor
+
+\+ **new Web3Wrapper**(`supportedProvider`: `SupportedProvider`, `callAndTxnDefaults`: `Partial<CallData>`): *[Web3Wrapper](#class-web3wrapper)*
+
+*Defined in [web3_wrapper.ts:145](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L145)*
+
+Instantiates a new Web3Wrapper.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`supportedProvider` | `SupportedProvider` | - | - |
+`callAndTxnDefaults` | `Partial<CallData>` |  {} | Override Call and Txn Data defaults sent with RPC requests to the backing Ethereum node. |
+
+**Returns:** *[Web3Wrapper](#class-web3wrapper)*
+
+An instance of the Web3Wrapper class.
+
+## Properties
+
+###  abiDecoder
+
+• **abiDecoder**: *`AbiDecoder`*
+
+*Defined in [web3_wrapper.ts:54](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L54)*
+
+___
+
+###  isZeroExWeb3Wrapper
+
+• **isZeroExWeb3Wrapper**: *boolean* = true
+
+*Defined in [web3_wrapper.ts:53](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L53)*
+
+Flag to check if this instance is of type Web3Wrapper
+
+## Methods
+
+###  awaitTransactionMinedAsync
+
+▸ **awaitTransactionMinedAsync**(`txHash`: string, `pollingIntervalMs`: number, `timeoutMs?`: undefined | number): *`Promise<TransactionReceiptWithDecodedLogs>`*
+
+*Defined in [web3_wrapper.ts:568](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L568)*
+
+Waits for a transaction to be mined and returns the transaction receipt.
+Note that just because a transaction was mined does not mean it was
+successful. You need to check the status code of the transaction receipt
+to find out if it was successful, or use the helper method
+awaitTransactionSuccessAsync.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`txHash` | string | - | Transaction hash |
+`pollingIntervalMs` | number | 1000 | How often (in ms) should we check if the transaction is mined. |
+`timeoutMs?` | undefined \| number | - | How long (in ms) to poll for transaction mined until aborting. |
+
+**Returns:** *`Promise<TransactionReceiptWithDecodedLogs>`*
+
+Transaction receipt with decoded log args.
+
+___
+
+###  awaitTransactionSuccessAsync
+
+▸ **awaitTransactionSuccessAsync**(`txHash`: string, `pollingIntervalMs`: number, `timeoutMs?`: undefined | number): *`Promise<TransactionReceiptWithDecodedLogs>`*
+
+*Defined in [web3_wrapper.ts:643](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L643)*
+
+Waits for a transaction to be mined and returns the transaction receipt.
+Unlike awaitTransactionMinedAsync, it will throw if the receipt has a
+status that is not equal to 1. A status of 0 or null indicates that the
+transaction was mined, but failed. See:
+https://github.com/ethereum/wiki/wiki/JavaScript-API#web3ethgettransactionreceipt
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`txHash` | string | - | Transaction hash |
+`pollingIntervalMs` | number | 1000 | How often (in ms) should we check if the transaction is mined. |
+`timeoutMs?` | undefined \| number | - | How long (in ms) to poll for transaction mined until aborting. |
+
+**Returns:** *`Promise<TransactionReceiptWithDecodedLogs>`*
+
+Transaction receipt with decoded log args.
+
+___
+
+###  callAsync
+
+▸ **callAsync**(`callData`: `CallData`, `defaultBlock?`: `BlockParam`): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:525](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L525)*
+
+Call a smart contract method at a given block height
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`callData` | `CallData` | Call data |
+`defaultBlock?` | `BlockParam` | Block height at which to make the call. Defaults to `latest` |
+
+**Returns:** *`Promise<string>`*
+
+The raw call result
+
+___
+
+###  doesContractExistAtAddressAsync
+
+▸ **doesContractExistAtAddressAsync**(`address`: string): *`Promise<boolean>`*
+
+*Defined in [web3_wrapper.ts:273](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L273)*
+
+Check if a contract exists at a given address
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address to which to check |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether or not contract code was found at the supplied address
+
+___
+
+###  estimateGasAsync
+
+▸ **estimateGasAsync**(`txData`: `Partial<TxData>`): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:508](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L508)*
+
+Calculate the estimated gas cost for a given transaction
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txData` | `Partial<TxData>` | Transaction data |
+
+**Returns:** *`Promise<number>`*
+
+Estimated gas cost
+
+___
+
+###  getAvailableAddressesAsync
+
+▸ **getAvailableAddressesAsync**(): *`Promise<string[]>`*
+
+*Defined in [web3_wrapper.ts:421](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L421)*
+
+Retrieve the user addresses available through the backing provider
+
+**Returns:** *`Promise<string[]>`*
+
+Available user addresses
+
+___
+
+###  getBalanceInWeiAsync
+
+▸ **getBalanceInWeiAsync**(`owner`: string, `defaultBlock?`: `BlockParam`): *`Promise<BigNumber>`*
+
+*Defined in [web3_wrapper.ts:254](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L254)*
+
+Retrieves an accounts Ether balance in wei
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`owner` | string | Account whose balance you wish to check |
+`defaultBlock?` | `BlockParam` | The block depth at which to fetch the balance (default=latest) |
+
+**Returns:** *`Promise<BigNumber>`*
+
+Balance in wei
+
+___
+
+###  getBlockIfExistsAsync
+
+▸ **getBlockIfExistsAsync**(`blockParam`: string | `BlockParam`): *`Promise<BlockWithoutTransactionData | undefined>`*
+
+*Defined in [web3_wrapper.ts:361](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L361)*
+
+Fetch a specific Ethereum block without transaction data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`blockParam` | string \| `BlockParam` | The block you wish to fetch (blockHash, blockNumber or blockLiteral) |
+
+**Returns:** *`Promise<BlockWithoutTransactionData | undefined>`*
+
+The requested block without transaction data, or undefined if block was not found
+(e.g the node isn't fully synced, there was a block re-org and the requested block was uncles, etc...)
+
+___
+
+###  getBlockNumberAsync
+
+▸ **getBlockNumberAsync**(): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:347](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L347)*
+
+Fetches the latest block number
+
+**Returns:** *`Promise<number>`*
+
+Block number
+
+___
+
+###  getBlockTimestampAsync
+
+▸ **getBlockTimestampAsync**(`blockParam`: string | `BlockParam`): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:409](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L409)*
+
+Fetch a block's timestamp
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`blockParam` | string \| `BlockParam` | The block you wish to fetch (blockHash, blockNumber or blockLiteral) |
+
+**Returns:** *`Promise<number>`*
+
+The block's timestamp
+
+___
+
+###  getBlockWithTransactionDataAsync
+
+▸ **getBlockWithTransactionDataAsync**(`blockParam`: string | `BlockParam`): *`Promise<BlockWithTransactionData>`*
+
+*Defined in [web3_wrapper.ts:387](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L387)*
+
+Fetch a specific Ethereum block with transaction data
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`blockParam` | string \| `BlockParam` | The block you wish to fetch (blockHash, blockNumber or blockLiteral) |
+
+**Returns:** *`Promise<BlockWithTransactionData>`*
+
+The requested block with transaction data
+
+___
+
+###  getContractCodeAsync
+
+▸ **getContractCodeAsync**(`address`: string, `defaultBlock?`: `BlockParam`): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:286](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L286)*
+
+Gets the contract code by address
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of the contract |
+`defaultBlock?` | `BlockParam` | Block height at which to make the call. Defaults to `latest` |
+
+**Returns:** *`Promise<string>`*
+
+Code of the contract
+
+___
+
+###  getContractDefaults
+
+▸ **getContractDefaults**(): *`Partial<CallData>` | undefined*
+
+*Defined in [web3_wrapper.ts:164](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L164)*
+
+Get the contract defaults set to the Web3Wrapper instance
+
+**Returns:** *`Partial<CallData>` | undefined*
+
+CallAndTxnData defaults (e.g gas, gasPrice, nonce, etc...)
+
+___
+
+###  getLogsAsync
+
+▸ **getLogsAsync**(`filter`: `FilterObject`): *`Promise<LogEntry[]>`*
+
+*Defined in [web3_wrapper.ts:475](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L475)*
+
+Retrieve smart contract logs for a given filter
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`filter` | `FilterObject` | Parameters by which to filter which logs to retrieve |
+
+**Returns:** *`Promise<LogEntry[]>`*
+
+The corresponding log entries
+
+___
+
+###  getNetworkIdAsync
+
+▸ **getNetworkIdAsync**(): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:207](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L207)*
+
+Fetches the networkId of the backing Ethereum node
+
+**Returns:** *`Promise<number>`*
+
+The network id
+
+___
+
+###  getNodeTypeAsync
+
+▸ **getNodeTypeAsync**(): *`Promise<NodeType>`*
+
+*Defined in [web3_wrapper.ts:690](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L690)*
+
+Returns either NodeType.Geth or NodeType.Ganache depending on the type of
+the backing Ethereum node. Throws for any other type of node.
+
+**Returns:** *`Promise<NodeType>`*
+
+___
+
+###  getNodeVersionAsync
+
+▸ **getNodeVersionAsync**(): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:199](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L199)*
+
+Fetch the backing Ethereum node's version string (e.g `MetaMask/v4.2.0`)
+
+**Returns:** *`Promise<string>`*
+
+Ethereum node's version string
+
+___
+
+###  getProvider
+
+▸ **getProvider**(): *`SupportedProvider`*
+
+*Defined in [web3_wrapper.ts:171](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L171)*
+
+Retrieve the Web3 provider
+
+**Returns:** *`SupportedProvider`*
+
+Web3 provider instance
+
+___
+
+###  getTransactionByHashAsync
+
+▸ **getTransactionByHashAsync**(`txHash`: string): *`Promise<Transaction>`*
+
+*Defined in [web3_wrapper.ts:239](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L239)*
+
+Retrieves the transaction data for a given transaction
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txHash` | string | Transaction hash |
+
+**Returns:** *`Promise<Transaction>`*
+
+The raw transaction data
+
+___
+
+###  getTransactionReceiptIfExistsAsync
+
+▸ **getTransactionReceiptIfExistsAsync**(`txHash`: string): *`Promise<TransactionReceipt | undefined>`*
+
+*Defined in [web3_wrapper.ts:217](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L217)*
+
+Retrieves the transaction receipt for a given transaction hash if found
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txHash` | string | Transaction hash |
+
+**Returns:** *`Promise<TransactionReceipt | undefined>`*
+
+The transaction receipt, including it's status (0: failed, 1: succeeded). Returns undefined if transaction not found.
+
+___
+
+###  getTransactionTraceAsync
+
+▸ **getTransactionTraceAsync**(`txHash`: string, `traceParams`: `TraceParams`): *`Promise<TransactionTrace>`*
+
+*Defined in [web3_wrapper.ts:305](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L305)*
+
+Gets the debug trace of a transaction
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txHash` | string | Hash of the transactuon to get a trace for |
+`traceParams` | `TraceParams` | Config object allowing you to specify if you need memory/storage/stack traces. |
+
+**Returns:** *`Promise<TransactionTrace>`*
+
+Transaction trace
+
+___
+
+###  increaseTimeAsync
+
+▸ **increaseTimeAsync**(`timeDelta`: number): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:458](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L458)*
+
+Increase the next blocks timestamp on TestRPC/Ganache or Geth local node.
+Will throw if provider is neither TestRPC/Ganache or Geth.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`timeDelta` | number | Amount of time to add in seconds  |
+
+**Returns:** *`Promise<number>`*
+
+___
+
+###  isSenderAddressAvailableAsync
+
+▸ **isSenderAddressAvailableAsync**(`senderAddress`: string): *`Promise<boolean>`*
+
+*Defined in [web3_wrapper.ts:189](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L189)*
+
+Check whether an address is available through the backing provider. This can be
+useful if you want to know whether a user can sign messages or transactions from
+a given Ethereum address.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`senderAddress` | string | Address to check availability for |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the address is available through the provider.
+
+___
+
+###  mineBlockAsync
+
+▸ **mineBlockAsync**(): *`Promise<void>`*
+
+*Defined in [web3_wrapper.ts:450](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L450)*
+
+Mine a block on a TestRPC/Ganache local node
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  revertSnapshotAsync
+
+▸ **revertSnapshotAsync**(`snapshotId`: number): *`Promise<boolean>`*
+
+*Defined in [web3_wrapper.ts:442](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L442)*
+
+Revert the blockchain state to a previous snapshot state on TestRPC/Ganache local node
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`snapshotId` | number | snapshot id to revert to |
+
+**Returns:** *`Promise<boolean>`*
+
+Whether the revert was successful
+
+___
+
+###  sendRawPayloadAsync
+
+▸ **sendRawPayloadAsync**<**A**>(`payload`: `Partial<JSONRPCRequestPayload>`): *`Promise<A>`*
+
+*Defined in [web3_wrapper.ts:671](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L671)*
+
+Sends a raw Ethereum JSON RPC payload and returns the response's `result` key
+
+**Type parameters:**
+
+▪ **A**
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayload>` | A partial JSON RPC payload. No need to include version, id, params (if none needed) |
+
+**Returns:** *`Promise<A>`*
+
+The contents nested under the result key of the response body
+
+___
+
+###  sendTransactionAsync
+
+▸ **sendTransactionAsync**(`txData`: `TxData`): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:547](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L547)*
+
+Send a transaction
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txData` | `TxData` | Transaction data |
+
+**Returns:** *`Promise<string>`*
+
+Transaction hash
+
+___
+
+###  setHeadAsync
+
+▸ **setHeadAsync**(`blockNumber`: number): *`Promise<void>`*
+
+*Defined in [web3_wrapper.ts:662](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L662)*
+
+Calls the 'debug_setHead' JSON RPC method, which sets the current head of
+the local chain by block number. Note, this is a destructive action and
+may severely damage your chain. Use with extreme caution. As of now, this
+is only supported by Geth. It sill throw if the 'debug_setHead' method is
+not supported.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`blockNumber` | number | The block number to reset to.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setProvider
+
+▸ **setProvider**(`supportedProvider`: `SupportedProvider`): *void*
+
+*Defined in [web3_wrapper.ts:178](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L178)*
+
+Update the used Web3 provider
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`supportedProvider` | `SupportedProvider` |
+
+**Returns:** *void*
+
+___
+
+###  signMessageAsync
+
+▸ **signMessageAsync**(`address`: string, `message`: string): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:319](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L319)*
+
+Sign a message with a specific address's private key (`eth_sign`)
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of signer |
+`message` | string | Message to sign |
+
+**Returns:** *`Promise<string>`*
+
+Signature string (might be VRS or RSV depending on the Signer)
+
+___
+
+###  signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: any): *`Promise<string>`*
+
+*Defined in [web3_wrapper.ts:334](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L334)*
+
+Sign an EIP712 typed data message with a specific address's private key (`eth_signTypedData`)
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of signer |
+`typedData` | any | Typed data message to sign |
+
+**Returns:** *`Promise<string>`*
+
+Signature string (as RSV)
+
+___
+
+###  takeSnapshotAsync
+
+▸ **takeSnapshotAsync**(): *`Promise<number>`*
+
+*Defined in [web3_wrapper.ts:433](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L433)*
+
+Take a snapshot of the blockchain state on a TestRPC/Ganache local node
+
+**Returns:** *`Promise<number>`*
+
+The snapshot id. This can be used to revert to this snapshot
+
+___
+
+### `Static` isAddress
+
+▸ **isAddress**(`address`: string): *boolean*
+
+*Defined in [web3_wrapper.ts:65](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L65)*
+
+Check if an address is a valid Ethereum address
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address to check |
+
+**Returns:** *boolean*
+
+Whether the address is a valid Ethereum address
+
+___
+
+### `Static` toBaseUnitAmount
+
+▸ **toBaseUnitAmount**(`amount`: `BigNumber`, `decimals`: number): *`BigNumber`*
+
+*Defined in [web3_wrapper.ts:91](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L91)*
+
+A baseUnit is defined as the smallest denomination of a token. An amount expressed in baseUnits
+is the amount expressed in the smallest denomination.
+E.g: 1 unit of a token with 18 decimal places is expressed in baseUnits as 1000000000000000000
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`amount` | `BigNumber` | The amount of units that you would like converted to baseUnits. |
+`decimals` | number | The number of decimal places the unit amount has. |
+
+**Returns:** *`BigNumber`*
+
+The amount in baseUnits.
+
+___
+
+### `Static` toUnitAmount
+
+▸ **toUnitAmount**(`amount`: `BigNumber`, `decimals`: number): *`BigNumber`*
+
+*Defined in [web3_wrapper.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L76)*
+
+A unit amount is defined as the amount of a token above the specified decimal places (integer part).
+E.g: If a currency has 18 decimal places, 1e18 or one quintillion of the currency is equivalent
+to 1 unit.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`amount` | `BigNumber` | The amount in baseUnits that you would like converted to units. |
+`decimals` | number | The number of decimal places the unit amount has. |
+
+**Returns:** *`BigNumber`*
+
+The amount in units.
+
+___
+
+### `Static` toWei
+
+▸ **toWei**(`ethAmount`: `BigNumber`): *`BigNumber`*
+
+*Defined in [web3_wrapper.ts:107](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/web3_wrapper.ts#L107)*
+
+Convert an Ether amount from ETH to Wei
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`ethAmount` | `BigNumber` | Amount of Ether to convert to wei |
+
+**Returns:** *`BigNumber`*
+
+Amount in wei
+
+<hr />
+
+> # Enumeration: NodeType
+
+## Index
+
+### Enumeration members
+
+* [Ganache](#ganache)
+* [Geth](#geth)
+
+## Enumeration members
+
+###  Ganache
+
+• **Ganache**: = "GANACHE"
+
+*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L91)*
+
+___
+
+###  Geth
+
+• **Geth**: = "GETH"
+
+*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L90)*
+
+<hr />
+
+> # Enumeration: Web3WrapperErrors
+
+## Index
+
+### Enumeration members
+
+* [TransactionMiningTimeout](#transactionminingtimeout)
+
+## Enumeration members
+
+###  TransactionMiningTimeout
+
+• **TransactionMiningTimeout**: = "TRANSACTION_MINING_TIMEOUT"
+
+*Defined in [types.ts:2](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L2)*
+
+<hr />
+
+> # Interface: AbstractBlockRPC
+
+## Hierarchy
+
+* **AbstractBlockRPC**
+
+  * [BlockWithoutTransactionDataRPC](#interface-blockwithouttransactiondatarpc)
+
+  * [BlockWithTransactionDataRPC](#interface-blockwithtransactiondatarpc)
+
+## Index
+
+### Properties
+
+* [difficulty](#difficulty)
+* [extraData](#extradata)
+* [gasLimit](#gaslimit)
+* [gasUsed](#gasused)
+* [hash](#hash)
+* [logsBloom](#logsbloom)
+* [miner](#miner)
+* [nonce](#nonce)
+* [number](#number)
+* [parentHash](#parenthash)
+* [sha3Uncles](#sha3uncles)
+* [size](#size)
+* [stateRoot](#stateroot)
+* [timestamp](#timestamp)
+* [totalDifficulty](#totaldifficulty)
+* [transactionsRoot](#transactionsroot)
+* [uncles](#uncles)
+
+## Properties
+
+###  difficulty
+
+• **difficulty**: *string*
+
+*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L15)*
+
+___
+
+###  extraData
+
+• **extraData**: *string*
+
+*Defined in [types.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L17)*
+
+___
+
+###  gasLimit
+
+• **gasLimit**: *string*
+
+*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L19)*
+
+___
+
+###  gasUsed
+
+• **gasUsed**: *string*
+
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L20)*
+
+___
+
+###  hash
+
+• **hash**: *string | null*
+
+*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L7)*
+
+___
+
+###  logsBloom
+
+• **logsBloom**: *string | null*
+
+*Defined in [types.ts:11](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L11)*
+
+___
+
+###  miner
+
+• **miner**: *string*
+
+*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L14)*
+
+___
+
+###  nonce
+
+• **nonce**: *string | null*
+
+*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L9)*
+
+___
+
+###  number
+
+• **number**: *string | null*
+
+*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L6)*
+
+___
+
+###  parentHash
+
+• **parentHash**: *string*
+
+*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L8)*
+
+___
+
+###  sha3Uncles
+
+• **sha3Uncles**: *string*
+
+*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L10)*
+
+___
+
+###  size
+
+• **size**: *string*
+
+*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L18)*
+
+___
+
+###  stateRoot
+
+• **stateRoot**: *string*
+
+*Defined in [types.ts:13](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L13)*
+
+___
+
+###  timestamp
+
+• **timestamp**: *string*
+
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L21)*
+
+___
+
+###  totalDifficulty
+
+• **totalDifficulty**: *string*
+
+*Defined in [types.ts:16](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L16)*
+
+___
+
+###  transactionsRoot
+
+• **transactionsRoot**: *string*
+
+*Defined in [types.ts:12](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L12)*
+
+___
+
+###  uncles
+
+• **uncles**: *string[]*
+
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L22)*
+
+<hr />
+
+> # Interface: BlockWithoutTransactionDataRPC
+
+## Hierarchy
+
+* [AbstractBlockRPC](#interface-abstractblockrpc)
+
+  * **BlockWithoutTransactionDataRPC**
+
+## Index
+
+### Properties
+
+* [difficulty](#difficulty)
+* [extraData](#extradata)
+* [gasLimit](#gaslimit)
+* [gasUsed](#gasused)
+* [hash](#hash)
+* [logsBloom](#logsbloom)
+* [miner](#miner)
+* [nonce](#nonce)
+* [number](#number)
+* [parentHash](#parenthash)
+* [sha3Uncles](#sha3uncles)
+* [size](#size)
+* [stateRoot](#stateroot)
+* [timestamp](#timestamp)
+* [totalDifficulty](#totaldifficulty)
+* [transactions](#transactions)
+* [transactionsRoot](#transactionsroot)
+* [uncles](#uncles)
+
+## Properties
+
+###  difficulty
+
+• **difficulty**: *string*
+
+*Inherited from [AbstractBlockRPC](#difficulty)*
+
+*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L15)*
+
+___
+
+###  extraData
+
+• **extraData**: *string*
+
+*Inherited from [AbstractBlockRPC](#extradata)*
+
+*Defined in [types.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L17)*
+
+___
+
+###  gasLimit
+
+• **gasLimit**: *string*
+
+*Inherited from [AbstractBlockRPC](#gaslimit)*
+
+*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L19)*
+
+___
+
+###  gasUsed
+
+• **gasUsed**: *string*
+
+*Inherited from [AbstractBlockRPC](#gasused)*
+
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L20)*
+
+___
+
+###  hash
+
+• **hash**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#hash)*
+
+*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L7)*
+
+___
+
+###  logsBloom
+
+• **logsBloom**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#logsbloom)*
+
+*Defined in [types.ts:11](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L11)*
+
+___
+
+###  miner
+
+• **miner**: *string*
+
+*Inherited from [AbstractBlockRPC](#miner)*
+
+*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L14)*
+
+___
+
+###  nonce
+
+• **nonce**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#nonce)*
+
+*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L9)*
+
+___
+
+###  number
+
+• **number**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#number)*
+
+*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L6)*
+
+___
+
+###  parentHash
+
+• **parentHash**: *string*
+
+*Inherited from [AbstractBlockRPC](#parenthash)*
+
+*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L8)*
+
+___
+
+###  sha3Uncles
+
+• **sha3Uncles**: *string*
+
+*Inherited from [AbstractBlockRPC](#sha3uncles)*
+
+*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L10)*
+
+___
+
+###  size
+
+• **size**: *string*
+
+*Inherited from [AbstractBlockRPC](#size)*
+
+*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L18)*
+
+___
+
+###  stateRoot
+
+• **stateRoot**: *string*
+
+*Inherited from [AbstractBlockRPC](#stateroot)*
+
+*Defined in [types.ts:13](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L13)*
+
+___
+
+###  timestamp
+
+• **timestamp**: *string*
+
+*Inherited from [AbstractBlockRPC](#timestamp)*
+
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L21)*
+
+___
+
+###  totalDifficulty
+
+• **totalDifficulty**: *string*
+
+*Inherited from [AbstractBlockRPC](#totaldifficulty)*
+
+*Defined in [types.ts:16](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L16)*
+
+___
+
+###  transactions
+
+• **transactions**: *string[]*
+
+*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L25)*
+
+___
+
+###  transactionsRoot
+
+• **transactionsRoot**: *string*
+
+*Inherited from [AbstractBlockRPC](#transactionsroot)*
+
+*Defined in [types.ts:12](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L12)*
+
+___
+
+###  uncles
+
+• **uncles**: *string[]*
+
+*Inherited from [AbstractBlockRPC](#uncles)*
+
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L22)*
+
+<hr />
+
+> # Interface: BlockWithTransactionDataRPC
+
+## Hierarchy
+
+* [AbstractBlockRPC](#interface-abstractblockrpc)
+
+  * **BlockWithTransactionDataRPC**
+
+## Index
+
+### Properties
+
+* [difficulty](#difficulty)
+* [extraData](#extradata)
+* [gasLimit](#gaslimit)
+* [gasUsed](#gasused)
+* [hash](#hash)
+* [logsBloom](#logsbloom)
+* [miner](#miner)
+* [nonce](#nonce)
+* [number](#number)
+* [parentHash](#parenthash)
+* [sha3Uncles](#sha3uncles)
+* [size](#size)
+* [stateRoot](#stateroot)
+* [timestamp](#timestamp)
+* [totalDifficulty](#totaldifficulty)
+* [transactions](#transactions)
+* [transactionsRoot](#transactionsroot)
+* [uncles](#uncles)
+
+## Properties
+
+###  difficulty
+
+• **difficulty**: *string*
+
+*Inherited from [AbstractBlockRPC](#difficulty)*
+
+*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L15)*
+
+___
+
+###  extraData
+
+• **extraData**: *string*
+
+*Inherited from [AbstractBlockRPC](#extradata)*
+
+*Defined in [types.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L17)*
+
+___
+
+###  gasLimit
+
+• **gasLimit**: *string*
+
+*Inherited from [AbstractBlockRPC](#gaslimit)*
+
+*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L19)*
+
+___
+
+###  gasUsed
+
+• **gasUsed**: *string*
+
+*Inherited from [AbstractBlockRPC](#gasused)*
+
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L20)*
+
+___
+
+###  hash
+
+• **hash**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#hash)*
+
+*Defined in [types.ts:7](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L7)*
+
+___
+
+###  logsBloom
+
+• **logsBloom**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#logsbloom)*
+
+*Defined in [types.ts:11](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L11)*
+
+___
+
+###  miner
+
+• **miner**: *string*
+
+*Inherited from [AbstractBlockRPC](#miner)*
+
+*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L14)*
+
+___
+
+###  nonce
+
+• **nonce**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#nonce)*
+
+*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L9)*
+
+___
+
+###  number
+
+• **number**: *string | null*
+
+*Inherited from [AbstractBlockRPC](#number)*
+
+*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L6)*
+
+___
+
+###  parentHash
+
+• **parentHash**: *string*
+
+*Inherited from [AbstractBlockRPC](#parenthash)*
+
+*Defined in [types.ts:8](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L8)*
+
+___
+
+###  sha3Uncles
+
+• **sha3Uncles**: *string*
+
+*Inherited from [AbstractBlockRPC](#sha3uncles)*
+
+*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L10)*
+
+___
+
+###  size
+
+• **size**: *string*
+
+*Inherited from [AbstractBlockRPC](#size)*
+
+*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L18)*
+
+___
+
+###  stateRoot
+
+• **stateRoot**: *string*
+
+*Inherited from [AbstractBlockRPC](#stateroot)*
+
+*Defined in [types.ts:13](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L13)*
+
+___
+
+###  timestamp
+
+• **timestamp**: *string*
+
+*Inherited from [AbstractBlockRPC](#timestamp)*
+
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L21)*
+
+___
+
+###  totalDifficulty
+
+• **totalDifficulty**: *string*
+
+*Inherited from [AbstractBlockRPC](#totaldifficulty)*
+
+*Defined in [types.ts:16](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L16)*
+
+___
+
+###  transactions
+
+• **transactions**: *[TransactionRPC](#interface-transactionrpc)[]*
+
+*Defined in [types.ts:28](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L28)*
+
+___
+
+###  transactionsRoot
+
+• **transactionsRoot**: *string*
+
+*Inherited from [AbstractBlockRPC](#transactionsroot)*
+
+*Defined in [types.ts:12](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L12)*
+
+___
+
+###  uncles
+
+• **uncles**: *string[]*
+
+*Inherited from [AbstractBlockRPC](#uncles)*
+
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L22)*
+
+<hr />
+
+> # Interface: CallDataRPC
+
+## Hierarchy
+
+* [CallTxDataBaseRPC](#interface-calltxdatabaserpc)
+
+  * **CallDataRPC**
+
+## Index
+
+### Properties
+
+* [data](#optional-data)
+* [from](#optional-from)
+* [gas](#optional-gas)
+* [gasPrice](#optional-gasprice)
+* [nonce](#optional-nonce)
+* [to](#optional-to)
+* [value](#optional-value)
+
+## Properties
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-data)*
+
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L76)*
+
+___
+
+### `Optional` from
+
+• **from**? : *undefined | string*
+
+*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L85)*
+
+___
+
+### `Optional` gas
+
+• **gas**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-gas)*
+
+*Defined in [types.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L74)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-gasprice)*
+
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L75)*
+
+___
+
+### `Optional` nonce
+
+• **nonce**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-nonce)*
+
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L77)*
+
+___
+
+### `Optional` to
+
+• **to**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-to)*
+
+*Defined in [types.ts:72](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L72)*
+
+___
+
+### `Optional` value
+
+• **value**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-value)*
+
+*Defined in [types.ts:73](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L73)*
+
+<hr />
+
+> # Interface: CallTxDataBaseRPC
+
+## Hierarchy
+
+* **CallTxDataBaseRPC**
+
+  * [TxDataRPC](#interface-txdatarpc)
+
+  * [CallDataRPC](#interface-calldatarpc)
+
+## Index
+
+### Properties
+
+* [data](#optional-data)
+* [gas](#optional-gas)
+* [gasPrice](#optional-gasprice)
+* [nonce](#optional-nonce)
+* [to](#optional-to)
+* [value](#optional-value)
+
+## Properties
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L76)*
+
+___
+
+### `Optional` gas
+
+• **gas**? : *undefined | string*
+
+*Defined in [types.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L74)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *undefined | string*
+
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L75)*
+
+___
+
+### `Optional` nonce
+
+• **nonce**? : *undefined | string*
+
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L77)*
+
+___
+
+### `Optional` to
+
+• **to**? : *undefined | string*
+
+*Defined in [types.ts:72](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L72)*
+
+___
+
+### `Optional` value
+
+• **value**? : *undefined | string*
+
+*Defined in [types.ts:73](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L73)*
+
+<hr />
+
+> # Interface: LogEntryRPC
+
+## Hierarchy
+
+* **LogEntryRPC**
+
+## Index
+
+### Properties
+
+* [address](#address)
+* [blockHash](#blockhash)
+* [blockNumber](#blocknumber)
+* [data](#data)
+* [logIndex](#logindex)
+* [topics](#topics)
+* [transactionHash](#transactionhash)
+* [transactionIndex](#transactionindex)
+
+## Properties
+
+###  address
+
+• **address**: *string*
+
+*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L64)*
+
+___
+
+###  blockHash
+
+• **blockHash**: *string | null*
+
+*Defined in [types.ts:62](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L62)*
+
+___
+
+###  blockNumber
+
+• **blockNumber**: *string | null*
+
+*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L63)*
+
+___
+
+###  data
+
+• **data**: *string*
+
+*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L65)*
+
+___
+
+###  logIndex
+
+• **logIndex**: *string | null*
+
+*Defined in [types.ts:59](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L59)*
+
+___
+
+###  topics
+
+• **topics**: *string[]*
+
+*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L66)*
+
+___
+
+###  transactionHash
+
+• **transactionHash**: *string*
+
+*Defined in [types.ts:61](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L61)*
+
+___
+
+###  transactionIndex
+
+• **transactionIndex**: *string | null*
+
+*Defined in [types.ts:60](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L60)*
+
+<hr />
+
+> # Interface: TransactionReceiptRPC
+
+## Hierarchy
+
+* **TransactionReceiptRPC**
+
+## Index
+
+### Properties
+
+* [blockHash](#blockhash)
+* [blockNumber](#blocknumber)
+* [contractAddress](#contractaddress)
+* [cumulativeGasUsed](#cumulativegasused)
+* [from](#from)
+* [gasUsed](#gasused)
+* [logs](#logs)
+* [status](#status)
+* [to](#to)
+* [transactionHash](#transactionhash)
+* [transactionIndex](#transactionindex)
+
+## Properties
+
+###  blockHash
+
+• **blockHash**: *string*
+
+*Defined in [types.ts:45](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L45)*
+
+___
+
+###  blockNumber
+
+• **blockNumber**: *string*
+
+*Defined in [types.ts:46](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L46)*
+
+___
+
+###  contractAddress
+
+• **contractAddress**: *string | null*
+
+*Defined in [types.ts:54](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L54)*
+
+___
+
+###  cumulativeGasUsed
+
+• **cumulativeGasUsed**: *string*
+
+*Defined in [types.ts:52](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L52)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L49)*
+
+___
+
+###  gasUsed
+
+• **gasUsed**: *string*
+
+*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L53)*
+
+___
+
+###  logs
+
+• **logs**: *[LogEntryRPC](#interface-logentryrpc)[]*
+
+*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L55)*
+
+___
+
+###  status
+
+• **status**: *[TransactionReceiptStatusRPC](#transactionreceiptstatusrpc)*
+
+*Defined in [types.ts:51](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L51)*
+
+___
+
+###  to
+
+• **to**: *string*
+
+*Defined in [types.ts:50](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L50)*
+
+___
+
+###  transactionHash
+
+• **transactionHash**: *string*
+
+*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L47)*
+
+___
+
+###  transactionIndex
+
+• **transactionIndex**: *string*
+
+*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L48)*
+
+<hr />
+
+> # Interface: TransactionRPC
+
+## Hierarchy
+
+* **TransactionRPC**
+
+## Index
+
+### Properties
+
+* [blockHash](#blockhash)
+* [blockNumber](#blocknumber)
+* [from](#from)
+* [gas](#gas)
+* [gasPrice](#gasprice)
+* [hash](#hash)
+* [input](#input)
+* [nonce](#nonce)
+* [to](#to)
+* [transactionIndex](#transactionindex)
+* [value](#value)
+
+## Properties
+
+###  blockHash
+
+• **blockHash**: *string | null*
+
+*Defined in [types.ts:33](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L33)*
+
+___
+
+###  blockNumber
+
+• **blockNumber**: *string | null*
+
+*Defined in [types.ts:34](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L34)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L36)*
+
+___
+
+###  gas
+
+• **gas**: *string*
+
+*Defined in [types.ts:40](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L40)*
+
+___
+
+###  gasPrice
+
+• **gasPrice**: *string*
+
+*Defined in [types.ts:39](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L39)*
+
+___
+
+###  hash
+
+• **hash**: *string*
+
+*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L31)*
+
+___
+
+###  input
+
+• **input**: *string*
+
+*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L41)*
+
+___
+
+###  nonce
+
+• **nonce**: *string*
+
+*Defined in [types.ts:32](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L32)*
+
+___
+
+###  to
+
+• **to**: *string | null*
+
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L37)*
+
+___
+
+###  transactionIndex
+
+• **transactionIndex**: *string | null*
+
+*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L35)*
+
+___
+
+###  value
+
+• **value**: *string*
+
+*Defined in [types.ts:38](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L38)*
+
+<hr />
+
+> # Interface: TxDataRPC
+
+## Hierarchy
+
+* [CallTxDataBaseRPC](#interface-calltxdatabaserpc)
+
+  * **TxDataRPC**
+
+## Index
+
+### Properties
+
+* [data](#optional-data)
+* [from](#from)
+* [gas](#optional-gas)
+* [gasPrice](#optional-gasprice)
+* [nonce](#optional-nonce)
+* [to](#optional-to)
+* [value](#optional-value)
+
+## Properties
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-data)*
+
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L76)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L81)*
+
+___
+
+### `Optional` gas
+
+• **gas**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-gas)*
+
+*Defined in [types.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L74)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-gasprice)*
+
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L75)*
+
+___
+
+### `Optional` nonce
+
+• **nonce**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-nonce)*
+
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L77)*
+
+___
+
+### `Optional` to
+
+• **to**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-to)*
+
+*Defined in [types.ts:72](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L72)*
+
+___
+
+### `Optional` value
+
+• **value**? : *undefined | string*
+
+*Inherited from [CallTxDataBaseRPC](#optional-value)*
+
+*Defined in [types.ts:73](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/web3-wrapper/src/types.ts#L73)*
+
+<hr />
+
+* [Globals](globals.md)
+* [External Modules]()
+  * [index](modules/_index_.md)
+  * [marshaller](modules/_marshaller_.md)
+  * [types](modules/_types_.md)
+  * [types.NodeType](#class-nodetype)
+  * [types.Web3WrapperErrors](#class-web3wrappererrors)
+  * [types.AbstractBlockRPC](#class-abstractblockrpc)
+  * [types.BlockWithTransactionDataRPC](#class-blockwithtransactiondatarpc)
+  * [types.BlockWithoutTransactionDataRPC](#class-blockwithouttransactiondatarpc)
+  * [types.CallDataRPC](#class-calldatarpc)
+  * [types.CallTxDataBaseRPC](#class-calltxdatabaserpc)
+  * [types.LogEntryRPC](#class-logentryrpc)
+  * [types.TransactionRPC](#class-transactionrpc)
+  * [types.TransactionReceiptRPC](#class-transactionreceiptrpc)
+  * [types.TxDataRPC](#class-txdatarpc)
+  * [utils](modules/_utils_.md)
+  * [web3_wrapper](modules/_web3_wrapper_.md)
+  * [web3_wrapper.Web3Wrapper](#class-web3wrapper)
+* [Classes]()
+  * [web3_wrapper.Web3Wrapper](#class-web3wrapper)
+* [Enums]()
+  * [types.NodeType](#class-nodetype)
+  * [types.Web3WrapperErrors](#class-web3wrappererrors)
+* [Interfaces]()
+  * [types.AbstractBlockRPC](#class-abstractblockrpc)
+  * [types.BlockWithTransactionDataRPC](#class-blockwithtransactiondatarpc)
+  * [types.BlockWithoutTransactionDataRPC](#class-blockwithouttransactiondatarpc)
+  * [types.CallDataRPC](#class-calldatarpc)
+  * [types.CallTxDataBaseRPC](#class-calltxdatabaserpc)
+  * [types.LogEntryRPC](#class-logentryrpc)
+  * [types.TransactionRPC](#class-transactionrpc)
+  * [types.TransactionReceiptRPC](#class-transactionreceiptrpc)
+  * [types.TxDataRPC](#class-txdatarpc)
+
+<hr />
+

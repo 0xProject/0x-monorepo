@@ -1,0 +1,3232 @@
+> # Class: BaseWalletSubprovider
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **BaseWalletSubprovider**
+
+  * [LedgerSubprovider](#class-ledgersubprovider)
+
+  * [PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)
+
+  * [MnemonicWalletSubprovider](#class-mnemonicwalletsubprovider)
+
+  * [TrezorSubprovider](#class-trezorsubprovider)
+
+## Index
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [getAccountsAsync](#abstract-getaccountsasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+* [signPersonalMessageAsync](#abstract-signpersonalmessageasync)
+* [signTransactionAsync](#abstract-signtransactionasync)
+* [signTypedDataAsync](#abstract-signtypeddataasync)
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+### `Abstract` getAccountsAsync
+
+▸ **getAccountsAsync**(): *`Promise<string[]>`*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L23)*
+
+**Returns:** *`Promise<string[]>`*
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+___
+
+### `Abstract` signPersonalMessageAsync
+
+▸ **signPersonalMessageAsync**(`data`: string, `address`: string): *`Promise<string>`*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:25](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L25)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`data` | string |
+`address` | string |
+
+**Returns:** *`Promise<string>`*
+
+___
+
+### `Abstract` signTransactionAsync
+
+▸ **signTransactionAsync**(`txParams`: [PartialTxParams](#interface-partialtxparams)): *`Promise<string>`*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:24](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L24)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`txParams` | [PartialTxParams](#interface-partialtxparams) |
+
+**Returns:** *`Promise<string>`*
+
+___
+
+### `Abstract` signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: any): *`Promise<string>`*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:26](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L26)*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`address` | string |
+`typedData` | any |
+
+**Returns:** *`Promise<string>`*
+
+<hr />
+
+> # Class: EmptyWalletSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It intercepts the `eth_accounts` JSON RPC requests and never returns any addresses when queried.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **EmptyWalletSubprovider**
+
+## Index
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/empty_wallet_subprovider.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/empty_wallet_subprovider.ts#L21)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: FakeGasEstimateSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It intercepts the `eth_estimateGas` JSON RPC call and always returns a constant gas amount when queried.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **FakeGasEstimateSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new FakeGasEstimateSubprovider**(`constantGasAmount`: number): *[FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)*
+
+*Defined in [subproviders/fake_gas_estimate_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L17)*
+
+Instantiates an instance of the FakeGasEstimateSubprovider
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`constantGasAmount` | number | The constant gas amount you want returned  |
+
+**Returns:** *[FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/fake_gas_estimate_subprovider.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/fake_gas_estimate_subprovider.ts#L35)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: GanacheSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It intercepts all JSON RPC requests and relays them to an in-process ganache instance.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **GanacheSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new GanacheSubprovider**(`opts`: `GanacheOpts`): *[GanacheSubprovider](#class-ganachesubprovider)*
+
+*Defined in [subproviders/ganache.ts:13](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ganache.ts#L13)*
+
+Instantiates a GanacheSubprovider
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`opts` | `GanacheOpts` | The desired opts with which to instantiate the Ganache provider  |
+
+**Returns:** *[GanacheSubprovider](#class-ganachesubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `_next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/ganache.ts:31](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ganache.ts#L31)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`_next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: LedgerSubprovider
+
+Subprovider for interfacing with a user's [Ledger Nano S](https://www.ledgerwallet.com/products/ledger-nano-s).
+This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and
+re-routes them to a Ledger device plugged into the users computer.
+
+## Hierarchy
+
+  * [BaseWalletSubprovider](#class-basewalletsubprovider)
+
+  * **LedgerSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [getAccountsAsync](#getaccountsasync)
+* [getPath](#getpath)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+* [setPath](#setpath)
+* [signPersonalMessageAsync](#signpersonalmessageasync)
+* [signTransactionAsync](#signtransactionasync)
+* [signTypedDataAsync](#signtypeddataasync)
+
+## Constructors
+
+###  constructor
+
+\+ **new LedgerSubprovider**(`config`: [LedgerSubproviderConfigs](#class-ledgersubprovider)*
+
+*Defined in [subproviders/ledger.ts:41](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L41)*
+
+Instantiates a LedgerSubprovider. Defaults to derivationPath set to `44'/60'/0'`.
+TestRPC/Ganache defaults to `m/44'/60'/0'/0`, so set this in the configs if desired.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | [LedgerSubproviderConfigs](#interface-ledgersubproviderconfigs) | Several available configurations |
+
+**Returns:** *[LedgerSubprovider](#class-ledgersubprovider)*
+
+LedgerSubprovider instance
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  getAccountsAsync
+
+▸ **getAccountsAsync**(`numberOfAccounts`: number): *`Promise<string[]>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-getaccountsasync)*
+
+*Defined in [subproviders/ledger.ts:87](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L87)*
+
+Retrieve a users Ledger accounts. The accounts are derived from the derivationPath,
+master public key and chain code. Because of this, you can request as many accounts
+as you wish and it only requires a single request to the Ledger device. This method
+is automatically called when issuing a `eth_accounts` JSON RPC request via your providerEngine
+instance.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`numberOfAccounts` | number |  DEFAULT_NUM_ADDRESSES_TO_FETCH | Number of accounts to retrieve (default: 10) |
+
+**Returns:** *`Promise<string[]>`*
+
+An array of accounts
+
+___
+
+###  getPath
+
+▸ **getPath**(): *string*
+
+*Defined in [subproviders/ledger.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L68)*
+
+Retrieve the set derivation path
+
+**Returns:** *string*
+
+derivation path
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Inherited from [BaseWalletSubprovider](#handlerequest)*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+___
+
+###  setPath
+
+▸ **setPath**(`basDerivationPath`: string): *void*
+
+*Defined in [subproviders/ledger.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L75)*
+
+Set a desired derivation path when computing the available user addresses
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`basDerivationPath` | string | The desired derivation path (e.g `44'/60'/0'`)  |
+
+**Returns:** *void*
+
+___
+
+###  signPersonalMessageAsync
+
+▸ **signPersonalMessageAsync**(`data`: string, `address`: string): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signpersonalmessageasync)*
+
+*Defined in [subproviders/ledger.ts:158](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L158)*
+
+Sign a personal Ethereum signed message. The signing account will be the account
+associated with the provided address.
+The Ledger adds the Ethereum signed message prefix on-device.  If you've added
+the LedgerSubprovider to your app's provider, you can simply send an `eth_sign`
+or `personal_sign` JSON RPC request, and this method will be called auto-magically.
+If you are not using this via a ProviderEngine instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | string | Hex string message to sign |
+`address` | string | Address of the account to sign with |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+___
+
+###  signTransactionAsync
+
+▸ **signTransactionAsync**(`txParams`: [PartialTxParams](#interface-partialtxparams)): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtransactionasync)*
+
+*Defined in [subproviders/ledger.ts:101](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L101)*
+
+Signs a transaction on the Ledger with the account specificed by the `from` field in txParams.
+If you've added the LedgerSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
+JSON RPC request, and this method will be called auto-magically. If you are not using this via a ProviderEngine
+instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txParams` | [PartialTxParams](#interface-partialtxparams) | Parameters of the transaction to sign |
+
+**Returns:** *`Promise<string>`*
+
+Signed transaction hex string
+
+___
+
+###  signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: any): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtypeddataasync)*
+
+*Defined in [subproviders/ledger.ts:196](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/ledger.ts#L196)*
+
+eth_signTypedData is currently not supported on Ledger devices.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of the account to sign with |
+`typedData` | any | - |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+<hr />
+
+> # Class: MetamaskSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine)
+subprovider interface and the provider sendAsync interface.
+It handles inconsistencies with Metamask implementations of various JSON RPC methods.
+It forwards JSON RPC requests involving the domain of a signer (getAccounts,
+sendTransaction, signMessage etc...) to the provider instance supplied at instantiation. All other requests
+are passed onwards for subsequent subproviders to handle.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **MetamaskSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [sendAsync](#sendasync)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new MetamaskSubprovider**(`supportedProvider`: `SupportedProvider`): *[MetamaskSubprovider](#class-metamasksubprovider)*
+
+*Defined in [subproviders/metamask_subprovider.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/metamask_subprovider.ts#L20)*
+
+Instantiates a new MetamaskSubprovider
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | `SupportedProvider` | Web3 provider that should handle  all user account related requests  |
+
+**Returns:** *[MetamaskSubprovider](#class-metamasksubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/metamask_subprovider.ts:40](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/metamask_subprovider.ts#L40)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  sendAsync
+
+▸ **sendAsync**(`payload`: `JSONRPCRequestPayload`, `callback`: [ErrorCallback](#errorcallback)): *void*
+
+*Defined in [subproviders/metamask_subprovider.ts:114](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/metamask_subprovider.ts#L114)*
+
+This method conforms to the provider sendAsync interface.
+Allowing the MetamaskSubprovider to be used as a generic provider (outside of Web3ProviderEngine) with the
+addition of wrapping the inconsistent Metamask behaviour
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`callback` | [ErrorCallback](#errorcallback) | - |
+
+**Returns:** *void*
+
+The contents nested under the result key of the response body
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: MnemonicWalletSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and handles
+all requests with accounts derived from the supplied mnemonic.
+
+## Hierarchy
+
+  * [BaseWalletSubprovider](#class-basewalletsubprovider)
+
+  * **MnemonicWalletSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [getAccountsAsync](#getaccountsasync)
+* [getPath](#getpath)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+* [setPath](#setpath)
+* [signPersonalMessageAsync](#signpersonalmessageasync)
+* [signTransactionAsync](#signtransactionasync)
+* [signTypedDataAsync](#signtypeddataasync)
+
+## Constructors
+
+###  constructor
+
+\+ **new MnemonicWalletSubprovider**(`config`: [MnemonicWalletSubproviderConfigs](#class-mnemonicwalletsubprovider)*
+
+*Defined in [subproviders/mnemonic_wallet.ts:27](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L27)*
+
+Instantiates a MnemonicWalletSubprovider. Defaults to baseDerivationPath set to `44'/60'/0'/0`.
+This is the default in TestRPC/Ganache, it can be overridden if desired.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`config` | [MnemonicWalletSubproviderConfigs](#interface-mnemonicwalletsubproviderconfigs) | Configuration for the mnemonic wallet, must contain the mnemonic |
+
+**Returns:** *[MnemonicWalletSubprovider](#class-mnemonicwalletsubprovider)*
+
+MnemonicWalletSubprovider instance
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  getAccountsAsync
+
+▸ **getAccountsAsync**(`numberOfAccounts`: number): *`Promise<string[]>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-getaccountsasync)*
+
+*Defined in [subproviders/mnemonic_wallet.ts:70](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L70)*
+
+Retrieve the accounts associated with the mnemonic.
+This method is implicitly called when issuing a `eth_accounts` JSON RPC request
+via your providerEngine instance.
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`numberOfAccounts` | number |  DEFAULT_NUM_ADDRESSES_TO_FETCH | Number of accounts to retrieve (default: 10) |
+
+**Returns:** *`Promise<string[]>`*
+
+An array of accounts
+
+___
+
+###  getPath
+
+▸ **getPath**(): *string*
+
+*Defined in [subproviders/mnemonic_wallet.ts:52](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L52)*
+
+Retrieve the set derivation path
+
+**Returns:** *string*
+
+derivation path
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Inherited from [BaseWalletSubprovider](#handlerequest)*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+___
+
+###  setPath
+
+▸ **setPath**(`baseDerivationPath`: string): *void*
+
+*Defined in [subproviders/mnemonic_wallet.ts:59](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L59)*
+
+Set a desired derivation path when computing the available user addresses
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`baseDerivationPath` | string | The desired derivation path (e.g `44'/60'/0'`)  |
+
+**Returns:** *void*
+
+___
+
+###  signPersonalMessageAsync
+
+▸ **signPersonalMessageAsync**(`data`: string, `address`: string): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signpersonalmessageasync)*
+
+*Defined in [subproviders/mnemonic_wallet.ts:102](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L102)*
+
+Sign a personal Ethereum signed message. The signing account will be the account
+associated with the provided address. If you've added the MnemonicWalletSubprovider to
+your app's provider, you can simply send an `eth_sign` or `personal_sign` JSON RPC request,
+and this method will be called auto-magically. If you are not using this via a ProviderEngine
+instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | string | Hex string message to sign |
+`address` | string | Address of the account to sign with |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+___
+
+###  signTransactionAsync
+
+▸ **signTransactionAsync**(`txParams`: [PartialTxParams](#interface-partialtxparams)): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtransactionasync)*
+
+*Defined in [subproviders/mnemonic_wallet.ts:84](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L84)*
+
+Signs a transaction with the account specificed by the `from` field in txParams.
+If you've added this Subprovider to your  app's provider, you can simply send
+an `eth_sendTransaction` JSON RPC request, and this method will be called auto-magically.
+If you are not using this via a ProviderEngine instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txParams` | [PartialTxParams](#interface-partialtxparams) | Parameters of the transaction to sign |
+
+**Returns:** *`Promise<string>`*
+
+Signed transaction hex string
+
+___
+
+###  signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: `EIP712TypedData`): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtypeddataasync)*
+
+*Defined in [subproviders/mnemonic_wallet.ts:122](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/mnemonic_wallet.ts#L122)*
+
+Sign an EIP712 Typed Data message. The signing account will be the account
+associated with the provided address. If you've added this MnemonicWalletSubprovider to
+your app's provider, you can simply send an `eth_signTypedData` JSON RPC request, and
+this method will be called auto-magically. If you are not using this via a ProviderEngine
+ instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of the account to sign with |
+`typedData` | `EIP712TypedData` | - |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+<hr />
+
+> # Class: NonceTrackerSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It is heavily inspired by the [NonceSubprovider](https://github.com/MetaMask/provider-engine/blob/master/subproviders/nonce-tracker.js).
+We added the additional feature of clearing the cached nonce value when a `nonce value too low` error occurs.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **NonceTrackerSubprovider**
+
+## Index
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [NextCallback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/nonce_tracker.ts:57](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/nonce_tracker.ts#L57)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [NextCallback](#nextcallback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: PrivateKeyWalletSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+This subprovider intercepts all account related RPC requests (e.g message/transaction signing, etc...) and handles
+all requests with the supplied Ethereum private key.
+
+## Hierarchy
+
+  * [BaseWalletSubprovider](#class-basewalletsubprovider)
+
+  * **PrivateKeyWalletSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [getAccountsAsync](#getaccountsasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+* [signPersonalMessageAsync](#signpersonalmessageasync)
+* [signTransactionAsync](#signtransactionasync)
+* [signTypedDataAsync](#signtypeddataasync)
+
+## Constructors
+
+###  constructor
+
+\+ **new PrivateKeyWalletSubprovider**(`privateKey`: string): *[PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)*
+
+*Defined in [subproviders/private_key_wallet.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/private_key_wallet.ts#L19)*
+
+Instantiates a PrivateKeyWalletSubprovider.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`privateKey` | string | The corresponding private key to an Ethereum address |
+
+**Returns:** *[PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)*
+
+PrivateKeyWalletSubprovider instance
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  getAccountsAsync
+
+▸ **getAccountsAsync**(): *`Promise<string[]>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-getaccountsasync)*
+
+*Defined in [subproviders/private_key_wallet.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/private_key_wallet.ts#L37)*
+
+Retrieve the account associated with the supplied private key.
+This method is implicitly called when issuing a `eth_accounts` JSON RPC request
+via your providerEngine instance.
+
+**Returns:** *`Promise<string[]>`*
+
+An array of accounts
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Inherited from [BaseWalletSubprovider](#handlerequest)*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+___
+
+###  signPersonalMessageAsync
+
+▸ **signPersonalMessageAsync**(`data`: string, `address`: string): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signpersonalmessageasync)*
+
+*Defined in [subproviders/private_key_wallet.ts:72](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/private_key_wallet.ts#L72)*
+
+Sign a personal Ethereum signed message. The signing address will be calculated from the private key.
+The address must be provided it must match the address calculated from the private key.
+If you've added this Subprovider to your app's provider, you can simply send an `eth_sign`
+or `personal_sign` JSON RPC request, and this method will be called auto-magically.
+If you are not using this via a ProviderEngine instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | string | Hex string message to sign |
+`address` | string | Address of the account to sign with |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+___
+
+###  signTransactionAsync
+
+▸ **signTransactionAsync**(`txParams`: [PartialTxParams](#interface-partialtxparams)): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtransactionasync)*
+
+*Defined in [subproviders/private_key_wallet.ts:48](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/private_key_wallet.ts#L48)*
+
+Sign a transaction with the private key. If you've added this Subprovider to your
+app's provider, you can simply send an `eth_sendTransaction` JSON RPC request, and
+this method will be called auto-magically. If you are not using this via a ProviderEngine
+instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`txParams` | [PartialTxParams](#interface-partialtxparams) | Parameters of the transaction to sign |
+
+**Returns:** *`Promise<string>`*
+
+Signed transaction hex string
+
+___
+
+###  signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: `EIP712TypedData`): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtypeddataasync)*
+
+*Defined in [subproviders/private_key_wallet.ts:99](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/private_key_wallet.ts#L99)*
+
+Sign an EIP712 Typed Data message. The signing address will be calculated from the private key.
+The address must be provided it must match the address calculated from the private key.
+If you've added this Subprovider to your app's provider, you can simply send an `eth_signTypedData`
+JSON RPC request, and this method will be called auto-magically.
+If you are not using this via a ProviderEngine instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of the account to sign with |
+`typedData` | `EIP712TypedData` | - |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+<hr />
+
+> # Class: RedundantSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It attempts to handle each JSON RPC request by sequentially attempting to receive a valid response from one of a
+set of JSON RPC endpoints.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **RedundantSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new RedundantSubprovider**(`subproviders`: [Subprovider](#class-redundantsubprovider)*
+
+*Defined in [subproviders/redundant_subprovider.ts:33](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/redundant_subprovider.ts#L33)*
+
+Instantiates a new RedundantSubprovider
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`subproviders` | [Subprovider](#class-subprovider)[] | Subproviders to attempt the request with  |
+
+**Returns:** *[RedundantSubprovider](#class-redundantsubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#callback), `end`: function): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/redundant_subprovider.ts:51](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/redundant_subprovider.ts#L51)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+▪ **payload**: *`JSONRPCRequestPayload`*
+
+JSON RPC payload
+
+▪ **next**: *[Callback](#callback)*
+
+Callback to call if this subprovider decides not to handle the request
+
+▪ **end**: *function*
+
+Callback to call if subprovider handled the request and wants to pass back the request.
+
+▸ (`err`: `Error` | null, `data?`: any): *void*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`err` | `Error` \| null |
+`data?` | any |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: RPCSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine) subprovider interface.
+It forwards on JSON RPC requests to the supplied `rpcUrl` endpoint
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **RPCSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new RPCSubprovider**(`rpcUrl`: string, `requestTimeoutMs`: number): *[RPCSubprovider](#class-rpcsubprovider)*
+
+*Defined in [subproviders/rpc_subprovider.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/rpc_subprovider.ts#L17)*
+
+**Parameters:**
+
+Name | Type | Default | Description |
+------ | ------ | ------ | ------ |
+`rpcUrl` | string | - | URL to the backing Ethereum node to which JSON RPC requests should be sent |
+`requestTimeoutMs` | number | 20000 | Amount of miliseconds to wait before timing out the JSON RPC request  |
+
+**Returns:** *[RPCSubprovider](#class-rpcsubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `_next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/rpc_subprovider.ts:38](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/rpc_subprovider.ts#L38)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`_next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: SignerSubprovider
+
+This class implements the [web3-provider-engine](https://github.com/MetaMask/provider-engine)
+subprovider interface. It forwards JSON RPC requests involving the domain of a signer (getAccounts,
+sendTransaction, signMessage etc...) to the provider instance supplied at instantiation. All other requests
+are passed onwards for subsequent subproviders to handle.
+
+## Hierarchy
+
+* [Subprovider](#class-subprovider)
+
+  * **SignerSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+
+## Constructors
+
+###  constructor
+
+\+ **new SignerSubprovider**(`supportedProvider`: `SupportedProvider`): *[SignerSubprovider](#class-signersubprovider)*
+
+*Defined in [subproviders/signer.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/signer.ts#L15)*
+
+Instantiates a new SignerSubprovider.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`supportedProvider` | `SupportedProvider` | Web3 provider that should handle  all user account related requests  |
+
+**Returns:** *[SignerSubprovider](#class-signersubprovider)*
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/signer.ts:33](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/signer.ts#L33)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: Subprovider
+
+A altered version of the base class Subprovider found in [web3-provider-engine](https://github.com/MetaMask/provider-engine).
+This one has an async/await `emitPayloadAsync` and also defined types.
+
+## Hierarchy
+
+* **Subprovider**
+
+  * [EmptyWalletSubprovider](#class-emptywalletsubprovider)
+
+  * [FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)
+
+  * [SignerSubprovider](#class-signersubprovider)
+
+  * [RedundantSubprovider](#class-redundantsubprovider)
+
+  * [BaseWalletSubprovider](#class-basewalletsubprovider)
+
+  * [RPCSubprovider](#class-rpcsubprovider)
+
+  * [GanacheSubprovider](#class-ganachesubprovider)
+
+  * [NonceTrackerSubprovider](#class-noncetrackersubprovider)
+
+  * [MetamaskSubprovider](#class-metamasksubprovider)
+
+## Index
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [handleRequest](#abstract-handlerequest)
+* [setEngine](#setengine)
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+### `Abstract` handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Defined in [subproviders/subprovider.ts:42](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L42)*
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC request payload |
+`next` | [Callback](#callback) | A callback to pass the request to the next subprovider in the stack |
+`end` | [ErrorCallback](#errorcallback) | A callback called once the subprovider is done handling the request  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+<hr />
+
+> # Class: TrezorSubprovider
+
+## Hierarchy
+
+  * [BaseWalletSubprovider](#class-basewalletsubprovider)
+
+  * **TrezorSubprovider**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [emitPayloadAsync](#emitpayloadasync)
+* [getAccountsAsync](#getaccountsasync)
+* [handleRequest](#handlerequest)
+* [setEngine](#setengine)
+* [signPersonalMessageAsync](#signpersonalmessageasync)
+* [signTransactionAsync](#signtransactionasync)
+* [signTypedDataAsync](#signtypeddataasync)
+
+## Constructors
+
+###  constructor
+
+\+ **new TrezorSubprovider**(`config`: [TrezorSubproviderConfig](#class-trezorsubprovider)*
+
+*Defined in [subproviders/trezor.ts:32](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/trezor.ts#L32)*
+
+Instantiates a TrezorSubprovider. Defaults to private key path set to `44'/60'/0'/0/`.
+Must be initialized with trezor-connect API module https://github.com/trezor/connect.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`config` | [TrezorSubproviderConfig](#interface-trezorsubproviderconfig) |
+
+**Returns:** *[TrezorSubprovider](#class-trezorsubprovider)*
+
+TrezorSubprovider instance
+
+## Methods
+
+###  emitPayloadAsync
+
+▸ **emitPayloadAsync**(`payload`: `Partial<JSONRPCRequestPayloadWithMethod>`): *`Promise<JSONRPCResponsePayload>`*
+
+*Inherited from [Subprovider](#emitpayloadasync)*
+
+*Defined in [subproviders/subprovider.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L55)*
+
+Emits a JSON RPC payload that will then be handled by the ProviderEngine instance
+this subprovider is a part of. The payload will cascade down the subprovider middleware
+stack until finding the responsible entity for handling the request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `Partial<JSONRPCRequestPayloadWithMethod>` | JSON RPC payload |
+
+**Returns:** *`Promise<JSONRPCResponsePayload>`*
+
+JSON RPC response payload
+
+___
+
+###  getAccountsAsync
+
+▸ **getAccountsAsync**(`numberOfAccounts`: number): *`Promise<string[]>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-getaccountsasync)*
+
+*Defined in [subproviders/trezor.ts:56](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/trezor.ts#L56)*
+
+Retrieve a users Trezor account. This method is automatically called
+when issuing a `eth_accounts` JSON RPC request via your providerEngine
+instance.
+
+**Parameters:**
+
+Name | Type | Default |
+------ | ------ | ------ |
+`numberOfAccounts` | number |  DEFAULT_NUM_ADDRESSES_TO_FETCH |
+
+**Returns:** *`Promise<string[]>`*
+
+An array of accounts
+
+___
+
+###  handleRequest
+
+▸ **handleRequest**(`payload`: `JSONRPCRequestPayload`, `next`: [Callback](#errorcallback)): *`Promise<void>`*
+
+*Inherited from [BaseWalletSubprovider](#handlerequest)*
+
+*Overrides [Subprovider](#abstract-handlerequest)*
+
+*Defined in [subproviders/base_wallet_subprovider.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/base_wallet_subprovider.ts#L37)*
+
+This method conforms to the web3-provider-engine interface.
+It is called internally by the ProviderEngine when it is this subproviders
+turn to handle a JSON RPC request.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`payload` | `JSONRPCRequestPayload` | JSON RPC payload |
+`next` | [Callback](#callback) | Callback to call if this subprovider decides not to handle the request |
+`end` | [ErrorCallback](#errorcallback) | Callback to call if subprovider handled the request and wants to pass back the request.  |
+
+**Returns:** *`Promise<void>`*
+
+___
+
+###  setEngine
+
+▸ **setEngine**(`engine`: `Web3ProviderEngine`): *void*
+
+*Inherited from [Subprovider](#setengine)*
+
+*Defined in [subproviders/subprovider.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/subprovider.ts#L68)*
+
+Set's the subprovider's engine to the ProviderEngine it is added to.
+This is only called within the ProviderEngine source code, do not call
+directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`engine` | `Web3ProviderEngine` | The ProviderEngine this subprovider is added to  |
+
+**Returns:** *void*
+
+___
+
+###  signPersonalMessageAsync
+
+▸ **signPersonalMessageAsync**(`data`: string, `address`: string): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signpersonalmessageasync)*
+
+*Defined in [subproviders/trezor.ts:129](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/trezor.ts#L129)*
+
+Sign a personal Ethereum signed message. The signing account will be the account
+associated with the provided address. If you've added the TrezorSubprovider to
+your app's provider, you can simply send an `eth_sign` or `personal_sign` JSON RPC
+request, and this method will be called auto-magically.
+If you are not using this via a ProviderEngine instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`data` | string | Hex string message to sign |
+`address` | string | Address of the account to sign with |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+___
+
+###  signTransactionAsync
+
+▸ **signTransactionAsync**(`txData`: [PartialTxParams](#interface-partialtxparams)): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtransactionasync)*
+
+*Defined in [subproviders/trezor.ts:70](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/trezor.ts#L70)*
+
+Signs a transaction on the Trezor with the account specificed by the `from` field in txParams.
+If you've added the TrezorSubprovider to your app's provider, you can simply send an `eth_sendTransaction`
+JSON RPC request, and this method will be called auto-magically. If you are not using this via a ProviderEngine
+instance, you can call it directly.
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`txData` | [PartialTxParams](#interface-partialtxparams) |
+
+**Returns:** *`Promise<string>`*
+
+Signed transaction hex string
+
+___
+
+###  signTypedDataAsync
+
+▸ **signTypedDataAsync**(`address`: string, `typedData`: any): *`Promise<string>`*
+
+*Overrides [BaseWalletSubprovider](#abstract-signtypeddataasync)*
+
+*Defined in [subproviders/trezor.ts:161](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/subproviders/trezor.ts#L161)*
+
+TODO:: eth_signTypedData is currently not supported on Trezor devices.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`address` | string | Address of the account to sign with |
+`typedData` | any | - |
+
+**Returns:** *`Promise<string>`*
+
+Signature hex string (order: rsv)
+
+<hr />
+
+> # Enumeration: LedgerSubproviderErrors
+
+## Index
+
+### Enumeration members
+
+* [MultipleOpenConnectionsDisallowed](#multipleopenconnectionsdisallowed)
+* [TooOldLedgerFirmware](#toooldledgerfirmware)
+
+## Enumeration members
+
+###  MultipleOpenConnectionsDisallowed
+
+• **MultipleOpenConnectionsDisallowed**: = "MULTIPLE_OPEN_CONNECTIONS_DISALLOWED"
+
+*Defined in [types.ts:116](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L116)*
+
+___
+
+###  TooOldLedgerFirmware
+
+• **TooOldLedgerFirmware**: = "TOO_OLD_LEDGER_FIRMWARE"
+
+*Defined in [types.ts:115](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L115)*
+
+<hr />
+
+> # Enumeration: NonceSubproviderErrors
+
+## Index
+
+### Enumeration members
+
+* [CannotDetermineAddressFromPayload](#cannotdetermineaddressfrompayload)
+* [EmptyParametersFound](#emptyparametersfound)
+
+## Enumeration members
+
+###  CannotDetermineAddressFromPayload
+
+• **CannotDetermineAddressFromPayload**: = "CANNOT_DETERMINE_ADDRESS_FROM_PAYLOAD"
+
+*Defined in [types.ts:121](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L121)*
+
+___
+
+###  EmptyParametersFound
+
+• **EmptyParametersFound**: = "EMPTY_PARAMETERS_FOUND"
+
+*Defined in [types.ts:120](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L120)*
+
+<hr />
+
+> # Enumeration: WalletSubproviderErrors
+
+## Index
+
+### Enumeration members
+
+* [AddressNotFound](#addressnotfound)
+* [DataMissingForSignPersonalMessage](#datamissingforsignpersonalmessage)
+* [DataMissingForSignTypedData](#datamissingforsigntypeddata)
+* [FromAddressMissingOrInvalid](#fromaddressmissingorinvalid)
+* [MethodNotSupported](#methodnotsupported)
+* [SenderInvalidOrNotSupplied](#senderinvalidornotsupplied)
+
+## Enumeration members
+
+###  AddressNotFound
+
+• **AddressNotFound**: = "ADDRESS_NOT_FOUND"
+
+*Defined in [types.ts:107](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L107)*
+
+___
+
+###  DataMissingForSignPersonalMessage
+
+• **DataMissingForSignPersonalMessage**: = "DATA_MISSING_FOR_SIGN_PERSONAL_MESSAGE"
+
+*Defined in [types.ts:108](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L108)*
+
+___
+
+###  DataMissingForSignTypedData
+
+• **DataMissingForSignTypedData**: = "DATA_MISSING_FOR_SIGN_TYPED_DATA"
+
+*Defined in [types.ts:109](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L109)*
+
+___
+
+###  FromAddressMissingOrInvalid
+
+• **FromAddressMissingOrInvalid**: = "FROM_ADDRESS_MISSING_OR_INVALID"
+
+*Defined in [types.ts:111](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L111)*
+
+___
+
+###  MethodNotSupported
+
+• **MethodNotSupported**: = "METHOD_NOT_SUPPORTED"
+
+*Defined in [types.ts:112](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L112)*
+
+___
+
+###  SenderInvalidOrNotSupplied
+
+• **SenderInvalidOrNotSupplied**: = "SENDER_INVALID_OR_NOT_SUPPLIED"
+
+*Defined in [types.ts:110](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L110)*
+
+<hr />
+
+> # Interface: AccountFetchingConfigs
+
+addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
+numAddressesToReturn: Number of addresses to return from 'eth_accounts' call
+shouldAskForOnDeviceConfirmation: Whether you wish to prompt the user on their Ledger
+                                  before fetching their addresses
+
+## Hierarchy
+
+* **AccountFetchingConfigs**
+
+## Index
+
+### Properties
+
+* [addressSearchLimit](#optional-addresssearchlimit)
+* [numAddressesToReturn](#optional-numaddressestoreturn)
+* [shouldAskForOnDeviceConfirmation](#optional-shouldaskforondeviceconfirmation)
+
+## Properties
+
+### `Optional` addressSearchLimit
+
+• **addressSearchLimit**? : *undefined | number*
+
+*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L55)*
+
+___
+
+### `Optional` numAddressesToReturn
+
+• **numAddressesToReturn**? : *undefined | number*
+
+*Defined in [types.ts:56](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L56)*
+
+___
+
+### `Optional` shouldAskForOnDeviceConfirmation
+
+• **shouldAskForOnDeviceConfirmation**? : *undefined | false | true*
+
+*Defined in [types.ts:57](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L57)*
+
+<hr />
+
+> # Interface: DerivedHDKeyInfo
+
+## Hierarchy
+
+* **DerivedHDKeyInfo**
+
+## Index
+
+### Properties
+
+* [address](#address)
+* [baseDerivationPath](#basederivationpath)
+* [derivationPath](#derivationpath)
+* [hdKey](#hdkey)
+
+## Properties
+
+###  address
+
+• **address**: *string*
+
+*Defined in [types.ts:124](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L124)*
+
+___
+
+###  baseDerivationPath
+
+• **baseDerivationPath**: *string*
+
+*Defined in [types.ts:125](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L125)*
+
+___
+
+###  derivationPath
+
+• **derivationPath**: *string*
+
+*Defined in [types.ts:126](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L126)*
+
+___
+
+###  hdKey
+
+• **hdKey**: *`HDNode`*
+
+*Defined in [types.ts:127](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L127)*
+
+<hr />
+
+> # Interface: ECSignatureString
+
+## Hierarchy
+
+* **ECSignatureString**
+
+## Index
+
+### Properties
+
+* [r](#r)
+* [s](#s)
+* [v](#v)
+
+## Properties
+
+###  r
+
+• **r**: *string*
+
+*Defined in [types.ts:29](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L29)*
+
+___
+
+###  s
+
+• **s**: *string*
+
+*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L30)*
+
+___
+
+###  v
+
+• **v**: *string*
+
+*Defined in [types.ts:28](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L28)*
+
+<hr />
+
+> # Interface: JSONRPCRequestPayloadWithMethod
+
+## Hierarchy
+
+* `JSONRPCRequestPayload`
+
+  * **JSONRPCRequestPayloadWithMethod**
+
+## Index
+
+### Properties
+
+* [id](#id)
+* [jsonrpc](#jsonrpc)
+* [method](#method)
+* [params](#params)
+
+## Properties
+
+###  id
+
+• **id**: *number*
+
+*Inherited from void*
+
+Defined in /Users/rickmorty/Documents/projects/0x/0x-monorepo/packages/ethereum-types/lib/index.d.ts:262
+
+___
+
+###  jsonrpc
+
+• **jsonrpc**: *string*
+
+*Inherited from void*
+
+Defined in /Users/rickmorty/Documents/projects/0x/0x-monorepo/packages/ethereum-types/lib/index.d.ts:263
+
+___
+
+###  method
+
+• **method**: *string*
+
+*Overrides void*
+
+*Defined in [types.ts:136](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L136)*
+
+___
+
+###  params
+
+• **params**: *any[]*
+
+*Inherited from void*
+
+Defined in /Users/rickmorty/Documents/projects/0x/0x-monorepo/packages/ethereum-types/lib/index.d.ts:260
+
+<hr />
+
+> # Interface: LedgerCommunication
+
+## Hierarchy
+
+* **LedgerCommunication**
+
+## Index
+
+### Properties
+
+* [close_async](#close_async)
+
+## Properties
+
+###  close_async
+
+• **close_async**: *function*
+
+*Defined in [types.ts:98](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L98)*
+
+#### Type declaration:
+
+▸ (): *`Promise<void>`*
+
+<hr />
+
+> # Interface: LedgerCommunicationClient
+
+## Hierarchy
+
+* **LedgerCommunicationClient**
+
+## Index
+
+### Properties
+
+* [close](#close)
+
+## Properties
+
+###  close
+
+• **close**: *function*
+
+*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L5)*
+
+#### Type declaration:
+
+▸ (): *`Promise<void>`*
+
+<hr />
+
+> # Interface: LedgerEthereumClient
+
+Elliptic Curve signature
+The LedgerEthereumClient sends Ethereum-specific requests to the Ledger Nano S
+It uses an internal LedgerCommunicationClient to relay these requests. Currently
+NodeJs and Browser communication are supported.
+
+## Hierarchy
+
+* **LedgerEthereumClient**
+
+## Index
+
+### Properties
+
+* [getAddress](#getaddress)
+* [signPersonalMessage](#signpersonalmessage)
+* [signTransaction](#signtransaction)
+* [transport](#transport)
+
+## Properties
+
+###  getAddress
+
+• **getAddress**: *function*
+
+*Defined in [types.ts:17](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L17)*
+
+#### Type declaration:
+
+▸ (`derivationPath`: string, `askForDeviceConfirmation`: boolean, `shouldGetChainCode`: true): *`Promise<LedgerGetAddressResult>`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`derivationPath` | string |
+`askForDeviceConfirmation` | boolean |
+`shouldGetChainCode` | true |
+
+___
+
+###  signPersonalMessage
+
+• **signPersonalMessage**: *function*
+
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L23)*
+
+#### Type declaration:
+
+▸ (`derivationPath`: string, `messageHex`: string): *`Promise<ECSignature>`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`derivationPath` | string |
+`messageHex` | string |
+
+___
+
+###  signTransaction
+
+• **signTransaction**: *function*
+
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L22)*
+
+#### Type declaration:
+
+▸ (`derivationPath`: string, `rawTxHex`: string): *`Promise<ECSignatureString>`*
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`derivationPath` | string |
+`rawTxHex` | string |
+
+___
+
+###  transport
+
+• **transport**: *[LedgerCommunicationClient](#interface-ledgercommunicationclient)*
+
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L24)*
+
+<hr />
+
+> # Interface: LedgerGetAddressResult
+
+## Hierarchy
+
+* **LedgerGetAddressResult**
+
+## Index
+
+### Properties
+
+* [address](#address)
+* [chainCode](#chaincode)
+* [publicKey](#publickey)
+
+## Properties
+
+###  address
+
+• **address**: *string*
+
+*Defined in [types.ts:79](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L79)*
+
+___
+
+###  chainCode
+
+• **chainCode**: *string*
+
+*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L81)*
+
+___
+
+###  publicKey
+
+• **publicKey**: *string*
+
+*Defined in [types.ts:80](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L80)*
+
+<hr />
+
+> # Interface: LedgerSubproviderConfigs
+
+networkId: The ethereum networkId to set as the chainId from EIP155
+ledgerConnectionType: Environment in which you wish to connect to Ledger (nodejs or browser)
+derivationPath: Initial derivation path to use e.g 44'/60'/0'
+accountFetchingConfigs: configs related to fetching accounts from a Ledger
+
+## Hierarchy
+
+* **LedgerSubproviderConfigs**
+
+## Index
+
+### Properties
+
+* [accountFetchingConfigs](#optional-accountfetchingconfigs)
+* [baseDerivationPath](#optional-basederivationpath)
+* [ledgerEthereumClientFactoryAsync](#ledgerethereumclientfactoryasync)
+* [networkId](#networkid)
+
+## Properties
+
+### `Optional` accountFetchingConfigs
+
+• **accountFetchingConfigs**? : *[AccountFetchingConfigs](#interface-accountfetchingconfigs)*
+
+*Defined in [types.ts:45](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L45)*
+
+___
+
+### `Optional` baseDerivationPath
+
+• **baseDerivationPath**? : *undefined | string*
+
+*Defined in [types.ts:44](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L44)*
+
+___
+
+###  ledgerEthereumClientFactoryAsync
+
+• **ledgerEthereumClientFactoryAsync**: *[LedgerEthereumClientFactoryAsync](#ledgerethereumclientfactoryasync)*
+
+*Defined in [types.ts:43](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L43)*
+
+___
+
+###  networkId
+
+• **networkId**: *number*
+
+*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L42)*
+
+<hr />
+
+> # Interface: MnemonicWalletSubproviderConfigs
+
+mnemonic: The string mnemonic seed
+addressSearchLimit: The maximum number of addresses to search through, defaults to 1000
+baseDerivationPath: The base derivation path (e.g 44'/60'/0'/0)
+
+## Hierarchy
+
+* **MnemonicWalletSubproviderConfigs**
+
+## Index
+
+### Properties
+
+* [addressSearchLimit](#optional-addresssearchlimit)
+* [baseDerivationPath](#optional-basederivationpath)
+* [mnemonic](#mnemonic)
+
+## Properties
+
+### `Optional` addressSearchLimit
+
+• **addressSearchLimit**? : *undefined | number*
+
+*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L67)*
+
+___
+
+### `Optional` baseDerivationPath
+
+• **baseDerivationPath**? : *undefined | string*
+
+*Defined in [types.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L68)*
+
+___
+
+###  mnemonic
+
+• **mnemonic**: *string*
+
+*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L66)*
+
+<hr />
+
+> # Interface: PartialTxParams
+
+## Hierarchy
+
+* **PartialTxParams**
+
+## Index
+
+### Properties
+
+* [chainId](#chainid)
+* [data](#optional-data)
+* [from](#from)
+* [gas](#gas)
+* [gasPrice](#optional-gasprice)
+* [nonce](#nonce)
+* [to](#to)
+* [value](#optional-value)
+
+## Properties
+
+###  chainId
+
+• **chainId**: *number*
+
+*Defined in [types.ts:92](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L92)*
+
+___
+
+### `Optional` data
+
+• **data**? : *undefined | string*
+
+*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L91)*
+
+___
+
+###  from
+
+• **from**: *string*
+
+*Defined in [types.ts:89](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L89)*
+
+___
+
+###  gas
+
+• **gas**: *string*
+
+*Defined in [types.ts:87](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L87)*
+
+___
+
+### `Optional` gasPrice
+
+• **gasPrice**? : *undefined | string*
+
+*Defined in [types.ts:86](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L86)*
+
+___
+
+###  nonce
+
+• **nonce**: *string*
+
+*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L85)*
+
+___
+
+###  to
+
+• **to**: *string*
+
+*Defined in [types.ts:88](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L88)*
+
+___
+
+### `Optional` value
+
+• **value**? : *undefined | string*
+
+*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L90)*
+
+<hr />
+
+> # Interface: ResponseWithTxParams
+
+## Hierarchy
+
+* **ResponseWithTxParams**
+
+## Index
+
+### Properties
+
+* [raw](#raw)
+* [tx](#tx)
+
+## Properties
+
+###  raw
+
+• **raw**: *string*
+
+*Defined in [types.ts:102](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L102)*
+
+___
+
+###  tx
+
+• **tx**: *[PartialTxParams](#interface-partialtxparams)*
+
+*Defined in [types.ts:103](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L103)*
+
+<hr />
+
+> # Interface: SignatureData
+
+## Hierarchy
+
+* **SignatureData**
+
+## Index
+
+### Properties
+
+* [hash](#hash)
+* [r](#r)
+* [s](#s)
+* [v](#v)
+
+## Properties
+
+###  hash
+
+• **hash**: *string*
+
+*Defined in [types.ts:72](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L72)*
+
+___
+
+###  r
+
+• **r**: *string*
+
+*Defined in [types.ts:73](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L73)*
+
+___
+
+###  s
+
+• **s**: *string*
+
+*Defined in [types.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L74)*
+
+___
+
+###  v
+
+• **v**: *number*
+
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L75)*
+
+<hr />
+
+> # Interface: TrezorConnectResponse
+
+## Hierarchy
+
+* **TrezorConnectResponse**
+
+## Index
+
+### Properties
+
+* [id](#id)
+* [payload](#payload)
+* [success](#success)
+
+## Properties
+
+###  id
+
+• **id**: *number*
+
+*Defined in [types.ts:175](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L175)*
+
+___
+
+###  payload
+
+• **payload**: *any*
+
+*Defined in [types.ts:174](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L174)*
+
+___
+
+###  success
+
+• **success**: *boolean*
+
+*Defined in [types.ts:176](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L176)*
+
+<hr />
+
+> # Interface: TrezorGetPublicKeyResponsePayload
+
+## Hierarchy
+
+* **TrezorGetPublicKeyResponsePayload**
+
+## Index
+
+### Properties
+
+* [chainCode](#chaincode)
+* [childNumb](#childnumb)
+* [depth](#depth)
+* [fingerprint](#fingerprint)
+* [path](#path)
+* [publicKey](#publickey)
+* [serializedPath](#serializedpath)
+* [xpub](#xpub)
+
+## Properties
+
+###  chainCode
+
+• **chainCode**: *string*
+
+*Defined in [types.ts:152](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L152)*
+
+___
+
+###  childNumb
+
+• **childNumb**: *number*
+
+*Defined in [types.ts:150](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L150)*
+
+___
+
+###  depth
+
+• **depth**: *number*
+
+*Defined in [types.ts:155](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L155)*
+
+___
+
+###  fingerprint
+
+• **fingerprint**: *number*
+
+*Defined in [types.ts:154](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L154)*
+
+___
+
+###  path
+
+• **path**: *object*
+
+*Defined in [types.ts:146](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L146)*
+
+#### Type declaration:
+
+● \[▪ **index**: *number*\]: number
+
+___
+
+###  publicKey
+
+• **publicKey**: *string*
+
+*Defined in [types.ts:153](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L153)*
+
+___
+
+###  serializedPath
+
+• **serializedPath**: *string*
+
+*Defined in [types.ts:149](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L149)*
+
+___
+
+###  xpub
+
+• **xpub**: *string*
+
+*Defined in [types.ts:151](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L151)*
+
+<hr />
+
+> # Interface: TrezorResponseErrorPayload
+
+## Hierarchy
+
+* **TrezorResponseErrorPayload**
+
+## Index
+
+### Properties
+
+* [error](#error)
+
+## Properties
+
+###  error
+
+• **error**: *string*
+
+*Defined in [types.ts:170](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L170)*
+
+<hr />
+
+> # Interface: TrezorSignMsgResponsePayload
+
+## Hierarchy
+
+* **TrezorSignMsgResponsePayload**
+
+## Index
+
+### Properties
+
+* [address](#address)
+* [signature](#signature)
+
+## Properties
+
+###  address
+
+• **address**: *string*
+
+*Defined in [types.ts:165](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L165)*
+
+___
+
+###  signature
+
+• **signature**: *string*
+
+*Defined in [types.ts:166](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L166)*
+
+<hr />
+
+> # Interface: TrezorSignTxResponsePayload
+
+## Hierarchy
+
+* **TrezorSignTxResponsePayload**
+
+## Index
+
+### Properties
+
+* [r](#r)
+* [s](#s)
+* [v](#v)
+
+## Properties
+
+###  r
+
+• **r**: *string*
+
+*Defined in [types.ts:160](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L160)*
+
+___
+
+###  s
+
+• **s**: *string*
+
+*Defined in [types.ts:161](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L161)*
+
+___
+
+###  v
+
+• **v**: *string*
+
+*Defined in [types.ts:159](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L159)*
+
+<hr />
+
+> # Interface: TrezorSubproviderConfig
+
+## Hierarchy
+
+* **TrezorSubproviderConfig**
+
+## Index
+
+### Properties
+
+* [accountFetchingConfigs](#accountfetchingconfigs)
+* [networkId](#networkid)
+* [trezorConnectClientApi](#trezorconnectclientapi)
+
+## Properties
+
+###  accountFetchingConfigs
+
+• **accountFetchingConfigs**: *[AccountFetchingConfigs](#interface-accountfetchingconfigs)*
+
+*Defined in [types.ts:140](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L140)*
+
+___
+
+###  networkId
+
+• **networkId**: *number*
+
+*Defined in [types.ts:142](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L142)*
+
+___
+
+###  trezorConnectClientApi
+
+• **trezorConnectClientApi**: *any*
+
+*Defined in [types.ts:141](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/subproviders/src/types.ts#L141)*
+
+<hr />
+
+* [Globals](globals.md)
+* [External Modules]()
+  * [index](modules/_index_.md)
+  * [subproviders/base_wallet_subprovider](modules/_subproviders_base_wallet_subprovider_.md)
+  * [subproviders/base_wallet_subprovider.BaseWalletSubprovider](#class-basewalletsubprovider)
+  * [subproviders/empty_wallet_subprovider](modules/_subproviders_empty_wallet_subprovider_.md)
+  * [subproviders/empty_wallet_subprovider.EmptyWalletSubprovider](#class-emptywalletsubprovider)
+  * [subproviders/fake_gas_estimate_subprovider](modules/_subproviders_fake_gas_estimate_subprovider_.md)
+  * [subproviders/fake_gas_estimate_subprovider.FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)
+  * [subproviders/ganache](modules/_subproviders_ganache_.md)
+  * [subproviders/ganache.GanacheSubprovider](#class-ganachesubprovider)
+  * [subproviders/ledger](modules/_subproviders_ledger_.md)
+  * [subproviders/ledger.LedgerSubprovider](#class-ledgersubprovider)
+  * [subproviders/metamask_subprovider](modules/_subproviders_metamask_subprovider_.md)
+  * [subproviders/metamask_subprovider.MetamaskSubprovider](#class-metamasksubprovider)
+  * [subproviders/mnemonic_wallet](modules/_subproviders_mnemonic_wallet_.md)
+  * [subproviders/mnemonic_wallet.MnemonicWalletSubprovider](#class-mnemonicwalletsubprovider)
+  * [subproviders/nonce_tracker](modules/_subproviders_nonce_tracker_.md)
+  * [subproviders/nonce_tracker.NonceTrackerSubprovider](#class-noncetrackersubprovider)
+  * [subproviders/private_key_wallet](modules/_subproviders_private_key_wallet_.md)
+  * [subproviders/private_key_wallet.PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)
+  * [subproviders/redundant_subprovider](modules/_subproviders_redundant_subprovider_.md)
+  * [subproviders/redundant_subprovider.RedundantSubprovider](#class-redundantsubprovider)
+  * [subproviders/rpc_subprovider](modules/_subproviders_rpc_subprovider_.md)
+  * [subproviders/rpc_subprovider.RPCSubprovider](#class-rpcsubprovider)
+  * [subproviders/signer](modules/_subproviders_signer_.md)
+  * [subproviders/signer.SignerSubprovider](#class-signersubprovider)
+  * [subproviders/subprovider](modules/_subproviders_subprovider_.md)
+  * [subproviders/subprovider.Subprovider](#class-subprovider)
+  * [subproviders/trezor](modules/_subproviders_trezor_.md)
+  * [subproviders/trezor.TrezorSubprovider](#class-trezorsubprovider)
+  * [types](modules/_types_.md)
+  * [types.LedgerSubproviderErrors](#class-ledgersubprovidererrors)
+  * [types.NonceSubproviderErrors](#class-noncesubprovidererrors)
+  * [types.WalletSubproviderErrors](#class-walletsubprovidererrors)
+  * [types.AccountFetchingConfigs](#class-accountfetchingconfigs)
+  * [types.DerivedHDKeyInfo](#class-derivedhdkeyinfo)
+  * [types.ECSignatureString](#class-ecsignaturestring)
+  * [types.JSONRPCRequestPayloadWithMethod](#class-jsonrpcrequestpayloadwithmethod)
+  * [types.LedgerCommunication](#class-ledgercommunication)
+  * [types.LedgerCommunicationClient](#class-ledgercommunicationclient)
+  * [types.LedgerEthereumClient](#class-ledgerethereumclient)
+  * [types.LedgerGetAddressResult](#class-ledgergetaddressresult)
+  * [types.LedgerSubproviderConfigs](#class-ledgersubproviderconfigs)
+  * [types.MnemonicWalletSubproviderConfigs](#class-mnemonicwalletsubproviderconfigs)
+  * [types.PartialTxParams](#class-partialtxparams)
+  * [types.ResponseWithTxParams](#class-responsewithtxparams)
+  * [types.SignatureData](#class-signaturedata)
+  * [types.TrezorConnectResponse](#class-trezorconnectresponse)
+  * [types.TrezorGetPublicKeyResponsePayload](#class-trezorgetpublickeyresponsepayload)
+  * [types.TrezorResponseErrorPayload](#class-trezorresponseerrorpayload)
+  * [types.TrezorSignMsgResponsePayload](#class-trezorsignmsgresponsepayload)
+  * [types.TrezorSignTxResponsePayload](#class-trezorsigntxresponsepayload)
+  * [types.TrezorSubproviderConfig](#class-trezorsubproviderconfig)
+  * [utils/subprovider_utils](modules/_utils_subprovider_utils_.md)
+  * [utils/wallet_utils](modules/_utils_wallet_utils_.md)
+* [Classes]()
+  * [subproviders/base_wallet_subprovider.BaseWalletSubprovider](#class-basewalletsubprovider)
+  * [subproviders/empty_wallet_subprovider.EmptyWalletSubprovider](#class-emptywalletsubprovider)
+  * [subproviders/fake_gas_estimate_subprovider.FakeGasEstimateSubprovider](#class-fakegasestimatesubprovider)
+  * [subproviders/ganache.GanacheSubprovider](#class-ganachesubprovider)
+  * [subproviders/ledger.LedgerSubprovider](#class-ledgersubprovider)
+  * [subproviders/metamask_subprovider.MetamaskSubprovider](#class-metamasksubprovider)
+  * [subproviders/mnemonic_wallet.MnemonicWalletSubprovider](#class-mnemonicwalletsubprovider)
+  * [subproviders/nonce_tracker.NonceTrackerSubprovider](#class-noncetrackersubprovider)
+  * [subproviders/private_key_wallet.PrivateKeyWalletSubprovider](#class-privatekeywalletsubprovider)
+  * [subproviders/redundant_subprovider.RedundantSubprovider](#class-redundantsubprovider)
+  * [subproviders/rpc_subprovider.RPCSubprovider](#class-rpcsubprovider)
+  * [subproviders/signer.SignerSubprovider](#class-signersubprovider)
+  * [subproviders/subprovider.Subprovider](#class-subprovider)
+  * [subproviders/trezor.TrezorSubprovider](#class-trezorsubprovider)
+* [Enums]()
+  * [types.LedgerSubproviderErrors](#class-ledgersubprovidererrors)
+  * [types.NonceSubproviderErrors](#class-noncesubprovidererrors)
+  * [types.WalletSubproviderErrors](#class-walletsubprovidererrors)
+* [Interfaces]()
+  * [types.AccountFetchingConfigs](#class-accountfetchingconfigs)
+  * [types.DerivedHDKeyInfo](#class-derivedhdkeyinfo)
+  * [types.ECSignatureString](#class-ecsignaturestring)
+  * [types.JSONRPCRequestPayloadWithMethod](#class-jsonrpcrequestpayloadwithmethod)
+  * [types.LedgerCommunication](#class-ledgercommunication)
+  * [types.LedgerCommunicationClient](#class-ledgercommunicationclient)
+  * [types.LedgerEthereumClient](#class-ledgerethereumclient)
+  * [types.LedgerGetAddressResult](#class-ledgergetaddressresult)
+  * [types.LedgerSubproviderConfigs](#class-ledgersubproviderconfigs)
+  * [types.MnemonicWalletSubproviderConfigs](#class-mnemonicwalletsubproviderconfigs)
+  * [types.PartialTxParams](#class-partialtxparams)
+  * [types.ResponseWithTxParams](#class-responsewithtxparams)
+  * [types.SignatureData](#class-signaturedata)
+  * [types.TrezorConnectResponse](#class-trezorconnectresponse)
+  * [types.TrezorGetPublicKeyResponsePayload](#class-trezorgetpublickeyresponsepayload)
+  * [types.TrezorResponseErrorPayload](#class-trezorresponseerrorpayload)
+  * [types.TrezorSignMsgResponsePayload](#class-trezorsignmsgresponsepayload)
+  * [types.TrezorSignTxResponsePayload](#class-trezorsigntxresponsepayload)
+  * [types.TrezorSubproviderConfig](#class-trezorsubproviderconfig)
+
+<hr />
+

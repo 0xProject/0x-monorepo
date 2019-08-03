@@ -1,0 +1,107 @@
+> # Class: SchemaValidator
+
+A validator for [JSON-schemas](http://json-schema.org/)
+
+## Hierarchy
+
+* **SchemaValidator**
+
+## Index
+
+### Constructors
+
+* [constructor](#constructor)
+
+### Methods
+
+* [addSchema](#addschema)
+* [isValid](#isvalid)
+* [validate](#validate)
+
+## Constructors
+
+###  constructor
+
+\+ **new SchemaValidator**(): *[SchemaValidator](#class-schemavalidator)*
+
+*Defined in [schema_validator.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/json-schemas/src/schema_validator.ts#L15)*
+
+Instantiates a SchemaValidator instance
+
+**Returns:** *[SchemaValidator](#class-schemavalidator)*
+
+## Methods
+
+###  addSchema
+
+▸ **addSchema**(`schema`: `Schema`): *void*
+
+*Defined in [schema_validator.ts:32](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/json-schemas/src/schema_validator.ts#L32)*
+
+Add a schema to the validator. All schemas and sub-schemas must be added to
+the validator before the `validate` and `isValid` methods can be called with
+instances of that schema.
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`schema` | `Schema` | The schema to add  |
+
+**Returns:** *void*
+
+___
+
+###  isValid
+
+▸ **isValid**(`instance`: any, `schema`: `Schema`): *boolean*
+
+*Defined in [schema_validator.ts:57](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/json-schemas/src/schema_validator.ts#L57)*
+
+Check whether an instance properly adheres to a JSON schema
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`instance` | any | JS object in question |
+`schema` | `Schema` | Schema to check against |
+
+**Returns:** *boolean*
+
+Whether or not the instance adheres to the schema
+
+___
+
+###  validate
+
+▸ **validate**(`instance`: any, `schema`: `Schema`): *`ValidatorResult`*
+
+*Defined in [schema_validator.ts:46](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/json-schemas/src/schema_validator.ts#L46)*
+
+Validate the JS object conforms to a specific JSON schema
+
+**Parameters:**
+
+Name | Type | Description |
+------ | ------ | ------ |
+`instance` | any | JS object in question |
+`schema` | `Schema` | Schema to check against |
+
+**Returns:** *`ValidatorResult`*
+
+The results of the validation
+
+<hr />
+
+* [Globals](globals.md)
+* [External Modules]()
+  * [index](modules/_index_.md)
+  * [schema_validator](modules/_schema_validator_.md)
+  * [schema_validator.SchemaValidator](#class-schemavalidator)
+  * [schemas](modules/_schemas_.md)
+* [Classes]()
+  * [schema_validator.SchemaValidator](#class-schemavalidator)
+
+<hr />
+

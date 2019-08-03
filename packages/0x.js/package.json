@@ -27,6 +27,8 @@
         "clean": "shx rm -rf _bundles lib test_temp src/generated_contract_wrappers generated_docs",
         "build:umd:prod": "NODE_ENV=production node --max_old_space_size=8192 ../../node_modules/.bin/webpack --mode production",
         "build:commonjs": "tsc -b",
+        "s3:sync": "aws s3 sync ./docs s3://docs-markdown/${npm_package_name}/v${npm_package_version} --profile 0xproject --region us-east-1 --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers",
+        "docs:md": "ts-doc-gen --sourceDir=./src --output=./docs --tsconfig=./typedoc-tsconfig.json; yarn s3:sync",
         "docs:json": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --json $JSON_FILE_PATH $PROJECT_FILES"
     },
     "config": {
@@ -46,6 +48,7 @@
         "@0x/contract-addresses": "^3.1.0",
         "@0x/dev-utils": "^2.3.1",
         "@0x/migrations": "^4.3.0",
+        "@0x/ts-doc-gen": "^0.0.6",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
@@ -66,7 +69,7 @@
         "sinon": "^4.0.0",
         "source-map-support": "^0.5.0",
         "tslint": "5.11.0",
-        "typedoc": "0.13.0",
+        "typedoc": "^0.15.0",
         "typescript": "3.0.1",
         "uglifyjs-webpack-plugin": "^2.0.1",
         "webpack": "^4.20.2"
