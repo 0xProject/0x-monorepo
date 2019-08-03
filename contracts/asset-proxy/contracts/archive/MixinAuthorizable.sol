@@ -19,7 +19,7 @@
 pragma solidity ^0.5.9;
 
 import "../archive/Ownable.sol";
-import "./interfaces/IAuthorizable.sol";
+import "../src/interfaces/IAuthorizable.sol";
 
 
 contract MixinAuthorizable is

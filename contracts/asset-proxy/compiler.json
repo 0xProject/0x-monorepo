@@ -24,10 +24,10 @@
         }
     },
     "contracts": [
+        "archive/MixinAuthorizable.sol",
         "src/ERC1155Proxy.sol",
         "src/ERC20Proxy.sol",
         "src/ERC721Proxy.sol",
-        "src/MixinAuthorizable.sol",
         "src/MultiAssetProxy.sol",
         "src/StaticCallProxy.sol",
         "src/interfaces/IAssetData.sol",
