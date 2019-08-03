@@ -21,7 +21,7 @@ for an Ethereum address and assetData
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L15)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L15)*
 
 Get balance of assetData for userAddress
 
@@ -42,7 +42,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L22)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_fetcher.ts#L22)*
 
 Get the 0x asset proxy allowance of assetData for userAddress
 
@@ -87,7 +87,7 @@ Allowance amount in base units
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L10)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L10)*
 
 **Returns:** *void*
 
@@ -97,7 +97,7 @@ ___
 
 ▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L7)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L7)*
 
 **Parameters:**
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L9)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L9)*
 
 **Parameters:**
 
@@ -131,7 +131,7 @@ ___
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:4](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L4)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:4](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L4)*
 
 **Parameters:**
 
@@ -148,7 +148,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L5)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L5)*
 
 **Parameters:**
 
@@ -165,7 +165,7 @@ ___
 
 ▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L6)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L6)*
 
 **Parameters:**
 
@@ -183,7 +183,7 @@ ___
 
 ▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L8)*
+*Defined in [abstract/abstract_balance_and_proxy_allowance_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_balance_and_proxy_allowance_lazy_store.ts#L8)*
 
 **Parameters:**
 
@@ -221,7 +221,7 @@ and whether it's been cancelled.
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L15)*
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:15](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L15)*
 
 Get the amount of the order's takerToken amount already filled
 
@@ -241,7 +241,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L22)*
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L22)*
 
 **Returns:** *string*
 
@@ -251,7 +251,7 @@ ___
 
 ▸ **isOrderCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L21)*
+*Defined in [abstract/abstract_order_filled_cancelled_fetcher.ts:21](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_fetcher.ts#L21)*
 
 Whether an order is cancelled
 
@@ -296,7 +296,7 @@ Whether or not the order is cancelled
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:11](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L11)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:11](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L11)*
 
 **Returns:** *void*
 
@@ -306,7 +306,7 @@ ___
 
 ▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L8)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:8](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L8)*
 
 **Parameters:**
 
@@ -322,7 +322,7 @@ ___
 
 ▸ **deleteIsCancelled**(`orderHash`: string): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L10)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:10](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L10)*
 
 **Parameters:**
 
@@ -338,7 +338,7 @@ ___
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L5)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:5](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L5)*
 
 **Parameters:**
 
@@ -354,7 +354,7 @@ ___
 
 ▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L6)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:6](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L6)*
 
 **Parameters:**
 
@@ -370,7 +370,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L12)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:12](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L12)*
 
 **Returns:** *string*
 
@@ -380,7 +380,7 @@ ___
 
 ▸ **setFilledTakerAmount**(`orderHash`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L7)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:7](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L7)*
 
 **Parameters:**
 
@@ -397,7 +397,7 @@ ___
 
 ▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
 
-*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L9)*
+*Defined in [abstract/abstract_order_filled_cancelled_lazy_store.ts:9](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/abstract/abstract_order_filled_cancelled_lazy_store.ts#L9)*
 
 **Parameters:**
 
@@ -435,7 +435,7 @@ An exchange transfer simulator which simulates asset transfers exactly how the
 
 \+ **new ExchangeTransferSimulator**(`store`: [AbstractBalanceAndProxyAllowanceLazyStore](#class-exchangetransfersimulator)*
 
-*Defined in [exchange_transfer_simulator.ts:50](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/exchange_transfer_simulator.ts#L50)*
+*Defined in [exchange_transfer_simulator.ts:50](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/exchange_transfer_simulator.ts#L50)*
 
 Instantiate a ExchangeTransferSimulator
 
@@ -455,7 +455,7 @@ an instance of ExchangeTransferSimulator
 
 ▸ **transferFromAsync**(`assetData`: string, `from`: string, `to`: string, `amountInBaseUnits`: `BigNumber`, `tradeSide`: [TradeSide](#enumeration-tradeside), `transferType`: [TransferType](#enumeration-transfertype)): *`Promise<void>`*
 
-*Defined in [exchange_transfer_simulator.ts:70](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/exchange_transfer_simulator.ts#L70)*
+*Defined in [exchange_transfer_simulator.ts:70](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/exchange_transfer_simulator.ts#L70)*
 
 Simulates transferFrom call performed by a proxy
 
@@ -498,7 +498,7 @@ Name | Type | Description |
 
 \+ **new OrderStateUtils**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](#class-orderstateutils)*
 
-*Defined in [order_state_utils.ts:98](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_state_utils.ts#L98)*
+*Defined in [order_state_utils.ts:98](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_state_utils.ts#L98)*
 
 Instantiate OrderStateUtils
 
@@ -519,7 +519,7 @@ Instance of OrderStateUtils
 
 ▸ **getMaxFillableTakerAssetAmountAsync**(`signedOrder`: `SignedOrder`, `takerAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [order_state_utils.ts:192](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_state_utils.ts#L192)*
+*Defined in [order_state_utils.ts:192](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_state_utils.ts#L192)*
 
 Get the max amount of the supplied order's takerAmount that could still be filled
 
@@ -540,7 +540,7 @@ ___
 
 ▸ **getOpenOrderRelevantStateAsync**(`signedOrder`: `SignedOrder`): *`Promise<OrderRelevantState>`*
 
-*Defined in [order_state_utils.ts:162](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_state_utils.ts#L162)*
+*Defined in [order_state_utils.ts:162](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_state_utils.ts#L162)*
 
 Get state relevant to an order (i.e makerBalance, makerAllowance, filledTakerAssetAmount, etc...
 
@@ -560,7 +560,7 @@ ___
 
 ▸ **getOpenOrderStateAsync**(`signedOrder`: `SignedOrder`, `transactionHash?`: undefined | string): *`Promise<OrderState>`*
 
-*Defined in [order_state_utils.ts:122](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_state_utils.ts#L122)*
+*Defined in [order_state_utils.ts:122](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_state_utils.ts#L122)*
 
 Get the orderState for an "open" order (i.e where takerAddress=NULL_ADDRESS)
 This method will only check the maker's balance/allowance to calculate the
@@ -608,7 +608,7 @@ A utility class for validating orders
 
 \+ **new OrderValidationUtils**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](#class-ordervalidationutils)*
 
-*Defined in [order_validation_utils.ts:159](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L159)*
+*Defined in [order_validation_utils.ts:159](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L159)*
 
 Instantiate OrderValidationUtils
 
@@ -629,7 +629,7 @@ An instance of OrderValidationUtils
 
 ▸ **validateFillOrderThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `takerAddress`: string, `zrxAssetData`: string): *`Promise<BigNumber>`*
 
-*Defined in [order_validation_utils.ts:236](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L236)*
+*Defined in [order_validation_utils.ts:236](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L236)*
 
 Validate a call to FillOrder and throw if it wouldn't succeed
 
@@ -652,7 +652,7 @@ ___
 
 ▸ **validateOrderFillableOrThrowAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `zrxAssetData`: string, `expectedFillTakerTokenAmount?`: `BigNumber`): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:185](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L185)*
+*Defined in [order_validation_utils.ts:185](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L185)*
 
 Validate if the supplied order is fillable, and throw if it isn't
 
@@ -673,7 +673,7 @@ ___
 
 ▸ **isRoundingErrorFloor**(`numerator`: `BigNumber`, `denominator`: `BigNumber`, `target`: `BigNumber`): *boolean*
 
-*Defined in [order_validation_utils.ts:34](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L34)*
+*Defined in [order_validation_utils.ts:34](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L34)*
 
 A Typescript implementation mirroring the implementation of isRoundingError in the
 Exchange smart contract
@@ -694,7 +694,7 @@ ___
 
 ▸ **validateFillOrderBalancesAllowancesThrowIfInvalidAsync**(`exchangeTradeEmulator`: [ExchangeTransferSimulator](#class-exchangetransfersimulator), `signedOrder`: `SignedOrder`, `fillTakerAssetAmount`: `BigNumber`, `senderAddress`: string, `zrxAssetData`: string): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:61](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L61)*
+*Defined in [order_validation_utils.ts:61](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L61)*
 
 Validate that the maker & taker have sufficient balances/allowances
 to fill the supplied order to the fillTakerAssetAmount amount
@@ -717,7 +717,7 @@ ___
 
 ▸ **validateMakerTransferThrowIfInvalidAsync**(`networkId`: `NetworkId`, `supportedProvider`: `SupportedProvider`, `signedOrder`: `SignedOrder`, `makerAssetAmount`: `BigNumber`, `takerAddress?`: undefined | string): *`Promise<void>`*
 
-*Defined in [order_validation_utils.ts:127](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/order_validation_utils.ts#L127)*
+*Defined in [order_validation_utils.ts:127](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/order_validation_utils.ts#L127)*
 
 Validate the transfer from the maker to the taker. This is simulated on-chain
 via an eth_call. If this call fails, the asset is currently nontransferable.
@@ -758,7 +758,7 @@ Name | Type | Description |
 
 \+ **new RemainingFillableCalculator**(`orderFee`: `BigNumber`, `orderAssetAmount`: `BigNumber`, `isTraderAssetZRX`: boolean, `transferrableAssetAmount`: `BigNumber`, `transferrableFeeAmount`: `BigNumber`, `remainingOrderAssetAmount`: `BigNumber`): *[RemainingFillableCalculator](#class-remainingfillablecalculator)*
 
-*Defined in [remaining_fillable_calculator.ts:11](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/remaining_fillable_calculator.ts#L11)*
+*Defined in [remaining_fillable_calculator.ts:11](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/remaining_fillable_calculator.ts#L11)*
 
 **Parameters:**
 
@@ -779,7 +779,7 @@ Name | Type |
 
 ▸ **computeRemainingFillable**(): *`BigNumber`*
 
-*Defined in [remaining_fillable_calculator.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/remaining_fillable_calculator.ts#L30)*
+*Defined in [remaining_fillable_calculator.ts:30](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/remaining_fillable_calculator.ts#L30)*
 
 **Returns:** *`BigNumber`*
 
@@ -820,7 +820,7 @@ Copy on read store for balances/proxyAllowances of tokens/accounts
 
 \+ **new BalanceAndProxyAllowanceLazyStore**(`balanceAndProxyAllowanceFetcher`: [AbstractBalanceAndProxyAllowanceFetcher](#class-balanceandproxyallowancelazystore)*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L23)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:23](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L23)*
 
 Instantiates a BalanceAndProxyAllowanceLazyStore
 
@@ -840,7 +840,7 @@ Instance of BalanceAndProxyAllowanceLazyStore
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:136](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L136)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:136](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L136)*
 
 Delete all balances & allowances
 
@@ -852,7 +852,7 @@ ___
 
 ▸ **deleteAllERC721ProxyAllowance**(`tokenAddress`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:119](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L119)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:119](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L119)*
 
 Clear all ERC721 0x proxy allowances a user has on all items of a specific ERC721 contract
 
@@ -871,7 +871,7 @@ ___
 
 ▸ **deleteBalance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L63)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L63)*
 
 Clear the balance of an asset for a user
 
@@ -890,7 +890,7 @@ ___
 
 ▸ **deleteProxyAllowance**(`assetData`: string, `userAddress`: string): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:106](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L106)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:106](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L106)*
 
 Clear the 0x asset proxy allowance
 
@@ -909,7 +909,7 @@ ___
 
 ▸ **getBalanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:39](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L39)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:39](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L39)*
 
 Get a users balance of an asset
 
@@ -928,7 +928,7 @@ ___
 
 ▸ **getProxyAllowanceAsync**(`assetData`: string, `userAddress`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L76)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:76](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L76)*
 
 Get the 0x asset proxy allowance
 
@@ -947,7 +947,7 @@ ___
 
 ▸ **setBalance**(`assetData`: string, `userAddress`: string, `balance`: `BigNumber`): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:52](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L52)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:52](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L52)*
 
 Set the balance of an asset for a user
 
@@ -967,7 +967,7 @@ ___
 
 ▸ **setProxyAllowance**(`assetData`: string, `userAddress`: string, `proxyAllowance`: `BigNumber`): *void*
 
-*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:95](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L95)*
+*Defined in [store/balance_and_proxy_allowance_lazy_store.ts:95](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/balance_and_proxy_allowance_lazy_store.ts#L95)*
 
 Set the 0x asset proxy allowance
 
@@ -1020,7 +1020,7 @@ Copy on read store for balances/proxyAllowances of tokens/accounts
 
 \+ **new OrderFilledCancelledLazyStore**(`orderFilledCancelledFetcher`: [AbstractOrderFilledCancelledFetcher](#class-orderfilledcancelledlazystore)*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L19)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:19](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L19)*
 
 Instantiate a OrderFilledCancelledLazyStore
 
@@ -1040,7 +1040,7 @@ An instance of OrderFilledCancelledLazyStore
 
 ▸ **deleteAll**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:90](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L90)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:90](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L90)*
 
 Clear all filled/cancelled state
 
@@ -1052,7 +1052,7 @@ ___
 
 ▸ **deleteAllFilled**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:103](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L103)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:103](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L103)*
 
 Clear all filled state
 
@@ -1064,7 +1064,7 @@ ___
 
 ▸ **deleteAllIsCancelled**(): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:97](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L97)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:97](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L97)*
 
 Clear all cancelled state
 
@@ -1076,7 +1076,7 @@ ___
 
 ▸ **deleteFilledTakerAmount**(`orderHash`: string): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L55)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:55](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L55)*
 
 Clear the filledTakerAssetAmount of an order
 
@@ -1094,7 +1094,7 @@ ___
 
 ▸ **deleteIsCancelled**(`orderHash`: string): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:84](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L84)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:84](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L84)*
 
 Clear whether the order has been cancelled if already set
 
@@ -1112,7 +1112,7 @@ ___
 
 ▸ **getFilledTakerAmountAsync**(`orderHash`: string): *`Promise<BigNumber>`*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L35)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:35](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L35)*
 
 Get the filledTakerAssetAmount of an order
 
@@ -1132,7 +1132,7 @@ ___
 
 ▸ **getIsCancelledAsync**(`signedOrder`: `SignedOrder`): *`Promise<boolean>`*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L63)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:63](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L63)*
 
 Check if an order has been cancelled
 
@@ -1152,7 +1152,7 @@ ___
 
 ▸ **getZRXAssetData**(): *string*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:109](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L109)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:109](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L109)*
 
 Get the ZRX assetData
 
@@ -1164,7 +1164,7 @@ ___
 
 ▸ **setFilledTakerAmount**(`orderHash`: string, `filledTakerAmount`: `BigNumber`): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:48](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L48)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:48](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L48)*
 
 Set the filledTakerAssetAmount of an order
 
@@ -1183,7 +1183,7 @@ ___
 
 ▸ **setIsCancelled**(`orderHash`: string, `isCancelled`: boolean): *void*
 
-*Defined in [store/order_filled_cancelled_lazy_store.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L77)*
+*Defined in [store/order_filled_cancelled_lazy_store.ts:77](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/store/order_filled_cancelled_lazy_store.ts#L77)*
 
 Set whether an order has been cancelled or not
 
@@ -1213,7 +1213,7 @@ Name | Type | Description |
 
 • **Maker**: = "maker"
 
-*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L9)*
+*Defined in [types.ts:9](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L9)*
 
 ___
 
@@ -1221,7 +1221,7 @@ ___
 
 • **Taker**: = "taker"
 
-*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L10)*
+*Defined in [types.ts:10](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L10)*
 
 <hr />
 
@@ -1240,7 +1240,7 @@ ___
 
 • **Fee**: = "fee"
 
-*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L15)*
+*Defined in [types.ts:15](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L15)*
 
 ___
 
@@ -1248,7 +1248,7 @@ ___
 
 • **Trade**: = "trade"
 
-*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L14)*
+*Defined in [types.ts:14](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L14)*
 
 <hr />
 
@@ -1267,7 +1267,7 @@ ___
 
 • **InvalidMetamaskSigner**: = "MetaMask provider must be wrapped in a MetamaskSubprovider (from the '@0x/subproviders' package) in order to work with this method."
 
-*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L5)*
+*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L5)*
 
 ___
 
@@ -1275,7 +1275,7 @@ ___
 
 • **InvalidSignature**: = "INVALID_SIGNATURE"
 
-*Defined in [types.ts:4](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L4)*
+*Defined in [types.ts:4](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L4)*
 
 <hr />
 
@@ -1303,7 +1303,7 @@ ___
 
 • **expirationTimeSeconds**? : *`BigNumber`*
 
-*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L25)*
+*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L25)*
 
 ___
 
@@ -1311,7 +1311,7 @@ ___
 
 • **feeRecipientAddress**? : *undefined | string*
 
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L23)*
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L23)*
 
 ___
 
@@ -1319,7 +1319,7 @@ ___
 
 • **makerFee**? : *`BigNumber`*
 
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L21)*
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L21)*
 
 ___
 
@@ -1327,7 +1327,7 @@ ___
 
 • **salt**? : *`BigNumber`*
 
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L24)*
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L24)*
 
 ___
 
@@ -1335,7 +1335,7 @@ ___
 
 • **senderAddress**? : *undefined | string*
 
-*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L20)*
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L20)*
 
 ___
 
@@ -1343,7 +1343,7 @@ ___
 
 • **takerAddress**? : *undefined | string*
 
-*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L19)*
+*Defined in [types.ts:19](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L19)*
 
 ___
 
@@ -1351,7 +1351,7 @@ ___
 
 • **takerFee**? : *`BigNumber`*
 
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L22)*
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L22)*
 
 <hr />
 
@@ -1379,7 +1379,7 @@ ___
 
 • **feeOrdersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:70](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L70)*
+*Defined in [types.ts:70](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L70)*
 
 ___
 
@@ -1387,7 +1387,7 @@ ___
 
 • **remainingFeeAmount**: *`BigNumber`*
 
-*Defined in [types.ts:71](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L71)*
+*Defined in [types.ts:71](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L71)*
 
 ___
 
@@ -1395,7 +1395,7 @@ ___
 
 • **resultFeeOrders**: *`T`[]*
 
-*Defined in [types.ts:69](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L69)*
+*Defined in [types.ts:69](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L69)*
 
 <hr />
 
@@ -1428,7 +1428,7 @@ Defaults to 0
 
 • **remainingFillableFeeAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L64)*
+*Defined in [types.ts:64](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L64)*
 
 ___
 
@@ -1436,7 +1436,7 @@ ___
 
 • **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L63)*
+*Defined in [types.ts:63](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L63)*
 
 ___
 
@@ -1444,7 +1444,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L65)*
+*Defined in [types.ts:65](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L65)*
 
 <hr />
 
@@ -1473,7 +1473,7 @@ Defaults to 0
 
 • **remainingFillableMakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L36)*
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L36)*
 
 ___
 
@@ -1481,7 +1481,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L37)*
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L37)*
 
 <hr />
 
@@ -1510,7 +1510,7 @@ Defaults to 0
 
 • **remainingFillableTakerAssetAmounts**? : *`BigNumber`[]*
 
-*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L48)*
+*Defined in [types.ts:48](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L48)*
 
 ___
 
@@ -1518,7 +1518,7 @@ ___
 
 • **slippageBufferAmount**? : *`BigNumber`*
 
-*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L49)*
+*Defined in [types.ts:49](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L49)*
 
 <hr />
 
@@ -1546,7 +1546,7 @@ ___
 
 • **ordersRemainingFillableMakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L76)*
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L76)*
 
 ___
 
@@ -1554,7 +1554,7 @@ ___
 
 • **remainingFillAmount**: *`BigNumber`*
 
-*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L77)*
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L77)*
 
 ___
 
@@ -1562,7 +1562,7 @@ ___
 
 • **resultOrders**: *`T`[]*
 
-*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L75)*
+*Defined in [types.ts:75](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L75)*
 
 <hr />
 
@@ -1590,7 +1590,7 @@ ___
 
 • **ordersRemainingFillableTakerAssetAmounts**: *`BigNumber`[]*
 
-*Defined in [types.ts:82](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L82)*
+*Defined in [types.ts:82](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L82)*
 
 ___
 
@@ -1598,7 +1598,7 @@ ___
 
 • **remainingFillAmount**: *`BigNumber`*
 
-*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L83)*
+*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L83)*
 
 ___
 
@@ -1606,7 +1606,7 @@ ___
 
 • **resultOrders**: *`T`[]*
 
-*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-utils/src/types.ts#L81)*
+*Defined in [types.ts:81](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-utils/src/types.ts#L81)*
 
 <hr />
 

@@ -33,7 +33,7 @@ that implement the standard relayer API v2
 
 \+ **new HttpClient**(`url`: string): *[HttpClient](#class-httpclient)*
 
-*Defined in [http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L44)*
+*Defined in [http_client.ts:44](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L44)*
 
 Instantiates a new HttpClient instance
 
@@ -53,7 +53,7 @@ An instance of HttpClient
 
 ▸ **getAssetPairsAsync**(`requestOpts?`: `RequestOpts` & `AssetPairsRequestOpts` & `PagedRequestOpts`): *`Promise<AssetPairsResponse>`*
 
-*Defined in [http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L59)*
+*Defined in [http_client.ts:59](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L59)*
 
 Retrieve assetData pair info from the API
 
@@ -73,7 +73,7 @@ ___
 
 ▸ **getFeeRecipientsAsync**(`requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<FeeRecipientsResponse>`*
 
-*Defined in [http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L160)*
+*Defined in [http_client.ts:160](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L160)*
 
 Retrieve the list of fee recipient addresses used by the relayer.
 
@@ -93,7 +93,7 @@ ___
 
 ▸ **getOrderAsync**(`orderHash`: string, `requestOpts?`: `RequestOpts`): *`Promise<APIOrder>`*
 
-*Defined in [http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L99)*
+*Defined in [http_client.ts:99](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L99)*
 
 Retrieve a specific order from the API
 
@@ -114,7 +114,7 @@ ___
 
 ▸ **getOrderConfigAsync**(`request`: `OrderConfigRequest`, `requestOpts?`: `RequestOpts`): *`Promise<OrderConfigResponse>`*
 
-*Defined in [http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L139)*
+*Defined in [http_client.ts:139](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L139)*
 
 Retrieve fee information from the API
 
@@ -135,7 +135,7 @@ ___
 
 ▸ **getOrderbookAsync**(`request`: `OrderbookRequest`, `requestOpts?`: `RequestOpts` & `PagedRequestOpts`): *`Promise<OrderbookResponse>`*
 
-*Defined in [http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L117)*
+*Defined in [http_client.ts:117](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L117)*
 
 Retrieve an orderbook from the API
 
@@ -156,7 +156,7 @@ ___
 
 ▸ **getOrdersAsync**(`requestOpts?`: `RequestOpts` & `OrdersRequestOpts` & `PagedRequestOpts`): *`Promise<OrdersResponse>`*
 
-*Defined in [http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L79)*
+*Defined in [http_client.ts:79](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L79)*
 
 Retrieve orders from the API
 
@@ -176,7 +176,7 @@ ___
 
 ▸ **submitOrderAsync**(`signedOrder`: `SignedOrder`, `requestOpts?`: `RequestOpts`): *`Promise<void>`*
 
-*Defined in [http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/http_client.ts#L177)*
+*Defined in [http_client.ts:177](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/http_client.ts#L177)*
 
 Submit a signed order to the API
 
@@ -221,7 +221,7 @@ that implements the standard relayer API v0
 
 \+ **new WebSocketOrdersChannel**(`client`: `w3cwebsocket`, `handler`: [OrdersChannelHandler](#class-websocketorderschannel)*
 
-*Defined in [ws_orders_channel.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/ws_orders_channel.ts#L21)*
+*Defined in [ws_orders_channel.ts:21](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/ws_orders_channel.ts#L21)*
 
 Instantiates a new WebSocketOrdersChannel instance
 
@@ -242,7 +242,7 @@ An instance of WebSocketOrdersChannel
 
 ▸ **close**(): *void*
 
-*Defined in [ws_orders_channel.ts:66](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/ws_orders_channel.ts#L66)*
+*Defined in [ws_orders_channel.ts:66](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/ws_orders_channel.ts#L66)*
 
 Close the websocket and stop receiving updates
 
@@ -254,7 +254,7 @@ ___
 
 ▸ **subscribe**(`subscriptionOpts`: `OrdersChannelSubscriptionOpts`): *void*
 
-*Defined in [ws_orders_channel.ts:50](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/ws_orders_channel.ts#L50)*
+*Defined in [ws_orders_channel.ts:50](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/ws_orders_channel.ts#L50)*
 
 Subscribe to orderbook snapshots and updates from the websocket
 
@@ -283,7 +283,7 @@ Name | Type | Description |
 
 • **Get**: = "GET"
 
-*Defined in [types.ts:46](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L46)*
+*Defined in [types.ts:46](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L46)*
 
 ___
 
@@ -291,7 +291,7 @@ ___
 
 • **Post**: = "POST"
 
-*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L47)*
+*Defined in [types.ts:47](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L47)*
 
 <hr />
 
@@ -323,7 +323,7 @@ ___
 
 • **getAssetPairsAsync**: *function*
 
-*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L18)*
+*Defined in [types.ts:18](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L18)*
 
 #### Type declaration:
 
@@ -341,7 +341,7 @@ ___
 
 • **getFeeRecipientsAsync**: *function*
 
-*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L25)*
+*Defined in [types.ts:25](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L25)*
 
 #### Type declaration:
 
@@ -359,7 +359,7 @@ ___
 
 • **getOrderAsync**: *function*
 
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L22)*
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L22)*
 
 #### Type declaration:
 
@@ -377,7 +377,7 @@ ___
 
 • **getOrderConfigAsync**: *function*
 
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L24)*
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L24)*
 
 #### Type declaration:
 
@@ -395,7 +395,7 @@ ___
 
 • **getOrderbookAsync**: *function*
 
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L23)*
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L23)*
 
 #### Type declaration:
 
@@ -414,7 +414,7 @@ ___
 
 • **getOrdersAsync**: *function*
 
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L21)*
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L21)*
 
 #### Type declaration:
 
@@ -432,7 +432,7 @@ ___
 
 • **submitOrderAsync**: *function*
 
-*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L26)*
+*Defined in [types.ts:26](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L26)*
 
 #### Type declaration:
 
@@ -465,7 +465,7 @@ Name | Type |
 
 • **params**? : *undefined | object*
 
-*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L41)*
+*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L41)*
 
 ___
 
@@ -473,7 +473,7 @@ ___
 
 • **payload**? : *undefined | object*
 
-*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L42)*
+*Defined in [types.ts:42](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L42)*
 
 <hr />
 
@@ -500,7 +500,7 @@ ___
 
 • **close**: *function*
 
-*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L31)*
+*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L31)*
 
 #### Type declaration:
 
@@ -512,7 +512,7 @@ ___
 
 • **subscribe**: *function*
 
-*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L30)*
+*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L30)*
 
 #### Type declaration:
 
@@ -546,7 +546,7 @@ Name | Type |
 
 • **onClose**: *function*
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L37)*
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L37)*
 
 #### Type declaration:
 
@@ -564,7 +564,7 @@ ___
 
 • **onError**: *function*
 
-*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L36)*
+*Defined in [types.ts:36](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L36)*
 
 #### Type declaration:
 
@@ -584,7 +584,7 @@ ___
 
 • **onUpdate**: *function*
 
-*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/connect/src/types.ts#L35)*
+*Defined in [types.ts:35](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/connect/src/types.ts#L35)*
 
 #### Type declaration:
 

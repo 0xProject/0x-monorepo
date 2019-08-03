@@ -31,7 +31,7 @@ It is used to report call stack traces whenever a revert occurs.
 
 *Overrides void*
 
-*Defined in [revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
+*Defined in [revert_trace_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-trace/src/revert_trace_subprovider.ts#L27)*
 
 Instantiates a RevertTraceSubprovider instance
 

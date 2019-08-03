@@ -15,7 +15,7 @@
 
 • **Constructor**: = "constructor"
 
-*Defined in [index.ts:455](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L455)*
+*Defined in [index.ts:455](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L455)*
 
 ___
 
@@ -23,7 +23,7 @@ ___
 
 • **Event**: = "event"
 
-*Defined in [index.ts:456](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L456)*
+*Defined in [index.ts:456](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L456)*
 
 ___
 
@@ -31,7 +31,7 @@ ___
 
 • **Fallback**: = "fallback"
 
-*Defined in [index.ts:457](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L457)*
+*Defined in [index.ts:457](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L457)*
 
 ___
 
@@ -39,7 +39,7 @@ ___
 
 • **Function**: = "function"
 
-*Defined in [index.ts:454](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L454)*
+*Defined in [index.ts:454](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L454)*
 
 <hr />
 
@@ -59,7 +59,7 @@ ___
 
 • **Earliest**: = "earliest"
 
-*Defined in [index.ts:470](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L470)*
+*Defined in [index.ts:470](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L470)*
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 • **Latest**: = "latest"
 
-*Defined in [index.ts:471](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L471)*
+*Defined in [index.ts:471](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L471)*
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 • **Pending**: = "pending"
 
-*Defined in [index.ts:472](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L472)*
+*Defined in [index.ts:472](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L472)*
 
 <hr />
 
@@ -226,7 +226,7 @@ ___
 
 • **Add**: = "ADD"
 
-*Defined in [index.ts:141](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L141)*
+*Defined in [index.ts:141](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L141)*
 
 ___
 
@@ -234,7 +234,7 @@ ___
 
 • **AddMod**: = "ADDMOD"
 
-*Defined in [index.ts:148](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L148)*
+*Defined in [index.ts:148](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L148)*
 
 ___
 
@@ -242,7 +242,7 @@ ___
 
 • **Address**: = "ADDRESS"
 
-*Defined in [index.ts:167](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L167)*
+*Defined in [index.ts:167](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L167)*
 
 ___
 
@@ -250,7 +250,7 @@ ___
 
 • **And**: = "AND"
 
-*Defined in [index.ts:159](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L159)*
+*Defined in [index.ts:159](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L159)*
 
 ___
 
@@ -258,7 +258,7 @@ ___
 
 • **Balance**: = "BALANCE"
 
-*Defined in [index.ts:168](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L168)*
+*Defined in [index.ts:168](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L168)*
 
 ___
 
@@ -266,7 +266,7 @@ ___
 
 • **BlockHash**: = "BLOCKHASH"
 
-*Defined in [index.ts:183](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L183)*
+*Defined in [index.ts:183](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L183)*
 
 ___
 
@@ -274,7 +274,7 @@ ___
 
 • **Byte**: = "BYTE"
 
-*Defined in [index.ts:163](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L163)*
+*Defined in [index.ts:163](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L163)*
 
 ___
 
@@ -282,7 +282,7 @@ ___
 
 • **Call**: = "CALL"
 
-*Defined in [index.ts:276](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L276)*
+*Defined in [index.ts:276](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L276)*
 
 ___
 
@@ -290,7 +290,7 @@ ___
 
 • **CallCode**: = "CALLCODE"
 
-*Defined in [index.ts:277](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L277)*
+*Defined in [index.ts:277](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L277)*
 
 ___
 
@@ -298,7 +298,7 @@ ___
 
 • **CallDataCopy**: = "CALLDATACOPY"
 
-*Defined in [index.ts:174](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L174)*
+*Defined in [index.ts:174](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L174)*
 
 ___
 
@@ -306,7 +306,7 @@ ___
 
 • **CallDataLoad**: = "CALLDATALOAD"
 
-*Defined in [index.ts:172](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L172)*
+*Defined in [index.ts:172](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L172)*
 
 ___
 
@@ -314,7 +314,7 @@ ___
 
 • **CallDataSize**: = "CALLDATASIZE"
 
-*Defined in [index.ts:173](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L173)*
+*Defined in [index.ts:173](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L173)*
 
 ___
 
@@ -322,7 +322,7 @@ ___
 
 • **CallValue**: = "CALLVALUE"
 
-*Defined in [index.ts:171](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L171)*
+*Defined in [index.ts:171](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L171)*
 
 ___
 
@@ -330,7 +330,7 @@ ___
 
 • **Caller**: = "CALLER"
 
-*Defined in [index.ts:170](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L170)*
+*Defined in [index.ts:170](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L170)*
 
 ___
 
@@ -338,7 +338,7 @@ ___
 
 • **CodeCopy**: = "CODECOPY"
 
-*Defined in [index.ts:176](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L176)*
+*Defined in [index.ts:176](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L176)*
 
 ___
 
@@ -346,7 +346,7 @@ ___
 
 • **CodeSize**: = "CODESIZE"
 
-*Defined in [index.ts:175](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L175)*
+*Defined in [index.ts:175](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L175)*
 
 ___
 
@@ -354,7 +354,7 @@ ___
 
 • **Coinbase**: = "COINBASE"
 
-*Defined in [index.ts:184](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L184)*
+*Defined in [index.ts:184](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L184)*
 
 ___
 
@@ -362,7 +362,7 @@ ___
 
 • **Create**: = "CREATE"
 
-*Defined in [index.ts:275](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L275)*
+*Defined in [index.ts:275](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L275)*
 
 ___
 
@@ -370,7 +370,7 @@ ___
 
 • **DelegateCall**: = "DELEGATECALL"
 
-*Defined in [index.ts:279](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L279)*
+*Defined in [index.ts:279](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L279)*
 
 ___
 
@@ -378,7 +378,7 @@ ___
 
 • **Difficulty**: = "DIFFICULTY"
 
-*Defined in [index.ts:187](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L187)*
+*Defined in [index.ts:187](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L187)*
 
 ___
 
@@ -386,7 +386,7 @@ ___
 
 • **Div**: = "DIV"
 
-*Defined in [index.ts:144](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L144)*
+*Defined in [index.ts:144](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L144)*
 
 ___
 
@@ -394,7 +394,7 @@ ___
 
 • **Dup1**: = "DUP1"
 
-*Defined in [index.ts:236](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L236)*
+*Defined in [index.ts:236](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L236)*
 
 ___
 
@@ -402,7 +402,7 @@ ___
 
 • **Dup10**: = "DUP10"
 
-*Defined in [index.ts:245](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L245)*
+*Defined in [index.ts:245](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L245)*
 
 ___
 
@@ -410,7 +410,7 @@ ___
 
 • **Dup11**: = "DUP11"
 
-*Defined in [index.ts:246](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L246)*
+*Defined in [index.ts:246](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L246)*
 
 ___
 
@@ -418,7 +418,7 @@ ___
 
 • **Dup12**: = "DUP12"
 
-*Defined in [index.ts:247](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L247)*
+*Defined in [index.ts:247](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L247)*
 
 ___
 
@@ -426,7 +426,7 @@ ___
 
 • **Dup13**: = "DUP13"
 
-*Defined in [index.ts:248](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L248)*
+*Defined in [index.ts:248](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L248)*
 
 ___
 
@@ -434,7 +434,7 @@ ___
 
 • **Dup14**: = "DUP14"
 
-*Defined in [index.ts:249](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L249)*
+*Defined in [index.ts:249](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L249)*
 
 ___
 
@@ -442,7 +442,7 @@ ___
 
 • **Dup15**: = "DUP15"
 
-*Defined in [index.ts:250](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L250)*
+*Defined in [index.ts:250](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L250)*
 
 ___
 
@@ -450,7 +450,7 @@ ___
 
 • **Dup16**: = "DUP16"
 
-*Defined in [index.ts:251](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L251)*
+*Defined in [index.ts:251](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L251)*
 
 ___
 
@@ -458,7 +458,7 @@ ___
 
 • **Dup2**: = "DUP2"
 
-*Defined in [index.ts:237](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L237)*
+*Defined in [index.ts:237](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L237)*
 
 ___
 
@@ -466,7 +466,7 @@ ___
 
 • **Dup3**: = "DUP3"
 
-*Defined in [index.ts:238](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L238)*
+*Defined in [index.ts:238](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L238)*
 
 ___
 
@@ -474,7 +474,7 @@ ___
 
 • **Dup4**: = "DUP4"
 
-*Defined in [index.ts:239](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L239)*
+*Defined in [index.ts:239](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L239)*
 
 ___
 
@@ -482,7 +482,7 @@ ___
 
 • **Dup5**: = "DUP5"
 
-*Defined in [index.ts:240](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L240)*
+*Defined in [index.ts:240](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L240)*
 
 ___
 
@@ -490,7 +490,7 @@ ___
 
 • **Dup6**: = "DUP6"
 
-*Defined in [index.ts:241](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L241)*
+*Defined in [index.ts:241](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L241)*
 
 ___
 
@@ -498,7 +498,7 @@ ___
 
 • **Dup7**: = "DUP7"
 
-*Defined in [index.ts:242](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L242)*
+*Defined in [index.ts:242](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L242)*
 
 ___
 
@@ -506,7 +506,7 @@ ___
 
 • **Dup8**: = "DUP8"
 
-*Defined in [index.ts:243](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L243)*
+*Defined in [index.ts:243](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L243)*
 
 ___
 
@@ -514,7 +514,7 @@ ___
 
 • **Dup9**: = "DUP9"
 
-*Defined in [index.ts:244](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L244)*
+*Defined in [index.ts:244](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L244)*
 
 ___
 
@@ -522,7 +522,7 @@ ___
 
 • **Eq**: = "EQ"
 
-*Defined in [index.ts:157](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L157)*
+*Defined in [index.ts:157](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L157)*
 
 ___
 
@@ -530,7 +530,7 @@ ___
 
 • **Exp**: = "EXP"
 
-*Defined in [index.ts:150](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L150)*
+*Defined in [index.ts:150](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L150)*
 
 ___
 
@@ -538,7 +538,7 @@ ___
 
 • **ExtCodeCopy**: = "EXTCODECOPY"
 
-*Defined in [index.ts:179](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L179)*
+*Defined in [index.ts:179](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L179)*
 
 ___
 
@@ -546,7 +546,7 @@ ___
 
 • **ExtCodeSize**: = "EXTCODESIZE"
 
-*Defined in [index.ts:178](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L178)*
+*Defined in [index.ts:178](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L178)*
 
 ___
 
@@ -554,7 +554,7 @@ ___
 
 • **Gas**: = "GAS"
 
-*Defined in [index.ts:200](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L200)*
+*Defined in [index.ts:200](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L200)*
 
 ___
 
@@ -562,7 +562,7 @@ ___
 
 • **GasPrice**: = "GASPRICE"
 
-*Defined in [index.ts:177](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L177)*
+*Defined in [index.ts:177](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L177)*
 
 ___
 
@@ -570,7 +570,7 @@ ___
 
 • **Gaslimit**: = "GASLIMIT"
 
-*Defined in [index.ts:188](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L188)*
+*Defined in [index.ts:188](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L188)*
 
 ___
 
@@ -578,7 +578,7 @@ ___
 
 • **Gt**: = "GT"
 
-*Defined in [index.ts:154](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L154)*
+*Defined in [index.ts:154](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L154)*
 
 ___
 
@@ -586,7 +586,7 @@ ___
 
 • **Invalid**: = "INVALID"
 
-*Defined in [index.ts:282](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L282)*
+*Defined in [index.ts:282](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L282)*
 
 ___
 
@@ -594,7 +594,7 @@ ___
 
 • **IsZero**: = "ISZERO"
 
-*Defined in [index.ts:158](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L158)*
+*Defined in [index.ts:158](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L158)*
 
 ___
 
@@ -602,7 +602,7 @@ ___
 
 • **Jump**: = "JUMP"
 
-*Defined in [index.ts:196](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L196)*
+*Defined in [index.ts:196](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L196)*
 
 ___
 
@@ -610,7 +610,7 @@ ___
 
 • **JumpDest**: = "JUMPDEST"
 
-*Defined in [index.ts:201](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L201)*
+*Defined in [index.ts:201](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L201)*
 
 ___
 
@@ -618,7 +618,7 @@ ___
 
 • **Jumpi**: = "JUMPI"
 
-*Defined in [index.ts:197](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L197)*
+*Defined in [index.ts:197](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L197)*
 
 ___
 
@@ -626,7 +626,7 @@ ___
 
 • **Log1**: = "LOG1"
 
-*Defined in [index.ts:270](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L270)*
+*Defined in [index.ts:270](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L270)*
 
 ___
 
@@ -634,7 +634,7 @@ ___
 
 • **Log2**: = "LOG2"
 
-*Defined in [index.ts:271](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L271)*
+*Defined in [index.ts:271](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L271)*
 
 ___
 
@@ -642,7 +642,7 @@ ___
 
 • **Log3**: = "LOG3"
 
-*Defined in [index.ts:272](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L272)*
+*Defined in [index.ts:272](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L272)*
 
 ___
 
@@ -650,7 +650,7 @@ ___
 
 • **Log4**: = "LOG4"
 
-*Defined in [index.ts:273](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L273)*
+*Defined in [index.ts:273](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L273)*
 
 ___
 
@@ -658,7 +658,7 @@ ___
 
 • **Lt**: = "LT"
 
-*Defined in [index.ts:153](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L153)*
+*Defined in [index.ts:153](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L153)*
 
 ___
 
@@ -666,7 +666,7 @@ ___
 
 • **MLoad**: = "MLOAD"
 
-*Defined in [index.ts:191](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L191)*
+*Defined in [index.ts:191](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L191)*
 
 ___
 
@@ -674,7 +674,7 @@ ___
 
 • **MSize**: = "MSIZE"
 
-*Defined in [index.ts:199](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L199)*
+*Defined in [index.ts:199](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L199)*
 
 ___
 
@@ -682,7 +682,7 @@ ___
 
 • **MStore**: = "MSTORE"
 
-*Defined in [index.ts:192](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L192)*
+*Defined in [index.ts:192](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L192)*
 
 ___
 
@@ -690,7 +690,7 @@ ___
 
 • **MStore8**: = "MSTORE8"
 
-*Defined in [index.ts:193](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L193)*
+*Defined in [index.ts:193](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L193)*
 
 ___
 
@@ -698,7 +698,7 @@ ___
 
 • **Mod**: = "MOD"
 
-*Defined in [index.ts:146](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L146)*
+*Defined in [index.ts:146](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L146)*
 
 ___
 
@@ -706,7 +706,7 @@ ___
 
 • **Mul**: = "MUL"
 
-*Defined in [index.ts:142](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L142)*
+*Defined in [index.ts:142](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L142)*
 
 ___
 
@@ -714,7 +714,7 @@ ___
 
 • **MulMod**: = "MULMOD"
 
-*Defined in [index.ts:149](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L149)*
+*Defined in [index.ts:149](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L149)*
 
 ___
 
@@ -722,7 +722,7 @@ ___
 
 • **Not**: = "NOT"
 
-*Defined in [index.ts:162](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L162)*
+*Defined in [index.ts:162](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L162)*
 
 ___
 
@@ -730,7 +730,7 @@ ___
 
 • **Number**: = "NUMBER"
 
-*Defined in [index.ts:186](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L186)*
+*Defined in [index.ts:186](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L186)*
 
 ___
 
@@ -738,7 +738,7 @@ ___
 
 • **Or**: = "OR"
 
-*Defined in [index.ts:160](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L160)*
+*Defined in [index.ts:160](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L160)*
 
 ___
 
@@ -746,7 +746,7 @@ ___
 
 • **Origin**: = "ORIGIN"
 
-*Defined in [index.ts:169](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L169)*
+*Defined in [index.ts:169](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L169)*
 
 ___
 
@@ -754,7 +754,7 @@ ___
 
 • **Pc**: = "PC"
 
-*Defined in [index.ts:198](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L198)*
+*Defined in [index.ts:198](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L198)*
 
 ___
 
@@ -762,7 +762,7 @@ ___
 
 • **Pop**: = "POP"
 
-*Defined in [index.ts:190](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L190)*
+*Defined in [index.ts:190](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L190)*
 
 ___
 
@@ -770,7 +770,7 @@ ___
 
 • **Push1**: = "PUSH1"
 
-*Defined in [index.ts:203](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L203)*
+*Defined in [index.ts:203](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L203)*
 
 ___
 
@@ -778,7 +778,7 @@ ___
 
 • **Push10**: = "PUSH10"
 
-*Defined in [index.ts:212](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L212)*
+*Defined in [index.ts:212](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L212)*
 
 ___
 
@@ -786,7 +786,7 @@ ___
 
 • **Push11**: = "PUSH11"
 
-*Defined in [index.ts:213](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L213)*
+*Defined in [index.ts:213](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L213)*
 
 ___
 
@@ -794,7 +794,7 @@ ___
 
 • **Push12**: = "PUSH12"
 
-*Defined in [index.ts:214](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L214)*
+*Defined in [index.ts:214](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L214)*
 
 ___
 
@@ -802,7 +802,7 @@ ___
 
 • **Push13**: = "PUSH13"
 
-*Defined in [index.ts:215](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L215)*
+*Defined in [index.ts:215](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L215)*
 
 ___
 
@@ -810,7 +810,7 @@ ___
 
 • **Push14**: = "PUSH14"
 
-*Defined in [index.ts:216](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L216)*
+*Defined in [index.ts:216](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L216)*
 
 ___
 
@@ -818,7 +818,7 @@ ___
 
 • **Push15**: = "PUSH15"
 
-*Defined in [index.ts:217](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L217)*
+*Defined in [index.ts:217](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L217)*
 
 ___
 
@@ -826,7 +826,7 @@ ___
 
 • **Push16**: = "PUSH16"
 
-*Defined in [index.ts:218](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L218)*
+*Defined in [index.ts:218](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L218)*
 
 ___
 
@@ -834,7 +834,7 @@ ___
 
 • **Push17**: = "PUSH17"
 
-*Defined in [index.ts:219](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L219)*
+*Defined in [index.ts:219](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L219)*
 
 ___
 
@@ -842,7 +842,7 @@ ___
 
 • **Push18**: = "PUSH18"
 
-*Defined in [index.ts:220](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L220)*
+*Defined in [index.ts:220](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L220)*
 
 ___
 
@@ -850,7 +850,7 @@ ___
 
 • **Push19**: = "PUSH19"
 
-*Defined in [index.ts:221](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L221)*
+*Defined in [index.ts:221](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L221)*
 
 ___
 
@@ -858,7 +858,7 @@ ___
 
 • **Push2**: = "PUSH2"
 
-*Defined in [index.ts:204](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L204)*
+*Defined in [index.ts:204](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L204)*
 
 ___
 
@@ -866,7 +866,7 @@ ___
 
 • **Push20**: = "PUSH20"
 
-*Defined in [index.ts:222](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L222)*
+*Defined in [index.ts:222](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L222)*
 
 ___
 
@@ -874,7 +874,7 @@ ___
 
 • **Push21**: = "PUSH21"
 
-*Defined in [index.ts:223](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L223)*
+*Defined in [index.ts:223](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L223)*
 
 ___
 
@@ -882,7 +882,7 @@ ___
 
 • **Push22**: = "PUSH22"
 
-*Defined in [index.ts:224](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L224)*
+*Defined in [index.ts:224](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L224)*
 
 ___
 
@@ -890,7 +890,7 @@ ___
 
 • **Push23**: = "PUSH23"
 
-*Defined in [index.ts:225](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L225)*
+*Defined in [index.ts:225](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L225)*
 
 ___
 
@@ -898,7 +898,7 @@ ___
 
 • **Push24**: = "PUSH24"
 
-*Defined in [index.ts:226](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L226)*
+*Defined in [index.ts:226](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L226)*
 
 ___
 
@@ -906,7 +906,7 @@ ___
 
 • **Push25**: = "PUSH25"
 
-*Defined in [index.ts:227](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L227)*
+*Defined in [index.ts:227](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L227)*
 
 ___
 
@@ -914,7 +914,7 @@ ___
 
 • **Push26**: = "PUSH26"
 
-*Defined in [index.ts:228](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L228)*
+*Defined in [index.ts:228](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L228)*
 
 ___
 
@@ -922,7 +922,7 @@ ___
 
 • **Push27**: = "PUSH27"
 
-*Defined in [index.ts:229](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L229)*
+*Defined in [index.ts:229](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L229)*
 
 ___
 
@@ -930,7 +930,7 @@ ___
 
 • **Push28**: = "PUSH28"
 
-*Defined in [index.ts:230](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L230)*
+*Defined in [index.ts:230](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L230)*
 
 ___
 
@@ -938,7 +938,7 @@ ___
 
 • **Push29**: = "PUSH29"
 
-*Defined in [index.ts:231](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L231)*
+*Defined in [index.ts:231](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L231)*
 
 ___
 
@@ -946,7 +946,7 @@ ___
 
 • **Push3**: = "PUSH3"
 
-*Defined in [index.ts:205](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L205)*
+*Defined in [index.ts:205](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L205)*
 
 ___
 
@@ -954,7 +954,7 @@ ___
 
 • **Push30**: = "PUSH30"
 
-*Defined in [index.ts:232](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L232)*
+*Defined in [index.ts:232](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L232)*
 
 ___
 
@@ -962,7 +962,7 @@ ___
 
 • **Push31**: = "PUSH31"
 
-*Defined in [index.ts:233](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L233)*
+*Defined in [index.ts:233](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L233)*
 
 ___
 
@@ -970,7 +970,7 @@ ___
 
 • **Push32**: = "PUSH32"
 
-*Defined in [index.ts:234](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L234)*
+*Defined in [index.ts:234](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L234)*
 
 ___
 
@@ -978,7 +978,7 @@ ___
 
 • **Push4**: = "PUSH4"
 
-*Defined in [index.ts:206](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L206)*
+*Defined in [index.ts:206](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L206)*
 
 ___
 
@@ -986,7 +986,7 @@ ___
 
 • **Push5**: = "PUSH5"
 
-*Defined in [index.ts:207](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L207)*
+*Defined in [index.ts:207](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L207)*
 
 ___
 
@@ -994,7 +994,7 @@ ___
 
 • **Push6**: = "PUSH6"
 
-*Defined in [index.ts:208](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L208)*
+*Defined in [index.ts:208](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L208)*
 
 ___
 
@@ -1002,7 +1002,7 @@ ___
 
 • **Push7**: = "PUSH7"
 
-*Defined in [index.ts:209](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L209)*
+*Defined in [index.ts:209](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L209)*
 
 ___
 
@@ -1010,7 +1010,7 @@ ___
 
 • **Push8**: = "PUSH8"
 
-*Defined in [index.ts:210](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L210)*
+*Defined in [index.ts:210](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L210)*
 
 ___
 
@@ -1018,7 +1018,7 @@ ___
 
 • **Push9**: = "PUSH9"
 
-*Defined in [index.ts:211](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L211)*
+*Defined in [index.ts:211](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L211)*
 
 ___
 
@@ -1026,7 +1026,7 @@ ___
 
 • **Return**: = "RETURN"
 
-*Defined in [index.ts:278](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L278)*
+*Defined in [index.ts:278](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L278)*
 
 ___
 
@@ -1034,7 +1034,7 @@ ___
 
 • **ReturnDataCopy**: = "RETURNDATACOPY"
 
-*Defined in [index.ts:181](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L181)*
+*Defined in [index.ts:181](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L181)*
 
 ___
 
@@ -1042,7 +1042,7 @@ ___
 
 • **ReturnDataSize**: = "RETURNDATASIZE"
 
-*Defined in [index.ts:180](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L180)*
+*Defined in [index.ts:180](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L180)*
 
 ___
 
@@ -1050,7 +1050,7 @@ ___
 
 • **Revert**: = "REVERT"
 
-*Defined in [index.ts:281](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L281)*
+*Defined in [index.ts:281](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L281)*
 
 ___
 
@@ -1058,7 +1058,7 @@ ___
 
 • **SDiv**: = "SDIV"
 
-*Defined in [index.ts:145](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L145)*
+*Defined in [index.ts:145](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L145)*
 
 ___
 
@@ -1066,7 +1066,7 @@ ___
 
 • **SGt**: = "SGT"
 
-*Defined in [index.ts:156](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L156)*
+*Defined in [index.ts:156](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L156)*
 
 ___
 
@@ -1074,7 +1074,7 @@ ___
 
 • **SLoad**: = "SLOAD"
 
-*Defined in [index.ts:194](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L194)*
+*Defined in [index.ts:194](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L194)*
 
 ___
 
@@ -1082,7 +1082,7 @@ ___
 
 • **SLt**: = "SLT"
 
-*Defined in [index.ts:155](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L155)*
+*Defined in [index.ts:155](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L155)*
 
 ___
 
@@ -1090,7 +1090,7 @@ ___
 
 • **SMod**: = "SMOD"
 
-*Defined in [index.ts:147](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L147)*
+*Defined in [index.ts:147](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L147)*
 
 ___
 
@@ -1098,7 +1098,7 @@ ___
 
 • **SStore**: = "SSTORE"
 
-*Defined in [index.ts:195](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L195)*
+*Defined in [index.ts:195](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L195)*
 
 ___
 
@@ -1106,7 +1106,7 @@ ___
 
 • **SelfDestruct**: = "SELFDESTRUCT"
 
-*Defined in [index.ts:283](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L283)*
+*Defined in [index.ts:283](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L283)*
 
 ___
 
@@ -1114,7 +1114,7 @@ ___
 
 • **Sha3**: = "SHA3"
 
-*Defined in [index.ts:165](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L165)*
+*Defined in [index.ts:165](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L165)*
 
 ___
 
@@ -1122,7 +1122,7 @@ ___
 
 • **SignExtend**: = "SIGNEXTEND"
 
-*Defined in [index.ts:151](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L151)*
+*Defined in [index.ts:151](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L151)*
 
 ___
 
@@ -1130,7 +1130,7 @@ ___
 
 • **StaticCall**: = "STATICCALL"
 
-*Defined in [index.ts:280](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L280)*
+*Defined in [index.ts:280](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L280)*
 
 ___
 
@@ -1138,7 +1138,7 @@ ___
 
 • **Stop**: = "STOP"
 
-*Defined in [index.ts:140](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L140)*
+*Defined in [index.ts:140](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L140)*
 
 ___
 
@@ -1146,7 +1146,7 @@ ___
 
 • **Sub**: = "SUB"
 
-*Defined in [index.ts:143](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L143)*
+*Defined in [index.ts:143](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L143)*
 
 ___
 
@@ -1154,7 +1154,7 @@ ___
 
 • **Swap1**: = "SWAP1"
 
-*Defined in [index.ts:253](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L253)*
+*Defined in [index.ts:253](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L253)*
 
 ___
 
@@ -1162,7 +1162,7 @@ ___
 
 • **Swap10**: = "SWAP10"
 
-*Defined in [index.ts:262](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L262)*
+*Defined in [index.ts:262](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L262)*
 
 ___
 
@@ -1170,7 +1170,7 @@ ___
 
 • **Swap11**: = "SWAP11"
 
-*Defined in [index.ts:263](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L263)*
+*Defined in [index.ts:263](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L263)*
 
 ___
 
@@ -1178,7 +1178,7 @@ ___
 
 • **Swap12**: = "SWAP12"
 
-*Defined in [index.ts:264](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L264)*
+*Defined in [index.ts:264](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L264)*
 
 ___
 
@@ -1186,7 +1186,7 @@ ___
 
 • **Swap13**: = "SWAP13"
 
-*Defined in [index.ts:265](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L265)*
+*Defined in [index.ts:265](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L265)*
 
 ___
 
@@ -1194,7 +1194,7 @@ ___
 
 • **Swap14**: = "SWAP14"
 
-*Defined in [index.ts:266](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L266)*
+*Defined in [index.ts:266](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L266)*
 
 ___
 
@@ -1202,7 +1202,7 @@ ___
 
 • **Swap15**: = "SWAP15"
 
-*Defined in [index.ts:267](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L267)*
+*Defined in [index.ts:267](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L267)*
 
 ___
 
@@ -1210,7 +1210,7 @@ ___
 
 • **Swap16**: = "SWAP16"
 
-*Defined in [index.ts:268](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L268)*
+*Defined in [index.ts:268](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L268)*
 
 ___
 
@@ -1218,7 +1218,7 @@ ___
 
 • **Swap2**: = "SWAP2"
 
-*Defined in [index.ts:254](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L254)*
+*Defined in [index.ts:254](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L254)*
 
 ___
 
@@ -1226,7 +1226,7 @@ ___
 
 • **Swap3**: = "SWAP3"
 
-*Defined in [index.ts:255](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L255)*
+*Defined in [index.ts:255](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L255)*
 
 ___
 
@@ -1234,7 +1234,7 @@ ___
 
 • **Swap4**: = "SWAP4"
 
-*Defined in [index.ts:256](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L256)*
+*Defined in [index.ts:256](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L256)*
 
 ___
 
@@ -1242,7 +1242,7 @@ ___
 
 • **Swap5**: = "SWAP5"
 
-*Defined in [index.ts:257](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L257)*
+*Defined in [index.ts:257](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L257)*
 
 ___
 
@@ -1250,7 +1250,7 @@ ___
 
 • **Swap6**: = "SWAP6"
 
-*Defined in [index.ts:258](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L258)*
+*Defined in [index.ts:258](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L258)*
 
 ___
 
@@ -1258,7 +1258,7 @@ ___
 
 • **Swap7**: = "SWAP7"
 
-*Defined in [index.ts:259](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L259)*
+*Defined in [index.ts:259](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L259)*
 
 ___
 
@@ -1266,7 +1266,7 @@ ___
 
 • **Swap8**: = "SWAP8"
 
-*Defined in [index.ts:260](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L260)*
+*Defined in [index.ts:260](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L260)*
 
 ___
 
@@ -1274,7 +1274,7 @@ ___
 
 • **Swap9**: = "SWAP9"
 
-*Defined in [index.ts:261](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L261)*
+*Defined in [index.ts:261](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L261)*
 
 ___
 
@@ -1282,7 +1282,7 @@ ___
 
 • **TimeStamp**: = "TimeStamp"
 
-*Defined in [index.ts:185](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L185)*
+*Defined in [index.ts:185](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L185)*
 
 ___
 
@@ -1290,7 +1290,7 @@ ___
 
 • **Xor**: = "XOR"
 
-*Defined in [index.ts:161](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L161)*
+*Defined in [index.ts:161](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L161)*
 
 <hr />
 
@@ -1316,7 +1316,7 @@ ___
 
 • **Address**: = "address"
 
-*Defined in [index.ts:489](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L489)*
+*Defined in [index.ts:489](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L489)*
 
 ___
 
@@ -1324,7 +1324,7 @@ ___
 
 • **Bool**: = "bool"
 
-*Defined in [index.ts:490](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L490)*
+*Defined in [index.ts:490](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L490)*
 
 ___
 
@@ -1332,7 +1332,7 @@ ___
 
 • **Bytes**: = "bytes"
 
-*Defined in [index.ts:491](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L491)*
+*Defined in [index.ts:491](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L491)*
 
 ___
 
@@ -1340,7 +1340,7 @@ ___
 
 • **Int**: = "int"
 
-*Defined in [index.ts:492](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L492)*
+*Defined in [index.ts:492](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L492)*
 
 ___
 
@@ -1348,7 +1348,7 @@ ___
 
 • **String**: = "string"
 
-*Defined in [index.ts:493](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L493)*
+*Defined in [index.ts:493](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L493)*
 
 ___
 
@@ -1356,7 +1356,7 @@ ___
 
 • **Tuple**: = "tuple"
 
-*Defined in [index.ts:494](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L494)*
+*Defined in [index.ts:494](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L494)*
 
 ___
 
@@ -1364,7 +1364,7 @@ ___
 
 • **Uint**: = "uint"
 
-*Defined in [index.ts:497](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L497)*
+*Defined in [index.ts:497](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L497)*
 
 ___
 
@@ -1372,7 +1372,7 @@ ___
 
 • **Uint256**: = "uint256"
 
-*Defined in [index.ts:495](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L495)*
+*Defined in [index.ts:495](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L495)*
 
 ___
 
@@ -1380,7 +1380,7 @@ ___
 
 • **Uint8**: = "uint8"
 
-*Defined in [index.ts:496](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L496)*
+*Defined in [index.ts:496](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L496)*
 
 <hr />
 
@@ -1422,7 +1422,7 @@ ___
 
 • **difficulty**: *`BigNumber`*
 
-*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L350)*
+*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L350)*
 
 ___
 
@@ -1430,7 +1430,7 @@ ___
 
 • **extraData**: *string*
 
-*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L352)*
+*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L352)*
 
 ___
 
@@ -1438,7 +1438,7 @@ ___
 
 • **gasLimit**: *number*
 
-*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L354)*
+*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L354)*
 
 ___
 
@@ -1446,7 +1446,7 @@ ___
 
 • **gasUsed**: *number*
 
-*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L355)*
+*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L355)*
 
 ___
 
@@ -1454,7 +1454,7 @@ ___
 
 • **hash**: *string | null*
 
-*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L342)*
+*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L342)*
 
 ___
 
@@ -1462,7 +1462,7 @@ ___
 
 • **logsBloom**: *string | null*
 
-*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L346)*
+*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L346)*
 
 ___
 
@@ -1470,7 +1470,7 @@ ___
 
 • **miner**: *string*
 
-*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L349)*
+*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L349)*
 
 ___
 
@@ -1478,7 +1478,7 @@ ___
 
 • **nonce**: *string | null*
 
-*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L344)*
+*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L344)*
 
 ___
 
@@ -1486,7 +1486,7 @@ ___
 
 • **number**: *number | null*
 
-*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L341)*
+*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L341)*
 
 ___
 
@@ -1494,7 +1494,7 @@ ___
 
 • **parentHash**: *string*
 
-*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L343)*
+*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L343)*
 
 ___
 
@@ -1502,7 +1502,7 @@ ___
 
 • **sha3Uncles**: *string*
 
-*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L345)*
+*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L345)*
 
 ___
 
@@ -1510,7 +1510,7 @@ ___
 
 • **size**: *number*
 
-*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L353)*
+*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L353)*
 
 ___
 
@@ -1518,7 +1518,7 @@ ___
 
 • **stateRoot**: *string*
 
-*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L348)*
+*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L348)*
 
 ___
 
@@ -1526,7 +1526,7 @@ ___
 
 • **timestamp**: *number*
 
-*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L356)*
+*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L356)*
 
 ___
 
@@ -1534,7 +1534,7 @@ ___
 
 • **totalDifficulty**: *`BigNumber`*
 
-*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L351)*
+*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L351)*
 
 ___
 
@@ -1542,7 +1542,7 @@ ___
 
 • **transactionsRoot**: *string*
 
-*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L347)*
+*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L347)*
 
 ___
 
@@ -1550,7 +1550,7 @@ ___
 
 • **uncles**: *string[]*
 
-*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L357)*
+*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L357)*
 
 <hr />
 
@@ -1593,7 +1593,7 @@ ___
 
 *Inherited from [AbstractBlock](#difficulty)*
 
-*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L350)*
+*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L350)*
 
 ___
 
@@ -1603,7 +1603,7 @@ ___
 
 *Inherited from [AbstractBlock](#extradata)*
 
-*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L352)*
+*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L352)*
 
 ___
 
@@ -1613,7 +1613,7 @@ ___
 
 *Inherited from [AbstractBlock](#gaslimit)*
 
-*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L354)*
+*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L354)*
 
 ___
 
@@ -1623,7 +1623,7 @@ ___
 
 *Inherited from [AbstractBlock](#gasused)*
 
-*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L355)*
+*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L355)*
 
 ___
 
@@ -1633,7 +1633,7 @@ ___
 
 *Inherited from [AbstractBlock](#hash)*
 
-*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L342)*
+*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L342)*
 
 ___
 
@@ -1643,7 +1643,7 @@ ___
 
 *Inherited from [AbstractBlock](#logsbloom)*
 
-*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L346)*
+*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L346)*
 
 ___
 
@@ -1653,7 +1653,7 @@ ___
 
 *Inherited from [AbstractBlock](#miner)*
 
-*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L349)*
+*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L349)*
 
 ___
 
@@ -1663,7 +1663,7 @@ ___
 
 *Inherited from [AbstractBlock](#nonce)*
 
-*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L344)*
+*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L344)*
 
 ___
 
@@ -1673,7 +1673,7 @@ ___
 
 *Inherited from [AbstractBlock](#number)*
 
-*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L341)*
+*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L341)*
 
 ___
 
@@ -1683,7 +1683,7 @@ ___
 
 *Inherited from [AbstractBlock](#parenthash)*
 
-*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L343)*
+*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L343)*
 
 ___
 
@@ -1693,7 +1693,7 @@ ___
 
 *Inherited from [AbstractBlock](#sha3uncles)*
 
-*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L345)*
+*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L345)*
 
 ___
 
@@ -1703,7 +1703,7 @@ ___
 
 *Inherited from [AbstractBlock](#size)*
 
-*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L353)*
+*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L353)*
 
 ___
 
@@ -1713,7 +1713,7 @@ ___
 
 *Inherited from [AbstractBlock](#stateroot)*
 
-*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L348)*
+*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L348)*
 
 ___
 
@@ -1723,7 +1723,7 @@ ___
 
 *Inherited from [AbstractBlock](#timestamp)*
 
-*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L356)*
+*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L356)*
 
 ___
 
@@ -1733,7 +1733,7 @@ ___
 
 *Inherited from [AbstractBlock](#totaldifficulty)*
 
-*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L351)*
+*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L351)*
 
 ___
 
@@ -1741,7 +1741,7 @@ ___
 
 • **transactions**: *string[]*
 
-*Defined in [index.ts:361](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L361)*
+*Defined in [index.ts:361](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L361)*
 
 ___
 
@@ -1751,7 +1751,7 @@ ___
 
 *Inherited from [AbstractBlock](#transactionsroot)*
 
-*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L347)*
+*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L347)*
 
 ___
 
@@ -1761,7 +1761,7 @@ ___
 
 *Inherited from [AbstractBlock](#uncles)*
 
-*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L357)*
+*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L357)*
 
 <hr />
 
@@ -1804,7 +1804,7 @@ ___
 
 *Inherited from [AbstractBlock](#difficulty)*
 
-*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L350)*
+*Defined in [index.ts:350](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L350)*
 
 ___
 
@@ -1814,7 +1814,7 @@ ___
 
 *Inherited from [AbstractBlock](#extradata)*
 
-*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L352)*
+*Defined in [index.ts:352](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L352)*
 
 ___
 
@@ -1824,7 +1824,7 @@ ___
 
 *Inherited from [AbstractBlock](#gaslimit)*
 
-*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L354)*
+*Defined in [index.ts:354](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L354)*
 
 ___
 
@@ -1834,7 +1834,7 @@ ___
 
 *Inherited from [AbstractBlock](#gasused)*
 
-*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L355)*
+*Defined in [index.ts:355](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L355)*
 
 ___
 
@@ -1844,7 +1844,7 @@ ___
 
 *Inherited from [AbstractBlock](#hash)*
 
-*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L342)*
+*Defined in [index.ts:342](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L342)*
 
 ___
 
@@ -1854,7 +1854,7 @@ ___
 
 *Inherited from [AbstractBlock](#logsbloom)*
 
-*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L346)*
+*Defined in [index.ts:346](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L346)*
 
 ___
 
@@ -1864,7 +1864,7 @@ ___
 
 *Inherited from [AbstractBlock](#miner)*
 
-*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L349)*
+*Defined in [index.ts:349](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L349)*
 
 ___
 
@@ -1874,7 +1874,7 @@ ___
 
 *Inherited from [AbstractBlock](#nonce)*
 
-*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L344)*
+*Defined in [index.ts:344](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L344)*
 
 ___
 
@@ -1884,7 +1884,7 @@ ___
 
 *Inherited from [AbstractBlock](#number)*
 
-*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L341)*
+*Defined in [index.ts:341](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L341)*
 
 ___
 
@@ -1894,7 +1894,7 @@ ___
 
 *Inherited from [AbstractBlock](#parenthash)*
 
-*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L343)*
+*Defined in [index.ts:343](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L343)*
 
 ___
 
@@ -1904,7 +1904,7 @@ ___
 
 *Inherited from [AbstractBlock](#sha3uncles)*
 
-*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L345)*
+*Defined in [index.ts:345](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L345)*
 
 ___
 
@@ -1914,7 +1914,7 @@ ___
 
 *Inherited from [AbstractBlock](#size)*
 
-*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L353)*
+*Defined in [index.ts:353](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L353)*
 
 ___
 
@@ -1924,7 +1924,7 @@ ___
 
 *Inherited from [AbstractBlock](#stateroot)*
 
-*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L348)*
+*Defined in [index.ts:348](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L348)*
 
 ___
 
@@ -1934,7 +1934,7 @@ ___
 
 *Inherited from [AbstractBlock](#timestamp)*
 
-*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L356)*
+*Defined in [index.ts:356](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L356)*
 
 ___
 
@@ -1944,7 +1944,7 @@ ___
 
 *Inherited from [AbstractBlock](#totaldifficulty)*
 
-*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L351)*
+*Defined in [index.ts:351](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L351)*
 
 ___
 
@@ -1952,7 +1952,7 @@ ___
 
 • **transactions**: *[Transaction](#class-transaction)[]*
 
-*Defined in [index.ts:365](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L365)*
+*Defined in [index.ts:365](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L365)*
 
 ___
 
@@ -1962,7 +1962,7 @@ ___
 
 *Inherited from [AbstractBlock](#transactionsroot)*
 
-*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L347)*
+*Defined in [index.ts:347](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L347)*
 
 ___
 
@@ -1972,7 +1972,7 @@ ___
 
 *Inherited from [AbstractBlock](#uncles)*
 
-*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L357)*
+*Defined in [index.ts:357](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L357)*
 
 <hr />
 
@@ -2004,7 +2004,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-data)*
 
-*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L387)*
+*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L387)*
 
 ___
 
@@ -2012,7 +2012,7 @@ ___
 
 • **from**? : *undefined | string*
 
-*Defined in [index.ts:396](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L396)*
+*Defined in [index.ts:396](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L396)*
 
 ___
 
@@ -2022,7 +2022,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gas)*
 
-*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L385)*
+*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L385)*
 
 ___
 
@@ -2032,7 +2032,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gasprice)*
 
-*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L386)*
+*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L386)*
 
 ___
 
@@ -2042,7 +2042,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-nonce)*
 
-*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L388)*
+*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L388)*
 
 ___
 
@@ -2052,7 +2052,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-to)*
 
-*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L383)*
+*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L383)*
 
 ___
 
@@ -2062,7 +2062,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-value)*
 
-*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L384)*
+*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L384)*
 
 <hr />
 
@@ -2093,7 +2093,7 @@ ___
 
 • **data**? : *undefined | string*
 
-*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L387)*
+*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L387)*
 
 ___
 
@@ -2101,7 +2101,7 @@ ___
 
 • **gas**? : *number | string | `BigNumber`*
 
-*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L385)*
+*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L385)*
 
 ___
 
@@ -2109,7 +2109,7 @@ ___
 
 • **gasPrice**? : *number | string | `BigNumber`*
 
-*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L386)*
+*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L386)*
 
 ___
 
@@ -2117,7 +2117,7 @@ ___
 
 • **nonce**? : *undefined | number*
 
-*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L388)*
+*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L388)*
 
 ___
 
@@ -2125,7 +2125,7 @@ ___
 
 • **to**? : *undefined | string*
 
-*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L383)*
+*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L383)*
 
 ___
 
@@ -2133,7 +2133,7 @@ ___
 
 • **value**? : *number | string | `BigNumber`*
 
-*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L384)*
+*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L384)*
 
 <hr />
 
@@ -2173,7 +2173,7 @@ contracts to compile with the the version specified here.
 
 • **artifactsDir**? : *undefined | string*
 
-*Defined in [index.ts:723](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L723)*
+*Defined in [index.ts:723](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L723)*
 
 ___
 
@@ -2181,7 +2181,7 @@ ___
 
 • **compilerSettings**? : *[CompilerSettings](#class-compilersettings)*
 
-*Defined in [index.ts:724](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L724)*
+*Defined in [index.ts:724](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L724)*
 
 ___
 
@@ -2189,7 +2189,7 @@ ___
 
 • **contracts**? : *string[] | "*"*
 
-*Defined in [index.ts:725](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L725)*
+*Defined in [index.ts:725](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L725)*
 
 ___
 
@@ -2197,7 +2197,7 @@ ___
 
 • **contractsDir**? : *undefined | string*
 
-*Defined in [index.ts:722](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L722)*
+*Defined in [index.ts:722](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L722)*
 
 ___
 
@@ -2205,7 +2205,7 @@ ___
 
 • **isOfflineMode**? : *undefined | false | true*
 
-*Defined in [index.ts:727](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L727)*
+*Defined in [index.ts:727](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L727)*
 
 ___
 
@@ -2213,7 +2213,7 @@ ___
 
 • **solcVersion**? : *undefined | string*
 
-*Defined in [index.ts:728](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L728)*
+*Defined in [index.ts:728](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L728)*
 
 ___
 
@@ -2221,7 +2221,7 @@ ___
 
 • **useDockerisedSolc**? : *undefined | false | true*
 
-*Defined in [index.ts:726](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L726)*
+*Defined in [index.ts:726](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L726)*
 
 <hr />
 
@@ -2245,7 +2245,7 @@ ___
 
 • **name**: *"solc"*
 
-*Defined in [index.ts:647](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L647)*
+*Defined in [index.ts:647](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L647)*
 
 ___
 
@@ -2253,7 +2253,7 @@ ___
 
 • **settings**: *[CompilerSettings](#class-compilersettings)*
 
-*Defined in [index.ts:649](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L649)*
+*Defined in [index.ts:649](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L649)*
 
 ___
 
@@ -2261,7 +2261,7 @@ ___
 
 • **version**: *string*
 
-*Defined in [index.ts:648](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L648)*
+*Defined in [index.ts:648](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L648)*
 
 <hr />
 
@@ -2288,7 +2288,7 @@ ___
 
 • **evmVersion**? : *"homestead" | "tangerineWhistle" | "spuriousDragon" | "byzantium" | "constantinople"*
 
-*Defined in [index.ts:681](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L681)*
+*Defined in [index.ts:681](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L681)*
 
 ___
 
@@ -2296,7 +2296,7 @@ ___
 
 • **libraries**? : *undefined | object*
 
-*Defined in [index.ts:683](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L683)*
+*Defined in [index.ts:683](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L683)*
 
 ___
 
@@ -2304,7 +2304,7 @@ ___
 
 • **metadata**? : *[CompilerSettingsMetadata](#class-compilersettingsmetadata)*
 
-*Defined in [index.ts:682](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L682)*
+*Defined in [index.ts:682](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L682)*
 
 ___
 
@@ -2312,7 +2312,7 @@ ___
 
 • **optimizer**? : *[OptimizerSettings](#class-optimizersettings)*
 
-*Defined in [index.ts:680](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L680)*
+*Defined in [index.ts:680](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L680)*
 
 ___
 
@@ -2320,7 +2320,7 @@ ___
 
 • **outputSelection**: *object*
 
-*Defined in [index.ts:688](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L688)*
+*Defined in [index.ts:688](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L688)*
 
 #### Type declaration:
 
@@ -2334,7 +2334,7 @@ ___
 
 • **remappings**? : *string[]*
 
-*Defined in [index.ts:679](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L679)*
+*Defined in [index.ts:679](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L679)*
 
 <hr />
 
@@ -2356,7 +2356,7 @@ ___
 
 • **useLiteralContent**: *true*
 
-*Defined in [index.ts:696](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L696)*
+*Defined in [index.ts:696](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L696)*
 
 <hr />
 
@@ -2381,7 +2381,7 @@ ___
 
 • **inputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [index.ts:103](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L103)*
+*Defined in [index.ts:103](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L103)*
 
 ___
 
@@ -2389,7 +2389,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [index.ts:104](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L104)*
+*Defined in [index.ts:104](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L104)*
 
 ___
 
@@ -2397,7 +2397,7 @@ ___
 
 • **stateMutability**: *[ConstructorStateMutability](#constructorstatemutability)*
 
-*Defined in [index.ts:105](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L105)*
+*Defined in [index.ts:105](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L105)*
 
 ___
 
@@ -2405,7 +2405,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [index.ts:102](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L102)*
+*Defined in [index.ts:102](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L102)*
 
 <hr />
 
@@ -2450,7 +2450,7 @@ If any of the sources change, the hash would change notifying us that a re-compi
 
 *Inherited from [ContractVersionData](#compiler)*
 
-*Defined in [index.ts:633](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L633)*
+*Defined in [index.ts:633](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L633)*
 
 ___
 
@@ -2460,7 +2460,7 @@ ___
 
 *Inherited from [ContractVersionData](#compileroutput)*
 
-*Defined in [index.ts:643](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L643)*
+*Defined in [index.ts:643](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L643)*
 
 ___
 
@@ -2468,7 +2468,7 @@ ___
 
 • **contractName**: *string*
 
-*Defined in [index.ts:667](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L667)*
+*Defined in [index.ts:667](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L667)*
 
 ___
 
@@ -2476,7 +2476,7 @@ ___
 
 • **networks**: *[ContractNetworks](#class-contractnetworks)*
 
-*Defined in [index.ts:668](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L668)*
+*Defined in [index.ts:668](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L668)*
 
 ___
 
@@ -2484,7 +2484,7 @@ ___
 
 • **schemaVersion**: *string*
 
-*Defined in [index.ts:666](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L666)*
+*Defined in [index.ts:666](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L666)*
 
 ___
 
@@ -2494,7 +2494,7 @@ ___
 
 *Inherited from [ContractVersionData](#sourcecodes)*
 
-*Defined in [index.ts:639](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L639)*
+*Defined in [index.ts:639](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L639)*
 
 #### Type declaration:
 
@@ -2508,7 +2508,7 @@ ___
 
 *Inherited from [ContractVersionData](#sourcetreehashhex)*
 
-*Defined in [index.ts:642](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L642)*
+*Defined in [index.ts:642](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L642)*
 
 ___
 
@@ -2518,7 +2518,7 @@ ___
 
 *Inherited from [ContractVersionData](#sources)*
 
-*Defined in [index.ts:634](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L634)*
+*Defined in [index.ts:634](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L634)*
 
 #### Type declaration:
 
@@ -2546,7 +2546,7 @@ ___
 
 • **address**: *string*
 
-*Defined in [index.ts:546](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L546)*
+*Defined in [index.ts:546](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L546)*
 
 ___
 
@@ -2554,7 +2554,7 @@ ___
 
 • **constructorArgs**: *string*
 
-*Defined in [index.ts:550](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L550)*
+*Defined in [index.ts:550](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L550)*
 
 ___
 
@@ -2562,7 +2562,7 @@ ___
 
 • **links**: *object*
 
-*Defined in [index.ts:547](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L547)*
+*Defined in [index.ts:547](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L547)*
 
 #### Type declaration:
 
@@ -2606,7 +2606,7 @@ ___
 
 • **compiler**: *[CompilerOpts](#class-compileropts)*
 
-*Defined in [index.ts:633](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L633)*
+*Defined in [index.ts:633](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L633)*
 
 ___
 
@@ -2614,7 +2614,7 @@ ___
 
 • **compilerOutput**: *[StandardContractOutput](#class-standardcontractoutput)*
 
-*Defined in [index.ts:643](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L643)*
+*Defined in [index.ts:643](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L643)*
 
 ___
 
@@ -2622,7 +2622,7 @@ ___
 
 • **sourceCodes**: *object*
 
-*Defined in [index.ts:639](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L639)*
+*Defined in [index.ts:639](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L639)*
 
 #### Type declaration:
 
@@ -2634,7 +2634,7 @@ ___
 
 • **sourceTreeHashHex**: *string*
 
-*Defined in [index.ts:642](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L642)*
+*Defined in [index.ts:642](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L642)*
 
 ___
 
@@ -2642,7 +2642,7 @@ ___
 
 • **sources**: *object*
 
-*Defined in [index.ts:634](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L634)*
+*Defined in [index.ts:634](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L634)*
 
 #### Type declaration:
 
@@ -2674,7 +2674,7 @@ ___
 
 • **components**? : *[DataItem](#class-dataitem)[]*
 
-*Defined in [index.ts:131](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L131)*
+*Defined in [index.ts:131](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L131)*
 
 ___
 
@@ -2682,7 +2682,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -2690,7 +2690,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
@@ -2745,7 +2745,7 @@ ___
 
 *Inherited from [LogEntry](#address)*
 
-*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L428)*
+*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L428)*
 
 ___
 
@@ -2753,7 +2753,7 @@ ___
 
 • **args**: *`A`*
 
-*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L411)*
+*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L411)*
 
 ___
 
@@ -2763,7 +2763,7 @@ ___
 
 *Inherited from [LogEntry](#blockhash)*
 
-*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L426)*
+*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L426)*
 
 ___
 
@@ -2773,7 +2773,7 @@ ___
 
 *Inherited from [LogEntry](#blocknumber)*
 
-*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L427)*
+*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L427)*
 
 ___
 
@@ -2783,7 +2783,7 @@ ___
 
 *Inherited from [LogEntry](#data)*
 
-*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L429)*
+*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L429)*
 
 ___
 
@@ -2791,7 +2791,7 @@ ___
 
 • **event**: *string*
 
-*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L410)*
+*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L410)*
 
 ___
 
@@ -2801,7 +2801,7 @@ ___
 
 *Inherited from [LogEntry](#logindex)*
 
-*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L423)*
+*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L423)*
 
 ___
 
@@ -2811,7 +2811,7 @@ ___
 
 *Inherited from [LogEntry](#topics)*
 
-*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L430)*
+*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L430)*
 
 ___
 
@@ -2821,7 +2821,7 @@ ___
 
 *Inherited from [LogEntry](#transactionhash)*
 
-*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L425)*
+*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L425)*
 
 ___
 
@@ -2831,7 +2831,7 @@ ___
 
 *Inherited from [LogEntry](#transactionindex)*
 
-*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L424)*
+*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L424)*
 
 <hr />
 
@@ -2871,7 +2871,7 @@ ___
 
 *Inherited from [LogEntry](#address)*
 
-*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L428)*
+*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L428)*
 
 ___
 
@@ -2881,7 +2881,7 @@ ___
 
 *Inherited from [DecodedLogEntry](#args)*
 
-*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L411)*
+*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L411)*
 
 ___
 
@@ -2891,7 +2891,7 @@ ___
 
 *Inherited from [LogEntry](#blockhash)*
 
-*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L426)*
+*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L426)*
 
 ___
 
@@ -2901,7 +2901,7 @@ ___
 
 *Inherited from [LogEntry](#blocknumber)*
 
-*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L427)*
+*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L427)*
 
 ___
 
@@ -2911,7 +2911,7 @@ ___
 
 *Inherited from [LogEntry](#data)*
 
-*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L429)*
+*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L429)*
 
 ___
 
@@ -2921,7 +2921,7 @@ ___
 
 *Inherited from [DecodedLogEntry](#event)*
 
-*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L410)*
+*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L410)*
 
 ___
 
@@ -2931,7 +2931,7 @@ ___
 
 *Inherited from [LogEntry](#logindex)*
 
-*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L423)*
+*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L423)*
 
 ___
 
@@ -2939,7 +2939,7 @@ ___
 
 • **removed**: *boolean*
 
-*Defined in [index.ts:415](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L415)*
+*Defined in [index.ts:415](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L415)*
 
 ___
 
@@ -2949,7 +2949,7 @@ ___
 
 *Inherited from [LogEntry](#topics)*
 
-*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L430)*
+*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L430)*
 
 ___
 
@@ -2959,7 +2959,7 @@ ___
 
 *Inherited from [LogEntry](#transactionhash)*
 
-*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L425)*
+*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L425)*
 
 ___
 
@@ -2969,7 +2969,7 @@ ___
 
 *Inherited from [LogEntry](#transactionindex)*
 
-*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L424)*
+*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L424)*
 
 <hr />
 
@@ -2993,7 +2993,7 @@ ___
 
 • **author**? : *undefined | string*
 
-*Defined in [index.ts:620](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L620)*
+*Defined in [index.ts:620](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L620)*
 
 ___
 
@@ -3001,7 +3001,7 @@ ___
 
 • **methods**: *object*
 
-*Defined in [index.ts:621](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L621)*
+*Defined in [index.ts:621](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L621)*
 
 #### Type declaration:
 
@@ -3013,7 +3013,7 @@ ___
 
 • **title**? : *undefined | string*
 
-*Defined in [index.ts:619](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L619)*
+*Defined in [index.ts:619](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L619)*
 
 <hr />
 
@@ -3040,7 +3040,7 @@ ___
 
 • **isEIP1193**: *boolean*
 
-*Defined in [index.ts:73](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L73)*
+*Defined in [index.ts:73](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L73)*
 
 ## Methods
 
@@ -3048,7 +3048,7 @@ ___
 
 ▸ **on**(`event`: [EIP1193Event](#eip1193event), `listener`: function): *this*
 
-*Defined in [index.ts:75](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L75)*
+*Defined in [index.ts:75](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L75)*
 
 **Parameters:**
 
@@ -3072,7 +3072,7 @@ ___
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [index.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L74)*
+*Defined in [index.ts:74](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L74)*
 
 **Parameters:**
 
@@ -3106,7 +3106,7 @@ Name | Type |
 
 • **anonymous**: *boolean*
 
-*Defined in [index.ts:125](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L125)*
+*Defined in [index.ts:125](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L125)*
 
 ___
 
@@ -3114,7 +3114,7 @@ ___
 
 • **inputs**: *[EventParameter](#class-eventparameter)[]*
 
-*Defined in [index.ts:124](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L124)*
+*Defined in [index.ts:124](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L124)*
 
 ___
 
@@ -3122,7 +3122,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [index.ts:123](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L123)*
+*Defined in [index.ts:123](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L123)*
 
 ___
 
@@ -3130,7 +3130,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [index.ts:122](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L122)*
+*Defined in [index.ts:122](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L122)*
 
 <hr />
 
@@ -3159,7 +3159,7 @@ ___
 
 *Inherited from [DataItem](#optional-components)*
 
-*Defined in [index.ts:131](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L131)*
+*Defined in [index.ts:131](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L131)*
 
 ___
 
@@ -3167,7 +3167,7 @@ ___
 
 • **indexed**: *boolean*
 
-*Defined in [index.ts:116](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L116)*
+*Defined in [index.ts:116](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L116)*
 
 ___
 
@@ -3177,7 +3177,7 @@ ___
 
 *Inherited from [DataItem](#name)*
 
-*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -3187,7 +3187,7 @@ ___
 
 *Inherited from [DataItem](#type)*
 
-*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
@@ -3210,7 +3210,7 @@ ___
 
 • **object**: *string*
 
-*Defined in [index.ts:614](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L614)*
+*Defined in [index.ts:614](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L614)*
 
 ___
 
@@ -3218,7 +3218,7 @@ ___
 
 • **sourceMap**: *string*
 
-*Defined in [index.ts:615](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L615)*
+*Defined in [index.ts:615](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L615)*
 
 <hr />
 
@@ -3241,7 +3241,7 @@ ___
 
 • **bytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
 
-*Defined in [index.ts:609](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L609)*
+*Defined in [index.ts:609](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L609)*
 
 ___
 
@@ -3249,7 +3249,7 @@ ___
 
 • **deployedBytecode**: *[EvmBytecodeOutput](#class-evmbytecodeoutput)*
 
-*Defined in [index.ts:610](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L610)*
+*Defined in [index.ts:610](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L610)*
 
 <hr />
 
@@ -3272,7 +3272,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [index.ts:112](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L112)*
+*Defined in [index.ts:112](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L112)*
 
 ___
 
@@ -3280,7 +3280,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [index.ts:111](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L111)*
+*Defined in [index.ts:111](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L111)*
 
 <hr />
 
@@ -3306,7 +3306,7 @@ ___
 
 • **address**? : *undefined | string*
 
-*Defined in [index.ts:403](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L403)*
+*Defined in [index.ts:403](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L403)*
 
 ___
 
@@ -3314,7 +3314,7 @@ ___
 
 • **blockHash**? : *undefined | string*
 
-*Defined in [index.ts:402](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L402)*
+*Defined in [index.ts:402](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L402)*
 
 ___
 
@@ -3322,7 +3322,7 @@ ___
 
 • **fromBlock**? : *number | string*
 
-*Defined in [index.ts:400](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L400)*
+*Defined in [index.ts:400](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L400)*
 
 ___
 
@@ -3330,7 +3330,7 @@ ___
 
 • **toBlock**? : *number | string*
 
-*Defined in [index.ts:401](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L401)*
+*Defined in [index.ts:401](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L401)*
 
 ___
 
@@ -3338,7 +3338,7 @@ ___
 
 • **topics**? : *[LogTopic](#logtopic)[]*
 
-*Defined in [index.ts:404](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L404)*
+*Defined in [index.ts:404](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L404)*
 
 <hr />
 
@@ -3360,7 +3360,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](#jsonrpcerrorcallback)): *void*
 
-*Defined in [index.ts:14](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L14)*
+*Defined in [index.ts:14](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L14)*
 
 **Parameters:**
 
@@ -3393,7 +3393,7 @@ Name | Type |
 
 • **name**: *"solc"*
 
-*Defined in [index.ts:672](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L672)*
+*Defined in [index.ts:672](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L672)*
 
 ___
 
@@ -3401,7 +3401,7 @@ ___
 
 • **settings**: *[CompilerSettings](#class-compilersettings)*
 
-*Defined in [index.ts:674](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L674)*
+*Defined in [index.ts:674](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L674)*
 
 ___
 
@@ -3409,7 +3409,7 @@ ___
 
 • **version**: *string*
 
-*Defined in [index.ts:673](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L673)*
+*Defined in [index.ts:673](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L673)*
 
 <hr />
 
@@ -3434,7 +3434,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [index.ts:324](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L324)*
+*Defined in [index.ts:324](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L324)*
 
 ___
 
@@ -3442,7 +3442,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [index.ts:325](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L325)*
+*Defined in [index.ts:325](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L325)*
 
 ___
 
@@ -3450,7 +3450,7 @@ ___
 
 • **method**: *string*
 
-*Defined in [index.ts:323](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L323)*
+*Defined in [index.ts:323](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L323)*
 
 ___
 
@@ -3458,7 +3458,7 @@ ___
 
 • **params**: *any[]*
 
-*Defined in [index.ts:322](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L322)*
+*Defined in [index.ts:322](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L322)*
 
 <hr />
 
@@ -3481,7 +3481,7 @@ ___
 
 • **code**: *number*
 
-*Defined in [index.ts:330](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L330)*
+*Defined in [index.ts:330](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L330)*
 
 ___
 
@@ -3489,7 +3489,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [index.ts:329](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L329)*
+*Defined in [index.ts:329](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L329)*
 
 <hr />
 
@@ -3514,7 +3514,7 @@ ___
 
 • **error**? : *[JSONRPCResponseError](#class-jsonrpcresponseerror)*
 
-*Defined in [index.ts:337](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L337)*
+*Defined in [index.ts:337](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L337)*
 
 ___
 
@@ -3522,7 +3522,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [index.ts:335](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L335)*
+*Defined in [index.ts:335](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L335)*
 
 ___
 
@@ -3530,7 +3530,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [index.ts:336](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L336)*
+*Defined in [index.ts:336](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L336)*
 
 ___
 
@@ -3538,7 +3538,7 @@ ___
 
 • **result**: *any*
 
-*Defined in [index.ts:334](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L334)*
+*Defined in [index.ts:334](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L334)*
 
 <hr />
 
@@ -3571,7 +3571,7 @@ ___
 
 • **address**: *string*
 
-*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L428)*
+*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L428)*
 
 ___
 
@@ -3579,7 +3579,7 @@ ___
 
 • **blockHash**: *string | null*
 
-*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L426)*
+*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L426)*
 
 ___
 
@@ -3587,7 +3587,7 @@ ___
 
 • **blockNumber**: *number | null*
 
-*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L427)*
+*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L427)*
 
 ___
 
@@ -3595,7 +3595,7 @@ ___
 
 • **data**: *string*
 
-*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L429)*
+*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L429)*
 
 ___
 
@@ -3603,7 +3603,7 @@ ___
 
 • **logIndex**: *number | null*
 
-*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L423)*
+*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L423)*
 
 ___
 
@@ -3611,7 +3611,7 @@ ___
 
 • **topics**: *string[]*
 
-*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L430)*
+*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L430)*
 
 ___
 
@@ -3619,7 +3619,7 @@ ___
 
 • **transactionHash**: *string*
 
-*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L425)*
+*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L425)*
 
 ___
 
@@ -3627,7 +3627,7 @@ ___
 
 • **transactionIndex**: *number | null*
 
-*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L424)*
+*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L424)*
 
 <hr />
 
@@ -3661,7 +3661,7 @@ ___
 
 *Inherited from [LogEntry](#address)*
 
-*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L428)*
+*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L428)*
 
 ___
 
@@ -3671,7 +3671,7 @@ ___
 
 *Inherited from [LogEntry](#blockhash)*
 
-*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L426)*
+*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L426)*
 
 ___
 
@@ -3681,7 +3681,7 @@ ___
 
 *Inherited from [LogEntry](#blocknumber)*
 
-*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L427)*
+*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L427)*
 
 ___
 
@@ -3691,7 +3691,7 @@ ___
 
 *Inherited from [LogEntry](#data)*
 
-*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L429)*
+*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L429)*
 
 ___
 
@@ -3701,7 +3701,7 @@ ___
 
 *Inherited from [LogEntry](#logindex)*
 
-*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L423)*
+*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L423)*
 
 ___
 
@@ -3709,7 +3709,7 @@ ___
 
 • **removed**: *boolean*
 
-*Defined in [index.ts:419](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L419)*
+*Defined in [index.ts:419](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L419)*
 
 ___
 
@@ -3719,7 +3719,7 @@ ___
 
 *Inherited from [LogEntry](#topics)*
 
-*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L430)*
+*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L430)*
 
 ___
 
@@ -3729,7 +3729,7 @@ ___
 
 *Inherited from [LogEntry](#transactionhash)*
 
-*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L425)*
+*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L425)*
 
 ___
 
@@ -3739,7 +3739,7 @@ ___
 
 *Inherited from [LogEntry](#transactionindex)*
 
-*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L424)*
+*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L424)*
 
 <hr />
 
@@ -3778,7 +3778,7 @@ ___
 
 *Inherited from [LogEntry](#address)*
 
-*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L428)*
+*Defined in [index.ts:428](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L428)*
 
 ___
 
@@ -3788,7 +3788,7 @@ ___
 
 *Inherited from [DecodedLogEntry](#args)*
 
-*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L411)*
+*Defined in [index.ts:411](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L411)*
 
 ___
 
@@ -3798,7 +3798,7 @@ ___
 
 *Inherited from [LogEntry](#blockhash)*
 
-*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L426)*
+*Defined in [index.ts:426](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L426)*
 
 ___
 
@@ -3808,7 +3808,7 @@ ___
 
 *Inherited from [LogEntry](#blocknumber)*
 
-*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L427)*
+*Defined in [index.ts:427](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L427)*
 
 ___
 
@@ -3818,7 +3818,7 @@ ___
 
 *Inherited from [LogEntry](#data)*
 
-*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L429)*
+*Defined in [index.ts:429](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L429)*
 
 ___
 
@@ -3828,7 +3828,7 @@ ___
 
 *Inherited from [DecodedLogEntry](#event)*
 
-*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L410)*
+*Defined in [index.ts:410](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L410)*
 
 ___
 
@@ -3838,7 +3838,7 @@ ___
 
 *Inherited from [LogEntry](#logindex)*
 
-*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L423)*
+*Defined in [index.ts:423](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L423)*
 
 ___
 
@@ -3848,7 +3848,7 @@ ___
 
 *Inherited from [LogEntry](#topics)*
 
-*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L430)*
+*Defined in [index.ts:430](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L430)*
 
 ___
 
@@ -3858,7 +3858,7 @@ ___
 
 *Inherited from [LogEntry](#transactionhash)*
 
-*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L425)*
+*Defined in [index.ts:425](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L425)*
 
 ___
 
@@ -3868,7 +3868,7 @@ ___
 
 *Inherited from [LogEntry](#transactionindex)*
 
-*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L424)*
+*Defined in [index.ts:424](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L424)*
 
 <hr />
 
@@ -3896,7 +3896,7 @@ ___
 
 • **constant**: *boolean*
 
-*Defined in [index.ts:94](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L94)*
+*Defined in [index.ts:94](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L94)*
 
 ___
 
@@ -3904,7 +3904,7 @@ ___
 
 • **inputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [index.ts:92](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L92)*
+*Defined in [index.ts:92](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L92)*
 
 ___
 
@@ -3912,7 +3912,7 @@ ___
 
 • **name**: *string*
 
-*Defined in [index.ts:91](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L91)*
+*Defined in [index.ts:91](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L91)*
 
 ___
 
@@ -3920,7 +3920,7 @@ ___
 
 • **outputs**: *[DataItem](#class-dataitem)[]*
 
-*Defined in [index.ts:93](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L93)*
+*Defined in [index.ts:93](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L93)*
 
 ___
 
@@ -3928,7 +3928,7 @@ ___
 
 • **payable**: *boolean*
 
-*Defined in [index.ts:96](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L96)*
+*Defined in [index.ts:96](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L96)*
 
 ___
 
@@ -3936,7 +3936,7 @@ ___
 
 • **stateMutability**: *[StateMutability](#statemutability)*
 
-*Defined in [index.ts:95](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L95)*
+*Defined in [index.ts:95](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L95)*
 
 ___
 
@@ -3944,7 +3944,7 @@ ___
 
 • **type**: *string*
 
-*Defined in [index.ts:90](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L90)*
+*Defined in [index.ts:90](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L90)*
 
 <hr />
 
@@ -3967,7 +3967,7 @@ ___
 
 • **enabled**: *boolean*
 
-*Defined in [index.ts:700](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L700)*
+*Defined in [index.ts:700](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L700)*
 
 ___
 
@@ -3975,7 +3975,7 @@ ___
 
 • **runs**? : *undefined | number*
 
-*Defined in [index.ts:701](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L701)*
+*Defined in [index.ts:701](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L701)*
 
 <hr />
 
@@ -3997,7 +3997,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](#jsonrpcerrorcallback)): *void*
 
-*Defined in [index.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L20)*
+*Defined in [index.ts:20](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L20)*
 
 **Parameters:**
 
@@ -4035,7 +4035,7 @@ Name | Type |
 
 • **address**: *string*
 
-*Defined in [index.ts:483](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L483)*
+*Defined in [index.ts:483](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L483)*
 
 ___
 
@@ -4043,7 +4043,7 @@ ___
 
 • **blockHash**: *string | null*
 
-*Defined in [index.ts:481](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L481)*
+*Defined in [index.ts:481](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L481)*
 
 ___
 
@@ -4051,7 +4051,7 @@ ___
 
 • **blockNumber**: *string | null*
 
-*Defined in [index.ts:482](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L482)*
+*Defined in [index.ts:482](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L482)*
 
 ___
 
@@ -4059,7 +4059,7 @@ ___
 
 • **data**: *string*
 
-*Defined in [index.ts:484](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L484)*
+*Defined in [index.ts:484](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L484)*
 
 ___
 
@@ -4067,7 +4067,7 @@ ___
 
 • **logIndex**: *string | null*
 
-*Defined in [index.ts:478](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L478)*
+*Defined in [index.ts:478](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L478)*
 
 ___
 
@@ -4075,7 +4075,7 @@ ___
 
 • **topics**: *string[]*
 
-*Defined in [index.ts:485](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L485)*
+*Defined in [index.ts:485](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L485)*
 
 ___
 
@@ -4083,7 +4083,7 @@ ___
 
 • **transactionHash**: *string*
 
-*Defined in [index.ts:480](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L480)*
+*Defined in [index.ts:480](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L480)*
 
 ___
 
@@ -4091,7 +4091,7 @@ ___
 
 • **transactionIndex**: *string | null*
 
-*Defined in [index.ts:479](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L479)*
+*Defined in [index.ts:479](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L479)*
 
 <hr />
 
@@ -4118,7 +4118,7 @@ ___
 
 • **component**: *"general" | "ewasm"*
 
-*Defined in [index.ts:596](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L596)*
+*Defined in [index.ts:596](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L596)*
 
 ___
 
@@ -4126,7 +4126,7 @@ ___
 
 • **formattedMessage**? : *undefined | string*
 
-*Defined in [index.ts:599](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L599)*
+*Defined in [index.ts:599](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L599)*
 
 ___
 
@@ -4134,7 +4134,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [index.ts:598](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L598)*
+*Defined in [index.ts:598](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L598)*
 
 ___
 
@@ -4142,7 +4142,7 @@ ___
 
 • **severity**: *[ErrorSeverity](#errorseverity)*
 
-*Defined in [index.ts:597](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L597)*
+*Defined in [index.ts:597](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L597)*
 
 ___
 
@@ -4150,7 +4150,7 @@ ___
 
 • **sourceLocation**? : *[SourceLocation](#class-sourcelocation)*
 
-*Defined in [index.ts:594](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L594)*
+*Defined in [index.ts:594](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L594)*
 
 ___
 
@@ -4158,7 +4158,7 @@ ___
 
 • **type**: *[ErrorType](#errortype)*
 
-*Defined in [index.ts:595](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L595)*
+*Defined in [index.ts:595](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L595)*
 
 <hr />
 
@@ -4180,7 +4180,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [index.ts:705](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L705)*
+*Defined in [index.ts:705](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L705)*
 
 <hr />
 
@@ -4204,7 +4204,7 @@ ___
 
 • **end**: *number*
 
-*Defined in [index.ts:605](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L605)*
+*Defined in [index.ts:605](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L605)*
 
 ___
 
@@ -4212,7 +4212,7 @@ ___
 
 • **file**: *string*
 
-*Defined in [index.ts:603](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L603)*
+*Defined in [index.ts:603](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L603)*
 
 ___
 
@@ -4220,7 +4220,7 @@ ___
 
 • **start**: *number*
 
-*Defined in [index.ts:604](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L604)*
+*Defined in [index.ts:604](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L604)*
 
 <hr />
 
@@ -4244,7 +4244,7 @@ ___
 
 • **abi**: *[ContractAbi](#contractabi)*
 
-*Defined in [index.ts:556](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L556)*
+*Defined in [index.ts:556](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L556)*
 
 ___
 
@@ -4252,7 +4252,7 @@ ___
 
 • **devdoc**? : *[DevdocOutput](#class-devdocoutput)*
 
-*Defined in [index.ts:558](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L558)*
+*Defined in [index.ts:558](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L558)*
 
 ___
 
@@ -4260,7 +4260,7 @@ ___
 
 • **evm**: *[EvmOutput](#class-evmoutput)*
 
-*Defined in [index.ts:557](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L557)*
+*Defined in [index.ts:557](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L557)*
 
 <hr />
 
@@ -4284,7 +4284,7 @@ ___
 
 • **contracts**: *object*
 
-*Defined in [index.ts:570](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L570)*
+*Defined in [index.ts:570](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L570)*
 
 #### Type declaration:
 
@@ -4298,7 +4298,7 @@ ___
 
 • **errors**: *[SolcError](#class-solcerror)[]*
 
-*Defined in [index.ts:562](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L562)*
+*Defined in [index.ts:562](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L562)*
 
 ___
 
@@ -4306,7 +4306,7 @@ ___
 
 • **sources**: *object*
 
-*Defined in [index.ts:563](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L563)*
+*Defined in [index.ts:563](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L563)*
 
 #### Type declaration:
 
@@ -4340,7 +4340,7 @@ ___
 
 • **depth**: *number*
 
-*Defined in [index.ts:287](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L287)*
+*Defined in [index.ts:287](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L287)*
 
 ___
 
@@ -4348,7 +4348,7 @@ ___
 
 • **error**: *string*
 
-*Defined in [index.ts:288](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L288)*
+*Defined in [index.ts:288](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L288)*
 
 ___
 
@@ -4356,7 +4356,7 @@ ___
 
 • **gas**: *number*
 
-*Defined in [index.ts:289](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L289)*
+*Defined in [index.ts:289](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L289)*
 
 ___
 
@@ -4364,7 +4364,7 @@ ___
 
 • **gasCost**: *number*
 
-*Defined in [index.ts:290](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L290)*
+*Defined in [index.ts:290](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L290)*
 
 ___
 
@@ -4372,7 +4372,7 @@ ___
 
 • **memory**: *string[]*
 
-*Defined in [index.ts:291](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L291)*
+*Defined in [index.ts:291](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L291)*
 
 ___
 
@@ -4380,7 +4380,7 @@ ___
 
 • **op**: *[OpCode](#enumeration-opcode)*
 
-*Defined in [index.ts:292](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L292)*
+*Defined in [index.ts:292](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L292)*
 
 ___
 
@@ -4388,7 +4388,7 @@ ___
 
 • **pc**: *number*
 
-*Defined in [index.ts:293](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L293)*
+*Defined in [index.ts:293](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L293)*
 
 ___
 
@@ -4396,7 +4396,7 @@ ___
 
 • **stack**: *string[]*
 
-*Defined in [index.ts:294](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L294)*
+*Defined in [index.ts:294](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L294)*
 
 ___
 
@@ -4404,7 +4404,7 @@ ___
 
 • **storage**: *object*
 
-*Defined in [index.ts:295](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L295)*
+*Defined in [index.ts:295](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L295)*
 
 #### Type declaration:
 
@@ -4434,7 +4434,7 @@ ___
 
 • **disableMemory**? : *undefined | false | true*
 
-*Defined in [index.ts:510](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L510)*
+*Defined in [index.ts:510](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L510)*
 
 ___
 
@@ -4442,7 +4442,7 @@ ___
 
 • **disableStack**? : *undefined | false | true*
 
-*Defined in [index.ts:511](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L511)*
+*Defined in [index.ts:511](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L511)*
 
 ___
 
@@ -4450,7 +4450,7 @@ ___
 
 • **disableStorage**? : *undefined | false | true*
 
-*Defined in [index.ts:512](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L512)*
+*Defined in [index.ts:512](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L512)*
 
 ___
 
@@ -4458,7 +4458,7 @@ ___
 
 • **timeout**? : *undefined | string*
 
-*Defined in [index.ts:514](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L514)*
+*Defined in [index.ts:514](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L514)*
 
 ___
 
@@ -4466,7 +4466,7 @@ ___
 
 • **tracer**? : *undefined | string*
 
-*Defined in [index.ts:513](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L513)*
+*Defined in [index.ts:513](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L513)*
 
 <hr />
 
@@ -4498,7 +4498,7 @@ ___
 
 • **blockHash**: *string | null*
 
-*Defined in [index.ts:371](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L371)*
+*Defined in [index.ts:371](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L371)*
 
 ___
 
@@ -4506,7 +4506,7 @@ ___
 
 • **blockNumber**: *number | null*
 
-*Defined in [index.ts:372](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L372)*
+*Defined in [index.ts:372](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L372)*
 
 ___
 
@@ -4514,7 +4514,7 @@ ___
 
 • **from**: *string*
 
-*Defined in [index.ts:374](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L374)*
+*Defined in [index.ts:374](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L374)*
 
 ___
 
@@ -4522,7 +4522,7 @@ ___
 
 • **gas**: *number*
 
-*Defined in [index.ts:378](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L378)*
+*Defined in [index.ts:378](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L378)*
 
 ___
 
@@ -4530,7 +4530,7 @@ ___
 
 • **gasPrice**: *`BigNumber`*
 
-*Defined in [index.ts:377](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L377)*
+*Defined in [index.ts:377](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L377)*
 
 ___
 
@@ -4538,7 +4538,7 @@ ___
 
 • **hash**: *string*
 
-*Defined in [index.ts:369](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L369)*
+*Defined in [index.ts:369](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L369)*
 
 ___
 
@@ -4546,7 +4546,7 @@ ___
 
 • **input**: *string*
 
-*Defined in [index.ts:379](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L379)*
+*Defined in [index.ts:379](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L379)*
 
 ___
 
@@ -4554,7 +4554,7 @@ ___
 
 • **nonce**: *number*
 
-*Defined in [index.ts:370](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L370)*
+*Defined in [index.ts:370](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L370)*
 
 ___
 
@@ -4562,7 +4562,7 @@ ___
 
 • **to**: *string | null*
 
-*Defined in [index.ts:375](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L375)*
+*Defined in [index.ts:375](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L375)*
 
 ___
 
@@ -4570,7 +4570,7 @@ ___
 
 • **transactionIndex**: *number | null*
 
-*Defined in [index.ts:373](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L373)*
+*Defined in [index.ts:373](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L373)*
 
 ___
 
@@ -4578,7 +4578,7 @@ ___
 
 • **value**: *`BigNumber`*
 
-*Defined in [index.ts:376](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L376)*
+*Defined in [index.ts:376](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L376)*
 
 <hr />
 
@@ -4612,7 +4612,7 @@ ___
 
 • **blockHash**: *string*
 
-*Defined in [index.ts:440](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L440)*
+*Defined in [index.ts:440](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L440)*
 
 ___
 
@@ -4620,7 +4620,7 @@ ___
 
 • **blockNumber**: *number*
 
-*Defined in [index.ts:441](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L441)*
+*Defined in [index.ts:441](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L441)*
 
 ___
 
@@ -4628,7 +4628,7 @@ ___
 
 • **contractAddress**: *string | null*
 
-*Defined in [index.ts:449](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L449)*
+*Defined in [index.ts:449](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L449)*
 
 ___
 
@@ -4636,7 +4636,7 @@ ___
 
 • **cumulativeGasUsed**: *number*
 
-*Defined in [index.ts:447](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L447)*
+*Defined in [index.ts:447](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L447)*
 
 ___
 
@@ -4644,7 +4644,7 @@ ___
 
 • **from**: *string*
 
-*Defined in [index.ts:444](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L444)*
+*Defined in [index.ts:444](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L444)*
 
 ___
 
@@ -4652,7 +4652,7 @@ ___
 
 • **gasUsed**: *number*
 
-*Defined in [index.ts:448](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L448)*
+*Defined in [index.ts:448](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L448)*
 
 ___
 
@@ -4660,7 +4660,7 @@ ___
 
 • **logs**: *[LogEntry](#class-logentry)[]*
 
-*Defined in [index.ts:450](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L450)*
+*Defined in [index.ts:450](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L450)*
 
 ___
 
@@ -4668,7 +4668,7 @@ ___
 
 • **status**: *[TransactionReceiptStatus](#transactionreceiptstatus)*
 
-*Defined in [index.ts:446](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L446)*
+*Defined in [index.ts:446](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L446)*
 
 ___
 
@@ -4676,7 +4676,7 @@ ___
 
 • **to**: *string*
 
-*Defined in [index.ts:445](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L445)*
+*Defined in [index.ts:445](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L445)*
 
 ___
 
@@ -4684,7 +4684,7 @@ ___
 
 • **transactionHash**: *string*
 
-*Defined in [index.ts:442](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L442)*
+*Defined in [index.ts:442](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L442)*
 
 ___
 
@@ -4692,7 +4692,7 @@ ___
 
 • **transactionIndex**: *number*
 
-*Defined in [index.ts:443](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L443)*
+*Defined in [index.ts:443](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L443)*
 
 <hr />
 
@@ -4732,7 +4732,7 @@ otherwise we don't.
 
 *Inherited from [TransactionReceipt](#blockhash)*
 
-*Defined in [index.ts:440](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L440)*
+*Defined in [index.ts:440](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L440)*
 
 ___
 
@@ -4742,7 +4742,7 @@ ___
 
 *Inherited from [TransactionReceipt](#blocknumber)*
 
-*Defined in [index.ts:441](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L441)*
+*Defined in [index.ts:441](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L441)*
 
 ___
 
@@ -4752,7 +4752,7 @@ ___
 
 *Inherited from [TransactionReceipt](#contractaddress)*
 
-*Defined in [index.ts:449](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L449)*
+*Defined in [index.ts:449](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L449)*
 
 ___
 
@@ -4762,7 +4762,7 @@ ___
 
 *Inherited from [TransactionReceipt](#cumulativegasused)*
 
-*Defined in [index.ts:447](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L447)*
+*Defined in [index.ts:447](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L447)*
 
 ___
 
@@ -4772,7 +4772,7 @@ ___
 
 *Inherited from [TransactionReceipt](#from)*
 
-*Defined in [index.ts:444](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L444)*
+*Defined in [index.ts:444](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L444)*
 
 ___
 
@@ -4782,7 +4782,7 @@ ___
 
 *Inherited from [TransactionReceipt](#gasused)*
 
-*Defined in [index.ts:448](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L448)*
+*Defined in [index.ts:448](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L448)*
 
 ___
 
@@ -4792,7 +4792,7 @@ ___
 
 *Overrides [TransactionReceipt](#logs)*
 
-*Defined in [index.ts:506](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L506)*
+*Defined in [index.ts:506](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L506)*
 
 ___
 
@@ -4802,7 +4802,7 @@ ___
 
 *Inherited from [TransactionReceipt](#status)*
 
-*Defined in [index.ts:446](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L446)*
+*Defined in [index.ts:446](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L446)*
 
 ___
 
@@ -4812,7 +4812,7 @@ ___
 
 *Inherited from [TransactionReceipt](#to)*
 
-*Defined in [index.ts:445](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L445)*
+*Defined in [index.ts:445](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L445)*
 
 ___
 
@@ -4822,7 +4822,7 @@ ___
 
 *Inherited from [TransactionReceipt](#transactionhash)*
 
-*Defined in [index.ts:442](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L442)*
+*Defined in [index.ts:442](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L442)*
 
 ___
 
@@ -4832,7 +4832,7 @@ ___
 
 *Inherited from [TransactionReceipt](#transactionindex)*
 
-*Defined in [index.ts:443](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L443)*
+*Defined in [index.ts:443](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L443)*
 
 <hr />
 
@@ -4856,7 +4856,7 @@ ___
 
 • **gas**: *number*
 
-*Defined in [index.ts:299](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L299)*
+*Defined in [index.ts:299](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L299)*
 
 ___
 
@@ -4864,7 +4864,7 @@ ___
 
 • **returnValue**: *any*
 
-*Defined in [index.ts:300](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L300)*
+*Defined in [index.ts:300](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L300)*
 
 ___
 
@@ -4872,7 +4872,7 @@ ___
 
 • **structLogs**: *[StructLog](#class-structlog)[]*
 
-*Defined in [index.ts:301](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L301)*
+*Defined in [index.ts:301](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L301)*
 
 <hr />
 
@@ -4900,7 +4900,7 @@ ___
 
 *Overrides [DataItem](#optional-components)*
 
-*Defined in [index.ts:135](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L135)*
+*Defined in [index.ts:135](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L135)*
 
 ___
 
@@ -4910,7 +4910,7 @@ ___
 
 *Inherited from [DataItem](#name)*
 
-*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L129)*
+*Defined in [index.ts:129](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L129)*
 
 ___
 
@@ -4920,7 +4920,7 @@ ___
 
 *Inherited from [DataItem](#type)*
 
-*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L130)*
+*Defined in [index.ts:130](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L130)*
 
 <hr />
 
@@ -4954,7 +4954,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-data)*
 
-*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L387)*
+*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L387)*
 
 ___
 
@@ -4962,7 +4962,7 @@ ___
 
 • **from**: *string*
 
-*Defined in [index.ts:392](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L392)*
+*Defined in [index.ts:392](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L392)*
 
 ___
 
@@ -4972,7 +4972,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gas)*
 
-*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L385)*
+*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L385)*
 
 ___
 
@@ -4982,7 +4982,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gasprice)*
 
-*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L386)*
+*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L386)*
 
 ___
 
@@ -4992,7 +4992,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-nonce)*
 
-*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L388)*
+*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L388)*
 
 ___
 
@@ -5002,7 +5002,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-to)*
 
-*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L383)*
+*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L383)*
 
 ___
 
@@ -5012,7 +5012,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-value)*
 
-*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L384)*
+*Defined in [index.ts:384](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L384)*
 
 <hr />
 
@@ -5044,7 +5044,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-data)*
 
-*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L387)*
+*Defined in [index.ts:387](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L387)*
 
 ___
 
@@ -5054,7 +5054,7 @@ ___
 
 *Inherited from [TxData](#from)*
 
-*Defined in [index.ts:392](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L392)*
+*Defined in [index.ts:392](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L392)*
 
 ___
 
@@ -5064,7 +5064,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gas)*
 
-*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L385)*
+*Defined in [index.ts:385](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L385)*
 
 ___
 
@@ -5074,7 +5074,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-gasprice)*
 
-*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L386)*
+*Defined in [index.ts:386](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L386)*
 
 ___
 
@@ -5084,7 +5084,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-nonce)*
 
-*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L388)*
+*Defined in [index.ts:388](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L388)*
 
 ___
 
@@ -5094,7 +5094,7 @@ ___
 
 *Inherited from [CallTxDataBase](#optional-to)*
 
-*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L383)*
+*Defined in [index.ts:383](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L383)*
 
 ___
 
@@ -5104,7 +5104,7 @@ ___
 
 *Overrides [CallTxDataBase](#optional-value)*
 
-*Defined in [index.ts:434](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L434)*
+*Defined in [index.ts:434](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L434)*
 
 <hr />
 
@@ -5131,7 +5131,7 @@ This interface allowed sending synchonous requests, support for which was later 
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](#class-jsonrpcresponsepayload)*
 
-*Defined in [index.ts:45](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L45)*
+*Defined in [index.ts:45](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L45)*
 
 **Parameters:**
 
@@ -5147,7 +5147,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](#jsonrpcerrorcallback)): *void*
 
-*Defined in [index.ts:44](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L44)*
+*Defined in [index.ts:44](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L44)*
 
 **Parameters:**
 
@@ -5182,7 +5182,7 @@ before the first attempts to conform to EIP1193
 
 ▸ **send**(`payload`: [JSONRPCRequestPayload](#jsonrpcerrorcallback)): *void*
 
-*Defined in [index.ts:54](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L54)*
+*Defined in [index.ts:54](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L54)*
 
 **Parameters:**
 
@@ -5217,7 +5217,7 @@ however it does not conform entirely.
 
 ▸ **send**(`method`: string, `params?`: any[]): *`Promise<any>`*
 
-*Defined in [index.ts:63](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L63)*
+*Defined in [index.ts:63](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L63)*
 
 **Parameters:**
 
@@ -5260,7 +5260,7 @@ add here
 
 • **isMetaMask**? : *undefined | false | true*
 
-*Defined in [index.ts:31](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L31)*
+*Defined in [index.ts:31](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L31)*
 
 ___
 
@@ -5268,7 +5268,7 @@ ___
 
 • **isParity**? : *undefined | false | true*
 
-*Defined in [index.ts:32](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L32)*
+*Defined in [index.ts:32](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L32)*
 
 ___
 
@@ -5276,7 +5276,7 @@ ___
 
 • **isZeroExProvider**? : *undefined | false | true*
 
-*Defined in [index.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L30)*
+*Defined in [index.ts:30](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L30)*
 
 ## Methods
 
@@ -5284,7 +5284,7 @@ ___
 
 ▸ **enable**(): *`Promise<void>`*
 
-*Defined in [index.ts:34](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L34)*
+*Defined in [index.ts:34](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L34)*
 
 **Returns:** *`Promise<void>`*
 
@@ -5294,7 +5294,7 @@ ___
 
 ▸ **sendAsync**(`payload`: [JSONRPCRequestPayload](#jsonrpcerrorcallback)): *void*
 
-*Defined in [index.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L35)*
+*Defined in [index.ts:35](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L35)*
 
 **Parameters:**
 
@@ -5311,7 +5311,7 @@ ___
 
 ▸ **stop**(): *void*
 
-*Defined in [index.ts:33](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/ethereum-types/src/index.ts#L33)*
+*Defined in [index.ts:33](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/ethereum-types/src/index.ts#L33)*
 
 **Returns:** *void*
 

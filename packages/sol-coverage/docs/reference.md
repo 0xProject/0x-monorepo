@@ -32,7 +32,7 @@ It's used to compute your code coverage while running solidity tests.
 
 *Overrides void*
 
-*Defined in [coverage_subprovider.ts:44](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-coverage/src/coverage_subprovider.ts#L44)*
+*Defined in [coverage_subprovider.ts:44](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-coverage/src/coverage_subprovider.ts#L44)*
 
 Instantiates a CoverageSubprovider instance
 
@@ -154,7 +154,7 @@ ___
 
 ▸ **writeCoverageAsync**(): *`Promise<void>`*
 
-*Defined in [coverage_subprovider.ts:78](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-coverage/src/coverage_subprovider.ts#L78)*
+*Defined in [coverage_subprovider.ts:78](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-coverage/src/coverage_subprovider.ts#L78)*
 
 Write the test coverage results to a file in Istanbul format.
 
@@ -185,7 +185,7 @@ ignoreFilesGlobs: The list of globs matching the file names of the files we want
 
 • **ignoreFilesGlobs**: *string[]*
 
-*Defined in [coverage_subprovider.ts:28](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-coverage/src/coverage_subprovider.ts#L28)*
+*Defined in [coverage_subprovider.ts:28](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-coverage/src/coverage_subprovider.ts#L28)*
 
 ___
 
@@ -193,7 +193,7 @@ ___
 
 • **isVerbose**: *boolean*
 
-*Defined in [coverage_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-coverage/src/coverage_subprovider.ts#L27)*
+*Defined in [coverage_subprovider.ts:27](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-coverage/src/coverage_subprovider.ts#L27)*
 
 <hr />
 

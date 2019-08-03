@@ -48,7 +48,7 @@
         "@0x/contract-addresses": "^3.1.0",
         "@0x/dev-utils": "^2.3.1",
         "@0x/migrations": "^4.3.0",
-        "@0x/ts-doc-gen": "^0.0.6",
+        "@0x/ts-doc-gen": "^0.0.7",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",

@@ -32,7 +32,7 @@ You can pass it by calling `this.addERC20Token(address)` or `this.addERC721Token
 
 \+ **new CollisionResistanceAbiDecoder**(`erc20Abi`: `ContractAbi`, `erc721Abi`: `ContractAbi`, `abis`: `ContractAbi`[]): *[CollisionResistanceAbiDecoder](#class-collisionresistanceabidecoder)*
 
-*Defined in [order_watcher/collision_resistant_abi_decoder.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L22)*
+*Defined in [order_watcher/collision_resistant_abi_decoder.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L22)*
 
 **Parameters:**
 
@@ -50,7 +50,7 @@ Name | Type |
 
 ▸ **addERC20Token**(`address`: string): *void*
 
-*Defined in [order_watcher/collision_resistant_abi_decoder.ts:44](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L44)*
+*Defined in [order_watcher/collision_resistant_abi_decoder.ts:44](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L44)*
 
 **Parameters:**
 
@@ -66,7 +66,7 @@ ___
 
 ▸ **addERC721Token**(`address`: string): *void*
 
-*Defined in [order_watcher/collision_resistant_abi_decoder.ts:51](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L51)*
+*Defined in [order_watcher/collision_resistant_abi_decoder.ts:51](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L51)*
 
 **Parameters:**
 
@@ -82,7 +82,7 @@ ___
 
 ▸ **tryToDecodeLogOrNoop**<**ArgsType**>(`log`: `LogEntry`): *`LogWithDecodedArgs<ArgsType>` | `RawLog`*
 
-*Defined in [order_watcher/collision_resistant_abi_decoder.ts:28](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L28)*
+*Defined in [order_watcher/collision_resistant_abi_decoder.ts:28](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/collision_resistant_abi_decoder.ts#L28)*
 
 **Type parameters:**
 
@@ -124,7 +124,7 @@ Name | Type |
 
 \+ **new DependentOrderHashesTracker**(`zrxTokenAddress`: string): *[DependentOrderHashesTracker](#class-dependentorderhashestracker)*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:35](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L35)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:35](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L35)*
 
 **Parameters:**
 
@@ -140,7 +140,7 @@ Name | Type |
 
 ▸ **addToDependentOrderHashes**(`signedOrder`: `SignedOrder`): *void*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:69](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L69)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:69](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L69)*
 
 **Parameters:**
 
@@ -156,7 +156,7 @@ ___
 
 ▸ **getDependentOrderHashesByAssetDataByMaker**(`makerAddress`: string, `assetData`: string): *string[]*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:61](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L61)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:61](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L61)*
 
 **Parameters:**
 
@@ -173,7 +173,7 @@ ___
 
 ▸ **getDependentOrderHashesByERC721ByMaker**(`makerAddress`: string, `tokenAddress`: string): *string[]*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:39](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L39)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:39](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L39)*
 
 **Parameters:**
 
@@ -190,7 +190,7 @@ ___
 
 ▸ **getDependentOrderHashesByMaker**(`makerAddress`: string): *string[]*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:57](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L57)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:57](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L57)*
 
 **Parameters:**
 
@@ -206,7 +206,7 @@ ___
 
 ▸ **removeFromDependentOrderHashes**(`signedOrder`: `SignedOrder`): *void*
 
-*Defined in [order_watcher/dependent_order_hashes_tracker.ts:74](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L74)*
+*Defined in [order_watcher/dependent_order_hashes_tracker.ts:74](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/dependent_order_hashes_tracker.ts#L74)*
 
 **Parameters:**
 
@@ -244,7 +244,7 @@ depth.
 
 \+ **new EventWatcher**(`supportedProvider`: `SupportedProvider`, `pollingIntervalIfExistsMs`: undefined | number, `isVerbose`: boolean): *[EventWatcher](#class-eventwatcher)*
 
-*Defined in [order_watcher/event_watcher.ts:28](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/event_watcher.ts#L28)*
+*Defined in [order_watcher/event_watcher.ts:28](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/event_watcher.ts#L28)*
 
 **Parameters:**
 
@@ -262,7 +262,7 @@ Name | Type |
 
 ▸ **subscribe**(`callback`: [EventWatcherCallback](#eventwatchercallback)): *void*
 
-*Defined in [order_watcher/event_watcher.ts:43](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/event_watcher.ts#L43)*
+*Defined in [order_watcher/event_watcher.ts:43](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/event_watcher.ts#L43)*
 
 **Parameters:**
 
@@ -278,7 +278,7 @@ ___
 
 ▸ **unsubscribe**(): *void*
 
-*Defined in [order_watcher/event_watcher.ts:50](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/event_watcher.ts#L50)*
+*Defined in [order_watcher/event_watcher.ts:50](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/event_watcher.ts#L50)*
 
 **Returns:** *void*
 
@@ -312,7 +312,7 @@ It stores them in a min heap by expiration time and checks for expired ones ever
 
 \+ **new ExpirationWatcher**(`expirationMarginIfExistsMs?`: undefined | number, `orderExpirationCheckingIntervalIfExistsMs?`: undefined | number): *[ExpirationWatcher](#class-expirationwatcher)*
 
-*Defined in [order_watcher/expiration_watcher.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L20)*
+*Defined in [order_watcher/expiration_watcher.ts:20](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L20)*
 
 **Parameters:**
 
@@ -329,7 +329,7 @@ Name | Type |
 
 ▸ **addOrder**(`orderHash`: string, `expirationUnixTimestampMs`: `BigNumber`): *void*
 
-*Defined in [order_watcher/expiration_watcher.ts:57](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L57)*
+*Defined in [order_watcher/expiration_watcher.ts:57](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L57)*
 
 **Parameters:**
 
@@ -346,7 +346,7 @@ ___
 
 ▸ **removeOrder**(`orderHash`: string): *void*
 
-*Defined in [order_watcher/expiration_watcher.ts:61](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L61)*
+*Defined in [order_watcher/expiration_watcher.ts:61](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L61)*
 
 **Parameters:**
 
@@ -362,7 +362,7 @@ ___
 
 ▸ **subscribe**(`callback`: function): *void*
 
-*Defined in [order_watcher/expiration_watcher.ts:40](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L40)*
+*Defined in [order_watcher/expiration_watcher.ts:40](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L40)*
 
 **Parameters:**
 
@@ -384,7 +384,7 @@ ___
 
 ▸ **unsubscribe**(): *void*
 
-*Defined in [order_watcher/expiration_watcher.ts:50](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L50)*
+*Defined in [order_watcher/expiration_watcher.ts:50](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/expiration_watcher.ts#L50)*
 
 **Returns:** *void*
 
@@ -421,7 +421,7 @@ the order should be deemed invalid.
 
 \+ **new OrderWatcher**(`supportedProvider`: `SupportedProvider`, `networkId`: number, `contractAddresses?`: `ContractAddresses`, `partialConfig`: `Partial<OrderWatcherConfig>`): *[OrderWatcher](#class-orderwatcher)*
 
-*Defined in [order_watcher/order_watcher.ts:98](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L98)*
+*Defined in [order_watcher/order_watcher.ts:98](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L98)*
 
 Instantiate a new OrderWatcher
 
@@ -442,7 +442,7 @@ Name | Type | Default | Description |
 
 ▸ **addOrderAsync**(`signedOrder`: `SignedOrder`): *`Promise<void>`*
 
-*Defined in [order_watcher/order_watcher.ts:160](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L160)*
+*Defined in [order_watcher/order_watcher.ts:160](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L160)*
 
 Add an order to the orderWatcher. Before the order is added, it's
 signature is verified.
@@ -461,7 +461,7 @@ ___
 
 ▸ **getStats**(): *`Stats`*
 
-*Defined in [order_watcher/order_watcher.ts:231](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L231)*
+*Defined in [order_watcher/order_watcher.ts:231](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L231)*
 
 Gets statistics of the OrderWatcher Instance.
 
@@ -473,7 +473,7 @@ ___
 
 ▸ **removeOrder**(`orderHash`: string): *void*
 
-*Defined in [order_watcher/order_watcher.ts:178](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L178)*
+*Defined in [order_watcher/order_watcher.ts:178](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L178)*
 
 Removes an order from the orderWatcher
 
@@ -491,7 +491,7 @@ ___
 
 ▸ **subscribe**(`callback`: [OnOrderStateChangeCallback](#onorderstatechangecallback)): *void*
 
-*Defined in [order_watcher/order_watcher.ts:195](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L195)*
+*Defined in [order_watcher/order_watcher.ts:195](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L195)*
 
 Starts an orderWatcher subscription. The callback will be called every time a watched order's
 backing blockchain state has changed. This is a call-to-action for the caller to re-validate the order.
@@ -510,7 +510,7 @@ ___
 
 ▸ **unsubscribe**(): *void*
 
-*Defined in [order_watcher/order_watcher.ts:217](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher.ts#L217)*
+*Defined in [order_watcher/order_watcher.ts:217](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher.ts#L217)*
 
 Ends an orderWatcher subscription.
 
@@ -541,7 +541,7 @@ Ends an orderWatcher subscription.
 
 \+ **new OrderWatcherWebSocketServer**(`supportedProvider`: `SupportedProvider`, `networkId`: number, `contractAddresses?`: `ContractAddresses`, `orderWatcherConfig?`: `Partial<OrderWatcherConfig>`): *[OrderWatcherWebSocketServer](#class-orderwatcherwebsocketserver)*
 
-*Defined in [order_watcher/order_watcher_web_socket_server.ts:42](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L42)*
+*Defined in [order_watcher/order_watcher_web_socket_server.ts:42](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L42)*
 
 Instantiate a new WebSocket server which provides OrderWatcher functionality
  @param supportedProvider Web3 provider to use for JSON RPC calls.
@@ -568,7 +568,7 @@ Name | Type |
 
 ▸ **start**(): *void*
 
-*Defined in [order_watcher/order_watcher_web_socket_server.ts:92](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L92)*
+*Defined in [order_watcher/order_watcher_web_socket_server.ts:92](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L92)*
 
 Activates the WebSocket server by subscribing to the OrderWatcher and
 starting the WebSocket's HTTP server
@@ -581,7 +581,7 @@ ___
 
 ▸ **stop**(): *void*
 
-*Defined in [order_watcher/order_watcher_web_socket_server.ts:107](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L107)*
+*Defined in [order_watcher/order_watcher_web_socket_server.ts:107](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/order_watcher/order_watcher_web_socket_server.ts#L107)*
 
 Deactivates the WebSocket server by stopping the HTTP server from accepting
 new connections and unsubscribing from the OrderWatcher
@@ -606,7 +606,7 @@ new connections and unsubscribing from the OrderWatcher
 
 • **NoAbiDecoder**: = "NO_ABI_DECODER"
 
-*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L30)*
+*Defined in [types.ts:30](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L30)*
 
 ___
 
@@ -614,7 +614,7 @@ ___
 
 • **WethNotInTokenRegistry**: = "WETH_NOT_IN_TOKEN_REGISTRY"
 
-*Defined in [types.ts:32](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L32)*
+*Defined in [types.ts:32](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L32)*
 
 ___
 
@@ -622,7 +622,7 @@ ___
 
 • **ZrxNotInTokenRegistry**: = "ZRX_NOT_IN_TOKEN_REGISTRY"
 
-*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L31)*
+*Defined in [types.ts:31](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L31)*
 
 <hr />
 
@@ -641,7 +641,7 @@ ___
 
 • **SubscriptionAlreadyPresent**: = "SUBSCRIPTION_ALREADY_PRESENT"
 
-*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L5)*
+*Defined in [types.ts:5](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L5)*
 
 ___
 
@@ -649,7 +649,7 @@ ___
 
 • **SubscriptionNotFound**: = "SUBSCRIPTION_NOT_FOUND"
 
-*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L6)*
+*Defined in [types.ts:6](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L6)*
 
 <hr />
 
@@ -670,7 +670,7 @@ ___
 
 • **AddOrder**: = "ADD_ORDER"
 
-*Defined in [types.ts:38](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L38)*
+*Defined in [types.ts:38](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L38)*
 
 ___
 
@@ -678,7 +678,7 @@ ___
 
 • **GetStats**: = "GET_STATS"
 
-*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L37)*
+*Defined in [types.ts:37](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L37)*
 
 ___
 
@@ -686,7 +686,7 @@ ___
 
 • **RemoveOrder**: = "REMOVE_ORDER"
 
-*Defined in [types.ts:39](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L39)*
+*Defined in [types.ts:39](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L39)*
 
 ___
 
@@ -694,7 +694,7 @@ ___
 
 • **Update**: = "UPDATE"
 
-*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L41)*
+*Defined in [types.ts:41](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L41)*
 
 <hr />
 
@@ -761,7 +761,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [types.ts:52](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L52)*
+*Defined in [types.ts:52](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L52)*
 
 ___
 
@@ -769,7 +769,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L53)*
+*Defined in [types.ts:53](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L53)*
 
 ___
 
@@ -777,7 +777,7 @@ ___
 
 • **method**: *[AddOrder](#addorder)*
 
-*Defined in [types.ts:54](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L54)*
+*Defined in [types.ts:54](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L54)*
 
 ___
 
@@ -785,7 +785,7 @@ ___
 
 • **params**: *object*
 
-*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L55)*
+*Defined in [types.ts:55](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L55)*
 
 #### Type declaration:
 
@@ -812,7 +812,7 @@ ___
 
 • **error**: *[JSONRPCError](#interface-jsonrpcerror)*
 
-*Defined in [types.ts:86](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L86)*
+*Defined in [types.ts:86](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L86)*
 
 ___
 
@@ -820,7 +820,7 @@ ___
 
 • **id**: *number | null*
 
-*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L83)*
+*Defined in [types.ts:83](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L83)*
 
 ___
 
@@ -828,7 +828,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [types.ts:84](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L84)*
+*Defined in [types.ts:84](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L84)*
 
 ___
 
@@ -836,7 +836,7 @@ ___
 
 • **method**: *null*
 
-*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L85)*
+*Defined in [types.ts:85](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L85)*
 
 <hr />
 
@@ -860,7 +860,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L66)*
+*Defined in [types.ts:66](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L66)*
 
 ___
 
@@ -868,7 +868,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L67)*
+*Defined in [types.ts:67](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L67)*
 
 ___
 
@@ -876,7 +876,7 @@ ___
 
 • **method**: *[GetStats](#getstats)*
 
-*Defined in [types.ts:68](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L68)*
+*Defined in [types.ts:68](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L68)*
 
 <hr />
 
@@ -898,7 +898,7 @@ ___
 
 • **orderCount**: *number*
 
-*Defined in [types.ts:96](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L96)*
+*Defined in [types.ts:96](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L96)*
 
 <hr />
 
@@ -922,7 +922,7 @@ ___
 
 • **code**: *number*
 
-*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L90)*
+*Defined in [types.ts:90](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L90)*
 
 ___
 
@@ -930,7 +930,7 @@ ___
 
 • **data**? : *string | object*
 
-*Defined in [types.ts:92](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L92)*
+*Defined in [types.ts:92](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L92)*
 
 ___
 
@@ -938,7 +938,7 @@ ___
 
 • **message**: *string*
 
-*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L91)*
+*Defined in [types.ts:91](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L91)*
 
 <hr />
 
@@ -971,7 +971,7 @@ isVerbose: Weather the order watcher should be verbose. Default=true.
 
 • **cleanupJobIntervalMs**: *number*
 
-*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L23)*
+*Defined in [types.ts:23](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L23)*
 
 ___
 
@@ -979,7 +979,7 @@ ___
 
 • **eventPollingIntervalMs**: *number*
 
-*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L21)*
+*Defined in [types.ts:21](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L21)*
 
 ___
 
@@ -987,7 +987,7 @@ ___
 
 • **expirationMarginMs**: *number*
 
-*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L22)*
+*Defined in [types.ts:22](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L22)*
 
 ___
 
@@ -995,7 +995,7 @@ ___
 
 • **isVerbose**: *boolean*
 
-*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L24)*
+*Defined in [types.ts:24](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L24)*
 
 ___
 
@@ -1003,7 +1003,7 @@ ___
 
 • **orderExpirationCheckingIntervalMs**: *number*
 
-*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L20)*
+*Defined in [types.ts:20](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L20)*
 
 <hr />
 
@@ -1028,7 +1028,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [types.ts:59](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L59)*
+*Defined in [types.ts:59](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L59)*
 
 ___
 
@@ -1036,7 +1036,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [types.ts:60](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L60)*
+*Defined in [types.ts:60](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L60)*
 
 ___
 
@@ -1044,7 +1044,7 @@ ___
 
 • **method**: *[RemoveOrder](#removeorder)*
 
-*Defined in [types.ts:61](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L61)*
+*Defined in [types.ts:61](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L61)*
 
 ___
 
@@ -1052,7 +1052,7 @@ ___
 
 • **params**: *object*
 
-*Defined in [types.ts:62](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L62)*
+*Defined in [types.ts:62](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L62)*
 
 #### Type declaration:
 
@@ -1079,7 +1079,7 @@ ___
 
 • **id**: *number*
 
-*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L76)*
+*Defined in [types.ts:76](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L76)*
 
 ___
 
@@ -1087,7 +1087,7 @@ ___
 
 • **jsonrpc**: *string*
 
-*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L77)*
+*Defined in [types.ts:77](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L77)*
 
 ___
 
@@ -1095,7 +1095,7 @@ ___
 
 • **method**: *[OrderWatcherMethod](#enumeration-orderwatchermethod)*
 
-*Defined in [types.ts:78](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L78)*
+*Defined in [types.ts:78](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L78)*
 
 ___
 
@@ -1103,7 +1103,7 @@ ___
 
 • **result**: *`OrderState` | [GetStatsResult](#interface-getstatsresult) | undefined*
 
-*Defined in [types.ts:79](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/order-watcher/src/types.ts#L79)*
+*Defined in [types.ts:79](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/order-watcher/src/types.ts#L79)*
 
 <hr />
 

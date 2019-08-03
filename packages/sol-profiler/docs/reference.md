@@ -32,7 +32,7 @@ ProfilerSubprovider is used to profile Solidity code while running tests.
 
 *Overrides void*
 
-*Defined in [profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
+*Defined in [profiler_subprovider.ts:30](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-profiler/src/profiler_subprovider.ts#L30)*
 
 Instantiates a ProfilerSubprovider instance
 
@@ -154,7 +154,7 @@ ___
 
 ▸ **writeProfilerOutputAsync**(): *`Promise<void>`*
 
-*Defined in [profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/61e50a1cd/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
+*Defined in [profiler_subprovider.ts:104](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/sol-profiler/src/profiler_subprovider.ts#L104)*
 
 Write the test profiler results to a file in Istanbul format.
 
