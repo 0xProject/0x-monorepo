@@ -11,9 +11,12 @@ import {
 import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { ReferenceFunctions as ExchangeLibsReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
+    blockchainTests,
     chaiSetup,
     constants,
+    describe,
     OrderFactory,
     orderUtils,
     provider,
@@ -34,14 +37,11 @@ import {
     ExchangeContract,
     ExchangeWrapper,
     ReentrantERC20TokenContract,
+    ReferenceFunctions,
     TestMatchOrdersContract,
 } from '../src';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
-
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-chaiSetup.configure();
-const expect = chai.expect;
 
 // Reduce the number of tokens to deploy to speed up tests, since we don't need
 // so many.
@@ -116,29 +116,29 @@ async function testCalculateCompleteFillBothAsync(
  * @param rightMakerAssetAmountRemaining The right maker asset remaining field for the function call.
  * @param rightTakerAssetAmountRemaining The right taker asset remaining field for the function call.
  */
-async function testCalculateCompleteRightFillAsync(
-    matchOrders: TestMatchOrdersContract,
-    leftOrder: SignedOrder,
-    args: BigNumber[],
-): Promise<void> {
-    // Ensure that the correct number of arguments were provided.
-    expect(args.length).to.be.eq(2);
+//async function testCalculateCompleteRightFillAsync(
+//    matchOrders: TestMatchOrdersContract,
+//    leftOrder: SignedOrder,
+//    args: BigNumber[],
+//): Promise<void> {
+//    // Ensure that the correct number of arguments were provided.
+//    expect(args.length).to.be.eq(2);
+//
+//    // Get the resultant matched fill results from the call to _calculateCompleteFillBoth.
+//    const matchedFillResults = await matchOrders.externalCalculateCompleteFillBoth.callAsync(
+//        leftOrder,
+//        args[0],
+//        args[1],
+//    );
+//
+//    // Ensure that the matched fill results are correct.
+//    expect(matchedFillResults.left.makerAssetFilledAmount).bignumber.to.be.eq(args[0]);
+//    expect(matchedFillResults.left.takerAssetFilledAmount).bignumber.to.be.eq(args[1]);
+//    expect(matchedFillResults.right.makerAssetFilledAmount).bignumber.to.be.eq(args[2]);
+//    expect(matchedFillResults.right.takerAssetFilledAmount).bignumber.to.be.eq(args[3]);
+//}
 
-    // Get the resultant matched fill results from the call to _calculateCompleteFillBoth.
-    const matchedFillResults = await matchOrders.externalCalculateCompleteFillBoth.callAsync(
-        leftOrder,
-        args[0],
-        args[1],
-    );
-
-    // Ensure that the matched fill results are correct.
-    expect(matchedFillResults.left.makerAssetFilledAmount).bignumber.to.be.eq(args[0]);
-    expect(matchedFillResults.left.takerAssetFilledAmount).bignumber.to.be.eq(args[1]);
-    expect(matchedFillResults.right.makerAssetFilledAmount).bignumber.to.be.eq(args[2]);
-    expect(matchedFillResults.right.takerAssetFilledAmount).bignumber.to.be.eq(args[3]);
-}
-
-describe.only('matchOrders', () => {
+blockchainTests.resets.only('MatchOrders Tests', ({ web3Wrapper, txDefaults }) => {
     let chainId: number;
     let makerAddressLeft: string;
     let makerAddressRight: string;
@@ -174,12 +174,6 @@ describe.only('matchOrders', () => {
 
     let matchOrders: TestMatchOrdersContract;
 
-    before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
     before(async () => {
         // Get the chain ID.
         chainId = await providerUtils.getChainIdAsync(provider);
@@ -330,7 +324,6 @@ describe.only('matchOrders', () => {
             artifacts.TestMatchOrders,
             provider,
             txDefaults,
-            new BigNumber(chainId),
         );
     });
 

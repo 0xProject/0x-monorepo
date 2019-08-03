@@ -30,7 +30,6 @@ export const artifacts = {
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Whitelist: Whitelist as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
-    MixinMatchOrders: MixinMatchOrders as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IExchange: IExchange as ContractArtifact,

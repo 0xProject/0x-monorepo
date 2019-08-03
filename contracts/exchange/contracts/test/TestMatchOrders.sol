@@ -14,18 +14,13 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "../src/Exchange.sol";
+import "./IsolatedExchange.sol";
 
 
 // solhint-disable no-empty-blocks
 contract TestMatchOrders is
-    Exchange
+    IsolatedExchange
 {
-    constructor (uint256 chainId)
-        public
-        Exchange(chainId)
-    {}
-
     function publicCalculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
@@ -86,6 +81,4 @@ contract TestMatchOrders is
             rightTakerAssetAmountRemaining
         );
     }
-
-    // FIXME - Stub out _dispatchTransferFrom
 }
