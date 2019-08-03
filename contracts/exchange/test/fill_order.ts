@@ -189,7 +189,7 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should throw if an order is expired', async () => {
+        it('should revert if an order is expired', async () => {
             const fillScenario = {
                 ...defaultFillScenario,
                 orderScenario: {
