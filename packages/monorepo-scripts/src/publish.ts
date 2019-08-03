@@ -95,10 +95,10 @@ async function confirmAsync(message: string): Promise<void> {
         const isStaging = false;
         const shouldUploadDocs = true;
         await generateAndUploadDocJsonsAsync(packagesWithDocs, isStaging, shouldUploadDocs);
-    }
 
-    // Upload markdown docs to S3 bucket
-    await execAsync(`yarn upload_md_docs`, { cwd: constants.monorepoRootPath });
+        // Upload markdown docs to S3 bucket
+        await execAsync(`yarn upload_md_docs`, { cwd: constants.monorepoRootPath });
+    }
 
     const releaseNotes = await publishReleaseNotesAsync(updatedPublicPackages, isDryRun);
     utils.log('Published release notes');
