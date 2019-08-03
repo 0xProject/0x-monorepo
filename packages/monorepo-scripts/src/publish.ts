@@ -167,10 +167,6 @@ function getPackagesWithDocs(allUpdatedPackages: Package[]): Package[] {
     return updatedPackagesWithDocPages;
 }
 
-async function generateAndUploadMarkdownDocsAsync(): Promise<void> {
-    await execAsync(`yarn generate_md_docs`, { cwd: constants.monorepoRootPath });
-}
-
 async function generateAndUploadDocJsonsAsync(
     packagesWithDocs: Package[],
     isStaging: boolean,
