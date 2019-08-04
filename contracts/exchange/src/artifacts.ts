@@ -23,6 +23,7 @@ import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInter
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
+import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
 import * as Whitelist from '../generated-artifacts/Whitelist.json';
 export const artifacts = {
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
@@ -34,14 +35,15 @@ export const artifacts = {
     IExchangeCore: IExchangeCore as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
+    IsolatedExchange: IsolatedExchange as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
     IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
-    IsolatedExchange: IsolatedExchange as ContractArtifact,
     ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
+    TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
 };

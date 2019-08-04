@@ -21,6 +21,7 @@
         "generated-artifacts/TestLibExchangeRichErrorDecoder.json",
         "generated-artifacts/TestSignatureValidator.json",
         "generated-artifacts/TestValidatorWallet.json",
+        "generated-artifacts/TestWrapperFunctions.json",
         "generated-artifacts/Whitelist.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
