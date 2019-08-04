@@ -75,9 +75,6 @@
             "repoBranchBase": "development"
         }
     },
-    "resolutions": {
-        "graceful-fs": "4.1.15"
-    },
     "devDependencies": {
         "@0x-lerna-fork/lerna": "3.16.10",
         "@0xproject/npm-cli-login": "^0.0.11",
