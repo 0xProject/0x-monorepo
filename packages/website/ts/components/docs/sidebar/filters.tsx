@@ -13,6 +13,7 @@ interface IFiltersGroupProps {
     attribute: string;
     heading: string;
     customLabel?: string;
+    operator?: string;
 }
 
 const transformItems = (items: IFiltersGroupProps[]) => _.orderBy(items, 'label', 'asc');
@@ -20,7 +21,7 @@ const transformItems = (items: IFiltersGroupProps[]) => _.orderBy(items, 'label'
 export const Filters: React.FC<IFiltersProps> = ({ filters }) => (
     <SidebarWrapper>
         {filters.map((filter: IFiltersGroupProps, index: number) => (
-            <FiltersGroup key={`filter-${index}`} transformItems={transformItems} {...filter} />
+            <FiltersGroup key={`filter-${index}`} operator="and" transformItems={transformItems} {...filter} />
         ))}
         <FiltersClear />
     </SidebarWrapper>
