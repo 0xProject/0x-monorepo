@@ -117,6 +117,20 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('name()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('name()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('name()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public approve = {
         /**
@@ -259,6 +273,20 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('approve(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public totalSupply = {
         /**
@@ -306,6 +334,20 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('totalSupply()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferFrom = {
@@ -484,6 +526,20 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transferFrom(address,address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public withdraw = {
         /**
@@ -612,6 +668,20 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('withdraw(uint256)', [wad]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('withdraw(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public decimals = {
         /**
@@ -659,6 +729,20 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('decimals()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): number {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('decimals()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<number>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): number {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('decimals()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<number>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public balanceOf = {
@@ -716,6 +800,20 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('balanceOf(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public symbol = {
         /**
@@ -763,6 +861,20 @@ export class WETH9Contract extends BaseContract {
             const self = (this as any) as WETH9Contract;
             const abiEncodedTransactionData = self._strictEncodeArguments('symbol()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('symbol()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transfer = {
@@ -906,6 +1018,20 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('transfer(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public deposit = {
         /**
@@ -1028,6 +1154,20 @@ export class WETH9Contract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('deposit()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('deposit()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public allowance = {
         /**
@@ -1091,12 +1231,27 @@ export class WETH9Contract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<BigNumber>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): BigNumber {
+            const self = (this as any) as WETH9Contract;
+            const abiEncoder = self._lookupAbiEncoder('allowance(address,address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     private readonly _subscriptionManager: SubscriptionManager<WETH9EventArgs, WETH9Events>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<WETH9Contract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -1109,13 +1264,18 @@ export class WETH9Contract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return WETH9Contract.deployAsync(bytecode, abi, provider, txDefaults);
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
+        return WETH9Contract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
     ): Promise<WETH9Contract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -1139,7 +1299,12 @@ export class WETH9Contract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`WETH9 successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new WETH9Contract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new WETH9Contract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -1503,8 +1668,13 @@ export class WETH9Contract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('WETH9', WETH9Contract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super('WETH9', WETH9Contract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<WETH9EventArgs, WETH9Events>(
             WETH9Contract.ABI(),

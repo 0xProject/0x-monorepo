@@ -1,6 +1,6 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import { styled } from 'ts/style/theme';
+import { colors } from 'ts/utils/colors';
 
 import { dash, rotate } from 'ts/style/keyframes';
 

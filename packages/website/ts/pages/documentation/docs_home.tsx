@@ -1,4 +1,5 @@
-import { ALink, colors, Link } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -7,7 +8,8 @@ import { NestedSidebarMenu } from 'ts/components/nested_sidebar_menu';
 import { Button } from 'ts/components/ui/button';
 import { DevelopersPage } from 'ts/pages/documentation/developers_page';
 import { Dispatcher } from 'ts/redux/dispatcher';
-import { Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { ALink, Categories, Deco, Key, Package, ScreenWidths, TutorialInfo, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
 
@@ -168,8 +170,15 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
             description:
                 'Convenience package for buying assets represented on the Ethereum blockchain using 0x. In its simplest form, the package helps in the usage of the [0x forwarder contract](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/forwarder-specification.md), which allows users to execute [Wrapped Ether](https://weth.io/) based 0x orders without having to set allowances, wrap Ether or own ZRX, meaning they can buy tokens with Ether alone. Given some liquidity (0x signed orders), it helps estimate the Ether cost of buying a certain asset (giving a range) and then buying that asset.',
             link: {
-                title: '@0x/asset-buyer',
+                title: '@0x/asset-buyer [Deprecated]',
                 to: WebsitePaths.AssetBuyer,
+            },
+        },
+        {
+            description: 'Convenience package for discovering and performing swaps for any ERC Assets',
+            link: {
+                title: '@0x/asset-swapper',
+                to: WebsitePaths.AssetSwapper,
             },
         },
     ],

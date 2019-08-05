@@ -187,6 +187,20 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Gets the endpoint for a Coordinator.
@@ -250,12 +264,27 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     private readonly _subscriptionManager: SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<CoordinatorRegistryContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -268,13 +297,24 @@ export class CoordinatorRegistryContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return CoordinatorRegistryContract.deployAsync(bytecode, abi, provider, txDefaults);
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
+        return CoordinatorRegistryContract.deployAsync(
+            bytecode,
+            abi,
+            provider,
+            txDefaults,
+            logDecodeDependenciesAbiOnly,
+        );
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
     ): Promise<CoordinatorRegistryContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -302,6 +342,7 @@ export class CoordinatorRegistryContract extends BaseContract {
             txReceipt.contractAddress as string,
             provider,
             txDefaults,
+            logDecodeDependencies,
         );
         contractInstance.constructorArgs = [];
         return contractInstance;
@@ -441,8 +482,20 @@ export class CoordinatorRegistryContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('CoordinatorRegistry', CoordinatorRegistryContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super(
+            'CoordinatorRegistry',
+            CoordinatorRegistryContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>(
             CoordinatorRegistryContract.ABI(),

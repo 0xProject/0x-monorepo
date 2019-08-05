@@ -1,4 +1,3 @@
-import { Styles } from '@0x/react-shared';
 import * as _ from 'lodash';
 import { GridTile as PlainGridTile } from 'material-ui/GridList';
 import * as React from 'react';
@@ -11,7 +10,7 @@ import { Island } from 'ts/components/ui/island';
 import { colors } from 'ts/style/colors';
 import { media } from 'ts/style/media';
 import { styled } from 'ts/style/theme';
-import { WebsiteBackendRelayerInfo } from 'ts/types';
+import { Styles, WebsiteBackendRelayerInfo } from 'ts/types';
 import { utils } from 'ts/utils/utils';
 
 export enum RelayerGridTileStyle {

@@ -1,4 +1,3 @@
-import { ALink } from '@0x/react-shared';
 import { ObjectMap, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Provider } from 'ethereum-types';
@@ -473,6 +472,7 @@ export enum WebsitePaths {
     OrderUtils = '/docs/order-utils',
     EthereumTypes = '/docs/ethereum-types',
     AssetBuyer = '/docs/asset-buyer',
+    AssetSwapper = '/docs/asset-swapper',
     Migrations = '/docs/migrations',
     Careers = '/careers',
     Credits = '/credits',
@@ -497,6 +497,7 @@ export enum DocPackages {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    AssetSwapper = 'ASSET_SWAPPER',
     Migrations = 'MIGRATIONS',
 }
 
@@ -560,6 +561,7 @@ export enum Key {
     ContractWrappers = 'CONTRACT_WRAPPERS',
     OrderWatcher = 'ORDER_WATCHER',
     AssetBuyer = 'ASSET_BUYER',
+    AssetSwapper = 'ASSET_SWAPPER',
     Blog = 'BLOG',
     Forum = 'FORUM',
     Connect = 'CONNECT',
@@ -775,5 +777,105 @@ export interface TallyInterface {
     yes?: BigNumber;
     no?: BigNumber;
     blockNumber?: string;
+}
+
+export interface SectionNameToMarkdownByVersion {
+    [version: string]: { [sectionName: string]: string };
+}
+
+export interface DocsInfoConfig {
+    id: string;
+    packageName: string;
+    type: SupportedDocJson;
+    displayName: string;
+    packageUrl: string;
+    markdownMenu: DocsMenu;
+    markdownSections: SectionsMap;
+    sectionNameToMarkdownByVersion: SectionNameToMarkdownByVersion;
+    contractsByVersionByNetworkId?: ContractsByVersionByNetworkId;
+}
+
+export interface DocsMenu {
+    [sectionName: string]: string[];
+}
+
+export interface SectionsMap {
+    [sectionName: string]: string;
+}
+
+// Exception: We don't make the values uppercase because these KindString's need to
+// match up those returned by TypeDoc
+export enum KindString {
+    Constructor = 'Constructor',
+    Property = 'Property',
+    Method = 'Method',
+    Interface = 'Interface',
+    TypeAlias = 'Type alias',
+    ObjectLiteral = 'Object literal',
+    Variable = 'Variable',
+    Function = 'Function',
+    Enumeration = 'Enumeration',
+    Class = 'Class',
+}
+
+export enum SupportedDocJson {
+    SolDoc = 'SOL_DOC',
+    TypeDoc = 'TYPEDOC',
+}
+
+export interface ContractsByVersionByNetworkId {
+    [version: string]: {
+        [networkName: string]: {
+            [contractName: string]: string;
+        };
+    };
+}
+
+export interface AddressByContractName {
+    [contractName: string]: string;
+}
+
+export interface EnumValue {
+    name: string;
+    defaultValue?: string;
+}
+
+export enum AbiTypes {
+    Constructor = 'constructor',
+    Function = 'function',
+    Event = 'event',
+}
+export interface Styles {
+    [name: string]: React.CSSProperties;
+}
+
+export enum HeaderSizes {
+    H1 = 'h1',
+    H2 = 'h2',
+    H3 = 'h3',
+}
+
+export enum EtherscanLinkSuffixes {
+    Address = 'address',
+    Tx = 'tx',
+}
+
+export enum Networks {
+    Mainnet = 'Mainnet',
+    Kovan = 'Kovan',
+    Ropsten = 'Ropsten',
+    Rinkeby = 'Rinkeby',
+}
+
+export enum LinkType {
+    External = 'EXTERNAL',
+    ReactScroll = 'REACT_SCROLL',
+    ReactRoute = 'REACT_ROUTE',
+}
+
+export interface ALink {
+    title: string;
+    to: string;
+    shouldOpenInNewTab?: boolean;
 }
 // tslint:disable:max-file-line-count

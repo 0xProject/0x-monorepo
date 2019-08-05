@@ -1,7 +1,7 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { Spinner } from 'ts/components/ui/spinner';
+import { colors } from 'ts/utils/colors';
 
 export enum AllowanceState {
     Locked,

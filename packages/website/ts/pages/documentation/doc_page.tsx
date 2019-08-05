@@ -1,11 +1,4 @@
-import {
-    DocAgnosticFormat,
-    DocReference,
-    DocsInfo,
-    GeneratedDocJson,
-    SupportedDocJson,
-    TypeDocUtils,
-} from '@0x/react-docs';
+import { DocAgnosticFormat, GeneratedDocJson } from '@0x/types';
 import findVersions from 'find-versions';
 import * as _ from 'lodash';
 import CircularProgress from 'material-ui/CircularProgress';
@@ -21,6 +14,11 @@ import { constants } from 'ts/utils/constants';
 import { docUtils } from 'ts/utils/doc_utils';
 import { Translate } from 'ts/utils/translate';
 import { utils } from 'ts/utils/utils';
+
+import { DocReference } from '../../components/documentation/reference/doc_reference';
+import { SupportedDocJson } from '../../types';
+import { DocsInfo } from '../../utils/docs_info';
+import { TypeDocUtils } from '../../utils/typedoc_utils';
 
 const isDevelopmentOrStaging = utils.isDevelopment() || utils.isStaging();
 const ZERO_EX_JS_VERSION_MISSING_TOPLEVEL_PATH = '0.32.4';
@@ -41,6 +39,7 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
     [DocPackages.AssetBuyer]: 'asset-buyer',
+    [DocPackages.AssetSwapper]: 'asset-swapper',
     [DocPackages.Migrations]: 'migrations',
 };
 

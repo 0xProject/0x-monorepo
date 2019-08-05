@@ -1,4 +1,3 @@
-import { colors } from '@0x/react-shared';
 import { BigNumber } from '@0x/utils';
 import * as _ from 'lodash';
 import Dialog from 'material-ui/Dialog';
@@ -8,6 +7,7 @@ import { Blockchain } from 'ts/blockchain';
 import { TokenAmountInput } from 'ts/components/inputs/token_amount_input';
 import { EthAmountInput } from 'ts/containers/inputs/eth_amount_input';
 import { Side, Token } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 
 interface EthWethConversionDialogProps {
     blockchain: Blockchain;

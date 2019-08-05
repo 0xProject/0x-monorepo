@@ -1,6 +1,6 @@
-import { colors } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 import { Container } from './container';
 

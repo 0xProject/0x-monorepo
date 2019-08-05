@@ -260,6 +260,10 @@ function registerPythonHelpers(): void {
         }
         return '';
     });
+    Handlebars.registerHelper(
+        'toPythonClassname',
+        (sourceName: string) => new Handlebars.SafeString(changeCase.pascal(sourceName)),
+    );
 }
 if (args.language === 'TypeScript') {
     registerTypeScriptHelpers();

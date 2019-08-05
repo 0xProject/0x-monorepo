@@ -1,6 +1,6 @@
 {
     "name": "@0x/abi-gen",
-    "version": "3.1.1",
+    "version": "3.1.2",
     "engines": {
         "node": ">=6.12"
     },
@@ -23,6 +23,7 @@
         "test_cli:clean": "rm -rf test-cli/output && rm -rf test-cli/test_typescript/lib",
         "test_cli:build": "tsc --project test-cli/tsconfig.json",
         "test_cli:run_mocha": "mocha --require source-map-support/register --require make-promises-safe test-cli/test_typescript/lib/**/*_test.js --timeout 100000 --bail --exit",
+        "test_cli:test_python": "black --check test-cli/output/python/**/__init__.py; test $? -le 1 # just make sure black can parse the output",
         "rebuild_and_test": "run-s build test",
         "test:profiler": "SOLIDITY_PROFILER=true run-s build run_mocha profiler:report:html",
         "test:trace": "SOLIDITY_REVERT_TRACE=true run-s build run_mocha",
@@ -58,7 +59,7 @@
     "dependencies": {
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
+        "@0x/utils": "^4.4.2",
         "chalk": "^2.3.0",
         "change-case": "^3.0.2",
         "cli-format": "^3.0.9",
@@ -72,19 +73,19 @@
         "yargs": "^10.0.3"
     },
     "devDependencies": {
-        "@0x/base-contract": "^5.1.2",
-        "@0x/contracts-gen": "^1.0.11",
-        "@0x/dev-utils": "^2.2.5",
-        "@0x/sol-compiler": "^3.1.10",
-        "@0x/subproviders": "^4.1.2",
+        "@0x/base-contract": "^5.3.0",
+        "@0x/contracts-gen": "^1.0.12",
+        "@0x/dev-utils": "^2.2.6",
+        "@0x/sol-compiler": "^3.1.11",
+        "@0x/subproviders": "^5.0.0",
         "@0x/tslint-config": "^3.0.1",
-        "@0x/web3-wrapper": "^6.0.8",
+        "@0x/web3-wrapper": "^6.0.9",
         "@types/glob": "5.0.35",
         "@types/mkdirp": "^0.5.2",
+        "@types/mocha": "^5.2.7",
         "@types/node": "*",
         "@types/tmp": "^0.0.33",
         "@types/yargs": "^11.0.0",
-        "@types/mocha": "^5.2.7",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",

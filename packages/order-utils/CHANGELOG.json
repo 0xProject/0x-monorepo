@@ -1,5 +1,15 @@
 [
     {
+        "version": "8.2.4",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "version": "8.2.3",
         "changes": [
             {

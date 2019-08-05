@@ -1,9 +1,9 @@
-import { Link as SmartLink } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import MediaQuery from 'react-responsive';
 import styled from 'styled-components';
 
+import { Link as SmartLink } from 'ts/components/documentation/shared/link';
 import { Logo } from 'ts/components/logo';
 import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
 import { NewsletterForm } from 'ts/components/newsletter_form';

@@ -1,7 +1,7 @@
-import { colors } from '@0x/react-shared';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 interface PortalDisclaimerDialogProps {
     isOpen: boolean;

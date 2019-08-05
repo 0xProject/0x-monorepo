@@ -1,5 +1,5 @@
-import { colors } from '@0x/react-shared';
 import { getMuiTheme } from 'material-ui/styles';
+import { colors } from 'ts/utils/colors';
 
 export const muiTheme = getMuiTheme({
     appBar: {

@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v8.2.4 - _July 31, 2019_
+
+    * Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies. (#1995)
+
 ## v8.2.3 - _July 24, 2019_
 
     * Ensure `assetData` is word aligned (#1964)

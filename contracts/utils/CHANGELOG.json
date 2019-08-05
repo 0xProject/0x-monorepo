@@ -1,5 +1,19 @@
 [
     {
+        "version": "3.2.0",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deployFrom0xArtifactAsync to include artifact dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Added tests for decoding log arguments when artifact dependencies are included/excluded.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "timestamp": 1563957393,
         "version": "3.1.10",
         "changes": [

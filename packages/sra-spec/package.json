@@ -1,6 +1,6 @@
 {
     "name": "@0x/sra-spec",
-    "version": "2.0.12",
+    "version": "2.0.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -36,7 +36,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sra-spec/README.md",
     "dependencies": {
-        "@0x/json-schemas": "^3.1.11",
+        "@0x/json-schemas": "^3.1.12",
         "@loopback/openapi-v3-types": "^0.8.2"
     },
     "devDependencies": {

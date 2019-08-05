@@ -28,9 +28,28 @@ const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 
 describe('AbiGenDummy Contract', () => {
     let abiGenDummy: AbiGenDummyContract;
+    const runTestAsync = async (contractMethod: any, input: any, output: any) => {
+        const transaction = contractMethod.getABIEncodedTransactionData(input);
+        // try decoding transaction
+        const decodedInput = contractMethod.getABIDecodedTransactionData(transaction);
+        expect(decodedInput, 'decoded input').to.be.deep.equal(input);
+        // execute transaction
+        const rawOutput = await web3Wrapper.callAsync({
+            to: abiGenDummy.address,
+            data: transaction,
+        });
+        // try decoding output
+        const decodedOutput = contractMethod.getABIDecodedReturnData(rawOutput);
+        expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
+    };
     before(async () => {
         providerUtils.startProviderEngine(provider);
-        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(artifacts.AbiGenDummy, provider, txDefaults);
+        abiGenDummy = await AbiGenDummyContract.deployFrom0xArtifactAsync(
+            artifacts.AbiGenDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
         await blockchainLifecycle.startAsync();
     });
     after(async () => {
@@ -72,6 +91,19 @@ describe('AbiGenDummy Contract', () => {
     describe('requireWithConstant', () => {
         it('should call requireWithConstant', async () => {
             return expectContractCallFailedAsync(abiGenDummy.requireWithConstant.callAsync(), 'REQUIRE_WITH_CONSTANT');
+        });
+    });
+
+    describe('struct handling', () => {
+        const sampleStruct = {
+            aDynamicArrayOfBytes: ['0x3078313233', '0x3078333231'],
+            anInteger: new BigNumber(5),
+            aString: 'abc',
+            someBytes: '0x3078313233',
+        };
+        it('should be able to handle struct output', async () => {
+            const result = await abiGenDummy.structOutput.callAsync();
+            expect(result).to.deep.equal(sampleStruct);
         });
     });
 
@@ -135,6 +167,63 @@ describe('AbiGenDummy Contract', () => {
             expect(output).to.equal(xAddress.toLowerCase());
         });
     });
+
+    describe('Encoding/Decoding Transaction Data and Return Values', () => {
+        it('should successfully encode/decode (no input / no output)', async () => {
+            const input = undefined;
+            const output = undefined;
+            await runTestAsync(abiGenDummy.noInputNoOutput, input, output);
+        });
+        it('should successfully encode/decode (no input / simple output)', async () => {
+            const input = undefined;
+            const output = new BigNumber(1991);
+            await runTestAsync(abiGenDummy.noInputSimpleOutput, input, output);
+        });
+        it('should successfully encode/decode (simple input / no output)', async () => {
+            const input = new BigNumber(1991);
+            const output = undefined;
+            await runTestAsync(abiGenDummy.simpleInputNoOutput, input, output);
+        });
+        it('should successfully encode/decode (simple input / simple output)', async () => {
+            const input = new BigNumber(16);
+            const output = new BigNumber(1991);
+            await runTestAsync(abiGenDummy.simpleInputSimpleOutput, input, output);
+        });
+        it('should successfully encode/decode (complex input / complex output)', async () => {
+            const input = {
+                foo: new BigNumber(1991),
+                bar: '0x1234',
+                car: 'zoom zoom',
+            };
+            const output = {
+                input,
+                lorem: '0x12345678',
+                ipsum: '0x87654321',
+                dolor: 'amet',
+            };
+            await runTestAsync(abiGenDummy.complexInputComplexOutput, input, output);
+        });
+        it('should successfully encode/decode (multi-input / multi-output)', async () => {
+            const input = [new BigNumber(1991), '0x1234', 'zoom zoom'];
+            const output = ['0x12345678', '0x87654321', 'amet'];
+            const transaction = abiGenDummy.multiInputMultiOutput.getABIEncodedTransactionData(
+                input[0] as BigNumber,
+                input[1] as string,
+                input[2] as string,
+            );
+            // try decoding transaction
+            const decodedInput = abiGenDummy.multiInputMultiOutput.getABIDecodedTransactionData(transaction);
+            expect(decodedInput, 'decoded input').to.be.deep.equal(input);
+            // execute transaction
+            const rawOutput = await web3Wrapper.callAsync({
+                to: abiGenDummy.address,
+                data: transaction,
+            });
+            // try decoding output
+            const decodedOutput = abiGenDummy.multiInputMultiOutput.getABIDecodedReturnData(rawOutput);
+            expect(decodedOutput, 'decoded output').to.be.deep.equal(output);
+        });
+    });
 });
 
 describe('Lib dummy contract', () => {
@@ -146,7 +235,12 @@ describe('Lib dummy contract', () => {
         await blockchainLifecycle.revertAsync();
     });
     before(async () => {
-        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(artifacts.TestLibDummy, provider, txDefaults);
+        libDummy = await TestLibDummyContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibDummy,
+            provider,
+            txDefaults,
+            artifacts,
+        );
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();

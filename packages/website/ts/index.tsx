@@ -38,6 +38,7 @@ tradeHistoryStorage.clearIfRequired();
 trackedTokenStorage.clearIfRequired();
 
 import 'less/all.less';
+import 'sass/modal_video.scss';
 
 // We pass modulePromise returning lambda instead of module promise,
 // cause we only want to import the module when the user navigates to the page.
@@ -94,6 +95,9 @@ const LazyEthereumTypesDocumentation = createLazyComponent('Documentation', asyn
 );
 const LazyAssetBuyerDocumentation = createLazyComponent('Documentation', async () =>
     import(/* webpackChunkName: "assetBuyerDocs" */ 'ts/containers/asset_buyer_documentation'),
+);
+const LazyAssetSwapperDocumentation = createLazyComponent('Documentation', async () =>
+    import(/* webpackChunkName: "assetSwapperDocs" */ 'ts/containers/asset_swapper_documentation'),
 );
 
 const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
@@ -203,6 +207,10 @@ render(
                                 <Route
                                     path={`${WebsitePaths.AssetBuyer}/:version?`}
                                     component={LazyAssetBuyerDocumentation}
+                                />
+                                <Route
+                                    path={`${WebsitePaths.AssetSwapper}/:version?`}
+                                    component={LazyAssetSwapperDocumentation}
                                 />
                                 <Route path={WebsitePaths.Docs} component={DocsHome as any} />
                                 {/* Legacy endpoints */}

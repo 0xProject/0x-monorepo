@@ -37,6 +37,7 @@ describe('Authorizable', () => {
             artifacts.MixinAuthorizable,
             provider,
             txDefaults,
+            artifacts,
         );
     });
     beforeEach(async () => {

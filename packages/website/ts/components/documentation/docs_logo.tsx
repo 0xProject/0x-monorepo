@@ -1,5 +1,5 @@
-import { Link } from '@0x/react-shared';
 import * as React from 'react';
+import { Link } from 'ts/components/documentation/shared/link';
 import { styled } from 'ts/style/theme';
 import { WebsitePaths } from 'ts/types';
 

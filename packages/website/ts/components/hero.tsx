@@ -117,7 +117,7 @@ const ButtonWrap = styled.div`
         flex-direction: column;
         justify-content: center;
 
-        * {
+        > * {
             padding-left: 20px;
             padding-right: 20px;
         }
@@ -138,26 +138,39 @@ const BackgroundWrap = styled.div`
     top: 0;
 `;
 
-export const Hero: React.StatelessComponent<Props> = (props: Props) => (
-    <Section padding={props.sectionPadding} isAnnouncement={!!props.announcement}>
-        {!!props.background && <BackgroundWrap>{props.background}</BackgroundWrap>}
-        <Wrap isCentered={!props.figure} isFullWidth={props.isFullWidth} isCenteredMobile={props.isCenteredMobile}>
-            {props.figure && <Content width="400px">{props.figure}</Content>}
+export class Hero extends React.Component<Props> {
+    public static defaultProps = {
+        isCenteredMobile: true,
+    };
+    public shouldComponentUpdate(): boolean {
+        // The hero is a static component with animations.
+        // We do not want state changes in parent components to re-trigger animations.
+        return false;
+    }
+    public render(): React.ReactNode {
+        const props = this.props;
+        return (
+            <Section padding={props.sectionPadding} isAnnouncement={!!props.announcement}>
+                {!!props.background && <BackgroundWrap>{props.background}</BackgroundWrap>}
+                <Wrap
+                    isCentered={!props.figure}
+                    isFullWidth={props.isFullWidth}
+                    isCenteredMobile={props.isCenteredMobile}
+                >
+                    {props.figure && <Content width="400px">{props.figure}</Content>}
 
-            <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
-                {!!props.announcement && <Announcement {...props.announcement} />}
-                <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
-                    {props.title}
-                </Title>
+                    <Content width={props.maxWidth ? props.maxWidth : props.figure ? '546px' : '678px'}>
+                        {!!props.announcement && <Announcement {...props.announcement} />}
+                        <Title isLarge={props.isLargeTitle} maxWidth={props.maxWidthHeading}>
+                            {props.title}
+                        </Title>
 
-                <Description>{props.description}</Description>
+                        <Description>{props.description}</Description>
 
-                {props.actions && <ButtonWrap>{props.actions}</ButtonWrap>}
-            </Content>
-        </Wrap>
-    </Section>
-);
-
-Hero.defaultProps = {
-    isCenteredMobile: true,
-};
+                        {props.actions && <ButtonWrap>{props.actions}</ButtonWrap>}
+                    </Content>
+                </Wrap>
+            </Section>
+        );
+    }
+}

@@ -1,6 +1,6 @@
-import { EtherscanLinkSuffixes, utils as sharedUtils } from '@0x/react-shared';
 import { BigNumber, errorUtils } from '@0x/utils';
 import * as _ from 'lodash';
+import { utils } from 'ts/utils/utils';
 
 import ActionAccountBalanceWallet from 'material-ui/svg-icons/action/account-balance-wallet';
 import * as React from 'react';
@@ -35,6 +35,7 @@ import { colors } from 'ts/style/colors';
 import {
     AccountState,
     BlockchainErrs,
+    EtherscanLinkSuffixes,
     ProviderType,
     ScreenWidths,
     Side,
@@ -45,7 +46,6 @@ import {
 } from 'ts/types';
 import { analytics } from 'ts/utils/analytics';
 import { constants } from 'ts/utils/constants';
-import { utils } from 'ts/utils/utils';
 
 export interface WalletProps {
     userAddress: string;
@@ -324,7 +324,7 @@ export class Wallet extends React.Component<WalletProps, WalletState> {
         if (tokenState === undefined) {
             return null;
         }
-        const tokenLink = sharedUtils.getEtherScanLinkIfExists(
+        const tokenLink = utils.getEtherScanLinkIfExists(
             token.address,
             this.props.networkId,
             EtherscanLinkSuffixes.Address,

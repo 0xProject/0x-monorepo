@@ -1,12 +1,14 @@
-import { ALink, colors, Link } from '@0x/react-shared';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Container } from 'ts/components/ui/container';
 import { DropDown } from 'ts/components/ui/drop_down';
 import { Text } from 'ts/components/ui/text';
-import { Deco, Key, WebsitePaths } from 'ts/types';
+import { ALink, Deco, Key, WebsitePaths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
 import { constants } from 'ts/utils/constants';
 import { Translate } from 'ts/utils/translate';
+
+import { Link } from '../documentation/shared/link';
 
 const gettingStartedKeyToLinkInfo1: ALink[] = [
     {

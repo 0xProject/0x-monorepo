@@ -45,7 +45,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
     ): Promise<CalldataInfo> {
         assert.isValidSwapQuote('quote', quote);
 
-        const { to, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
+        const { toAddress, methodAbi, ethAmount, params } = await this.getSmartContractParamsOrThrowAsync(quote, opts);
 
         const abiEncoder = new AbiEncoder.Method(methodAbi);
 
@@ -58,11 +58,11 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
             const { takerAssetFillAmount } = params;
             args = [orders, takerAssetFillAmount, signatures];
         }
-        const calldataHexString = abiEncoder.encode(args);
+        const calldataHexString = abiEncoder.encode(args, { shouldOptimize: true });
         return {
             calldataHexString,
             methodAbi,
-            to,
+            toAddress,
             ethAmount,
         };
     }
@@ -113,7 +113,7 @@ export class ExchangeSwapQuoteConsumer implements SwapQuoteConsumerBase<Exchange
 
         return {
             params,
-            to: this._contractWrappers.exchange.address,
+            toAddress: this._contractWrappers.exchange.address,
             methodAbi,
         };
     }

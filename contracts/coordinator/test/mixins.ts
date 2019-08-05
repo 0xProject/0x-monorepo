@@ -44,6 +44,7 @@ describe('Mixins tests', () => {
             artifacts.Coordinator,
             provider,
             txDefaults,
+            artifacts,
             exchangeAddress,
         );
         const accounts = await web3Wrapper.getAvailableAddressesAsync();

@@ -1,5 +1,19 @@
 [
     {
+        "version": "2.4.0",
+        "changes": [
+            {
+                "note": "Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies.",
+                "pr": 1995
+            },
+            {
+                "note": "Updated interface to `deployAsync` to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "version": "2.3.0",
         "changes": [
             {

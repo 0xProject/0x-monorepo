@@ -1,5 +1,5 @@
-import { colors } from '@0x/react-shared';
 import * as React from 'react';
+import { colors } from 'ts/utils/colors';
 
 import * as _ from 'lodash';
 import { Button } from 'ts/components/ui/button';

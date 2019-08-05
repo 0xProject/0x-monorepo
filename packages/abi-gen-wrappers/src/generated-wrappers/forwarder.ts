@@ -506,6 +506,84 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Withdraws assets from this contract. The contract requires a ZRX balance in order to
@@ -671,6 +749,20 @@ export class ForwarderContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public owner = {
         /**
@@ -718,6 +810,20 @@ export class ForwarderContract extends BaseContract {
             const self = (this as any) as ForwarderContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -1151,6 +1257,84 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public transferOwnership = {
         /**
@@ -1281,11 +1465,26 @@ export class ForwarderContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
         _exchange: string,
         _zrxAssetData: string,
         _wethAssetData: string,
@@ -1301,11 +1500,16 @@ export class ForwarderContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
         return ForwarderContract.deployAsync(
             bytecode,
             abi,
             provider,
             txDefaults,
+            logDecodeDependenciesAbiOnly,
             _exchange,
             _zrxAssetData,
             _wethAssetData,
@@ -1316,6 +1520,7 @@ export class ForwarderContract extends BaseContract {
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
         _exchange: string,
         _zrxAssetData: string,
         _wethAssetData: string,
@@ -1346,7 +1551,12 @@ export class ForwarderContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`Forwarder successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ForwarderContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new ForwarderContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [_exchange, _zrxAssetData, _wethAssetData];
         return contractInstance;
     }
@@ -1794,8 +2004,13 @@ export class ForwarderContract extends BaseContract {
         ] as ContractAbi;
         return abi;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('Forwarder', ForwarderContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super('Forwarder', ForwarderContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
     }
 }

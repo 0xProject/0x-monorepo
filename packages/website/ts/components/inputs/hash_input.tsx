@@ -1,5 +1,4 @@
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { Styles } from '@0x/react-shared';
 import { Order } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
@@ -7,7 +6,7 @@ import ReactTooltip from 'react-tooltip';
 
 import { Blockchain } from 'ts/blockchain';
 import { FakeTextField } from 'ts/components/ui/fake_text_field';
-import { HashData } from 'ts/types';
+import { HashData, Styles } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
 const styles: Styles = {

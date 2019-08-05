@@ -21,7 +21,8 @@ class TestCommandExtension(TestCommand):
         """Invoke pytest."""
         import pytest
 
-        exit(pytest.main(["--doctest-modules"]))
+        exit(pytest.main(["--doctest-modules", "-rapP"]))
+        #        show short test summary at end ^
 
 
 class LintCommand(distutils.command.build_py.build_py):

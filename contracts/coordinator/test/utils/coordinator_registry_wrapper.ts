@@ -24,6 +24,7 @@ export class CoordinatorRegistryWrapper {
             artifacts.CoordinatorRegistry,
             this._provider,
             txDefaults,
+            artifacts,
         );
         if (this._coordinatorRegistryContract === undefined) {
             throw new Error(`Failed to deploy Coordinator Registry contract.`);

@@ -1,12 +1,22 @@
 [
     {
+        "version": "5.2.0",
+        "changes": [
+            {
+                "note": "Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
+                "pr": 2018
+            }
+        ]
+    },
+    {
         "version": "5.1.0",
         "changes": [
             {
                 "note": "Add subscribe/unsubscribe methods for events",
                 "pr": 1970
             }
-        ]
+        ],
+        "timestamp": 1564604963
     },
     {
         "timestamp": 1563957393,

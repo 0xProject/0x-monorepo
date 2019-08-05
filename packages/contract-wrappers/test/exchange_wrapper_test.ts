@@ -351,10 +351,12 @@ describe('ExchangeWrapper', () => {
             });
         });
         it('should throw when the ERC20 token has transfer restrictions', async () => {
+            const artifactDependencies = {};
             const untransferrableToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
                 UntransferrableDummyERC20Token,
                 provider,
                 { from: userAddresses[0] },
+                artifactDependencies,
                 'UntransferrableToken',
                 'UTT',
                 new BigNumber(constants.ZRX_DECIMALS),

@@ -1,10 +1,13 @@
-import { ALink, colors, Link, utils as sharedUtils } from '@0x/react-shared';
+import { Link } from 'ts/components/documentation/shared/link';
+
 import { ObjectMap } from '@0x/types';
 import * as _ from 'lodash';
 import * as React from 'react';
 import { Button } from 'ts/components/ui/button';
 import { Text } from 'ts/components/ui/text';
-import { ScreenWidths } from 'ts/types';
+import { ALink, ScreenWidths } from 'ts/types';
+import { colors } from 'ts/utils/colors';
+import { utils } from 'ts/utils/utils';
 
 export interface NestedSidebarMenuProps {
     sectionNameToLinks: ObjectMap<ALink[]>;
@@ -15,10 +18,10 @@ export interface NestedSidebarMenuProps {
 
 export const NestedSidebarMenu = (props: NestedSidebarMenuProps) => {
     const navigation = _.map(props.sectionNameToLinks, (links: ALink[], sectionName: string) => {
-        const finalSectionName = sharedUtils.convertCamelCaseToSpaces(sectionName);
+        const finalSectionName = utils.convertCamelCaseToSpaces(sectionName);
         const menuItems = _.map(links, (link, i) => {
             const menuItemTitle = props.shouldReformatMenuItemNames
-                ? _.capitalize(sharedUtils.convertDashesToSpaces(link.title))
+                ? _.capitalize(utils.convertDashesToSpaces(link.title))
                 : link.title;
             const finalLink = {
                 ...link,

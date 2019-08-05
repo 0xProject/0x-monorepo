@@ -5,6 +5,15 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v10.1.0 - _July 31, 2019_
+
+    * Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies. (#1995)
+    * Updated interface to `deployAsync` to include log decode dependencies. (#1995)
+
+## v10.0.0 - _Invalid date_
+
+    * Constructors for `ERC20TokenWrapper`, `ERC721TokenWrapper`, and `EtherTokenWrapper` no longer accept networkId (#1970)
+
 ## v9.1.8 - _July 24, 2019_
 
     * re-export new ethereum-types type, TupleDataItem (#1919)

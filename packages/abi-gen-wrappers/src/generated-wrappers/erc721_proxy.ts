@@ -191,6 +191,20 @@ export class ERC721ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public authorities = {
         /**
@@ -244,6 +258,20 @@ export class ERC721ProxyContract extends BaseContract {
             const self = (this as any) as ERC721ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -383,6 +411,20 @@ export class ERC721ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public owner = {
         /**
@@ -430,6 +472,20 @@ export class ERC721ProxyContract extends BaseContract {
             const self = (this as any) as ERC721ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -607,6 +663,20 @@ export class ERC721ProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Gets the proxy id associated with the proxy address.
@@ -658,6 +728,20 @@ export class ERC721ProxyContract extends BaseContract {
             const self = (this as any) as ERC721ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public authorized = {
@@ -715,6 +799,20 @@ export class ERC721ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Gets all authorized addresses.
@@ -766,6 +864,20 @@ export class ERC721ProxyContract extends BaseContract {
             const self = (this as any) as ERC721ProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string[] {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string[] {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferOwnership = {
@@ -897,12 +1009,27 @@ export class ERC721ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC721ProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC721ProxyEventArgs, ERC721ProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<ERC721ProxyContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -915,13 +1042,18 @@ export class ERC721ProxyContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return ERC721ProxyContract.deployAsync(bytecode, abi, provider, txDefaults);
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
+        return ERC721ProxyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
     ): Promise<ERC721ProxyContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -945,7 +1077,12 @@ export class ERC721ProxyContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`ERC721Proxy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new ERC721ProxyContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new ERC721ProxyContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -1209,8 +1346,13 @@ export class ERC721ProxyContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('ERC721Proxy', ERC721ProxyContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super('ERC721Proxy', ERC721ProxyContract.ABI(), address, supportedProvider, txDefaults, logDecodeDependencies);
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<ERC721ProxyEventArgs, ERC721ProxyEvents>(
             ERC721ProxyContract.ABI(),

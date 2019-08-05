@@ -110,6 +110,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('assetProxies(bytes4)', [index_0]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('assetProxies(bytes4)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Authorizes an address.
@@ -248,6 +262,20 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public authorities = {
         /**
@@ -301,6 +329,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -361,6 +403,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAssetProxy(bytes4)', [assetProxyId]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAssetProxy(bytes4)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -500,6 +556,20 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public owner = {
         /**
@@ -547,6 +617,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -724,6 +808,20 @@ export class MultiAssetProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Gets the proxy id associated with the proxy address.
@@ -775,6 +873,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getProxyId()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public authorized = {
@@ -831,6 +943,20 @@ export class MultiAssetProxyContract extends BaseContract {
                 index_0.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('authorized(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
         },
     };
     /**
@@ -975,6 +1101,20 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('registerAssetProxy(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     /**
      * Gets all authorized addresses.
@@ -1026,6 +1166,20 @@ export class MultiAssetProxyContract extends BaseContract {
             const self = (this as any) as MultiAssetProxyContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string[] {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string[]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string[] {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public transferOwnership = {
@@ -1157,12 +1311,27 @@ export class MultiAssetProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as MultiAssetProxyContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     private readonly _subscriptionManager: SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>;
     public static async deployFrom0xArtifactAsync(
         artifact: ContractArtifact | SimpleContractArtifact,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractArtifact | SimpleContractArtifact },
     ): Promise<MultiAssetProxyContract> {
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
             schemas.addressSchema,
@@ -1175,13 +1344,18 @@ export class MultiAssetProxyContract extends BaseContract {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
-        return MultiAssetProxyContract.deployAsync(bytecode, abi, provider, txDefaults);
+        const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
+        for (const key of Object.keys(logDecodeDependencies)) {
+            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        }
+        return MultiAssetProxyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }
     public static async deployAsync(
         bytecode: string,
         abi: ContractAbi,
         supportedProvider: SupportedProvider,
         txDefaults: Partial<TxData>,
+        logDecodeDependencies: { [contractName: string]: ContractAbi },
     ): Promise<MultiAssetProxyContract> {
         assert.isHexString('bytecode', bytecode);
         assert.doesConformToSchema('txDefaults', txDefaults, schemas.txDataSchema, [
@@ -1205,7 +1379,12 @@ export class MultiAssetProxyContract extends BaseContract {
         logUtils.log(`transactionHash: ${txHash}`);
         const txReceipt = await web3Wrapper.awaitTransactionSuccessAsync(txHash);
         logUtils.log(`MultiAssetProxy successfully deployed at ${txReceipt.contractAddress}`);
-        const contractInstance = new MultiAssetProxyContract(txReceipt.contractAddress as string, provider, txDefaults);
+        const contractInstance = new MultiAssetProxyContract(
+            txReceipt.contractAddress as string,
+            provider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         contractInstance.constructorArgs = [];
         return contractInstance;
     }
@@ -1539,8 +1718,20 @@ export class MultiAssetProxyContract extends BaseContract {
         );
         return logs;
     }
-    constructor(address: string, supportedProvider: SupportedProvider, txDefaults?: Partial<TxData>) {
-        super('MultiAssetProxy', MultiAssetProxyContract.ABI(), address, supportedProvider, txDefaults);
+    constructor(
+        address: string,
+        supportedProvider: SupportedProvider,
+        txDefaults?: Partial<TxData>,
+        logDecodeDependencies?: { [contractName: string]: ContractAbi },
+    ) {
+        super(
+            'MultiAssetProxy',
+            MultiAssetProxyContract.ABI(),
+            address,
+            supportedProvider,
+            txDefaults,
+            logDecodeDependencies,
+        );
         classUtils.bindAll(this, ['_abiEncoderByFunctionSignature', 'address', '_web3Wrapper']);
         this._subscriptionManager = new SubscriptionManager<MultiAssetProxyEventArgs, MultiAssetProxyEvents>(
             MultiAssetProxyContract.ABI(),
