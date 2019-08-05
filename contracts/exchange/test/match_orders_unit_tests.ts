@@ -25,7 +25,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
-import { Order, OrderStatus, SignedOrder } from '@0x/types';
+import { OrderWithoutDomain, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -40,6 +40,7 @@ import {
     ReferenceFunctions,
     TestMatchOrdersContract,
 } from '../src';
+import { calculateCompleteFillBoth, calculateCompleteRightFill } from '../src/reference_functions';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 
@@ -47,30 +48,6 @@ import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 // so many.
 constants.NUM_DUMMY_ERC721_TO_DEPLOY = 1;
 constants.NUM_DUMMY_ERC1155_CONTRACTS_TO_DEPLOY = 1;
-
-/**
- * Converts a SignedOrder object into an Order object by removing the signature field.
- *
- */
-//function toOrder(order: SignedOrder): Order {
-//    return {
-//        domain: order.domain,
-//        makerAddress: order.makerAddress,
-//        takerAddress: order.takerAddress,
-//        feeRecipientAddress: order.feeRecipientAddress,
-//        senderAddress: order.senderAddress,
-//        makerAssetAmount: order.makerAssetAmount,
-//        takerAssetAmount: order.takerAssetAmount,
-//        makerFee: order.makerFee,
-//        takerFee: order.takerFee,
-//        expirationTimeSeconds: order.expirationTimeSeconds,
-//        salt: order.salt,
-//        makerAssetData: order.makerAssetData,
-//        takerAssetData: order.takerAssetData,
-//        makerFeeAssetData: order.makerFeeAssetData,
-//        takerFeeAssetData: order.takerFeeAssetData,
-//    }
-//}
 
 /**
  * Tests the _calculateCompleteFillBoth function with the provided inputs by making a call
@@ -90,19 +67,55 @@ async function testCalculateCompleteFillBothAsync(
     // Ensure that the correct number of arguments were provided.
     expect(args.length).to.be.eq(4);
 
-    // Get the resultant matched fill results from the call to _calculateCompleteFillBoth.
-    const matchedFillResults = await matchOrders.externalCalculateCompleteFillBoth.callAsync(
+    // Get the expected matched fill results from calling the reference function.
+    const expectedMatchedFillResults = calculateCompleteFillBoth(
         args[0],
         args[1],
         args[2],
         args[3],
     );
 
-    // Ensure that the matched fill results are correct.
-    expect(matchedFillResults.left.makerAssetFilledAmount).bignumber.to.be.eq(args[0]);
-    expect(matchedFillResults.left.takerAssetFilledAmount).bignumber.to.be.eq(args[1]);
-    expect(matchedFillResults.right.makerAssetFilledAmount).bignumber.to.be.eq(args[2]);
-    expect(matchedFillResults.right.takerAssetFilledAmount).bignumber.to.be.eq(args[3]);
+    // Get the resultant matched fill results from the call to _calculateCompleteFillBoth.
+    const actualMatchedFillResults = await matchOrders.externalCalculateCompleteFillBoth.callAsync(
+        args[0],
+        args[1],
+        args[2],
+        args[3],
+    );
+
+    expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
+}
+
+/**
+ * Tests the _calculateCompleteRightFill function with the provided inputs by making a call
+ * to the provided matchOrders contract's externalCalculateCompleteRightFill function with the
+ * provided inputs and asserting that the resultant struct is correct.
+ * @param matchOrders The TestMatchOrders contract object that should be used to make the call to
+ *                    the smart contract.
+ */
+async function testCalculateCompleteRightFillAsync(
+    matchOrders: TestMatchOrdersContract,
+    leftOrder: OrderWithoutDomain,
+    args: BigNumber[],
+): Promise<void> {
+    // Ensure that the correct number of arguments were provided.
+    expect(args.length).to.be.eq(2);
+
+    // Get the expected matched fill results from calling the reference function.
+    const expectedMatchedFillResults = calculateCompleteRightFill(
+        leftOrder,
+        args[0],
+        args[1],
+    );
+
+    // Get the resultant matched fill results from the call to _calculateCompleteRightFill.
+    const actualMatchedFillResults = await matchOrders.publicCalculateCompleteRightFill.callAsync(
+        leftOrder,
+        args[0],
+        args[1],
+    );
+
+    expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
 }
 
 /**
@@ -137,6 +150,9 @@ async function testCalculateCompleteFillBothAsync(
 //    expect(matchedFillResults.right.makerAssetFilledAmount).bignumber.to.be.eq(args[2]);
 //    expect(matchedFillResults.right.takerAssetFilledAmount).bignumber.to.be.eq(args[3]);
 //}
+
+chaiSetup.configure();
+const expect = chai.expect;
 
 blockchainTests.resets.only('MatchOrders Tests', ({ web3Wrapper, txDefaults }) => {
     let chainId: number;
@@ -327,14 +343,6 @@ blockchainTests.resets.only('MatchOrders Tests', ({ web3Wrapper, txDefaults }) =
         );
     });
 
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
     describe('_assertValidMatch', () => {
 
     });
@@ -400,9 +408,63 @@ blockchainTests.resets.only('MatchOrders Tests', ({ web3Wrapper, txDefaults }) =
     });
 
     describe('_calculateCompleteRightFill', () => {
-        // FIXME - Test a few different situations.
-        // FIXME - Verify that rounding fails when it should. Add a comment that says that it
-        //         can possibly be removed after more rigorous unit testing
+        /**
+         * NOTE(jalextowle): These test cases actually cover all code branches of _calculateCompleteRightFill (in
+         * fact any one of these test cases provide 100% coverage), but they do not verify that _safeGetPartialAmountCeil
+         * and _safeGetPartialAmountFloor revert appropriately. Keeping in the spirit of unit testing, these functions
+         * are unit tested to ensure that they exhibit the correct behavior in a more isolated setting.
+         */
+
+        it('should correctly calculate the complete right fill', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(17, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(98, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            await testCalculateCompleteRightFillAsync(
+                matchOrders,
+                signedOrderLeft,
+                [
+                    Web3Wrapper.toBaseUnitAmount(75, 0),
+                    Web3Wrapper.toBaseUnitAmount(13, 0),
+                ],
+            );
+        });
+
+        it('should correctly calculate the complete right fill', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(12, 0),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(97, 0),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            await testCalculateCompleteRightFillAsync(
+                matchOrders,
+                signedOrderLeft,
+                [
+                    Web3Wrapper.toBaseUnitAmount(89, 0),
+                    Web3Wrapper.toBaseUnitAmount(1, 0),
+                ],
+            );
+        });
+
+        it('should correctly calculate the complete right fill', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAddress: makerAddressLeft,
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                feeRecipientAddress: feeRecipientAddressLeft,
+            });
+            await testCalculateCompleteRightFillAsync(
+                matchOrders,
+                signedOrderLeft,
+                [
+                    Web3Wrapper.toBaseUnitAmount(10, 18),
+                    Web3Wrapper.toBaseUnitAmount(2, 18),
+                ],
+            );
+        });
     });
 
     describe('_settleMatchedOrders', () => {
