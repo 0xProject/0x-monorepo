@@ -41,15 +41,15 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
     const [value, setValue] = React.useState<string>('');
 
     React.useEffect(() => {
-        const handleEscapeKeyUp: any = (event: React.KeyboardEvent): void => {
+        const handleKeyUp: any = (event: React.KeyboardEvent): void => {
             if (event.key === 'Escape') {
                 setValue('');
             }
         };
 
-        window.addEventListener('keyup', handleEscapeKeyUp);
+        window.addEventListener('keyup', handleKeyUp);
         return () => {
-            window.removeEventListener('keyup', handleEscapeKeyUp);
+            window.removeEventListener('keyup', handleKeyUp);
         };
     }, []);
 
