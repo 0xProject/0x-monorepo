@@ -33,15 +33,14 @@ const Overlay = styled.div<IAutocompleteOverlayProps>`
 // This could be extracted to reuse
 function useLockBodyScroll(): void {
     useLayoutEffect(() => {
-        // Get original value of body styles
-        const { maxHeight, overflowY } = window.getComputedStyle(document.body);
+        const html = document.documentElement;
         // Prevent scrolling on mount
-        document.body.style.overflowY = 'hidden';
-        document.body.style.maxHeight = '100vh';
+        html.style.overflowY = 'hidden';
+        html.style.maxHeight = '100vh';
         // Re-enable scrolling when component unmounts
         return () => {
-            document.body.style.overflowY = overflowY;
-            document.body.style.maxHeight = maxHeight;
+            html.style.overflowY = 'auto';
+            html.style.maxHeight = '';
         };
     }, []); // Empty array ensures effect is only run on mount and unmount
 }
