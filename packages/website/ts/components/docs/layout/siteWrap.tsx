@@ -42,7 +42,7 @@ export const SiteWrap: React.FC<ISiteWrapProps> = props => {
                     {children}
                 </Main>
 
-                <Footer />
+                <Footer isDocs={true} />
             </>
         </ThemeProvider>
     );
