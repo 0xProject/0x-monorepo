@@ -6,7 +6,7 @@ import CircularProgress from 'material-ui/CircularProgress';
 
 import { Hero } from 'ts/components/docs/layout/hero';
 import { ScrollTopArrow } from 'ts/components/docs/layout/scroll_top_arrow';
-import { SiteWrap } from 'ts/components/docs/layout/siteWrap';
+import { SiteWrap } from 'ts/components/siteWrap';
 
 import { DocumentTitle } from 'ts/components/document_title';
 import { Section } from 'ts/components/newLayout';
@@ -28,7 +28,7 @@ const SECTION_WIDTH = '1150px';
 
 export const DocsPageLayout: React.FC<IDocsPageLayoutProps> = props => {
     return (
-        <SiteWrap theme="light">
+        <SiteWrap isDocs={true} theme="light">
             <DocumentTitle {...documentConstants.DOCS} />
             <Hero title={props.title} subtitle={props.subtitle} isHome={props.isHome} />
             <Section maxWidth={SECTION_WIDTH} minHeight={SECTION_MIN_HEIGHT} isPadded={false} overflow="visible">

@@ -1,14 +1,16 @@
 import * as React from 'react';
 import styled, { ThemeProvider } from 'styled-components';
 
+import { Header as DocsHeader } from 'ts/components/docs/header/header';
+import { Header as MainHeader } from 'ts/components/header';
 import { Footer } from 'ts/components/footer';
-import { Header } from 'ts/components/header';
 
 import { GlobalStyles } from 'ts/constants/globalStyle';
 import { GLOBAL_THEMES } from 'ts/style/theme';
 
 interface ISiteWrapProps {
     theme?: 'dark' | 'light' | 'gray';
+    isDocs?: boolean;
     isFullScreen?: boolean;
     children: any;
 }
@@ -19,8 +21,10 @@ interface IMainProps {
 }
 
 export const SiteWrap: React.FC<ISiteWrapProps> = props => {
-    const { children, theme = 'dark', isFullScreen } = props;
+    const { children, theme = 'dark', isDocs, isFullScreen } = props;
     const [isMobileNavOpen, setIsMobileNavOpen] = React.useState<boolean>(false);
+
+    const Header = isDocs ? DocsHeader : MainHeader;
 
     React.useEffect(() => {
         document.documentElement.style.overflowY = 'auto';
@@ -40,7 +44,7 @@ export const SiteWrap: React.FC<ISiteWrapProps> = props => {
                     {children}
                 </Main>
 
-                <Footer />
+                <Footer isDocs={isDocs} />
             </>
         </ThemeProvider>
     );
