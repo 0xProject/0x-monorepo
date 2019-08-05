@@ -32,7 +32,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/ethereum-types/README.md",
     "devDependencies": {
-        "@0x/ts-doc-gen": "^0.0.7",
+        "@0x/ts-doc-gen": "0.0.7",
         "@0x/tslint-config": "^3.0.1",
         "make-promises-safe": "^1.1.0",
         "shx": "^0.2.2",
