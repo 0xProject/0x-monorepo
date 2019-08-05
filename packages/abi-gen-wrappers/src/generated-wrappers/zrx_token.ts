@@ -56,7 +56,9 @@ export interface ZRXTokenApprovalEventArgs extends DecodedLogArgs {
 export class ZRXTokenContract extends BaseContract {
     public name = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -89,9 +91,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
@@ -101,9 +104,10 @@ export class ZRXTokenContract extends BaseContract {
     };
     public approve = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _spender: string,
@@ -134,10 +138,11 @@ export class ZRXTokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _spender: string,
@@ -164,8 +169,8 @@ export class ZRXTokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _spender: string,
@@ -195,7 +200,9 @@ export class ZRXTokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             _spender: string,
@@ -238,9 +245,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(_spender: string, _value: BigNumber): string {
             assert.isString('_spender', _spender);
@@ -255,7 +263,9 @@ export class ZRXTokenContract extends BaseContract {
     };
     public totalSupply = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -288,9 +298,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
@@ -303,12 +314,13 @@ export class ZRXTokenContract extends BaseContract {
      */
     public transferFrom = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _from         Address to transfer from.
-         * @param _to         Address to transfer to.
-         * @param _value         Amount to transfer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from Address to transfer from.
+         * @param _to Address to transfer to.
+         * @param _value Amount to transfer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _from: string,
@@ -342,13 +354,14 @@ export class ZRXTokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _from         Address to transfer from.
-         * @param _to         Address to transfer to.
-         * @param _value         Amount to transfer.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from Address to transfer from.
+         * @param _to Address to transfer to.
+         * @param _value Amount to transfer.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _from: string,
@@ -382,11 +395,11 @@ export class ZRXTokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from         Address to transfer from.
-         * @param _to         Address to transfer to.
-         * @param _value         Amount to transfer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _from Address to transfer from.
+         * @param _to Address to transfer to.
+         * @param _value Amount to transfer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _from: string,
@@ -419,10 +432,12 @@ export class ZRXTokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _from         Address to transfer from.
-         * @param _to         Address to transfer to.
-         * @param _value         Amount to transfer.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from Address to transfer from.
+         * @param _to Address to transfer to.
+         * @param _value Amount to transfer.
          * @returns Success of transfer.
          */
         async callAsync(
@@ -469,12 +484,13 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _from         Address to transfer from.
-         * @param _to         Address to transfer to.
-         * @param _value         Amount to transfer.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from Address to transfer from.
+         * @param _to Address to transfer to.
+         * @param _value Amount to transfer.
          */
         getABIEncodedTransactionData(_from: string, _to: string, _value: BigNumber): string {
             assert.isString('_from', _from);
@@ -491,7 +507,9 @@ export class ZRXTokenContract extends BaseContract {
     };
     public decimals = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -524,9 +542,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
@@ -536,7 +555,9 @@ export class ZRXTokenContract extends BaseContract {
     };
     public balanceOf = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             _owner: string,
@@ -574,9 +595,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
@@ -587,7 +609,9 @@ export class ZRXTokenContract extends BaseContract {
     };
     public symbol = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -620,9 +644,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ZRXTokenContract;
@@ -632,9 +657,10 @@ export class ZRXTokenContract extends BaseContract {
     };
     public transfer = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _to: string,
@@ -662,10 +688,11 @@ export class ZRXTokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _to: string,
@@ -692,8 +719,8 @@ export class ZRXTokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('_to', _to);
@@ -716,7 +743,9 @@ export class ZRXTokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             _to: string,
@@ -756,9 +785,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(_to: string, _value: BigNumber): string {
             assert.isString('_to', _to);
@@ -773,7 +803,9 @@ export class ZRXTokenContract extends BaseContract {
     };
     public allowance = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             _owner: string,
@@ -816,9 +848,10 @@ export class ZRXTokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(_owner: string, _spender: string): string {
             assert.isString('_owner', _owner);
@@ -1107,11 +1140,11 @@ export class ZRXTokenContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the ZRXToken contract.
-     * @param   eventName           The ZRXToken contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The ZRXToken contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ZRXTokenEventArgs>(
@@ -1137,7 +1170,7 @@ export class ZRXTokenContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -1150,11 +1183,11 @@ export class ZRXTokenContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The ZRXToken contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The ZRXToken contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ZRXTokenEventArgs>(
         eventName: ZRXTokenEvents,

@@ -235,6 +235,8 @@ jobs:
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
             - store_artifacts:
+                  path: ~/repo/packages/abi-gen-wrappers/generated_docs
+            - store_artifacts:
                   path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
             - store_artifacts:
                   path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py

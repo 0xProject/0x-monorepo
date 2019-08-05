@@ -72,7 +72,9 @@ export interface WETH9WithdrawalEventArgs extends DecodedLogArgs {
 export class WETH9Contract extends BaseContract {
     public name = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -105,9 +107,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
@@ -117,9 +120,10 @@ export class WETH9Contract extends BaseContract {
     };
     public approve = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('guy', guy);
@@ -143,10 +147,11 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             guy: string,
@@ -173,8 +178,8 @@ export class WETH9Contract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(guy: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('guy', guy);
@@ -197,7 +202,9 @@ export class WETH9Contract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             guy: string,
@@ -237,9 +244,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(guy: string, wad: BigNumber): string {
             assert.isString('guy', guy);
@@ -254,7 +262,9 @@ export class WETH9Contract extends BaseContract {
     };
     public totalSupply = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -287,9 +297,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
@@ -299,9 +310,10 @@ export class WETH9Contract extends BaseContract {
     };
     public transferFrom = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             src: string,
@@ -335,10 +347,11 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             src: string,
@@ -372,8 +385,8 @@ export class WETH9Contract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             src: string,
@@ -406,7 +419,9 @@ export class WETH9Contract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             src: string,
@@ -452,9 +467,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(src: string, dst: string, wad: BigNumber): string {
             assert.isString('src', src);
@@ -471,9 +487,10 @@ export class WETH9Contract extends BaseContract {
     };
     public withdraw = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('wad', wad);
@@ -496,10 +513,11 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             wad: BigNumber,
@@ -524,8 +542,8 @@ export class WETH9Contract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('wad', wad);
@@ -547,7 +565,9 @@ export class WETH9Contract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(wad: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isBigNumber('wad', wad);
@@ -581,9 +601,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(wad: BigNumber): string {
             assert.isBigNumber('wad', wad);
@@ -594,7 +615,9 @@ export class WETH9Contract extends BaseContract {
     };
     public decimals = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<number> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -627,9 +650,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
@@ -639,7 +663,9 @@ export class WETH9Contract extends BaseContract {
     };
     public balanceOf = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -677,9 +703,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -692,7 +719,9 @@ export class WETH9Contract extends BaseContract {
     };
     public symbol = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -725,9 +754,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
@@ -737,9 +767,10 @@ export class WETH9Contract extends BaseContract {
     };
     public transfer = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('dst', dst);
@@ -763,10 +794,11 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             dst: string,
@@ -793,8 +825,8 @@ export class WETH9Contract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(dst: string, wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('dst', dst);
@@ -817,7 +849,9 @@ export class WETH9Contract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             dst: string,
@@ -857,9 +891,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(dst: string, wad: BigNumber): string {
             assert.isString('dst', dst);
@@ -874,9 +909,10 @@ export class WETH9Contract extends BaseContract {
     };
     public deposit = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
             const self = (this as any) as WETH9Contract;
@@ -898,10 +934,11 @@ export class WETH9Contract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             txData?: Partial<TxData>,
@@ -924,8 +961,8 @@ export class WETH9Contract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(txData?: Partial<TxData> | undefined): Promise<number> {
             const self = (this as any) as WETH9Contract;
@@ -946,7 +983,9 @@ export class WETH9Contract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -979,9 +1018,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as WETH9Contract;
@@ -991,7 +1031,9 @@ export class WETH9Contract extends BaseContract {
     };
     public allowance = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -1034,9 +1076,10 @@ export class WETH9Contract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
@@ -1394,11 +1437,11 @@ export class WETH9Contract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the WETH9 contract.
-     * @param   eventName           The WETH9 contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The WETH9 contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends WETH9EventArgs>(
@@ -1424,7 +1467,7 @@ export class WETH9Contract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -1437,11 +1480,11 @@ export class WETH9Contract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The WETH9 contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The WETH9 contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends WETH9EventArgs>(
         eventName: WETH9Events,

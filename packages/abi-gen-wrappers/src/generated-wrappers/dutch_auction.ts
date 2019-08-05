@@ -32,10 +32,11 @@ export class DutchAuctionContract extends BaseContract {
      */
     public getAuctionDetails = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param order         The sell order
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order The sell order
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             order: {
@@ -76,11 +77,12 @@ export class DutchAuctionContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param order         The sell order
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order The sell order
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             order: {
@@ -117,9 +119,9 @@ export class DutchAuctionContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order         The sell order
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param order The sell order
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             order: {
@@ -159,8 +161,10 @@ export class DutchAuctionContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         The sell order
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order The sell order
          * @returns AuctionDetails
          */
         async callAsync(
@@ -230,10 +234,11 @@ export class DutchAuctionContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         The sell order
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order The sell order
          */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
@@ -276,13 +281,16 @@ export class DutchAuctionContract extends BaseContract {
      */
     public matchOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
-         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
-         * @param buySignature         Proof that order was created by the buyer.
-         * @param sellSignature         Proof that order was created by the seller.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param buyOrder The Buyer's order. This order is for the current expected
+         * price of the auction.
+         * @param sellOrder The Seller's order. This order is for the lowest amount (at
+         * the end of the auction).
+         * @param buySignature Proof that order was created by the buyer.
+         * @param sellSignature Proof that order was created by the seller.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             buyOrder: {
@@ -341,14 +349,17 @@ export class DutchAuctionContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
-         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
-         * @param buySignature         Proof that order was created by the buyer.
-         * @param sellSignature         Proof that order was created by the seller.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param buyOrder The Buyer's order. This order is for the current expected
+         * price of the auction.
+         * @param sellOrder The Seller's order. This order is for the lowest amount (at
+         * the end of the auction).
+         * @param buySignature Proof that order was created by the buyer.
+         * @param sellSignature Proof that order was created by the seller.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             buyOrder: {
@@ -409,12 +420,14 @@ export class DutchAuctionContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
-         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
-         * @param buySignature         Proof that order was created by the buyer.
-         * @param sellSignature         Proof that order was created by the seller.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param buyOrder The Buyer's order. This order is for the current expected
+         * price of the auction.
+         * @param sellOrder The Seller's order. This order is for the lowest amount (at
+         * the end of the auction).
+         * @param buySignature Proof that order was created by the buyer.
+         * @param sellSignature Proof that order was created by the seller.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             buyOrder: {
@@ -472,11 +485,15 @@ export class DutchAuctionContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
-         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
-         * @param buySignature         Proof that order was created by the buyer.
-         * @param sellSignature         Proof that order was created by the seller.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param buyOrder The Buyer's order. This order is for the current expected
+         * price of the auction.
+         * @param sellOrder The Seller's order. This order is for the lowest amount (at
+         * the end of the auction).
+         * @param buySignature Proof that order was created by the buyer.
+         * @param sellSignature Proof that order was created by the seller.
          * @returns matchedFillResults amounts filled and fees paid by maker and taker of matched orders.
          */
         async callAsync(
@@ -578,13 +595,16 @@ export class DutchAuctionContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param buyOrder         The Buyer's order. This order is for the current expected price of the auction.
-         * @param sellOrder         The Seller's order. This order is for the lowest amount (at the end of the auction).
-         * @param buySignature         Proof that order was created by the buyer.
-         * @param sellSignature         Proof that order was created by the seller.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param buyOrder The Buyer's order. This order is for the current expected
+         * price of the auction.
+         * @param sellOrder The Seller's order. This order is for the lowest amount (at
+         * the end of the auction).
+         * @param buySignature Proof that order was created by the buyer.
+         * @param sellSignature Proof that order was created by the seller.
          */
         getABIEncodedTransactionData(
             buyOrder: {

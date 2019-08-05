@@ -1,9 +1,10 @@
 public {{languageSpecificName}} = {
     /**
-     * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
+     * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+     * Ethereum operation and will cost gas.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData    Additional data for transaction
-     * @returns         The hash of the transaction
+     * @param txData Additional data for transaction
+     * @returns The hash of the transaction
      */
     async sendTransactionAsync(
     {{> typed_params inputs=inputs}}
@@ -34,11 +35,12 @@ public {{languageSpecificName}} = {
     return txHash;
     },
     /**
-     * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
+     * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+     * If the transaction was mined, but reverted, an error is thrown.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData                Additional data for transaction
-     * @param pollingIntervalMs     Interval at which to poll for success
-     * @returns                     A promise that resolves when the transaction is successful
+     * @param txData Additional data for transaction
+     * @param pollingIntervalMs Interval at which to poll for success
+     * @returns A promise that resolves when the transaction is successful
      */
     awaitTransactionSuccessAsync(
     {{> typed_params inputs=inputs}}
@@ -70,8 +72,8 @@ public {{languageSpecificName}} = {
     /**
      * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
     {{> params_docstring inputs=inputs docstrings=devdoc.params}}
-     * @param txData    Additional data for transaction
-     * @returns         The hash of the transaction
+     * @param txData Additional data for transaction
+     * @returns The hash of the transaction
      */
     async estimateGasAsync(
     {{> typed_params inputs=inputs}}

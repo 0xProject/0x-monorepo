@@ -59,10 +59,11 @@ export class ERC20ProxyContract extends BaseContract {
      */
     public addAuthorizedAddress = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param target         Address to authorize.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param target Address to authorize.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
@@ -85,11 +86,12 @@ export class ERC20ProxyContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param target         Address to authorize.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param target Address to authorize.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             target: string,
@@ -114,9 +116,9 @@ export class ERC20ProxyContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target         Address to authorize.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param target Address to authorize.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
@@ -138,8 +140,10 @@ export class ERC20ProxyContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param target         Address to authorize.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param target Address to authorize.
          */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
@@ -173,10 +177,11 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param target         Address to authorize.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param target Address to authorize.
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
@@ -189,7 +194,9 @@ export class ERC20ProxyContract extends BaseContract {
     };
     public authorities = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: BigNumber,
@@ -227,9 +234,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -243,10 +251,11 @@ export class ERC20ProxyContract extends BaseContract {
      */
     public removeAuthorizedAddress = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param target         Address to remove authorization from.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param target Address to remove authorization from.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('target', target);
@@ -269,11 +278,12 @@ export class ERC20ProxyContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param target         Address to remove authorization from.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param target Address to remove authorization from.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             target: string,
@@ -298,9 +308,9 @@ export class ERC20ProxyContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target         Address to remove authorization from.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param target Address to remove authorization from.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(target: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('target', target);
@@ -322,8 +332,10 @@ export class ERC20ProxyContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param target         Address to remove authorization from.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param target Address to remove authorization from.
          */
         async callAsync(target: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('target', target);
@@ -357,10 +369,11 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param target         Address to remove authorization from.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param target Address to remove authorization from.
          */
         getABIEncodedTransactionData(target: string): string {
             assert.isString('target', target);
@@ -373,7 +386,9 @@ export class ERC20ProxyContract extends BaseContract {
     };
     public owner = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -406,9 +421,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20ProxyContract;
@@ -421,11 +437,12 @@ export class ERC20ProxyContract extends BaseContract {
      */
     public removeAuthorizedAddressAtIndex = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param target         Address to remove authorization from.
-         * @param index         Index of target in authorities array.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param target Address to remove authorization from.
+         * @param index Index of target in authorities array.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             target: string,
@@ -456,12 +473,13 @@ export class ERC20ProxyContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param target         Address to remove authorization from.
-         * @param index         Index of target in authorities array.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param target Address to remove authorization from.
+         * @param index Index of target in authorities array.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             target: string,
@@ -492,10 +510,10 @@ export class ERC20ProxyContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param target         Address to remove authorization from.
-         * @param index         Index of target in authorities array.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param target Address to remove authorization from.
+         * @param index Index of target in authorities array.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             target: string,
@@ -525,9 +543,11 @@ export class ERC20ProxyContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param target         Address to remove authorization from.
-         * @param index         Index of target in authorities array.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param target Address to remove authorization from.
+         * @param index Index of target in authorities array.
          */
         async callAsync(
             target: string,
@@ -570,11 +590,12 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param target         Address to remove authorization from.
-         * @param index         Index of target in authorities array.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param target Address to remove authorization from.
+         * @param index Index of target in authorities array.
          */
         getABIEncodedTransactionData(target: string, index: BigNumber): string {
             assert.isString('target', target);
@@ -592,7 +613,9 @@ export class ERC20ProxyContract extends BaseContract {
      */
     public getProxyId = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          * @returns Proxy id.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
@@ -626,9 +649,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20ProxyContract;
@@ -638,7 +662,9 @@ export class ERC20ProxyContract extends BaseContract {
     };
     public authorized = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -676,9 +702,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -694,7 +721,9 @@ export class ERC20ProxyContract extends BaseContract {
      */
     public getAuthorizedAddresses = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          * @returns Array of authorized addresses.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
@@ -728,9 +757,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20ProxyContract;
@@ -740,9 +770,10 @@ export class ERC20ProxyContract extends BaseContract {
     };
     public transferOwnership = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
@@ -765,10 +796,11 @@ export class ERC20ProxyContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -793,8 +825,8 @@ export class ERC20ProxyContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
@@ -816,7 +848,9 @@ export class ERC20ProxyContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
@@ -850,9 +884,10 @@ export class ERC20ProxyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -1108,11 +1143,11 @@ export class ERC20ProxyContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the ERC20Proxy contract.
-     * @param   eventName           The ERC20Proxy contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The ERC20Proxy contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ERC20ProxyEventArgs>(
@@ -1138,7 +1173,7 @@ export class ERC20ProxyContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -1151,11 +1186,11 @@ export class ERC20ProxyContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The ERC20Proxy contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The ERC20Proxy contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ERC20ProxyEventArgs>(
         eventName: ERC20ProxyEvents,

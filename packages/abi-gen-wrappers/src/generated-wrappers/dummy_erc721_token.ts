@@ -66,7 +66,9 @@ export interface DummyERC721TokenApprovalForAllEventArgs extends DecodedLogArgs 
 export class DummyERC721TokenContract extends BaseContract {
     public name = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -99,9 +101,10 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
@@ -114,8 +117,10 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public getApproved = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _tokenId         The NFT to find the approved address for
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _tokenId The NFT to find the approved address for
          * @returns The approved address for this NFT, or the zero address if there is none
          */
         async callAsync(
@@ -154,10 +159,11 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId         The NFT to find the approved address for
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _tokenId The NFT to find the approved address for
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
             assert.isBigNumber('_tokenId', _tokenId);
@@ -173,11 +179,12 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public approve = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _approved         The new approved NFT controller
-         * @param _tokenId         The NFT to approve
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _approved The new approved NFT controller
+         * @param _tokenId The NFT to approve
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _approved: string,
@@ -208,12 +215,13 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _approved         The new approved NFT controller
-         * @param _tokenId         The NFT to approve
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _approved The new approved NFT controller
+         * @param _tokenId The NFT to approve
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _approved: string,
@@ -240,10 +248,10 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _approved         The new approved NFT controller
-         * @param _tokenId         The NFT to approve
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _approved The new approved NFT controller
+         * @param _tokenId The NFT to approve
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _approved: string,
@@ -273,9 +281,11 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _approved         The new approved NFT controller
-         * @param _tokenId         The NFT to approve
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _approved The new approved NFT controller
+         * @param _tokenId The NFT to approve
          */
         async callAsync(
             _approved: string,
@@ -318,11 +328,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _approved         The new approved NFT controller
-         * @param _tokenId         The NFT to approve
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _approved The new approved NFT controller
+         * @param _tokenId The NFT to approve
          */
         getABIEncodedTransactionData(_approved: string, _tokenId: BigNumber): string {
             assert.isString('_approved', _approved);
@@ -343,12 +354,13 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public transferFrom = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _from: string,
@@ -382,13 +394,14 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _from: string,
@@ -422,11 +435,11 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _from: string,
@@ -459,10 +472,12 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
          */
         async callAsync(
             _from: string,
@@ -508,12 +523,13 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
             assert.isString('_from', _from);
@@ -534,11 +550,12 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public mint = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _to         Address of the beneficiary that will own the minted token
-         * @param _tokenId         ID of the token to be minted by the msg.sender
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _to Address of the beneficiary that will own the minted token
+         * @param _tokenId ID of the token to be minted by the msg.sender
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _to: string,
@@ -566,12 +583,13 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _to         Address of the beneficiary that will own the minted token
-         * @param _tokenId         ID of the token to be minted by the msg.sender
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _to Address of the beneficiary that will own the minted token
+         * @param _tokenId ID of the token to be minted by the msg.sender
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _to: string,
@@ -598,10 +616,10 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _to         Address of the beneficiary that will own the minted token
-         * @param _tokenId         ID of the token to be minted by the msg.sender
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _to Address of the beneficiary that will own the minted token
+         * @param _tokenId ID of the token to be minted by the msg.sender
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _to: string,
@@ -628,9 +646,11 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _to         Address of the beneficiary that will own the minted token
-         * @param _tokenId         ID of the token to be minted by the msg.sender
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _to Address of the beneficiary that will own the minted token
+         * @param _tokenId ID of the token to be minted by the msg.sender
          */
         async callAsync(
             _to: string,
@@ -670,11 +690,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _to         Address of the beneficiary that will own the minted token
-         * @param _tokenId         ID of the token to be minted by the msg.sender
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _to Address of the beneficiary that will own the minted token
+         * @param _tokenId ID of the token to be minted by the msg.sender
          */
         getABIEncodedTransactionData(_to: string, _tokenId: BigNumber): string {
             assert.isString('_to', _to);
@@ -693,12 +714,13 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public safeTransferFrom1 = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _from: string,
@@ -732,13 +754,14 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _from: string,
@@ -772,11 +795,11 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _from: string,
@@ -809,10 +832,12 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
          */
         async callAsync(
             _from: string,
@@ -858,12 +883,13 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber): string {
             assert.isString('_from', _from);
@@ -884,8 +910,10 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public ownerOf = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _tokenId         The identifier for an NFT
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _tokenId The identifier for an NFT
          * @returns The address of the owner of the NFT
          */
         async callAsync(
@@ -924,10 +952,11 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _tokenId         The identifier for an NFT
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _tokenId The identifier for an NFT
          */
         getABIEncodedTransactionData(_tokenId: BigNumber): string {
             assert.isBigNumber('_tokenId', _tokenId);
@@ -942,8 +971,10 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public balanceOf = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _owner         An address for whom to query the balance
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _owner An address for whom to query the balance
          * @returns The number of NFTs owned by &#x60;_owner&#x60;, possibly zero
          */
         async callAsync(
@@ -982,10 +1013,11 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _owner         An address for whom to query the balance
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _owner An address for whom to query the balance
          */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
@@ -996,7 +1028,9 @@ export class DummyERC721TokenContract extends BaseContract {
     };
     public owner = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1029,9 +1063,10 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
@@ -1041,7 +1076,9 @@ export class DummyERC721TokenContract extends BaseContract {
     };
     public symbol = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1074,9 +1111,10 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as DummyERC721TokenContract;
@@ -1090,11 +1128,12 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public burn = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _owner         Owner of token with given token ID
-         * @param _tokenId         ID of the token to be burned by the msg.sender
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _owner Owner of token with given token ID
+         * @param _tokenId ID of the token to be burned by the msg.sender
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _owner: string,
@@ -1122,12 +1161,13 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _owner         Owner of token with given token ID
-         * @param _tokenId         ID of the token to be burned by the msg.sender
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _owner Owner of token with given token ID
+         * @param _tokenId ID of the token to be burned by the msg.sender
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _owner: string,
@@ -1154,10 +1194,10 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _owner         Owner of token with given token ID
-         * @param _tokenId         ID of the token to be burned by the msg.sender
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _owner Owner of token with given token ID
+         * @param _tokenId ID of the token to be burned by the msg.sender
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _owner: string,
@@ -1184,9 +1224,11 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _owner         Owner of token with given token ID
-         * @param _tokenId         ID of the token to be burned by the msg.sender
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _owner Owner of token with given token ID
+         * @param _tokenId ID of the token to be burned by the msg.sender
          */
         async callAsync(
             _owner: string,
@@ -1226,11 +1268,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _owner         Owner of token with given token ID
-         * @param _tokenId         ID of the token to be burned by the msg.sender
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _owner Owner of token with given token ID
+         * @param _tokenId ID of the token to be burned by the msg.sender
          */
         getABIEncodedTransactionData(_owner: string, _tokenId: BigNumber): string {
             assert.isString('_owner', _owner);
@@ -1249,11 +1292,12 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public setApprovalForAll = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _operator         Address to add to the set of authorized operators
-         * @param _approved         True if the operator is approved, false to revoke approval
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _operator: string,
@@ -1284,12 +1328,13 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _operator         Address to add to the set of authorized operators
-         * @param _approved         True if the operator is approved, false to revoke approval
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _operator: string,
@@ -1320,10 +1365,10 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _operator         Address to add to the set of authorized operators
-         * @param _approved         True if the operator is approved, false to revoke approval
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _operator: string,
@@ -1353,9 +1398,11 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _operator         Address to add to the set of authorized operators
-         * @param _approved         True if the operator is approved, false to revoke approval
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
          */
         async callAsync(
             _operator: string,
@@ -1398,11 +1445,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _operator         Address to add to the set of authorized operators
-         * @param _approved         True if the operator is approved, false to revoke approval
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _operator Address to add to the set of authorized operators
+         * @param _approved True if the operator is approved, false to revoke approval
          */
         getABIEncodedTransactionData(_operator: string, _approved: boolean): string {
             assert.isString('_operator', _operator);
@@ -1426,13 +1474,14 @@ export class DummyERC721TokenContract extends BaseContract {
      */
     public safeTransferFrom2 = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param _data         Additional data with no specified format, sent in call to `_to`
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _from: string,
@@ -1475,14 +1524,15 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param _data         Additional data with no specified format, sent in call to `_to`
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _from: string,
@@ -1519,12 +1569,12 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param _data         Additional data with no specified format, sent in call to `_to`
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             _from: string,
@@ -1560,11 +1610,13 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param _data         Additional data with no specified format, sent in call to `_to`
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
          */
         async callAsync(
             _from: string,
@@ -1613,13 +1665,14 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _from         The current owner of the NFT
-         * @param _to         The new owner
-         * @param _tokenId         The NFT to transfer
-         * @param _data         Additional data with no specified format, sent in call to `_to`
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The current owner of the NFT
+         * @param _to The new owner
+         * @param _tokenId The NFT to transfer
+         * @param _data Additional data with no specified format, sent in call to `_to`
          */
         getABIEncodedTransactionData(_from: string, _to: string, _tokenId: BigNumber, _data: string): string {
             assert.isString('_from', _from);
@@ -1636,9 +1689,11 @@ export class DummyERC721TokenContract extends BaseContract {
     };
     public isApprovedForAll = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _owner         The address that owns the NFTs
-         * @param _operator         The address that acts on behalf of the owner
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _owner The address that owns the NFTs
+         * @param _operator The address that acts on behalf of the owner
          * @returns True if &#x60;_operator&#x60; is an approved operator for &#x60;_owner&#x60;, false otherwise
          */
         async callAsync(
@@ -1682,11 +1737,12 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _owner         The address that owns the NFTs
-         * @param _operator         The address that acts on behalf of the owner
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _owner The address that owns the NFTs
+         * @param _operator The address that acts on behalf of the owner
          */
         getABIEncodedTransactionData(_owner: string, _operator: string): string {
             assert.isString('_owner', _owner);
@@ -1701,9 +1757,10 @@ export class DummyERC721TokenContract extends BaseContract {
     };
     public transferOwnership = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
@@ -1726,10 +1783,11 @@ export class DummyERC721TokenContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -1754,8 +1812,8 @@ export class DummyERC721TokenContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
@@ -1777,7 +1835,9 @@ export class DummyERC721TokenContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
@@ -1811,9 +1871,10 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -2261,11 +2322,11 @@ export class DummyERC721TokenContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the DummyERC721Token contract.
-     * @param   eventName           The DummyERC721Token contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The DummyERC721Token contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends DummyERC721TokenEventArgs>(
@@ -2291,7 +2352,7 @@ export class DummyERC721TokenContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -2304,11 +2365,11 @@ export class DummyERC721TokenContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The DummyERC721Token contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The DummyERC721Token contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends DummyERC721TokenEventArgs>(
         eventName: DummyERC721TokenEvents,

@@ -51,10 +51,11 @@ export class CoordinatorRegistryContract extends BaseContract {
      */
     public setCoordinatorEndpoint = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param coordinatorEndpoint         endpoint of the Coordinator.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
@@ -77,11 +78,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param coordinatorEndpoint         endpoint of the Coordinator.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
@@ -106,9 +108,9 @@ export class CoordinatorRegistryContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param coordinatorEndpoint         endpoint of the Coordinator.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
@@ -130,8 +132,10 @@ export class CoordinatorRegistryContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
          */
         async callAsync(
             coordinatorEndpoint: string,
@@ -169,10 +173,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param coordinatorEndpoint         endpoint of the Coordinator.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param coordinatorEndpoint endpoint of the Coordinator.
          */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
@@ -188,8 +193,10 @@ export class CoordinatorRegistryContract extends BaseContract {
      */
     public getCoordinatorEndpoint = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param coordinatorOperator         operator of the Coordinator endpoint.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param coordinatorOperator operator of the Coordinator endpoint.
          */
         async callAsync(
             coordinatorOperator: string,
@@ -229,10 +236,11 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param coordinatorOperator         operator of the Coordinator endpoint.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param coordinatorOperator operator of the Coordinator endpoint.
          */
         getABIEncodedTransactionData(coordinatorOperator: string): string {
             assert.isString('coordinatorOperator', coordinatorOperator);
@@ -367,11 +375,11 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the CoordinatorRegistry contract.
-     * @param   eventName           The CoordinatorRegistry contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The CoordinatorRegistry contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends CoordinatorRegistryEventArgs>(
@@ -397,7 +405,7 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -410,11 +418,11 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The CoordinatorRegistry contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The CoordinatorRegistry contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends CoordinatorRegistryEventArgs>(
         eventName: CoordinatorRegistryEvents,

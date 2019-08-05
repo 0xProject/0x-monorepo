@@ -125,6 +125,20 @@ function registerTypeScriptHelpers(): void {
             return new Handlebars.SafeString(`${devdocParamsObj[paramName]}`);
         },
     );
+
+    // Format docstring for method param
+    Handlebars.registerHelper(
+        'formatDocstringForParamTs',
+        (paramName: string, desc: Handlebars.SafeString): Handlebars.SafeString => {
+            const docString = `@param ${paramName} ${desc}`;
+            const config = {
+                width: 80,
+                paddingLeft: ' * ',
+                ansi: false,
+            };
+            return new Handlebars.SafeString(`${cliFormat.wrap(docString, config)}`);
+        },
+    );
 }
 
 function registerPythonHelpers(): void {

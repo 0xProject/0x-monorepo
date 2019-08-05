@@ -119,7 +119,9 @@ export interface AssetProxyOwnerRequirementChangeEventArgs extends DecodedLogArg
 export class AssetProxyOwnerContract extends BaseContract {
     public owners = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: BigNumber,
@@ -157,9 +159,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -173,10 +176,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public removeOwner = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param owner         Address of owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param owner Address of owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
@@ -199,11 +203,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param owner         Address of owner.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param owner Address of owner.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             owner: string,
@@ -228,9 +233,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param owner         Address of owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param owner Address of owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
@@ -252,8 +257,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param owner         Address of owner.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param owner Address of owner.
          */
         async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('owner', owner);
@@ -287,10 +294,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param owner         Address of owner.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param owner Address of owner.
          */
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
@@ -306,10 +314,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public revokeConfirmation = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
@@ -332,11 +341,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param transactionId         Transaction ID.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -361,9 +371,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
@@ -385,8 +395,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          */
         async callAsync(
             transactionId: BigNumber,
@@ -424,10 +436,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -440,7 +453,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public isOwner = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -478,9 +493,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -491,7 +507,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public confirmations = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: BigNumber,
@@ -534,9 +552,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: BigNumber, index_1: string): string {
             assert.isBigNumber('index_0', index_0);
@@ -554,10 +573,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public executeRemoveAuthorizedAddressAtIndex = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
@@ -582,11 +602,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param transactionId         Transaction ID.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -614,9 +635,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
@@ -640,8 +661,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          */
         async callAsync(
             transactionId: BigNumber,
@@ -681,10 +704,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -698,7 +722,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public secondsTimeLocked = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -731,9 +757,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
@@ -746,9 +773,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public getTransactionCount = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param pending         Include pending transactions.
-         * @param executed         Include executed transactions.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param pending Include pending transactions.
+         * @param executed Include executed transactions.
          * @returns Total number of transactions after filters are applied.
          */
         async callAsync(
@@ -789,11 +818,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param pending         Include pending transactions.
-         * @param executed         Include executed transactions.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param pending Include pending transactions.
+         * @param executed Include executed transactions.
          */
         getABIEncodedTransactionData(pending: boolean, executed: boolean): string {
             assert.isBoolean('pending', pending);
@@ -812,11 +842,12 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public registerAssetProxy = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param assetProxyContract         Address of AssetProxy contract.
-         * @param isRegistered         Status of approval for AssetProxy contract.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param assetProxyContract Address of AssetProxy contract.
+         * @param isRegistered Status of approval for AssetProxy contract.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             assetProxyContract: string,
@@ -847,12 +878,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param assetProxyContract         Address of AssetProxy contract.
-         * @param isRegistered         Status of approval for AssetProxy contract.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param assetProxyContract Address of AssetProxy contract.
+         * @param isRegistered Status of approval for AssetProxy contract.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             assetProxyContract: string,
@@ -883,10 +915,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param assetProxyContract         Address of AssetProxy contract.
-         * @param isRegistered         Status of approval for AssetProxy contract.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param assetProxyContract Address of AssetProxy contract.
+         * @param isRegistered Status of approval for AssetProxy contract.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             assetProxyContract: string,
@@ -916,9 +948,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param assetProxyContract         Address of AssetProxy contract.
-         * @param isRegistered         Status of approval for AssetProxy contract.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param assetProxyContract Address of AssetProxy contract.
+         * @param isRegistered Status of approval for AssetProxy contract.
          */
         async callAsync(
             assetProxyContract: string,
@@ -961,11 +995,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param assetProxyContract         Address of AssetProxy contract.
-         * @param isRegistered         Status of approval for AssetProxy contract.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetProxyContract Address of AssetProxy contract.
+         * @param isRegistered Status of approval for AssetProxy contract.
          */
         getABIEncodedTransactionData(assetProxyContract: string, isRegistered: boolean): string {
             assert.isString('assetProxyContract', assetProxyContract);
@@ -983,10 +1018,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public addOwner = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param owner         Address of new owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param owner Address of new owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('owner', owner);
@@ -1009,11 +1045,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param owner         Address of new owner.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param owner Address of new owner.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             owner: string,
@@ -1038,9 +1075,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param owner         Address of new owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param owner Address of new owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(owner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
@@ -1062,8 +1099,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param owner         Address of new owner.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param owner Address of new owner.
          */
         async callAsync(owner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('owner', owner);
@@ -1097,10 +1136,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param owner         Address of new owner.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param owner Address of new owner.
          */
         getABIEncodedTransactionData(owner: string): string {
             assert.isString('owner', owner);
@@ -1114,8 +1154,10 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public isConfirmed = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          * @returns Confirmation status.
          */
         async callAsync(
@@ -1154,10 +1196,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -1171,10 +1214,12 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public changeTimeLock = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _secondsTimeLocked Duration needed after a transaction is confirmed
+         * and before it becomes executable, in seconds.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             _secondsTimeLocked: BigNumber,
@@ -1200,11 +1245,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _secondsTimeLocked Duration needed after a transaction is confirmed
+         * and before it becomes executable, in seconds.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _secondsTimeLocked: BigNumber,
@@ -1229,9 +1276,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _secondsTimeLocked Duration needed after a transaction is confirmed
+         * and before it becomes executable, in seconds.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(_secondsTimeLocked: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
@@ -1253,8 +1301,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _secondsTimeLocked Duration needed after a transaction is confirmed
+         * and before it becomes executable, in seconds.
          */
         async callAsync(
             _secondsTimeLocked: BigNumber,
@@ -1292,10 +1343,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _secondsTimeLocked         Duration needed after a transaction is confirmed and before it becomes executable, in seconds.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _secondsTimeLocked Duration needed after a transaction is confirmed
+         * and before it becomes executable, in seconds.
          */
         getABIEncodedTransactionData(_secondsTimeLocked: BigNumber): string {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);
@@ -1308,7 +1361,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public isAssetProxyRegistered = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -1346,9 +1401,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -1364,8 +1420,10 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public getConfirmationCount = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          * @returns Number of confirmations.
          */
         async callAsync(
@@ -1404,10 +1462,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -1420,7 +1479,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public transactions = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: BigNumber,
@@ -1458,9 +1519,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -1474,7 +1536,9 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public getOwners = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          * @returns List of owner addresses.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string[]> {
@@ -1508,9 +1572,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1523,11 +1588,13 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public getTransactionIds = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param from         Index start position of transaction array.
-         * @param to         Index end position of transaction array.
-         * @param pending         Include pending transactions.
-         * @param executed         Include executed transactions.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param from Index start position of transaction array.
+         * @param to Index end position of transaction array.
+         * @param pending Include pending transactions.
+         * @param executed Include executed transactions.
          * @returns Returns array of transaction IDs.
          */
         async callAsync(
@@ -1577,13 +1644,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param from         Index start position of transaction array.
-         * @param to         Index end position of transaction array.
-         * @param pending         Include pending transactions.
-         * @param executed         Include executed transactions.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param from Index start position of transaction array.
+         * @param to Index end position of transaction array.
+         * @param pending Include pending transactions.
+         * @param executed Include executed transactions.
          */
         getABIEncodedTransactionData(from: BigNumber, to: BigNumber, pending: boolean, executed: boolean): string {
             assert.isBigNumber('from', from);
@@ -1603,8 +1671,10 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public getConfirmations = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          * @returns Returns array of owner addresses.
          */
         async callAsync(
@@ -1643,10 +1713,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -1657,7 +1728,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public transactionCount = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1690,9 +1763,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
@@ -1705,10 +1779,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public changeRequirement = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param _required         Number of required confirmations.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _required Number of required confirmations.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('_required', _required);
@@ -1731,11 +1806,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param _required         Number of required confirmations.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _required Number of required confirmations.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             _required: BigNumber,
@@ -1760,9 +1836,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param _required         Number of required confirmations.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param _required Number of required confirmations.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(_required: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('_required', _required);
@@ -1784,8 +1860,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param _required         Number of required confirmations.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _required Number of required confirmations.
          */
         async callAsync(
             _required: BigNumber,
@@ -1823,10 +1901,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param _required         Number of required confirmations.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _required Number of required confirmations.
          */
         getABIEncodedTransactionData(_required: BigNumber): string {
             assert.isBigNumber('_required', _required);
@@ -1840,10 +1919,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public confirmTransaction = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
@@ -1866,11 +1946,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param transactionId         Transaction ID.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -1895,9 +1976,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
@@ -1919,8 +2000,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          */
         async callAsync(
             transactionId: BigNumber,
@@ -1958,10 +2041,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -1977,12 +2061,13 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public submitTransaction = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param destination         Transaction target address.
-         * @param value         Transaction ether value.
-         * @param data         Transaction data payload.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param destination Transaction target address.
+         * @param value Transaction ether value.
+         * @param data Transaction data payload.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             destination: string,
@@ -2016,13 +2101,14 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param destination         Transaction target address.
-         * @param value         Transaction ether value.
-         * @param data         Transaction data payload.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param destination Transaction target address.
+         * @param value Transaction ether value.
+         * @param data Transaction data payload.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             destination: string,
@@ -2056,11 +2142,11 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param destination         Transaction target address.
-         * @param value         Transaction ether value.
-         * @param data         Transaction data payload.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param destination Transaction target address.
+         * @param value Transaction ether value.
+         * @param data Transaction data payload.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             destination: string,
@@ -2093,10 +2179,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param destination         Transaction target address.
-         * @param value         Transaction ether value.
-         * @param data         Transaction data payload.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param destination Transaction target address.
+         * @param value Transaction ether value.
+         * @param data Transaction data payload.
          * @returns Returns transaction ID.
          */
         async callAsync(
@@ -2143,12 +2231,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param destination         Transaction target address.
-         * @param value         Transaction ether value.
-         * @param data         Transaction data payload.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param destination Transaction target address.
+         * @param value Transaction ether value.
+         * @param data Transaction data payload.
          */
         getABIEncodedTransactionData(destination: string, value: BigNumber, data: string): string {
             assert.isString('destination', destination);
@@ -2165,7 +2254,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public confirmationTimes = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: BigNumber,
@@ -2203,9 +2294,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: BigNumber): string {
             assert.isBigNumber('index_0', index_0);
@@ -2216,7 +2308,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public MAX_OWNER_COUNT = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2249,9 +2343,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2261,7 +2356,9 @@ export class AssetProxyOwnerContract extends BaseContract {
     };
     public required = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -2294,9 +2391,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as AssetProxyOwnerContract;
@@ -2309,11 +2407,12 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public replaceOwner = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param owner         Address of owner to be replaced.
-         * @param newOwner         Address of new owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param owner Address of owner to be replaced.
+         * @param newOwner Address of new owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             owner: string,
@@ -2344,12 +2443,13 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param owner         Address of owner to be replaced.
-         * @param newOwner         Address of new owner.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param owner Address of owner to be replaced.
+         * @param newOwner Address of new owner.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             owner: string,
@@ -2380,10 +2480,10 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param owner         Address of owner to be replaced.
-         * @param newOwner         Address of new owner.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param owner Address of owner to be replaced.
+         * @param newOwner Address of new owner.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(owner: string, newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('owner', owner);
@@ -2409,9 +2509,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param owner         Address of owner to be replaced.
-         * @param newOwner         Address of new owner.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param owner Address of owner to be replaced.
+         * @param newOwner Address of new owner.
          */
         async callAsync(
             owner: string,
@@ -2454,11 +2556,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param owner         Address of owner to be replaced.
-         * @param newOwner         Address of new owner.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param owner Address of owner to be replaced.
+         * @param newOwner Address of new owner.
          */
         getABIEncodedTransactionData(owner: string, newOwner: string): string {
             assert.isString('owner', owner);
@@ -2476,10 +2579,11 @@ export class AssetProxyOwnerContract extends BaseContract {
      */
     public executeTransaction = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('transactionId', transactionId);
@@ -2502,11 +2606,12 @@ export class AssetProxyOwnerContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param transactionId         Transaction ID.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             transactionId: BigNumber,
@@ -2531,9 +2636,9 @@ export class AssetProxyOwnerContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param transactionId         Transaction ID.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param transactionId Transaction ID.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(transactionId: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('transactionId', transactionId);
@@ -2555,8 +2660,10 @@ export class AssetProxyOwnerContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param transactionId         Transaction ID.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param transactionId Transaction ID.
          */
         async callAsync(
             transactionId: BigNumber,
@@ -2594,10 +2701,11 @@ export class AssetProxyOwnerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param transactionId         Transaction ID.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param transactionId Transaction ID.
          */
         getABIEncodedTransactionData(transactionId: BigNumber): string {
             assert.isBigNumber('transactionId', transactionId);
@@ -3389,11 +3497,11 @@ export class AssetProxyOwnerContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the AssetProxyOwner contract.
-     * @param   eventName           The AssetProxyOwner contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The AssetProxyOwner contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends AssetProxyOwnerEventArgs>(
@@ -3419,7 +3527,7 @@ export class AssetProxyOwnerContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -3432,11 +3540,11 @@ export class AssetProxyOwnerContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The AssetProxyOwner contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The AssetProxyOwner contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends AssetProxyOwnerEventArgs>(
         eventName: AssetProxyOwnerEvents,

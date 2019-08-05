@@ -92,7 +92,9 @@ export interface ExchangeAssetProxyRegisteredEventArgs extends DecodedLogArgs {
 export class ExchangeContract extends BaseContract {
     public filled = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -130,9 +132,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -146,12 +149,14 @@ export class ExchangeContract extends BaseContract {
      */
     public batchFillOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -197,13 +202,15 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -250,11 +257,12 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -299,10 +307,13 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
         async callAsync(
@@ -373,12 +384,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -411,7 +424,9 @@ export class ExchangeContract extends BaseContract {
     };
     public cancelled = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -449,9 +464,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -466,11 +482,12 @@ export class ExchangeContract extends BaseContract {
      */
     public preSign = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             hash: string,
@@ -504,12 +521,13 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             hash: string,
@@ -543,10 +561,10 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             hash: string,
@@ -579,9 +597,11 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
          */
         async callAsync(
             hash: string,
@@ -627,11 +647,12 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
          */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
@@ -654,13 +675,14 @@ export class ExchangeContract extends BaseContract {
      */
     public matchOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param leftOrder         First order to match.
-         * @param rightOrder         Second order to match.
-         * @param leftSignature         Proof that order was created by the left maker.
-         * @param rightSignature         Proof that order was created by the right maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param leftOrder First order to match.
+         * @param rightOrder Second order to match.
+         * @param leftSignature Proof that order was created by the left maker.
+         * @param rightSignature Proof that order was created by the right maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             leftOrder: {
@@ -719,14 +741,15 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param leftOrder         First order to match.
-         * @param rightOrder         Second order to match.
-         * @param leftSignature         Proof that order was created by the left maker.
-         * @param rightSignature         Proof that order was created by the right maker.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param leftOrder First order to match.
+         * @param rightOrder Second order to match.
+         * @param leftSignature Proof that order was created by the left maker.
+         * @param rightSignature Proof that order was created by the right maker.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             leftOrder: {
@@ -787,12 +810,12 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param leftOrder         First order to match.
-         * @param rightOrder         Second order to match.
-         * @param leftSignature         Proof that order was created by the left maker.
-         * @param rightSignature         Proof that order was created by the right maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param leftOrder First order to match.
+         * @param rightOrder Second order to match.
+         * @param leftSignature Proof that order was created by the left maker.
+         * @param rightSignature Proof that order was created by the right maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             leftOrder: {
@@ -850,11 +873,13 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param leftOrder         First order to match.
-         * @param rightOrder         Second order to match.
-         * @param leftSignature         Proof that order was created by the left maker.
-         * @param rightSignature         Proof that order was created by the right maker.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param leftOrder First order to match.
+         * @param rightOrder Second order to match.
+         * @param leftSignature Proof that order was created by the left maker.
+         * @param rightSignature Proof that order was created by the right maker.
          * @returns matchedFillResults Amounts filled and fees paid by maker and taker of matched orders.
          */
         async callAsync(
@@ -956,13 +981,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param leftOrder         First order to match.
-         * @param rightOrder         Second order to match.
-         * @param leftSignature         Proof that order was created by the left maker.
-         * @param rightSignature         Proof that order was created by the right maker.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param leftOrder First order to match.
+         * @param rightOrder Second order to match.
+         * @param leftSignature Proof that order was created by the left maker.
+         * @param rightSignature Proof that order was created by the right maker.
          */
         getABIEncodedTransactionData(
             leftOrder: {
@@ -1012,12 +1038,13 @@ export class ExchangeContract extends BaseContract {
      */
     public fillOrderNoThrow = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             order: {
@@ -1062,13 +1089,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             order: {
@@ -1114,11 +1142,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             order: {
@@ -1162,10 +1190,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          * @returns Amounts filled and fees paid by maker and taker.
          */
         async callAsync(
@@ -1235,12 +1265,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          */
         getABIEncodedTransactionData(
             order: {
@@ -1272,7 +1303,9 @@ export class ExchangeContract extends BaseContract {
     };
     public assetProxies = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(index_0: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.isString('index_0', index_0);
@@ -1306,9 +1339,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -1322,10 +1356,11 @@ export class ExchangeContract extends BaseContract {
      */
     public batchCancelOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -1367,11 +1402,12 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -1409,9 +1445,9 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -1452,8 +1488,10 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
          */
         async callAsync(
             orders: Array<{
@@ -1509,10 +1547,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -1544,12 +1583,14 @@ export class ExchangeContract extends BaseContract {
      */
     public batchFillOrKillOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -1595,13 +1636,15 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -1648,11 +1691,12 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -1697,10 +1741,13 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
         async callAsync(
@@ -1771,12 +1818,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -1813,10 +1862,12 @@ export class ExchangeContract extends BaseContract {
      */
     public cancelOrdersUpTo = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param targetOrderEpoch Orders created with a salt less or equal to this
+         * value will be cancelled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
@@ -1839,11 +1890,13 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param targetOrderEpoch Orders created with a salt less or equal to this
+         * value will be cancelled.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             targetOrderEpoch: BigNumber,
@@ -1868,9 +1921,10 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param targetOrderEpoch Orders created with a salt less or equal to this
+         * value will be cancelled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(targetOrderEpoch: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
@@ -1892,8 +1946,11 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param targetOrderEpoch Orders created with a salt less or equal to this
+         * value will be cancelled.
          */
         async callAsync(
             targetOrderEpoch: BigNumber,
@@ -1931,10 +1988,12 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param targetOrderEpoch         Orders created with a salt less or equal to this value will be cancelled.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param targetOrderEpoch Orders created with a salt less or equal to this
+         * value will be cancelled.
          */
         getABIEncodedTransactionData(targetOrderEpoch: BigNumber): string {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
@@ -1951,12 +2010,14 @@ export class ExchangeContract extends BaseContract {
      */
     public batchFillOrdersNoThrow = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -2002,13 +2063,15 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -2055,11 +2118,12 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -2104,10 +2168,13 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
         async callAsync(
@@ -2178,12 +2245,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmounts         Array of desired amounts of takerAsset to sell in orders.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
+         * in orders.
+         * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -2219,8 +2288,10 @@ export class ExchangeContract extends BaseContract {
      */
     public getAssetProxy = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param assetProxyId         Id of the asset proxy.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param assetProxyId Id of the asset proxy.
          * @returns The asset proxy registered to assetProxyId. Returns 0x0 if no proxy is registered.
          */
         async callAsync(
@@ -2259,10 +2330,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param assetProxyId         Id of the asset proxy.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetProxyId Id of the asset proxy.
          */
         getABIEncodedTransactionData(assetProxyId: string): string {
             assert.isString('assetProxyId', assetProxyId);
@@ -2273,7 +2345,9 @@ export class ExchangeContract extends BaseContract {
     };
     public transactions = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -2311,9 +2385,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string): string {
             assert.isString('index_0', index_0);
@@ -2327,12 +2402,13 @@ export class ExchangeContract extends BaseContract {
      */
     public fillOrKillOrder = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             order: {
@@ -2377,13 +2453,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             order: {
@@ -2429,11 +2506,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             order: {
@@ -2477,10 +2554,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          */
         async callAsync(
             order: {
@@ -2549,12 +2628,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          */
         getABIEncodedTransactionData(
             order: {
@@ -2589,11 +2669,12 @@ export class ExchangeContract extends BaseContract {
      */
     public setSignatureValidatorApproval = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param validatorAddress         Address of Validator contract.
-         * @param approval         Approval or disapproval of  Validator contract.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param validatorAddress Address of Validator contract.
+         * @param approval Approval or disapproval of  Validator contract.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             validatorAddress: string,
@@ -2628,12 +2709,13 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param validatorAddress         Address of Validator contract.
-         * @param approval         Approval or disapproval of  Validator contract.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param validatorAddress Address of Validator contract.
+         * @param approval Approval or disapproval of  Validator contract.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             validatorAddress: string,
@@ -2664,10 +2746,10 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param validatorAddress         Address of Validator contract.
-         * @param approval         Approval or disapproval of  Validator contract.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param validatorAddress Address of Validator contract.
+         * @param approval Approval or disapproval of  Validator contract.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             validatorAddress: string,
@@ -2697,9 +2779,11 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param validatorAddress         Address of Validator contract.
-         * @param approval         Approval or disapproval of  Validator contract.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param validatorAddress Address of Validator contract.
+         * @param approval Approval or disapproval of  Validator contract.
          */
         async callAsync(
             validatorAddress: string,
@@ -2742,11 +2826,12 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param validatorAddress         Address of Validator contract.
-         * @param approval         Approval or disapproval of  Validator contract.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param validatorAddress Address of Validator contract.
+         * @param approval Approval or disapproval of  Validator contract.
          */
         getABIEncodedTransactionData(validatorAddress: string, approval: boolean): string {
             assert.isString('validatorAddress', validatorAddress);
@@ -2761,7 +2846,9 @@ export class ExchangeContract extends BaseContract {
     };
     public allowedValidators = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -2804,9 +2891,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
@@ -2824,12 +2912,13 @@ export class ExchangeContract extends BaseContract {
      */
     public marketSellOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -2875,13 +2964,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -2928,11 +3018,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been created by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -2977,10 +3067,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.
          */
         async callAsync(
@@ -3051,12 +3143,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been created by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -3092,8 +3185,10 @@ export class ExchangeContract extends BaseContract {
      */
     public getOrdersInfo = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
          * @returns Array of OrderInfo instances that correspond to each order.
          */
         async callAsync(
@@ -3152,10 +3247,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -3184,7 +3280,9 @@ export class ExchangeContract extends BaseContract {
     };
     public preSigned = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -3227,9 +3325,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
@@ -3244,7 +3343,9 @@ export class ExchangeContract extends BaseContract {
     };
     public owner = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -3277,9 +3378,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
@@ -3292,10 +3394,12 @@ export class ExchangeContract extends BaseContract {
      */
     public isValidSignature = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param hash         Any 32 byte hash.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param hash Any 32 byte hash.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
          * @returns True if the address recovered from the provided signature matches the input signer address.
          */
         async callAsync(
@@ -3342,12 +3446,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param hash         Any 32 byte hash.
-         * @param signerAddress         Address that should have signed the given hash.
-         * @param signature         Proof that the hash has been signed by signer.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param hash Any 32 byte hash.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof that the hash has been signed by signer.
          */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
@@ -3368,12 +3473,13 @@ export class ExchangeContract extends BaseContract {
      */
     public marketBuyOrdersNoThrow = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -3419,13 +3525,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -3472,11 +3579,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -3521,10 +3628,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
          * @returns Amounts filled and fees paid by makers and taker.
          */
         async callAsync(
@@ -3595,12 +3704,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -3636,12 +3746,13 @@ export class ExchangeContract extends BaseContract {
      */
     public fillOrder = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             order: {
@@ -3686,13 +3797,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             order: {
@@ -3733,11 +3845,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             order: {
@@ -3781,10 +3893,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          * @returns Amounts filled and fees paid by maker and taker.
          */
         async callAsync(
@@ -3854,12 +3968,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         Order struct containing order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signature         Proof that order has been created by maker.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order Order struct containing order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signature Proof that order has been created by maker.
          */
         getABIEncodedTransactionData(
             order: {
@@ -3894,13 +4009,14 @@ export class ExchangeContract extends BaseContract {
      */
     public executeTransaction = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
-         * @param signerAddress         Address of transaction signer.
-         * @param data         AbiV2 encoded calldata.
-         * @param signature         Proof of signer transaction by signer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param salt Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress Address of transaction signer.
+         * @param data AbiV2 encoded calldata.
+         * @param signature Proof of signer transaction by signer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             salt: BigNumber,
@@ -3937,14 +4053,15 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
-         * @param signerAddress         Address of transaction signer.
-         * @param data         AbiV2 encoded calldata.
-         * @param signature         Proof of signer transaction by signer.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param salt Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress Address of transaction signer.
+         * @param data AbiV2 encoded calldata.
+         * @param signature Proof of signer transaction by signer.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             salt: BigNumber,
@@ -3981,12 +4098,12 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
-         * @param signerAddress         Address of transaction signer.
-         * @param data         AbiV2 encoded calldata.
-         * @param signature         Proof of signer transaction by signer.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param salt Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress Address of transaction signer.
+         * @param data AbiV2 encoded calldata.
+         * @param signature Proof of signer transaction by signer.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             salt: BigNumber,
@@ -4022,11 +4139,13 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
-         * @param signerAddress         Address of transaction signer.
-         * @param data         AbiV2 encoded calldata.
-         * @param signature         Proof of signer transaction by signer.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param salt Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress Address of transaction signer.
+         * @param data AbiV2 encoded calldata.
+         * @param signature Proof of signer transaction by signer.
          */
         async callAsync(
             salt: BigNumber,
@@ -4075,13 +4194,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param salt         Arbitrary number to ensure uniqueness of transaction hash.
-         * @param signerAddress         Address of transaction signer.
-         * @param data         AbiV2 encoded calldata.
-         * @param signature         Proof of signer transaction by signer.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param salt Arbitrary number to ensure uniqueness of transaction hash.
+         * @param signerAddress Address of transaction signer.
+         * @param data AbiV2 encoded calldata.
+         * @param signature Proof of signer transaction by signer.
          */
         getABIEncodedTransactionData(salt: BigNumber, signerAddress: string, data: string, signature: string): string {
             assert.isBigNumber('salt', salt);
@@ -4102,10 +4222,11 @@ export class ExchangeContract extends BaseContract {
      */
     public registerAssetProxy = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param assetProxy         Address of new asset proxy to register.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param assetProxy Address of new asset proxy to register.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('assetProxy', assetProxy);
@@ -4128,11 +4249,12 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param assetProxy         Address of new asset proxy to register.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param assetProxy Address of new asset proxy to register.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             assetProxy: string,
@@ -4157,9 +4279,9 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param assetProxy         Address of new asset proxy to register.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param assetProxy Address of new asset proxy to register.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(assetProxy: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('assetProxy', assetProxy);
@@ -4181,8 +4303,10 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param assetProxy         Address of new asset proxy to register.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param assetProxy Address of new asset proxy to register.
          */
         async callAsync(
             assetProxy: string,
@@ -4220,10 +4344,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param assetProxy         Address of new asset proxy to register.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetProxy Address of new asset proxy to register.
          */
         getABIEncodedTransactionData(assetProxy: string): string {
             assert.isString('assetProxy', assetProxy);
@@ -4239,8 +4364,10 @@ export class ExchangeContract extends BaseContract {
      */
     public getOrderInfo = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         Order to gather information on.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order Order to gather information on.
          * @returns OrderInfo Information about the order and its state.         See LibOrder.OrderInfo for a complete description.
          */
         async callAsync(
@@ -4300,10 +4427,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         Order to gather information on.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order Order to gather information on.
          */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
@@ -4333,10 +4461,11 @@ export class ExchangeContract extends BaseContract {
      */
     public cancelOrder = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             order: {
@@ -4377,11 +4506,12 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             order: {
@@ -4418,9 +4548,9 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param order Order to cancel. Order must be OrderStatus.FILLABLE.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             order: {
@@ -4460,8 +4590,10 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param order Order to cancel. Order must be OrderStatus.FILLABLE.
          */
         async callAsync(
             order: {
@@ -4516,10 +4648,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param order         Order to cancel. Order must be OrderStatus.FILLABLE.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param order Order to cancel. Order must be OrderStatus.FILLABLE.
          */
         getABIEncodedTransactionData(order: {
             makerAddress: string;
@@ -4545,7 +4678,9 @@ export class ExchangeContract extends BaseContract {
     };
     public orderEpoch = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(
             index_0: string,
@@ -4588,9 +4723,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(index_0: string, index_1: string): string {
             assert.isString('index_0', index_0);
@@ -4605,7 +4741,9 @@ export class ExchangeContract extends BaseContract {
     };
     public ZRX_ASSET_DATA = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -4638,9 +4776,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
@@ -4654,12 +4793,13 @@ export class ExchangeContract extends BaseContract {
      */
     public marketSellOrdersNoThrow = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -4705,13 +4845,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -4758,11 +4899,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -4807,10 +4948,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been signed by makers.
          * @returns Amounts filled and fees paid by makers and taker.
          */
         async callAsync(
@@ -4881,12 +5024,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param takerAssetFillAmount         Desired amount of takerAsset to sell.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param takerAssetFillAmount Desired amount of takerAsset to sell.
+         * @param signatures Proofs that orders have been signed by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -4919,7 +5063,9 @@ export class ExchangeContract extends BaseContract {
     };
     public EIP712_DOMAIN_HASH = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -4952,9 +5098,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
@@ -4967,12 +5114,13 @@ export class ExchangeContract extends BaseContract {
      */
     public marketBuyOrders = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(
             orders: Array<{
@@ -5018,13 +5166,14 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             orders: Array<{
@@ -5071,11 +5220,11 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(
             orders: Array<{
@@ -5120,10 +5269,12 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
          * @returns Amounts filled and fees paid by makers and taker.
          */
         async callAsync(
@@ -5194,12 +5345,13 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
-         * @param orders         Array of order specifications.
-         * @param makerAssetFillAmount         Desired amount of makerAsset to buy.
-         * @param signatures         Proofs that orders have been signed by makers.
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications.
+         * @param makerAssetFillAmount Desired amount of makerAsset to buy.
+         * @param signatures Proofs that orders have been signed by makers.
          */
         getABIEncodedTransactionData(
             orders: Array<{
@@ -5232,7 +5384,9 @@ export class ExchangeContract extends BaseContract {
     };
     public currentContextAddress = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -5265,9 +5419,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
@@ -5277,9 +5432,10 @@ export class ExchangeContract extends BaseContract {
     };
     public transferOwnership = {
         /**
-         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write Ethereum operation and will cost gas.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
@@ -5302,10 +5458,11 @@ export class ExchangeContract extends BaseContract {
             return txHash;
         },
         /**
-         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting. If the transaction was mined, but reverted, an error is thrown.
-         * @param txData                Additional data for transaction
-         * @param pollingIntervalMs     Interval at which to poll for success
-         * @returns                     A promise that resolves when the transaction is successful
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
          */
         awaitTransactionSuccessAsync(
             newOwner: string,
@@ -5330,8 +5487,8 @@ export class ExchangeContract extends BaseContract {
         },
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
-         * @param txData    Additional data for transaction
-         * @returns         The hash of the transaction
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
          */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
@@ -5353,7 +5510,9 @@ export class ExchangeContract extends BaseContract {
             return gas;
         },
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
@@ -5387,9 +5546,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
@@ -5402,7 +5562,9 @@ export class ExchangeContract extends BaseContract {
     };
     public VERSION = {
         /**
-         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas since they don't modify state.
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
          */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -5435,9 +5597,10 @@ export class ExchangeContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
-
         /**
-         * Returns the ABI encoded transaction data needed to send an Ethereum tx calling this method. Before sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used to create a 0x transaction (see protocol spec for more details).
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
          */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ExchangeContract;
@@ -7484,11 +7647,11 @@ export class ExchangeContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the Exchange contract.
-     * @param   eventName           The Exchange contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The Exchange contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ExchangeEventArgs>(
@@ -7514,7 +7677,7 @@ export class ExchangeContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -7527,11 +7690,11 @@ export class ExchangeContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The Exchange contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The Exchange contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ExchangeEventArgs>(
         eventName: ExchangeEvents,
