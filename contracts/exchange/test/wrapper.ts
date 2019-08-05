@@ -1682,12 +1682,16 @@ describe('Exchange wrappers', () => {
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(erc20Balances).to.be.deep.equal(newBalances);
             });
-            it('should revert if a single cancel fails', async () => {
+            it('should not revert if a single cancel noops', async () => {
                 await exchangeWrapper.cancelOrderAsync(signedOrders[1], makerAddress);
-                const orderHash = orderHashUtils.getOrderHashHex(signedOrders[1]);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
-                const tx = exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
-                return expect(tx).to.revertWith(expectedError);
+                const expectedOrderHashes = [signedOrders[0], ...signedOrders.slice(2)].map(order =>
+                    orderHashUtils.getOrderHashHex(order),
+                );
+                const tx = await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
+                expect(tx.logs.length).to.equal(signedOrders.length - 1);
+                tx.logs.forEach((log, index) => {
+                    expect((log as any).args.orderHash).to.equal(expectedOrderHashes[index]);
+                });
             });
         });
 

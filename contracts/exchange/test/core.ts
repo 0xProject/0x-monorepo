@@ -433,6 +433,29 @@ describe('Exchange core', () => {
             const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
             return expect(tx).to.revertWith(expectedError);
         });
+
+        it('should throw if rounding error is greater than 0.1%', async () => {
+            signedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetAmount: new BigNumber(1001),
+                takerAssetAmount: new BigNumber(3),
+            });
+
+            const fillTakerAssetAmount1 = new BigNumber(2);
+            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount: fillTakerAssetAmount1,
+            });
+
+            const fillTakerAssetAmount2 = new BigNumber(1);
+            const expectedError = new LibMathRevertErrors.RoundingError(
+                fillTakerAssetAmount2,
+                new BigNumber(3),
+                new BigNumber(1001),
+            );
+            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+                takerAssetFillAmount: fillTakerAssetAmount2,
+            });
+            return expect(tx).to.revertWith(expectedError);
+        });
     });
 
     describe('Fill transfer ordering', () => {
@@ -749,30 +772,20 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should revert if makerAssetAmount is 0', async () => {
+        it('should noop if makerAssetAmount is 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(0),
             });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHash,
-                OrderStatus.InvalidMakerAssetAmount,
-            );
-            const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(tx).to.revertWith(expectedError);
+            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            expect(tx.logs.length).to.equal(0);
         });
 
-        it('should revert if takerAssetAmount is 0', async () => {
+        it('should noop if takerAssetAmount is 0', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
                 takerAssetAmount: new BigNumber(0),
             });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(
-                orderHash,
-                OrderStatus.InvalidTakerAssetAmount,
-            );
-            const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(tx).to.revertWith(expectedError);
+            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            expect(tx.logs.length).to.equal(0);
         });
 
         it('should be able to cancel an order', async () => {
@@ -785,7 +798,7 @@ describe('Exchange core', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should log 1 event with correct arguments', async () => {
+        it('should log 1 event with correct arguments if cancelled successfully', async () => {
             const res = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
             expect(res.logs).to.have.length(1);
 
@@ -800,46 +813,19 @@ describe('Exchange core', () => {
             expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
         });
 
-        it('should revert if already cancelled', async () => {
+        it('should noop if already cancelled', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
-            const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(tx).to.revertWith(expectedError);
+            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            expect(tx.logs.length).to.equal(0);
         });
 
-        it('should revert if order is expired', async () => {
+        it('should noop if order is expired', async () => {
             const currentTimestamp = await getLatestBlockTimestampAsync();
             signedOrder = await orderFactory.newSignedOrderAsync({
                 expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
             });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Expired);
-            const tx = exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should revert if rounding error is greater than 0.1%', async () => {
-            signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: new BigNumber(1001),
-                takerAssetAmount: new BigNumber(3),
-            });
-
-            const fillTakerAssetAmount1 = new BigNumber(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount1,
-            });
-
-            const fillTakerAssetAmount2 = new BigNumber(1);
-            const expectedError = new LibMathRevertErrors.RoundingError(
-                fillTakerAssetAmount2,
-                new BigNumber(3),
-                new BigNumber(1001),
-            );
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: fillTakerAssetAmount2,
-            });
-            return expect(tx).to.revertWith(expectedError);
+            const tx = await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
+            expect(tx.logs.length).to.equal(0);
         });
     });
 
