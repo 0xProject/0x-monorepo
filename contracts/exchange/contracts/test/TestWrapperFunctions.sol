@@ -28,6 +28,8 @@ import "../src/Exchange.sol";
 contract TestWrapperFunctions is
     Exchange
 {
+    uint8 internal constant MAX_ORDER_STATUS = uint8(OrderStatus.CANCELLED);
+
     // solhint-disable no-unused-vars
     event FillOrderCalled(
         Order order,
@@ -45,7 +47,7 @@ contract TestWrapperFunctions is
         Exchange(0x74657374)
     {}
 
-    /// @dev Overridden to only log arguments and revert with certain inputs.
+    /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
     function _fillOrder(
         Order memory order,
         uint256 takerAssetFillAmount,
@@ -64,6 +66,14 @@ contract TestWrapperFunctions is
         if (order.salt == uint256(-1)) {
             revert("FILL_ORDER_FAILED");
         }
+
+        // We aren't interested in correctness here because we are testing the
+        // behavior of the caller, not `_fillOrder()` itself. We just need some
+        // values that the caller can aggregate together.
+        fillResults.makerAssetFilledAmount = order.makerAssetAmount;
+        fillResults.takerAssetFilledAmount = order.takerAssetAmount;
+        fillResults.makerFeePaid = order.makerFee;
+        fillResults.takerFeePaid = order.takerFee;
     }
 
     /// @dev Overridden to only log arguments and revert with certain inputs.
@@ -82,7 +92,7 @@ contract TestWrapperFunctions is
         }
     }
 
-    /// @dev Overridden to be deterministic.
+    /// @dev Overridden to be deterministic and simplified.
     function getOrderInfo(Order memory order)
         public
         view
@@ -91,7 +101,7 @@ contract TestWrapperFunctions is
         // Lower uint128 of `order.salt` is the `orderTakerAssetFilledAmount`.
         orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
         // High byte of `order.salt` is the `orderStatus`.
-        orderInfo.orderTakerAssetFilledAmount = uint8(order.salt >> 248);
+        orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
         // `orderHash` is just `keccak256(order.salt)`.
         orderInfo.orderHash = keccak256(abi.encode(order.salt));
     }
