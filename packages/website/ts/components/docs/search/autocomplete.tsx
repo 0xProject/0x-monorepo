@@ -28,14 +28,14 @@ interface ISnippetMatchLevels {
     [index: string]: number;
 }
 
-const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
-
 interface IAutoCompleteProps {
     isHome?: boolean;
     hits?: object[];
     currentRefinement?: string;
     refine?: (value: string) => void;
 }
+
+const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
 
 const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits = [], currentRefinement, refine }) => {
     const [value, setValue] = React.useState<string>('');
