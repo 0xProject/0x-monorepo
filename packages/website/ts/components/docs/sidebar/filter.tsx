@@ -6,6 +6,7 @@ import { colors } from 'ts/style/colors';
 export interface IFilterProps extends IFilterCheckboxProps {
     label: string;
     customLabel?: string;
+    isDisabled?: boolean;
     value: string;
     refine: (value: string) => void;
 }
@@ -14,22 +15,26 @@ interface IFilterCheckboxProps {
     isRefined: boolean;
 }
 
-export const Filter: React.FC<IFilterProps> = ({ isRefined, label, value, customLabel, refine }) => {
+export const Filter: React.FC<IFilterProps> = ({ isDisabled, isRefined, label, value, customLabel, refine }) => {
     const handleClick = () => refine(value);
 
     return (
-        <FilterWrapper onClick={handleClick}>
+        <FilterWrapper isDisabled={isDisabled} onClick={handleClick}>
             <FilterCheckbox isRefined={isRefined} />
             <FilterLabel>{customLabel ? customLabel : label}</FilterLabel>
         </FilterWrapper>
     );
 };
 
-const FilterWrapper = styled.label`
-    cursor: pointer;
+const FilterWrapper = styled.label<{ isDisabled: boolean }>`
     display: flex;
     align-items: center;
     margin-bottom: 0.83rem;
+
+    cursor: ${({ isDisabled }) => (isDisabled ? 'not-allowed' : 'pointer')};
+    pointer-events: ${({ isDisabled }) => isDisabled && 'none'};
+    opacity: ${({ isDisabled }) => (isDisabled ? 0.3 : 1)};
+    transition: opacity 250ms ease-in-out;
 `;
 
 const FilterCheckbox = styled.div<{ isRefined: boolean }>`
