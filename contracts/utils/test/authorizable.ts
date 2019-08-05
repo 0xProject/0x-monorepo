@@ -50,11 +50,7 @@ describe('Authorizable', () => {
         });
 
         it('should allow owner to add an authorized address', async () => {
-            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(
-                address,
-                { from: owner },
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await authorizable.addAuthorizedAddress.awaitTransactionSuccessAsync(address, { from: owner });
             const isAuthorized = await authorizable.authorized.callAsync(address);
             expect(isAuthorized).to.be.true();
         });
