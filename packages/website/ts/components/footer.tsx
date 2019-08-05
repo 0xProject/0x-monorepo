@@ -6,6 +6,8 @@ import { Link as SmartLink } from 'ts/components/documentation/shared/link';
 import { Logo } from 'ts/components/logo';
 import { Column, FlexWrap, WrapGrid } from 'ts/components/newLayout';
 import { NewsletterForm } from 'ts/components/newsletter_form';
+
+import { colors } from 'ts/style/colors';
 import { WebsitePaths } from 'ts/types';
 import { constants } from 'ts/utils/constants';
 
@@ -68,8 +70,12 @@ const linkRows: LinkRows[] = [
     },
 ];
 
-export const Footer: React.FC = () => (
-    <FooterWrap>
+interface IFooterProps {
+    isDocs?: boolean;
+}
+
+export const Footer: React.FC<IFooterProps> = ({ isDocs }) => (
+    <FooterWrap isDocs={isDocs}>
         <FlexWrap>
             <FooterColumn width="35%">
                 <Logo />
@@ -106,10 +112,10 @@ const LinkList = (props: LinkListProps) => (
     </List>
 );
 
-const FooterWrap = styled.footer`
+const FooterWrap = styled.footer<IFooterProps>`
     padding: 40px 30px 30px 30px;
     margin-top: 30px;
-    background-color: ${props => props.theme.footerBg};
+    background-color: ${props => (props.isDocs ? colors.backgroundLight : props.theme.footerBg)};
     color: ${props => props.theme.footerColor};
 
     path {
