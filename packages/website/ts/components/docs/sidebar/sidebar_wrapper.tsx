@@ -31,4 +31,10 @@ const SidebarAside = styled.aside`
 const SidebarContent = styled.div`
     position: sticky;
     top: ${docs.headerOffset}px; /* To make space for the header (react-headroom) when clicking on links */
+    max-height: 60vh;
+    overflow-y: auto;
+
+    @media (max-width: 900px) {
+        max-height: 100%;
+    }
 `;
