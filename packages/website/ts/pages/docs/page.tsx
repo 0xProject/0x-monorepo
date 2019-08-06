@@ -3,6 +3,7 @@ import { match } from 'react-router-dom';
 
 import { MDXProvider } from '@mdx-js/react';
 
+import { Animation } from 'ts/components/docs/mdx/animation';
 import { Code } from 'ts/components/docs/mdx/code';
 import { CodeTabs } from 'ts/components/docs/mdx/code_tabs';
 import { H1, H2, H3, H4, H5, H6 } from 'ts/components/docs/mdx/headings';
@@ -54,9 +55,12 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
     const isLoading = !Component && !wasNotFound;
     const { page, type } = match.params;
 
-    React.useEffect(() => {
-        void loadPageAsync(page, type);
-    }, [page, type]);
+    React.useEffect(
+        () => {
+            void loadPageAsync(page, type);
+        },
+        [page, type],
+    );
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
@@ -117,6 +121,7 @@ const mdxComponents = {
     p: Paragraph,
     table: Table,
     ul: UnorderedList,
-    Notification,
+    Animation,
     CodeTabs,
+    Notification,
 };
