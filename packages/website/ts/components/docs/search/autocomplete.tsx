@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
@@ -28,7 +29,7 @@ interface ISnippetMatchLevels {
     [index: string]: number;
 }
 
-interface IAutoCompleteProps {
+interface IAutoCompleteProps extends RouteComponentProps<{}> {
     isHome?: boolean;
     hits?: object[];
     currentRefinement?: string;
@@ -37,7 +38,13 @@ interface IAutoCompleteProps {
 
 const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
 
-const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits = [], currentRefinement, refine }) => {
+const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
+    isHome = false,
+    hits = [],
+    currentRefinement,
+    refine,
+    history,
+}) => {
     const [value, setValue] = React.useState<string>('');
 
     React.useEffect(() => {
@@ -53,17 +60,22 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
         };
     }, []);
 
-    const onChange = (event: React.KeyboardEvent, { newValue }: any): void => setValue(newValue);
+    const onChange = (event: React.KeyboardEvent, { newValue }: any): void => {
+        console.log('newValue', newValue);
+        setValue(newValue);
+    };
 
     const onSuggestionsFetchRequested = ({ value: newValue }: any): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
 
-    // tslint:disable-next-line: no-empty
-    const onSuggestionHighlighted = (): void => {};
-
-    // tslint:disable-next-line: no-empty
-    const onSuggestionSelected = (event: React.MouseEvent, { suggestion }: any): void => {};
+    const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
+        if (event.key === 'Enter' && suggestion.url) {
+            history.push(suggestion.url);
+            // Without using route props / withRouter HOC this coudl simply be (with full route load):
+            // location.href = suggestion.url;
+        }
+    };
 
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
 
@@ -117,7 +129,6 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
                     multiSection={true}
                     onSuggestionSelected={onSuggestionSelected}
                     onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-                    onSuggestionHighlighted={onSuggestionHighlighted}
                     onSuggestionsClearRequested={onSuggestionsClearRequested}
                     getSuggestionValue={getSuggestionValue}
                     renderSuggestion={renderSuggestion}
@@ -133,4 +144,4 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({ isHome = false, hits
     );
 };
 
-export const AutoComplete = connectAutoComplete(CustomAutoComplete);
+export const AutoComplete = connectAutoComplete(withRouter(CustomAutoComplete));
