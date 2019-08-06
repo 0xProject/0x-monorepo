@@ -73,28 +73,15 @@ contract MixinWrapperFunctions is
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            FILL_ORDER_SELECTOR,
+            IExchangeCore(0).fillOrder.selector,
             order,
             takerAssetFillAmount,
             signature
         );
 
-        // Delegate to `fillOrder` and handle any exceptions gracefully
-        assembly {
-            let success := delegatecall(
-                gas,                                // forward all gas
-                address,                            // call address of this contract
-                add(fillOrderCalldata, 32),         // pointer to start of input (skip array length in first 32 bytes)
-                mload(fillOrderCalldata),           // length of input
-                fillOrderCalldata,                  // write output over input
-                128                                 // output size is 128 bytes
-            )
-            if success {
-                mstore(fillResults, mload(fillOrderCalldata))
-                mstore(add(fillResults, 32), mload(add(fillOrderCalldata, 32)))
-                mstore(add(fillResults, 64), mload(add(fillOrderCalldata, 64)))
-                mstore(add(fillResults, 96), mload(add(fillOrderCalldata, 96)))
-            }
+        (bool didSucceed, bytes memory resultData) = address(this).delegatecall(fillOrderCalldata);
+        if (didSucceed) {
+            fillResults = abi.decode(resultData, (FillResults));
         }
         // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
