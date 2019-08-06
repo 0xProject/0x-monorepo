@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { colors } from 'ts/style/colors';
 
 export interface IStepLinkProps {
@@ -49,12 +48,7 @@ const StepLinkWrapper = styled(Link)`
     justify-content: space-between;
 
     &:hover {
-        background: ${colors.brandDark};
-
-        * {
-            color: ${colors.white};
-            fill: ${colors.white};
-        }
+        background: ${colors.backgroundLightHover};
     }
 
     & + & {
