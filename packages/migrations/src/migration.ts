@@ -91,6 +91,21 @@ export async function runMigrationsAsync(
         erc721TokenInfo[0].symbol,
     );
 
+    // 1155 Asset Proxy
+    const erc1155Proxy = await wrappers.ERC1155ProxyContract.deployFrom0xArtifactAsync(
+        artifacts.ERC1155Proxy,
+        provider,
+        txDefaults,
+        artifacts,
+    );
+
+    const staticCallProxy = await wrappers.StaticCallProxyContract.deployFrom0xArtifactAsync(
+        artifacts.StaticCallProxy,
+        provider,
+        txDefaults,
+        artifacts,
+    );
+
     const multiAssetProxy = await wrappers.MultiAssetProxyContract.deployFrom0xArtifactAsync(
         artifacts.MultiAssetProxy,
         provider,
@@ -105,6 +120,9 @@ export async function runMigrationsAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, txDefaults),
     );
 
@@ -116,10 +134,19 @@ export async function runMigrationsAsync(
         await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.addAuthorizedAddress.sendTransactionAsync(multiAssetProxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc20Proxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await multiAssetProxy.registerAssetProxy.sendTransactionAsync(staticCallProxy.address, txDefaults),
     );
 
     // Register the Asset Proxies to the Exchange
@@ -130,7 +157,13 @@ export async function runMigrationsAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(erc721Proxy.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(erc1155Proxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await exchange.registerAssetProxy.sendTransactionAsync(multiAssetProxy.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
+        await exchange.registerAssetProxy.sendTransactionAsync(staticCallProxy.address, txDefaults),
     );
 
     // Forwarder
@@ -189,6 +222,9 @@ export async function runMigrationsAsync(
         await erc721Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
     );
     await web3Wrapper.awaitTransactionSuccessAsync(
+        await erc1155Proxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
+    );
+    await web3Wrapper.awaitTransactionSuccessAsync(
         await multiAssetProxy.transferOwnership.sendTransactionAsync(assetProxyOwner.address, txDefaults),
     );
 
@@ -219,6 +255,7 @@ export async function runMigrationsAsync(
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
+        erc1155Proxy: erc1155Proxy.address,
         zrxToken: zrxToken.address,
         etherToken: etherToken.address,
         exchange: exchange.address,
@@ -228,6 +265,8 @@ export async function runMigrationsAsync(
         dutchAuction: dutchAuction.address,
         coordinatorRegistry: coordinatorRegistry.address,
         coordinator: coordinator.address,
+        multiAssetProxy: multiAssetProxy.address,
+        staticCallProxy: staticCallProxy.address,
     };
 
     return contractAddresses;

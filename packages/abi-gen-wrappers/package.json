@@ -22,7 +22,7 @@
         "docs": "typedoc --excludePrivate --excludeExternals --target ES5 --tsconfig typedoc-tsconfig.json --out generated_docs ./src/generated-wrappers/*"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker).json"
+        "abis": "../contract-artifacts/artifacts/@(AssetProxyOwner|DutchAuction|DummyERC20Token|DummyERC721Token|ERC20Proxy|ERC20Token|ERC721Proxy|ERC721Token|Exchange|Forwarder|IAssetProxy|IValidator|IWallet|MultiAssetProxy|OrderValidator|WETH9|ZRXToken|Coordinator|CoordinatorRegistry|EthBalanceChecker|ERC1155Proxy|StaticCallProxy).json"
     },
     "repository": {
         "type": "git",
