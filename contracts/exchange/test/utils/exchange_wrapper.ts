@@ -135,23 +135,9 @@ export class ExchangeWrapper {
     public async marketSellOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { takerAssetFillAmount: BigNumber },
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketSellOrders.sendTransactionAsync(
-            orders,
-            opts.takerAssetFillAmount,
-            orders.map(signedOrder => signedOrder.signature),
-            { from },
-        );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
-    }
-    public async marketSellOrdersNoThrowAsync(
-        orders: SignedOrder[],
-        from: string,
         opts: { takerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
+        const txHash = await this._exchange.marketSellOrders.sendTransactionAsync(
             orders,
             opts.takerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),
@@ -163,23 +149,9 @@ export class ExchangeWrapper {
     public async marketBuyOrdersAsync(
         orders: SignedOrder[],
         from: string,
-        opts: { makerAssetFillAmount: BigNumber },
-    ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketBuyOrders.sendTransactionAsync(
-            orders,
-            opts.makerAssetFillAmount,
-            orders.map(signedOrder => signedOrder.signature),
-            { from },
-        );
-        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
-        return tx;
-    }
-    public async marketBuyOrdersNoThrowAsync(
-        orders: SignedOrder[],
-        from: string,
         opts: { makerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
+        const txHash = await this._exchange.marketBuyOrders.sendTransactionAsync(
             orders,
             opts.makerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),

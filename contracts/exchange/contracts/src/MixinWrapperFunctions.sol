@@ -164,57 +164,12 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    /// @param orders Array of order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signatures Proofs that orders have been created by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrders(
-        LibOrder.Order[] memory orders,
-        uint256 takerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        nonReentrant
-        returns (FillResults memory fillResults)
-    {
-        bytes memory takerAssetData = orders[0].takerAssetData;
-
-        uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i != ordersLength; i++) {
-
-            // The `takerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].takerAssetData = takerAssetData;
-
-            // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
-
-            // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = _fillOrder(
-                orders[i],
-                remainingTakerAssetFillAmount,
-                signatures[i]
-            );
-
-            // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
-
-            // Stop execution if the entire amount of takerAsset has been sold
-            if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
-                break;
-            }
-        }
-        return fillResults;
-    }
-
     /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrdersNoThrow(
+    function marketSellOrders(
         LibOrder.Order[] memory orders,
         uint256 takerAssetFillAmount,
         bytes[] memory signatures
@@ -253,65 +208,12 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev Executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
-    /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
-    /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrders(
-        LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        nonReentrant
-        returns (FillResults memory fillResults)
-    {
-        bytes memory makerAssetData = orders[0].makerAssetData;
-
-        uint256 ordersLength = orders.length;
-        for (uint256 i = 0; i != ordersLength; i++) {
-
-            // The `makerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].makerAssetData = makerAssetData;
-
-            // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
-
-            // Convert the remaining amount of makerAsset to buy into remaining amount
-            // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountFloor(
-                orders[i].takerAssetAmount,
-                orders[i].makerAssetAmount,
-                remainingMakerAssetFillAmount
-            );
-
-            // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = _fillOrder(
-                orders[i],
-                remainingTakerAssetFillAmount,
-                signatures[i]
-            );
-
-            // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
-
-            // Stop execution if the entire amount of makerAsset has been bought
-            if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
-                break;
-            }
-        }
-        return fillResults;
-    }
-
     /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrdersNoThrow(
+    function marketBuyOrders(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures

@@ -17,6 +17,7 @@ import {
     artifacts,
     TestWrapperFunctionsContract,
     TestWrapperFunctionsFillOrderCalledEventArgs as FillOrderCalledEventArgs,
+    TestWrapperFunctionsCancelOrderCalledEventArgs as CancelOrderCalledEventArgs,
 } from '../src';
 
 blockchainTests.only('Exchange wrapper functions unit tests.', env => {
@@ -37,8 +38,10 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
     };
     let testContract: TestWrapperFunctionsContract;
     let txHelper: TransactionHelper;
+    let senderAddress: string;
 
     before(async () => {
+        [ senderAddress ] = await env.getAccountAddressesAsync();
         txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
         testContract = await TestWrapperFunctionsContract.deployFrom0xArtifactAsync(
             artifacts.TestWrapperFunctions,
@@ -580,6 +583,66 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 orders,
                 fillAmounts,
                 signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    // Asserts that `_cancelOrder()` was called in the same order and with the same
+    // arguments as given by examining receipt logs.
+    function assertCancelOrderCallsFromLogs(
+        logs: LogEntry[],
+        calls: Order[],
+    ): void {
+        expect(logs.length).to.eq(calls.length);
+        for (const i of _.times(calls.length)) {
+            const log = logs[i] as LogWithDecodedArgs<CancelOrderCalledEventArgs>;
+            const expectedOrder = calls[i];
+            expect(log.event).to.eq('CancelOrderCalled');
+            assertSameOrderFromEvent(log.args.order as any, expectedOrder);
+        }
+    }
+
+    describe('batchCancelOrders', () => {
+        it('works with no orders', async () => {
+            const [ , receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchCancelOrders,
+                [],
+            );
+            assertCancelOrderCallsFromLogs(receipt.logs, []);
+        });
+
+        it('works with many orders', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder({ makerAddress: senderAddress }));
+            const [ , receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchCancelOrders,
+                orders,
+            );
+            assertCancelOrderCallsFromLogs(receipt.logs, orders);
+        });
+
+        it('works with duplicate orders', async () => {
+            const COUNT = 3;
+            const order = randomOrder({ makerAddress: senderAddress });
+            const orders = _.times(COUNT, () => order);
+            const [ , receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchCancelOrders,
+                orders,
+            );
+            assertCancelOrderCallsFromLogs(receipt.logs, orders);
+        });
+
+        it('reverts if one `_cancelOrder()` reverts', async () => {
+            const COUNT = 8;
+            const FAILING_ORDER_INDEX = 4;
+            const orders = _.times(COUNT, () => randomOrder({ makerAddress: senderAddress }));
+            const failingOrder = orders[FAILING_ORDER_INDEX];
+            failingOrder.salt = ALWAYS_FAILING_SALT;
+            const expectedError = ALWAYS_FAILING_SALT_REVERT_ERROR;
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchCancelOrders,
+                orders,
             );
             return expect(tx).to.revertWith(expectedError);
         });

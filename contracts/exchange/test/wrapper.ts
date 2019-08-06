@@ -925,167 +925,7 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
-                            takerAssetFillAmount: signedOrder.takerAssetAmount,
-                        });
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('marketSellOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
-            it('should stop when the entire takerAssetFillAmount is filled', async () => {
-                const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
-                    signedOrders[1].takerAssetAmount.div(2),
-                );
-
-                const fillResults = await exchange.marketSellOrders.callAsync(
-                    signedOrders,
-                    takerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.plus(
-                    signedOrders[1].makerAssetAmount.dividedToIntegerBy(2),
-                );
-                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
-
-                expect(fillResults.makerAssetFilledAmount).to.bignumber.equal(makerAssetFilledAmount);
-                expect(fillResults.takerAssetFilledAmount).to.bignumber.equal(takerAssetFillAmount);
-                expect(fillResults.makerFeePaid).to.bignumber.equal(makerFee);
-                expect(fillResults.takerFeePaid).to.bignumber.equal(takerFee);
-
-                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
-                );
-                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][feeToken.address].minus(makerFee),
-                );
-                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
-                );
-                expect(newBalances[takerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][feeToken.address].minus(takerFee),
-                );
-                expect(newBalances[feeRecipientAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][feeToken.address].plus(makerFee.plus(takerFee)),
-                );
-            });
-
-            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                _.forEach(signedOrders, signedOrder => {
-                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultMakerAssetAddress
-                    ].minus(signedOrder.makerAssetAmount);
-                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultTakerAssetAddress
-                    ].plus(signedOrder.takerAssetAmount);
-                    erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
-                        signedOrder.makerFee,
-                    );
-                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultMakerAssetAddress
-                    ].plus(signedOrder.makerAssetAmount);
-                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultTakerAssetAddress
-                    ].minus(signedOrder.takerAssetAmount);
-                    erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
-                        signedOrder.takerFee,
-                    );
-                    erc20Balances[feeRecipientAddress][feeToken.address] = erc20Balances[feeRecipientAddress][
-                        feeToken.address
-                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
-                });
-
-                const fillResults = await exchange.marketSellOrders.callAsync(
-                    signedOrders,
-                    takerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                        }),
-                        nullFillResults,
-                    );
-
-                expect(fillResults).to.deep.equal(expectedFillResults);
-                expect(newBalances).to.be.deep.equal(erc20Balances);
-            });
-
-            it('should revert when a signedOrder does not use the same takerAssetAddress', async () => {
-                signedOrders = [
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync({
-                        takerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
-                    }),
-                    await orderFactory.newSignedOrderAsync(),
-                ];
-                const reconstructedOrder = {
-                    ...signedOrders[1],
-                    takerAssetData: signedOrders[0].takerAssetData,
-                };
-                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
-                    orderHashHex,
-                    signedOrders[1].makerAddress,
-                    signedOrders[1].signature,
-                );
-                const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                });
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('marketSellOrdersNoThrow', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketSellOrdersNoThrow to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        await exchangeWrapper.marketSellOrdersNoThrowAsync([signedOrder], takerAddress, {
+                        await exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
                             takerAssetFillAmount: signedOrder.takerAssetAmount,
                         });
                         const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -1093,7 +933,7 @@ describe('Exchange wrappers', () => {
                     });
                 }
             };
-            describe('marketSellOrdersNoThrow reentrancy tests', () =>
+            describe('marketSellOrders reentrancy tests', () =>
                 reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
@@ -1101,13 +941,13 @@ describe('Exchange wrappers', () => {
                     signedOrders[1].takerAssetAmount.div(2),
                 );
 
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketSellOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1176,13 +1016,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketSellOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1250,13 +1090,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketSellOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1303,167 +1143,7 @@ describe('Exchange wrappers', () => {
                             await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
                             constants.AWAIT_TRANSACTION_MINED_MS,
                         );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
-                            makerAssetFillAmount: signedOrder.makerAssetAmount,
-                        });
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('marketBuyOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
-            it('should stop when the entire makerAssetFillAmount is filled', async () => {
-                const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
-                    signedOrders[1].makerAssetAmount.div(2),
-                );
-
-                const fillResults = await exchange.marketBuyOrders.callAsync(
-                    signedOrders,
-                    makerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const makerAmountBought = signedOrders[0].takerAssetAmount.plus(
-                    signedOrders[1].takerAssetAmount.dividedToIntegerBy(2),
-                );
-                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
-
-                expect(fillResults.makerAssetFilledAmount).to.bignumber.equal(makerAssetFillAmount);
-                expect(fillResults.takerAssetFilledAmount).to.bignumber.equal(makerAmountBought);
-                expect(fillResults.makerFeePaid).to.bignumber.equal(makerFee);
-                expect(fillResults.takerFeePaid).to.bignumber.equal(takerFee);
-
-                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(makerAmountBought),
-                );
-                expect(newBalances[makerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][feeToken.address].minus(makerFee),
-                );
-                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
-                );
-                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][feeToken.address].minus(takerFee),
-                );
-                expect(newBalances[feeRecipientAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][feeToken.address].plus(makerFee.plus(takerFee)),
-                );
-            });
-
-            it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
-                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                _.forEach(signedOrders, signedOrder => {
-                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultMakerAssetAddress
-                    ].minus(signedOrder.makerAssetAmount);
-                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultTakerAssetAddress
-                    ].plus(signedOrder.takerAssetAmount);
-                    erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
-                        signedOrder.makerFee,
-                    );
-                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultMakerAssetAddress
-                    ].plus(signedOrder.makerAssetAmount);
-                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultTakerAssetAddress
-                    ].minus(signedOrder.takerAssetAmount);
-                    erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
-                        signedOrder.takerFee,
-                    );
-                    erc20Balances[feeRecipientAddress][feeToken.address] = erc20Balances[feeRecipientAddress][
-                        feeToken.address
-                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
-                });
-
-                const fillResults = await exchange.marketBuyOrders.callAsync(
-                    signedOrders,
-                    makerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                        }),
-                        nullFillResults,
-                    );
-
-                expect(fillResults).to.deep.equal(expectedFillResults);
-                expect(newBalances).to.be.deep.equal(erc20Balances);
-            });
-
-            it('should revert when a signedOrder does not use the same makerAssetAddress', async () => {
-                signedOrders = [
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
-                    }),
-                    await orderFactory.newSignedOrderAsync(),
-                ];
-                const reconstructedOrder = {
-                    ...signedOrders[1],
-                    makerAssetData: signedOrders[0].makerAssetData,
-                };
-                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
-                    orderHashHex,
-                    signedOrders[1].makerAddress,
-                    signedOrders[1].signature,
-                );
-                const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                });
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('marketBuyOrdersNoThrow', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketBuyOrdersNoThrow to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        await exchangeWrapper.marketBuyOrdersNoThrowAsync([signedOrder], takerAddress, {
+                        await exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
                             makerAssetFillAmount: signedOrder.makerAssetAmount,
                         });
                         const newBalances = await erc20Wrapper.getBalancesAsync();
@@ -1471,7 +1151,7 @@ describe('Exchange wrappers', () => {
                     });
                 }
             };
-            describe('marketBuyOrdersNoThrow reentrancy tests', () =>
+            describe('marketBuyOrders reentrancy tests', () =>
                 reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
@@ -1479,13 +1159,13 @@ describe('Exchange wrappers', () => {
                     signedOrders[1].makerAssetAmount.div(2),
                 );
 
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketBuyOrders.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1554,13 +1234,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketBuyOrders.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1629,13 +1309,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketBuyOrders.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
