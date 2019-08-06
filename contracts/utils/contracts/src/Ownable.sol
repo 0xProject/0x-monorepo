@@ -30,7 +30,9 @@ contract Ownable is
         public
         onlyOwner
     {
-        if (newOwner != address(0)) {
+        if (newOwner == address(0)) {
+            LibRichErrors._rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
+        } else {
             owner = newOwner;
         }
     }

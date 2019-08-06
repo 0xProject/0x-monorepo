@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
-import "./interfaces/IAssetProxy.sol";
-import "./interfaces/IAssetProxyDispatcher.sol";
+import "../archive/Ownable.sol";
+import "../src/interfaces/IAssetProxy.sol";
+import "../src/interfaces/IAssetProxyDispatcher.sol";
 
 
 contract MixinAssetProxyDispatcher is
@@ -84,7 +84,7 @@ contract MixinAssetProxyDispatcher is
                 assetData.length > 3,
                 "LENGTH_GREATER_THAN_3_REQUIRED"
             );
-            
+
             // Lookup assetProxy. We do not use `LibBytes.readBytes4` for gas efficiency reasons.
             bytes4 assetProxyId;
             assembly {
@@ -100,10 +100,10 @@ contract MixinAssetProxyDispatcher is
                 assetProxy != address(0),
                 "ASSET_PROXY_DOES_NOT_EXIST"
             );
-            
+
             // We construct calldata for the `assetProxy.transferFrom` ABI.
             // The layout of this calldata is in the table below.
-            // 
+            //
             // | Area     | Offset | Length  | Contents                                    |
             // | -------- |--------|---------|-------------------------------------------- |
             // | Header   | 0      | 4       | function selector                           |
@@ -127,12 +127,12 @@ contract MixinAssetProxyDispatcher is
                 // `cdEnd` is the end of the calldata for `assetProxy.transferFrom`.
                 let cdEnd := add(cdStart, add(132, dataAreaLength))
 
-                
+
                 /////// Setup Header Area ///////
                 // This area holds the 4-byte `transferFromSelector`.
                 // bytes4(keccak256("transferFrom(bytes,address,address,uint256)")) = 0xa85e59e4
                 mstore(cdStart, 0xa85e59e400000000000000000000000000000000000000000000000000000000)
-                
+
                 /////// Setup Params Area ///////
                 // Each parameter is padded to 32-bytes. The entire Params Area is 128 bytes.
                 // Notes:
@@ -142,7 +142,7 @@ contract MixinAssetProxyDispatcher is
                 mstore(add(cdStart, 36), and(from, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 68), and(to, 0xffffffffffffffffffffffffffffffffffffffff))
                 mstore(add(cdStart, 100), amount)
-                
+
                 /////// Setup Data Area ///////
                 // This area holds `assetData`.
                 let dataArea := add(cdStart, 132)
@@ -159,7 +159,7 @@ contract MixinAssetProxyDispatcher is
                     assetProxy,             // call address of asset proxy
                     0,                      // don't send any ETH
                     cdStart,                // pointer to start of input
-                    sub(cdEnd, cdStart),    // length of input  
+                    sub(cdEnd, cdStart),    // length of input
                     cdStart,                // write output over input
                     512                     // reserve 512 bytes for output
                 )

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2018 ZeroEx Intl.
+  Copyright 2019 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/Ownable.sol";
-import "./interfaces/IAuthorizable.sol";
+import "../archive/Ownable.sol";
+import "../src/interfaces/IAuthorizable.sol";
 
 
 contract MixinAuthorizable is

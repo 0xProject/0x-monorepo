@@ -1,8 +1,6 @@
 import { BigNumber } from './configured_bignumber';
 import { RevertError } from './revert_error';
 
-// tslint:disable:max-classes-per-file
-
 export enum SafeMathErrorCodes {
     Uint256AdditionOverflow,
     Uint256MultiplicationOverflow,
