@@ -60,7 +60,8 @@ const CommunityLinkWrapper = styled(Link)`
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-color: ${colors.backgroundLight};
+    background: ${colors.backgroundLight};
+    transition: background 250ms ease-in-out;
 
     &:hover {
         background: ${colors.backgroundLightHover};

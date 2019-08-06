@@ -37,7 +37,6 @@ export const StepLink: React.FC<IStepLinkProps> = props => (
 );
 
 const StepLinksWrapper = styled.div`
-    background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
 `;
 
@@ -46,6 +45,9 @@ const StepLinkWrapper = styled(Link)`
     display: flex;
     align-items: center;
     justify-content: space-between;
+
+    background: ${colors.backgroundLight};
+    transition: background 250ms ease-in-out;
 
     &:hover {
         background: ${colors.backgroundLightHover};
