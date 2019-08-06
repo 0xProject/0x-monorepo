@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
@@ -54,7 +53,6 @@ const CommunityLinksWrapper = styled.div`
 `;
 
 const CommunityLinkWrapper = styled(Link)`
-    background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 50px;
     display: flex;
@@ -62,6 +60,11 @@ const CommunityLinkWrapper = styled(Link)`
     align-items: center;
     justify-content: center;
     text-align: center;
+    background-color: ${colors.backgroundLight};
+
+    &:hover {
+        background: ${colors.backgroundLightHover};
+    }
 `;
 
 const CommunityIcon = styled(Icon)`

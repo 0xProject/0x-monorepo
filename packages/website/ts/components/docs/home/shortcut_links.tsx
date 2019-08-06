@@ -6,7 +6,6 @@ import { Heading, Paragraph } from 'ts/components/text';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { colors } from 'ts/style/colors';
 
 interface IShortcutLinksProps {
@@ -62,13 +61,17 @@ const ShortcutIcon = styled(Icon)`
 `;
 
 const ShortcutLinkWrapper = styled(Link)`
-    background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 50px;
     display: flex;
     align-items: center;
     flex-direction: column;
     text-align: center;
+    background-color: ${colors.backgroundLight};
+
+    &:hover {
+        background: ${colors.backgroundLightHover};
+    }
 
     @media (min-width: 900px) {
         flex-direction: row;
