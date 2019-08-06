@@ -29,6 +29,8 @@ contract TestWrapperFunctions is
     Exchange
 {
     uint8 internal constant MAX_ORDER_STATUS = uint8(OrderStatus.CANCELLED);
+    uint256 internal constant ALWAYS_FAILING_SALT = uint256(-1);
+    string internal constant ALWAYS_FAILING_SALT_REVERT_REASON = "ALWAYS_FAILING_SALT";
 
     // solhint-disable no-unused-vars
     event FillOrderCalled(
@@ -62,9 +64,9 @@ contract TestWrapperFunctions is
             signature
         );
 
-        // Fail if the salt is uint256(-1).
-        if (order.salt == uint256(-1)) {
-            revert("FILL_ORDER_FAILED");
+        // Fail if the salt is ALWAYS_FAILING_SALT.
+        if (order.salt == ALWAYS_FAILING_SALT) {
+            revert(ALWAYS_FAILING_SALT_REVERT_REASON);
         }
 
         // We aren't interested in correctness here because we are testing the
@@ -86,9 +88,9 @@ contract TestWrapperFunctions is
             order
         );
 
-        // Fail if the salt is uint256(-1).
-        if (order.salt == uint256(-1)) {
-            revert("CANCEL_ORDER_FAILED");
+        // Fail if the salt is ALWAYS_FAILING_SALT.
+        if (order.salt == ALWAYS_FAILING_SALT) {
+            revert(ALWAYS_FAILING_SALT_REVERT_REASON);
         }
     }
 

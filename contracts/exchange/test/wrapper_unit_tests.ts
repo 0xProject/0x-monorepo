@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, OrderWithoutDomain as Order } from '@0x/types';
-import { BigNumber, StringRevertError } from '@0x/utils';
+import { AnyRevertError, BigNumber, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -28,7 +28,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
     const randomTimestamp = () => new BigNumber(Math.floor(_.now() / 1000) + _.random(0, 34560));
     const randomSalt = () => new BigNumber(hexRandom(constants.WORD_LENGTH).substr(2), 16);
     const ALWAYS_FAILING_SALT = constants.MAX_UINT256;
-    const FILL_ORDER_FAILED_REVERT_ERROR = new StringRevertError('FILL_ORDER_FAILED');
+    const ALWAYS_FAILING_SALT_REVERT_ERROR = new StringRevertError('ALWAYS_FAILING_SALT');
     const EMPTY_FILL_RESULTS = {
         makerAssetFilledAmount: constants.ZERO_AMOUNT,
         takerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -75,6 +75,9 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
 
     // Computes the expected (fake) fill results from `TestWrapperFunctions` `_fillOrder` implementation.
     function getExpectedFillResults(order: Order): FillResults {
+        if (order.salt === ALWAYS_FAILING_SALT) {
+            return EMPTY_FILL_RESULTS;
+        }
         return {
             makerAssetFilledAmount: order.makerAssetAmount,
             takerAssetFilledAmount: order.takerAssetAmount,
@@ -131,15 +134,16 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 takerAssetAmount: fillAmount,
             });
             const signature = randomSignature();
-            const expected = getExpectedFillResults(order);
-            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+            const expectedResult = getExpectedFillResults(order);
+            const expectedCalls = [[ order, fillAmount, signature ]];
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.fillOrKillOrder,
                 order,
                 fillAmount,
                 signature,
             );
-            expect(actual).to.deep.eq(expected);
-            assertFillOrderCallsFromLogs(receipt.logs, [[ order, fillAmount, signature ]]);
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
 
         it('reverts if the order is filled by less than `takerAssetFillAmount`', async () => {
@@ -183,7 +187,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             const order = randomOrder({
                 salt: ALWAYS_FAILING_SALT,
             });
-            const expectedError = FILL_ORDER_FAILED_REVERT_ERROR;
+            const expectedError = ALWAYS_FAILING_SALT_REVERT_ERROR;
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
                 order,
                 fillAmount,
@@ -198,15 +202,16 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             const fillAmount = randomAmount();
             const order = randomOrder();
             const signature = randomSignature();
-            const expected = getExpectedFillResults(order);
-            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+            const expectedResult = getExpectedFillResults(order);
+            const expectedCalls = [[ order, fillAmount, signature ]];
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.fillOrderNoThrow,
                 order,
                 fillAmount,
                 signature,
             );
-            expect(actual).to.deep.eq(expected);
-            assertFillOrderCallsFromLogs(receipt.logs, [[ order, fillAmount, signature ]]);
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
         });
 
         it('does not revert if `fillOrder()` reverts', async () => {
@@ -215,15 +220,368 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 salt: ALWAYS_FAILING_SALT,
             });
             const signature = randomSignature();
-            const expected = EMPTY_FILL_RESULTS;
-            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+            const expectedResult = EMPTY_FILL_RESULTS;
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.fillOrderNoThrow,
                 order,
                 fillAmount,
                 signature,
             );
-            expect(actual).to.deep.eq(expected);
+            expect(actualResult).to.deep.eq(expectedResult);
             assertFillOrderCallsFromLogs(receipt.logs, []);
+        });
+    });
+
+    describe('batchFillOrders', () => {
+        it('works with no fills', async () => {
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                [],
+                [],
+                [],
+            );
+            expect(actualResult).to.deep.eq([]);
+            assertFillOrderCallsFromLogs(receipt.logs, []);
+        });
+
+        it('works with one fill', async () => {
+            const COUNT = 1;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with many fills', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with duplicate orders', async () => {
+            const COUNT = 2;
+            const order = randomOrder();
+            const signature = randomSignature();
+            const orders = _.times(COUNT, () => order);
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount.dividedToIntegerBy(COUNT));
+            const signatures = _.times(COUNT, () => signature);
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('reverts if there are more orders than fill amounts', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if there are more orders than signatures', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT - 1, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('batchFillOrKillOrders', () => {
+        it('works with no fills', async () => {
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                [],
+                [],
+                [],
+            );
+            expect(actualResult).to.deep.eq([]);
+            assertFillOrderCallsFromLogs(receipt.logs, []);
+        });
+
+        it('works with one fill', async () => {
+            const COUNT = 1;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with many fills', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with duplicate orders', async () => {
+            const COUNT = 2;
+            const order = randomOrder();
+            const signature = randomSignature();
+            const orders = _.times(COUNT, () => order);
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => signature);
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('reverts if any fill sells less than its takerAssetFillAmount', async () => {
+            const COUNT = 8;
+            const FAILING_ORDER_INDEX = 6;
+            const orders = _.times(COUNT, () => randomOrder());
+            const failingOrder = orders[FAILING_ORDER_INDEX];
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
+            // the `takerAssetFilledAmount`.
+            failingOrder.takerAssetAmount = failingOrder.takerAssetAmount.minus(1);
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                getExpectedOrderHash(failingOrder),
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if any fill sells more than its takerAssetFillAmount', async () => {
+            const COUNT = 8;
+            const FAILING_ORDER_INDEX = 6;
+            const orders = _.times(COUNT, () => randomOrder());
+            const failingOrder = orders[FAILING_ORDER_INDEX];
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
+            // the `takerAssetFilledAmount`.
+            failingOrder.takerAssetAmount = failingOrder.takerAssetAmount.plus(1);
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                getExpectedOrderHash(failingOrder),
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if there are more orders than fill amounts', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if there are more orders than signatures', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT - 1, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrKillOrders,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('batchFillOrdersNoThrow', () => {
+        it('works with no fills', async () => {
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                [],
+                [],
+                [],
+            );
+            expect(actualResult).to.deep.eq([]);
+            assertFillOrderCallsFromLogs(receipt.logs, []);
+        });
+
+        it('works with one fill', async () => {
+            const COUNT = 1;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with many fills', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works with duplicate orders', async () => {
+            const COUNT = 2;
+            const order = randomOrder();
+            const signature = randomSignature();
+            const orders = _.times(COUNT, () => order);
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount.dividedBy(COUNT));
+            const signatures = _.times(COUNT, () => signature);
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('works if a fill fails', async () => {
+            const COUNT = 8;
+            const FAILING_ORDER_INDEX = 6;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const failingOrder = orders[FAILING_ORDER_INDEX];
+            failingOrder.salt = ALWAYS_FAILING_SALT;
+            const expectedResult = orders.map(getExpectedFillResults);
+            const expectedCalls = _.zip(orders, fillAmounts, signatures);
+            expectedCalls.splice(FAILING_ORDER_INDEX, 1);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls as any);
+        });
+
+        it('reverts if there are more orders than fill amounts', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT - 1, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if there are more orders than signatures', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
+            const signatures = _.times(COUNT - 1, () => randomSignature());
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.batchFillOrdersNoThrow,
+                orders,
+                fillAmounts,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
         });
     });
 
@@ -248,17 +606,28 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
 
         it('works with one order', async () => {
             const orders = [ randomOrder() ];
-            const expected = orders.map(getExpectedOrderInfo);
-            const actual = await testContract.getOrdersInfo.callAsync(orders);
-            expect(actual).to.deep.eq(expected);
+            const expectedResult = orders.map(getExpectedOrderInfo);
+            const actualResult = await testContract.getOrdersInfo.callAsync(orders);
+            expect(actualResult).to.deep.eq(expectedResult);
         });
 
         it('works with many orders', async () => {
             const NUM_ORDERS = 16;
             const orders = _.times(NUM_ORDERS, () => randomOrder());
-            const expected = orders.map(getExpectedOrderInfo);
-            const actual = await testContract.getOrdersInfo.callAsync(orders);
-            expect(actual).to.deep.eq(expected);
+            const expectedResult = orders.map(getExpectedOrderInfo);
+            const actualResult = await testContract.getOrdersInfo.callAsync(orders);
+            expect(actualResult).to.deep.eq(expectedResult);
+        });
+
+        it('works with duplicate orders', async () => {
+            const NUM_UNIQUE_ORDERS = 4;
+            const CLONE_COUNT = 2;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.flatten(_.times(CLONE_COUNT, () => uniqueOrders));
+            const expectedResult = orders.map(getExpectedOrderInfo);
+            const actualResult = await testContract.getOrdersInfo.callAsync(orders);
+            expect(actualResult).to.deep.eq(expectedResult);
         });
     });
 });
+// tslint:disable-next-line: max-file-line-count
