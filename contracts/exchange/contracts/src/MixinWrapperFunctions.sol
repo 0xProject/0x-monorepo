@@ -371,19 +371,6 @@ contract MixinWrapperFunctions is
         return fillResults;
     }
 
-    /// @dev After calling, the order can not be filled anymore.
-    //       Returns false if the cancelOrder call would otherwise revert.
-    /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    /// @return True if the order was cancelled successfully.
-    function cancelOrderNoThrow(LibOrder.Order memory order)
-        public
-        returns (bool didCancel)
-    {
-        bytes memory cancelOrderCallData = abi.encodeWithSelector(CANCEL_ORDER_SELECTOR, order);
-        (didCancel,) = address(this).delegatecall(cancelOrderCallData);
-        return didCancel;
-    }
-
     /// @dev Executes multiple calls of cancelOrder.
     /// @param orders Array of order specifications.
     function batchCancelOrders(LibOrder.Order[] memory orders)
@@ -394,21 +381,6 @@ contract MixinWrapperFunctions is
         for (uint256 i = 0; i != ordersLength; i++) {
             _cancelOrder(orders[i]);
         }
-    }
-
-    /// @dev Executes multiple calls of canccelOrderNoThrow.
-    /// @param orders Array of order specifications.
-    /// @return Bool array containing results of each individual cancellation.
-    function batchCancelOrdersNoThrow(LibOrder.Order[] memory orders)
-        public
-        returns (bool[] memory)
-    {
-        uint256 ordersLength = orders.length;
-        bool[] memory didCancel = new bool[](ordersLength);
-        for (uint256 i = 0; i != ordersLength; i++) {
-            didCancel[i] = cancelOrderNoThrow(orders[i]);
-        }
-        return didCancel;
     }
 
     /// @dev Fetches information for all passed in orders.

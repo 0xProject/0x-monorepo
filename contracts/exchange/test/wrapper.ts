@@ -19,13 +19,11 @@ import { OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, ReentrancyGuardRevertErrors } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
-import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
     artifacts,
     constants as exchangeConstants,
-    ExchangeCancelEventArgs,
     ExchangeContract,
     ExchangeWrapper,
     ReentrantERC20TokenContract,
@@ -548,88 +546,6 @@ describe('Exchange wrappers', () => {
             expect(newOwnerMakerAsset).to.be.bignumber.equal(takerAddress);
             const newOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
             expect(newOwnerTakerAsset).to.be.bignumber.equal(makerAddress);
-        });
-    });
-
-    describe('cancelOrderNoThrow', () => {
-        it('should return false if not sent by maker', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync();
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const didCancel = await exchange.cancelOrderNoThrow.callAsync(signedOrder, { from: takerAddress });
-            const isCancelled = await exchange.cancelled.callAsync(orderHash);
-            expect(didCancel).to.equal(false);
-            expect(isCancelled).to.equal(false);
-        });
-
-        it('should return false if makerAssetAmount is 0', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: new BigNumber(0),
-            });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const didCancel = await exchange.cancelOrderNoThrow.callAsync(signedOrder, { from: makerAddress });
-            const isCancelled = await exchange.cancelled.callAsync(orderHash);
-            expect(didCancel).to.equal(false);
-            expect(isCancelled).to.equal(false);
-        });
-
-        it('should return false if takerAssetAmount is 0', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync({
-                takerAssetAmount: new BigNumber(0),
-            });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const didCancel = await exchange.cancelOrderNoThrow.callAsync(signedOrder, { from: makerAddress });
-            const isCancelled = await exchange.cancelled.callAsync(orderHash);
-            expect(didCancel).to.equal(false);
-            expect(isCancelled).to.equal(false);
-        });
-
-        it('should be able to cancel an order', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync();
-            await exchangeWrapper.cancelOrderNoThrowAsync(signedOrder, makerAddress);
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
-            const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount: signedOrder.takerAssetAmount.div(2),
-            });
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('should log 1 event with correct arguments if successful', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync();
-            const res = await exchangeWrapper.cancelOrderNoThrowAsync(signedOrder, makerAddress);
-            expect(res.logs).to.have.length(1);
-
-            const log = res.logs[0] as LogWithDecodedArgs<ExchangeCancelEventArgs>;
-            const logArgs = log.args;
-
-            expect(signedOrder.makerAddress).to.be.equal(logArgs.makerAddress);
-            expect(signedOrder.makerAddress).to.be.equal(logArgs.senderAddress);
-            expect(signedOrder.feeRecipientAddress).to.be.equal(logArgs.feeRecipientAddress);
-            expect(signedOrder.makerAssetData).to.be.equal(logArgs.makerAssetData);
-            expect(signedOrder.takerAssetData).to.be.equal(logArgs.takerAssetData);
-            expect(orderHashUtils.getOrderHashHex(signedOrder)).to.be.equal(logArgs.orderHash);
-        });
-
-        it('should return false if already cancelled', async () => {
-            const signedOrder = await orderFactory.newSignedOrderAsync();
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
-            const isCancelled = await exchange.cancelled.callAsync(orderHash);
-            expect(isCancelled).to.equal(true);
-            const didCancel = await exchange.cancelOrderNoThrow.callAsync(signedOrder, { from: makerAddress });
-            expect(didCancel).to.equal(false);
-        });
-
-        it('should return false if order is expired', async () => {
-            const currentTimestamp = await getLatestBlockTimestampAsync();
-            const signedOrder = await orderFactory.newSignedOrderAsync({
-                expirationTimeSeconds: new BigNumber(currentTimestamp).minus(10),
-            });
-            const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const didCancel = await exchange.cancelOrderNoThrow.callAsync(signedOrder, { from: makerAddress });
-            const isCancelled = await exchange.cancelled.callAsync(orderHash);
-            expect(didCancel).to.equal(false);
-            expect(isCancelled).to.equal(false);
         });
     });
 
@@ -1766,33 +1682,16 @@ describe('Exchange wrappers', () => {
                 const newBalances = await erc20Wrapper.getBalancesAsync();
                 expect(erc20Balances).to.be.deep.equal(newBalances);
             });
-            it('should revert if a single cancel fails', async () => {
+            it('should not revert if a single cancel noops', async () => {
                 await exchangeWrapper.cancelOrderAsync(signedOrders[1], makerAddress);
-                const orderHash = orderHashUtils.getOrderHashHex(signedOrders[1]);
-                const expectedError = new ExchangeRevertErrors.OrderStatusError(orderHash, OrderStatus.Cancelled);
-                const tx = exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('batchCancelOrdersNoThrow', () => {
-            it('should be able to cancel multiple signedOrders', async () => {
-                const takerAssetCancelAmounts = _.map(signedOrders, signedOrder => signedOrder.takerAssetAmount);
-                await exchangeWrapper.batchCancelOrdersNoThrowAsync(signedOrders, makerAddress);
-
-                await exchangeWrapper.batchFillOrdersNoThrowAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmounts: takerAssetCancelAmounts,
+                const expectedOrderHashes = [signedOrders[0], ...signedOrders.slice(2)].map(order =>
+                    orderHashUtils.getOrderHashHex(order),
+                );
+                const tx = await exchangeWrapper.batchCancelOrdersAsync(signedOrders, makerAddress);
+                expect(tx.logs.length).to.equal(signedOrders.length - 1);
+                tx.logs.forEach((log, index) => {
+                    expect((log as any).args.orderHash).to.equal(expectedOrderHashes[index]);
                 });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-                expect(erc20Balances).to.be.deep.equal(newBalances);
-            });
-            it('should return false for cancelled orders', async () => {
-                await exchangeWrapper.cancelOrderAsync(signedOrders[1], makerAddress);
-                const didCancelArray = await exchange.batchCancelOrdersNoThrow.callAsync(signedOrders, {
-                    from: makerAddress,
-                });
-                expect(didCancelArray[0]).to.equal(true);
-                expect(didCancelArray[1]).to.equal(false);
             });
         });
 

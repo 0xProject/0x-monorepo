@@ -256,6 +256,11 @@ contract MixinExchangeCore is
         // Validate context
         _assertValidCancel(order, orderInfo);
 
+        // Noop if order is already unfillable
+        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
+            return;
+        }
+
         // Perform cancel
         _updateCancelledState(order, orderInfo.orderHash);
     }
@@ -466,15 +471,6 @@ contract MixinExchangeCore is
         internal
         view
     {
-        // Ensure order is valid
-        // An order can only be cancelled if its status is FILLABLE.
-        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderStatusError(
-                orderInfo.orderHash,
-                OrderStatus(orderInfo.orderStatus)
-            ));
-        }
-
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
