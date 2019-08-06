@@ -1,4 +1,10 @@
-import { constants, filterLogsToArguments, LogDecoder, txDefaults as testTxDefaults } from '@0x/contracts-test-utils';
+import {
+    constants,
+    filterLogsToArguments,
+    MutatorContractFunction,
+    TransactionHelper,
+    txDefaults as testTxDefaults,
+} from '@0x/contracts-test-utils';
 import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderWithoutDomain, SignatureType } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -34,8 +40,8 @@ export const DEFAULT_BAD_SIGNATURE = createBadSignature();
  */
 export class IsolatedExchangeWrapper {
     public static readonly CHAIN_ID = 1337;
-    public instance: IsolatedExchangeContract;
-    public logDecoder: LogDecoder;
+    public readonly instance: IsolatedExchangeContract;
+    public readonly txHelper: TransactionHelper;
     public lastTxEvents: IsolatedExchangeEvents = createEmptyEvents();
     public lastTxBalanceChanges: AssetBalances = {};
 
@@ -64,7 +70,7 @@ export class IsolatedExchangeWrapper {
 
     public constructor(web3Wrapper: Web3Wrapper, instance: IsolatedExchangeContract) {
         this.instance = instance;
-        this.logDecoder = new LogDecoder(web3Wrapper, artifacts);
+        this.txHelper = new TransactionHelper(web3Wrapper, artifacts);
     }
 
     public async getTakerAssetFilledAmountAsync(order: Order): Promise<BigNumber> {
@@ -85,7 +91,7 @@ export class IsolatedExchangeWrapper {
         signature: string = DEFAULT_GOOD_SIGNATURE,
         txOpts?: TxData,
     ): Promise<FillResults> {
-        return this._callAndSendExchangeFunctionAsync<FillResults>(
+        return this._runFillContractFunctionAsync(
             this.instance.fillOrder,
             order,
             new BigNumber(takerAssetFillAmount),
@@ -116,28 +122,22 @@ export class IsolatedExchangeWrapper {
         return constants.ZERO_AMOUNT;
     }
 
-    protected async _callAndSendExchangeFunctionAsync<TResult>(
-        instanceMethod: TransactionContractFunction<TResult>,
+    protected async _runFillContractFunctionAsync<
+        TCallAsyncArgs extends any[],
+        TAwaitTransactionSuccessAsyncArgs extends any[],
+        TResult
+    >(
+        contractFunction: MutatorContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TResult>,
         // tslint:disable-next-line: trailing-comma
-        ...args: any[]
+        ...args: TAwaitTransactionSuccessAsyncArgs
     ): Promise<TResult> {
         this.lastTxEvents = createEmptyEvents();
         this.lastTxBalanceChanges = {};
-        // Call to get the return value.
-        const result = await instanceMethod.callAsync(...args);
-        // Transact to execute it.
-        const receipt = await this.logDecoder.getTxWithDecodedLogsAsync(
-            await this.instance.fillOrder.sendTransactionAsync.call(this.instance, ...args),
-        );
+        const [result, receipt] = await this.txHelper.getResultAndReceiptAsync(contractFunction, ...args);
         this.lastTxEvents = extractEvents(receipt.logs);
         this.lastTxBalanceChanges = getBalanceChangesFromTransferFromCalls(this.lastTxEvents.transferFromCalls);
         return result;
     }
-}
-
-interface TransactionContractFunction<TResult> {
-    callAsync: (...args: any[]) => Promise<TResult>;
-    sendTransactionAsync: (...args: any[]) => Promise<string>;
 }
 
 /**
