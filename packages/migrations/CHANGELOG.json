@@ -1,14 +1,19 @@
 [
     {
+        "version": "4.2.0",
+        "changes": [
+            {
+                "note": "Added StaticCallAssetProxy and ERC1155AssetProxy",
+                "pr": 2021
+            }
+        ]
+    },
+    {
         "version": "4.1.11",
         "changes": [
             {
                 "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
                 "pr": 1995
-            },
-            {
-                "note": "Added StaticCallAssetProxy and ERC1155AssetProxy",
-                "pr": 2021
             }
         ],
         "timestamp": 1564604963
