@@ -88,7 +88,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
                 border-bottom-color: ${colors.brandLight};
                 
                 @media (min-width: 1200px) {
-                    width: 900px;
+                    width: 750px;
                 }
             }
         `};
@@ -178,7 +178,7 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             width: 100%;
 
             @media (min-width: 1200px) {
-                width: 900px;
+                width: 750px;
                 right: 30px;
                 top: 28px;
             }
