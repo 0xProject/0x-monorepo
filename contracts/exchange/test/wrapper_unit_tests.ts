@@ -8,7 +8,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors } from '@0x/order-utils';
 import { FillResults, OrderInfo, OrderStatus, OrderWithoutDomain as Order } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -27,6 +27,14 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
     const randomAmount = (maxAmount: BigNumber = ONE_ETHER) => maxAmount.times(_.random(0, 100, true).toFixed(12));
     const randomTimestamp = () => new BigNumber(Math.floor(_.now() / 1000) + _.random(0, 34560));
     const randomSalt = () => new BigNumber(hexRandom(constants.WORD_LENGTH).substr(2), 16);
+    const ALWAYS_FAILING_SALT = constants.MAX_UINT256;
+    const FILL_ORDER_FAILED_REVERT_ERROR = new StringRevertError('FILL_ORDER_FAILED');
+    const EMPTY_FILL_RESULTS = {
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
+    };
     let testContract: TestWrapperFunctionsContract;
     let txHelper: TransactionHelper;
 
@@ -39,7 +47,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         );
     });
 
-    function createRandomOrder(fields?: Partial<Order>): Order {
+    function randomOrder(fields?: Partial<Order>): Order {
         return _.assign({
             makerAddress: randomAddress(),
             takerAddress: randomAddress(),
@@ -77,7 +85,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
 
     // Asserts that `_fillOrder()` was called in the same order and with the same
     // arguments as given by examining receipt logs.
-    function assertFillOrderCallsFromReceipt(
+    function assertFillOrderCallsFromLogs(
         logs: LogEntry[],
         calls: Array<[Order, BigNumber, string]>,
     ): void {
@@ -97,6 +105,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
     }
 
     function assertSameOrderFromEvent(actual: any[], expected: Order): void {
+        expect(actual.length === 14);
         expect(actual[0].toLowerCase()).to.be.eq(expected.makerAddress);
         expect(actual[1].toLowerCase()).to.be.eq(expected.takerAddress);
         expect(actual[2].toLowerCase()).to.be.eq(expected.feeRecipientAddress);
@@ -112,6 +121,111 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         expect(actual[12]).to.be.eq(expected.makerFeeAssetData);
         expect(actual[13]).to.be.eq(expected.takerFeeAssetData);
     }
+
+    describe('fillOrKillOrder', () => {
+        it('works if the order is filled by exactly `takerAssetFillAmount`', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder({
+                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
+                // the `takerAssetFilledAmount`.
+                takerAssetAmount: fillAmount,
+            });
+            const signature = randomSignature();
+            const expected = getExpectedFillResults(order);
+            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.fillOrKillOrder,
+                order,
+                fillAmount,
+                signature,
+            );
+            expect(actual).to.deep.eq(expected);
+            assertFillOrderCallsFromLogs(receipt.logs, [[ order, fillAmount, signature ]]);
+        });
+
+        it('reverts if the order is filled by less than `takerAssetFillAmount`', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder({
+                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
+                // the `takerAssetFilledAmount`.
+                takerAssetAmount: fillAmount.minus(1),
+            });
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                getExpectedOrderHash(order),
+            );
+            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
+                order,
+                fillAmount,
+                randomSignature(),
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if the order is filled by greater than `takerAssetFillAmount`', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder({
+                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
+                // the `takerAssetFilledAmount`.
+                takerAssetAmount: fillAmount.plus(1),
+            });
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
+                getExpectedOrderHash(order),
+            );
+            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
+                order,
+                fillAmount,
+                randomSignature(),
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts if `_fillOrder()` reverts', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder({
+                salt: ALWAYS_FAILING_SALT,
+            });
+            const expectedError = FILL_ORDER_FAILED_REVERT_ERROR;
+            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
+                order,
+                fillAmount,
+                randomSignature(),
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('fillOrderNoThrow', () => {
+        it('calls `fillOrder()` and returns its result', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder();
+            const signature = randomSignature();
+            const expected = getExpectedFillResults(order);
+            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.fillOrderNoThrow,
+                order,
+                fillAmount,
+                signature,
+            );
+            expect(actual).to.deep.eq(expected);
+            assertFillOrderCallsFromLogs(receipt.logs, [[ order, fillAmount, signature ]]);
+        });
+
+        it('does not revert if `fillOrder()` reverts', async () => {
+            const fillAmount = randomAmount();
+            const order = randomOrder({
+                salt: ALWAYS_FAILING_SALT,
+            });
+            const signature = randomSignature();
+            const expected = EMPTY_FILL_RESULTS;
+            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.fillOrderNoThrow,
+                order,
+                fillAmount,
+                signature,
+            );
+            expect(actual).to.deep.eq(expected);
+            assertFillOrderCallsFromLogs(receipt.logs, []);
+        });
+    });
 
     describe('getOrdersInfo', () => {
         // Computes the expected (fake) order info generated by the `TestWrapperFunctions` contract.
@@ -133,7 +247,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
 
         it('works with one order', async () => {
-            const orders = [ createRandomOrder() ];
+            const orders = [ randomOrder() ];
             const expected = orders.map(getExpectedOrderInfo);
             const actual = await testContract.getOrdersInfo.callAsync(orders);
             expect(actual).to.deep.eq(expected);
@@ -141,67 +255,10 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
 
         it('works with many orders', async () => {
             const NUM_ORDERS = 16;
-            const orders = _.times(NUM_ORDERS, () => createRandomOrder());
+            const orders = _.times(NUM_ORDERS, () => randomOrder());
             const expected = orders.map(getExpectedOrderInfo);
             const actual = await testContract.getOrdersInfo.callAsync(orders);
             expect(actual).to.deep.eq(expected);
-        });
-    });
-
-    describe('fillOrKillOrder', () => {
-        it('reverts if the order is filled by less than `takerAssetFillAmount`', async () => {
-            const fillAmount = randomAmount();
-            const order = createRandomOrder({
-                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
-                // the `takerAssetFilledAmount`.
-                takerAssetAmount: fillAmount.minus(1),
-            });
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
-                getExpectedOrderHash(order),
-            );
-            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
-                order,
-                fillAmount,
-                randomSignature(),
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('reverts if the order is filled by greater than `takerAssetFillAmount`', async () => {
-            const fillAmount = randomAmount();
-            const order = createRandomOrder({
-                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
-                // the `takerAssetFilledAmount`.
-                takerAssetAmount: fillAmount.plus(1),
-            });
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
-                getExpectedOrderHash(order),
-            );
-            const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
-                order,
-                fillAmount,
-                randomSignature(),
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
-
-        it('works if the order is filled by exactly `takerAssetFillAmount`', async () => {
-            const fillAmount = randomAmount();
-            const order = createRandomOrder({
-                // `_fillOrder()` is overridden to always return `order.takerAssetAmount` as
-                // the `takerAssetFilledAmount`.
-                takerAssetAmount: fillAmount,
-            });
-            const signature = randomSignature();
-            const expected = getExpectedFillResults(order);
-            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
-                testContract.fillOrKillOrder,
-                order,
-                fillAmount,
-                signature,
-            );
-            expect(actual).to.deep.eq(expected);
-            assertFillOrderCallsFromReceipt(receipt.logs, [[ order, fillAmount, signature ]]);
         });
     });
 });
