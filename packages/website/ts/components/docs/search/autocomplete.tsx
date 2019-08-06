@@ -52,6 +52,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
         const handleKeyUp: any = (event: React.KeyboardEvent): void => {
             if (event.key === 'Escape') {
                 setValue('');
+                inputRef.blur();
             }
         };
 
