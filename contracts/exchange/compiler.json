@@ -36,12 +36,22 @@
         "src/interfaces/ITransactions.sol",
         "src/interfaces/IWallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
+        "test/DummyERC20Token.sol",
+        "test/DummyNoReturnERC20Token.sol",
+        "test/DummyERC721Token.sol",
+        "test/ERC20Proxy.sol",
+        "test/ERC721Proxy.sol",
+        "test/ERC1155Proxy.sol",
+        "test/ERC1155Mintable.sol",
+        "test/MultiAssetProxy.sol",
+        "test/StaticCallProxy.sol",
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",
         "test/TestExchangeMath.sol",
         "test/TestLibExchangeRichErrorDecoder.sol",
         "test/TestSignatureValidator.sol",
+        "test/TestStaticCallTarget.sol",
         "test/TestValidatorWallet.sol"
     ]
 }
