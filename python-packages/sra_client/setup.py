@@ -5,6 +5,8 @@
 
 import subprocess  # nosec
 import distutils.command.build_py
+from distutils.command.clean import clean
+from shutil import rmtree
 from urllib.request import urlopen
 from urllib.error import URLError
 
@@ -24,6 +26,21 @@ with open("README.md", "r") as file_handle:
     README_MD = file_handle.read()
 
 REQUIRES = ["urllib3 >= 1.15", "six >= 1.10", "certifi", "python-dateutil"]
+
+
+class CleanCommandExtension(clean):
+    """Custom command to do custom cleanup."""
+
+    def run(self):
+        """Run the regular clean, followed by our custom commands."""
+        super().run()
+        rmtree("__pycache__", ignore_errors=True)
+        rmtree(".mypy_cache", ignore_errors=True)
+        rmtree(".tox", ignore_errors=True)
+        rmtree(".pytest_cache", ignore_errors=True)
+        rmtree("0x_sra_client.egg-info", ignore_errors=True)
+        rmtree("build", ignore_errors=True)
+        rmtree("dist", ignore_errors=True)
 
 
 class TestCommandExtension(TestCommand):
@@ -164,6 +181,7 @@ setup(
     long_description=README_MD,
     long_description_content_type="text/markdown",
     cmdclass={
+        "clean": CleanCommandExtension,
         "test_publish": TestPublishCommand,
         "publish": PublishCommand,
         "start_test_relayer": StartTestRelayerCommand,
