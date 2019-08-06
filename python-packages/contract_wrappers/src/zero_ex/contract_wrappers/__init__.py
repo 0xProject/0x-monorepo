@@ -32,8 +32,8 @@ the second account will be the taker.
 
 >>> from web3 import Web3
 >>> accounts = Web3(ganache).eth.accounts
->>> maker_address = accounts[0].lower()
->>> taker_address = accounts[1].lower()
+>>> maker_address = accounts[0]
+>>> taker_address = accounts[1]
 
 In the examples below, we'll use the optional `tx_params`:code: parameter to
 the contract calls, in order to specify which account each transaction is to

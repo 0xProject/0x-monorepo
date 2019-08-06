@@ -177,7 +177,7 @@ setup(
             "0x-contract-artifacts",
             "0x-contract-addresses",
             "0x-order-utils",
-            "0x-web3",
+            "web3",
             "bandit",
             "black",
             "coverage",

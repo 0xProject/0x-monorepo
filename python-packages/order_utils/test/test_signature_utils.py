@@ -133,7 +133,9 @@ def test_sign_hash_to_bytes__golden_path():
     provider = Web3.HTTPProvider("http://127.0.0.1:8545")
     signature = sign_hash_to_bytes(
         provider,
-        Web3(provider).personal.listAccounts[0],  # pylint: disable=no-member
+        Web3(  # pylint: disable=no-member
+            provider
+        ).geth.personal.listAccounts()[0],
         "0x34decbedc118904df65f379a175bb39ca18209d6ce41d5ed549d54e6e0a95004",
     )
     assert (
