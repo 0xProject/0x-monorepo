@@ -72,6 +72,8 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
             background-position: left 21px center;
             font-size: 1rem;
 
+            transition: all 300ms ease-in-out;
+
             @media (min-width: 1200px) {
                 position: absolute;
                 right: 30px;
