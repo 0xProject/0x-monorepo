@@ -194,7 +194,7 @@ export class CoordinatorContract extends BaseContract {
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
          * @param approval Coordinator approval message containing the transaction
-         * hash, transaction signature, and expiration of the approval.
+         *     hash, transaction signature, and expiration of the approval.
          * @returns EIP712 hash of the Coordinator approval message with the domain separator of this contract.
          */
         async callAsync(
@@ -245,7 +245,7 @@ export class CoordinatorContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param approval Coordinator approval message containing the transaction
-         * hash, transaction signature, and expiration of the approval.
+         *     hash, transaction signature, and expiration of the approval.
          */
         getABIEncodedTransactionData(approval: {
             txOrigin: string;
@@ -284,13 +284,13 @@ export class CoordinatorContract extends BaseContract {
          * Ethereum operation and will cost gas.
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -345,13 +345,13 @@ export class CoordinatorContract extends BaseContract {
          * If the transaction was mined, but reverted, an error is thrown.
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
          * @returns A promise that resolves when the transaction is successful
@@ -395,13 +395,13 @@ export class CoordinatorContract extends BaseContract {
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -449,13 +449,13 @@ export class CoordinatorContract extends BaseContract {
          * since they don't modify state.
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          */
         async callAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
@@ -517,13 +517,13 @@ export class CoordinatorContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          */
         getABIEncodedTransactionData(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
@@ -641,13 +641,13 @@ export class CoordinatorContract extends BaseContract {
          * since they don't modify state.
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          */
         async callAsync(
             transaction: { salt: BigNumber; signerAddress: string; data: string },
@@ -709,13 +709,13 @@ export class CoordinatorContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param transaction 0x transaction containing salt, signerAddress, and data.
          * @param txOrigin Required signer of Ethereum transaction calling this
-         * function.
+         *     function.
          * @param transactionSignature Proof that the transaction has been signed by
-         * the signer.
+         *     the signer.
          * @param approvalExpirationTimeSeconds Array of expiration times in seconds
-         * for which each corresponding approval signature expires.
+         *     for which each corresponding approval signature expires.
          * @param approvalSignatures Array of signatures that correspond to the
-         * feeRecipients of each order in the transaction's Exchange calldata.
+         *     feeRecipients of each order in the transaction's Exchange calldata.
          */
         getABIEncodedTransactionData(
             transaction: { salt: BigNumber; signerAddress: string; data: string },

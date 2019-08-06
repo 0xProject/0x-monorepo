@@ -131,9 +131,11 @@ function registerTypeScriptHelpers(): void {
         'formatDocstringForParamTs',
         (paramName: string, desc: Handlebars.SafeString): Handlebars.SafeString => {
             const docString = `@param ${paramName} ${desc}`;
+            const hangingIndentLength = 4;
             const config = {
                 width: 80,
                 paddingLeft: ' * ',
+                hangingIndent: ' '.repeat(hangingIndentLength),
                 ansi: false,
             };
             return new Handlebars.SafeString(`${cliFormat.wrap(docString, config)}`);

@@ -37,14 +37,14 @@ export class ForwarderContract extends BaseContract {
          * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
          * Ethereum operation and will cost gas.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -134,14 +134,14 @@ export class ForwarderContract extends BaseContract {
          * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
          * If the transaction was mined, but reverted, an error is thrown.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
@@ -218,14 +218,14 @@ export class ForwarderContract extends BaseContract {
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -306,14 +306,14 @@ export class ForwarderContract extends BaseContract {
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
          */
@@ -439,14 +439,14 @@ export class ForwarderContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          */
         getABIEncodedTransactionData(
@@ -837,13 +837,13 @@ export class ForwarderContract extends BaseContract {
          * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
          * Ethereum operation and will cost gas.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -922,13 +922,13 @@ export class ForwarderContract extends BaseContract {
          * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
          * If the transaction was mined, but reverted, an error is thrown.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
@@ -1002,13 +1002,13 @@ export class ForwarderContract extends BaseContract {
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -1079,13 +1079,13 @@ export class ForwarderContract extends BaseContract {
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
          */
@@ -1201,13 +1201,13 @@ export class ForwarderContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param orders Array of order specifications used containing desired
-         * makerAsset and WETH as takerAsset.
+         *     makerAsset and WETH as takerAsset.
          * @param signatures Proofs that orders have been created by makers.
          * @param feeOrders Array of order specifications containing ZRX as makerAsset
-         * and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
          * @param feeSignatures Proofs that feeOrders have been created by makers.
          * @param feePercentage Percentage of WETH sold that will payed as fee to
-         * forwarding contract feeRecipient.
+         *     forwarding contract feeRecipient.
          * @param feeRecipient Address that will receive ETH when orders are filled.
          */
         getABIEncodedTransactionData(

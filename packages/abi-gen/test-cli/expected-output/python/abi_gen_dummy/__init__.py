@@ -407,7 +407,9 @@ class EcrecoverFnMethod(ContractMethod):
         test that devdocs will be generated and     that multiline devdocs will
         look okay
 
-        :param hash: description of some hash
+        :param hash: description of some hash. Let's make this line super long
+            to demonstrate hanging indents for method params. It has to be more
+            than one hundred twenty columns.
         :param r: ECDSA r output
         :param s: ECDSA s output
         :param v: some v, recovery id
@@ -424,7 +426,9 @@ class EcrecoverFnMethod(ContractMethod):
         test that devdocs will be generated and     that multiline devdocs will
         look okay
 
-        :param hash: description of some hash
+        :param hash: description of some hash. Let's make this line super long
+            to demonstrate hanging indents for method params. It has to be more
+            than one hundred twenty columns.
         :param r: ECDSA r output
         :param s: ECDSA s output
         :param v: some v, recovery id

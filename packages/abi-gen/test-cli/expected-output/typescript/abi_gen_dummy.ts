@@ -490,7 +490,9 @@ export class AbiGenDummyContract extends BaseContract {
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
-         * @param hash description of some hash
+         * @param hash description of some hash. Let's make this line super long to
+         *     demonstrate hanging indents for method params. It has to be more than
+         *     one hundred twenty columns.
          * @param v some v, recovery id
          * @param r ECDSA r output
          * @param s ECDSA s output
@@ -547,7 +549,9 @@ export class AbiGenDummyContract extends BaseContract {
          * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
-         * @param hash description of some hash
+         * @param hash description of some hash. Let's make this line super long to
+         *     demonstrate hanging indents for method params. It has to be more than
+         *     one hundred twenty columns.
          * @param v some v, recovery id
          * @param r ECDSA r output
          * @param s ECDSA s output

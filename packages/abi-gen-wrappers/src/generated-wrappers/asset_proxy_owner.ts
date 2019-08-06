@@ -1371,7 +1371,7 @@ export class AssetProxyOwnerContract extends BaseContract {
          * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
          * Ethereum operation and will cost gas.
          * @param _secondsTimeLocked Duration needed after a transaction is confirmed
-         * and before it becomes executable, in seconds.
+         *     and before it becomes executable, in seconds.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -1402,7 +1402,7 @@ export class AssetProxyOwnerContract extends BaseContract {
          * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
          * If the transaction was mined, but reverted, an error is thrown.
          * @param _secondsTimeLocked Duration needed after a transaction is confirmed
-         * and before it becomes executable, in seconds.
+         *     and before it becomes executable, in seconds.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
          * @returns A promise that resolves when the transaction is successful
@@ -1431,7 +1431,7 @@ export class AssetProxyOwnerContract extends BaseContract {
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param _secondsTimeLocked Duration needed after a transaction is confirmed
-         * and before it becomes executable, in seconds.
+         *     and before it becomes executable, in seconds.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -1459,7 +1459,7 @@ export class AssetProxyOwnerContract extends BaseContract {
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
          * @param _secondsTimeLocked Duration needed after a transaction is confirmed
-         * and before it becomes executable, in seconds.
+         *     and before it becomes executable, in seconds.
          */
         async callAsync(
             _secondsTimeLocked: BigNumber,
@@ -1502,7 +1502,7 @@ export class AssetProxyOwnerContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param _secondsTimeLocked Duration needed after a transaction is confirmed
-         * and before it becomes executable, in seconds.
+         *     and before it becomes executable, in seconds.
          */
         getABIEncodedTransactionData(_secondsTimeLocked: BigNumber): string {
             assert.isBigNumber('_secondsTimeLocked', _secondsTimeLocked);

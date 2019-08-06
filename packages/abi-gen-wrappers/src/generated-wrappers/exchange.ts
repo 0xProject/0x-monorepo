@@ -167,7 +167,7 @@ export class ExchangeContract extends BaseContract {
          * Ethereum operation and will cost gas.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -220,7 +220,7 @@ export class ExchangeContract extends BaseContract {
          * If the transaction was mined, but reverted, an error is thrown.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
@@ -273,7 +273,7 @@ export class ExchangeContract extends BaseContract {
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -326,7 +326,7 @@ export class ExchangeContract extends BaseContract {
          * since they don't modify state.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
@@ -404,7 +404,7 @@ export class ExchangeContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
@@ -1823,7 +1823,7 @@ export class ExchangeContract extends BaseContract {
          * Ethereum operation and will cost gas.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -1876,7 +1876,7 @@ export class ExchangeContract extends BaseContract {
          * If the transaction was mined, but reverted, an error is thrown.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
@@ -1929,7 +1929,7 @@ export class ExchangeContract extends BaseContract {
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -1982,7 +1982,7 @@ export class ExchangeContract extends BaseContract {
          * since they don't modify state.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
@@ -2060,7 +2060,7 @@ export class ExchangeContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
@@ -2143,7 +2143,7 @@ export class ExchangeContract extends BaseContract {
          * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
          * Ethereum operation and will cost gas.
          * @param targetOrderEpoch Orders created with a salt less or equal to this
-         * value will be cancelled.
+         *     value will be cancelled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -2171,7 +2171,7 @@ export class ExchangeContract extends BaseContract {
          * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
          * If the transaction was mined, but reverted, an error is thrown.
          * @param targetOrderEpoch Orders created with a salt less or equal to this
-         * value will be cancelled.
+         *     value will be cancelled.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
          * @returns A promise that resolves when the transaction is successful
@@ -2200,7 +2200,7 @@ export class ExchangeContract extends BaseContract {
         /**
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param targetOrderEpoch Orders created with a salt less or equal to this
-         * value will be cancelled.
+         *     value will be cancelled.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
          */
@@ -2228,7 +2228,7 @@ export class ExchangeContract extends BaseContract {
          * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
          * since they don't modify state.
          * @param targetOrderEpoch Orders created with a salt less or equal to this
-         * value will be cancelled.
+         *     value will be cancelled.
          */
         async callAsync(
             targetOrderEpoch: BigNumber,
@@ -2271,7 +2271,7 @@ export class ExchangeContract extends BaseContract {
          * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
          * to create a 0x transaction (see protocol spec for more details).
          * @param targetOrderEpoch Orders created with a salt less or equal to this
-         * value will be cancelled.
+         *     value will be cancelled.
          */
         getABIEncodedTransactionData(targetOrderEpoch: BigNumber): string {
             assert.isBigNumber('targetOrderEpoch', targetOrderEpoch);
@@ -2306,7 +2306,7 @@ export class ExchangeContract extends BaseContract {
          * Ethereum operation and will cost gas.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -2359,7 +2359,7 @@ export class ExchangeContract extends BaseContract {
          * If the transaction was mined, but reverted, an error is thrown.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @param pollingIntervalMs Interval at which to poll for success
@@ -2412,7 +2412,7 @@ export class ExchangeContract extends BaseContract {
          * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @param txData Additional data for transaction
          * @returns The hash of the transaction
@@ -2465,7 +2465,7 @@ export class ExchangeContract extends BaseContract {
          * since they don't modify state.
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          * @returns Amounts filled and fees paid by makers and taker.         NOTE: makerAssetFilledAmount and takerAssetFilledAmount may include amounts filled of different assets.
          */
@@ -2543,7 +2543,7 @@ export class ExchangeContract extends BaseContract {
          * to create a 0x transaction (see protocol spec for more details).
          * @param orders Array of order specifications.
          * @param takerAssetFillAmounts Array of desired amounts of takerAsset to sell
-         * in orders.
+         *     in orders.
          * @param signatures Proofs that orders have been created by makers.
          */
         getABIEncodedTransactionData(
