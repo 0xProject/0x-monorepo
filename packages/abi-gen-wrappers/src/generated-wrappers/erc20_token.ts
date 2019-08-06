@@ -54,7 +54,18 @@ export interface ERC20TokenApprovalEventArgs extends DecodedLogArgs {
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ERC20TokenContract extends BaseContract {
+    /**
+     * `msg.sender` approves `_spender` to spend `_value` tokens
+     */
     public approve = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _spender The address of the account able to transfer the tokens
+         * @param _value The amount of wei to be approved for transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             _spender: string,
             _value: BigNumber,
@@ -83,6 +94,15 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _spender The address of the account able to transfer the tokens
+         * @param _value The amount of wei to be approved for transfer
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _spender: string,
             _value: BigNumber,
@@ -106,6 +126,13 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _spender The address of the account able to transfer the tokens
+         * @param _value The amount of wei to be approved for transfer
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(
             _spender: string,
             _value: BigNumber,
@@ -133,6 +160,14 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _spender The address of the account able to transfer the tokens
+         * @param _value The amount of wei to be approved for transfer
+         * @returns Always true if the call has enough gas to complete execution
+         */
         async callAsync(
             _spender: string,
             _value: BigNumber,
@@ -174,6 +209,13 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _spender The address of the account able to transfer the tokens
+         * @param _value The amount of wei to be approved for transfer
+         */
         getABIEncodedTransactionData(_spender: string, _value: BigNumber): string {
             assert.isString('_spender', _spender);
             assert.isBigNumber('_value', _value);
@@ -199,7 +241,16 @@ export class ERC20TokenContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    /**
+     * Query total supply of token
+     */
     public totalSupply = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @returns Total supply of token
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -231,6 +282,11 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ERC20TokenContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('totalSupply()', []);
@@ -251,7 +307,19 @@ export class ERC20TokenContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    /**
+     * send `value` token to `to` from `from` on the condition it is approved by `from`
+     */
     public transferFrom = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _from The address of the sender
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             _from: string,
             _to: string,
@@ -283,6 +351,16 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _from The address of the sender
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _from: string,
             _to: string,
@@ -313,6 +391,14 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _from The address of the sender
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(
             _from: string,
             _to: string,
@@ -343,6 +429,15 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _from The address of the sender
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @returns True if transfer was successful
+         */
         async callAsync(
             _from: string,
             _to: string,
@@ -387,6 +482,14 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _from The address of the sender
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         */
         getABIEncodedTransactionData(_from: string, _to: string, _value: BigNumber): string {
             assert.isString('_from', _from);
             assert.isString('_to', _to);
@@ -414,7 +517,17 @@ export class ERC20TokenContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    /**
+     * Query the balance of owner
+     */
     public balanceOf = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _owner The address from which the balance will be retrieved
+         * @returns Balance of owner
+         */
         async callAsync(
             _owner: string,
             callData: Partial<CallData> = {},
@@ -451,6 +564,12 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _owner The address from which the balance will be retrieved
+         */
         getABIEncodedTransactionData(_owner: string): string {
             assert.isString('_owner', _owner);
             const self = (this as any) as ERC20TokenContract;
@@ -472,7 +591,18 @@ export class ERC20TokenContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    /**
+     * send `value` token to `to` from `msg.sender`
+     */
     public transfer = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             _to: string,
             _value: BigNumber,
@@ -498,6 +628,15 @@ export class ERC20TokenContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             _to: string,
             _value: BigNumber,
@@ -521,6 +660,13 @@ export class ERC20TokenContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(_to: string, _value: BigNumber, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -541,6 +687,14 @@ export class ERC20TokenContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         * @returns True if transfer was successful
+         */
         async callAsync(
             _to: string,
             _value: BigNumber,
@@ -579,6 +733,13 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _to The address of the recipient
+         * @param _value The amount of token to be transferred
+         */
         getABIEncodedTransactionData(_to: string, _value: BigNumber): string {
             assert.isString('_to', _to);
             assert.isBigNumber('_value', _value);
@@ -605,6 +766,14 @@ export class ERC20TokenContract extends BaseContract {
         },
     };
     public allowance = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param _owner The address of the account owning tokens
+         * @param _spender The address of the account able to transfer the tokens
+         * @returns Amount of remaining tokens allowed to spent
+         */
         async callAsync(
             _owner: string,
             _spender: string,
@@ -646,6 +815,13 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param _owner The address of the account owning tokens
+         * @param _spender The address of the account able to transfer the tokens
+         */
         getABIEncodedTransactionData(_owner: string, _spender: string): string {
             assert.isString('_owner', _owner);
             assert.isString('_spender', _spender);
@@ -919,11 +1095,11 @@ export class ERC20TokenContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the ERC20Token contract.
-     * @param   eventName           The ERC20Token contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The ERC20Token contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends ERC20TokenEventArgs>(
@@ -949,7 +1125,7 @@ export class ERC20TokenContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -962,11 +1138,11 @@ export class ERC20TokenContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The ERC20Token contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The ERC20Token contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends ERC20TokenEventArgs>(
         eventName: ERC20TokenEvents,

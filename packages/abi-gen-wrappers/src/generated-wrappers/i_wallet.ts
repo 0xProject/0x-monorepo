@@ -27,7 +27,18 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IWalletContract extends BaseContract {
+    /**
+     * Verifies that a signature is valid.
+     */
     public isValidSignature = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param hash Message hash that is signed.
+         * @param signature Proof of signing.
+         * @returns Validity of order signature.
+         */
         async callAsync(
             hash: string,
             signature: string,
@@ -66,6 +77,13 @@ export class IWalletContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param hash Message hash that is signed.
+         * @param signature Proof of signing.
+         */
         getABIEncodedTransactionData(hash: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signature', signature);

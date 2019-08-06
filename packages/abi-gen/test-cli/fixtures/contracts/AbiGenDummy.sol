@@ -80,6 +80,13 @@ contract AbiGenDummy
         require(0 > 1, REQUIRE_REASON);
     }
 
+    /// @dev test that devdocs will be generated and
+    ///     that multiline devdocs will look okay
+    /// @param hash description of some hash. Let's make this line super long to demonstrate hanging indents for method params. It has to be more than one hundred twenty columns.
+    /// @param v    some v, recovery id
+    /// @param r    ECDSA r output
+    /// @param s    ECDSA s output
+    /// @return     the signerAddress that created this signature
     function ecrecoverFn(bytes32 hash, uint8 v, bytes32 r, bytes32 s)
         public
         pure

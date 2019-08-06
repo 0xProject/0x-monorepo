@@ -28,6 +28,11 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class OrderValidatorContract extends BaseContract {
     public getOrderAndTraderInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -111,6 +116,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;
@@ -212,6 +222,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalanceAndAllowance = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             target: string,
             assetData: string,
@@ -253,6 +268,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(target: string, assetData: string): string {
             assert.isString('target', target);
             assert.isString('assetData', assetData);
@@ -279,6 +299,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getOrdersAndTradersInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -363,6 +388,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -465,6 +495,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTradersInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -543,6 +578,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -633,6 +673,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getERC721TokenOwner = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             token: string,
             tokenId: BigNumber,
@@ -674,6 +719,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(token: string, tokenId: BigNumber): string {
             assert.isString('token', token);
             assert.isBigNumber('tokenId', tokenId);
@@ -700,6 +750,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getBalancesAndAllowances = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             target: string,
             assetData: string[],
@@ -741,6 +796,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(target: string, assetData: string[]): string {
             assert.isString('target', target);
             assert.isArray('assetData', assetData);
@@ -767,6 +827,11 @@ export class OrderValidatorContract extends BaseContract {
         },
     };
     public getTraderInfo = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(
             order: {
                 makerAddress: string;
@@ -840,6 +905,11 @@ export class OrderValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(
             order: {
                 makerAddress: string;

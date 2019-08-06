@@ -37,6 +37,8 @@ jobs:
                   path: ~/repo/packages/python-contract-wrappers/generated
             - store_artifacts:
                   path: ~/repo/packages/abi-gen/test-cli/output
+            - store_artifacts:
+                  path: ~/repo/packages/abi-gen-wrappers/generated_docs
     build-website:
         resource_class: medium+
         docker:

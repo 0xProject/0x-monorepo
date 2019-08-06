@@ -404,8 +404,17 @@ class EcrecoverFnMethod(ContractMethod):
     def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
         """Execute underlying contract method via eth_call.
 
-        :param tx_params: transaction parameters
+        test that devdocs will be generated and     that multiline devdocs will
+        look okay
 
+        :param hash: description of some hash. Let's make this line super long
+            to demonstrate hanging indents for method params. It has to be more
+            than one hundred twenty columns.
+        :param r: ECDSA r output
+        :param s: ECDSA s output
+        :param v: some v, recovery id
+        :param tx_params: transaction parameters
+        :returns: the signerAddress that created this signature
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)
@@ -414,8 +423,17 @@ class EcrecoverFnMethod(ContractMethod):
     def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
-        :param tx_params: transaction parameters
+        test that devdocs will be generated and     that multiline devdocs will
+        look okay
 
+        :param hash: description of some hash. Let's make this line super long
+            to demonstrate hanging indents for method params. It has to be more
+            than one hundred twenty columns.
+        :param r: ECDSA r output
+        :param s: ECDSA s output
+        :param v: some v, recovery id
+        :param tx_params: transaction parameters
+        :returns: the signerAddress that created this signature
         """
         (_hash, v, r, s) = self.validate_and_normalize_inputs(_hash, v, r, s)
         tx_params = super().normalize_tx_params(tx_params)

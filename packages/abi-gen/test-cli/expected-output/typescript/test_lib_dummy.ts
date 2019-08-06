@@ -28,6 +28,11 @@ import * as ethers from 'ethers';
 // tslint:disable-next-line:class-name
 export class TestLibDummyContract extends BaseContract {
     public publicAddConstant = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -60,6 +65,11 @@ export class TestLibDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
             const self = (this as any) as TestLibDummyContract;
@@ -82,6 +92,11 @@ export class TestLibDummyContract extends BaseContract {
         },
     };
     public publicAddOne = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(x: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<BigNumber> {
             assert.isBigNumber('x', x);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -114,6 +129,11 @@ export class TestLibDummyContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(x: BigNumber): string {
             assert.isBigNumber('x', x);
             const self = (this as any) as TestLibDummyContract;

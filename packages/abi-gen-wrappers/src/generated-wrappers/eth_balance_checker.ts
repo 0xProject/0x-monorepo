@@ -27,7 +27,17 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class EthBalanceCheckerContract extends BaseContract {
+    /**
+     * Batch fetches ETH balances
+     */
     public getEthBalances = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param addresses Array of addresses.
+         * @returns Array of ETH balances.
+         */
         async callAsync(
             addresses: string[],
             callData: Partial<CallData> = {},
@@ -64,6 +74,12 @@ export class EthBalanceCheckerContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param addresses Array of addresses.
+         */
         getABIEncodedTransactionData(addresses: string[]): string {
             assert.isArray('addresses', addresses);
             const self = (this as any) as EthBalanceCheckerContract;
