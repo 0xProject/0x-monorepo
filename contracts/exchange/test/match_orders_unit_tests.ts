@@ -24,7 +24,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
+import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { OrderWithoutDomain, OrderStatus, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -117,39 +117,6 @@ async function testCalculateCompleteRightFillAsync(
 
     expect(actualMatchedFillResults).to.be.deep.eq(expectedMatchedFillResults);
 }
-
-/**
- * Tests the _calculateCompleteFillBoth function with the provided inputs by making a call
- * to the provided matchOrders contract's externalCalculateCompleteFillBoth function with the
- * provided inputs and asserting that the resultant struct is correct.
- * @param matchOrders The TestMatchOrders contract object that should be used to make the call to
- *                    the smart contract.
- * @param leftMakerAssetAmountRemaining The left maker asset remaining field for the function call.
- * @param leftTakerAssetAmountRemaining The left taker asset remaining field for the function call.
- * @param rightMakerAssetAmountRemaining The right maker asset remaining field for the function call.
- * @param rightTakerAssetAmountRemaining The right taker asset remaining field for the function call.
- */
-//async function testCalculateCompleteRightFillAsync(
-//    matchOrders: TestMatchOrdersContract,
-//    leftOrder: SignedOrder,
-//    args: BigNumber[],
-//): Promise<void> {
-//    // Ensure that the correct number of arguments were provided.
-//    expect(args.length).to.be.eq(2);
-//
-//    // Get the resultant matched fill results from the call to _calculateCompleteFillBoth.
-//    const matchedFillResults = await matchOrders.externalCalculateCompleteFillBoth.callAsync(
-//        leftOrder,
-//        args[0],
-//        args[1],
-//    );
-//
-//    // Ensure that the matched fill results are correct.
-//    expect(matchedFillResults.left.makerAssetFilledAmount).bignumber.to.be.eq(args[0]);
-//    expect(matchedFillResults.left.takerAssetFilledAmount).bignumber.to.be.eq(args[1]);
-//    expect(matchedFillResults.right.makerAssetFilledAmount).bignumber.to.be.eq(args[2]);
-//    expect(matchedFillResults.right.takerAssetFilledAmount).bignumber.to.be.eq(args[3]);
-//}
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -344,11 +311,50 @@ blockchainTests.resets.only('MatchOrders Tests', ({ web3Wrapper, txDefaults }) =
     });
 
     describe('_assertValidMatch', () => {
+        it('should revert if the prices of the left order is less than the price of the right order', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            const orderHashHexLeft = orderHashUtils.getOrderHashHex(signedOrderLeft);
+            const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
+            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
+            const tx = matchOrders.publicAssertValidMatch.callAsync(signedOrderLeft, signedOrderRight);
+            expect(tx).to.revertWith(expectedError);
+        });
 
+        it('should revert if the prices of the left and right orders are equal', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            const orderHashHexLeft = orderHashUtils.getOrderHashHex(signedOrderLeft);
+            const orderHashHexRight = orderHashUtils.getOrderHashHex(signedOrderRight);
+            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
+            const tx = matchOrders.publicAssertValidMatch.callAsync(signedOrderLeft, signedOrderRight);
+            expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should succeed if the price of the left order is higher than the price of the right', async () => {
+            const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 18),
+            });
+            await matchOrders.publicAssertValidMatch.callAsync(signedOrderLeft, signedOrderRight)
+        });
     });
-
-    // FIXME - I may not need to test this
-    describe('_getCurrentContextAddress', () => {});
 
     describe('_calculateMatchedFillResults', () => {
         // FIXME - Test case 2 and verify that it is correctly hitting case 1 and 3.

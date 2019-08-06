@@ -21,6 +21,16 @@ import "./IsolatedExchange.sol";
 contract TestMatchOrders is
     IsolatedExchange
 {
+    function publicAssertValidMatch(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder
+    )
+        public
+        view
+    {
+        _assertValidMatch(leftOrder, rightOrder);
+    }
+
     function publicCalculateMatchedFillResults(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
