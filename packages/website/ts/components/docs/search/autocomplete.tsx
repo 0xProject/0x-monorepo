@@ -46,6 +46,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     history,
 }) => {
     const [value, setValue] = React.useState<string>('');
+    let inputRef: HTMLInputElement;
 
     React.useEffect(() => {
         const handleKeyUp: any = (event: React.KeyboardEvent): void => {
@@ -60,9 +61,10 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
         };
     }, []);
 
-    const onChange = (event: React.KeyboardEvent, { newValue }: any): void => {
-        console.log('newValue', newValue);
-        setValue(newValue);
+    const onChange = (event: React.KeyboardEvent, { newValue, method }: any): void => {
+        if (method === 'type') {
+            setValue(newValue);
+        }
     };
 
     const onSuggestionsFetchRequested = ({ value: newValue }: any): void => refine(newValue);
@@ -75,6 +77,8 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
             // Without using route props / withRouter HOC this coudl simply be (with full route load):
             // location.href = suggestion.url;
         }
+        setValue(''); // Clear input value
+        inputRef.blur(); // Blur input, used for keyboard choices in connection with focusInputOnSuggestionClick prop on autosuggest
     };
 
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
@@ -115,6 +119,12 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
 
     const getSectionSuggestions = (section: any): string => section.hits;
 
+    const storeInputRef = (autosuggest: any): void => {
+        if (autosuggest !== null) {
+            inputRef = autosuggest.input;
+        }
+    };
+
     const inputProps = {
         placeholder: 'Search docs…',
         onChange,
@@ -126,7 +136,9 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
             <AutocompleteWrapper currentRefinement={currentRefinement} isHome={isHome}>
                 <Autosuggest
                     suggestions={hits}
+                    ref={storeInputRef}
                     multiSection={true}
+                    focusInputOnSuggestionClick={false}
                     onSuggestionSelected={onSuggestionSelected}
                     onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                     onSuggestionsClearRequested={onSuggestionsClearRequested}
