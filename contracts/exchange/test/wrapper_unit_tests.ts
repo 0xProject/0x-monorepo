@@ -4,11 +4,12 @@ import {
     describe,
     expect,
     hexRandom,
+    TransactionHelper,
 } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors } from '@0x/order-utils';
-import { OrderInfo, OrderStatus, OrderWithoutDomain as Order } from '@0x/types';
+import { FillResults, OrderInfo, OrderStatus, OrderWithoutDomain as Order } from '@0x/types';
 import { BigNumber } from '@0x/utils';
-import { TransactionReceipt } from 'ethereum-types';
+import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
 import * as _ from 'lodash';
 
@@ -27,8 +28,10 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
     const randomTimestamp = () => new BigNumber(Math.floor(_.now() / 1000) + _.random(0, 34560));
     const randomSalt = () => new BigNumber(hexRandom(constants.WORD_LENGTH).substr(2), 16);
     let testContract: TestWrapperFunctionsContract;
+    let txHelper: TransactionHelper;
 
     before(async () => {
+        txHelper = new TransactionHelper(env.web3Wrapper, artifacts);
         testContract = await TestWrapperFunctionsContract.deployFrom0xArtifactAsync(
             artifacts.TestWrapperFunctions,
             env.provider,
@@ -62,32 +65,52 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             `0x${order.salt.toString(16)}`, constants.WORD_LENGTH)));
     }
 
-    type AsyncFunction<TArgs extends any[], TResult> = (...args: TArgs) => Promise<TResult>;
-
-    interface MutableContractFunction<
-        TCallAsyncArgs extends any[],
-        TAwaitTransactionSuccessAsyncArgs extends any[],
-        TCallAsyncResult,
-    > {
-        callAsync: AsyncFunction<TCallAsyncArgs, TCallAsyncResult>;
-        awaitTransactionSuccessAsync: AsyncFunction<TAwaitTransactionSuccessAsyncArgs, TransactionReceipt>;
+    // Computes the expected (fake) fill results from `TestWrapperFunctions` `_fillOrder` implementation.
+    function getExpectedFillResults(order: Order): FillResults {
+        return {
+            makerAssetFilledAmount: order.makerAssetAmount,
+            takerAssetFilledAmount: order.takerAssetAmount,
+            makerFeePaid: order.makerFee,
+            takerFeePaid: order.takerFee,
+        };
     }
 
-    async function getResultAndTransactAsync<
-        TCallAsyncArgs extends any[],
-        TAwaitTransactionSuccessAsyncArgs extends any[],
-        TCallAsyncResult,
-    >(
-        contractFunction: MutableContractFunction<TCallAsyncArgs, TAwaitTransactionSuccessAsyncArgs, TCallAsyncResult>,
-        // tslint:disable-next-line: trailing-comma
-        ...args: TAwaitTransactionSuccessAsyncArgs
-    ): Promise<[TCallAsyncResult, TransactionReceipt]> {
-        // HACK(dorothy-zbornak): We take advantage of the general rule that
-        // the parameters for `callAsync()` are a subset of the
-        // parameters for `awaitTransactionSuccessAsync()`.
-        const result = await contractFunction.callAsync(...args as any as TCallAsyncArgs);
-        const receipt = await contractFunction.awaitTransactionSuccessAsync(...args);
-        return [ result, receipt ];
+    // Asserts that `_fillOrder()` was called in the same order and with the same
+    // arguments as given by examining receipt logs.
+    function assertFillOrderCallsFromReceipt(
+        logs: LogEntry[],
+        calls: Array<[Order, BigNumber, string]>,
+    ): void {
+        expect(logs.length).to.eq(calls.length);
+        for (const i of _.times(calls.length)) {
+            const log = logs[i] as LogWithDecodedArgs<FillOrderCalledEventArgs>;
+            const [
+                expectedOrder,
+                expectedTakerAssetFillAmount,
+                expectedSignature,
+            ] = calls[i];
+            expect(log.event).to.eq('FillOrderCalled');
+            assertSameOrderFromEvent(log.args.order as any, expectedOrder);
+            expect(log.args.takerAssetFillAmount).to.bignumber.eq(expectedTakerAssetFillAmount);
+            expect(log.args.signature).to.eq(expectedSignature);
+        }
+    }
+
+    function assertSameOrderFromEvent(actual: any[], expected: Order): void {
+        expect(actual[0].toLowerCase()).to.be.eq(expected.makerAddress);
+        expect(actual[1].toLowerCase()).to.be.eq(expected.takerAddress);
+        expect(actual[2].toLowerCase()).to.be.eq(expected.feeRecipientAddress);
+        expect(actual[3].toLowerCase()).to.be.eq(expected.senderAddress);
+        expect(actual[4]).to.be.bignumber.eq(expected.makerAssetAmount);
+        expect(actual[5]).to.be.bignumber.eq(expected.takerAssetAmount);
+        expect(actual[6]).to.be.bignumber.eq(expected.makerFee);
+        expect(actual[7]).to.be.bignumber.eq(expected.takerFee);
+        expect(actual[8]).to.be.bignumber.eq(expected.expirationTimeSeconds);
+        expect(actual[9]).to.be.bignumber.eq(expected.salt);
+        expect(actual[10]).to.be.eq(expected.makerAssetData);
+        expect(actual[11]).to.be.eq(expected.takerAssetData);
+        expect(actual[12]).to.be.eq(expected.makerFeeAssetData);
+        expect(actual[13]).to.be.eq(expected.takerFeeAssetData);
     }
 
     describe('getOrdersInfo', () => {
@@ -169,14 +192,16 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 // the `takerAssetFilledAmount`.
                 takerAssetAmount: fillAmount,
             });
-            // const expected = getExpectedFillResults(order, fillAmount);
-            const actual = await getResultAndTransactAsync(
+            const signature = randomSignature();
+            const expected = getExpectedFillResults(order);
+            const [ actual, receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.fillOrKillOrder,
                 order,
                 fillAmount,
-                randomSignature(),
+                signature,
             );
-            // expect(actual).to.deep.eq(expected);
+            expect(actual).to.deep.eq(expected);
+            assertFillOrderCallsFromReceipt(receipt.logs, [[ order, fillAmount, signature ]]);
         });
     });
 });
