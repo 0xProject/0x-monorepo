@@ -3,7 +3,7 @@
         "version": "11.0.0",
         "changes": [
             {
-                "note": "Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/1911",
+                "note": "Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/2040",
                 "pr": 2037
             }
         ]

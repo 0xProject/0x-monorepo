@@ -215,7 +215,12 @@ export class CoordinatorWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const signatures = signedOrders.map(o => o.signature);
-        const data = this._getAbiEncodedTransactionData('batchFillOrders', signedOrders, takerAssetFillAmounts, signatures);
+        const data = this._getAbiEncodedTransactionData(
+            'batchFillOrders',
+            signedOrders,
+            takerAssetFillAmounts,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -318,7 +323,12 @@ export class CoordinatorWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const signatures = signedOrders.map(o => o.signature);
-        const data = this._getAbiEncodedTransactionData('marketBuyOrders', signedOrders, makerAssetFillAmount, signatures);
+        const data = this._getAbiEncodedTransactionData(
+            'marketBuyOrders',
+            signedOrders,
+            makerAssetFillAmount,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -351,7 +361,12 @@ export class CoordinatorWrapper {
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
         const signatures = signedOrders.map(o => o.signature);
-        const data = this._getAbiEncodedTransactionData('marketSellOrders', signedOrders, takerAssetFillAmount, signatures);
+        const data = this._getAbiEncodedTransactionData(
+            'marketSellOrders',
+            signedOrders,
+            takerAssetFillAmount,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -658,7 +673,7 @@ export class CoordinatorWrapper {
         return signerAddress;
     }
 
-    private _getAbiEncodedTransactionData<K extends keyof ExchangeContract>(methodName: K, ...args: any): string {
+    private _getAbiEncodedTransactionData<K extends keyof ExchangeContract>(methodName: K, ...args: any[]): string {
         return getAbiEncodedTransactionData(this._exchangeInstance, methodName, ...args);
     }
 

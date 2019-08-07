@@ -46,6 +46,7 @@ export {
     ExchangeContract,
     ForwarderContract,
     OrderValidatorContract,
+    WETH9Contract,
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
