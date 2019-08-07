@@ -6,7 +6,7 @@ services:
         ports:
             - "8545:8545"
     launchkit:
-        image: "0xorg/launch-kit-ci"
+        image: "0xorg/launch-kit-backend"
         depends_on:
             - ganache
         ports:
