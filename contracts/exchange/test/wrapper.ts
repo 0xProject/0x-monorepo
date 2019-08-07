@@ -933,8 +933,7 @@ describe('Exchange wrappers', () => {
                     });
                 }
             };
-            describe('marketSellOrders reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
+            describe('marketSellOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
                 const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
@@ -1151,8 +1150,7 @@ describe('Exchange wrappers', () => {
                     });
                 }
             };
-            describe('marketBuyOrders reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
+            describe('marketBuyOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
                 const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(

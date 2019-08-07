@@ -137,6 +137,10 @@
             {
                 "note": "Remove `_assertValidFill()`",
                 "pr": 2031
+            },
+            {
+                "note": "Add `wrapper_unit_tests` tests and `TestWrapperFunctions` contract",
+                "pr": "TODO"
             }
         ]
     },

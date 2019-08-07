@@ -49,6 +49,19 @@ contract TestWrapperFunctions is
         Exchange(0x74657374)
     {}
 
+    /// @dev Overridden to be deterministic and simplified.
+    function getOrderInfo(Order memory order)
+        public
+        view
+        returns (OrderInfo memory orderInfo)
+    {
+        // Lower uint128 of `order.salt` is the `orderTakerAssetFilledAmount`.
+        orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
+        // High byte of `order.salt` is the `orderStatus`.
+        orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
+        orderInfo.orderHash = _getOrderHash(order);
+    }
+
     /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
     function _fillOrder(
         Order memory order,
@@ -94,19 +107,7 @@ contract TestWrapperFunctions is
         }
     }
 
-    /// @dev Overridden to be deterministic and simplified.
-    function getOrderInfo(Order memory order)
-        public
-        view
-        returns (OrderInfo memory orderInfo)
-    {
-        // Lower uint128 of `order.salt` is the `orderTakerAssetFilledAmount`.
-        orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
-        // High byte of `order.salt` is the `orderStatus`.
-        orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
-        orderInfo.orderHash = _getOrderHash(order);
-    }
-
+    /// @dev Simplified order hashing.
     function _getOrderHash(Order memory order)
         internal
         pure
