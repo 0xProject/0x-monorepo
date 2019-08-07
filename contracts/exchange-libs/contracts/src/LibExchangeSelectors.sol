@@ -22,9 +22,6 @@ pragma solidity ^0.5.9;
 contract LibExchangeSelectors {
     // solhint-disable max-line-length
 
-    // function allowedOrderValidators(address,address)
-    bytes4 constant internal ALLOWED_ORDER_VALIDATORS_SELECTOR = 0x3a0a355b;
-
     // function allowedValidators(address,address)
     bytes4 constant internal ALLOWED_VALIDATORS_SELECTOR = 0x7b8e3514;
 
@@ -34,8 +31,8 @@ contract LibExchangeSelectors {
     // function batchCancelOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[])
     bytes4 constant internal BATCH_CANCEL_ORDERS_SELECTOR = 0xdedfc1f1;
 
-    // function batchExecuteTransactions((uint256,address,bytes)[],bytes[])
-    bytes4 constant internal BATCH_EXECUTE_TRANSACTIONS_SELECTOR = 0x970d970c;
+    // function batchExecuteTransactions((uint256,uint256,address,bytes)[],bytes[])
+    bytes4 constant internal BATCH_EXECUTE_TRANSACTIONS_SELECTOR = 0x3f80f0ee;
 
     // function batchFillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])
     bytes4 constant internal BATCH_FILL_ORDERS_SELECTOR = 0x9694a402;
@@ -45,6 +42,15 @@ contract LibExchangeSelectors {
 
     // function batchFillOrKillOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256[],bytes[])
     bytes4 constant internal BATCH_FILL_OR_KILL_ORDERS_SELECTOR = 0xbeee2e14;
+
+    // function batchMatchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],bytes[])
+    bytes4 constant internal BATCH_MATCH_ORDERS_SELECTOR = 0x6fcf3e9e;
+
+    // function batchMatchOrdersWithMaximalFill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],bytes[],bytes[])
+    bytes4 constant internal BATCH_MATCH_ORDERS_WITH_MAXIMAL_FILL_SELECTOR = 0x6a1a80fd;
+
+    // function calculateMatchedFillResults((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,uint256,bool)
+    bytes4 constant internal CALCULATE_MATCHED_FILL_RESULTS_SELECTOR = 0x38f9eb3b;
 
     // function cancelled(bytes32)
     bytes4 constant internal CANCELLED_SELECTOR = 0x2ac12622;
@@ -58,6 +64,12 @@ contract LibExchangeSelectors {
     // function currentContextAddress()
     bytes4 constant internal CURRENT_CONTEXT_ADDRESS_SELECTOR = 0xeea086ba;
 
+    // function doesSignatureRequireRegularValidation(bytes32,address,bytes)
+    bytes4 constant internal DOES_SIGNATURE_REQUIRE_REGULAR_VALIDATION_SELECTOR = 0xc17f8ccc;
+
+    // function EIP1271_MAGIC_VALUE()
+    bytes4 constant internal EIP_1271_MAGIC_VALUE_SELECTOR = 0xdd885e2d;
+
     // function EIP712_EXCHANGE_DOMAIN_HASH()
     bytes4 constant internal EIP_712_EXCHANGE_DOMAIN_HASH_SELECTOR = 0xc26cfecd;
 
@@ -67,8 +79,14 @@ contract LibExchangeSelectors {
     // function EIP712_EXCHANGE_DOMAIN_VERSION()
     bytes4 constant internal EIP_712_EXCHANGE_DOMAIN_VERSION_SELECTOR = 0x0f01323b;
 
-    // function executeTransaction((uint256,address,bytes),bytes)
-    bytes4 constant internal EXECUTE_TRANSACTION_SELECTOR = 0x965504f7;
+    // function EIP712_ORDER_SCHEMA_HASH()
+    bytes4 constant internal EIP_712_ORDER_SCHEMA_HASH_SELECTOR = 0xe4588b64;
+
+    // function EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH()
+    bytes4 constant internal EIP_712_ZEROEX_TRANSACTION_SCHEMA_HASH_SELECTOR = 0xc148c58a;
+
+    // function executeTransaction((uint256,uint256,address,bytes),bytes)
+    bytes4 constant internal EXECUTE_TRANSACTION_SELECTOR = 0xcba0648a;
 
     // function filled(bytes32)
     bytes4 constant internal FILLED_SELECTOR = 0x288cdc91;
@@ -94,8 +112,8 @@ contract LibExchangeSelectors {
     // function getOrdersInfo((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[])
     bytes4 constant internal GET_ORDERS_INFO_SELECTOR = 0x9dfac06d;
 
-    // function getTransactionHash((uint256,address,bytes))
-    bytes4 constant internal GET_TRANSACTION_HASH_SELECTOR = 0x23872f55;
+    // function getTransactionHash((uint256,uint256,address,bytes))
+    bytes4 constant internal GET_TRANSACTION_HASH_SELECTOR = 0xe0456690;
 
     // function isValidHashSignature(bytes32,address,bytes)
     bytes4 constant internal IS_VALID_HASH_SIGNATURE_SELECTOR = 0x8171c407;
@@ -103,20 +121,20 @@ contract LibExchangeSelectors {
     // function isValidOrderSignature((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),address,bytes)
     bytes4 constant internal IS_VALID_ORDER_SIGNATURE_SELECTOR = 0xf813e384;
 
+    // function isValidTransactionSignature((uint256,uint256,address,bytes),address,bytes)
+    bytes4 constant internal IS_VALID_TRANSACTION_SIGNATURE_SELECTOR = 0xfaa8b882;
+
     // function marketBuyOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
     bytes4 constant internal MARKET_BUY_ORDERS_SELECTOR = 0xdb702a9c;
-
-    // function marketBuyOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
-    bytes4 constant internal MARKET_BUY_ORDERS_NO_THROW_SELECTOR = 0x78d29ac1;
 
     // function marketSellOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
     bytes4 constant internal MARKET_SELL_ORDERS_SELECTOR = 0x52b3ca9e;
 
-    // function marketSellOrdersNoThrow((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes)[],uint256,bytes[])
-    bytes4 constant internal MARKET_SELL_ORDERS_NO_THROW_SELECTOR = 0x369da099;
-
     // function matchOrders((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)
     bytes4 constant internal MATCH_ORDERS_SELECTOR = 0x88ec79fb;
+
+    // function matchOrdersWithMaximalFill((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),bytes,bytes)
+    bytes4 constant internal MATCH_ORDERS_WITH_MAXIMAL_FILL_SELECTOR = 0xb718e292;
 
     // function orderEpoch(address,address)
     bytes4 constant internal ORDER_EPOCH_SELECTOR = 0xd9bfa73e;
@@ -133,14 +151,14 @@ contract LibExchangeSelectors {
     // function registerAssetProxy(address)
     bytes4 constant internal REGISTER_ASSET_PROXY_SELECTOR = 0xc585bb93;
 
-    // function setOrderValidatorApproval(address,bool)
-    bytes4 constant internal SET_ORDER_VALIDATOR_APPROVAL_SELECTOR = 0x5972957b;
-
     // function setSignatureValidatorApproval(address,bool)
     bytes4 constant internal SET_SIGNATURE_VALIDATOR_APPROVAL_SELECTOR = 0x77fcce68;
 
-    // function transactions(bytes32)
-    bytes4 constant internal TRANSACTIONS_SELECTOR = 0x642f2eaf;
+    // function simulateDispatchTransferFromCalls(bytes[],address[],address[],uint256[])
+    bytes4 constant internal SIMULATE_DISPATCH_TRANSFER_FROM_CALLS_SELECTOR = 0xb04fbddd;
+
+    // function transactionsExecuted(bytes32)
+    bytes4 constant internal TRANSACTIONS_EXECUTED_SELECTOR = 0x0228e168;
 
     // function transferOwnership(address)
     bytes4 constant internal TRANSFER_OWNERSHIP_SELECTOR = 0xf2fde38b;
@@ -157,9 +175,12 @@ contract LibExchangeSelectors {
     // event CancelUpTo(address,address,uint256)
     bytes32 constant internal EVENT_CANCEL_UP_TO_SELECTOR = 0x82af639571738f4ebd4268fb0363d8957ebe1bbb9e78dba5ebd69eed39b154f0;
 
-    // event Fill(address,address,address,address,uint256,uint256,uint256,uint256,bytes32,bytes,bytes,bytes,bytes)
-    bytes32 constant internal EVENT_FILL_SELECTOR = 0xcb32b586b1d019abfd3dfc2d45e7275f145185e9d53359e9b99521ca88cea0e8;
+    // event Fill(address,address,bytes,bytes,bytes,bytes,uint256,uint256,uint256,uint256,address,address,bytes32)
+    bytes32 constant internal EVENT_FILL_SELECTOR = 0xa5a8f3e79ee70e3be6330220296f9075863b936f4098d942ab107367d193a197;
 
     // event SignatureValidatorApproval(address,address,bool)
     bytes32 constant internal EVENT_SIGNATURE_VALIDATOR_APPROVAL_SELECTOR = 0xa8656e308026eeabce8f0bc18048433252318ab80ac79da0b3d3d8697dfba891;
+
+    // event TransactionExecution(bytes32)
+    bytes32 constant internal EVENT_TRANSACTION_EXECUTION_SELECTOR = 0xa4a7329f1dd821363067e07d359e347b4af9b1efe4b6cccf13240228af3c800d;
 }
