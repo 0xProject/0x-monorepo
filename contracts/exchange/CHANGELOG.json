@@ -149,6 +149,10 @@
             {
                 "note": "Update `Wallet` signature type behavior to be in line with v2.1.",
                 "pr": "TODO"
+            },
+            {
+                "note": "Add (semi) automated reentrancy tests and remove manual ones",
+                "pr": "TODO"
             }
         ]
     },
