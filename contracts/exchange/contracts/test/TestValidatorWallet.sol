@@ -45,6 +45,8 @@ contract TestValidatorWallet is
 {
     using LibBytes for bytes;
 
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
+
     /// @dev Revert reason for `Revert` `ValidatorAction`.
     string constant public REVERT_REASON = "you shall not pass";
 
@@ -158,19 +160,19 @@ contract TestValidatorWallet is
     /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return isValid `true` if the signature check succeeds.
+    /// @return `LEGACY_WALLET_MAGIC_VALUE` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         bytes memory signature
     )
         public
-        returns (bool isValid)
+        returns (bytes4 magicValue)
     {
         ValidatorAction action = _hashActions[hash];
         if (action == ValidatorAction.Reject) {
-            isValid = false;
+            magicValue = 0x0;
         } else if (action == ValidatorAction.Accept) {
-            isValid = true;
+            magicValue = LEGACY_WALLET_MAGIC_VALUE;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
@@ -179,7 +181,7 @@ contract TestValidatorWallet is
             assert(action == ValidatorAction.MatchSignatureHash);
             bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
             if (keccak256(signature) == expectedSignatureHash) {
-                isValid = true;
+                magicValue = LEGACY_WALLET_MAGIC_VALUE;
             }
         }
     }

@@ -141,6 +141,14 @@
             {
                 "note": "Add `wrapper_unit_tests` tests and `TestWrapperFunctions` contract",
                 "pr": "TODO"
+            },
+            {
+                "note": "Disallow `signerAddress == 0` in signature validation functions.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Update `Wallet` signature type behavior to be in line with v2.1.",
+                "pr": "TODO"
             }
         ]
     },

@@ -43,6 +43,10 @@ contract MixinSignatureValidator is
 {
     using LibBytes for bytes;
 
+    // Magic bytes to be returned by `Wallet` signature type validators.
+    // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
+
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
 
@@ -94,6 +98,8 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
+        _assertValidSigner(signerAddress, hash, signature);
+
         SignatureType signatureType = _readValidSignatureType(
             hash,
             signerAddress,
@@ -210,6 +216,8 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
+        _assertValidSigner(signerAddress, orderHash, signature);
+
         SignatureType signatureType = _readValidSignatureType(
             orderHash,
             signerAddress,
@@ -259,6 +267,8 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
+        _assertValidSigner(signerAddress, transactionHash, signature);
+
         SignatureType signatureType = _readValidSignatureType(
             transactionHash,
             signerAddress,
@@ -467,9 +477,9 @@ contract MixinSignatureValidator is
         }
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32) {
-            return returnData.readUint256(0) == 1;
+        // Return data should be `LEGACY_WALLET_MAGIC_VALUE`.
+        if (didSucceed && returnData.length <= 32) {
+            return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
         }
         // Static call to verifier failed.
         LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
@@ -599,4 +609,21 @@ contract MixinSignatureValidator is
         ));
     }
 
+    function _assertValidSigner(
+        address signerAddress,
+        bytes32 hash,
+        bytes memory signature
+    )
+        private
+        pure
+    {
+        if (signerAddress == address(0)) {
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+    }
 }
