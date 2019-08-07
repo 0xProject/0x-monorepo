@@ -24,18 +24,12 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { OrderStatus, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils, ReentrancyGuardRevertErrors } from '@0x/utils';
+import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    constants as exchangeConstants,
-    ExchangeContract,
-    ExchangeWrapper,
-    ReentrantERC20TokenContract,
-} from '../src';
+import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 
@@ -65,7 +59,6 @@ describe('matchOrders', () => {
     let erc20Tokens: DummyERC20TokenContract[];
     let erc721Token: DummyERC721TokenContract;
     let erc1155Token: ERC1155TokenContract;
-    let reentrantErc20Token: ReentrantERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -195,13 +188,6 @@ describe('matchOrders', () => {
             erc1155Proxy.address,
             { from: owner },
             constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
-        reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.ReentrantERC20Token,
-            provider,
-            txDefaults,
-            exchange.address,
         );
 
         // Set default addresses
@@ -626,34 +612,6 @@ describe('matchOrders', () => {
                 false,
             );
         });
-
-        const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
-                const description = `should not allow matchOrders to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    });
-                    const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                        makerAddress: makerAddressRight,
-                        takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                        feeRecipientAddress: feeRecipientAddressRight,
-                    });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.matchOrdersAsync(signedOrderLeft, signedOrderRight, takerAddress);
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            });
-        };
-        describe('matchOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should transfer the correct amounts when orders completely fill each other', async () => {
             // Create orders to match
@@ -1906,39 +1864,6 @@ describe('matchOrders', () => {
                 true,
             );
         });
-
-        const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
-                const description = `should not allow matchOrdersWithMaximalFill to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    });
-                    const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
-                        makerAddress: makerAddressRight,
-                        takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                        takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                        feeRecipientAddress: feeRecipientAddressRight,
-                    });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.matchOrdersWithMaximalFillAsync(
-                        signedOrderLeft,
-                        signedOrderRight,
-                        takerAddress,
-                    );
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            });
-        };
-        describe('matchOrdersWithMaximalFill reentrancy tests', () =>
-            reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
             // Create orders to match
@@ -3520,38 +3445,6 @@ describe('matchOrders', () => {
                 false,
             );
         });
-
-        const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
-                const description = `should not allow batchMatchOrders to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const leftOrders = [
-                        await orderFactoryLeft.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                        }),
-                    ];
-                    const rightOrders = [
-                        await orderFactoryRight.newSignedOrderAsync({
-                            makerAddress: makerAddressRight,
-                            takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                            feeRecipientAddress: feeRecipientAddressRight,
-                        }),
-                    ];
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            });
-        };
-        describe('batchMatchOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
     });
     describe('batchMatchOrdersWithMaximalFill', () => {
         it('should fully fill the the right order and pay the profit denominated in the left maker asset', async () => {
@@ -3813,39 +3706,6 @@ describe('matchOrders', () => {
                 true,
             );
         });
-
-        const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, async (functionName: string, functionId: number) => {
-                const description = `should not allow batchMatchOrdersWithMaximalFill to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const leftOrders = [
-                        await orderFactoryLeft.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                        }),
-                    ];
-                    const rightOrders = [
-                        await orderFactoryRight.newSignedOrderAsync({
-                            makerAddress: makerAddressRight,
-                            takerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                            feeRecipientAddress: feeRecipientAddressRight,
-                        }),
-                    ];
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.batchMatchOrdersAsync(leftOrders, rightOrders, takerAddress);
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            });
-        };
-        describe('batchMatchOrdersWithMaximalFill reentrancy tests', () =>
-            reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
     });
 });
 // tslint:disable-line:max-file-line-count

@@ -37,6 +37,7 @@
         "src/interfaces/IWallet.sol",
         "src/interfaces/IWrapperFunctions.sol",
         "test/IsolatedExchange.sol",
+        "test/ReentrancyTester.sol",
         "test/ReentrantERC20Token.sol",
         "test/TestAssetProxyDispatcher.sol",
         "test/TestExchangeInternals.sol",

@@ -2,17 +2,15 @@
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
+    describe,
+    expect,
     getLatestBlockTimestampAsync,
     LogDecoder,
     OrderFactory,
-    provider,
     TransactionFactory,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import {
     assetDataUtils,
     ExchangeRevertErrors,
@@ -21,8 +19,7 @@ import {
     transactionHashUtils,
 } from '@0x/order-utils';
 import { EIP712DomainWithDefaultSchema, FillResults, OrderStatus, RevertReason } from '@0x/types';
-import { AbiEncoder, BigNumber, providerUtils } from '@0x/utils';
-import * as chai from 'chai';
+import { AbiEncoder, BigNumber } from '@0x/utils';
 import { LogWithDecodedArgs, MethodAbi } from 'ethereum-types';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -43,11 +40,8 @@ import {
     WhitelistContract,
 } from '../src/';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange transactions', () => {
+blockchainTests.resets('Exchange transactions', env => {
     let chainId: number;
     let senderAddress: string;
     let owner: string;
@@ -81,20 +75,8 @@ describe('Exchange transactions', () => {
     let taker2PrivateKey: Buffer;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        chainId = await env.getChainIdAsync();
+        const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([
             owner,
             senderAddress,
@@ -105,7 +87,7 @@ describe('Exchange transactions', () => {
             taker2Address,
         ] = _.slice(accounts, 0, 7));
 
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 4;
         [erc20TokenA, erc20TokenB, takerFeeToken, makerFeeToken] = await erc20Wrapper.deployDummyTokensAsync(
@@ -117,17 +99,14 @@ describe('Exchange transactions', () => {
 
         exchangeInstance = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchangeInstance, provider);
+        exchangeWrapper = new ExchangeWrapper(exchangeInstance, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchangeInstance.address, { from: owner }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchangeInstance.address, { from: owner });
 
         defaultMakerTokenAddress = erc20TokenA.address;
         defaultTakerTokenAddress = erc20TokenB.address;
@@ -372,8 +351,8 @@ describe('Exchange transactions', () => {
                     [
                         ExchangeFunctionName.FillOrderNoThrow,
                         ExchangeFunctionName.BatchFillOrdersNoThrow,
-                        ExchangeFunctionName.MarketBuyOrdersNoThrow,
-                        ExchangeFunctionName.MarketSellOrdersNoThrow,
+                        ExchangeFunctionName.MarketBuyOrders,
+                        ExchangeFunctionName.MarketSellOrders,
                     ].indexOf(fnName) === -1
                 ) {
                     it(`${fnName} should revert and rethrow error if the underlying function reverts`, async () => {
@@ -993,8 +972,8 @@ describe('Exchange transactions', () => {
                 before(async () => {
                     exchangeWrapperContract = await ExchangeWrapperContract.deployFrom0xArtifactAsync(
                         artifacts.ExchangeWrapper,
-                        provider,
-                        txDefaults,
+                        env.provider,
+                        env.txDefaults,
                         exchangeInstance.address,
                     );
                 });
@@ -1060,7 +1039,7 @@ describe('Exchange transactions', () => {
                         signedOrder.signature,
                     );
                     const transaction = await takerTransactionFactory.newSignedTransactionAsync({ data });
-                    const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+                    const logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
                     const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                         await exchangeWrapperContract.fillOrder.sendTransactionAsync(
                             signedOrder,
@@ -1095,8 +1074,8 @@ describe('Exchange transactions', () => {
                 before(async () => {
                     whitelistContract = await WhitelistContract.deployFrom0xArtifactAsync(
                         artifacts.Whitelist,
-                        provider,
-                        txDefaults,
+                        env.provider,
+                        env.txDefaults,
                         exchangeInstance.address,
                     );
                     const isApproved = true;
@@ -1109,11 +1088,10 @@ describe('Exchange transactions', () => {
 
                 it('should revert if maker has not been whitelisted', async () => {
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(takerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        takerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
                     const signedOrder = await orderFactory.newSignedOrderAsync({
@@ -1133,11 +1111,10 @@ describe('Exchange transactions', () => {
 
                 it('should revert if taker has not been whitelisted', async () => {
                     const isApproved = true;
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await whitelistContract.updateWhitelistStatus.sendTransactionAsync(makerAddress, isApproved, {
-                            from: owner,
-                        }),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
+                    await whitelistContract.updateWhitelistStatus.awaitTransactionSuccessAsync(
+                        makerAddress,
+                        isApproved,
+                        { from: owner },
                     );
 
                     const signedOrder = await orderFactory.newSignedOrderAsync({
@@ -1174,7 +1151,7 @@ describe('Exchange transactions', () => {
                     });
                     const takerAssetFillAmount = signedOrder.takerAssetAmount;
                     const salt = generatePseudoRandomSalt();
-                    const logDecoder = new LogDecoder(web3Wrapper, artifacts);
+                    const logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
                     const transactionReceipt = await logDecoder.getTxWithDecodedLogsAsync(
                         await whitelistContract.fillOrderIfWhitelisted.sendTransactionAsync(
                             signedOrder,

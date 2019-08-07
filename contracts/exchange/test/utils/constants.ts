@@ -1,22 +1,14 @@
 import { ExchangeFunctionName } from './types';
 
 export const constants = {
-    FUNCTIONS_WITH_MUTEX: [
-        'FILL_ORDER',
-        'FILL_OR_KILL_ORDER',
-        'BATCH_FILL_ORDERS',
-        'BATCH_FILL_OR_KILL_ORDERS',
-        'MARKET_BUY_ORDERS',
-        'MARKET_SELL_ORDERS',
-        'MATCH_ORDERS',
-        'MATCH_ORDERS_WITH_MAXIMAL_FILL',
-        'BATCH_MATCH_ORDERS',
-        'BATCH_MATCH_ORDERS_WITH_MAXIMAL_FILL',
-        'CANCEL_ORDER',
-        'BATCH_CANCEL_ORDERS',
-        'CANCEL_ORDERS_UP_TO',
-        'PRE_SIGN',
-        'SET_SIGNATURE_VALIDATOR_APPROVAL',
+    // These are functions not secured by the `nonReentrant`, directly or
+    // indirectly (by calling a function that has the modifier).
+    REENTRANT_FUNCTIONS: [
+        'batchExecuteTransactions',
+        'executeTransaction',
+        'registerAssetProxy',
+        'simulateDispatchTransferFromCalls',
+        'transferOwnership',
     ],
     SINGLE_FILL_FN_NAMES: [
         ExchangeFunctionName.FillOrder,
@@ -28,12 +20,7 @@ export const constants = {
         ExchangeFunctionName.BatchFillOrKillOrders,
         ExchangeFunctionName.BatchFillOrdersNoThrow,
     ],
-    MARKET_FILL_FN_NAMES: [
-        ExchangeFunctionName.MarketBuyOrders,
-        ExchangeFunctionName.MarketBuyOrdersNoThrow,
-        ExchangeFunctionName.MarketSellOrders,
-        ExchangeFunctionName.MarketSellOrdersNoThrow,
-    ],
+    MARKET_FILL_FN_NAMES: [ExchangeFunctionName.MarketBuyOrders, ExchangeFunctionName.MarketSellOrders],
 };
 
 export enum ValidatorWalletAction {

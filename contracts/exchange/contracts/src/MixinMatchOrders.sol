@@ -491,7 +491,7 @@ contract MixinMatchOrders is
         bytes[] memory rightSignatures,
         bool shouldMaximallyFillOrders
     )
-        private
+        internal
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
     {
         // Ensure that the left and right orders have nonzero lengths.
@@ -640,7 +640,7 @@ contract MixinMatchOrders is
         bytes memory rightSignature,
         bool shouldMaximallyFillOrders
     )
-        private
+        internal
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
     {
         // We assume that rightOrder.takerAssetData == leftOrder.makerAssetData and rightOrder.makerAssetData == leftOrder.takerAssetData

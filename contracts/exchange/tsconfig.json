@@ -15,6 +15,7 @@
         "generated-artifacts/IWallet.json",
         "generated-artifacts/IWrapperFunctions.json",
         "generated-artifacts/IsolatedExchange.json",
+        "generated-artifacts/ReentrancyTester.json",
         "generated-artifacts/ReentrantERC20Token.json",
         "generated-artifacts/TestAssetProxyDispatcher.json",
         "generated-artifacts/TestExchangeInternals.json",

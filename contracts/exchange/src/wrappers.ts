@@ -15,6 +15,7 @@ export * from '../generated-wrappers/i_transactions';
 export * from '../generated-wrappers/i_wallet';
 export * from '../generated-wrappers/i_wrapper_functions';
 export * from '../generated-wrappers/isolated_exchange';
+export * from '../generated-wrappers/reentrancy_tester';
 export * from '../generated-wrappers/reentrant_erc20_token';
 export * from '../generated-wrappers/test_asset_proxy_dispatcher';
 export * from '../generated-wrappers/test_exchange_internals';
