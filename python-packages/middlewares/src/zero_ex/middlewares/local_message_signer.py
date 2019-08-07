@@ -9,7 +9,7 @@ an ethereum JSON RPC-Server and signs messages with a local private key.
 from functools import singledispatch
 from typing import Dict, List, Set, Tuple, Union
 from eth_account import Account, messages
-from eth_account.local import LocalAccount
+from eth_account.signers.local import LocalAccount
 from eth_keys.datatypes import PrivateKey
 from hexbytes import HexBytes
 
@@ -71,7 +71,7 @@ def construct_local_message_signer(
     >>> from web3 import Web3, HTTPProvider
     >>> Web3(
     ...     HTTPProvider("https://mainnet.infura.io/v3/API_KEY")
-    ... ).middleware_stack.add(
+    ... ).middleware_onion.add(
     ...     construct_local_message_signer(private_key)
     ... )
 

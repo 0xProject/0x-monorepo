@@ -76,7 +76,7 @@ What network is it?
 
 For our Maker role, we'll just use the first address available in the node:
 
->>> maker_address = Web3(eth_node).eth.accounts[0].lower()
+>>> maker_address = Web3(eth_node).eth.accounts[0]
 
 The 0x Ganache snapshot loaded into our eth_node has a pre-loaded ZRX balance
 for this account, so the example orders below have the maker trading away ZRX.
@@ -284,7 +284,7 @@ examples.
 Filling
 ^^^^^^^
 
->>> taker_address = Web3(eth_node).eth.accounts[1].lower()
+>>> taker_address = Web3(eth_node).eth.accounts[1]
 
 Our taker will take a ZRX/WETH order, but it doesn't have any WETH yet.  By
 depositing some ether into the WETH contract, it will be given some WETH to

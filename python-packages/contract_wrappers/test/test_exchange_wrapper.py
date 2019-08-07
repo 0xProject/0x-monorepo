@@ -31,7 +31,7 @@ def create_test_order(
 ):
     """Create a test order."""
     order = Order(
-        makerAddress=maker_address.lower(),
+        makerAddress=maker_address,
         takerAddress="0x0000000000000000000000000000000000000000",
         feeRecipientAddress="0x0000000000000000000000000000000000000000",
         senderAddress="0x0000000000000000000000000000000000000000",
