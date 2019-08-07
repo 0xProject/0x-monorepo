@@ -3,17 +3,20 @@ const path = require('path');
 const { read } = require('to-vfile');
 const remark = require('remark');
 const mdx = require('remark-mdx');
+const slug = require('remark-slug');
 const slugify = require('slugify');
-const filter = require('unist-util-filter');
+const findAfter = require('unist-util-find-after');
+const modifyChildren = require('unist-util-modify-children');
 const { selectAll } = require('unist-util-select');
+
 const extractMdxMeta = require('extract-mdx-metadata');
 
 function processContentTree(tree: Node[], url: string, meta: Meta, index: any, settings: Settings): void {
-    const filteredTree = filter(tree, () => {
-        return (node: Node) => node.type === 'heading' || node.type === 'paragraph';
-    });
-
-    const textNodes = selectAll('text', filteredTree);
+    const modify = modifyChildren(modifier);
+    // We first modify the tree to get slugified ids from headings to all text nodes
+    modify(tree);
+    // Get all text nodes. I.e. 'heading', 'paragraph', 'list' all can have (nested) child text nodes
+    const textNodes = selectAll('text', tree);
 
     if (textNodes) {
         const formattedTextNodes = formatTextNodes(textNodes);
@@ -21,6 +24,35 @@ function processContentTree(tree: Node[], url: string, meta: Meta, index: any, s
 
         setIndexSettings(index, settings);
         pushObjectsToAlgolia(index, content);
+    }
+}
+
+function modifier(node: Node, index: number, parent: Node): void {
+    if (node.type === 'heading') {
+        const start = node;
+        const isEnd = (node: Node) => node.type === 'heading' && node.depth <= start.depth;
+        const end = findAfter(parent, start, isEnd);
+
+        const startIndex = parent.children.indexOf(start);
+        const endIndex = parent.children.indexOf(end);
+        // Find all nodes between and including the heading and all nodes before the next heading
+        const between = parent.children.slice(startIndex, endIndex > 0 ? endIndex : undefined);
+        // We add the id of the heading as hash part of the url to all text nodes
+        for (const item of between) {
+            addHashToChildren(item, start);
+        }
+    }
+}
+
+function addHashToChildren(item: any, start: any): void {
+    if (item.children) {
+        for (const child of item.children) {
+            if (child.type === 'text') {
+                child.data = child.data || {};
+                child.data.hash = start.data.id;
+            }
+            addHashToChildren(child, start);
+        }
     }
 }
 
@@ -52,10 +84,12 @@ function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
         const titleSlug = slugify(meta.title, { lower: true });
+        const urlWithHash = `${url}#${node.hash}`;
 
         content.push({
             ...meta,
             url,
+            urlWithHash,
             textContent: node.textContent,
             id: titleSlug,
             objectID: `${titleSlug}_${index}`,
@@ -69,7 +103,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     const formattedTextNodes: FormattedNode[] = []; // array structure: [ { line: [LINE_NUMBER], textContent: [MERGED_TEXT_VALUE] } ]
 
     textNodes.map((textNode: Node) => {
-        const { position, value } = textNode;
+        const { data, position, value } = textNode;
         const { line } = position.start; // Line at which textnode starts (and for paragraphs, headings, ends).
 
         const nodeIndex = formattedTextNodes.findIndex((node: FormattedNode) => node.line === line);
@@ -78,7 +112,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
         if (isIndexPresent) {
             formattedTextNodes[nodeIndex].textContent += value; // Merge value with existing text at the given line
         } else {
-            formattedTextNodes.push({ line, textContent: value }); // Create text and its start line
+            formattedTextNodes.push({ line, hash: data.hash, textContent: value }); // Create text, hash part of the url, and its start line
         }
     });
 
@@ -101,6 +135,7 @@ async function processMdxAsync(
     const meta = await extractMdxMeta(rawContent);
 
     await remark()
+        .use(slug) // slugify heading text as ids
         .use(mdx)
         .use(() => (tree: Node[]) => processContentTree(tree, url, meta, index, settings))
         .process(file);
@@ -130,6 +165,7 @@ interface Meta {
 
 interface Content extends Meta {
     url: string;
+    urlWithHash: string;
     textContent: string;
     id: string;
     objectID: string;
@@ -145,6 +181,7 @@ interface Settings {
 }
 
 interface FormattedNode {
+    hash: string;
     line: number;
     textContent: string;
 }
@@ -180,5 +217,5 @@ interface Point {
 // Space is guaranteed to never be specified by unist or specifications
 // implementing unist.
 interface Data {
-    [key: string]: unknown;
+    [key: string]: any;
 }
