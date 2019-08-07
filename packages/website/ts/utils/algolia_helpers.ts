@@ -22,8 +22,8 @@ function processContentTree(tree: Node[], url: string, meta: Meta, index: any, s
         const formattedTextNodes = formatTextNodes(textNodes);
         const content = getContent(meta, url, formattedTextNodes);
 
-        setIndexSettings(index, settings);
-        pushObjectsToAlgolia(index, content);
+        // setIndexSettings(index, settings);
+        // pushObjectsToAlgolia(index, content);
     }
 }
 
@@ -84,12 +84,12 @@ function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
         const titleSlug = slugify(meta.title, { lower: true });
-        const urlWithHash = `${url}#${node.hash}`;
+        const sectionUrl = node.hash ? `${url}#${node.hash}` : url; // If we have the hash, append it to url, if not - use the base url
 
         content.push({
             ...meta,
             url,
-            urlWithHash,
+            sectionUrl,
             textContent: node.textContent,
             id: titleSlug,
             objectID: `${titleSlug}_${index}`,
@@ -104,6 +104,9 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
 
     textNodes.map((textNode: Node) => {
         const { data, position, value } = textNode;
+        // If data (hash) is not present on the node it means that the text node occurs before any headings. I.e. in an intro text without a heading.
+        const hash = data ? data.hash : '';
+
         const { line } = position.start; // Line at which textnode starts (and for paragraphs, headings, ends).
 
         const nodeIndex = formattedTextNodes.findIndex((node: FormattedNode) => node.line === line);
@@ -112,7 +115,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
         if (isIndexPresent) {
             formattedTextNodes[nodeIndex].textContent += value; // Merge value with existing text at the given line
         } else {
-            formattedTextNodes.push({ line, hash: data.hash, textContent: value }); // Create text, hash part of the url, and its start line
+            formattedTextNodes.push({ line, hash, textContent: value }); // Create text, hash part of the url, and its start line
         }
     });
 
@@ -165,7 +168,7 @@ interface Meta {
 
 interface Content extends Meta {
     url: string;
-    urlWithHash: string;
+    sectionUrl: string;
     textContent: string;
     id: string;
     objectID: string;
