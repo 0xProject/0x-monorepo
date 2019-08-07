@@ -5,7 +5,7 @@ import { BlockchainLifecycle } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber, fetchAsync, logUtils } from '@0x/utils';
+import { BigNumber, fetchAsync, logUtils, tokenUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as http from 'http';
 import 'mocha';
@@ -16,7 +16,6 @@ import { CoordinatorServerErrorMsg } from '../src/utils/coordinator_server_types
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
-import { tokenUtils } from './utils/token_utils';
 import { provider, web3Wrapper } from './utils/web3_wrapper';
 
 chaiSetup.configure();
@@ -71,7 +70,7 @@ describe('CoordinatorWrapper', () => {
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
+        zrxTokenAddress = contractAddresses.zrxToken;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
@@ -410,7 +409,7 @@ describe('CoordinatorWrapper', () => {
                 txHash = await contractWrappers.coordinator.hardCancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
 
                 await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
+                const orderEpoch = await contractWrappers.exchange.orderEpoch.callAsync(
                     makerAddress,
                     contractWrappers.coordinator.address,
                 );

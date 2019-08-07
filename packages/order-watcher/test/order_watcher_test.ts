@@ -1,6 +1,5 @@
 // tslint:disable:no-unnecessary-type-assertion
 import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
-import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
@@ -13,7 +12,7 @@ import {
     OrderStateValid,
     SignedOrder,
 } from '@0x/types';
-import { BigNumber } from '@0x/utils';
+import { BigNumber, tokenUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import * as _ from 'lodash';

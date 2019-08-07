@@ -1,5 +1,14 @@
 [
     {
+        "version": "11.0.0",
+        "changes": [
+            {
+                "note": "Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/1911",
+                "pr": 2037
+            }
+        ]
+    },
+    {
         "version": "10.1.0",
         "changes": [
             {

@@ -11,6 +11,7 @@ export { abiUtils } from './abi_utils';
 export { NULL_BYTES } from './constants';
 export { errorUtils } from './error_utils';
 export { fetchAsync } from './fetch_async';
+export { tokenUtils } from './token_utils';
 export { signTypedDataUtils } from './sign_typed_data_utils';
 export import AbiEncoder = require('./abi_encoder');
 export * from './types';

@@ -40,7 +40,7 @@
         "@0x/assert": "^2.1.2",
         "@0x/connect": "^5.0.15",
         "@0x/contract-addresses": "^3.0.2",
-        "@0x/contract-wrappers": "^10.1.0",
+        "@0x/contract-wrappers": "10.1.0",
         "@0x/dev-utils": "^2.2.6",
         "@0x/fill-scenarios": "^3.0.15",
         "@0x/json-schemas": "^3.1.12",

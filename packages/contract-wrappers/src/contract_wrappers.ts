@@ -15,20 +15,17 @@ import { Web3Wrapper } from '@0x/web3-wrapper';
 import { SupportedProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { CoordinatorWrapper } from './contract_wrappers/coordinator_wrapper';
-import { DutchAuctionWrapper } from './contract_wrappers/dutch_auction_wrapper';
-import { ERC20ProxyWrapper } from './contract_wrappers/erc20_proxy_wrapper';
-import { ERC20TokenWrapper } from './contract_wrappers/erc20_token_wrapper';
-import { ERC721ProxyWrapper } from './contract_wrappers/erc721_proxy_wrapper';
-import { ERC721TokenWrapper } from './contract_wrappers/erc721_token_wrapper';
-import { EtherTokenWrapper } from './contract_wrappers/ether_token_wrapper';
-import { ExchangeWrapper } from './contract_wrappers/exchange_wrapper';
-import { ForwarderWrapper } from './contract_wrappers/forwarder_wrapper';
-import { OrderValidatorWrapper } from './contract_wrappers/order_validator_wrapper';
+import { CoordinatorWrapper } from './coordinator_wrapper';
+import { DutchAuctionContract } from './generated-wrappers/dutch_auction';
+import { ERC20ProxyContract } from './generated-wrappers/erc20_proxy';
+import { ERC721ProxyContract } from './generated-wrappers/erc721_proxy';
+import { ExchangeContract } from './generated-wrappers/exchange';
+import { ForwarderContract } from './generated-wrappers/forwarder';
+import { OrderValidatorContract } from './generated-wrappers/order_validator';
+
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
-import { constants } from './utils/constants';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
 /**
@@ -36,45 +33,31 @@ import { _getDefaultContractAddresses } from './utils/contract_addresses';
  */
 export class ContractWrappers {
     /**
-     * An instance of the ExchangeWrapper class containing methods for interacting with the 0x Exchange smart contract.
+     * An instance of the ExchangeContract class containing methods for interacting with the 0x Exchange smart contract.
      */
-    public exchange: ExchangeWrapper;
+    public exchange: ExchangeContract;
     /**
-     * An instance of the ERC20TokenWrapper class containing methods for interacting with any ERC20 token smart contract.
-     */
-    public erc20Token: ERC20TokenWrapper;
-    /**
-     * An instance of the ERC721TokenWrapper class containing methods for interacting with any ERC721 token smart contract.
-     */
-    public erc721Token: ERC721TokenWrapper;
-    /**
-     * An instance of the EtherTokenWrapper class containing methods for interacting with the
-     * wrapped ETH ERC20 token smart contract.
-     */
-    public etherToken: EtherTokenWrapper;
-    /**
-     * An instance of the ERC20ProxyWrapper class containing methods for interacting with the
+     * An instance of the ERC20ProxyContract class containing methods for interacting with the
      * erc20Proxy smart contract.
      */
-    public erc20Proxy: ERC20ProxyWrapper;
+    public erc20Proxy: ERC20ProxyContract;
     /**
-     * An instance of the ERC721ProxyWrapper class containing methods for interacting with the
+     * An instance of the ERC721ProxyContract class containing methods for interacting with the
      * erc721Proxy smart contract.
      */
-    public erc721Proxy: ERC721ProxyWrapper;
+    public erc721Proxy: ERC721ProxyContract;
     /**
-     * An instance of the ForwarderWrapper class containing methods for interacting with any Forwarder smart contract.
+     * An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
      */
-    public forwarder: ForwarderWrapper;
+    public forwarder: ForwarderContract;
     /**
-     * An instance of the OrderValidatorWrapper class containing methods for interacting with any OrderValidator smart contract.
+     * An instance of the OrderValidatorContract class containing methods for interacting with any OrderValidator smart contract.
      */
-    public orderValidator: OrderValidatorWrapper;
+    public orderValidator: OrderValidatorContract;
     /**
-     * An instance of the DutchAuctionWrapper class containing methods for interacting with any DutchAuction smart contract.
+     * An instance of the DutchAuctionContract class containing methods for interacting with any DutchAuction smart contract.
      */
-    public dutchAuction: DutchAuctionWrapper;
-
+    public dutchAuction: DutchAuctionContract;
     /**
      * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
@@ -109,45 +92,16 @@ export class ContractWrappers {
         _.forEach(artifactsArray, artifact => {
             this._web3Wrapper.abiDecoder.addABI(artifact.compilerOutput.abi, artifact.contractName);
         });
-        const blockPollingIntervalMs =
-            config.blockPollingIntervalMs === undefined
-                ? constants.DEFAULT_BLOCK_POLLING_INTERVAL
-                : config.blockPollingIntervalMs;
         const contractAddresses =
             config.contractAddresses === undefined
                 ? _getDefaultContractAddresses(config.networkId)
                 : config.contractAddresses;
-        this.erc20Proxy = new ERC20ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc20Proxy);
-        this.erc721Proxy = new ERC721ProxyWrapper(this._web3Wrapper, config.networkId, contractAddresses.erc721Proxy);
-        this.erc20Token = new ERC20TokenWrapper(this._web3Wrapper, this.erc20Proxy, blockPollingIntervalMs);
-        this.erc721Token = new ERC721TokenWrapper(this._web3Wrapper, this.erc721Proxy, blockPollingIntervalMs);
-        this.etherToken = new EtherTokenWrapper(this._web3Wrapper, this.erc20Token, blockPollingIntervalMs);
-        this.exchange = new ExchangeWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            this.erc20Token,
-            this.erc721Token,
-            contractAddresses.exchange,
-            contractAddresses.zrxToken,
-            blockPollingIntervalMs,
-        );
-        this.forwarder = new ForwarderWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            contractAddresses.forwarder,
-            contractAddresses.zrxToken,
-            contractAddresses.etherToken,
-        );
-        this.orderValidator = new OrderValidatorWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            contractAddresses.orderValidator,
-        );
-        this.dutchAuction = new DutchAuctionWrapper(
-            this._web3Wrapper,
-            config.networkId,
-            contractAddresses.dutchAuction,
-        );
+        this.erc20Proxy = new ERC20ProxyContract(contractAddresses.erc20Proxy, this.getProvider());
+        this.erc721Proxy = new ERC721ProxyContract(contractAddresses.erc721Proxy, this.getProvider());
+        this.exchange = new ExchangeContract(contractAddresses.exchange, this.getProvider());
+        this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
+        this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
+        this.dutchAuction = new DutchAuctionContract(contractAddresses.dutchAuction, this.getProvider());
         this.coordinator = new CoordinatorWrapper(
             this._web3Wrapper,
             config.networkId,
@@ -161,9 +115,8 @@ export class ContractWrappers {
      */
     public unsubscribeAll(): void {
         this.exchange.unsubscribeAll();
-        this.erc20Token.unsubscribeAll();
-        this.erc721Token.unsubscribeAll();
-        this.etherToken.unsubscribeAll();
+        this.erc20Proxy.unsubscribeAll();
+        this.erc721Proxy.unsubscribeAll();
     }
     /**
      * Get the provider instance currently used by contract-wrappers

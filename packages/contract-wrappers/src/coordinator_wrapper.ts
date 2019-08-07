@@ -1,4 +1,3 @@
-import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from '@0x/abi-gen-wrappers';
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 import { Coordinator } from '@0x/contract-artifacts';
 import { schemas } from '@0x/json-schemas';
@@ -10,10 +9,9 @@ import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
 import { flatten } from 'lodash';
 
-import { orderTxOptsSchema } from '../schemas/order_tx_opts_schema';
-import { txOptsSchema } from '../schemas/tx_opts_schema';
-import { CoordinatorTransaction, OrderTransactionOpts } from '../types';
-import { assert } from '../utils/assert';
+import { orderTxOptsSchema } from './schemas/order_tx_opts_schema';
+import { txOptsSchema } from './schemas/tx_opts_schema';
+import { assert } from './utils/assert';
 import {
     CoordinatorServerApprovalRawResponse,
     CoordinatorServerApprovalResponse,
@@ -21,9 +19,12 @@ import {
     CoordinatorServerError,
     CoordinatorServerErrorMsg,
     CoordinatorServerResponse,
-} from '../utils/coordinator_server_types';
-import { decorators } from '../utils/decorators';
-import { TransactionEncoder } from '../utils/transaction_encoder';
+} from './utils/coordinator_server_types';
+import { decorators } from './utils/decorators';
+import { TransactionEncoder } from './utils/transaction_encoder';
+
+import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from './index';
+import { CoordinatorTransaction, OrderTransactionOpts } from './types';
 
 /**
  * This class includes all the functionality related to filling or cancelling orders through

@@ -1,8 +1,7 @@
-import { DummyERC20TokenContract } from '@0x/abi-gen-wrappers';
 import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils, signatureUtils } from '@0x/order-utils';
-import { DoneCallback, RevertReason, SignedOrder } from '@0x/types';
+import { DoneCallback, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import { BlockParamLiteral } from 'ethereum-types';
@@ -10,8 +9,8 @@ import 'mocha';
 
 import { ContractWrappers, ExchangeCancelEventArgs, ExchangeEvents, ExchangeFillEventArgs, OrderStatus } from '../src';
 import { DecodedLogEvent } from '../src/types';
+import { _getDefaultContractAddresses } from '../src/utils/contract_addresses';
 
-import { UntransferrableDummyERC20Token } from './artifacts/UntransferrableDummyERC20Token';
 import { chaiSetup } from './utils/chai_setup';
 import { constants } from './utils/constants';
 import { migrateOnceAsync } from './utils/migrate';
@@ -35,7 +34,6 @@ describe('ExchangeWrapper', () => {
     let takerAddress: string;
     let makerAssetData: string;
     let takerAssetData: string;
-    let txHash: string;
     const fillableAmount = new BigNumber(5);
     const takerTokenFillAmount = new BigNumber(5);
     let signedOrder: SignedOrder;
@@ -52,7 +50,7 @@ describe('ExchangeWrapper', () => {
         contractWrappers = new ContractWrappers(provider, config);
         exchangeContractAddress = contractWrappers.exchange.address;
         userAddresses = await web3Wrapper.getAvailableAddressesAsync();
-        zrxTokenAddress = contractWrappers.exchange.zrxTokenAddress;
+        zrxTokenAddress = contractAddresses.zrxToken;
         fillScenarios = new FillScenarios(
             provider,
             userAddresses,
@@ -94,71 +92,71 @@ describe('ExchangeWrapper', () => {
     describe('fill order(s)', () => {
         describe('#fillOrderAsync', () => {
             it('should fill a valid order', async () => {
-                txHash = await contractWrappers.exchange.fillOrderAsync(
+                await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmount,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#fillOrderNoThrowAsync', () => {
             it('should fill a valid order', async () => {
-                txHash = await contractWrappers.exchange.fillOrderNoThrowAsync(
+                await contractWrappers.exchange.fillOrderNoThrow.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmount,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+                const orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
         describe('#fillOrKillOrderAsync', () => {
             it('should fill or kill a valid order', async () => {
-                txHash = await contractWrappers.exchange.fillOrKillOrderAsync(
+                await contractWrappers.exchange.fillOrKillOrder.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmount,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#batchFillOrdersAsync', () => {
             it('should fill a batch of valid orders', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount];
-                txHash = await contractWrappers.exchange.batchFillOrdersAsync(
+                await contractWrappers.exchange.batchFillOrders.awaitTransactionSuccessAsync(
                     signedOrders,
                     takerAssetFillAmounts,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketBuyOrdersAsync', () => {
             it('should maker buy', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const makerAssetFillAmount = takerTokenFillAmount;
-                txHash = await contractWrappers.exchange.marketBuyOrdersAsync(
+                await contractWrappers.exchange.marketBuyOrders.awaitTransactionSuccessAsync(
                     signedOrders,
                     makerAssetFillAmount,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketBuyOrdersNoThrowAsync', () => {
             it('should no throw maker buy', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const makerAssetFillAmount = takerTokenFillAmount;
-                txHash = await contractWrappers.exchange.marketBuyOrdersNoThrowAsync(
+                await contractWrappers.exchange.marketBuyOrdersNoThrow.awaitTransactionSuccessAsync(
                     signedOrders,
                     makerAssetFillAmount,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+                const orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
@@ -166,25 +164,25 @@ describe('ExchangeWrapper', () => {
             it('should maker sell', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmount = takerTokenFillAmount;
-                txHash = await contractWrappers.exchange.marketSellOrdersAsync(
+                await contractWrappers.exchange.marketSellOrders.awaitTransactionSuccessAsync(
                     signedOrders,
                     takerAssetFillAmount,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#marketSellOrdersNoThrowAsync', () => {
             it('should no throw maker sell', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmount = takerTokenFillAmount;
-                txHash = await contractWrappers.exchange.marketSellOrdersNoThrowAsync(
+                await contractWrappers.exchange.marketSellOrdersNoThrow.awaitTransactionSuccessAsync(
                     signedOrders,
                     takerAssetFillAmount,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+                const orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
@@ -192,15 +190,15 @@ describe('ExchangeWrapper', () => {
             it('should fill a batch of valid orders', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount];
-                txHash = await contractWrappers.exchange.batchFillOrdersNoThrowAsync(
+                await contractWrappers.exchange.batchFillOrdersNoThrow.awaitTransactionSuccessAsync(
                     signedOrders,
                     takerAssetFillAmounts,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                let orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+                let orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
-                orderInfo = await contractWrappers.exchange.getOrderInfoAsync(anotherSignedOrder);
+                orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(anotherSignedOrder);
                 expect(orderInfo.orderStatus).to.be.equal(OrderStatus.FullyFilled);
             });
         });
@@ -208,12 +206,12 @@ describe('ExchangeWrapper', () => {
             it('should fill or kill a batch of valid orders', async () => {
                 const signedOrders = [signedOrder, anotherSignedOrder];
                 const takerAssetFillAmounts = [takerTokenFillAmount, takerTokenFillAmount];
-                txHash = await contractWrappers.exchange.batchFillOrKillOrdersAsync(
+                await contractWrappers.exchange.batchFillOrKillOrders.awaitTransactionSuccessAsync(
                     signedOrders,
                     takerAssetFillAmounts,
-                    takerAddress,
+                    signedOrders.map(o => o.signature),
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
         describe('#matchOrdersAsync', () => {
@@ -225,35 +223,39 @@ describe('ExchangeWrapper', () => {
                     takerAddress,
                     fillableAmount,
                 );
-                txHash = await contractWrappers.exchange.matchOrdersAsync(
+                await contractWrappers.exchange.matchOrders.awaitTransactionSuccessAsync(
                     signedOrder,
                     matchingSignedOrder,
-                    takerAddress,
+                    signedOrder.signature,
+                    matchingSignedOrder.signature,
+                    { from: takerAddress },
                 );
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
             });
         });
     });
     describe('cancel order(s)', () => {
         describe('#cancelOrderAsync', () => {
             it('should cancel a valid order', async () => {
-                txHash = await contractWrappers.exchange.cancelOrderAsync(signedOrder);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await contractWrappers.exchange.cancelOrder.awaitTransactionSuccessAsync(signedOrder, {
+                    from: makerAddress,
+                });
             });
         });
         describe('#batchCancelOrdersAsync', () => {
             it('should cancel a batch of valid orders', async () => {
                 const orders = [signedOrder, anotherSignedOrder];
-                txHash = await contractWrappers.exchange.batchCancelOrdersAsync(orders);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+                await contractWrappers.exchange.batchCancelOrders.awaitTransactionSuccessAsync(orders, {
+                    from: makerAddress,
+                });
             });
         });
         describe('#cancelOrdersUpTo/getOrderEpochAsync', () => {
             it('should cancel orders up to target order epoch', async () => {
                 const targetOrderEpoch = new BigNumber(42);
-                txHash = await contractWrappers.exchange.cancelOrdersUpToAsync(targetOrderEpoch, makerAddress);
-                await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-                const orderEpoch = await contractWrappers.exchange.getOrderEpochAsync(
+                await contractWrappers.exchange.cancelOrdersUpTo.awaitTransactionSuccessAsync(targetOrderEpoch, {
+                    from: makerAddress,
+                });
+                const orderEpoch = await contractWrappers.exchange.orderEpoch.callAsync(
                     makerAddress,
                     constants.NULL_ADDRESS,
                 );
@@ -261,138 +263,35 @@ describe('ExchangeWrapper', () => {
             });
         });
     });
-    describe('#getZRXAssetData', () => {
-        it('should get the asset data', () => {
-            const ZRX_ASSET_DATA = contractWrappers.exchange.getZRXAssetData();
-            const ASSET_DATA_HEX_LENGTH = 74;
-            expect(ZRX_ASSET_DATA).to.have.length(ASSET_DATA_HEX_LENGTH);
-        });
-    });
     describe('#getOrderInfoAsync', () => {
         it('should get the order info', async () => {
-            const orderInfo = await contractWrappers.exchange.getOrderInfoAsync(signedOrder);
+            const orderInfo = await contractWrappers.exchange.getOrderInfo.callAsync(signedOrder);
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             expect(orderInfo.orderHash).to.be.equal(orderHash);
         });
     });
     describe('#getOrdersInfoAsync', () => {
         it('should get the orders info', async () => {
-            const ordersInfo = await contractWrappers.exchange.getOrdersInfoAsync([signedOrder, anotherSignedOrder]);
+            const ordersInfo = await contractWrappers.exchange.getOrdersInfo.callAsync([
+                signedOrder,
+                anotherSignedOrder,
+            ]);
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
             expect(ordersInfo[0].orderHash).to.be.equal(orderHash);
             const anotherOrderHash = orderHashUtils.getOrderHashHex(anotherSignedOrder);
             expect(ordersInfo[1].orderHash).to.be.equal(anotherOrderHash);
         });
     });
-    describe('#validateOrderFillableOrThrowAsync', () => {
-        it('should throw if signature is invalid', async () => {
-            const signedOrderWithInvalidSignature = {
-                ...signedOrder,
-                signature:
-                    '0x1b61a3ed31b43c8780e905a260a35faefcc527be7516aa11c0256729b5b351bc3340349190569279751135161d22529dc25add4f6069af05be04cacbda2ace225403',
-            };
-
-            return expect(
-                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrderWithInvalidSignature),
-            ).to.eventually.to.be.rejectedWith(RevertReason.InvalidOrderSignature);
-        });
-        it('should validate the order with the current balances and allowances for the maker', async () => {
-            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
-                validateRemainingOrderAmountIsFillable: false,
-            });
-        });
-        it('should validate the order with remaining fillable amount for the order', async () => {
-            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
-        });
-        it('should validate the order with specified amount', async () => {
-            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
-                expectedFillTakerTokenAmount: signedOrder.takerAssetAmount,
-            });
-        });
-        it('should throw if the amount is greater than the allowance/balance', async () => {
-            return expect(
-                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
-                    // tslint:disable-next-line:custom-no-magic-numbers
-                    expectedFillTakerTokenAmount: new BigNumber(2).pow(256).minus(1),
-                }),
-            ).to.eventually.to.be.rejected();
-        });
-        it('should throw when the maker does not have enough balance for the remaining order amount', async () => {
-            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
-            // Change maker balance to have less than the order amount
-            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await contractWrappers.erc20Token.transferAsync(
-                    makerTokenAddress,
-                    makerAddress,
-                    constants.NULL_ADDRESS,
-                    remainingBalance,
-                ),
-            );
-            return expect(
-                contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder),
-            ).to.eventually.to.be.rejected();
-        });
-        it('should validate the order when remaining order amount has some fillable amount', async () => {
-            const makerBalance = await contractWrappers.erc20Token.getBalanceAsync(makerTokenAddress, makerAddress);
-            // Change maker balance to have less than the order amount
-            const remainingBalance = makerBalance.minus(signedOrder.makerAssetAmount.minus(1));
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await contractWrappers.erc20Token.transferAsync(
-                    makerTokenAddress,
-                    makerAddress,
-                    constants.NULL_ADDRESS,
-                    remainingBalance,
-                ),
-            );
-            // An amount is still transferrable
-            await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder, {
-                validateRemainingOrderAmountIsFillable: false,
-            });
-        });
-        it('should throw when the ERC20 token has transfer restrictions', async () => {
-            const artifactDependencies = {};
-            const untransferrableToken = await DummyERC20TokenContract.deployFrom0xArtifactAsync(
-                UntransferrableDummyERC20Token,
-                provider,
-                { from: userAddresses[0] },
-                artifactDependencies,
-                'UntransferrableToken',
-                'UTT',
-                new BigNumber(constants.ZRX_DECIMALS),
-                // tslint:disable-next-line:custom-no-magic-numbers
-                new BigNumber(2).pow(20).minus(1),
-            );
-            const untransferrableMakerAssetData = assetDataUtils.encodeERC20AssetData(untransferrableToken.address);
-            const invalidSignedOrder = await fillScenarios.createFillableSignedOrderAsync(
-                untransferrableMakerAssetData,
-                takerAssetData,
-                makerAddress,
-                takerAddress,
-                fillableAmount,
-            );
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await contractWrappers.erc20Token.setProxyAllowanceAsync(
-                    untransferrableToken.address,
-                    makerAddress,
-                    signedOrder.makerAssetAmount,
-                ),
-            );
-            return expect(
-                contractWrappers.exchange.validateOrderFillableOrThrowAsync(invalidSignedOrder),
-            ).to.eventually.to.be.rejectedWith('TRANSFER_FAILED');
-        });
-    });
     describe('#isValidSignature', () => {
         it('should check if the signature is valid', async () => {
             const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            let isValid = await contractWrappers.exchange.isValidSignatureAsync(
+            let isValid = await contractWrappers.exchange.isValidSignature.callAsync(
                 orderHash,
                 signedOrder.makerAddress,
                 signedOrder.signature,
             );
             expect(isValid).to.be.true();
-            isValid = await contractWrappers.exchange.isValidSignatureAsync(
+            isValid = await contractWrappers.exchange.isValidSignature.callAsync(
                 orderHash,
                 signedOrder.takerAddress,
                 signedOrder.signature,
@@ -404,7 +303,10 @@ describe('ExchangeWrapper', () => {
         it('should check if the validator is allowed', async () => {
             const signerAddress = makerAddress;
             const validatorAddress = constants.NULL_ADDRESS;
-            const isAllowed = await contractWrappers.exchange.isAllowedValidatorAsync(signerAddress, validatorAddress);
+            const isAllowed = await contractWrappers.exchange.allowedValidators.callAsync(
+                signerAddress,
+                validatorAddress,
+            );
             expect(isAllowed).to.be.false();
         });
     });
@@ -413,52 +315,50 @@ describe('ExchangeWrapper', () => {
             const validatorAddress = constants.NULL_ADDRESS;
             const isApproved = true;
             const senderAddress = makerAddress;
-            txHash = await contractWrappers.exchange.setSignatureValidatorApprovalAsync(
+            await contractWrappers.exchange.setSignatureValidatorApproval.awaitTransactionSuccessAsync(
                 validatorAddress,
                 isApproved,
-                senderAddress,
+                { from: senderAddress },
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
         });
     });
     describe('#isTransactionExecutedAsync', () => {
         it('should check if the transaction is executed', async () => {
             const transactionHash = '0x0000000000000000000000000000000000000000000000000000000000000000';
-            const isExecuted = await contractWrappers.exchange.isTransactionExecutedAsync(transactionHash);
+            const isExecuted = await contractWrappers.exchange.transactions.callAsync(transactionHash);
             expect(isExecuted).to.be.false();
         });
     });
     describe('#getAssetProxyBySignatureAsync', () => {
         it('should fill or kill a valid order', async () => {
-            const erc20ProxyId = await contractWrappers.erc20Proxy.getProxyIdAsync();
-            const erc20ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc20ProxyId);
+            const erc20ProxyId = await contractWrappers.erc20Proxy.getProxyId.callAsync();
+            const erc20ProxyAddressById = await contractWrappers.exchange.getAssetProxy.callAsync(erc20ProxyId);
             const erc20ProxyAddress = contractWrappers.erc20Proxy.address;
             expect(erc20ProxyAddressById).to.be.equal(erc20ProxyAddress);
-            const erc721ProxyId = await contractWrappers.erc721Proxy.getProxyIdAsync();
-            const erc721ProxyAddressById = await contractWrappers.exchange.getAssetProxyBySignatureAsync(erc721ProxyId);
+            const erc721ProxyId = await contractWrappers.erc721Proxy.getProxyId.callAsync();
+            const erc721ProxyAddressById = await contractWrappers.exchange.getAssetProxy.callAsync(erc721ProxyId);
             const erc721ProxyAddress = contractWrappers.erc721Proxy.address;
             expect(erc721ProxyAddressById).to.be.equal(erc721ProxyAddress);
         });
     });
-    describe('#preSignAsync/isPreSignedAsync', () => {
+    describe('#preSign/isPresigned', () => {
         it('should preSign the hash', async () => {
             const senderAddress = takerAddress;
             const hash = orderHashUtils.getOrderHashHex(signedOrder);
             const signerAddress = signedOrder.makerAddress;
-            let isPreSigned = await contractWrappers.exchange.isPreSignedAsync(hash, signerAddress);
+            let isPreSigned = await contractWrappers.exchange.preSigned.callAsync(hash, signerAddress);
             expect(isPreSigned).to.be.false();
-            txHash = await contractWrappers.exchange.preSignAsync(
+            await contractWrappers.exchange.preSign.awaitTransactionSuccessAsync(
                 hash,
                 signerAddress,
                 signedOrder.signature,
-                senderAddress,
+                { from: senderAddress },
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-            isPreSigned = await contractWrappers.exchange.isPreSignedAsync(hash, signerAddress);
+            isPreSigned = await contractWrappers.exchange.preSigned.callAsync(hash, signerAddress);
             expect(isPreSigned).to.be.true();
 
             const preSignedSignature = '0x06';
-            const isValidSignature = await contractWrappers.exchange.isValidSignatureAsync(
+            const isValidSignature = await contractWrappers.exchange.isValidSignature.callAsync(
                 hash,
                 signerAddress,
                 preSignedSignature,
@@ -477,7 +377,7 @@ describe('ExchangeWrapper', () => {
     });
     describe('#getVersionAsync', () => {
         it('should return version the hash', async () => {
-            const version = await contractWrappers.exchange.getVersionAsync();
+            const version = await contractWrappers.exchange.VERSION.callAsync();
             const VERSION = '2.0.0';
             expect(version).to.be.equal(VERSION);
         });
@@ -510,10 +410,11 @@ describe('ExchangeWrapper', () => {
                     },
                 );
                 contractWrappers.exchange.subscribe(ExchangeEvents.Fill, indexFilterValues, callback);
-                await contractWrappers.exchange.fillOrderAsync(
+                await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmountInBaseUnits,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
             })().catch(done);
         });
@@ -525,7 +426,9 @@ describe('ExchangeWrapper', () => {
                     },
                 );
                 contractWrappers.exchange.subscribe(ExchangeEvents.Cancel, indexFilterValues, callback);
-                await contractWrappers.exchange.cancelOrderAsync(signedOrder);
+                await contractWrappers.exchange.cancelOrder.awaitTransactionSuccessAsync(signedOrder, {
+                    from: makerAddress,
+                });
             })().catch(done);
         });
         it('Outstanding subscriptions are cancelled when contractWrappers.unsubscribeAll called', (done: DoneCallback) => {
@@ -545,10 +448,11 @@ describe('ExchangeWrapper', () => {
                     },
                 );
                 contractWrappers.exchange.subscribe(ExchangeEvents.Fill, indexFilterValues, callback);
-                await contractWrappers.exchange.fillOrderAsync(
+                await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmountInBaseUnits,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
             })().catch(done);
         });
@@ -565,10 +469,11 @@ describe('ExchangeWrapper', () => {
                     callbackNeverToBeCalled,
                 );
                 contractWrappers.exchange.unsubscribe(subscriptionToken);
-                await contractWrappers.exchange.fillOrderAsync(
+                await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
                     signedOrder,
                     takerTokenFillAmountInBaseUnits,
-                    takerAddress,
+                    signedOrder.signature,
+                    { from: takerAddress },
                 );
                 done();
             })().catch(done);
@@ -580,7 +485,12 @@ describe('ExchangeWrapper', () => {
             toBlock: BlockParamLiteral.Latest,
         };
         it('should get logs with decoded args emitted by Fill', async () => {
-            txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
+            await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
+                signedOrder,
+                takerTokenFillAmount,
+                signedOrder.signature,
+                { from: takerAddress },
+            );
             const eventName = ExchangeEvents.Fill;
             const indexFilterValues = {};
             const logs = await contractWrappers.exchange.getLogsAsync(eventName, blockRange, indexFilterValues);
@@ -588,8 +498,12 @@ describe('ExchangeWrapper', () => {
             expect(logs[0].event).to.be.equal(eventName);
         });
         it('should only get the logs with the correct event name', async () => {
-            txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
+                signedOrder,
+                takerTokenFillAmount,
+                signedOrder.signature,
+                { from: takerAddress },
+            );
             const differentEventName = ExchangeEvents.Cancel;
             const indexFilterValues = {};
             const logs = await contractWrappers.exchange.getLogsAsync(
@@ -600,8 +514,12 @@ describe('ExchangeWrapper', () => {
             expect(logs).to.have.length(0);
         });
         it('should only get the logs with the correct indexed fields', async () => {
-            txHash = await contractWrappers.exchange.fillOrderAsync(signedOrder, takerTokenFillAmount, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
+            await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
+                signedOrder,
+                takerTokenFillAmount,
+                signedOrder.signature,
+                { from: takerAddress },
+            );
             const signedOrderWithAnotherMakerAddress = await fillScenarios.createFillableSignedOrderAsync(
                 makerAssetData,
                 takerAssetData,
@@ -609,13 +527,12 @@ describe('ExchangeWrapper', () => {
                 takerAddress,
                 fillableAmount,
             );
-            txHash = await contractWrappers.exchange.fillOrderAsync(
+            await contractWrappers.exchange.fillOrder.awaitTransactionSuccessAsync(
                 signedOrderWithAnotherMakerAddress,
                 takerTokenFillAmount,
-                takerAddress,
+                signedOrderWithAnotherMakerAddress.signature,
+                { from: takerAddress },
             );
-            await web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-
             const eventName = ExchangeEvents.Fill;
             const indexFilterValues = {
                 makerAddress: anotherMakerAddress,

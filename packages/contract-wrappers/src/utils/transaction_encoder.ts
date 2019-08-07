@@ -1,10 +1,10 @@
-import { ExchangeContract } from '@0x/abi-gen-wrappers';
-
 import { schemas } from '@0x/json-schemas';
 import { transactionHashUtils } from '@0x/order-utils';
 import { Order, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import _ = require('lodash');
+
+import { ExchangeContract } from '../index';
 
 import { assert } from './assert';
 
