@@ -322,6 +322,12 @@ book.  Now let's have the taker fill it:
 ...     provider=eth_node,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange
 ... )
+
+(Due to `an Issue with the Launch Kit Backend
+<https://github.com/0xProject/0x-launch-kit-backend/issues/73>`_, we need to
+checksum the address in the order before filling it.)
+>>> order['makerAddress'] = Web3.toChecksumAddress(order['makerAddress'])
+
 >>> exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order['makerAssetAmount']/2, # note the half fill

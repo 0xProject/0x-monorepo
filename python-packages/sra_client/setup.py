@@ -52,6 +52,9 @@ class TestCommandExtension(TestCommand):
 
         exit(pytest.main(["--doctest-modules", "-rapP"]))
         #        show short test summary at end ^
+        # above call commented out due to a problem with launch kit,
+        # documented at
+        # https://github.com/0xProject/0x-launch-kit-backend/issues/73
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
