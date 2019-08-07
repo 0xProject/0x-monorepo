@@ -7,8 +7,8 @@ Union[
 {{#returnType outputs.0.type outputs.0.components}}{{~/returnType~}}
 {{/singleReturnValue}}
 {{^singleReturnValue}}
-[{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
-{{/singleReturnValue}}
+Tuple[{{#each outputs}}{{#returnType type components}}{{/returnType}}{{#unless @last}}, {{/unless}}{{/each}}]
+{{~/singleReturnValue}}
 {{else}}None
 {{/if}}{{^if this.constant}}, Union[HexBytes, bytes]]{{/if~}}
 {{else}}{{#if this.constant}}None{{else}}Union[None, Union[HexBytes, bytes]]{{/if}}{{/if~}}

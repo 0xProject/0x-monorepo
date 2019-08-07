@@ -60,6 +60,7 @@
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
         "@0x/utils": "^4.4.2",
+        "@types/toposort": "^2.0.1",
         "chalk": "^2.3.0",
         "change-case": "^3.0.2",
         "cli-format": "^3.0.9",
@@ -70,6 +71,7 @@
         "mkdirp": "^0.5.1",
         "tmp": "^0.0.33",
         "to-snake-case": "^1.0.0",
+        "toposort": "^2.0.2",
         "yargs": "^10.0.3"
     },
     "devDependencies": {

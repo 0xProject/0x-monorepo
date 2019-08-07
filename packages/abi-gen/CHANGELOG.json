@@ -30,6 +30,26 @@
             {
                 "note": "added gas estimation functionality to contract methods",
                 "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning multiple values",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning arrays of structs",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods that return a struct that contains another struct where the inner struct was not otherwise directly referenced by any method",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with tuples sometimes being used before they were declared",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with supporting overloaded methods",
+                "pr": 1996
             }
         ]
     },

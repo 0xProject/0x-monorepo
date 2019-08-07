@@ -34,41 +34,61 @@ try:
     )
 except ImportError:
 
-    class AbiGenDummyValidator(Validator):  # type: ignore
+    class AbiGenDummyValidator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 
-class Tuple0xc9bdd2d5(TypedDict):
+class Tuple0x246f9407(TypedDict):
     """Python representation of a tuple or struct.
 
-    A tuple found in an ABI may have been written in Solidity as a literal
-    tuple, or it may have been written as a parameter with a Solidity
-    `struct`:code: data type; there's no way to tell which, based solely on the
-    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
-    ABI.  This class represents a tuple that appeared in a method definition.
-    Its name is derived from a hash of that tuple's field names, and every
-    method whose ABI refers to a tuple with that same list of field names will
-    have a generated wrapper method that refers to this class.
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
 
     Any members of type `bytes`:code: should be encoded as UTF-8, which can be
     accomplished via `str.encode("utf_8")`:code:
     """
 
-    innerStruct: Tuple0xcf8ad995
+    aField: int
 
-    description: str
+
+class Tuple0x1b9da225(TypedDict):
+    """Python representation of a tuple or struct.
+
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
+
+    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
+    accomplished via `str.encode("utf_8")`:code:
+    """
+
+    innerStruct: Tuple0x246f9407
+
 
 class Tuple0xcf8ad995(TypedDict):
     """Python representation of a tuple or struct.
 
-    A tuple found in an ABI may have been written in Solidity as a literal
-    tuple, or it may have been written as a parameter with a Solidity
-    `struct`:code: data type; there's no way to tell which, based solely on the
-    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
-    ABI.  This class represents a tuple that appeared in a method definition.
-    Its name is derived from a hash of that tuple's field names, and every
-    method whose ABI refers to a tuple with that same list of field names will
-    have a generated wrapper method that refers to this class.
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
 
     Any members of type `bytes`:code: should be encoded as UTF-8, which can be
     accomplished via `str.encode("utf_8")`:code:
@@ -82,17 +102,39 @@ class Tuple0xcf8ad995(TypedDict):
 
     aString: str
 
+
+class Tuple0xc9bdd2d5(TypedDict):
+    """Python representation of a tuple or struct.
+
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
+
+    Any members of type `bytes`:code: should be encoded as UTF-8, which can be
+    accomplished via `str.encode("utf_8")`:code:
+    """
+
+    innerStruct: Tuple0xcf8ad995
+
+    description: str
+
+
 class Tuple0xf95128ef(TypedDict):
     """Python representation of a tuple or struct.
 
-    A tuple found in an ABI may have been written in Solidity as a literal
-    tuple, or it may have been written as a parameter with a Solidity
-    `struct`:code: data type; there's no way to tell which, based solely on the
-    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
-    ABI.  This class represents a tuple that appeared in a method definition.
-    Its name is derived from a hash of that tuple's field names, and every
-    method whose ABI refers to a tuple with that same list of field names will
-    have a generated wrapper method that refers to this class.
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
 
     Any members of type `bytes`:code: should be encoded as UTF-8, which can be
     accomplished via `str.encode("utf_8")`:code:
@@ -104,17 +146,18 @@ class Tuple0xf95128ef(TypedDict):
 
     car: str
 
+
 class Tuple0xa057bf41(TypedDict):
     """Python representation of a tuple or struct.
 
-    A tuple found in an ABI may have been written in Solidity as a literal
-    tuple, or it may have been written as a parameter with a Solidity
-    `struct`:code: data type; there's no way to tell which, based solely on the
-    ABI, and the name of a Solidity `struct`:code: is not conveyed through the
-    ABI.  This class represents a tuple that appeared in a method definition.
-    Its name is derived from a hash of that tuple's field names, and every
-    method whose ABI refers to a tuple with that same list of field names will
-    have a generated wrapper method that refers to this class.
+    Solidity compiler output does not include the names of structs that appear
+    in method definitions.  A tuple found in an ABI may have been written in
+    Solidity as a literal, anonymous tuple, or it may have been written as a
+    named `struct`:code:, but there is no way to tell from the compiler
+    output.  This class represents a tuple that appeared in a method
+    definition.  Its name is derived from a hash of that tuple's field names,
+    and every method whose ABI refers to a tuple with that same list of field
+    names will have a generated wrapper method that refers to this class.
 
     Any members of type `bytes`:code: should be encoded as UTF-8, which can be
     accomplished via `str.encode("utf_8")`:code:
@@ -336,8 +379,7 @@ class MultiInputMultiOutputMethod(ContractMethod):
         )
         return (index_0, index_1, index_2)
 
-    def call(self, index_0: int, index_1: bytes, index_2: str, tx_params: Optional[TxParams] = None) -> [bytes, bytes, str]
-:
+    def call(self, index_0: int, index_1: bytes, index_2: str, tx_params: Optional[TxParams] = None) -> Tuple[bytes, bytes, str]:
         """Execute underlying contract method via eth_call.
 
         Tests decoding when the input and output are complex and have more than
@@ -564,6 +606,37 @@ class SimpleRevertMethod(ContractMethod):
         self.underlying_method = contract_function
 
     def call(self, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(ContractMethod):
+    """Various interfaces to the methodUsingNestedStructWithInnerStructNotUsedElsewhere method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple0x1b9da225:
         """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
@@ -1023,6 +1096,68 @@ class NestedStructInputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(n).estimateGas(tx_params.as_dict())
 
+class MethodReturningMultipleValuesMethod(ContractMethod):
+    """Various interfaces to the methodReturningMultipleValues method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> Tuple[int, str]:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
+class MethodReturningArrayOfStructsMethod(ContractMethod):
+    """Various interfaces to the methodReturningArrayOfStructs method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def call(self, tx_params: Optional[TxParams] = None) -> List[Tuple0xcf8ad995]:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().call(tx_params.as_dict())
+
+    def send_transaction(self, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().transact(tx_params.as_dict())
+
+    def estimate_gas(self, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method().estimateGas(tx_params.as_dict())
+
 class StructOutputMethod(ContractMethod):
     """Various interfaces to the structOutput method."""
 
@@ -1138,6 +1273,92 @@ class SimpleInputNoOutputMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(index_0).estimateGas(tx_params.as_dict())
 
+class OverloadedMethod2Method(ContractMethod):
+    """Various interfaces to the overloadedMethod method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, a: str):
+        """Validate the inputs to the overloadedMethod method."""
+        self.validator.assert_valid(
+            method_name='overloadedMethod',
+            parameter_name='a',
+            argument_value=a,
+        )
+        return (a)
+
+    def call(self, a: str, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).call(tx_params.as_dict())
+
+    def send_transaction(self, a: str, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
+
+    def estimate_gas(self, a: str, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+
+class OverloadedMethod1Method(ContractMethod):
+    """Various interfaces to the overloadedMethod method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, a: int):
+        """Validate the inputs to the overloadedMethod method."""
+        self.validator.assert_valid(
+            method_name='overloadedMethod',
+            parameter_name='a',
+            argument_value=a,
+        )
+        return (a)
+
+    def call(self, a: int, tx_params: Optional[TxParams] = None) -> None:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).call(tx_params.as_dict())
+
+    def send_transaction(self, a: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).transact(tx_params.as_dict())
+
+    def estimate_gas(self, a: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (a) = self.validate_and_normalize_inputs(a)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(a).estimateGas(tx_params.as_dict())
+
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class AbiGenDummy:
     """Wrapper class for AbiGenDummy Solidity contract.
@@ -1155,6 +1376,7 @@ class AbiGenDummy:
     no_input_simple_output: NoInputSimpleOutputMethod
     revert_with_constant: RevertWithConstantMethod
     simple_revert: SimpleRevertMethod
+    method_using_nested_struct_with_inner_struct_not_used_elsewhere: MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod
     nested_struct_output: NestedStructOutputMethod
     require_with_constant: RequireWithConstantMethod
     with_address_input: WithAddressInputMethod
@@ -1166,9 +1388,13 @@ class AbiGenDummy:
     non_pure_method_that_returns_nothing: NonPureMethodThatReturnsNothingMethod
     simple_pure_function: SimplePureFunctionMethod
     nested_struct_input: NestedStructInputMethod
+    method_returning_multiple_values: MethodReturningMultipleValuesMethod
+    method_returning_array_of_structs: MethodReturningArrayOfStructsMethod
     struct_output: StructOutputMethod
     pure_function_with_constant: PureFunctionWithConstantMethod
     simple_input_no_output: SimpleInputNoOutputMethod
+    overloaded_method2: OverloadedMethod2Method
+    overloaded_method1: OverloadedMethod1Method
 
     def __init__(
         self,
@@ -1213,6 +1439,8 @@ class AbiGenDummy:
 
         self.simple_revert = SimpleRevertMethod(provider, contract_address, functions.simpleRevert, validator)
 
+        self.method_using_nested_struct_with_inner_struct_not_used_elsewhere = MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod(provider, contract_address, functions.methodUsingNestedStructWithInnerStructNotUsedElsewhere, validator)
+
         self.nested_struct_output = NestedStructOutputMethod(provider, contract_address, functions.nestedStructOutput, validator)
 
         self.require_with_constant = RequireWithConstantMethod(provider, contract_address, functions.requireWithConstant, validator)
@@ -1235,11 +1463,19 @@ class AbiGenDummy:
 
         self.nested_struct_input = NestedStructInputMethod(provider, contract_address, functions.nestedStructInput, validator)
 
+        self.method_returning_multiple_values = MethodReturningMultipleValuesMethod(provider, contract_address, functions.methodReturningMultipleValues, validator)
+
+        self.method_returning_array_of_structs = MethodReturningArrayOfStructsMethod(provider, contract_address, functions.methodReturningArrayOfStructs, validator)
+
         self.struct_output = StructOutputMethod(provider, contract_address, functions.structOutput, validator)
 
         self.pure_function_with_constant = PureFunctionWithConstantMethod(provider, contract_address, functions.pureFunctionWithConstant, validator)
 
         self.simple_input_no_output = SimpleInputNoOutputMethod(provider, contract_address, functions.simpleInputNoOutput, validator)
+
+        self.overloaded_method2 = OverloadedMethod2Method(provider, contract_address, functions.overloadedMethod, validator)
+
+        self.overloaded_method1 = OverloadedMethod1Method(provider, contract_address, functions.overloadedMethod, validator)
 
     def get_withdrawal_event(
         self, tx_hash: Union[HexBytes, bytes]
@@ -1264,7 +1500,7 @@ class AbiGenDummy:
     def abi():
         """Return the ABI to the underlying contract."""
         return json.loads(
-            '[{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"},{"name":"index_1","type":"bytes"},{"name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"name":"","type":"bytes"},{"name":"","type":"bytes"},{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"address"},{"name":"a","type":"uint256"},{"name":"b","type":"uint256"},{"name":"y","type":"address"},{"name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"input","type":"tuple"},{"name":"lorem","type":"bytes"},{"name":"ipsum","type":"bytes"},{"name":"dolor","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"param","type":"uint8"}],"name":"AnEvent","type":"event"}]'  # noqa: E501 (line-too-long)
+            '[{"constant":true,"inputs":[],"name":"simpleRequire","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes[]"}],"name":"acceptsAnArrayOfBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[{"name":"wad","type":"uint256"}],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"},{"name":"index_1","type":"bytes"},{"name":"index_2","type":"string"}],"name":"multiInputMultiOutput","outputs":[{"name":"","type":"bytes"},{"name":"","type":"bytes"},{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"hash","type":"bytes32"},{"name":"v","type":"uint8"},{"name":"r","type":"bytes32"},{"name":"s","type":"bytes32"}],"name":"ecrecoverFn","outputs":[{"name":"signerAddress","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"bytes"}],"name":"acceptsBytes","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputSimpleOutput","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"revertWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"simpleRevert","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodUsingNestedStructWithInnerStructNotUsedElsewhere","outputs":[{"components":[{"components":[{"name":"aField","type":"uint256"}],"name":"innerStruct","type":"tuple"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"nestedStructOutput","outputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"requireWithConstant","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"address"},{"name":"a","type":"uint256"},{"name":"b","type":"uint256"},{"name":"y","type":"address"},{"name":"c","type":"uint256"}],"name":"withAddressInput","outputs":[{"name":"z","type":"address"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"name":"structInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethod","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"complexInput","type":"tuple"}],"name":"complexInputComplexOutput","outputs":[{"components":[{"components":[{"name":"foo","type":"uint256"},{"name":"bar","type":"bytes"},{"name":"car","type":"string"}],"name":"input","type":"tuple"},{"name":"lorem","type":"bytes"},{"name":"ipsum","type":"bytes"},{"name":"dolor","type":"string"}],"name":"","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"noInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"simplePureFunctionWithInput","outputs":[{"name":"sum","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":false,"inputs":[],"name":"nonPureMethodThatReturnsNothing","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"simplePureFunction","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"components":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"innerStruct","type":"tuple"},{"name":"description","type":"string"}],"name":"n","type":"tuple"}],"name":"nestedStructInput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningMultipleValues","outputs":[{"name":"","type":"uint256"},{"name":"","type":"string"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"methodReturningArrayOfStructs","outputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"","type":"tuple[]"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"structOutput","outputs":[{"components":[{"name":"someBytes","type":"bytes"},{"name":"anInteger","type":"uint32"},{"name":"aDynamicArrayOfBytes","type":"bytes[]"},{"name":"aString","type":"string"}],"name":"s","type":"tuple"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[],"name":"pureFunctionWithConstant","outputs":[{"name":"someConstant","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"index_0","type":"uint256"}],"name":"simpleInputNoOutput","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"string"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"a","type":"int256"}],"name":"overloadedMethod","outputs":[],"payable":false,"stateMutability":"pure","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_owner","type":"address"},{"indexed":false,"name":"_value","type":"uint256"}],"name":"Withdrawal","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"param","type":"uint8"}],"name":"AnEvent","type":"event"}]'  # noqa: E501 (line-too-long)
         )
 
 # pylint: disable=too-many-lines

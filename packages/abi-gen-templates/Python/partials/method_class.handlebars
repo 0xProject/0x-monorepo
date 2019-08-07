@@ -1,5 +1,5 @@
 
-class {{toPythonClassname this.name}}Method(ContractMethod):
+class {{toPythonClassname this.languageSpecificName}}Method(ContractMethod):
     """Various interfaces to the {{this.name}} method."""
 
     def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
