@@ -352,7 +352,7 @@ export const utils = {
     },
     extractTuples(
         parameter: DataItem,
-        tupleDefinitions: { [pythonTupleName: string]: string }, // output
+        tupleBodies: { [pythonTupleName: string]: string }, // output
         tupleDependencies: Array<[string, string]>, // output
     ): void {
         if (parameter.type === 'tuple' || parameter.type === 'tuple[]') {
@@ -362,14 +362,14 @@ export const utils = {
             //     Type 'undefined' is not assignable to type 'DataItem[]'
             // when the code below tries to access tupleDataItem.components.
             const pythonTupleName = utils.makePythonTupleName(tupleDataItem.components);
-            tupleDefinitions[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
+            tupleBodies[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
             for (const component of tupleDataItem.components) {
                 if (component.type === 'tuple' || component.type === 'tuple[]') {
                     tupleDependencies.push([
                         utils.makePythonTupleName((component as TupleDataItem).components), // tslint:disable-line:no-unnecessary-type-assertion
                         pythonTupleName,
                     ]);
-                    utils.extractTuples(component, tupleDefinitions, tupleDependencies);
+                    utils.extractTuples(component, tupleBodies, tupleDependencies);
                 }
             }
         }
