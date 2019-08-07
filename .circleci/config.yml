@@ -23,8 +23,9 @@ jobs:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
             - setup_remote_docker
-            - run: yarn build:ci:no_website
-            - run: yarn build:ts
+            # - run: yarn build:ci:no_website
+            # - run: yarn build:ts
+            - run: PKG=@0x/abi-gen-wrappers yarn build
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -187,7 +188,7 @@ jobs:
                   RPC_URL: http://localhost:8545
                   NETWORK_ID: 50
                   WHITELIST_ALL_TOKENS: True
-              command: bash -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; forever ts/lib/index.js"
+              command: sh -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -394,36 +395,36 @@ workflows:
     main:
         jobs:
             - build
-            - build-website:
-                  requires:
-                      - build
-            - test-contracts-ganache:
-                  requires:
-                      - build
-            # TODO(albrow): Tests always fail on Geth right now because our fork
-            # is outdated. Uncomment once we have updated our Geth fork.
-            # - test-contracts-geth:
+            # - build-website:
             #       requires:
             #           - build
-            - test-rest:
-                  requires:
-                      - build
-            - static-tests:
-                  requires:
-                      - build
-            - test-publish:
-                  requires:
-                      - build
-            - test-doc-generation:
-                  requires:
-                      - build
-            - submit-coverage:
-                  requires:
-                      - test-rest
-                      - test-python
-            - static-tests-python:
-                  requires:
-                      - test-python
+            # - test-contracts-ganache:
+            #       requires:
+            #           - build
+            # # TODO(albrow): Tests always fail on Geth right now because our fork
+            # # is outdated. Uncomment once we have updated our Geth fork.
+            # # - test-contracts-geth:
+            # #       requires:
+            # #           - build
+            # - test-rest:
+            #       requires:
+            #           - build
+            # - static-tests:
+            #       requires:
+            #           - build
+            # - test-publish:
+            #       requires:
+            #           - build
+            # - test-doc-generation:
+            #       requires:
+            #           - build
+            # - submit-coverage:
+            #       requires:
+            #           - test-rest
+            #           - test-python
+            # - static-tests-python:
+            #       requires:
+            #           - test-python
             - test-python:
                   requires:
                       - build
