@@ -46,7 +46,17 @@ export interface CoordinatorRegistryCoordinatorEndpointSetEventArgs extends Deco
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class CoordinatorRegistryContract extends BaseContract {
+    /**
+     * Called by a Coordinator operator to set the endpoint of their Coordinator.
+     */
     public setCoordinatorEndpoint = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -67,6 +77,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             coordinatorEndpoint: string,
             txData?: Partial<TxData>,
@@ -88,6 +106,12 @@ export class CoordinatorRegistryContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(coordinatorEndpoint: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -107,6 +131,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         */
         async callAsync(
             coordinatorEndpoint: string,
             callData: Partial<CallData> = {},
@@ -143,6 +173,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param coordinatorEndpoint endpoint of the Coordinator.
+         */
         getABIEncodedTransactionData(coordinatorEndpoint: string): string {
             assert.isString('coordinatorEndpoint', coordinatorEndpoint);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -151,8 +187,31 @@ export class CoordinatorRegistryContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('setCoordinatorEndpoint(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
+    /**
+     * Gets the endpoint for a Coordinator.
+     */
     public getCoordinatorEndpoint = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param coordinatorOperator operator of the Coordinator endpoint.
+         */
         async callAsync(
             coordinatorOperator: string,
             callData: Partial<CallData> = {},
@@ -191,6 +250,12 @@ export class CoordinatorRegistryContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param coordinatorOperator operator of the Coordinator endpoint.
+         */
         getABIEncodedTransactionData(coordinatorOperator: string): string {
             assert.isString('coordinatorOperator', coordinatorOperator);
             const self = (this as any) as CoordinatorRegistryContract;
@@ -198,6 +263,20 @@ export class CoordinatorRegistryContract extends BaseContract {
                 coordinatorOperator.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as CoordinatorRegistryContract;
+            const abiEncoder = self._lookupAbiEncoder('getCoordinatorEndpoint(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<CoordinatorRegistryEventArgs, CoordinatorRegistryEvents>;
@@ -337,11 +416,11 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Subscribe to an event type emitted by the CoordinatorRegistry contract.
-     * @param   eventName           The CoordinatorRegistry contract event you would like to subscribe to.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
-     * @param   callback            Callback that gets called when a log is added/removed
-     * @param   isVerbose           Enable verbose subscription warnings (e.g recoverable network issues encountered)
+     * @param eventName The CoordinatorRegistry contract event you would like to subscribe to.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{maker: aUserAddressHex}`
+     * @param callback Callback that gets called when a log is added/removed
+     * @param isVerbose Enable verbose subscription warnings (e.g recoverable network issues encountered)
      * @return Subscription token used later to unsubscribe
      */
     public subscribe<ArgsType extends CoordinatorRegistryEventArgs>(
@@ -367,7 +446,7 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Cancel a subscription
-     * @param   subscriptionToken Subscription token returned by `subscribe()`
+     * @param subscriptionToken Subscription token returned by `subscribe()`
      */
     public unsubscribe(subscriptionToken: string): void {
         this._subscriptionManager.unsubscribe(subscriptionToken);
@@ -380,11 +459,11 @@ export class CoordinatorRegistryContract extends BaseContract {
     }
     /**
      * Gets historical logs without creating a subscription
-     * @param   eventName           The CoordinatorRegistry contract event you would like to subscribe to.
-     * @param   blockRange          Block range to get logs from.
-     * @param   indexFilterValues   An object where the keys are indexed args returned by the event and
-     *                              the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
-     * @return  Array of logs that match the parameters
+     * @param eventName The CoordinatorRegistry contract event you would like to subscribe to.
+     * @param blockRange Block range to get logs from.
+     * @param indexFilterValues An object where the keys are indexed args returned by the event and
+     * the value is the value you are interested in. E.g `{_from: aUserAddressHex}`
+     * @return Array of logs that match the parameters
      */
     public async getLogsAsync<ArgsType extends CoordinatorRegistryEventArgs>(
         eventName: CoordinatorRegistryEvents,

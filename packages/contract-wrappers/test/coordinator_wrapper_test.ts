@@ -99,7 +99,7 @@ describe('CoordinatorWrapper', () => {
         const coordinatorServerConfigs = {
             HTTP_PORT: 3000, // Only used in default instantiation in 0x-coordinator-server/server.js; not used here
             NETWORK_ID_TO_SETTINGS: {
-                50: {
+                [config.networkId]: {
                     FEE_RECIPIENTS: [
                         {
                             ADDRESS: feeRecipientAddressOne,
@@ -125,6 +125,9 @@ describe('CoordinatorWrapper', () => {
                     RPC_URL: 'http://ignore',
                 },
             },
+            NETWORK_ID_TO_CONTRACT_ADDRESSES: {
+                [config.networkId]: contractAddresses,
+            },
             // Optional selective delay on fill requests
             SELECTIVE_DELAY_MS: 0,
             EXPIRATION_DURATION_SECONDS: 60, // 1 minute
@@ -134,7 +137,15 @@ describe('CoordinatorWrapper', () => {
                 [config.networkId]: provider,
             },
             coordinatorServerConfigs,
-            defaultOrmConfig,
+            {
+                name: 'coord_server_1',
+                type: 'sqlite',
+                database: ':memory:',
+                entities: defaultOrmConfig.entities,
+                cli: defaultOrmConfig.cli,
+                logging: defaultOrmConfig.logging,
+                synchronize: defaultOrmConfig.synchronize,
+            },
         );
 
         coordinatorServerApp.listen(coordinatorPort, () => {
@@ -148,7 +159,8 @@ describe('CoordinatorWrapper', () => {
             coordinatorServerConfigs,
             {
                 type: 'sqlite',
-                database: 'database.sqlite_2',
+                name: 'coord_server_2',
+                database: ':memory:',
                 entities: defaultOrmConfig.entities,
                 cli: defaultOrmConfig.cli,
                 logging: defaultOrmConfig.logging,

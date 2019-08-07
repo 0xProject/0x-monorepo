@@ -27,7 +27,19 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class IValidatorContract extends BaseContract {
+    /**
+     * Verifies that a signature is valid.
+     */
     public isValidSignature = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param hash Message hash that is signed.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof of signing.
+         * @returns Validity of order signature.
+         */
         async callAsync(
             hash: string,
             signerAddress: string,
@@ -72,6 +84,14 @@ export class IValidatorContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param hash Message hash that is signed.
+         * @param signerAddress Address that should have signed the given hash.
+         * @param signature Proof of signing.
+         */
         getABIEncodedTransactionData(hash: string, signerAddress: string, signature: string): string {
             assert.isString('hash', hash);
             assert.isString('signerAddress', signerAddress);
@@ -83,6 +103,20 @@ export class IValidatorContract extends BaseContract {
                 signature,
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): boolean {
+            const self = (this as any) as IValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<boolean>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as IValidatorContract;
+            const abiEncoder = self._lookupAbiEncoder('isValidSignature(bytes32,address,bytes)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(

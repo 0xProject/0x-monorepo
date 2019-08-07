@@ -104,6 +104,43 @@ function registerTypeScriptHelpers(): void {
             return context !== undefined;
         },
     );
+
+    // Format docstring for method description
+    Handlebars.registerHelper(
+        'formatDocstringForMethodTs',
+        (docString: string): Handlebars.SafeString => {
+            // preserve newlines
+            const regex = /([ ]{4,})+/gi;
+            const formatted = docString.replace(regex, '\n * ');
+            return new Handlebars.SafeString(formatted);
+        },
+    );
+    // Get docstring for method param
+    Handlebars.registerHelper(
+        'getDocstringForParamTs',
+        (paramName: string, devdocParamsObj: { [name: string]: string }): Handlebars.SafeString | undefined => {
+            if (devdocParamsObj === undefined || devdocParamsObj[paramName] === undefined) {
+                return undefined;
+            }
+            return new Handlebars.SafeString(`${devdocParamsObj[paramName]}`);
+        },
+    );
+
+    // Format docstring for method param
+    Handlebars.registerHelper(
+        'formatDocstringForParamTs',
+        (paramName: string, desc: Handlebars.SafeString): Handlebars.SafeString => {
+            const docString = `@param ${paramName} ${desc}`;
+            const hangingIndentLength = 4;
+            const config = {
+                width: 80,
+                paddingLeft: ' * ',
+                hangingIndent: ' '.repeat(hangingIndentLength),
+                ansi: false,
+            };
+            return new Handlebars.SafeString(`${cliFormat.wrap(docString, config)}`);
+        },
+    );
 }
 
 function registerPythonHelpers(): void {
