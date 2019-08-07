@@ -25,7 +25,7 @@ jobs:
             - setup_remote_docker
             # - run: yarn build:ci:no_website
             # - run: yarn build:ts
-            - run: PKG=@0x/abi-gen-wrappers yarn build
+            - run: PKG=@0x/python-contract-wrappers yarn build
             - save_cache:
                   key: repo-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -36,10 +36,10 @@ jobs:
                       - ~/repo/packages/python-contract-wrappers/generated
             - store_artifacts:
                   path: ~/repo/packages/python-contract-wrappers/generated
-            - store_artifacts:
-                  path: ~/repo/packages/abi-gen/test-cli/output
-            - store_artifacts:
-                  path: ~/repo/packages/abi-gen-wrappers/generated_docs
+            # - store_artifacts:
+            #       path: ~/repo/packages/abi-gen/test-cli/output
+            # - store_artifacts:
+            #       path: ~/repo/packages/abi-gen-wrappers/generated_docs
     build-website:
         resource_class: medium+
         docker:
