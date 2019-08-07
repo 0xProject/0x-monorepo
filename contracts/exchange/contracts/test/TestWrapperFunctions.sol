@@ -31,7 +31,6 @@ contract TestWrapperFunctions is
     uint8 internal constant MAX_ORDER_STATUS = uint8(OrderStatus.CANCELLED);
     uint256 internal constant ALWAYS_FAILING_SALT = uint256(-1);
     string internal constant ALWAYS_FAILING_SALT_REVERT_REASON = "ALWAYS_FAILING_SALT";
-    string internal constant BAD_SIGNATURE_REVERT_REASON = "BAD_SIGNATURE";
 
     // solhint-disable no-unused-vars
     event FillOrderCalled(
@@ -68,10 +67,6 @@ contract TestWrapperFunctions is
         // Fail if the salt is ALWAYS_FAILING_SALT.
         if (order.salt == ALWAYS_FAILING_SALT) {
             revert(ALWAYS_FAILING_SALT_REVERT_REASON);
-        }
-        // Fail if the signature is invalid.
-        if (keccak256(signature) != keccak256(_getValidOrderSignature(order))) {
-            revert(BAD_SIGNATURE_REVERT_REASON);
         }
 
         // We aren't interested in correctness here because we are testing the
@@ -119,13 +114,5 @@ contract TestWrapperFunctions is
     {
         // `orderHash` is just `keccak256(order.makerFeeAssetData, order.takerAssetData, order.salt)`.
         hash = keccak256(abi.encodePacked(order.makerAssetData, order.takerAssetData, order.salt));
-    }
-
-    function _getValidOrderSignature(Order memory order)
-        internal
-        pure
-        returns (bytes memory signature)
-    {
-        return abi.encodePacked(keccak256(abi.encodePacked(_getOrderHash(order))));
     }
 }

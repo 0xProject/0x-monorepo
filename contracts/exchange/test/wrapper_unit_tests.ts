@@ -13,7 +13,8 @@ import { FillResults, OrderInfo, OrderStatus, OrderWithoutDomain as Order } from
 import {
     AnyRevertError,
     BigNumber,
-    StringRevertError
+    SafeMathRevertErrors,
+    StringRevertError,
 } from '@0x/utils';
 import { LogEntry, LogWithDecodedArgs } from 'ethereum-types';
 import * as ethjs from 'ethereumjs-util';
@@ -26,19 +27,17 @@ import {
     TestWrapperFunctionsCancelOrderCalledEventArgs as CancelOrderCalledEventArgs,
 } from '../src';
 
-blockchainTests.only('Exchange wrapper functions unit tests.', env => {
-    const { ONE_ETHER } = constants;
+blockchainTests('Exchange wrapper functions unit tests.', env => {
+    const { ONE_ETHER, MAX_UINT256, MAX_UINT256_ROOT } = constants;
     const { addFillResults, getPartialAmountFloor } = LibReferenceFunctions;
     const { safeSub } = UtilReferenceFunctions;
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomAssetData = () => hexRandom(34);
-    const randomSignature = () => `${hexRandom(32 * 3)}`;
     const randomAmount = (maxAmount: BigNumber = ONE_ETHER) => maxAmount.times(_.random(0, 100, true).toFixed(12));
     const randomTimestamp = () => new BigNumber(Math.floor(_.now() / 1000) + _.random(0, 34560));
     const randomSalt = () => new BigNumber(hexRandom(constants.WORD_LENGTH).substr(2), 16);
     const ALWAYS_FAILING_SALT = constants.MAX_UINT256;
     const ALWAYS_FAILING_SALT_REVERT_ERROR = new StringRevertError('ALWAYS_FAILING_SALT');
-    const BAD_SIGNATURE_REVERT_REASON = new StringRevertError('BAD_SIGNATURE');
     const EMPTY_FILL_RESULTS = {
         makerAssetFilledAmount: constants.ZERO_AMOUNT,
         takerAssetFilledAmount: constants.ZERO_AMOUNT,
@@ -87,14 +86,9 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         ])));
     }
 
-    // Computes a valid signature for an order.
-    function createOrderSignature(order: Order): string {
-        return ethjs.bufferToHex(ethjs.sha3(ethjs.toBuffer(getExpectedOrderHash(order))));
-    }
-
     // Computes the expected (fake) fill results from `TestWrapperFunctions` `_fillOrder` implementation.
     function getExpectedFillResults(order: Order, signature: string): FillResults {
-        if (order.salt === ALWAYS_FAILING_SALT || signature !== createOrderSignature(order)) {
+        if (order.salt === ALWAYS_FAILING_SALT) {
             return EMPTY_FILL_RESULTS;
         }
         return {
@@ -103,6 +97,12 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             makerFeePaid: order.makerFee,
             takerFeePaid: order.takerFee,
         };
+    }
+
+    // Creates a deterministic order signature, even though no signature validation
+    // actually occurs in the test contract.
+    function createOrderSignature(order: Order): string {
+        return ethjs.bufferToHex(ethjs.sha3(ethjs.toBuffer(getExpectedOrderHash(order))));
     }
 
     // Asserts that `_fillOrder()` was called in the same order and with the same
@@ -172,13 +172,14 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 // the `takerAssetFilledAmount`.
                 takerAssetAmount: fillAmount.minus(1),
             });
+            const signature = createOrderSignature(order);
             const expectedError = new ExchangeRevertErrors.IncompleteFillError(
                 getExpectedOrderHash(order),
             );
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
                 order,
                 fillAmount,
-                createOrderSignature(order),
+                signature,
             );
             return expect(tx).to.revertWith(expectedError);
         });
@@ -190,13 +191,14 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
                 // the `takerAssetFilledAmount`.
                 takerAssetAmount: fillAmount.plus(1),
             });
+            const signature = createOrderSignature(order);
             const expectedError = new ExchangeRevertErrors.IncompleteFillError(
                 getExpectedOrderHash(order),
             );
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
                 order,
                 fillAmount,
-                createOrderSignature(order),
+                signature,
             );
             return expect(tx).to.revertWith(expectedError);
         });
@@ -206,11 +208,12 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             const order = randomOrder({
                 salt: ALWAYS_FAILING_SALT,
             });
+            const signature = createOrderSignature(order);
             const expectedError = ALWAYS_FAILING_SALT_REVERT_ERROR;
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(
                 order,
                 fillAmount,
-                createOrderSignature(order),
+                signature,
             );
             return expect(tx).to.revertWith(expectedError);
         });
@@ -298,12 +301,12 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
 
         it('works with duplicate orders', async () => {
-            const COUNT = 2;
-            const order = randomOrder();
-            const signature = createOrderSignature(order);
-            const orders = _.times(COUNT, () => order);
+            const NUM_UNIQUE_ORDERS = 2;
+            const COUNT = 4;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.shuffle(_.flatten(_.times(COUNT / NUM_UNIQUE_ORDERS, () => uniqueOrders)));
             const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount.dividedToIntegerBy(COUNT));
-            const signatures = _.times(COUNT, () => signature);
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
             const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
@@ -394,12 +397,12 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
 
         it('works with duplicate orders', async () => {
-            const COUNT = 2;
-            const order = randomOrder();
-            const signature = createOrderSignature(order);
-            const orders = _.times(COUNT, () => order);
+            const NUM_UNIQUE_ORDERS = 2;
+            const COUNT = 4;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.shuffle(_.flatten(_.times(COUNT / NUM_UNIQUE_ORDERS, () => uniqueOrders)));
             const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount);
-            const signatures = _.times(COUNT, () => signature);
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
             const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
@@ -487,73 +490,6 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
     });
 
-    describe('marketSellOrders', () => {
-        function simulateMarketSellOrders(
-            orders: Order[],
-            takerAssetFillAmount: BigNumber,
-            signatures: string[],
-        ): [FillResults, [[Order, BigNumber, string]]] {
-            const fillOrderCalls = [];
-            let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
-            const takerAssetData = orders[0].takerAssetData;
-            for (const [ order, signature ] of _.zip(orders, signatures) as [[Order, string]]) {
-                const remainingTakerAssetFillAmount = safeSub(
-                    takerAssetFillAmount,
-                    fillResults.takerAssetFilledAmount,
-                );
-                const expectedSignature = createOrderSignature(
-                    {
-                        ...order,
-                        takerAssetData,
-                    },
-                );
-                if (order.salt !== ALWAYS_FAILING_SALT && signature !== expectedSignature) {
-                    fillOrderCalls.push([order, remainingTakerAssetFillAmount, signature]);
-                    fillResults = addFillResults(fillResults, getExpectedFillResults(order, signature));
-                }
-                if (fillResults.takerAssetFilledAmount.gte(takerAssetFillAmount)) {
-                    break;
-                }
-            }
-            return [fillResults, fillOrderCalls as any];
-        }
-
-        it('works with one order', async () => {
-            const COUNT = 1;
-            const orders = _.times(COUNT, () => randomOrder());
-            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
-            const takerAssetFillAmount = _.reduce(
-                orders,
-                (total, o) => o.takerAssetAmount.plus(total),
-                constants.ZERO_AMOUNT,
-            );
-            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
-                orders,
-                takerAssetFillAmount,
-                signatures,
-            );
-            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
-                testContract.marketSellOrders,
-                orders,
-                takerAssetFillAmount,
-                signatures,
-            );
-            expect(actualResult).to.deep.eq(expectedResult);
-            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
-        });
-
-        it('reverts with no orders', async () => {
-            const expectedError = new AnyRevertError();
-            const tx = txHelper.getResultAndReceiptAsync(
-                testContract.marketSellOrders,
-                [],
-                constants.ZERO_AMOUNT,
-                [],
-            );
-            return expect(tx).to.revertWith(expectedError);
-        });
-    });
-
     describe('batchFillOrdersNoThrow', () => {
         it('works with no fills', async () => {
             const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
@@ -601,12 +537,12 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
 
         it('works with duplicate orders', async () => {
-            const COUNT = 2;
-            const order = randomOrder();
-            const signature = createOrderSignature(order);
-            const orders = _.times(COUNT, () => order);
-            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount.dividedBy(COUNT));
-            const signatures = _.times(COUNT, () => signature);
+            const NUM_UNIQUE_ORDERS = 2;
+            const COUNT = 4;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.shuffle(_.flatten(_.times(COUNT / NUM_UNIQUE_ORDERS, () => uniqueOrders)));
+            const fillAmounts = _.times(COUNT, i => orders[i].takerAssetAmount.dividedToIntegerBy(COUNT));
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
             const expectedResult = _.times(COUNT, i => getExpectedFillResults(orders[i], signatures[i]));
             const expectedCalls = _.zip(orders, fillAmounts, signatures);
             const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
@@ -671,22 +607,564 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
     });
 
-    // Asserts that `_cancelOrder()` was called in the same order and with the same
-    // arguments as given by examining receipt logs.
-    function assertCancelOrderCallsFromLogs(
-        logs: LogEntry[],
-        calls: Order[],
-    ): void {
-        expect(logs.length).to.eq(calls.length);
-        for (const i of _.times(calls.length)) {
-            const log = logs[i] as LogWithDecodedArgs<CancelOrderCalledEventArgs>;
-            const expectedOrder = calls[i];
-            expect(log.event).to.eq('CancelOrderCalled');
-            assertSameOrderFromEvent(log.args.order as any, expectedOrder);
+    describe('marketSellOrders', () => {
+        function simulateMarketSellOrders(
+            orders: Order[],
+            takerAssetFillAmount: BigNumber,
+            signatures: string[],
+        ): [FillResults, [[Order, BigNumber, string]]] {
+            const fillOrderCalls = [];
+            let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
+            const takerAssetData = orders[0].takerAssetData;
+            for (const [ order, signature ] of _.zip(orders, signatures) as [[Order, string]]) {
+                const remainingTakerAssetFillAmount = safeSub(
+                    takerAssetFillAmount,
+                    fillResults.takerAssetFilledAmount,
+                );
+                if (order.salt !== ALWAYS_FAILING_SALT) {
+                    const modifiedOrder = { ...order, takerAssetData };
+                    fillOrderCalls.push([modifiedOrder, remainingTakerAssetFillAmount, signature]);
+                }
+                fillResults = addFillResults(fillResults, getExpectedFillResults(order, signature));
+                if (fillResults.takerAssetFilledAmount.gte(takerAssetFillAmount)) {
+                    break;
+                }
+            }
+            return [fillResults, fillOrderCalls as any];
         }
-    }
+
+        it('works with one order', async () => {
+            const COUNT = 1;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works with many orders', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works with duplicate orders', async () => {
+            const NUM_UNIQUE_ORDERS = 2;
+            const COUNT = 4;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.shuffle(_.flatten(_.times(COUNT / NUM_UNIQUE_ORDERS, () => uniqueOrders)));
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works when any fills revert', async () => {
+            const COUNT = 4;
+            const BAD_ORDERS_COUNT = 2;
+            const orders = _.times(COUNT, () => randomOrder());
+            const badOrders = _.sampleSize(orders, BAD_ORDERS_COUNT);
+            for (const order of badOrders) {
+                order.salt = ALWAYS_FAILING_SALT;
+            }
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works when all fills revert', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder({ salt: ALWAYS_FAILING_SALT }));
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(0);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('stops when filled == `takerAssetFillAmount`', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            // Skip the last order in our `takerAssetFillAmount` calculation.
+            const takerAssetFillAmount = _.reduce(
+                orders.slice(0, COUNT - 1),
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            // It should stop filling after the penultimate order.
+            expect(expectedCalls.length).to.eq(COUNT - 1);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('stops when filled > `takerAssetFillAmount`', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const takerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.takerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            // Because `TestWrapperFunctions` always fills `takerAssetAmount`
+            // setting the first order's `takerAssetAmount` to larger than
+            // `takerAssetFillAmount` will cause an overfill.
+            orders[0].takerAssetAmount = takerAssetFillAmount.plus(1);
+            const [ expectedResult, expectedCalls ] = simulateMarketSellOrders(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            // It should stop filling after first order.
+            expect(expectedCalls.length).to.eq(1);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('reverts when an overflow occurs when summing fill results', async () => {
+            const COUNT = 2;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            orders[1].takerAssetAmount = MAX_UINT256;
+            const takerAssetFillAmount = MAX_UINT256;
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                orders[0].takerAssetAmount,
+                orders[1].takerAssetAmount,
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                orders,
+                takerAssetFillAmount,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts with no orders', async () => {
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketSellOrders,
+                [],
+                constants.ZERO_AMOUNT,
+                [],
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
+
+    describe('marketBuyOrders', () => {
+        function simulateMarketBuyOrders(
+            orders: Order[],
+            makerAssetFillAmount: BigNumber,
+            signatures: string[],
+        ): [FillResults, [[Order, BigNumber, string]]] {
+            const fillOrderCalls = [];
+            let fillResults = _.cloneDeep(EMPTY_FILL_RESULTS);
+            const makerAssetData = orders[0].makerAssetData;
+            for (const [ order, signature ] of _.zip(orders, signatures) as [[Order, string]]) {
+                const remainingMakerAssetFillAmount = safeSub(
+                    makerAssetFillAmount,
+                    fillResults.makerAssetFilledAmount,
+                );
+                const remainingTakerAssetFillAmount = getPartialAmountFloor(
+                    order.takerAssetAmount,
+                    order.makerAssetAmount,
+                    remainingMakerAssetFillAmount,
+                );
+                if (order.salt !== ALWAYS_FAILING_SALT) {
+                    const modifiedOrder = { ...order, makerAssetData };
+                    fillOrderCalls.push([modifiedOrder, remainingTakerAssetFillAmount, signature]);
+                }
+                fillResults = addFillResults(fillResults, getExpectedFillResults(order, signature));
+                if (fillResults.makerAssetFilledAmount.gte(makerAssetFillAmount)) {
+                    break;
+                }
+            }
+            return [fillResults, fillOrderCalls as any];
+        }
+
+        it('works with one order', async () => {
+            const COUNT = 1;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works with many orders', async () => {
+            const COUNT = 8;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works with duplicate orders', async () => {
+            const NUM_UNIQUE_ORDERS = 2;
+            const COUNT = 4;
+            const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
+            const orders = _.shuffle(_.flatten(_.times(COUNT / NUM_UNIQUE_ORDERS, () => uniqueOrders)));
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works when any fills revert', async () => {
+            const COUNT = 4;
+            const BAD_ORDERS_COUNT = 2;
+            const orders = _.times(COUNT, () => randomOrder());
+            const badOrders = _.sampleSize(orders, BAD_ORDERS_COUNT);
+            for (const order of badOrders) {
+                order.salt = ALWAYS_FAILING_SALT;
+            }
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('works when all fills revert', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder({ salt: ALWAYS_FAILING_SALT }));
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(expectedCalls.length).to.eq(0);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('stops when filled == `makerAssetFillAmount`', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            // Skip the last order in our `makerAssetFillAmount` calculation.
+            const makerAssetFillAmount = _.reduce(
+                orders.slice(0, COUNT - 1),
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            // It should stop filling after the penultimate order.
+            expect(expectedCalls.length).to.eq(COUNT - 1);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('stops when filled > `makerAssetFillAmount`', async () => {
+            const COUNT = 4;
+            const orders = _.times(COUNT, () => randomOrder());
+            const signatures = _.times(COUNT, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = _.reduce(
+                orders,
+                (total, o) => o.makerAssetAmount.plus(total),
+                constants.ZERO_AMOUNT,
+            );
+            // Because `TestWrapperFunctions` always fills `makerAssetAmount`
+            // setting the first order's `makerAssetAmount` to larger than
+            // `makerAssetFillAmount` will cause an overfill.
+            orders[0].makerAssetAmount = makerAssetFillAmount.plus(1);
+            const [ expectedResult, expectedCalls ] = simulateMarketBuyOrders(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            // It should stop filling after first order.
+            expect(expectedCalls.length).to.eq(1);
+            const [ actualResult, receipt ] = await txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            expect(actualResult).to.deep.eq(expectedResult);
+            assertFillOrderCallsFromLogs(receipt.logs, expectedCalls);
+        });
+
+        it('reverts when an overflow occurs when computing `remainingTakerAssetFillAmount`', async () => {
+            const orders = [ randomOrder({ takerAssetAmount: MAX_UINT256 }) ];
+            const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = new BigNumber(2);
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                orders[0].takerAssetAmount,
+                makerAssetFillAmount,
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts when an order\'s `makerAssetAmount` is zero', async () => {
+            const orders = [ randomOrder({ makerAssetAmount: constants.ZERO_AMOUNT }) ];
+            const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = ONE_ETHER;
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256DivisionByZero,
+                orders[0].takerAssetAmount.times(makerAssetFillAmount),
+                orders[0].makerAssetAmount,
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts when an overflow occurs when summing fill results', async () => {
+            const orders = [
+                randomOrder({
+                    takerAssetAmount: new BigNumber(1),
+                    makerAssetAmount: new BigNumber(1),
+                }),
+                randomOrder({
+                    takerAssetAmount: new BigNumber(1),
+                    makerAssetAmount: MAX_UINT256,
+                }),
+            ];
+            const signatures = _.times(orders.length, i => createOrderSignature(orders[i]));
+            const makerAssetFillAmount = new BigNumber(2);
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                orders[0].makerAssetAmount,
+                orders[1].makerAssetAmount,
+            );
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                orders,
+                makerAssetFillAmount,
+                signatures,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('reverts with no orders', async () => {
+            const expectedError = new AnyRevertError(); // Just a generic revert.
+            const tx = txHelper.getResultAndReceiptAsync(
+                testContract.marketBuyOrders,
+                [],
+                constants.ZERO_AMOUNT,
+                [],
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+    });
 
     describe('batchCancelOrders', () => {
+        // Asserts that `_cancelOrder()` was called in the same order and with the same
+        // arguments as given by examining receipt logs.
+        function assertCancelOrderCallsFromLogs(
+            logs: LogEntry[],
+            calls: Order[],
+        ): void {
+            expect(logs.length).to.eq(calls.length);
+            for (const i of _.times(calls.length)) {
+                const log = logs[i] as LogWithDecodedArgs<CancelOrderCalledEventArgs>;
+                const expectedOrder = calls[i];
+                expect(log.event).to.eq('CancelOrderCalled');
+                assertSameOrderFromEvent(log.args.order as any, expectedOrder);
+            }
+        }
+
         it('works with no orders', async () => {
             const [ , receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.batchCancelOrders,
@@ -706,9 +1184,10 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
         });
 
         it('works with duplicate orders', async () => {
-            const COUNT = 3;
-            const order = randomOrder({ makerAddress: senderAddress });
-            const orders = _.times(COUNT, () => order);
+            const UNIQUE_ORDERS = 2;
+            const COUNT = 6;
+            const uniqueOrders = _.times(UNIQUE_ORDERS, () => randomOrder({ makerAddress: senderAddress }));
+            const orders = _.shuffle(_.flatten(_.times(COUNT / UNIQUE_ORDERS, () => uniqueOrders)));
             const [ , receipt ] = await txHelper.getResultAndReceiptAsync(
                 testContract.batchCancelOrders,
                 orders,
@@ -769,7 +1248,7 @@ blockchainTests.only('Exchange wrapper functions unit tests.', env => {
             const NUM_UNIQUE_ORDERS = 4;
             const CLONE_COUNT = 2;
             const uniqueOrders = _.times(NUM_UNIQUE_ORDERS, () => randomOrder());
-            const orders = _.flatten(_.times(CLONE_COUNT, () => uniqueOrders));
+            const orders = _.shuffle(_.flatten(_.times(CLONE_COUNT, () => uniqueOrders)));
             const expectedResult = orders.map(getExpectedOrderInfo);
             const actualResult = await testContract.getOrdersInfo.callAsync(orders);
             expect(actualResult).to.deep.eq(expectedResult);

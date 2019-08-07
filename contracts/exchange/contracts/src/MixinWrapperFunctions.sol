@@ -188,7 +188,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount - fillResults.takerAssetFilledAmount;
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
