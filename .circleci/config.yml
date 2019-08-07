@@ -188,7 +188,9 @@ jobs:
                   RPC_URL: http://localhost:8545
                   NETWORK_ID: 50
                   WHITELIST_ALL_TOKENS: True
-              command: sh -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
+              command: |
+                    apk add curl
+                    sh -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
