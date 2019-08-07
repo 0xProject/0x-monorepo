@@ -63,6 +63,10 @@ contract MixinAssets is
         // For now we only care about ERC20, since percentage fees on ERC721 tokens are invalid.
         if (proxyId == ERC20_DATA_ID) {
             address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
+            require(
+                proxyAddress != address(0),
+                "UNREGISTERED_ASSET_PROXY"
+            );
             IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
             if (assetToken.allowance(address(this), proxyAddress) != MAX_UINT) {
                 assetToken.approve(proxyAddress, MAX_UINT);
