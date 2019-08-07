@@ -2,7 +2,7 @@ import { createHash } from 'crypto';
 
 import * as changeCase from 'change-case';
 import * as cliFormat from 'cli-format';
-import { AbiType, ConstructorAbi, DataItem } from 'ethereum-types';
+import { AbiType, ConstructorAbi, DataItem, TupleDataItem } from 'ethereum-types';
 import * as fs from 'fs';
 import * as _ from 'lodash';
 import * as path from 'path';
@@ -349,5 +349,29 @@ export const utils = {
             ansi: false,
             hangingIndent: ' '.repeat(columnsPerIndent),
         });
+    },
+    extractTuples(
+        parameter: DataItem,
+        tupleBodies: { [pythonTupleName: string]: string }, // output
+        tupleDependencies: Array<[string, string]>, // output
+    ): void {
+        if (parameter.type === 'tuple' || parameter.type === 'tuple[]') {
+            const tupleDataItem = parameter as TupleDataItem; // tslint:disable-line:no-unnecessary-type-assertion
+            // without the above cast (which tslint complains about), tsc says
+            //     Argument of type 'DataItem[] | undefined' is not assignable to parameter of type 'DataItem[]'.
+            //     Type 'undefined' is not assignable to type 'DataItem[]'
+            // when the code below tries to access tupleDataItem.components.
+            const pythonTupleName = utils.makePythonTupleName(tupleDataItem.components);
+            tupleBodies[pythonTupleName] = utils.makePythonTupleClassBody(tupleDataItem.components);
+            for (const component of tupleDataItem.components) {
+                if (component.type === 'tuple' || component.type === 'tuple[]') {
+                    tupleDependencies.push([
+                        utils.makePythonTupleName((component as TupleDataItem).components), // tslint:disable-line:no-unnecessary-type-assertion
+                        pythonTupleName,
+                    ]);
+                    utils.extractTuples(component, tupleBodies, tupleDependencies);
+                }
+            }
+        }
     },
 };

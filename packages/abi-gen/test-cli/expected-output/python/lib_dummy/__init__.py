@@ -34,7 +34,9 @@ try:
     )
 except ImportError:
 
-    class LibDummyValidator(Validator):  # type: ignore
+    class LibDummyValidator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 

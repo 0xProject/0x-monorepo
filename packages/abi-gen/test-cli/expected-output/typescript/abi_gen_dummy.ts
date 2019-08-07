@@ -836,6 +836,79 @@ export class AbiGenDummyContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    public methodUsingNestedStructWithInnerStructNotUsedElsewhere = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<{ innerStruct: { aField: BigNumber } }> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments(
+                'methodUsingNestedStructWithInnerStructNotUsedElsewhere()',
+                [],
+            );
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments(
+                'methodUsingNestedStructWithInnerStructNotUsedElsewhere()',
+                [],
+            );
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): { innerStruct: { aField: BigNumber } } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<{ innerStruct: { aField: BigNumber } }>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): { innerStruct: { aField: BigNumber } } {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodUsingNestedStructWithInnerStructNotUsedElsewhere()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<{ innerStruct: { aField: BigNumber } }>(
+                returnData,
+            );
+            return abiDecodedReturnData;
+        },
+    };
     public nestedStructOutput = {
         /**
          * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
@@ -1794,6 +1867,143 @@ export class AbiGenDummyContract extends BaseContract {
             return abiDecodedReturnData;
         },
     };
+    public methodReturningMultipleValues = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<[BigNumber, string]> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningMultipleValues()', []);
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): [BigNumber, string] {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<[BigNumber, string]>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): [BigNumber, string] {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningMultipleValues()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<[BigNumber, string]>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    public methodReturningArrayOfStructs = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(
+            callData: Partial<CallData> = {},
+            defaultBlock?: BlockParam,
+        ): Promise<Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>> {
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<
+                Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
+            >(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(): string {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('methodReturningArrayOfStructs()', []);
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }> {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('methodReturningArrayOfStructs()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                Array<{ someBytes: string; anInteger: number; aDynamicArrayOfBytes: string[]; aString: string }>
+            >(returnData);
+            return abiDecodedReturnData;
+        },
+    };
     /**
      * a method that returns a struct
      */
@@ -2010,6 +2220,134 @@ export class AbiGenDummyContract extends BaseContract {
         getABIDecodedReturnData(returnData: string): void {
             const self = (this as any) as AbiGenDummyContract;
             const abiEncoder = self._lookupAbiEncoder('simpleInputNoOutput(uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    public overloadedMethod2 = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(a: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.isString('a', a);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('overloadedMethod(string)', [a]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(a: string): string {
+            assert.isString('a', a);
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('overloadedMethod(string)', [a]);
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(string)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
+    };
+    public overloadedMethod1 = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
+        async callAsync(a: BigNumber, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
+            assert.isBigNumber('a', a);
+            assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
+                schemas.addressSchema,
+                schemas.numberSchema,
+                schemas.jsNumber,
+            ]);
+            if (defaultBlock !== undefined) {
+                assert.isBlockParam('defaultBlock', defaultBlock);
+            }
+            const self = (this as any) as AbiGenDummyContract;
+            const encodedData = self._strictEncodeArguments('overloadedMethod(int256)', [a]);
+            const callDataWithDefaults = await BaseContract._applyDefaultsToTxDataAsync(
+                {
+                    to: self.address,
+                    ...callData,
+                    data: encodedData,
+                },
+                self._web3Wrapper.getContractDefaults(),
+            );
+            callDataWithDefaults.from = callDataWithDefaults.from
+                ? callDataWithDefaults.from.toLowerCase()
+                : callDataWithDefaults.from;
+
+            const rawCallResult = await self._web3Wrapper.callAsync(callDataWithDefaults, defaultBlock);
+            BaseContract._throwIfRevertWithReasonCallResult(rawCallResult);
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
+            // tslint:disable boolean-naming
+            const result = abiEncoder.strictDecodeReturnValue<void>(rawCallResult);
+            // tslint:enable boolean-naming
+            return result;
+        },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
+        getABIEncodedTransactionData(a: BigNumber): string {
+            assert.isBigNumber('a', a);
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncodedTransactionData = self._strictEncodeArguments('overloadedMethod(int256)', [a]);
+            return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as AbiGenDummyContract;
+            const abiEncoder = self._lookupAbiEncoder('overloadedMethod(int256)');
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
@@ -2249,6 +2587,32 @@ export class AbiGenDummyContract extends BaseContract {
                 inputs: [],
                 name: 'simpleRevert',
                 outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'methodUsingNestedStructWithInnerStructNotUsedElsewhere',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'tuple',
+                        components: [
+                            {
+                                name: 'innerStruct',
+                                type: 'tuple',
+                                components: [
+                                    {
+                                        name: 'aField',
+                                        type: 'uint256',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
                 payable: false,
                 stateMutability: 'pure',
                 type: 'function',
@@ -2546,6 +2910,56 @@ export class AbiGenDummyContract extends BaseContract {
             {
                 constant: true,
                 inputs: [],
+                name: 'methodReturningMultipleValues',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'uint256',
+                    },
+                    {
+                        name: '',
+                        type: 'string',
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
+                name: 'methodReturningArrayOfStructs',
+                outputs: [
+                    {
+                        name: '',
+                        type: 'tuple[]',
+                        components: [
+                            {
+                                name: 'someBytes',
+                                type: 'bytes',
+                            },
+                            {
+                                name: 'anInteger',
+                                type: 'uint32',
+                            },
+                            {
+                                name: 'aDynamicArrayOfBytes',
+                                type: 'bytes[]',
+                            },
+                            {
+                                name: 'aString',
+                                type: 'string',
+                            },
+                        ],
+                    },
+                ],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [],
                 name: 'structOutput',
                 outputs: [
                     {
@@ -2598,6 +3012,34 @@ export class AbiGenDummyContract extends BaseContract {
                     },
                 ],
                 name: 'simpleInputNoOutput',
+                outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'a',
+                        type: 'string',
+                    },
+                ],
+                name: 'overloadedMethod',
+                outputs: [],
+                payable: false,
+                stateMutability: 'pure',
+                type: 'function',
+            },
+            {
+                constant: true,
+                inputs: [
+                    {
+                        name: 'a',
+                        type: 'int256',
+                    },
+                ],
+                name: 'overloadedMethod',
                 outputs: [],
                 payable: false,
                 stateMutability: 'pure',

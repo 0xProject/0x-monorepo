@@ -22,6 +22,9 @@ class ContractAddresses(NamedTuple):
     erc721_proxy: str
     """Address of the ERC20Proxy contract."""
 
+    erc1155_proxy: str
+    """Address of the ERC1155Proxy contract."""
+
     zrx_token: str
     """Address of the ZRX token contract."""
 
@@ -76,6 +79,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         order_validator="0xa09329c6003c9a5402102e226417738ee22cf1f2",
         coordinator_registry="0x45797531b873fd5e519477a070a955764c1a5b07",
         coordinator="0xa14857e8930acd9a882d33ec20559beb5479c8a6",
+        erc1155_proxy="0x7eefbd48fd63d441ec7435d024ec7c5131019add",
     ),
     NetworkId.ROPSTEN: ContractAddresses(  # nosec
         erc20_proxy="0xb1408f4c245a23c31b98d2c626777d4c0d766caa",
@@ -88,6 +92,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         order_validator="0x90431a90516ab49af23a0530e04e8c7836e7122f",
         coordinator_registry="0x403cc23e88c17c4652fb904784d1af640a6722d9",
         coordinator="0x2ba02e03ee0029311e0f43715307870a3e701b53",
+        erc1155_proxy="0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d",
     ),
     NetworkId.RINKEBY: ContractAddresses(  # nosec
         exchange="0xbff9493f92a3df4b0429b6d00743b3cfb4c85831",
@@ -100,6 +105,7 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         order_validator="0x0c5173a51e26b29d6126c686756fb9fbef71f762",
         coordinator_registry="0x1084b6a398e47907bae43fec3ff4b677db6e4fee",
         coordinator="0x2ba02e03ee0029311e0f43715307870a3e701b53",
+        erc1155_proxy="0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d",
     ),
     NetworkId.KOVAN: ContractAddresses(  # nosec
         erc20_proxy="0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e",
@@ -112,18 +118,20 @@ NETWORK_TO_ADDRESSES: Dict[NetworkId, ContractAddresses] = {
         order_validator="0xb389da3d204b412df2f75c6afb3d0a7ce0bc283d",
         coordinator_registry="0x09fb99968c016a3ff537bf58fb3d9fe55a7975d5",
         coordinator="0x2ba02e03ee0029311e0f43715307870a3e701b53",
+        erc1155_proxy="0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f",
     ),
     NetworkId.GANACHE: ContractAddresses(  # nosec
         exchange="0x48bacb9266a570d521063ef5dd96e61686dbe788",
         erc20_proxy="0x1dc4c1cefef38a777b15aa20260a54e584b16c48",
         erc721_proxy="0x1d7022f5b17d2f8b695918fb48fa1089c9f85401",
+        erc1155_proxy="0x6a4a62e5a7ed13c361b176a5f62c2ee620ac0df8",
         zrx_token="0x871dd7c2b4b25e1aa18728e9d5f2af4c4e431f5c",
         ether_token="0x0b1ba0af832d7c05fd64161e0db78e85978e8082",
-        asset_proxy_owner="0x34d402f14d58e001d8efbe6585051bf9706aa064",
-        forwarder="0x6000eca38b8b5bba64986182fe2a69c57f6b5414",
-        order_validator="0x32eecaf51dfea9618e9bc94e9fbfddb1bbdcba15",
-        coordinator_registry="0xaa86dda78e9434aca114b6676fc742a18d15a1cc",
-        coordinator="0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29",
+        asset_proxy_owner="0x8d42e38980ce74736c21c059b2240df09958d3c8",
+        forwarder="0xaa86dda78e9434aca114b6676fc742a18d15a1cc",
+        order_validator="0x4d3d5c850dd5bd9d6f4adda3dd039a3c8054ca29",
+        coordinator_registry="0x1941ff73d1154774d87521d2d0aaad5d19c8df60",
+        coordinator="0x0d8b0dd11f5d34ed41d556def5f841900d5b1c6b",
     ),
 }
 """A mapping from instances of NetworkId to instances of ContractAddresses.

@@ -34,7 +34,9 @@ try:
     )
 except ImportError:
 
-    class {{contractName}}Validator(Validator):  # type: ignore
+    class {{contractName}}Validator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 
@@ -48,7 +50,7 @@ except ImportError:
 class {{contractName}}:
     """Wrapper class for {{contractName}} Solidity contract.{{docBytesIfNecessary ABIString}}"""
 {{#each methods}}
-    {{toPythonIdentifier this.name}}: {{toPythonClassname this.name}}Method
+    {{toPythonIdentifier this.languageSpecificName}}: {{toPythonClassname this.languageSpecificName}}Method
 {{/each}}
 
     def __init__(
@@ -75,7 +77,7 @@ class {{contractName}}:
         functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi={{contractName}}.abi()).functions
 
         {{#each methods}}
-        self.{{toPythonIdentifier this.name}} = {{toPythonClassname this.name}}Method(provider, contract_address, functions.{{this.name}}, validator)
+        self.{{toPythonIdentifier this.languageSpecificName}} = {{toPythonClassname this.languageSpecificName}}Method(provider, contract_address, functions.{{this.name}}, validator)
 
         {{/each}}
 {{#each events}}

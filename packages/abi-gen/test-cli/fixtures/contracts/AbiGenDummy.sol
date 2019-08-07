@@ -145,6 +145,8 @@ contract AbiGenDummy
         });
     }
 
+    function methodReturningArrayOfStructs() public pure returns(Struct[] memory) {}
+
     struct NestedStruct {
         Struct innerStruct;
         string description;
@@ -153,10 +155,31 @@ contract AbiGenDummy
     function nestedStructInput(NestedStruct memory n) public pure {}
     function nestedStructOutput() public pure returns(NestedStruct memory) {}
 
+    struct StructNotDirectlyUsedAnywhere {
+        uint256 aField;
+    }
+
+    struct NestedStructWithInnerStructNotUsedElsewhere {
+        StructNotDirectlyUsedAnywhere innerStruct;
+    }
+
+    function methodUsingNestedStructWithInnerStructNotUsedElsewhere()
+        public pure returns(NestedStructWithInnerStructNotUsedElsewhere  memory)
+    {}
+
     uint someState;
     function nonPureMethod() public returns(uint) { return someState += 1; }
     function nonPureMethodThatReturnsNothing() public { someState += 1; }
 
+    function methodReturningMultipleValues()
+        public pure returns (uint256, string memory)
+    {
+        return (1, "hello");
+    }
+
+    function overloadedMethod(int a) public pure {}
+    function overloadedMethod(string memory a) public pure {}
+    
     // begin tests for `decodeTransactionData`, `decodeReturnData`
 
     /// @dev complex input is dynamic and more difficult to decode than simple input.
