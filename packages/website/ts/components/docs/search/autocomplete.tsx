@@ -1,7 +1,7 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
@@ -63,12 +63,6 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
         };
     }, []);
 
-    const onChange = (event: React.KeyboardEvent, { newValue, method }: any): void => {
-        if (method === 'type') {
-            setValue(newValue);
-        }
-    };
-
     const onSuggestionsFetchRequested = ({ value: newValue }: any): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
@@ -78,7 +72,6 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
             // Without using route props / withRouter HOC this could simply be (with full page load):
             // location.href = suggestion.url;
             history.push(suggestion.url);
-
             window.scrollTo(0, 0);
         }
         setValue(''); // Clear input value
@@ -126,6 +119,13 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const storeInputRef = (autosuggest: any): void => {
         if (autosuggest !== null) {
             inputRef = autosuggest.input;
+        }
+    };
+
+    const onChange = (event: React.KeyboardEvent, { newValue, method }: any): void => {
+        // Only set value if the user typed it in, without it it leads to populating the input with snippet or highlight text
+        if (method === 'type') {
+            setValue(newValue);
         }
     };
 
