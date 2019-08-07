@@ -25,15 +25,16 @@ interface IHit {
     _highlightResult: any;
     _snippetResult: any;
 }
-interface ISnippetMatchLevels {
-    [index: string]: number;
-}
 
 interface IAutoCompleteProps extends RouteComponentProps<{}> {
     isHome?: boolean;
     hits?: object[];
     currentRefinement?: string;
     refine?: (value: string) => void;
+}
+
+interface ISnippetMatchLevels {
+    [index: string]: number;
 }
 
 const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
@@ -74,21 +75,23 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
 
     const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
         if (event.key === 'Enter' && suggestion.url) {
-            history.push(suggestion.url);
-            // Without using route props / withRouter HOC this coudl simply be (with full route load):
+            // Without using route props / withRouter HOC this could simply be (with full page load):
             // location.href = suggestion.url;
+            history.push(suggestion.url);
+
+            window.scrollTo(0, 0);
         }
         setValue(''); // Clear input value
-        inputRef.blur(); // Blur input, used for keyboard choices in connection with focusInputOnSuggestionClick prop on autosuggest
+        inputRef.blur(); // Blur input, used for keyboard choices in connection with focusInputOnSuggestionClick prop on autosuggest for mouse clicks
     };
 
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
 
     const renderSuggestion = (hit: IHit): React.ReactNode => {
-        let attributeToSnippet = 'description';
-
         const description: string = hit._snippetResult.description.matchLevel;
         const textContent: string = hit._snippetResult.textContent.matchLevel;
+
+        let attributeToSnippet = 'description';
 
         if (SNIPPET_MATCH_LEVELS[textContent] > SNIPPET_MATCH_LEVELS[description]) {
             attributeToSnippet = 'textContent';
