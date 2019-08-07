@@ -724,7 +724,7 @@ contract MixinMatchOrders is
         address takerAddress,
         LibFillResults.MatchedFillResults memory matchedFillResults
     )
-        private
+        internal
     {
         address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
         address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;

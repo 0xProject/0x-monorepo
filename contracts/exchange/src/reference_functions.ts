@@ -1,11 +1,23 @@
 import { ReferenceFunctions as ExchangeLibsReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { constants } from '@0x/contracts-test-utils';
 import { ReferenceFunctions as UtilsReferenceFunctions } from '@0x/contracts-utils';
-import { FillResults, MatchedFillResults, OrderWithoutDomain } from '@0x/types';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { FillResults, MatchedFillResults, Order, OrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 const { safeGetPartialAmountCeil, safeGetPartialAmountFloor } = ExchangeLibsReferenceFunctions;
-const { safeSub } = UtilsReferenceFunctions;
+const { safeMul, safeSub } = UtilsReferenceFunctions;
+
+/**
+ * Ensure that there is a profitable spread.
+ */
+export function assertValidMatch(leftOrder: Order, rightOrder: Order): void {
+    if (safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) < safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+        const orderHashHexLeft = orderHashUtils.getOrderHashHex(leftOrder);
+        const orderHashHexRight = orderHashUtils.getOrderHashHex(rightOrder);
+        throw new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
+    }
+}
 
 /**
  * Calculates amounts filled and fees paid by maker and taker.
@@ -51,14 +63,8 @@ export function calculateMatchedFillResults(
         rightOrderTakerAssetFilledAmount,
     );
 
-    // Calculate the profit from the matching
-    matchedFillResults.profitInLeftMakerAsset = safeSub(
-        matchedFillResults.left.makerAssetFilledAmount,
-        matchedFillResults.right.takerAssetFilledAmount,
-    );
-
     if (leftTakerAssetAmountRemaining.isGreaterThan(rightMakerAssetAmountRemaining)) {
-        // Case 1: Right order is fully filled
+        // Case 1
         calculateCompleteRightFill(
             leftOrder,
             rightMakerAssetAmountRemaining,
@@ -66,7 +72,7 @@ export function calculateMatchedFillResults(
             matchedFillResults,
         );
     } else if (leftTakerAssetAmountRemaining.isLessThan(rightMakerAssetAmountRemaining)) {
-        // Case 2: Left order is fully filled
+        // Case 2
         matchedFillResults.left.makerAssetFilledAmount = leftMakerAssetAmountRemaining;
         matchedFillResults.left.takerAssetFilledAmount = leftTakerAssetAmountRemaining;
         matchedFillResults.right.makerAssetFilledAmount = leftTakerAssetAmountRemaining;
@@ -76,8 +82,7 @@ export function calculateMatchedFillResults(
             leftTakerAssetAmountRemaining,
         );
     } else {
-        // Case 3: Both orders are fully filled. Technically, this could be captured by the above cases, but
-        //         this calculation will be more precise since it does not include rounding.
+        // Case 3
         calculateCompleteFillBoth(
             leftMakerAssetAmountRemaining,
             leftTakerAssetAmountRemaining,
@@ -92,6 +97,12 @@ export function calculateMatchedFillResults(
         leftOrder,
         rightOrder,
         matchedFillResults,
+    );
+
+    // Calculate the profit from the matching
+    matchedFillResults.profitInLeftMakerAsset = safeSub(
+        matchedFillResults.left.makerAssetFilledAmount,
+        matchedFillResults.right.takerAssetFilledAmount,
     );
 
     return matchedFillResults;
@@ -206,18 +217,20 @@ function getRemainingFillAmounts(
     leftOrderTakerAssetFilledAmount: BigNumber,
     rightOrderTakerAssetFilledAmount: BigNumber,
 ): [ BigNumber, BigNumber, BigNumber, BigNumber ] {
+    const leftTakerAssetRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
+    const rightTakerAssetRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
     return [
         safeGetPartialAmountFloor(
             leftOrder.makerAssetAmount,
             leftOrder.takerAssetAmount,
-            leftOrderTakerAssetFilledAmount
+            leftTakerAssetRemaining,
         ),
-        safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount),
+        leftTakerAssetRemaining,
         safeGetPartialAmountFloor(
             rightOrder.makerAssetAmount,
             rightOrder.takerAssetAmount,
-            rightOrderTakerAssetFilledAmount
+            rightTakerAssetRemaining,
         ),
-        safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount),
+        rightTakerAssetRemaining,
     ];
 }

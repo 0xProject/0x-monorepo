@@ -39,6 +39,16 @@ contract TestExchangeInternals is
         Exchange(chainId)
     {}
 
+    function assertValidMatch(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder
+    )
+        public
+        view
+    {
+        _assertValidMatch(leftOrder, rightOrder);
+    }
+
     function calculateFillResults(
         Order memory order,
         uint256 takerAssetFilledAmount
@@ -48,6 +58,43 @@ contract TestExchangeInternals is
         returns (FillResults memory fillResults)
     {
         return _calculateFillResults(order, takerAssetFilledAmount);
+    }
+
+    function calculateCompleteFillBoth(
+        uint256 leftMakerAssetAmountRemaining,
+        uint256 leftTakerAssetAmountRemaining,
+        uint256 rightMakerAssetAmountRemaining,
+        uint256 rightTakerAssetAmountRemaining
+    )
+        public
+        pure
+        returns (MatchedFillResults memory fillResults)
+    {
+        _calculateCompleteFillBoth(
+            fillResults,
+            leftMakerAssetAmountRemaining,
+            leftTakerAssetAmountRemaining,
+            rightMakerAssetAmountRemaining,
+            rightTakerAssetAmountRemaining
+        );
+        return fillResults;
+    }
+
+    function calculateCompleteRightFill(
+        LibOrder.Order memory leftOrder,
+        uint256 rightMakerAssetAmountRemaining,
+        uint256 rightTakerAssetAmountRemaining
+    )
+        public
+        pure
+        returns (MatchedFillResults memory fillResults)
+    {
+        _calculateCompleteRightFill(
+            fillResults,
+            leftOrder,
+            rightMakerAssetAmountRemaining,
+            rightTakerAssetAmountRemaining
+        );
     }
 
     /// @dev Call `_updateFilledState()` but first set `filled[order]` to
@@ -80,6 +127,26 @@ contract TestExchangeInternals is
         public
     {
         _settleOrder(orderHash, order, takerAddress, fillResults);
+    }
+
+    function settleMatchOrders(
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash,
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        public
+    {
+        _settleMatchedOrders(
+            leftOrderHash,
+            rightOrderHash,
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
+        );
     }
 
     /// @dev Overidden to only log arguments so we can test `_settleOrder()`.
