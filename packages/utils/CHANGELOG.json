@@ -9,10 +9,6 @@
             {
                 "note": "Throw exception when trying to decode beyond boundaries of calldata",
                 "pr": 2018
-            },
-            {
-                "note": "Move `tokenUtils` here from `@0x/contract-wrappers`",
-                "pr": 2037
             }
         ]
     },

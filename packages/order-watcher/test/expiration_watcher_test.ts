@@ -1,8 +1,8 @@
-import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { DoneCallback } from '@0x/types';
-import { BigNumber, tokenUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';

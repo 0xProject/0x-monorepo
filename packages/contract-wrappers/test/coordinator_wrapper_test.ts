@@ -1,11 +1,11 @@
 import { CoordinatorRegistryContract } from '@0x/abi-gen-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils } from '@0x/order-utils';
 import { SignedOrder } from '@0x/types';
-import { BigNumber, fetchAsync, logUtils, tokenUtils } from '@0x/utils';
+import { BigNumber, fetchAsync, logUtils } from '@0x/utils';
 import * as chai from 'chai';
 import * as http from 'http';
 import 'mocha';

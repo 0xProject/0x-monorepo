@@ -1,8 +1,8 @@
 import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation, SignedOrder } from '@0x/types';
-import { BigNumber, tokenUtils } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import * as chai from 'chai';
 import 'mocha';
 

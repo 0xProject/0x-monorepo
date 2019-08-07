@@ -9,8 +9,11 @@ import { ContractAbi } from 'ethereum-types';
 import * as HttpStatus from 'http-status-codes';
 import { flatten } from 'lodash';
 
+import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from './index';
+
 import { orderTxOptsSchema } from './schemas/order_tx_opts_schema';
 import { txOptsSchema } from './schemas/tx_opts_schema';
+import { CoordinatorTransaction, OrderTransactionOpts } from './types';
 import { assert } from './utils/assert';
 import {
     CoordinatorServerApprovalRawResponse,
@@ -21,10 +24,7 @@ import {
     CoordinatorServerResponse,
 } from './utils/coordinator_server_types';
 import { decorators } from './utils/decorators';
-import { TransactionEncoder } from './utils/transaction_encoder';
-
-import { CoordinatorContract, CoordinatorRegistryContract, ExchangeContract } from './index';
-import { CoordinatorTransaction, OrderTransactionOpts } from './types';
+import { getAbiEncodedTransactionData } from './utils/getAbiEncodedTransactionData';
 
 /**
  * This class includes all the functionality related to filling or cancelling orders through
@@ -40,7 +40,6 @@ export class CoordinatorWrapper {
     private readonly _contractInstance: CoordinatorContract;
     private readonly _registryInstance: CoordinatorRegistryContract;
     private readonly _exchangeInstance: ExchangeContract;
-    private readonly _transactionEncoder: TransactionEncoder;
     private readonly _feeRecipientToEndpoint: { [feeRecipient: string]: string } = {};
 
     /**
@@ -83,8 +82,6 @@ export class CoordinatorWrapper {
             this._web3Wrapper.getProvider(),
             this._web3Wrapper.getContractDefaults(),
         );
-
-        this._transactionEncoder = new TransactionEncoder(this._exchangeInstance);
     }
 
     /**
@@ -113,7 +110,12 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.fillOrderTx(signedOrder, takerAssetFillAmount);
+        const data = this._getAbiEncodedTransactionData(
+            'fillOrder',
+            signedOrder,
+            takerAssetFillAmount,
+            signedOrder.signature,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
         return txHash;
     }
@@ -140,7 +142,12 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.fillOrderNoThrowTx(signedOrder, takerAssetFillAmount);
+        const data = this._getAbiEncodedTransactionData(
+            'fillOrderNoThrow',
+            signedOrder,
+            takerAssetFillAmount,
+            signedOrder.signature,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
         return txHash;
     }
@@ -168,7 +175,12 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.fillOrKillOrderTx(signedOrder, takerAssetFillAmount);
+        const data = this._getAbiEncodedTransactionData(
+            'fillOrKillOrder',
+            signedOrder,
+            takerAssetFillAmount,
+            signedOrder.signature,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, [signedOrder], orderTransactionOpts);
         return txHash;
     }
@@ -202,7 +214,8 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.batchFillOrdersTx(signedOrders, takerAssetFillAmounts);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData('batchFillOrders', signedOrders, takerAssetFillAmounts, signatures);
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -231,7 +244,13 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.batchFillOrdersNoThrowTx(signedOrders, takerAssetFillAmounts);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData(
+            'batchFillOrdersNoThrow',
+            signedOrders,
+            takerAssetFillAmounts,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -260,7 +279,13 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.batchFillOrKillOrdersTx(signedOrders, takerAssetFillAmounts);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData(
+            'batchFillOrKillOrders',
+            signedOrders,
+            takerAssetFillAmounts,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -292,7 +317,8 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.marketBuyOrdersTx(signedOrders, makerAssetFillAmount);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData('marketBuyOrders', signedOrders, makerAssetFillAmount, signatures);
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -324,7 +350,8 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.marketSellOrdersTx(signedOrders, takerAssetFillAmount);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData('marketSellOrders', signedOrders, takerAssetFillAmount, signatures);
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -351,7 +378,13 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.marketBuyOrdersNoThrowTx(signedOrders, makerAssetFillAmount);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData(
+            'marketBuyOrdersNoThrow',
+            signedOrders,
+            makerAssetFillAmount,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -378,7 +411,13 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('takerAddress', takerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.marketSellOrdersNoThrowTx(signedOrders, takerAssetFillAmount);
+        const signatures = signedOrders.map(o => o.signature);
+        const data = this._getAbiEncodedTransactionData(
+            'marketSellOrdersNoThrow',
+            signedOrders,
+            takerAssetFillAmount,
+            signatures,
+        );
         const txHash = await this._handleFillsAsync(data, takerAddress, signedOrders, orderTransactionOpts);
         return txHash;
     }
@@ -395,7 +434,7 @@ export class CoordinatorWrapper {
         assert.isETHAddressHex('feeRecipientAddress', order.feeRecipientAddress);
         assert.isSenderAddressAsync('makerAddress', order.makerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.cancelOrderTx(order);
+        const data = this._getAbiEncodedTransactionData('cancelOrder', order);
         const transaction = await this._generateSignedZeroExTransactionAsync(data, order.makerAddress);
         const endpoint = await this._getServerEndpointOrThrowAsync(order.feeRecipientAddress);
 
@@ -429,7 +468,7 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orders', orders, schemas.ordersSchema);
         const makerAddress = getMakerAddressOrThrow(orders);
         assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
-        const data = this._transactionEncoder.batchCancelOrdersTx(orders);
+        const data = this._getAbiEncodedTransactionData('batchCancelOrders', orders);
 
         const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(orders);
 
@@ -487,7 +526,7 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('makerAddress', order.makerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.cancelOrderTx(order);
+        const data = this._getAbiEncodedTransactionData('cancelOrder', order);
         const transaction = await this._generateSignedZeroExTransactionAsync(data, order.makerAddress);
 
         const approvalSignatures = new Array();
@@ -520,7 +559,7 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('makerAddress', makerAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.batchCancelOrdersTx(orders);
+        const data = this._getAbiEncodedTransactionData('batchCancelOrders', orders);
         const transaction = await this._generateSignedZeroExTransactionAsync(data, makerAddress);
 
         const approvalSignatures = new Array();
@@ -555,7 +594,7 @@ export class CoordinatorWrapper {
         assert.doesConformToSchema('orderTransactionOpts', orderTransactionOpts, orderTxOptsSchema, [txOptsSchema]);
         await assert.isSenderAddressAsync('senderAddress', senderAddress, this._web3Wrapper);
 
-        const data = this._transactionEncoder.cancelOrdersUpToTx(targetOrderEpoch);
+        const data = this._getAbiEncodedTransactionData('cancelOrdersUpTo', targetOrderEpoch);
         const transaction = await this._generateSignedZeroExTransactionAsync(data, senderAddress);
 
         const approvalSignatures = new Array();
@@ -617,6 +656,10 @@ export class CoordinatorWrapper {
         assert.isHexString('signature', signature);
         const signerAddress = await this._contractInstance.getSignerAddress.callAsync(hash, signature);
         return signerAddress;
+    }
+
+    private _getAbiEncodedTransactionData<K extends keyof ExchangeContract>(methodName: K, ...args: any): string {
+        return getAbiEncodedTransactionData(this._exchangeInstance, methodName, ...args);
     }
 
     private async _handleFillsAsync(

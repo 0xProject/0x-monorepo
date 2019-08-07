@@ -1,10 +1,10 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { ExchangeContractErrs, OrderStateInvalid, SignedOrder } from '@0x/types';
-import { BigNumber, logUtils, tokenUtils } from '@0x/utils';
+import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import 'mocha';

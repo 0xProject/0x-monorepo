@@ -7,7 +7,8 @@ import * as chai from 'chai';
 import * as _ from 'lodash';
 import 'mocha';
 
-import { ContractAddresses, ContractWrappers, TransactionEncoder } from '../src';
+import { ContractAddresses, ContractWrappers } from '../src';
+import { getAbiEncodedTransactionData } from '../src/utils/getAbiEncodedTransactionData';
 
 import { chaiSetup } from './utils/chai_setup';
 import { migrateOnceAsync } from './utils/migrate';
@@ -80,8 +81,14 @@ describe('ABI Decoding Calldata', () => {
             blockPollingIntervalMs: 10,
         };
         contractWrappers = new ContractWrappers(provider, config);
-        const transactionEncoder = new TransactionEncoder(contractWrappers.exchange);
-        matchOrdersTxData = transactionEncoder.matchOrdersTx(signedOrderLeft, signedOrderRight);
+        matchOrdersTxData = getAbiEncodedTransactionData(
+            contractWrappers.exchange,
+            'matchOrders',
+            signedOrderLeft,
+            signedOrderRight,
+            signedOrderLeft.signature,
+            signedOrderRight.signature,
+        );
     });
 
     describe('decode', () => {

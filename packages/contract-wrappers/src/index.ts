@@ -23,5 +23,4 @@ export * from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
 export { CoordinatorWrapper } from './coordinator_wrapper';
-export { TransactionEncoder } from './utils/transaction_encoder';
 export { OrderStatus } from './types';
