@@ -23,6 +23,7 @@ import { ExchangeContract } from './generated-wrappers/exchange';
 import { ForwarderContract } from './generated-wrappers/forwarder';
 import { OrderValidatorContract } from './generated-wrappers/order_validator';
 
+import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
@@ -46,6 +47,11 @@ export class ContractWrappers {
      * erc721Proxy smart contract.
      */
     public erc721Proxy: ERC721ProxyContract;
+    /**
+     * An instance of the WETH9Contract class containing methods for interacting with the
+     * WETH9 smart contract.
+     */
+    public weth9: WETH9Contract;
     /**
      * An instance of the ForwarderContract class containing methods for interacting with any Forwarder smart contract.
      */
@@ -98,6 +104,7 @@ export class ContractWrappers {
                 : config.contractAddresses;
         this.erc20Proxy = new ERC20ProxyContract(contractAddresses.erc20Proxy, this.getProvider());
         this.erc721Proxy = new ERC721ProxyContract(contractAddresses.erc721Proxy, this.getProvider());
+        this.weth9 = new WETH9Contract(contractAddresses.etherToken, this.getProvider());
         this.exchange = new ExchangeContract(contractAddresses.exchange, this.getProvider());
         this.forwarder = new ForwarderContract(contractAddresses.forwarder, this.getProvider());
         this.orderValidator = new OrderValidatorContract(contractAddresses.orderValidator, this.getProvider());
@@ -117,6 +124,7 @@ export class ContractWrappers {
         this.exchange.unsubscribeAll();
         this.erc20Proxy.unsubscribeAll();
         this.erc721Proxy.unsubscribeAll();
+        this.weth9.unsubscribeAll();
     }
     /**
      * Get the provider instance currently used by contract-wrappers
