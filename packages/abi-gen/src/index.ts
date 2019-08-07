@@ -154,10 +154,14 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper('tupleDefinitions', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
         // build an array of objects, each of which has one key, the Python
-        // name of a tuple, with a string value holding the Python
-        // definition of that tuple. Using a key-value object conveniently
+        // name of a tuple, with a string value holding the body of a Python
+        // class representing that tuple. Using a key-value object conveniently
         // filters duplicate references to the same tuple.
         const tupleBodies: { [pythonTupleName: string]: string } = {};
+        // build an array of tuple dependencies, whose format conforms to the
+        // expected input to toposort, a function to do a topological sort,
+        // which will help us declare tuples in the proper order, avoiding
+        // references to tuples that haven't been declared yet.
         const tupleDependencies: Array<[string, string]> = [];
         for (const abi of abis) {
             let parameters: DataItem[] = [];
@@ -183,13 +187,21 @@ function registerPythonHelpers(): void {
                 utils.extractTuples(parameter, tupleBodies, tupleDependencies);
             }
         }
+        // build up a list of tuples to declare. the order they're pushed into
+        // this array is the order they will be declared.
         const tuplesToDeclare = [];
+        // first push the ones that have dependencies
         tuplesToDeclare.push(...toposort(tupleDependencies));
+        // then push any remaining bodies (the ones that DON'T have
+        // dependencies)
         for (const pythonTupleName in tupleBodies) {
             if (!tuplesToDeclare.includes(pythonTupleName)) {
                 tuplesToDeclare.push(pythonTupleName);
             }
         }
+        // now iterate over those ordered tuples-to-declare, and prefix the
+        // corresponding class bodies with their class headers, to form full
+        // class declarations.
         const tupleDeclarations = [];
         for (const pythonTupleName of tuplesToDeclare) {
             if (tupleBodies[pythonTupleName]) {
@@ -200,6 +212,7 @@ function registerPythonHelpers(): void {
                 );
             }
         }
+        // finally, join the class declarations together for the output file
         return new Handlebars.SafeString(tupleDeclarations.join('\n\n\n'));
     });
     Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string) => {
