@@ -18,8 +18,10 @@
 
 pragma solidity ^0.5.9;
 
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinWeth is
@@ -31,20 +33,20 @@ contract MixinWeth is
         external
         payable
     {
-        require(
-            msg.sender == address(ETHER_TOKEN),
-            "DEFAULT_FUNCTION_WETH_CONTRACT_ONLY"
-        );
+        if (msg.sender != address(ETHER_TOKEN)) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.DefaultFunctionWethContractOnlyError(
+                msg.sender
+            ));
+        }
     }
 
     /// @dev Converts message call's ETH value into WETH.
     function _convertEthToWeth()
         internal
     {
-        require(
-            msg.value > 0,
-            "INVALID_MSG_VALUE"
-        );
+        if (msg.value <= 0) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.InvalidMsgValueError());
+        }
         ETHER_TOKEN.deposit.value(msg.value)();
     }
 
@@ -61,16 +63,19 @@ contract MixinWeth is
         internal
     {
         // Ensure feePercentage is less than 5%.
-        require(
-            feePercentage <= MAX_FEE_PERCENTAGE,
-            "FEE_PERCENTAGE_TOO_LARGE"
-        );
+        if (feePercentage > MAX_FEE_PERCENTAGE) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
+                feePercentage
+            ));
+        }
 
         // Ensure that no extra WETH owned by this contract has been sold.
-        require(
-            wethSold <= msg.value,
-            "OVERSOLD_WETH"
-        );
+        if (wethSold > msg.value) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.OversoldWethError(
+                wethSold,
+                msg.value
+            ));
+        }
 
         // Calculate amount of WETH that hasn't been sold.
         uint256 wethRemaining = _safeSub(msg.value, wethSold);
@@ -83,10 +88,12 @@ contract MixinWeth is
         );
 
         // Ensure fee is less than amount of WETH remaining.
-        require(
-            ethFee <= wethRemaining,
-            "INSUFFICIENT_ETH_REMAINING"
-        );
+        if (ethFee > wethRemaining) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.InsufficientEthRemainingError(
+                ethFee,
+                wethRemaining
+            ));
+        }
 
         // Do nothing if no WETH remaining
         if (wethRemaining > 0) {

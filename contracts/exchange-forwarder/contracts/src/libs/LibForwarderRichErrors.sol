@@ -19,15 +19,21 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "./interfaces/IExchangeRichErrors.sol";
 
 
-library LibExchangeRichErrors {
+library LibForwarderRichErrors {
 
-    // bytes4(keccak256("AssetProxyError(bytes4)"))
-    bytes4 internal constant ASEST_PROXY_ERROR_SELECTOR =
-        0xaa3ff166;
+    // bytes4(keccak256("UnregisteredAssetProxyError()"))
+    bytes4 internal constant UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR =
+        0xf3b96b8d;
+
+    // bytes4(keccak256("UnregisteredAssetProxyError()"))
+    bytes internal constant UNREGISTERED_ASSET_PROXY_ERROR =
+        hex"f3b96b8d";
+
+    // bytes4(keccak256("UnsupportedAssetProxyError(bytes4)"))
+    bytes4 internal constant UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR =
+        0x7996a271;
 
     // bytes4(keccak256("CompleteFillFailedError(uint256,uint256)"))
     bytes4 internal constant COMPLETE_FILL_FAILED_ERROR_SELECTOR =
@@ -53,6 +59,10 @@ library LibExchangeRichErrors {
     bytes4 internal constant TRANSFER_FAILED_ERROR_SELECTOR =
         0x570f1df4;
 
+    // bytes4(keccak256("TransferFailedError()"))
+    bytes internal constant TRANSFER_FAILED_ERROR =
+        hex"570f1df4";
+
     // bytes4(keccak256("DefaultFunctionWethContractOnlyError(address)"))
     bytes4 internal constant DEFAULT_FUNCTION_WETH_CONTRACT_ONLY_ERROR_SELECTOR =
         0x08b18698;
@@ -61,13 +71,24 @@ library LibExchangeRichErrors {
     bytes4 internal constant INVALID_MSG_VALUE_ERROR_SELECTOR =
         0xb0658a43;
 
+    // bytes4(keccak256("InvalidMsgValueError()"))
+    bytes internal constant INVALID_MSG_VALUE_ERROR =
+        hex"b0658a43";
+
     // bytes4(keccak256("InvalidErc721AmountError(uint256)"))
     bytes4 internal constant INVALID_ERC721_AMOUNT_ERROR_SELECTOR =
         0x27ed87bf;
 
     // solhint-disable func-name-mixedcase
-    function AssetProxyError(
-        IForwarderRichErrors.AssetProxyErrorCodes errorCode,
+    function UnregisteredAssetProxyError()
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return UNREGISTERED_ASSET_PROXY_ERROR;
+    }
+
+    function UnsupportedAssetProxyError(
         bytes4 proxyId
     )
         internal
@@ -75,7 +96,7 @@ library LibExchangeRichErrors {
         returns (bytes memory)
     {
         return abi.encodeWithSelector(
-            ASSET_PROXY_ERROR_SELECTOR,
+            UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR,
             proxyId
         );
     }
@@ -158,7 +179,7 @@ library LibExchangeRichErrors {
         pure
         returns (bytes memory)
     {
-        return TRANSFER_FAILED_ERROR_SELECTOR;
+        return TRANSFER_FAILED_ERROR;
     }
 
     function DefaultFunctionWethContractOnlyError(
@@ -179,7 +200,7 @@ library LibExchangeRichErrors {
         pure
         returns (bytes memory)
     {
-        return INVALID_MSG_VALUE_ERROR_SELECTOR;
+        return INVALID_MSG_VALUE_ERROR;
     }
 
     function InvalidErc721AmountError(

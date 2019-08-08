@@ -19,11 +19,12 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./libs/LibConstants.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts/exchange/contracts/src/interfaces/IExchange.sol";
+import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinExchangeWrapper is
@@ -98,10 +99,12 @@ contract MixinExchangeWrapper is
         uint256 ordersLength = orders.length;
 
         for (uint256 i = 0; i != ordersLength; i++) {
-            require(
-                orders[i].makerAssetData.equals(orders[0].makerAssetData),
-                "MAKER_ASSET_MISMATCH"
-            );
+            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
+                LibRichErrors._rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                    orders[0].makerAssetData,
+                    orders[i].makerAssetData
+                ));
+            }
 
             // The remaining amount of WETH to sell
             uint256 remainingTakerAssetFillAmount = _safeSub(
@@ -189,10 +192,12 @@ contract MixinExchangeWrapper is
     {
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
-            require(
-                orders[i].makerAssetData.equals(orders[0].makerAssetData),
-                "MAKER_ASSET_MISMATCH"
-            );
+            if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
+                LibRichErrors._rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                    orders[0].makerAssetData,
+                    orders[i].makerAssetData
+                ));
+            }
 
             // Calculate the remaining amount of takerAsset to sell
             uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(

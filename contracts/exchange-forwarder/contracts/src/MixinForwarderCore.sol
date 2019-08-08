@@ -20,10 +20,12 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
 import "./interfaces/IForwarderCore.sol";
 import "./MixinAssets.sol";
@@ -48,10 +50,9 @@ contract MixinForwarderCore is
         public
     {
         address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
-        require(
-            proxyAddress != address(0),
-            "UNREGISTERED_ASSET_PROXY"
-        );
+        if (proxyAddress == address(0)) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+        }
         ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
     }
 
@@ -112,7 +113,7 @@ contract MixinForwarderCore is
 
     /// @dev Attempt to fill makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
     ///      The Forwarder may spend some amount of the makerAsset filled to pay takerFees where
-    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees). 
+    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
     /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.

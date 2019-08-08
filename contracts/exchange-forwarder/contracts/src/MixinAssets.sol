@@ -19,10 +19,12 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-erc721/contracts/src/interfaces/IERC721Token.sol";
 import "./libs/LibConstants.sol";
+import "./libs/LibForwarderRichErrors.sol";
 import "./interfaces/IAssets.sol";
 
 
@@ -63,10 +65,9 @@ contract MixinAssets is
         // For now we only care about ERC20, since percentage fees on ERC721 tokens are invalid.
         if (proxyId == ERC20_DATA_ID) {
             address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
-            require(
-                proxyAddress != address(0),
-                "UNREGISTERED_ASSET_PROXY"
-            );
+            if (proxyAddress == address(0)) {
+                LibRichErrors._rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+            }
             IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
             if (assetToken.allowance(address(this), proxyAddress) != MAX_UINT) {
                 assetToken.approve(proxyAddress, MAX_UINT);
@@ -90,7 +91,9 @@ contract MixinAssets is
         } else if (proxyId == ERC721_DATA_ID) {
             _transferERC721Token(assetData, amount);
         } else {
-            revert("UNSUPPORTED_ASSET_PROXY");
+            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
+                proxyId
+            ));
         }
     }
 
@@ -113,10 +116,9 @@ contract MixinAssets is
             msg.sender,
             amount
         ));
-        require(
-            success,
-            "TRANSFER_FAILED"
-        );
+        if (!success) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.TransferFailedError());
+        }
 
         // Check return data.
         // If there is no return data, we assume the token incorrectly
@@ -134,10 +136,9 @@ contract MixinAssets is
                 }
             }
         }
-        require(
-            success,
-            "TRANSFER_FAILED"
-        );
+        if (!success) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.TransferFailedError());
+        }
     }
 
     /// @dev Decodes ERC721 assetData and transfers given amount to sender.
@@ -149,10 +150,11 @@ contract MixinAssets is
     )
         internal
     {
-        require(
-            amount == 1,
-            "INVALID_AMOUNT"
-        );
+        if (amount != 1) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.InvalidErc721AmountError(
+                amount
+            ));
+        }
         // Decode asset data.
         address token = assetData.readAddress(16);
         uint256 tokenId = assetData.readUint256(36);
