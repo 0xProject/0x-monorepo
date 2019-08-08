@@ -22,8 +22,8 @@ function processContentTree(tree: Node[], url: string, meta: Meta, index: any, s
         const formattedTextNodes = formatTextNodes(textNodes);
         const content = getContent(meta, url, formattedTextNodes);
 
-        // setIndexSettings(index, settings);
-        // pushObjectsToAlgolia(index, content);
+        setIndexSettings(index, settings);
+        pushObjectsToAlgolia(index, content);
     }
 }
 
@@ -84,12 +84,11 @@ function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
         const titleSlug = slugify(meta.title, { lower: true });
-        const sectionUrl = node.hash ? `${url}#${node.hash}` : url; // If we have the hash, append it to url, if not - use the base url
+        const formattedUrl = node.hash ? `${url}#${node.hash}` : url; // If we have the hash, append it to url, if not - use the base url
 
         content.push({
             ...meta,
-            url,
-            sectionUrl,
+            url: formattedUrl,
             textContent: node.textContent,
             id: titleSlug,
             objectID: `${titleSlug}_${index}`,
@@ -168,7 +167,6 @@ interface Meta {
 
 interface Content extends Meta {
     url: string;
-    sectionUrl: string;
     textContent: string;
     id: string;
     objectID: string;

@@ -1,5 +1,6 @@
+import * as _ from 'lodash';
 import * as React from 'react';
-import { match } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router-dom';
 
 import { MDXProvider } from '@mdx-js/react';
 
@@ -29,11 +30,9 @@ import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 import { Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
+import { docs } from 'ts/style/docs';
 
-interface IDocsPageProps {
-    match: match<any>;
-}
-
+interface IDocsPageProps extends RouteComponentProps<any> {}
 interface IDocsPageState {
     Component: React.ReactNode;
     contents: IContents[];
@@ -42,7 +41,7 @@ interface IDocsPageState {
     wasNotFound: boolean;
 }
 
-export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
+export const DocsPage: React.FC<IDocsPageProps> = props => {
     const [state, setState] = React.useState<IDocsPageState>({
         Component: null,
         contents: [],
@@ -53,14 +52,12 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
 
     const { Component, contents, title, subtitle, wasNotFound } = state;
     const isLoading = !Component && !wasNotFound;
-    const { page, type } = match.params;
+    const { page, type } = props.match.params;
+    const { hash } = props.location;
 
-    React.useEffect(
-        () => {
-            void loadPageAsync(page, type);
-        },
-        [page, type],
-    );
+    React.useEffect(() => {
+        void loadPageAsync(page, type);
+    }, [page, type]);
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
@@ -73,8 +70,40 @@ export const DocsPage: React.FC<IDocsPageProps> = ({ match }) => {
                 subtitle: component.meta.subtitle,
                 title: component.meta.title,
             });
+
+            if (hash) {
+                await waitForImages(); // images will push down content when loading, so we wait...
+                scrollToHash(hash); // ...and then scroll to hash when ready not to push the content down
+            }
         } catch (error) {
             setState({ ...state, title: '404', wasNotFound: true });
+        }
+    };
+
+    const waitForImages = async () => {
+        const images = document.querySelectorAll('img');
+        return Promise.all(
+            _.compact(
+                _.map(images, (img: HTMLImageElement) => {
+                    if (!img.complete) {
+                        return new Promise(resolve => {
+                            img.addEventListener('load', () => resolve());
+                        });
+                    }
+                    return false;
+                }),
+            ),
+        );
+    };
+
+    const scrollToHash = (hash: string): void => {
+        const element = document.getElementById(hash.substring(1));
+        if (element) {
+            const bodyRect = document.body.getBoundingClientRect();
+            const elemRect = element.getBoundingClientRect();
+            const elemOffset = elemRect.top - bodyRect.top;
+            const totalOffset = elemOffset - docs.headerOffset;
+            window.scrollTo(0, totalOffset);
         }
     };
 
