@@ -1,6 +1,6 @@
 {
     "name": "@0x/json-schemas",
-    "version": "3.1.12",
+    "version": "3.1.13",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,7 +47,7 @@
     },
     "devDependencies": {
         "@0x/tslint-config": "^3.0.1",
-        "@0x/utils": "^4.4.2",
+        "@0x/utils": "^4.5.0",
         "@types/lodash.foreach": "^4.5.3",
         "@types/lodash.values": "^4.3.3",
         "@types/mocha": "^5.2.7",
