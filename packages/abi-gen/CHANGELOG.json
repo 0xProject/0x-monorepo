@@ -10,7 +10,8 @@
                 "note": "Added tests for`getABIDecodedTransactionData` and `getABIDecodedReturnData` in contract wrappers.",
                 "pr": 2018
             }
-        ]
+        ],
+        "timestamp": 1565288549
     },
     {
         "version": "4.0.0",

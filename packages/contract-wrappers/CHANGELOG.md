@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v11.0.0 - _August 8, 2019_
+
+    * Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/2040 (#2037)
+
 ## v10.1.0 - _July 31, 2019_
 
     * Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies. (#1995)
