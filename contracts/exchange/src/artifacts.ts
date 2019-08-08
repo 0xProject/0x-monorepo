@@ -21,7 +21,6 @@ import * as ReentrancyTester from '../generated-artifacts/ReentrancyTester.json'
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
-import * as TestMatchOrders from '../generated-artifacts/TestMatchOrders.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
@@ -40,11 +39,14 @@ export const artifacts = {
     IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
     IsolatedExchange: IsolatedExchange as ContractArtifact,
+<<<<<<< HEAD
     ReentrancyTester: ReentrancyTester as ContractArtifact,
+=======
+    ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
+>>>>>>> Removed unused reference functions
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
-    TestMatchOrders: TestMatchOrders as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
     TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
