@@ -183,14 +183,13 @@ jobs:
         docker:
             - image: circleci/python
             - image: 0xorg/ganache-cli:2.2.2
-            - image: 0xorg/launch-kit-backend
+            - image: 0xorg/launch-kit-backend:74bcc39
               environment:
                   RPC_URL: http://localhost:8545
                   NETWORK_ID: 50
                   WHITELIST_ALL_TOKENS: True
               command: |
-                    apk add curl
-                    sh -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
+                  sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -212,51 +211,50 @@ jobs:
                       - '/usr/local/lib/python3.7/site-packages'
             - run:
                   command: |
-                      cd python-packages
-                      ./parallel coverage run setup.py test
-                      ./build_docs
-            - save_cache:
-                  key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/contract_addresses/.coverage
-            - save_cache:
-                  key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/contract_artifacts/.coverage
-            - save_cache:
-                  key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/contract_demo/.coverage
-            - save_cache:
-                  key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/json_schemas/.coverage
-            - save_cache:
-                  key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/python-packages/order_utils/.coverage
+                      cd python-packages/sra_client
+                      coverage run setup.py test
+            # - save_cache:
+            #       key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/python-packages/contract_addresses/.coverage
+            # - save_cache:
+            #       key: coverage-python-contract-artifacts-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/python-packages/contract_artifacts/.coverage
+            # - save_cache:
+            #       key: coverage-python-contract-demo-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/python-packages/contract_demo/.coverage
+            # - save_cache:
+            #       key: coverage-python-json-schemas-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/python-packages/json_schemas/.coverage
+            # - save_cache:
+            #       key: coverage-python-order-utils-{{ .Environment.CIRCLE_SHA1 }}
+            #       paths:
+            #           - ~/repo/python-packages/order_utils/.coverage
             - save_cache:
                   key: coverage-python-sra-client-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/python-packages/sra_client/.coverage
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_addresses/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_artifacts/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/contract_wrappers/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/json_schemas/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/middlewares/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/order_utils/build
-            - store_artifacts:
-                  path: ~/repo/python-packages/sra_client/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/erc20_token/__init__.py
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/contract_wrappers/src/zero_ex/contract_wrappers/exchange/__init__.py
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/contract_addresses/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/contract_artifacts/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/contract_wrappers/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/json_schemas/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/middlewares/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/order_utils/build
+            # - store_artifacts:
+            #       path: ~/repo/python-packages/sra_client/build
     test-rest-python:
         working_directory: ~/repo
         docker:
@@ -396,7 +394,7 @@ workflows:
     version: 2
     main:
         jobs:
-            - build
+            # - build
             # - build-website:
             #       requires:
             #           - build
@@ -427,8 +425,9 @@ workflows:
             # - static-tests-python:
             #       requires:
             #           - test-python
-            - test-python:
-                  requires:
-                      - build
+            - test-python
+            # - test-python:
+            #       requires:
+            #           - build
             # skip python tox run for now, as we don't yet have multiple test environments to support.
             #- test-rest-python
