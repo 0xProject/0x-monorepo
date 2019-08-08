@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v5.3.1 - _August 8, 2019_
-
-    * Dependencies updated
-
 ## v5.3.0 - _July 31, 2019_
 
     * Updated interface to `deployFrom0xArtifactAsync` to include log decode dependencies. (#1995)

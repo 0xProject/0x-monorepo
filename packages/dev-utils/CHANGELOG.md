@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v2.3.0 - _August 8, 2019_
-
-    * Move `tokenUtils` here from `@0x/contract-wrappers` (#2037)
-
 ## v2.2.6 - _July 31, 2019_
 
     * Dependencies updated

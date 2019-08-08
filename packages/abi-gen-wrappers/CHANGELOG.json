@@ -6,8 +6,7 @@
                 "note": "Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
                 "pr": 2018
             }
-        ],
-        "timestamp": 1565288549
+        ]
     },
     {
         "version": "5.1.0",
