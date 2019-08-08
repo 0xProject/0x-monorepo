@@ -12,8 +12,6 @@ import {
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './constants';
-
 export class LogDecoder {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _abiDecoder: AbiDecoder;

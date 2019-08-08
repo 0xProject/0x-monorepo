@@ -97,7 +97,7 @@ describe('LibTransactionDecoder', () => {
         });
     }
 
-    for (const func of ['marketBuyOrders', 'marketSellOrders', ]) {
+    for (const func of ['marketBuyOrders', 'marketSellOrders']) {
         const input = (exchangeInterface as any)[func].getABIEncodedTransactionData(
             [order, order],
             takerAssetFillAmount,

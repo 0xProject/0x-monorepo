@@ -19,7 +19,7 @@ blockchainTests.resets('Reentrancy Tests', env => {
                 !method.constant &&
                 !_.includes(['view', 'pure'], method.stateMutability)
             ) {
-                if (_.includes(TestConstants.REENTRANT_FUNCTIONS, method.name)) {
+                if (_.includes(TestConstants.REENTRANT_FUNCTIONS as string[], method.name)) {
                     reentrantFunctions.push(method);
                 } else {
                     nonReentrantFunctions.push(method);

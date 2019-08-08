@@ -4,11 +4,11 @@ export const constants = {
     // These are functions not secured by the `nonReentrant`, directly or
     // indirectly (by calling a function that has the modifier).
     REENTRANT_FUNCTIONS: [
-        'batchExecuteTransactions',
-        'executeTransaction',
-        'registerAssetProxy',
-        'simulateDispatchTransferFromCalls',
-        'transferOwnership',
+        ExchangeFunctionName.BatchExecuteTransactions,
+        ExchangeFunctionName.ExecuteTransaction,
+        ExchangeFunctionName.RegisterAssetProxy,
+        ExchangeFunctionName.SimulateDispatchTransferFromCalls,
+        ExchangeFunctionName.TransferOwnership,
     ],
     SINGLE_FILL_FN_NAMES: [
         ExchangeFunctionName.FillOrder,
