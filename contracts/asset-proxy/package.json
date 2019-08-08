@@ -74,6 +74,7 @@
         "@0x/contracts-erc721": "^2.1.9",
         "@0x/contracts-utils": "^3.1.9",
         "@0x/order-utils": "^8.2.2",
+        "@0x/subproviders": "^5.0.1",
         "@0x/types": "^2.4.0",
         "@0x/typescript-typings": "^4.2.3",
         "@0x/utils": "^4.4.0",

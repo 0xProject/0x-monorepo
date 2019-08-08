@@ -69,7 +69,9 @@
     },
     "dependencies": {
         "@0x/base-contract": "^5.0.5",
+        "@0x/contracts-test-utils": "3.1.10",
         "@0x/contracts-utils": "^3.1.1",
+        "@0x/subproviders": "^5.0.1",
         "@0x/types": "^2.2.2",
         "@0x/typescript-typings": "^4.2.2",
         "@0x/utils": "^4.3.1",
