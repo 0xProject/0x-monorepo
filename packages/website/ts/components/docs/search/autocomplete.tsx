@@ -17,6 +17,7 @@ interface IHit {
     isCommunity?: boolean;
     isFeatured?: boolean;
     objectID: string;
+    sectionUrl: string;
     tags?: string[];
     textContent: string;
     title: string;
