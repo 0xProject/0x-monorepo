@@ -315,7 +315,8 @@ Now the taker is ready to trade.
 Recall that in a previous example we selected a specific order from the order
 book.  Now let's have the taker fill it:
 
->>> from zero_ex.contract_wrappers import Exchange, TxParams
+>>> from zero_ex.contract_wrappers import TxParams
+>>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> from zero_ex.order_utils import Order
 >>> exchange = Exchange(
 ...     provider=eth_node,

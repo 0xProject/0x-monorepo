@@ -9,18 +9,18 @@ Python zero_ex.contract_wrappers
    :members:
 
 
-zero_ex.contract_wrappers.Exchange
+zero_ex.contract_wrappers.exchange
 ==================================
 
-.. autoclass:: zero_ex.contract_wrappers.Exchange
+.. automodule:: zero_ex.contract_wrappers.exchange
    :members:
    :special-members:
 
 
-zero_ex.contract_wrappers.ERC20Token
-====================================
+zero_ex.contract_wrappers.erc20_token
+=====================================
 
-.. autoclass:: zero_ex.contract_wrappers.ERC20Token
+.. automodule:: zero_ex.contract_wrappers.erc20_token
    :members:
    :special-members:
 
