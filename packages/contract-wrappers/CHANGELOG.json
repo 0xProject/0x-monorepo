@@ -6,7 +6,8 @@
                 "note": "Use @0x/abi-gen to generate wrappers. For a full list of changes, see https://github.com/0xProject/0x-monorepo/issues/2040",
                 "pr": 2037
             }
-        ]
+        ],
+        "timestamp": 1565281154
     },
     {
         "version": "10.1.0",

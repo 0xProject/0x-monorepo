@@ -24,7 +24,7 @@ export const dockerHubUtils = {
             throw new Error(
                 `DockerHub user login failed (status code: ${
                     response.status
-                }). Make sure you have environment variables 'DOCKER_USERNAME; and 'DOCKER_PASS' set`,
+                }). Make sure you have environment variables 'DOCKER_USERNAME; and 'DOCKER_PASS' set [ ${JSON.stringify(payload)}]`,
             );
         }
         const respPayload = await response.json();

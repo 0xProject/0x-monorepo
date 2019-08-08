@@ -5,6 +5,10 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v1.0.1 - _August 8, 2019_
+
+    * Dependencies updated
+
 ## v1.0.0 - _July 31, 2019_
 
     * Added optimization utils to consumer output (#1988)
