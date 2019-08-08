@@ -77,7 +77,7 @@
         "graceful-fs": "4.1.15"
     },
     "devDependencies": {
-        "@0x-lerna-fork/lerna": "3.16.9",
+        "@0x-lerna-fork/lerna": "3.16.10",
         "@0xproject/npm-cli-login": "^0.0.11",
         "async-child-process": "^1.1.1",
         "bundlewatch": "^0.2.1",

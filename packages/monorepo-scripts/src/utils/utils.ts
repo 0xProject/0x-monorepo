@@ -77,17 +77,16 @@ export const utils = {
     },
     async getLernaUpdatedPackagesAsync(shouldIncludePrivate: boolean): Promise<UpdatedPackage[]> {
         try {
-            const result = await execAsync(`${constants.lernaExecutable} updated --json`, {
-                cwd: constants.monorepoRootPath,
-            });
+            const result = await execAsync(
+                `${constants.lernaExecutable} changed --json ${shouldIncludePrivate ? '--all' : ''}`,
+                {
+                    cwd: constants.monorepoRootPath,
+                },
+            );
             if (result.stdout === '') {
                 return [];
             }
             const updatedPackages = JSON.parse(result.stdout);
-            if (!shouldIncludePrivate) {
-                const updatedPublicPackages = _.filter(updatedPackages, updatedPackage => !updatedPackage.private);
-                return updatedPublicPackages;
-            }
             return updatedPackages;
         } catch (err) {
             return [];
