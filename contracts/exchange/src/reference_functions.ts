@@ -12,7 +12,10 @@ const { safeMul, safeSub } = UtilsReferenceFunctions;
  * Ensure that there is a profitable spread.
  */
 export function assertValidMatch(leftOrder: Order, rightOrder: Order): void {
-    if (safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) < safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)) {
+    if (
+        safeMul(leftOrder.makerAssetAmount, rightOrder.makerAssetAmount) <
+        safeMul(leftOrder.takerAssetAmount, rightOrder.takerAssetAmount)
+    ) {
         const orderHashHexLeft = orderHashUtils.getOrderHashHex(leftOrder);
         const orderHashHexRight = orderHashUtils.getOrderHashHex(rightOrder);
         throw new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
@@ -93,11 +96,7 @@ export function calculateMatchedFillResults(
     }
 
     // Compute the fees from the order matching
-    calculateFees(
-        leftOrder,
-        rightOrder,
-        matchedFillResults,
-    );
+    calculateFees(leftOrder, rightOrder, matchedFillResults);
 
     // Calculate the profit from the matching
     matchedFillResults.profitInLeftMakerAsset = safeSub(
@@ -216,21 +215,13 @@ function getRemainingFillAmounts(
     rightOrder: OrderWithoutDomain,
     leftOrderTakerAssetFilledAmount: BigNumber,
     rightOrderTakerAssetFilledAmount: BigNumber,
-): [ BigNumber, BigNumber, BigNumber, BigNumber ] {
+): [BigNumber, BigNumber, BigNumber, BigNumber] {
     const leftTakerAssetRemaining = safeSub(leftOrder.takerAssetAmount, leftOrderTakerAssetFilledAmount);
     const rightTakerAssetRemaining = safeSub(rightOrder.takerAssetAmount, rightOrderTakerAssetFilledAmount);
     return [
-        safeGetPartialAmountFloor(
-            leftOrder.makerAssetAmount,
-            leftOrder.takerAssetAmount,
-            leftTakerAssetRemaining,
-        ),
+        safeGetPartialAmountFloor(leftOrder.makerAssetAmount, leftOrder.takerAssetAmount, leftTakerAssetRemaining),
         leftTakerAssetRemaining,
-        safeGetPartialAmountFloor(
-            rightOrder.makerAssetAmount,
-            rightOrder.takerAssetAmount,
-            rightTakerAssetRemaining,
-        ),
+        safeGetPartialAmountFloor(rightOrder.makerAssetAmount, rightOrder.takerAssetAmount, rightTakerAssetRemaining),
         rightTakerAssetRemaining,
     ];
 }
