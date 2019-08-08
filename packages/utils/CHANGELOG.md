@@ -5,6 +5,11 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v4.5.0 - _August 8, 2019_
+
+    * Updated to include `strictDecode` for decoding method arguments (#2018)
+    * Throw exception when trying to decode beyond boundaries of calldata (#2018)
+
 ## v4.4.2 - _July 31, 2019_
 
     * Dependencies updated
