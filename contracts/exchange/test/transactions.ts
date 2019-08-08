@@ -1,6 +1,6 @@
 // tslint:disable: max-file-line-count
 import { ERC20ProxyContract, ERC20Wrapper } from '@0x/contracts-asset-proxy';
-import { DummyERC20TokenContract } from '@0x/contracts-erc20';
+import { artifacts as erc20Artifacts, DummyERC20TokenContract } from '@0x/contracts-erc20';
 import {
     blockchainTests,
     constants,
@@ -25,7 +25,7 @@ import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
 import {
-    artifacts,
+    artifacts as localArtifacts,
     constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeCancelUpToEventArgs,
@@ -39,6 +39,8 @@ import {
     ExchangeWrapperContract,
     WhitelistContract,
 } from '../src/';
+
+const artifacts = { ...erc20Artifacts, ...localArtifacts };
 
 // tslint:disable:no-unnecessary-type-assertion
 blockchainTests.resets('Exchange transactions', env => {

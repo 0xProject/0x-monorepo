@@ -45,10 +45,7 @@ export class LogDecoder {
         return logWithDecodedArgsOrLog;
     }
     public async getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const receipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
-            txHash,
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        const receipt = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return this.decodeReceiptLogs(receipt);
     }
     public decodeReceiptLogs(receipt: TransactionReceipt): TransactionReceiptWithDecodedLogs {
