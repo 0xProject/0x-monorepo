@@ -137,7 +137,15 @@ class PublicAddOneMethod(ContractMethod):
 class TestLibDummy:
     """Wrapper class for TestLibDummy Solidity contract."""
     public_add_constant: PublicAddConstantMethod
+    """Constructor-initialized instance of
+    :class:`PublicAddConstantMethod`.
+    """
+
     public_add_one: PublicAddOneMethod
+    """Constructor-initialized instance of
+    :class:`PublicAddOneMethod`.
+    """
+
 
     def __init__(
         self,
