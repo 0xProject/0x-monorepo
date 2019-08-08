@@ -56,7 +56,7 @@
             },
             {
                 "note": "Add `ExchangeRevertErrors.SignatureErrorCode.InvalidSigner`.",
-                "pr": "TODO"
+                "pr": 2042
             }
         ]
     },
