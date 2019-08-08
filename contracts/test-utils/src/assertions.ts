@@ -1,5 +1,5 @@
 import { RevertReason } from '@0x/types';
-import { logUtils } from '@0x/utils';
+import { logUtils, RevertError } from '@0x/utils';
 import { NodeType } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { TransactionReceipt, TransactionReceiptStatus, TransactionReceiptWithDecodedLogs } from 'ethereum-types';
@@ -90,7 +90,7 @@ export async function expectInsufficientFundsAsync<T>(p: Promise<T>): Promise<vo
  * @returns a new Promise which will reject if the conditions are not met and
  * otherwise resolve with no value.
  */
-export async function expectTransactionFailedAsync(p: sendTransactionResult, reason: RevertReason): Promise<void> {
+export async function expectTransactionFailedAsync(p: sendTransactionResult, reason: RevertReason | RevertError): Promise<void> {
     // HACK(albrow): This dummy `catch` should not be necessary, but if you
     // remove it, there is an uncaught exception and the Node process will
     // forcibly exit. It's possible this is a false positive in
@@ -184,7 +184,7 @@ export async function expectContractCallFailedWithoutReasonAsync<T>(p: Promise<T
  */
 export async function expectContractCreationFailedAsync<T>(
     p: sendTransactionResult,
-    reason: RevertReason,
+    reason: RevertReason | RevertError,
 ): Promise<void> {
     return expectTransactionFailedAsync(p, reason);
 }

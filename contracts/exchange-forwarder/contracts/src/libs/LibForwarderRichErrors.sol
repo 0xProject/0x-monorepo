@@ -24,10 +24,6 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 library LibForwarderRichErrors {
 
     // bytes4(keccak256("UnregisteredAssetProxyError()"))
-    bytes4 internal constant UNREGISTERED_ASSET_PROXY_ERROR_SELECTOR =
-        0xf3b96b8d;
-
-    // bytes4(keccak256("UnregisteredAssetProxyError()"))
     bytes internal constant UNREGISTERED_ASSET_PROXY_ERROR =
         hex"f3b96b8d";
 
@@ -35,9 +31,9 @@ library LibForwarderRichErrors {
     bytes4 internal constant UNSUPPORTED_ASSET_PROXY_ERROR_SELECTOR =
         0x7996a271;
 
-    // bytes4(keccak256("CompleteFillFailedError(uint256,uint256)"))
-    bytes4 internal constant COMPLETE_FILL_FAILED_ERROR_SELECTOR =
-        0x7675a605;
+    // bytes4(keccak256("CompleteFillFailedError()"))
+    bytes internal constant COMPLETE_FILL_FAILED_ERROR =
+        hex"4bcb2058";
 
     // bytes4(keccak256("MakerAssetMismatchError(bytes,bytes)"))
     bytes4 internal constant MAKER_ASSET_MISMATCH_ERROR_SELECTOR =
@@ -47,17 +43,13 @@ library LibForwarderRichErrors {
     bytes4 internal constant FEE_PERCENTAGE_TOO_LARGE_ERROR_SELECTOR =
         0x1174fb80;
 
-    // bytes4(keccak256("InsufficientEthRemainingError(uint256,uint256)"))
-    bytes4 internal constant INSUFFICIENT_ETH_REMAINING_ERROR_SELECTOR =
-        0x01b718a6;
+    // bytes4(keccak256("InsufficientEthForFeeError()"))
+    bytes internal constant INSUFFICIENT_ETH_FOR_FEE_ERROR =
+        hex"54a53d9e";
 
     // bytes4(keccak256("OversoldWethError(uint256,uint256)"))
     bytes4 internal constant OVERSOLD_WETH_ERROR_SELECTOR =
         0x5cc555c8;
-
-    // bytes4(keccak256("TransferFailedError()"))
-    bytes4 internal constant TRANSFER_FAILED_ERROR_SELECTOR =
-        0x570f1df4;
 
     // bytes4(keccak256("TransferFailedError()"))
     bytes internal constant TRANSFER_FAILED_ERROR =
@@ -101,19 +93,12 @@ library LibForwarderRichErrors {
         );
     }
 
-    function CompleteFillFailedError(
-        uint256 desiredFillAmount,
-        uint256 actualFillAmount
-    )
+    function CompleteFillFailedError()
         internal
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(
-            COMPLETE_FILL_FAILED_ERROR_SELECTOR,
-            desiredFillAmount,
-            actualFillAmount
-        );
+        return COMPLETE_FILL_FAILED_ERROR;
     }
 
     function MakerAssetMismatchError(
@@ -144,19 +129,12 @@ library LibForwarderRichErrors {
         );
     }
 
-    function InsufficientEthRemainingError(
-        uint256 ethFee,
-        uint256 wethRemaining
-    )
+    function InsufficientEthForFeeError()
         internal
         pure
         returns (bytes memory)
     {
-        return abi.encodeWithSelector(
-            INSUFFICIENT_ETH_REMAINING_ERROR_SELECTOR,
-            ethFee,
-            wethRemaining
-        );
+        return INSUFFICIENT_ETH_FOR_FEE_ERROR;
     }
 
     function OversoldWethError(

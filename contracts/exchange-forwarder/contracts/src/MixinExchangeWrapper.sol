@@ -245,10 +245,10 @@ contract MixinExchangeWrapper is
             }
         }
 
-        require(
-            totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount,
-            "COMPLETE_FILL_FAILED"
-        );
+        if (totalFillResults.makerAssetFilledAmount < makerAssetFillAmount) {
+            LibRichErrors._rrevert(LibForwarderRichErrors.CompleteFillFailedError());
+        }
+
         return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
     }
 }

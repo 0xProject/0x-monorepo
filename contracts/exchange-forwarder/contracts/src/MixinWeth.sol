@@ -89,10 +89,7 @@ contract MixinWeth is
 
         // Ensure fee is less than amount of WETH remaining.
         if (ethFee > wethRemaining) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.InsufficientEthRemainingError(
-                ethFee,
-                wethRemaining
-            ));
+            LibRichErrors._rrevert(LibForwarderRichErrors.InsufficientEthForFeeError());
         }
 
         // Do nothing if no WETH remaining

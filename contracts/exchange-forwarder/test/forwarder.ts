@@ -14,7 +14,7 @@ import {
     web3Wrapper,
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
-import { assetDataUtils } from '@0x/order-utils';
+import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
 import { RevertReason, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -123,12 +123,12 @@ describe(ContractName.Forwarder, () => {
             feeRecipientAddress: orderFeeRecipientAddress,
             makerAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerAssetData: assetDataUtils.encodeERC20AssetData(defaultTakerAssetAddress),
-            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), DECIMALS_DEFAULT),
-            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(10), DECIMALS_DEFAULT),
+            makerAssetAmount: Web3Wrapper.toBaseUnitAmount(200, DECIMALS_DEFAULT),
+            takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, DECIMALS_DEFAULT),
             makerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
-            makerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(0), DECIMALS_DEFAULT),
+            makerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(0, DECIMALS_DEFAULT),
             domain: {
                 verifyingContractAddress: exchangeInstance.address,
                 chainId,
@@ -169,11 +169,11 @@ describe(ContractName.Forwarder, () => {
         await blockchainLifecycle.startAsync();
         orderWithoutFee = await orderFactory.newSignedOrderAsync();
         orderWithPercentageFee = await orderFactory.newSignedOrderAsync({
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
             takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
         });
         orderWithWethFee = await orderFactory.newSignedOrderAsync({
-            takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+            takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
             takerFeeAssetData: wethAssetData,
         });
     });
@@ -189,16 +189,16 @@ describe(ContractName.Forwarder, () => {
                 txDefaults,
                 new BigNumber(chainId),
             );
-            return expectContractCreationFailedAsync(
-                (ForwarderContract.deployFrom0xArtifactAsync(
-                    artifacts.Forwarder,
-                    provider,
-                    txDefaults,
-                    exchangeInstance.address,
-                    wethAssetData,
-                ) as any) as sendTransactionResult,
-                RevertReason.UnregisteredAssetProxy,
-            );
+
+            const deployForwarder = (ForwarderContract.deployFrom0xArtifactAsync(
+                artifacts.Forwarder,
+                provider,
+                txDefaults,
+                exchangeInstance.address,
+                wethAssetData,
+            ) as any) as sendTransactionResult;
+
+            expect(deployForwarder).to.revertWith(new ForwarderRevertErrors.UnregisteredAssetProxyError());
         });
     });
     describe('marketSellOrdersWithEth without extra fees', () => {
@@ -215,7 +215,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should fill multiple orders with percentage fees', async () => {
             const secondOrderWithPercentageFee = await orderFactory.newSignedOrderAsync({
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(2, DECIMALS_DEFAULT),
                 takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             });
             const orders = [orderWithPercentageFee, secondOrderWithPercentageFee];
@@ -225,7 +225,7 @@ describe(ContractName.Forwarder, () => {
             const unapprovedAsset = assetDataUtils.encodeERC20AssetData(secondErc20Token.address);
             const order = await orderFactory.newSignedOrderAsync({
                 makerAssetData: unapprovedAsset,
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(2, DECIMALS_DEFAULT),
                 takerFeeAssetData: unapprovedAsset,
             });
 
@@ -266,7 +266,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should fill multiple orders with WETH fees', async () => {
             const secondOrderWithPercentageFee = await orderFactory.newSignedOrderAsync({
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(2), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(2, DECIMALS_DEFAULT),
                 takerFeeAssetData: assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress),
             });
             const orders = [orderWithWethFee, secondOrderWithPercentageFee];
@@ -287,16 +287,26 @@ describe(ContractName.Forwarder, () => {
             expect(takerEthBalanceAfter).to.be.bignumber.equal(takerEthBalanceBefore.minus(totalEthSpent));
         });
         it('should not fill orders with different makerAssetData than the first order', async () => {
+            const firstOrderMakerAssetData = assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress);
+            const erc20SignedOrder = await orderFactory.newSignedOrderAsync({
+                makerAssetData: firstOrderMakerAssetData,
+            });
+
             const makerAssetId = erc721MakerAssetIds[0];
+            const secondOrderMakerAssetData = assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId);
             const erc721SignedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                makerAssetData: secondOrderMakerAssetData,
             });
-            const erc20SignedOrder = await orderFactory.newSignedOrderAsync();
+
             const orders = [erc20SignedOrder, erc721SignedOrder];
 
+            const revertError = new ForwarderRevertErrors.MakerAssetMismatchError(
+                firstOrderMakerAssetData,
+                secondOrderMakerAssetData,
+            );
             await forwarderTestFactory.marketSellTestAsync(orders, new BigNumber(2), erc20Token, {
-                revertReason: RevertReason.MakerAssetMismatch,
+                revertError,
             });
         });
     });
@@ -307,9 +317,14 @@ describe(ContractName.Forwarder, () => {
             });
         });
         it('should fail if the fee is set too high', async () => {
+            const forwarderFeePercentage = new BigNumber(6);
+            const revertError = new ForwarderRevertErrors.FeePercentageTooLargeError(
+                ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, forwarderFeePercentage),
+            );
+
             await forwarderTestFactory.marketSellTestAsync([orderWithoutFee], new BigNumber(0.5), erc20Token, {
-                forwarderFeePercentage: new BigNumber(6),
-                revertReason: RevertReason.FeePercentageTooLarge,
+                forwarderFeePercentage,
+                revertError,
             });
         });
     });
@@ -324,7 +339,7 @@ describe(ContractName.Forwarder, () => {
         });
         it('should buy the exact amount of makerAsset and return excess ETH', async () => {
             await forwarderTestFactory.marketBuyTestAsync([orderWithoutFee], new BigNumber(0.5), erc20Token, {
-                ethValueAdjustment: orderWithoutFee.takerAssetAmount.dividedToIntegerBy(2),
+                ethValueAdjustment: new BigNumber(2),
             });
         });
         it('should buy the exact amount of makerAsset from a single order with a WETH fee', async () => {
@@ -334,9 +349,10 @@ describe(ContractName.Forwarder, () => {
             await forwarderTestFactory.marketBuyTestAsync([orderWithPercentageFee], new BigNumber(0.5), erc20Token);
         });
         it('should revert if the amount of ETH sent is too low to fill the makerAssetAmount', async () => {
+            const revertError = new ForwarderRevertErrors.CompleteFillFailedError();
             await forwarderTestFactory.marketBuyTestAsync([orderWithoutFee], new BigNumber(0.5), erc20Token, {
-                ethValueAdjustment: new BigNumber(-1),
-                revertReason: RevertReason.CompleteFillFailed,
+                ethValueAdjustment: new BigNumber(-2),
+                revertError,
             });
         });
         it('should buy an ERC721 asset from a single order', async () => {
@@ -349,26 +365,12 @@ describe(ContractName.Forwarder, () => {
                 makerAssetId,
             });
         });
-        it('should revert if buying an ERC721 asset when later orders contain different makerAssetData', async () => {
-            const makerAssetId = erc721MakerAssetIds[0];
-            const erc721Order = await orderFactory.newSignedOrderAsync({
-                makerAssetAmount: new BigNumber(1),
-                makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-            });
-            const differentMakerAssetDataOrder = await orderFactory.newSignedOrderAsync();
-            const orders = [erc721Order, differentMakerAssetDataOrder];
-
-            await forwarderTestFactory.marketBuyTestAsync(orders, new BigNumber(2), erc721Token, {
-                makerAssetId,
-                revertReason: RevertReason.MakerAssetMismatch,
-            });
-        });
         it('should buy an ERC721 asset and pay WETH fees from a single fee order', async () => {
             const makerAssetId = erc721MakerAssetIds[0];
             const erc721orderWithWethFee = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
-                takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), DECIMALS_DEFAULT),
+                takerFee: Web3Wrapper.toBaseUnitAmount(1, DECIMALS_DEFAULT),
                 takerFeeAssetData: wethAssetData,
             });
             await forwarderTestFactory.marketBuyTestAsync([erc721orderWithWethFee], new BigNumber(1), erc721Token, {
@@ -494,16 +496,20 @@ describe(ContractName.Forwarder, () => {
             });
         });
         it('should fail if the fee is set too high', async () => {
+            const revertError = new ForwarderRevertErrors.FeePercentageTooLargeError(
+                ForwarderTestFactory.getPercentageOfValue(constants.PERCENTAGE_DENOMINATOR, new BigNumber(6)),
+            );
             await forwarderTestFactory.marketBuyTestAsync([orderWithoutFee], new BigNumber(0.5), erc20Token, {
                 forwarderFeePercentage: new BigNumber(6),
-                revertReason: RevertReason.FeePercentageTooLarge,
+                revertError,
             });
         });
         it('should fail if there is not enough ETH remaining to pay the fee', async () => {
+            const revertError = new ForwarderRevertErrors.InsufficientEthForFeeError();
             await forwarderTestFactory.marketBuyTestAsync([orderWithoutFee], new BigNumber(0.5), erc20Token, {
-                ethValueAdjustment: new BigNumber(-1),
+                ethValueAdjustment: new BigNumber(-2),
                 forwarderFeePercentage: new BigNumber(2),
-                revertReason: RevertReason.InsufficientEthRemaining,
+                revertError,
             });
         });
     });
