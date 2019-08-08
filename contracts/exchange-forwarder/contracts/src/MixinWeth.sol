@@ -55,12 +55,14 @@ contract MixinWeth is
     /// @param wethSold Amount of WETH sold when filling primary orders.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
+    /// @return Amount paid to feeRecipient as a percentage fee on the total WETH sold.
     function _transferEthFeeAndRefund(
         uint256 wethSold,
         uint256 feePercentage,
         address payable feeRecipient
     )
         internal
+        returns (uint256 ethFee)
     {
         // Ensure feePercentage is less than 5%.
         if (feePercentage > MAX_FEE_PERCENTAGE) {
@@ -81,7 +83,7 @@ contract MixinWeth is
         uint256 wethRemaining = _safeSub(msg.value, wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        uint256 ethFee = _getPartialAmountFloor(
+        ethFee = _getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSold

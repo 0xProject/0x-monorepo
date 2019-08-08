@@ -83,7 +83,7 @@ contract MixinExchangeWrapper is
     /// @param orders Array of order specifications.
     /// @param wethSellAmount Desired amount of WETH to sell.
     /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Amounts of WETH spent and makerAsset acquired by the taker.
     function _marketSellWeth(
         LibOrder.Order[] memory orders,
         uint256 wethSellAmount,
@@ -91,7 +91,6 @@ contract MixinExchangeWrapper is
     )
         internal
         returns (
-            FillResults memory totalFillResults,
             uint256 wethSpentAmount,
             uint256 makerAssetAcquiredAmount
         )
@@ -160,32 +159,29 @@ contract MixinExchangeWrapper is
                 );
             }
 
-            _addFillResults(totalFillResults, singleFillResults);
-
             // Stop execution if the entire amount of WETH has been sold
             if (wethSpentAmount >= wethSellAmount) {
                 break;
             }
         }
-        return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
+        return (wethSpentAmount, makerAssetAcquiredAmount);
     }
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is filled.
-    ///      Note that as of v3.0.0, makerAssetFillAmount is the amount of makerAsset *filled* by the Forwarder,
-    ///      some of which may be spent on order fees. The amount acquired after fees is makerAssetAcquiredAmount.
+    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is acquired.
+    ///      Note that the Forwarder may fill more than the makerAssetBuyAmount so that, after percentage fees
+    ///      are paid, the net amount acquired after fees is equal to makerAssetBuyAmount (modulo rounding).
     ///      The asset being sold by taker must always be WETH.
     /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to fill.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to fill.
     /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
+    /// @return Amounts of WETH spent and makerAsset acquired by the taker.
     function _marketBuyExactAmountWithWeth(
         LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures
     )
         internal
         returns (
-            FillResults memory totalFillResults,
             uint256 wethSpentAmount,
             uint256 makerAssetAcquiredAmount
         )
@@ -199,21 +195,22 @@ contract MixinExchangeWrapper is
                 ));
             }
 
-            // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
-                orders[i].takerAssetAmount,
-                orders[i].makerAssetAmount,
-                _safeSub(makerAssetFillAmount, makerAssetAcquiredAmount)
-            );
-
-            // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = _fillOrderNoThrow(
-                orders[i],
-                remainingTakerAssetFillAmount,
-                signatures[i]
-            );
             // Percentage fee
             if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
+                // Calculate the remaining amount of takerAsset to sell
+                uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+                    orders[i].takerAssetAmount,
+                    _safeSub(orders[i].makerAssetAmount, orders[i].takerFee),
+                    _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+                );
+
+                // Attempt to sell the remaining amount of takerAsset
+                FillResults memory singleFillResults = _fillOrderNoThrow(
+                    orders[i],
+                    remainingTakerAssetFillAmount,
+                    signatures[i]
+                );
+
                 // Subtract fee from makerAssetFilledAmount for the net amount acquired.
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
@@ -226,6 +223,20 @@ contract MixinExchangeWrapper is
                 );
             // WETH fee
             } else {
+                // Calculate the remaining amount of takerAsset to sell
+                uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+                    orders[i].takerAssetAmount,
+                    orders[i].makerAssetAmount,
+                    _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+                );
+
+                // Attempt to sell the remaining amount of takerAsset
+                FillResults memory singleFillResults = _fillOrderNoThrow(
+                    orders[i],
+                    remainingTakerAssetFillAmount,
+                    signatures[i]
+                );
+
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     singleFillResults.makerAssetFilledAmount
@@ -237,18 +248,17 @@ contract MixinExchangeWrapper is
                     _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
                 );
             }
-            _addFillResults(totalFillResults, singleFillResults);
 
-            // Stop execution if the entire amount of makerAsset has been filled
-            if (totalFillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
+            // Stop execution if the entire amount of makerAsset has been bought
+            if (makerAssetAcquiredAmount >= makerAssetBuyAmount) {
                 break;
             }
         }
 
-        if (totalFillResults.makerAssetFilledAmount < makerAssetFillAmount) {
+        if (makerAssetAcquiredAmount < makerAssetBuyAmount) {
             LibRichErrors._rrevert(LibForwarderRichErrors.CompleteFillFailedError());
         }
 
-        return (totalFillResults, wethSpentAmount, makerAssetAcquiredAmount);
+        return (wethSpentAmount, makerAssetAcquiredAmount);
     }
 }

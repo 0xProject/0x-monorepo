@@ -31,7 +31,7 @@ contract IForwarderCore {
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
@@ -40,26 +40,34 @@ contract IForwarderCore {
     )
         public
         payable
-        returns (LibFillResults.FillResults memory orderFillResults);
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
+        );
 
-    /// @dev Attempt to fill makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      The Forwarder may spend some amount of the makerAsset filled to pay takerFees where
-    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees).
+    /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can
+    ///      pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
-        returns (LibFillResults.FillResults memory orderFillResults);
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
+        );
 }

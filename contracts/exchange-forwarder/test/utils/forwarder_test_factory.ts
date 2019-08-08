@@ -164,7 +164,7 @@ export class ForwarderTestFactory {
 
         const tx = this._forwarderWrapper.marketBuyOrdersWithEthAsync(
             orders,
-            expectedResults.makerAssetFillAmount,
+            expectedResults.makerAssetFillAmount.minus(expectedResults.percentageFees),
             {
                 value: ethValue,
                 from: this._takerAddress,

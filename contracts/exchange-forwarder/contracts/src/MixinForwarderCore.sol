@@ -62,7 +62,7 @@ contract MixinForwarderCore is
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
     function marketSellOrdersWithEth(
         LibOrder.Order[] memory orders,
         bytes[] memory signatures,
@@ -71,7 +71,11 @@ contract MixinForwarderCore is
     )
         public
         payable
-        returns (FillResults memory orderFillResults)
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
+        )
     {
         // Convert ETH to WETH.
         _convertEthToWeth();
@@ -84,10 +88,7 @@ contract MixinForwarderCore is
         );
 
         // Spends up to wethSellAmount to fill orders and pay WETH order fees.
-        uint256 wethSpentAmount;
-        uint256 makerAssetAcquiredAmount;
         (
-            orderFillResults,
             wethSpentAmount,
             makerAssetAcquiredAmount
         ) = _marketSellWeth(
@@ -98,7 +99,7 @@ contract MixinForwarderCore is
 
         // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
+        ethFeePaid = _transferEthFeeAndRefund(
             wethSpentAmount,
             feePercentage,
             feeRecipient
@@ -111,48 +112,49 @@ contract MixinForwarderCore is
         );
     }
 
-    /// @dev Attempt to fill makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
-    ///      The Forwarder may spend some amount of the makerAsset filled to pay takerFees where
-    ///      takerFeeAssetData == makerAssetData (i.e. percentage fees).
+    /// @dev Attempt to buy makerAssetBuyAmount of makerAsset by selling ETH provided with transaction.
+    ///      The Forwarder may *fill* more than makerAssetBuyAmount of the makerAsset so that it can
+    ///      pay takerFees where takerFeeAssetData == makerAssetData (i.e. percentage fees).
     ///      Any ETH not spent will be refunded to sender.
     /// @param orders Array of order specifications used containing desired makerAsset and WETH as takerAsset.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+    /// @param makerAssetBuyAmount Desired amount of makerAsset to purchase.
     /// @param signatures Proofs that orders have been created by makers.
     /// @param feePercentage Percentage of WETH sold that will payed as fee to forwarding contract feeRecipient.
     /// @param feeRecipient Address that will receive ETH when orders are filled.
-    /// @return Amounts filled and fees paid by maker and taker for both sets of orders.
+    /// @return Amounts of WETH spent, makerAsset acquired, and forwarder fees paid for the given set of orders.
     function marketBuyOrdersWithEth(
         LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
+        uint256 makerAssetBuyAmount,
         bytes[] memory signatures,
         uint256 feePercentage,
         address payable feeRecipient
     )
         public
         payable
-        returns (FillResults memory orderFillResults)
+        returns (
+            uint256 wethSpentAmount,
+            uint256 makerAssetAcquiredAmount,
+            uint256 ethFeePaid
+        )
     {
         // Convert ETH to WETH.
         _convertEthToWeth();
 
-        // Attempt to fill the desired amount of makerAsset. Note that makerAssetAcquiredAmount < makerAssetFillAmount
+        // Attempt to fill the desired amount of makerAsset. Note that makerAssetAcquiredAmount < makerAssetBuyAmount
         // if any of the orders filled have an takerFee denominated in makerAsset, since these fees will be paid out
         // from the Forwarder's temporary makerAsset balance.
-        uint256 wethSpentAmount;
-        uint256 makerAssetAcquiredAmount;
         (
-            orderFillResults,
             wethSpentAmount,
             makerAssetAcquiredAmount
         ) = _marketBuyExactAmountWithWeth(
             orders,
-            makerAssetFillAmount,
+            makerAssetBuyAmount,
             signatures
         );
 
         // Transfer feePercentage of total ETH spent on orders to feeRecipient.
         // Refund remaining ETH to msg.sender.
-        _transferEthFeeAndRefund(
+        ethFeePaid = _transferEthFeeAndRefund(
             wethSpentAmount,
             feePercentage,
             feeRecipient

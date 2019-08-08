@@ -6,7 +6,6 @@ import {
     chaiSetup,
     constants,
     ContractName,
-    expectContractCreationFailedAsync,
     OrderFactory,
     provider,
     sendTransactionResult,
@@ -15,7 +14,7 @@ import {
 } from '@0x/contracts-test-utils';
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ForwarderRevertErrors } from '@0x/order-utils';
-import { RevertReason, SignedOrder } from '@0x/types';
+import { SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -137,23 +136,22 @@ describe(ContractName.Forwarder, () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
 
-        const forwarderInstance = await ForwarderContract.deployFrom0xArtifactAsync(
+        forwarderContract = await ForwarderContract.deployFrom0xArtifactAsync(
             artifacts.Forwarder,
             provider,
             txDefaults,
             exchangeInstance.address,
             wethAssetData,
         );
-        forwarderContract = new ForwarderContract(forwarderInstance.address, provider);
         forwarderWrapper = new ForwarderWrapper(forwarderContract, provider);
 
         await forwarderWrapper.approveMakerAssetProxyAsync(defaultOrderParams.makerAssetData, { from: takerAddress });
-        erc20Wrapper.addTokenOwnerAddress(forwarderInstance.address);
+        erc20Wrapper.addTokenOwnerAddress(forwarderContract.address);
 
         forwarderTestFactory = new ForwarderTestFactory(
             forwarderWrapper,
             erc20Wrapper,
-            forwarderInstance.address,
+            forwarderContract.address,
             makerAddress,
             takerAddress,
             orderFeeRecipientAddress,
