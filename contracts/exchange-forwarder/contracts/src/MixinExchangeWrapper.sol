@@ -78,6 +78,56 @@ contract MixinExchangeWrapper is
         return fillResults;
     }
 
+    /// @dev Executes a single call of fillOrder according to the wethSellAmount and
+    ///      the amount already sold. Returns false if the transaction would otherwise revert.
+    /// @param order A single order specification.
+    /// @param signature Signature for the given order.
+    /// @param wethSellAmount Total amount of WETH to sell.
+    /// @param wethSpentAmount Amount of WETH already sold.
+    /// @return Amounts filled and fees paid by maker and taker for this order.
+    function _marketSellSingleOrder(
+        LibOrder.Order memory order,
+        bytes memory signature,
+        uint256 wethSellAmount,
+        uint256 wethSpentAmount
+    )
+        internal
+        returns (FillResults memory singleFillResults)
+    {
+        // The remaining amount of WETH to sell
+        uint256 remainingTakerAssetFillAmount = _safeSub(
+            wethSellAmount,
+            wethSpentAmount
+        );
+
+        // Percentage fee
+        if (order.makerAssetData.equals(order.takerFeeAssetData)) {
+            // Attempt to sell the remaining amount of WETH
+            singleFillResults = _fillOrderNoThrow(
+                order,
+                remainingTakerAssetFillAmount,
+                signature
+            );
+        // WETH fee
+        } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
+            // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
+            // This ensures that we reserve enough to pay the fee.
+            uint256 takerAssetFillAmount = _getPartialAmountCeil(
+                order.takerAssetAmount,
+                _safeAdd(order.takerAssetAmount, order.takerFee),
+                remainingTakerAssetFillAmount
+            );
+
+            singleFillResults = _fillOrderNoThrow(
+                order,
+                takerAssetFillAmount,
+                signature
+            );
+        } else {
+            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
+        }
+    }
+
     /// @dev Synchronously executes multiple calls of fillOrder until total amount of WETH has been sold by taker.
     ///      Returns false if the transaction would otherwise revert.
     /// @param orders Array of order specifications.
@@ -105,22 +155,15 @@ contract MixinExchangeWrapper is
                 ));
             }
 
-            // The remaining amount of WETH to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(
+            FillResults memory singleFillResults = _marketSellSingleOrder(
+                orders[i],
+                signatures[i],
                 wethSellAmount,
                 wethSpentAmount
             );
-            FillResults memory singleFillResults;
 
             // Percentage fee
-            if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                // Attempt to sell the remaining amount of WETH
-                singleFillResults = _fillOrderNoThrow(
-                    orders[i],
-                    remainingTakerAssetFillAmount,
-                    signatures[i]
-                );
-
+            if (orders[i].takerFeeAssetData.equals(orders[i].makerAssetData)) {
                 // Subtract fee from makerAssetFilledAmount for the net amount acquired.
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
@@ -133,20 +176,6 @@ contract MixinExchangeWrapper is
                 );
             // WETH fee
             } else {
-                // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
-                // This ensures that we reserve enough to pay the fee.
-                uint256 takerAssetFillAmount = _getPartialAmountCeil(
-                    orders[i].takerAssetAmount,
-                    _safeAdd(orders[i].takerAssetAmount, orders[i].takerFee),
-                    remainingTakerAssetFillAmount
-                );
-
-                singleFillResults = _fillOrderNoThrow(
-                    orders[i],
-                    takerAssetFillAmount,
-                    signatures[i]
-                );
-
                 // WETH is also spent on the taker fee, so we add it here.
                 wethSpentAmount = _safeAdd(
                     wethSpentAmount,
@@ -165,6 +194,57 @@ contract MixinExchangeWrapper is
             }
         }
         return (wethSpentAmount, makerAssetAcquiredAmount);
+    }
+
+    /// @dev Executes a single call of fillOrder according to the makerAssetBuyAmount and
+    ///      the amount already bought. Returns false if the transaction would otherwise revert.
+    /// @param order A single order specification.
+    /// @param signature Signature for the given order.
+    /// @param makerAssetBuyAmount Total amount of maker asset to buy.
+    /// @param makerAssetAcquiredAmount Amount of maker asset already bought.
+    /// @return Amounts filled and fees paid by maker and taker for this order.
+    function _marketBuySingleOrder(
+        LibOrder.Order memory order,
+        bytes memory signature,
+        uint256 makerAssetBuyAmount,
+        uint256 makerAssetAcquiredAmount
+    )
+        internal
+        returns (FillResults memory singleFillResults)
+    {
+        // Percentage fee
+        if (order.takerFeeAssetData.equals(order.makerAssetData)) {
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+                order.takerAssetAmount,
+                _safeSub(order.makerAssetAmount, order.takerFee),
+                _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+            );
+
+            // Attempt to sell the remaining amount of takerAsset
+            singleFillResults = _fillOrderNoThrow(
+                order,
+                remainingTakerAssetFillAmount,
+                signature
+            );
+        // WETH fee
+        } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+                order.takerAssetAmount,
+                order.makerAssetAmount,
+                _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+            );
+
+            // Attempt to sell the remaining amount of takerAsset
+            singleFillResults = _fillOrderNoThrow(
+                order,
+                remainingTakerAssetFillAmount,
+                signature
+            );
+        } else {
+            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
+        }
     }
 
     /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is acquired.
@@ -195,22 +275,15 @@ contract MixinExchangeWrapper is
                 ));
             }
 
+            FillResults memory singleFillResults = _marketBuySingleOrder(
+                orders[i],
+                signatures[i],
+                makerAssetBuyAmount,
+                makerAssetAcquiredAmount
+            );
+
             // Percentage fee
-            if (orders[i].makerAssetData.equals(orders[i].takerFeeAssetData)) {
-                // Calculate the remaining amount of takerAsset to sell
-                uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
-                    orders[i].takerAssetAmount,
-                    _safeSub(orders[i].makerAssetAmount, orders[i].takerFee),
-                    _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
-                );
-
-                // Attempt to sell the remaining amount of takerAsset
-                FillResults memory singleFillResults = _fillOrderNoThrow(
-                    orders[i],
-                    remainingTakerAssetFillAmount,
-                    signatures[i]
-                );
-
+            if (orders[i].takerFeeAssetData.equals(orders[i].makerAssetData)) {
                 // Subtract fee from makerAssetFilledAmount for the net amount acquired.
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
@@ -223,20 +296,6 @@ contract MixinExchangeWrapper is
                 );
             // WETH fee
             } else {
-                // Calculate the remaining amount of takerAsset to sell
-                uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
-                    orders[i].takerAssetAmount,
-                    orders[i].makerAssetAmount,
-                    _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
-                );
-
-                // Attempt to sell the remaining amount of takerAsset
-                FillResults memory singleFillResults = _fillOrderNoThrow(
-                    orders[i],
-                    remainingTakerAssetFillAmount,
-                    signatures[i]
-                );
-
                 makerAssetAcquiredAmount = _safeAdd(
                     makerAssetAcquiredAmount,
                     singleFillResults.makerAssetFilledAmount

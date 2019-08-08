@@ -34,6 +34,12 @@ export class MakerAssetMismatchError extends RevertError {
     }
 }
 
+export class UnsupportedFeeError extends RevertError {
+    constructor(takerFeeAssetData?: string) {
+        super('UnsupportedFeeError', 'UnsupportedFeeError(bytes takerFeeAssetData)', { takerFeeAssetData });
+    }
+}
+
 export class FeePercentageTooLargeError extends RevertError {
     constructor(feePercentage?: BigNumber | number | string) {
         super('FeePercentageTooLargeError', 'FeePercentageTooLargeError(uint256 feePercentage)', {
@@ -90,6 +96,7 @@ const types = [
     UnsupportedAssetProxyError,
     CompleteFillFailedError,
     MakerAssetMismatchError,
+    UnsupportedFeeError,
     FeePercentageTooLargeError,
     InsufficientEthForFeeError,
     OversoldWethError,

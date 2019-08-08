@@ -39,6 +39,10 @@ library LibForwarderRichErrors {
     bytes4 internal constant MAKER_ASSET_MISMATCH_ERROR_SELECTOR =
         0x56677f2c;
 
+    // bytes4(keccak256("UnsupportedFeeError(bytes)"))
+    bytes4 internal constant UNSUPPORTED_FEE_ERROR_SELECTOR =
+        0x31360af1;
+
     // bytes4(keccak256("FeePercentageTooLargeError(uint256)"))
     bytes4 internal constant FEE_PERCENTAGE_TOO_LARGE_ERROR_SELECTOR =
         0x1174fb80;
@@ -113,6 +117,19 @@ library LibForwarderRichErrors {
             MAKER_ASSET_MISMATCH_ERROR_SELECTOR,
             firstOrderMakerAssetData,
             mismatchedMakerAssetData
+        );
+    }
+
+    function UnsupportedFeeError(
+        bytes memory takerFeeAssetData
+    )
+        internal
+        pure
+        returns (bytes memory)
+    {
+        return abi.encodeWithSelector(
+            UNSUPPORTED_FEE_ERROR_SELECTOR,
+            takerFeeAssetData
         );
     }
 

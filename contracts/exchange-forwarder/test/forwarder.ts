@@ -358,6 +358,7 @@ describe(ContractName.Forwarder, () => {
             const erc721Order = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: new BigNumber(1),
                 makerAssetData: assetDataUtils.encodeERC721AssetData(erc721Token.address, makerAssetId),
+                takerFeeAssetData: wethAssetData,
             });
             await forwarderTestFactory.marketBuyTestAsync([erc721Order], new BigNumber(1), erc721Token, {
                 makerAssetId,
