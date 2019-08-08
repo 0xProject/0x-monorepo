@@ -1,6 +1,6 @@
 {
     "name": "@0x/website",
-    "version": "0.0.86",
+    "version": "0.0.87",
     "engines": {
         "node": ">=6.12"
     },
@@ -21,16 +21,16 @@
     "author": "Fabio Berger",
     "license": "Apache-2.0",
     "dependencies": {
-        "@0x/asset-buyer": "^6.1.8",
-        "@0x/contract-addresses": "^3.0.2",
+        "@0x/asset-buyer": "^6.1.11",
+        "@0x/contract-addresses": "^3.0.3",
         "@0x/contract-wrappers": "^9.1.7",
-        "@0x/json-schemas": "^3.0.11",
-        "@0x/order-utils": "^8.2.2",
-        "@0x/subproviders": "^5.0.0",
+        "@0x/json-schemas": "^3.1.13",
+        "@0x/order-utils": "^8.2.5",
+        "@0x/subproviders": "^5.0.1",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.2",
-        "@0x/web3-wrapper": "^6.0.9",
+        "@0x/utils": "^4.5.0",
+        "@0x/web3-wrapper": "^6.0.10",
         "@reach/dialog": "^0.1.2",
         "@types/react-lazyload": "^2.3.1",
         "@types/react-loadable": "^5.4.2",
