@@ -46,14 +46,18 @@ blockchainTests('Isolated fillOrder() tests', env => {
 
     before(async () => {
         [takerAddress, notTakerAddress] = await env.getAccountAddressesAsync();
-        exchange = await IsolatedExchangeWrapper.deployAsync(
-            env.web3Wrapper,
-            _.assign(env.txDefaults, { from: takerAddress }),
-        );
+        exchange = await IsolatedExchangeWrapper.deployAsync(env.web3Wrapper, {
+            ...env.txDefaults,
+            from: takerAddress,
+        });
     });
 
     function createOrder(details: Partial<Order> = {}): Order {
-        return _.assign({}, DEFAULT_ORDER, { salt: new BigNumber(nextSaltValue++) }, details);
+        return {
+            ...DEFAULT_ORDER,
+            salt: new BigNumber(nextSaltValue++),
+            ...details,
+        };
     }
 
     interface FillOrderAndAssertResultsResults {

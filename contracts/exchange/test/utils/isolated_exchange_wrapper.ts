@@ -11,7 +11,6 @@ import { BigNumber } from '@0x/utils';
 import { TxData, Web3Wrapper } from '@0x/web3-wrapper';
 import * as crypto from 'crypto';
 import { LogEntry } from 'ethereum-types';
-import * as _ from 'lodash';
 
 import {
     artifacts,
@@ -105,7 +104,7 @@ export class IsolatedExchangeWrapper {
             verifyingContractAddress: this.instance.address,
             chainId: IsolatedExchangeWrapper.CHAIN_ID,
         };
-        return orderHashUtils.getOrderHashHex(_.assign(order, { domain }));
+        return orderHashUtils.getOrderHashHex({ ...order, domain });
     }
 
     public async getOrderInfoAsync(order: Order): Promise<OrderInfo> {
