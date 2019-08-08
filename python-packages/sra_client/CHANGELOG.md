@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.0 - TBD
+## 3.0.0 - 2019-08-08
 
 -   Migrated from v4 to v5 of Web3.py.
 

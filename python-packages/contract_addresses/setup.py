@@ -119,7 +119,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-addresses",
-    version="2.1.0",
+    version="2.2.0",
     description="Addresses at which the 0x smart contracts have been deployed",
     long_description=README_MD,
     long_description_content_type="text/markdown",

@@ -14,7 +14,7 @@ from setuptools import setup, find_packages  # noqa: H301
 from setuptools.command.test import test as TestCommand
 
 NAME = "0x-sra-client"
-VERSION = "2.0.0"
+VERSION = "3.0.0"
 # To install the library, run the following
 #
 # python setup.py install
@@ -170,7 +170,8 @@ setup(
     name=NAME,
     version=VERSION,
     description="Standard Relayer REST API Client",
-    author_email="",
+    author="F. Eugene Aumson",
+    author_email="feuGeneA@users.noreply.github.com",
     url=(
         "https://github.com/0xproject/0x-monorepo/tree/development"
         "/python-packages/sra_client"

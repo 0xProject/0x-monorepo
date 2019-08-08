@@ -18,6 +18,30 @@ from setuptools.command.test import test as TestCommand
 BLACK_COMMAND = "black --line-length 79 "
 
 
+CONTRACTS_TO_BE_WRAPPED = [
+    "asset_proxy_owner",
+    "coordinator",
+    "coordinator_registry",
+    "dummy_erc20_token",
+    "dummy_erc721_token",
+    "dutch_auction",
+    "erc20_proxy",
+    "erc20_token",
+    "erc721_proxy",
+    "erc721_token",
+    "eth_balance_checker",
+    "exchange",
+    "forwarder",
+    "i_asset_proxy",
+    "i_validator",
+    "i_wallet",
+    "multi_asset_proxy",
+    "order_validator",
+    "weth9",
+    "zrx_token",
+]
+
+
 class PreInstallCommand(distutils.command.build_py.build_py):
     """Custom setuptools command class for pulling in generated code."""
 
@@ -26,29 +50,7 @@ class PreInstallCommand(distutils.command.build_py.build_py):
     def run(self):
         """Copy files from TS build area to local src, & `black` them."""
         pkgdir = path.dirname(path.realpath(argv[0]))
-        contracts = [
-            "asset_proxy_owner",
-            "coordinator",
-            "coordinator_registry",
-            "dummy_erc20_token",
-            "dummy_erc721_token",
-            "dutch_auction",
-            "erc20_proxy",
-            "erc20_token",
-            "erc721_proxy",
-            "erc721_token",
-            "eth_balance_checker",
-            "exchange",
-            "forwarder",
-            "i_asset_proxy",
-            "i_validator",
-            "i_wallet",
-            "multi_asset_proxy",
-            "order_validator",
-            "weth9",
-            "zrx_token",
-        ]
-        for contract in contracts:
+        for contract in CONTRACTS_TO_BE_WRAPPED:
             copy(
                 path.join(
                     pkgdir,
@@ -84,7 +86,7 @@ class PreInstallCommand(distutils.command.build_py.build_py):
         black_command = BLACK_COMMAND + " ".join(
             [
                 f"src/zero_ex/contract_wrappers/{contract}/__init__.py"
-                for contract in contracts
+                for contract in CONTRACTS_TO_BE_WRAPPED
             ]
         )
         print(f"Running command `{black_command}`...")
@@ -158,8 +160,11 @@ class CleanCommandExtension(clean):
         rmtree(".pytest_cache", ignore_errors=True)
         rmtree("src/0x_contract_wrappers.egg-info", ignore_errors=True)
         # generated files:
-        remove("src/zero_ex/contract_wrappers/exchange/__init__.py")
-        remove("src/zero_ex/contract_wrappers/erc20_token/__init__.py")
+        for contract in CONTRACTS_TO_BE_WRAPPED:
+            try:
+                remove(f"src/zero_ex/contract_wrappers/{contract}/__init__.py")
+            except FileNotFoundError:
+                pass
 
 
 class TestPublishCommand(distutils.command.build_py.build_py):
