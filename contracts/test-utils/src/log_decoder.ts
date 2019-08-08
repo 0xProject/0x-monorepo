@@ -52,7 +52,7 @@ export class LogDecoder {
         return this.decodeReceiptLogs(receipt);
     }
     public decodeReceiptLogs(receipt: TransactionReceipt): TransactionReceiptWithDecodedLogs {
-        const decodedLogs = receipt.logs.map(log => this.decodeLogOrThrow(log));
+        const decodedLogs = (receipt.logs as LogEntry[]).map(log => this.decodeLogOrThrow(log));
         return _.merge({}, receipt, { logs: decodedLogs });
     }
 }
