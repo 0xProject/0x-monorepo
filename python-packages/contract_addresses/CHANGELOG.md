@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.0 - TBD
+
+-   Added ERC1155Proxy address
+-   Updated addresses for AssetProxyOwner, Coordinator, CoordinatorRegistry, Forwarder, and OrderValidator.
+
 ## 2.1.0 - 2019-07-15
 
 -   Added Coordinator and CoordinatorRegistry addresses.
