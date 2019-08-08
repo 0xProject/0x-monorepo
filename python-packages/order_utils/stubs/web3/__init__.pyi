@@ -1,6 +1,6 @@
-from typing import Dict, Optional, Union
+from typing import Dict, List, Optional, Union
 
-from web3.utils import datatypes
+from web3.contract import Contract
 from web3.providers.base import BaseProvider
 
 
@@ -23,6 +23,15 @@ class Web3:
 
     class eth:
         @staticmethod
-        def contract(address: str, abi: Dict) -> datatypes.Contract: ...
+        def contract(address: str, abi: Dict) -> Contract: ...
         ...
+
+    class geth:
+        class personal:
+            @staticmethod
+            def listAccounts() -> List[str]:
+                ...
+            ...
+        ...
+
     ...

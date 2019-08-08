@@ -1,3 +1,13 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python
 
-./parallel pip install -e .[dev]
+"""Script to install all packages in editable mode (pip install -e .)."""
+
+from os import path
+import subprocess
+
+# install all packages
+subprocess.check_call(
+    (
+        path.join(".", "cmd_pkgs_in_dep_order.py") + " pip install -e .[dev]"
+    ).split()
+)

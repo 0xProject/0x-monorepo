@@ -2,7 +2,7 @@
 
 ## 3.0.0 - TBD
 
--   Major breaking changes: removal of definitions for Order, OrderInfo, order_to_jsdict, jsdict_to_order, all of which have been moved to contract_wrappers.exchange.types; removal of signature validation.
+-   Major breaking changes: removal of definitions for Order, OrderInfo, order_to_jsdict, jsdict_to_order, all of which have been moved to contract_wrappers.exchange.types; removal of signature validation; migration from v4 to v5 of Web3.py
 
 ## 2.0.0 - 2019-04-30
 

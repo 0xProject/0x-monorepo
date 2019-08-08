@@ -32,8 +32,8 @@ the second account will be the taker.
 
 >>> from web3 import Web3
 >>> accounts = Web3(ganache).eth.accounts
->>> maker_address = accounts[0].lower()
->>> taker_address = accounts[1].lower()
+>>> maker_address = accounts[0]
+>>> taker_address = accounts[1]
 
 In the examples below, we'll use the optional `tx_params`:code: parameter to
 the contract calls, in order to specify which account each transaction is to
@@ -90,7 +90,7 @@ their tokens.  Because the order constructed below has the maker giving WETH,
 we need to tell the WETH token contract to let the 0x contracts transfer our
 balance:
 
->>> from zero_ex.contract_wrappers import ERC20Token
+>>> from zero_ex.contract_wrappers.erc20_token import ERC20Token
 >>> zrx_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
@@ -161,7 +161,7 @@ specifies the amount of tokens (in this case WETH) that the taker wants to
 fill.  This example fills the order completely, but partial fills are possible
 too.
 
->>> from zero_ex.contract_wrappers import Exchange
+>>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> exchange = Exchange(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
@@ -324,5 +324,3 @@ will be consumed.
 """
 
 from .tx_params import TxParams
-from .erc20_token import ERC20Token
-from .exchange import Exchange

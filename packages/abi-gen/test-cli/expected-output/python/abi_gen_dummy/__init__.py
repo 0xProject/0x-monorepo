@@ -446,7 +446,7 @@ class EcrecoverFnMethod(ContractMethod):
     def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
         """Execute underlying contract method via eth_call.
 
-        test that devdocs will be generated and     that multiline devdocs will
+        test that devdocs will be generated and that multiline devdocs will
         look okay
 
         :param hash: description of some hash. Let's make this line super long
@@ -465,7 +465,7 @@ class EcrecoverFnMethod(ContractMethod):
     def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
-        test that devdocs will be generated and     that multiline devdocs will
+        test that devdocs will be generated and that multiline devdocs will
         look okay
 
         :param hash: description of some hash. Let's make this line super long
@@ -1367,34 +1367,150 @@ class AbiGenDummy:
     which can be accomplished via `str.encode("utf_8")`:code:.
     """
     simple_require: SimpleRequireMethod
+    """Constructor-initialized instance of
+    :class:`SimpleRequireMethod`.
+    """
+
     accepts_an_array_of_bytes: AcceptsAnArrayOfBytesMethod
+    """Constructor-initialized instance of
+    :class:`AcceptsAnArrayOfBytesMethod`.
+    """
+
     simple_input_simple_output: SimpleInputSimpleOutputMethod
+    """Constructor-initialized instance of
+    :class:`SimpleInputSimpleOutputMethod`.
+    """
+
     withdraw: WithdrawMethod
+    """Constructor-initialized instance of
+    :class:`WithdrawMethod`.
+    """
+
     multi_input_multi_output: MultiInputMultiOutputMethod
+    """Constructor-initialized instance of
+    :class:`MultiInputMultiOutputMethod`.
+    """
+
     ecrecover_fn: EcrecoverFnMethod
+    """Constructor-initialized instance of
+    :class:`EcrecoverFnMethod`.
+    """
+
     accepts_bytes: AcceptsBytesMethod
+    """Constructor-initialized instance of
+    :class:`AcceptsBytesMethod`.
+    """
+
     no_input_simple_output: NoInputSimpleOutputMethod
+    """Constructor-initialized instance of
+    :class:`NoInputSimpleOutputMethod`.
+    """
+
     revert_with_constant: RevertWithConstantMethod
+    """Constructor-initialized instance of
+    :class:`RevertWithConstantMethod`.
+    """
+
     simple_revert: SimpleRevertMethod
+    """Constructor-initialized instance of
+    :class:`SimpleRevertMethod`.
+    """
+
     method_using_nested_struct_with_inner_struct_not_used_elsewhere: MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod
+    """Constructor-initialized instance of
+    :class:`MethodUsingNestedStructWithInnerStructNotUsedElsewhereMethod`.
+    """
+
     nested_struct_output: NestedStructOutputMethod
+    """Constructor-initialized instance of
+    :class:`NestedStructOutputMethod`.
+    """
+
     require_with_constant: RequireWithConstantMethod
+    """Constructor-initialized instance of
+    :class:`RequireWithConstantMethod`.
+    """
+
     with_address_input: WithAddressInputMethod
+    """Constructor-initialized instance of
+    :class:`WithAddressInputMethod`.
+    """
+
     struct_input: StructInputMethod
+    """Constructor-initialized instance of
+    :class:`StructInputMethod`.
+    """
+
     non_pure_method: NonPureMethodMethod
+    """Constructor-initialized instance of
+    :class:`NonPureMethodMethod`.
+    """
+
     complex_input_complex_output: ComplexInputComplexOutputMethod
+    """Constructor-initialized instance of
+    :class:`ComplexInputComplexOutputMethod`.
+    """
+
     no_input_no_output: NoInputNoOutputMethod
+    """Constructor-initialized instance of
+    :class:`NoInputNoOutputMethod`.
+    """
+
     simple_pure_function_with_input: SimplePureFunctionWithInputMethod
+    """Constructor-initialized instance of
+    :class:`SimplePureFunctionWithInputMethod`.
+    """
+
     non_pure_method_that_returns_nothing: NonPureMethodThatReturnsNothingMethod
+    """Constructor-initialized instance of
+    :class:`NonPureMethodThatReturnsNothingMethod`.
+    """
+
     simple_pure_function: SimplePureFunctionMethod
+    """Constructor-initialized instance of
+    :class:`SimplePureFunctionMethod`.
+    """
+
     nested_struct_input: NestedStructInputMethod
+    """Constructor-initialized instance of
+    :class:`NestedStructInputMethod`.
+    """
+
     method_returning_multiple_values: MethodReturningMultipleValuesMethod
+    """Constructor-initialized instance of
+    :class:`MethodReturningMultipleValuesMethod`.
+    """
+
     method_returning_array_of_structs: MethodReturningArrayOfStructsMethod
+    """Constructor-initialized instance of
+    :class:`MethodReturningArrayOfStructsMethod`.
+    """
+
     struct_output: StructOutputMethod
+    """Constructor-initialized instance of
+    :class:`StructOutputMethod`.
+    """
+
     pure_function_with_constant: PureFunctionWithConstantMethod
+    """Constructor-initialized instance of
+    :class:`PureFunctionWithConstantMethod`.
+    """
+
     simple_input_no_output: SimpleInputNoOutputMethod
+    """Constructor-initialized instance of
+    :class:`SimpleInputNoOutputMethod`.
+    """
+
     overloaded_method2: OverloadedMethod2Method
+    """Constructor-initialized instance of
+    :class:`OverloadedMethod2Method`.
+    """
+
     overloaded_method1: OverloadedMethod1Method
+    """Constructor-initialized instance of
+    :class:`OverloadedMethod1Method`.
+    """
+
 
     def __init__(
         self,

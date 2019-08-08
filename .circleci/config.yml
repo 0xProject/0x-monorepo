@@ -182,12 +182,13 @@ jobs:
         docker:
             - image: circleci/python
             - image: 0xorg/ganache-cli:2.2.2
-            - image: 0xorg/launch-kit-ci
+            - image: 0xorg/launch-kit-backend:74bcc39
               environment:
                   RPC_URL: http://localhost:8545
                   NETWORK_ID: 50
                   WHITELIST_ALL_TOKENS: True
-              command: bash -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; forever ts/lib/index.js"
+              command: |
+                  sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -210,7 +211,7 @@ jobs:
             - run:
                   command: |
                       cd python-packages
-                      ./parallel coverage run setup.py test
+                      ./parallel_without_sra_client coverage run setup.py test
                       ./build_docs
             - save_cache:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}

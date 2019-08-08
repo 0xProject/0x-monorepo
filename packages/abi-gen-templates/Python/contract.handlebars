@@ -51,6 +51,10 @@ class {{contractName}}:
     """Wrapper class for {{contractName}} Solidity contract.{{docBytesIfNecessary ABIString}}"""
 {{#each methods}}
     {{toPythonIdentifier this.languageSpecificName}}: {{toPythonClassname this.languageSpecificName}}Method
+    """Constructor-initialized instance of
+    :class:`{{toPythonClassname this.languageSpecificName}}Method`.
+    """
+
 {{/each}}
 
     def __init__(

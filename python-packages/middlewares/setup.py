@@ -155,15 +155,13 @@ setup(
         "eth-account",
         "eth-keys",
         "hexbytes",
-        "hypothesis>=3.31.2",  # HACK! this is web3's dependency!
-        # above works around https://github.com/ethereum/web3.py/issues/1179
         "mypy_extensions",
     ],
     extras_require={
         "dev": [
             "0x-contract-addresses",
             "0x-order-utils",
-            "0x-web3",
+            "web3",
             "bandit",
             "black",
             "coverage",

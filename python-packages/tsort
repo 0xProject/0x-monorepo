@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# extract package interdependencies and topographically sort them
+
+find -name setup.py -exec grep -H \"0x- {} \; | \
+    grep -v name= | \
+    grep -v NAME | \
+    sed \
+        -e 's/^\.\//0x-/' \
+        -e 's/\/setup.py://' \
+        -e 's/"//g' -e 's/,$//' \
+        -e 's/_/-/g' | \
+    tsort | \
+    tac | \
+    sed \
+        -e 's/^0x-//' \
+        -e 's/-/_/'

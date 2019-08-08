@@ -6,7 +6,8 @@ import pytest
 from eth_utils import remove_0x_prefix
 
 from zero_ex.contract_addresses import NETWORK_TO_ADDRESSES, NetworkId
-from zero_ex.contract_wrappers import Exchange, TxParams
+from zero_ex.contract_wrappers import TxParams
+from zero_ex.contract_wrappers.exchange import Exchange
 from zero_ex.contract_wrappers.exchange.types import Order
 from zero_ex.json_schemas import assert_valid
 from zero_ex.order_utils import generate_order_hash_hex, sign_hash_to_bytes
@@ -30,7 +31,7 @@ def create_test_order(
 ):
     """Create a test order."""
     order = Order(
-        makerAddress=maker_address.lower(),
+        makerAddress=maker_address,
         takerAddress="0x0000000000000000000000000000000000000000",
         feeRecipientAddress="0x0000000000000000000000000000000000000000",
         senderAddress="0x0000000000000000000000000000000000000000",

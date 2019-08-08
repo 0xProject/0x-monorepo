@@ -6,7 +6,7 @@ services:
         ports:
             - "8545:8545"
     launchkit:
-        image: "0xorg/launch-kit-ci"
+        image: "0xorg/launch-kit-backend:74bcc39"
         depends_on:
             - ganache
         ports:
@@ -16,4 +16,5 @@ services:
             - NETWORK_ID=50
             - RPC_URL=http://localhost:8545
             - WHITELIST_ALL_TOKENS=True
-        command: bash -c "until curl -sfd'{\"method\":\"net_listening\"}' http://localhost:8545 | grep true; do continue; done; forever ts/lib/index.js"
+        command: |
+            sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
