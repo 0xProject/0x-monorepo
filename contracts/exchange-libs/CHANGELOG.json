@@ -69,6 +69,10 @@
             {
                 "note": "Remove unecessary zero-denominator checks in `LibMath`.",
                 "pr": 2031
+            },
+            {
+                "note": "Fix coverage hooks.",
+                "pr": 2031
             }
         ]
     },

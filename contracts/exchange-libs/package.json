@@ -53,6 +53,7 @@
         "@0x/contracts-test-utils": "^3.1.10",
         "@0x/dev-utils": "^2.2.4",
         "@0x/sol-compiler": "^3.1.9",
+        "@0x/subproviders": "^4.1.1",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/node": "*",

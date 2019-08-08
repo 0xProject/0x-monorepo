@@ -59,6 +59,15 @@ blockchainTests('LibMath', env => {
                 expect(actual).to.bignumber.eq(expected);
             });
 
+            it('rounds down when computing the partial amount', async () => {
+                const numerator = ONE_ETHER.times(0.6);
+                const denominator = ONE_ETHER.times(1.8);
+                const target = ONE_ETHER;
+                const expected = ONE_ETHER.dividedToIntegerBy(3);
+                const actual = await libsContract.getPartialAmountFloor.callAsync(numerator, denominator, target);
+                expect(actual).to.bignumber.eq(expected);
+            });
+
             it('reverts if `denominator` is zero', async () => {
                 const numerator = ONE_ETHER;
                 const denominator = ZERO_AMOUNT;
@@ -105,6 +114,15 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = ReferenceFunctions.getPartialAmountCeil(numerator, denominator, target);
+                const actual = await libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target);
+                expect(actual).to.bignumber.eq(expected);
+            });
+
+            it('rounds up when computing the partial amount', async () => {
+                const numerator = ONE_ETHER.times(0.6);
+                const denominator = ONE_ETHER.times(1.8);
+                const target = ONE_ETHER;
+                const expected = ONE_ETHER.dividedToIntegerBy(3).plus(1);
                 const actual = await libsContract.getPartialAmountCeil.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -156,6 +174,15 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = ReferenceFunctions.safeGetPartialAmountFloor(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
+                expect(actual).to.bignumber.eq(expected);
+            });
+
+            it('rounds down when computing the partial amount', async () => {
+                const numerator = ONE_ETHER.times(0.6);
+                const denominator = ONE_ETHER.times(1.8);
+                const target = ONE_ETHER;
+                const expected = ONE_ETHER.dividedToIntegerBy(3);
                 const actual = await libsContract.safeGetPartialAmountFloor.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
@@ -212,6 +239,15 @@ blockchainTests('LibMath', env => {
                 const denominator = ONE_ETHER.dividedToIntegerBy(2);
                 const target = ONE_ETHER.times(0.01);
                 const expected = ReferenceFunctions.safeGetPartialAmountCeil(numerator, denominator, target);
+                const actual = await libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
+                expect(actual).to.bignumber.eq(expected);
+            });
+
+            it('rounds up when computing the partial amount', async () => {
+                const numerator = ONE_ETHER.times(0.6);
+                const denominator = ONE_ETHER.times(1.8);
+                const target = ONE_ETHER;
+                const expected = ONE_ETHER.dividedToIntegerBy(3).plus(1);
                 const actual = await libsContract.safeGetPartialAmountCeil.callAsync(numerator, denominator, target);
                 expect(actual).to.bignumber.eq(expected);
             });
