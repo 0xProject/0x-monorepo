@@ -149,7 +149,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-order-utils",
-    version="2.0.0",
+    version="3.0.0",
     description="Order utilities for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
