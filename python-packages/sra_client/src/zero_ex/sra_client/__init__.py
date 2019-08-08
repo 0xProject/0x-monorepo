@@ -304,8 +304,10 @@ Next the taker needs to give the 0x contracts permission to trade their WETH:
 
 >>> weth_instance.functions.approve(
 ...     Web3.toChecksumAddress(contract_addresses.erc20_proxy),
-...     1000000000000000000).transact(
-...     {"from": Web3.toChecksumAddress(taker_address)})
+...     1000000000000000000
+... ).transact(
+...     {"from": Web3.toChecksumAddress(taker_address)}
+... )
 HexBytes('0x...')
 
 Now the taker is ready to trade.
