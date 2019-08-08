@@ -210,7 +210,7 @@ jobs:
             - run:
                   command: |
                       cd python-packages
-                      ./parallel coverage run setup.py test
+                      ./parallel_without_sra_client coverage run setup.py test
                       ./build_docs
             - save_cache:
                   key: coverage-python-contract-addresses-{{ .Environment.CIRCLE_SHA1 }}
