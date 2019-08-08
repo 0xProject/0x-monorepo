@@ -153,13 +153,18 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper('toPythonIdentifier', utils.toPythonIdentifier.bind(utils));
     Handlebars.registerHelper('sanitizeDevdocDetails', (_methodName: string, devdocDetails: string, indent: number) => {
         // wrap to 80 columns, assuming given indent, so that generated
-        // docstrings can pass pycodestyle checks.
+        // docstrings can pass pycodestyle checks.  also, replace repeated
+        // spaces, likely caused by leading indents in the Solidity, because
+        // they cause repeated spaces in the output, and in particular they may
+        // cause repeated spaces at the beginning of a line in the docstring,
+        // which leads to "unexpected indent" errors when generating
+        // documentation.
         if (devdocDetails === undefined || devdocDetails.length === 0) {
             return '';
         }
         const columnsPerRow = 80;
         return new Handlebars.SafeString(
-            `\n${cliFormat.wrap(devdocDetails || '', {
+            `\n${cliFormat.wrap(devdocDetails.replace(/  +/g, '') || '', {
                 paddingLeft: ' '.repeat(indent),
                 width: columnsPerRow,
                 ansi: false,

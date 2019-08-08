@@ -446,8 +446,8 @@ class EcrecoverFnMethod(ContractMethod):
     def call(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> str:
         """Execute underlying contract method via eth_call.
 
-        test that devdocs will be generated and     that multiline devdocs will
-        look okay
+        test that devdocs will be generated andthat multiline devdocs will look
+        okay
 
         :param hash: description of some hash. Let's make this line super long
             to demonstrate hanging indents for method params. It has to be more
@@ -465,8 +465,8 @@ class EcrecoverFnMethod(ContractMethod):
     def send_transaction(self, _hash: bytes, v: int, r: bytes, s: bytes, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
-        test that devdocs will be generated and     that multiline devdocs will
-        look okay
+        test that devdocs will be generated andthat multiline devdocs will look
+        okay
 
         :param hash: description of some hash. Let's make this line super long
             to demonstrate hanging indents for method params. It has to be more
