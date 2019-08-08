@@ -6,8 +6,7 @@
                 "note": "Move `tokenUtils` here from `@0x/contract-wrappers`",
                 "pr": 2037
             }
-        ],
-        "timestamp": 1565281154
+        ]
     },
     {
         "timestamp": 1564604963,

@@ -6,8 +6,7 @@
                 "note": "Added StaticCallAssetProxy and ERC1155AssetProxy",
                 "pr": 2021
             }
-        ],
-        "timestamp": 1565281154
+        ]
     },
     {
         "version": "3.0.2",

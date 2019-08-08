@@ -5,10 +5,6 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
-## v3.0.3 - _August 8, 2019_
-
-    * Added StaticCallAssetProxy and ERC1155AssetProxy (#2021)
-
 ## v3.0.2 - _July 15, 2019_
 
     * Update OrderValidator testnet addresses
