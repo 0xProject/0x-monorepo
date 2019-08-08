@@ -324,5 +324,3 @@ will be consumed.
 """
 
 from .tx_params import TxParams
-from .erc20_token import ERC20Token
-from .exchange import Exchange
