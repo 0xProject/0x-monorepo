@@ -164,7 +164,7 @@ function registerPythonHelpers(): void {
         }
         const columnsPerRow = 80;
         return new Handlebars.SafeString(
-            `\n${cliFormat.wrap(devdocDetails.replace(/  +/g, '') || '', {
+            `\n${cliFormat.wrap(devdocDetails.replace(/  +/g, ' ') || '', {
                 paddingLeft: ' '.repeat(indent),
                 width: columnsPerRow,
                 ansi: false,
