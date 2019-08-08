@@ -140,19 +140,19 @@
             },
             {
                 "note": "Add `wrapper_unit_tests` tests and `TestWrapperFunctions` contract",
-                "pr": "TODO"
+                "pr": 2042
             },
             {
                 "note": "Disallow `signerAddress == 0` in signature validation functions.",
-                "pr": "TODO"
+                "pr": 2042
             },
             {
                 "note": "Update `Wallet` signature type behavior to be in line with v2.1.",
-                "pr": "TODO"
+                "pr": 2042
             },
             {
                 "note": "Add (semi) automated reentrancy tests and remove manual ones",
-                "pr": "TODO"
+                "pr": 2042
             }
         ]
     },
