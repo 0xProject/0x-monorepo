@@ -170,7 +170,8 @@ setup(
     name=NAME,
     version=VERSION,
     description="Standard Relayer REST API Client",
-    author_email="",
+    author="F. Eugene Aumson",
+    author_email="feuGeneA@users.noreply.github.com",
     url=(
         "https://github.com/0xproject/0x-monorepo/tree/development"
         "/python-packages/sra_client"
