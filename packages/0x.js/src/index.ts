@@ -40,6 +40,13 @@ export {
 } from '@0x/contract-wrappers';
 
 export {
+    DutchAuctionContract,
+    ERC20ProxyContract,
+    ERC721ProxyContract,
+    ExchangeContract,
+    ForwarderContract,
+    OrderValidatorContract,
+    WETH9Contract,
     WETH9Events,
     WETH9WithdrawalEventArgs,
     WETH9ApprovalEventArgs,
@@ -102,15 +109,12 @@ export {
     ObjectMap,
     OrderRelevantState,
     Stats,
-    DutchAuctionDetails,
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
 
 export {
-    BlockParamLiteral,
     ContractAbi,
-    BlockParam,
     LogWithDecodedArgs,
     ContractEventArg,
     SupportedProvider,

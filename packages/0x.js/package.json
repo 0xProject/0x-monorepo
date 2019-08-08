@@ -76,7 +76,7 @@
         "@0x/assert": "^2.1.2",
         "@0x/asset-swapper": "^1.0.0",
         "@0x/base-contract": "^5.3.0",
-        "@0x/contract-wrappers": "^10.1.0",
+        "@0x/contract-wrappers": "10.1.0",
         "@0x/order-utils": "^8.2.4",
         "@0x/order-watcher": "^4.0.16",
         "@0x/subproviders": "^5.0.0",

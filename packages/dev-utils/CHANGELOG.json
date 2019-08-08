@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.3.0",
+        "changes": [
+            {
+                "note": "Move `tokenUtils` here from `@0x/contract-wrappers`",
+                "pr": 2037
+            }
+        ]
+    },
+    {
         "timestamp": 1564604963,
         "version": "2.2.6",
         "changes": [

@@ -2372,8 +2372,10 @@ export class AbiGenDummyContract extends BaseContract {
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
         const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
-        for (const key of Object.keys(logDecodeDependencies)) {
-            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        if (Object.keys(logDecodeDependencies) !== undefined) {
+            for (const key of Object.keys(logDecodeDependencies)) {
+                logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+            }
         }
         return AbiGenDummyContract.deployAsync(bytecode, abi, provider, txDefaults, logDecodeDependenciesAbiOnly);
     }

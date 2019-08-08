@@ -1,8 +1,31 @@
 import * as _ from 'lodash';
 
-import { AsyncMethod, ContractWrappersError, SyncMethod } from '../types';
+export enum ContractWrappersError {
+    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
+    InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
+    InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
+    InvalidJump = 'INVALID_JUMP',
+    OutOfGas = 'OUT_OF_GAS',
+    SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
+    ERC721OwnerNotFound = 'ERC_721_OWNER_NOT_FOUND',
+    ERC721NoApproval = 'ERC_721_NO_APPROVAL',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+}
 
-import { constants } from './constants';
+export type AsyncMethod = (...args: any[]) => Promise<any>;
+export type SyncMethod = (...args: any[]) => any;
+
+const constants = {
+    INVALID_JUMP_PATTERN: 'invalid JUMP at',
+    REVERT: 'revert',
+    OUT_OF_GAS_PATTERN: 'out of gas',
+    INVALID_TAKER_FORMAT: 'instance.taker is not of a type(s) string',
+    METAMASK_USER_DENIED_SIGNATURE_PATTERN: 'User denied transaction signature',
+    TRUST_WALLET_USER_DENIED_SIGNATURE_PATTERN: 'cancelled',
+};
 
 type ErrorTransformer = (err: Error) => Error;
 

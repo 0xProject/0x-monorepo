@@ -1,7 +1,6 @@
 import { ContractAddresses } from '@0x/contract-addresses';
 import { ContractWrappers } from '@0x/contract-wrappers';
-import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { ExchangeContractErrs, OrderStateInvalid, SignedOrder } from '@0x/types';
