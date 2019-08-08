@@ -65,12 +65,8 @@ contract LibTransactionDecoder is
             functionName = "fillOrKillOrder";
         } else if (functionSelector == MARKET_BUY_ORDERS_SELECTOR) {
             functionName = "marketBuyOrders";
-        } else if (functionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR) {
-            functionName = "marketBuyOrdersNoThrow";
         } else if (functionSelector == MARKET_SELL_ORDERS_SELECTOR) {
             functionName = "marketSellOrders";
-        } else if (functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR) {
-            functionName = "marketSellOrdersNoThrow";
         } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
             functionName = "matchOrders";
         } else if (
@@ -107,9 +103,7 @@ contract LibTransactionDecoder is
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(transactionData);
         } else if (
             functionSelector == MARKET_BUY_ORDERS_SELECTOR ||
-            functionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
-            functionSelector == MARKET_SELL_ORDERS_SELECTOR ||
-            functionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
+            functionSelector == MARKET_SELL_ORDERS_SELECTOR
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(transactionData);
         } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
