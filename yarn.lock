@@ -53,15 +53,15 @@
     read-package-tree "^5.1.6"
     semver "^6.2.0"
 
-"@0x-lerna-fork/changed@3.16.9":
-  version "3.16.9"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/changed/-/changed-3.16.9.tgz#79cd1597cae00a1700b8248c27f00f8aebf75873"
+"@0x-lerna-fork/changed@3.16.10":
+  version "3.16.10"
+  resolved "https://registry.npmjs.org/@0x-lerna-fork/changed/-/changed-3.16.10.tgz#522a449e39d4e79a6bb81c335df3f7f63c9a90ac"
   dependencies:
     "@0x-lerna-fork/collect-updates" "3.16.3"
     "@0x-lerna-fork/command" "3.16.3"
     "@0x-lerna-fork/listable" "3.16.3"
     "@0x-lerna-fork/output" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.9"
+    "@0x-lerna-fork/version" "3.16.10"
 
 "@0x-lerna-fork/check-working-tree@3.16.3":
   version "3.16.3"
@@ -291,13 +291,13 @@
     p-map "^2.1.0"
     write-json-file "^3.2.0"
 
-"@0x-lerna-fork/lerna@3.16.9":
-  version "3.16.9"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/lerna/-/lerna-3.16.9.tgz#9a68fc960545a50ecf03b03ad88300f884e23fe9"
+"@0x-lerna-fork/lerna@3.16.10":
+  version "3.16.10"
+  resolved "https://registry.npmjs.org/@0x-lerna-fork/lerna/-/lerna-3.16.10.tgz#ec5a9dc62c833ba4d15ddcb227715a9ab28f4dfa"
   dependencies:
     "@0x-lerna-fork/add" "3.16.3"
     "@0x-lerna-fork/bootstrap" "3.16.3"
-    "@0x-lerna-fork/changed" "3.16.9"
+    "@0x-lerna-fork/changed" "3.16.10"
     "@0x-lerna-fork/clean" "3.16.3"
     "@0x-lerna-fork/cli" "3.16.3"
     "@0x-lerna-fork/create" "3.16.3"
@@ -307,9 +307,9 @@
     "@0x-lerna-fork/init" "3.16.3"
     "@0x-lerna-fork/link" "3.16.3"
     "@0x-lerna-fork/list" "3.16.3"
-    "@0x-lerna-fork/publish" "3.16.9"
+    "@0x-lerna-fork/publish" "3.16.10"
     "@0x-lerna-fork/run" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.9"
+    "@0x-lerna-fork/version" "3.16.10"
     import-local "^2.0.0"
     npmlog "^4.1.2"
 
@@ -474,9 +474,9 @@
     inquirer "^6.2.0"
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/publish@3.16.9":
-  version "3.16.9"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/publish/-/publish-3.16.9.tgz#282a4bcb660036f39c5f8bab18c8744ed8a073c9"
+"@0x-lerna-fork/publish@3.16.10":
+  version "3.16.10"
+  resolved "https://registry.npmjs.org/@0x-lerna-fork/publish/-/publish-3.16.10.tgz#36b8aa88ae470d8d95a3a0337c0a0f1fa6fa9068"
   dependencies:
     "@0x-lerna-fork/check-working-tree" "3.16.3"
     "@0x-lerna-fork/child-process" "3.16.3"
@@ -496,7 +496,7 @@
     "@0x-lerna-fork/run-lifecycle" "3.16.3"
     "@0x-lerna-fork/run-topologically" "3.16.3"
     "@0x-lerna-fork/validation-error" "3.16.3"
-    "@0x-lerna-fork/version" "3.16.9"
+    "@0x-lerna-fork/version" "3.16.10"
     "@evocateur/libnpmaccess" "^3.1.2"
     "@evocateur/npm-registry-fetch" "^4.0.0"
     "@evocateur/pacote" "^9.6.3"
@@ -607,9 +607,9 @@
   dependencies:
     npmlog "^4.1.2"
 
-"@0x-lerna-fork/version@3.16.9":
-  version "3.16.9"
-  resolved "https://registry.yarnpkg.com/@0x-lerna-fork/version/-/version-3.16.9.tgz#71df8f8f7af117b72764219577301b7b66c2accf"
+"@0x-lerna-fork/version@3.16.10":
+  version "3.16.10"
+  resolved "https://registry.npmjs.org/@0x-lerna-fork/version/-/version-3.16.10.tgz#bb79ef90d9a3089c9dbf6c5ff6b6d9ba020bd0c5"
   dependencies:
     "@0x-lerna-fork/check-working-tree" "3.16.3"
     "@0x-lerna-fork/child-process" "3.16.3"
