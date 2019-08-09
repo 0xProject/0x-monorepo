@@ -34,8 +34,8 @@ export const searchIndices: ISearchIndices = {
 const sharedSettings = {
     distinct: true,
     attributeForDistinct: 'id',
-    attributesToSnippet: ['description', 'textContent:20'], // attribute:nbWords (number of words to show in a snippet)
-    searchableAttributes: ['title', 'textContent', 'description'],
+    attributesToSnippet: ['textContent:20'], // attribute:nbWords (number of words to show in a snippet)
+    searchableAttributes: ['title', 'textContent'],
     snippetEllipsisText: '…',
 };
 

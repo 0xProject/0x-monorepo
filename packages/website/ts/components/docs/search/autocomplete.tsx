@@ -36,12 +36,6 @@ interface IAutoCompleteProps extends RouteComponentProps<{}> {
     refine?: (value: string) => void;
 }
 
-interface ISnippetMatchLevels {
-    [index: string]: number;
-}
-
-const SNIPPET_MATCH_LEVELS: ISnippetMatchLevels = { none: 0, partial: 1, full: 2 };
-
 const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     isHome = false,
     hits = [],
@@ -93,19 +87,10 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
 
     const renderSuggestion = (hit: IHit): React.ReactNode => {
-        const description: string = hit._snippetResult.description.matchLevel;
-        const textContent: string = hit._snippetResult.textContent.matchLevel;
-
-        let attributeToSnippet = 'description';
-
-        if (SNIPPET_MATCH_LEVELS[textContent] > SNIPPET_MATCH_LEVELS[description]) {
-            attributeToSnippet = 'textContent';
-        }
-
         return (
             <Link to={hit.url}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
-                <Snippet attribute={attributeToSnippet} hit={hit} nonHighlightedTagName="p" tagName="span" />
+                <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
         );
     };
