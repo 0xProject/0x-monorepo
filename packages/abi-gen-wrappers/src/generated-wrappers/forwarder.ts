@@ -297,7 +297,7 @@ export class ForwarderContract extends BaseContract {
                     takerAssetFilledAmount: BigNumber;
                     makerFeePaid: BigNumber;
                     takerFeePaid: BigNumber;
-                }
+                },
             ]
         > {
             assert.isArray('orders', orders);
@@ -359,7 +359,7 @@ export class ForwarderContract extends BaseContract {
                         takerAssetFilledAmount: BigNumber;
                         makerFeePaid: BigNumber;
                         takerFeePaid: BigNumber;
-                    }
+                    },
                 ]
             >(rawCallResult);
             // tslint:enable boolean-naming
@@ -828,7 +828,7 @@ export class ForwarderContract extends BaseContract {
                     takerAssetFilledAmount: BigNumber;
                     makerFeePaid: BigNumber;
                     takerFeePaid: BigNumber;
-                }
+                },
             ]
         > {
             assert.isArray('orders', orders);
@@ -881,7 +881,7 @@ export class ForwarderContract extends BaseContract {
                         takerAssetFilledAmount: BigNumber;
                         makerFeePaid: BigNumber;
                         takerFeePaid: BigNumber;
-                    }
+                    },
                 ]
             >(rawCallResult);
             // tslint:enable boolean-naming

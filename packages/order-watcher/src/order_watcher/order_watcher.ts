@@ -160,9 +160,13 @@ export class OrderWatcher {
     public async addOrderAsync(signedOrder: SignedOrder): Promise<void> {
         assert.doesConformToSchema('signedOrder', signedOrder, schemas.signedOrderSchema);
         const orderHash = orderHashUtils.getOrderHashHex(signedOrder);
-        await assert.isValidSignatureAsync(this._provider, orderHash, signedOrder.signature, signedOrder.makerAddress, {
-            exchangeAddress: signedOrder.exchangeAddress,
-        });
+        await assert.isValidSignatureAsync(
+            this._provider,
+            orderHash,
+            signedOrder.signature,
+            signedOrder.makerAddress,
+            signedOrder.exchangeAddress,
+        );
 
         const expirationUnixTimestampMs = signedOrder.expirationTimeSeconds.times(MILLISECONDS_IN_A_SECOND);
         this._expirationWatcher.addOrder(orderHash, expirationUnixTimestampMs);

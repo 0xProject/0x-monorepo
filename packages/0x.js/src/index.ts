@@ -6,9 +6,6 @@ export {
     generatePseudoRandomSalt,
     orderHashUtils,
     transactionHashUtils,
-    SignatureValidationOpts,
-    ValidatorSignatureOpts,
-    PresignedSignatureOpts,
 } from '@0x/order-utils';
 
 export {

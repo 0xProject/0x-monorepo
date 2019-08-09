@@ -20,7 +20,7 @@ import { assert } from './assert';
 import { eip712Utils } from './eip712_utils';
 import { orderHashUtils } from './order_hash';
 import { transactionHashUtils } from './transaction_hash';
-import { PresignedSignatureOpts, SignatureValidationOpts, TypedDataError, ValidatorSignatureOpts } from './types';
+import { TypedDataError } from './types';
 import { utils } from './utils';
 
 export const signatureUtils = {
@@ -31,7 +31,7 @@ export const signatureUtils = {
      * @param   signature     A hex encoded 0x Protocol signature made up of: [TypeSpecificData][SignatureType].
      *          E.g [vrs][SignatureType.EIP712]
      * @param   signerAddress The hex encoded address that signed the data, producing the supplied signature.
-     * @param   signatureValidationOpts Optional additional information to pass to signature validation functions.
+     * @param   exchangeAddress Optional address of the Exchange contract to validate the signature against.
      * @return  Whether the signature is valid for the supplied signerAddress and data.
      */
     async isValidSignatureAsync(
@@ -39,7 +39,7 @@ export const signatureUtils = {
         data: string,
         signature: string,
         signerAddress: string,
-        signatureValidationOpts?: SignatureValidationOpts,
+        exchangeAddress?: string,
     ): Promise<boolean> {
         const provider = providerUtils.standardizeOrThrow(supportedProvider);
         assert.isHexString('data', data);
@@ -77,8 +77,6 @@ export const signatureUtils = {
             }
 
             case SignatureType.Validator: {
-                const exchangeAddress =
-                    signatureValidationOpts && (signatureValidationOpts as ValidatorSignatureOpts).exchangeAddress;
                 const isValid = await signatureUtils.isValidValidatorSignatureAsync(
                     provider,
                     data,
@@ -90,8 +88,6 @@ export const signatureUtils = {
             }
 
             case SignatureType.PreSigned: {
-                const exchangeAddress =
-                    signatureValidationOpts && (signatureValidationOpts as PresignedSignatureOpts).exchangeAddress;
                 return signatureUtils.isValidPresignedSignatureAsync(provider, data, signerAddress, exchangeAddress);
             }
 

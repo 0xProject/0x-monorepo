@@ -377,7 +377,7 @@ describe('MixinSignatureValidator', () => {
                 orderHashHex,
                 signatureHex,
                 signerAddress,
-                { exchangeAddress: signatureValidator.address },
+                signatureValidator.address,
             );
             expect(isValidSignatureTs).to.be.true();
         });
@@ -402,7 +402,7 @@ describe('MixinSignatureValidator', () => {
                 orderHashHex,
                 signatureHex,
                 notSignerAddress,
-                { exchangeAddress: signatureValidator.address },
+                signatureValidator.address,
             );
             expect(isValidSignatureTs).to.be.false();
         });
@@ -442,9 +442,13 @@ describe('MixinSignatureValidator', () => {
             expect(isValidSignature).to.be.false();
 
             expect(
-                signatureUtils.isValidSignatureAsync(provider, orderHashHex, signatureHex, signerAddress, {
-                    exchangeAddress: signatureValidator.address,
-                }),
+                signatureUtils.isValidSignatureAsync(
+                    provider,
+                    orderHashHex,
+                    signatureHex,
+                    signerAddress,
+                    signatureValidator.address,
+                ),
             ).to.be.rejected();
         });
 
