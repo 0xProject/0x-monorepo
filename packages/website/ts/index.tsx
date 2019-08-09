@@ -31,9 +31,9 @@ import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
 import { NextMarketMaker } from 'ts/pages/market_maker';
-import { NextWhy } from 'ts/pages/why';
 import { PrivacyPolicy } from 'ts/pages/privacy';
 import { TermsOfService } from 'ts/pages/terms';
+import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
 tradeHistoryStorage.clearIfRequired();

@@ -1,6 +1,5 @@
 import * as _ from 'lodash';
 import * as React from 'react';
-import styled from 'styled-components';
 
 import { DocumentTitle } from 'ts/components/document_title';
 import { Column, Section } from 'ts/components/newLayout';

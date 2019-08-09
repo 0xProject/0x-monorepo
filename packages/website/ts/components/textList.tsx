@@ -8,10 +8,14 @@ interface ListItemProps {
 interface OrderedListProps {
     marginBottom?: string;
 }
+interface UnorderedListProps {
+    marginBottom?: string;
+}
 
-export const UnorderedList = styled.ul`
+export const UnorderedList = styled.ul<UnorderedListProps>`
     list-style-type: disc;
     padding-left: 20px;
+    margin-bottom: ${props => props.marginBottom};
 `;
 
 export const OrderedList = styled.ol<OrderedListProps>`
