@@ -43,7 +43,7 @@ interface IDocsPageState {
 
 export const DocsPage: React.FC<IDocsPageProps> = props => {
     const [state, setState] = React.useState<IDocsPageState>({
-        Component: null,
+        Component: '',
         contents: [],
         title: '',
         subtitle: '',
