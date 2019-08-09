@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { Difficulty, Level } from 'ts/components/docs/resource/level';
 import { Tag } from 'ts/components/docs/resource/tag';
 import { Heading, Paragraph } from 'ts/components/text';
@@ -40,7 +39,7 @@ export const Resource: React.FC<IHitProps> = ({ hit }) => {
                         <Tag key={`tag-${index}`}>{label}</Tag>
                     ))}
                 </Tags>
-                <Level difficulty={difficulty} />
+                {difficulty && <Level difficulty={difficulty} />}
             </Meta>
         </ResourceWrapper>
     );
