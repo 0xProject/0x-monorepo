@@ -69,7 +69,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
 
     const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
         const { hash, url, urlWithHash } = suggestion;
-        // If the url contains a hash (fragment identifier) and the user is currently
+        // If there is a hash (fragment identifier) and the user is currently
         // on the same page, scroll to content. If not, route away to the doc page.
         if (hash && location.pathname === url) {
             const id = hash.substring(1); // Get rid of # symbol
