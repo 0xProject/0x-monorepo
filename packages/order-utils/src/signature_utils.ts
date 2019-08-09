@@ -114,7 +114,7 @@ export const signatureUtils = {
         assert.isETHAddressHex('signerAddress', signerAddress);
 
         let exchangeContract: ExchangeContract;
-        if (exchangeAddress) {
+        if (exchangeAddress !== undefined) {
             assert.isETHAddressHex('exchange', exchangeAddress);
             exchangeContract = new ExchangeContract(exchangeAddress, provider);
         } else {
@@ -173,7 +173,7 @@ export const signatureUtils = {
         assert.isETHAddressHex('signerAddress', signerAddress);
 
         let exchangeContract: ExchangeContract;
-        if (exchangeAddress) {
+        if (exchangeAddress !== undefined) {
             assert.isETHAddressHex('exchange', exchangeAddress);
             exchangeContract = new ExchangeContract(exchangeAddress, provider);
         } else {
