@@ -106,13 +106,11 @@ const DOCUMENT_TITLE = '0x: The Protocol for Trading Tokens';
 const DOCUMENT_DESCRIPTION = 'An Open Protocol For Decentralized Exchange On The Ethereum Blockchain';
 
 render(
-    <div>
+    <>
         <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
         <Router>
-            <div>
                 <MuiThemeProvider muiTheme={muiTheme}>
                     <Provider store={store}>
-                        <div>
                             <Switch>
                                 {/* Next (new site) routes */}
                                 <Route exact={true} path="/" component={NextLanding as any} />
@@ -242,11 +240,9 @@ render(
                                 <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
                                 <Route component={NotFound as any} />
                             </Switch>
-                        </div>
                     </Provider>
                 </MuiThemeProvider>
-            </div>
         </Router>
-    </div>,
+    </>,
     document.getElementById('app'),
 );
