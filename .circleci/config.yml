@@ -80,8 +80,6 @@ jobs:
             - restore_cache:
                   keys:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
-            - store_artifacts:
-                  path: ~/repo/packages/contract-wrappers/node_modules
             - run: yarn test:publish:circleci
     test-doc-generation:
         docker:
