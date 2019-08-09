@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.2.0 - _August 8, 2019_
+
+    * Updated to include `getABIDecodedTransactionData` and `getABIDecodedReturnData` (#2018)
+
+## v5.1.0 - _July 31, 2019_
+
+    * Add subscribe/unsubscribe methods for events (#1970)
+
 ## v5.0.3 - _July 24, 2019_
 
     * Dependencies updated

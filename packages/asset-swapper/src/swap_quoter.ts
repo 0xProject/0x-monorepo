@@ -373,6 +373,11 @@ export class SwapQuoter {
         return ordersAndFillableAmounts;
     }
 
+    /**
+     * Util function to check if takerAddress's allowance is enough for 0x exchange contracts to conduct the swap specified by the swapQuote.
+     * @param swapQuote The swapQuote in question to check enough allowance enabled for 0x exchange contracts to conduct the swap.
+     * @param takerAddress The address of the taker of the provided swapQuote
+     */
     public async isTakerAddressAllowanceEnoughForBestAndWorstQuoteInfoAsync(
         swapQuote: SwapQuote,
         takerAddress: string,

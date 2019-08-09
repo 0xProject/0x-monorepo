@@ -1,12 +1,31 @@
 [
     {
+        "timestamp": 1565296576,
+        "version": "0.0.7",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1564607468,
         "version": "0.0.6",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "0.0.5",
         "changes": [
             {
                 "note": "Updated calls to <contract wrapper>.deployFrom0xArtifactAsync to include artifact dependencies.",
                 "pr": 1995
             }
-        ]
+        ],
+        "timestamp": 1564604963
     },
     {
         "timestamp": 1563957393,

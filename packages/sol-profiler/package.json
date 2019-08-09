@@ -1,6 +1,6 @@
 {
     "name": "@0x/sol-profiler",
-    "version": "3.1.9",
+    "version": "3.1.11",
     "engines": {
         "node": ">=6.12"
     },
@@ -30,10 +30,10 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/sol-profiler/README.md",
     "dependencies": {
-        "@0x/sol-tracing-utils": "^6.0.14",
-        "@0x/subproviders": "^4.1.2",
+        "@0x/sol-tracing-utils": "^6.0.16",
+        "@0x/subproviders": "^5.0.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
+        "@0x/utils": "^4.5.0",
         "ethereum-types": "^2.1.4",
         "ethereumjs-util": "^5.1.1",
         "lodash": "^4.17.11",

@@ -1,6 +1,6 @@
 {
     "name": "@0x/python-contract-wrappers",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "engines": {
         "node": ">=6.12"
     },
@@ -13,7 +13,7 @@
         "clean": "shx rm -rf generated"
     },
     "config": {
-        "abis": "../contract-artifacts/artifacts/{Exchange,ERC20Token}.json"
+        "abis": "../contract-artifacts/artifacts/{AssetProxyOwner,Coordinator,CoordinatorRegistry,DummyERC20Token,DummyERC721Token,DutchAuction,ERC20Proxy,ERC20Token,ERC721Proxy,ERC721Token,EthBalanceChecker,Exchange,Forwarder,IAssetProxy,IValidator,IWallet,MultiAssetProxy,OrderValidator,WETH9,ZRXToken}.json"
     },
     "repository": {
         "type": "git",
@@ -25,7 +25,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/python-contract-wrappers/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^3.1.1",
+        "@0x/abi-gen": "^4.1.0",
         "shx": "^0.2.2"
     },
     "publishConfig": {

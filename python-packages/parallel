@@ -20,9 +20,9 @@ $ ./parallel pip uninstall $(basename $(pwd))
 
 >>>"""
 
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, wait
 from os import chdir
-from subprocess import check_call
+from subprocess import CalledProcessError, check_output
 from sys import argv
 
 PACKAGES = [
@@ -38,7 +38,18 @@ PACKAGES = [
 def run_cmd_on_package(package: str):
     """cd to the package dir, ./setup.py lint, cd .."""
     chdir(package)
-    check_call(f"{' '.join(argv[1:])}".split())
-    chdir("..")
+    try:
+        check_output(f"{' '.join(argv[1:])}".split())
+    except CalledProcessError as error:
+        print(f"standard output from command:\n{error.output.decode('utf-8')}")
+        raise RuntimeError(f"Above exception raised in {package}, ") from error
+    finally:
+        chdir("..")
 
-ProcessPoolExecutor().map(run_cmd_on_package, PACKAGES)
+with ProcessPoolExecutor() as executor:
+    for future in executor.map(run_cmd_on_package, PACKAGES):
+        # iterate over map()'s return value, to resolve the futures.
+        # but we don't actually care what the return values are, so just `pass`.
+        # if any exceptions were raised by the underlying task, they'll be
+        # raised as the iteration encounters them.
+        pass

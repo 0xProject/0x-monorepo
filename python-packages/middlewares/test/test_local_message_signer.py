@@ -27,7 +27,7 @@ def test_local_message_signer__sign_order():
     )
     ganache = HTTPProvider("http://127.0.0.1:8545")
     web3_instance = Web3(ganache)
-    web3_instance.middleware_stack.add(
+    web3_instance.middleware_onion.add(
         construct_local_message_signer(private_key)
     )
     order = {

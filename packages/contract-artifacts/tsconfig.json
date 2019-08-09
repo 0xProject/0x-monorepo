@@ -26,6 +26,8 @@
         "./artifacts/ZRXToken.json",
         "./artifacts/CoordinatorRegistry.json",
         "./artifacts/Coordinator.json",
-        "./artifacts/EthBalanceChecker.json"
+        "./artifacts/EthBalanceChecker.json",
+        "./artifacts/ERC1155Proxy.json",
+        "./artifacts/StaticCallProxy.json"
     ]
 }

@@ -32,8 +32,8 @@ the second account will be the taker.
 
 >>> from web3 import Web3
 >>> accounts = Web3(ganache).eth.accounts
->>> maker_address = accounts[0].lower()
->>> taker_address = accounts[1].lower()
+>>> maker_address = accounts[0]
+>>> taker_address = accounts[1]
 
 In the examples below, we'll use the optional `tx_params`:code: parameter to
 the contract calls, in order to specify which account each transaction is to
@@ -90,7 +90,7 @@ their tokens.  Because the order constructed below has the maker giving WETH,
 we need to tell the WETH token contract to let the 0x contracts transfer our
 balance:
 
->>> from zero_ex.contract_wrappers import ERC20Token
+>>> from zero_ex.contract_wrappers.erc20_token import ERC20Token
 >>> zrx_token = ERC20Token(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].zrx_token,
@@ -102,13 +102,13 @@ balance:
 
 >>> erc20_proxy_addr = NETWORK_TO_ADDRESSES[NetworkId.GANACHE].erc20_proxy
 
->>> tx = zrx_token.approve(
+>>> tx = zrx_token.approve.send_transaction(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=maker_address),
 ... )
 
->>> tx = weth_token.approve(
+>>> tx = weth_token.approve.send_transaction(
 ...     erc20_proxy_addr,
 ...     to_wei(100, 'ether'),
 ...     tx_params=TxParams(from_=taker_address),
@@ -161,12 +161,12 @@ specifies the amount of tokens (in this case WETH) that the taker wants to
 fill.  This example fills the order completely, but partial fills are possible
 too.
 
->>> from zero_ex.contract_wrappers import Exchange
+>>> from zero_ex.contract_wrappers.exchange import Exchange
 >>> exchange = Exchange(
 ...     provider=ganache,
 ...     contract_address=NETWORK_TO_ADDRESSES[NetworkId.GANACHE].exchange,
 ... )
->>> tx_hash = exchange.fill_order(
+>>> tx_hash = exchange.fill_order.send_transaction(
 ...     order=order,
 ...     taker_asset_fill_amount=order["takerAssetAmount"],
 ...     signature=maker_signature,
@@ -217,7 +217,7 @@ A Maker can cancel an order that has yet to be filled.
 ...     )
 ... )
 
->>> tx_hash = exchange.cancel_order(
+>>> tx_hash = exchange.cancel_order.send_transaction(
 ...     order=order, tx_params=TxParams(from_=maker_address)
 ... )
 
@@ -287,14 +287,40 @@ is an example where the taker fills two orders in one transaction:
 
 Fill order_1 and order_2 together:
 
->>> exchange.batch_fill_orders(
+>>> exchange.batch_fill_orders.send_transaction(
 ...     orders=[order_1, order_2],
 ...     taker_asset_fill_amounts=[1, 2],
 ...     signatures=[signature_1, signature_2],
 ...     tx_params=TxParams(from_=taker_address))
 HexBytes('0x...')
+
+Estimating gas consumption
+--------------------------
+
+Before executing a transaction, you may want to get an estimate of how much gas
+will be consumed.
+
+>>> exchange.cancel_order.estimate_gas(
+...     order=Order(
+...         makerAddress=maker_address,
+...         takerAddress='0x0000000000000000000000000000000000000000',
+...         exchangeAddress=exchange_address,
+...         senderAddress='0x0000000000000000000000000000000000000000',
+...         feeRecipientAddress='0x0000000000000000000000000000000000000000',
+...         makerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         takerAssetData=asset_data_utils.encode_erc20(weth_address),
+...         salt=random.randint(1, 100000000000000000),
+...         makerFee=0,
+...         takerFee=0,
+...         makerAssetAmount=1000000000000000000,
+...         takerAssetAmount=500000000000000000000,
+...         expirationTimeSeconds=round(
+...             (datetime.utcnow() + timedelta(days=1)).timestamp()
+...         )
+...     ),
+...     tx_params=TxParams(from_=maker_address),
+... )
+73...
 """
 
 from .tx_params import TxParams
-from .erc20_token import ERC20Token
-from .exchange import Exchange

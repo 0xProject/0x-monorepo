@@ -108,7 +108,7 @@ const ButtonBase = styled.button<ButtonInterface>`
         border-color: ${props => props.isTransparent && !props.isNoBorder && !props.isWithArrow && '#00AE99'};
 
         svg {
-            transform: translate3d(2px, -2px, 0);
+            transform: ${props => (props.isWithArrow ? 'translate3d(2px, -2px, 0)' : '')};
         }
     }
 `;

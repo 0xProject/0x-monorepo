@@ -1,7 +1,6 @@
 // tslint:disable:no-unnecessary-type-assertion
 import { ContractAddresses, ContractWrappers } from '@0x/contract-wrappers';
-import { tokenUtils } from '@0x/contract-wrappers/lib/test/utils/token_utils';
-import { BlockchainLifecycle, callbackErrorReporter } from '@0x/dev-utils';
+import { BlockchainLifecycle, callbackErrorReporter, tokenUtils } from '@0x/dev-utils';
 import { FillScenarios } from '@0x/fill-scenarios';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';

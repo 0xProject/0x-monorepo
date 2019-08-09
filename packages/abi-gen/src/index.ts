@@ -12,12 +12,12 @@ import {
     DevdocOutput,
     EventAbi,
     MethodAbi,
-    TupleDataItem,
 } from 'ethereum-types';
 import { sync as globSync } from 'glob';
 import * as Handlebars from 'handlebars';
 import * as _ from 'lodash';
 import * as mkdirp from 'mkdirp';
+import toposort = require('toposort');
 import * as yargs from 'yargs';
 
 import { ContextData, ContractsBackend, ParamKind } from './types';
@@ -104,6 +104,43 @@ function registerTypeScriptHelpers(): void {
             return context !== undefined;
         },
     );
+
+    // Format docstring for method description
+    Handlebars.registerHelper(
+        'formatDocstringForMethodTs',
+        (docString: string): Handlebars.SafeString => {
+            // preserve newlines
+            const regex = /([ ]{4,})+/gi;
+            const formatted = docString.replace(regex, '\n * ');
+            return new Handlebars.SafeString(formatted);
+        },
+    );
+    // Get docstring for method param
+    Handlebars.registerHelper(
+        'getDocstringForParamTs',
+        (paramName: string, devdocParamsObj: { [name: string]: string }): Handlebars.SafeString | undefined => {
+            if (devdocParamsObj === undefined || devdocParamsObj[paramName] === undefined) {
+                return undefined;
+            }
+            return new Handlebars.SafeString(`${devdocParamsObj[paramName]}`);
+        },
+    );
+
+    // Format docstring for method param
+    Handlebars.registerHelper(
+        'formatDocstringForParamTs',
+        (paramName: string, desc: Handlebars.SafeString): Handlebars.SafeString => {
+            const docString = `@param ${paramName} ${desc}`;
+            const hangingIndentLength = 4;
+            const config = {
+                width: 80,
+                paddingLeft: ' * ',
+                hangingIndent: ' '.repeat(hangingIndentLength),
+                ansi: false,
+            };
+            return new Handlebars.SafeString(`${cliFormat.wrap(docString, config)}`);
+        },
+    );
 }
 
 function registerPythonHelpers(): void {
@@ -116,13 +153,18 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper('toPythonIdentifier', utils.toPythonIdentifier.bind(utils));
     Handlebars.registerHelper('sanitizeDevdocDetails', (_methodName: string, devdocDetails: string, indent: number) => {
         // wrap to 80 columns, assuming given indent, so that generated
-        // docstrings can pass pycodestyle checks.
+        // docstrings can pass pycodestyle checks.  also, replace repeated
+        // spaces, likely caused by leading indents in the Solidity, because
+        // they cause repeated spaces in the output, and in particular they may
+        // cause repeated spaces at the beginning of a line in the docstring,
+        // which leads to "unexpected indent" errors when generating
+        // documentation.
         if (devdocDetails === undefined || devdocDetails.length === 0) {
             return '';
         }
         const columnsPerRow = 80;
         return new Handlebars.SafeString(
-            `\n${cliFormat.wrap(devdocDetails || '', {
+            `\n${cliFormat.wrap(devdocDetails.replace(/  +/g, ' ') || '', {
                 paddingLeft: ' '.repeat(indent),
                 width: columnsPerRow,
                 ansi: false,
@@ -154,10 +196,15 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper('tupleDefinitions', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
         // build an array of objects, each of which has one key, the Python
-        // name of a tuple, with a string value holding the Python
-        // definition of that tuple. Using a key-value object conveniently
+        // name of a tuple, with a string value holding the body of a Python
+        // class representing that tuple. Using a key-value object conveniently
         // filters duplicate references to the same tuple.
-        const tupleDefinitions: { [pythonTupleName: string]: string } = {};
+        const tupleBodies: { [pythonTupleName: string]: string } = {};
+        // build an array of tuple dependencies, whose format conforms to the
+        // expected input to toposort, a function to do a topological sort,
+        // which will help us declare tuples in the proper order, avoiding
+        // references to tuples that haven't been declared yet.
+        const tupleDependencies: Array<[string, string]> = [];
         for (const abi of abis) {
             let parameters: DataItem[] = [];
             if (abi.hasOwnProperty('inputs')) {
@@ -179,24 +226,36 @@ function registerPythonHelpers(): void {
                 parameters = parameters.concat((abi as MethodAbi).outputs);
             }
             for (const parameter of parameters) {
-                if (parameter.type === 'tuple') {
-                    tupleDefinitions[
-                        utils.makePythonTupleName((parameter as TupleDataItem).components)
-                    ] = utils.makePythonTupleClassBody((parameter as TupleDataItem).components);
-                }
+                utils.extractTuples(parameter, tupleBodies, tupleDependencies);
             }
         }
+        // build up a list of tuples to declare. the order they're pushed into
+        // this array is the order they will be declared.
+        const tuplesToDeclare = [];
+        // first push the ones that have dependencies
+        tuplesToDeclare.push(...toposort(tupleDependencies));
+        // then push any remaining bodies (the ones that DON'T have
+        // dependencies)
+        for (const pythonTupleName in tupleBodies) {
+            if (!tuplesToDeclare.includes(pythonTupleName)) {
+                tuplesToDeclare.push(pythonTupleName);
+            }
+        }
+        // now iterate over those ordered tuples-to-declare, and prefix the
+        // corresponding class bodies with their class headers, to form full
+        // class declarations.
         const tupleDeclarations = [];
-        for (const pythonTupleName in tupleDefinitions) {
-            if (tupleDefinitions[pythonTupleName]) {
+        for (const pythonTupleName of tuplesToDeclare) {
+            if (tupleBodies[pythonTupleName]) {
                 tupleDeclarations.push(
-                    `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    A tuple found in an ABI may have been written in Solidity as a literal\n    tuple, or it may have been written as a parameter with a Solidity\n    \`struct\`:code: data type; there's no way to tell which, based solely on the\n    ABI, and the name of a Solidity \`struct\`:code: is not conveyed through the\n    ABI.  This class represents a tuple that appeared in a method definition.\n    Its name is derived from a hash of that tuple's field names, and every\n    method whose ABI refers to a tuple with that same list of field names will\n    have a generated wrapper method that refers to this class.\n\n    Any members of type \`bytes\`:code: should be encoded as UTF-8, which can be\n    accomplished via \`str.encode("utf_8")\`:code:\n    """${
-                        tupleDefinitions[pythonTupleName]
+                    `class ${pythonTupleName}(TypedDict):\n    """Python representation of a tuple or struct.\n\n    Solidity compiler output does not include the names of structs that appear\n    in method definitions.  A tuple found in an ABI may have been written in\n    Solidity as a literal, anonymous tuple, or it may have been written as a\n    named \`struct\`:code:, but there is no way to tell from the compiler\n    output.  This class represents a tuple that appeared in a method\n    definition.  Its name is derived from a hash of that tuple's field names,\n    and every method whose ABI refers to a tuple with that same list of field\n    names will have a generated wrapper method that refers to this class.\n\n    Any members of type \`bytes\`:code: should be encoded as UTF-8, which can be\n    accomplished via \`str.encode("utf_8")\`:code:\n    """${
+                        tupleBodies[pythonTupleName]
                     }`,
                 );
             }
         }
-        return new Handlebars.SafeString(tupleDeclarations.join('\n\n'));
+        // finally, join the class declarations together for the output file
+        return new Handlebars.SafeString(tupleDeclarations.join('\n\n\n'));
     });
     Handlebars.registerHelper('docBytesIfNecessary', (abisJSON: string) => {
         const abis: AbiDefinition[] = JSON.parse(abisJSON);
@@ -225,6 +284,10 @@ function registerPythonHelpers(): void {
         }
         return '';
     });
+    Handlebars.registerHelper(
+        'toPythonClassname',
+        (sourceName: string) => new Handlebars.SafeString(changeCase.pascal(sourceName)),
+    );
 }
 if (args.language === 'TypeScript') {
     registerTypeScriptHelpers();

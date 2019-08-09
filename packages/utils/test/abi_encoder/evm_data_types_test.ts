@@ -800,6 +800,19 @@ describe('ABI Encoder: EVM Data Type Encoding/Decoding', () => {
             const decodedArgs = dataType.decode(nullEncodedArgs);
             expect(decodedArgs).to.be.deep.equal(args);
         });
+        it('Should fail to decode if not enough bytes in calldata', async () => {
+            // Create DataType object
+            const testDataItem = { name: 'Integer (256)', type: 'int' };
+            const dataType = new AbiEncoder.Int(testDataItem);
+            const args = new BigNumber(0);
+            const encodedArgs = dataType.encode(args, encodingRules);
+            const truncatedCalldataLength = 60;
+            const encodedArgsTruncated = encodedArgs.substr(0, truncatedCalldataLength);
+            // Encode Args and validate result
+            expect(() => {
+                dataType.decode(encodedArgsTruncated);
+            }).to.throw();
+        });
     });
 
     describe('Unsigned Integer', () => {

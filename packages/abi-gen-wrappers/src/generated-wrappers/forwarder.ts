@@ -27,7 +27,28 @@ import * as ethers from 'ethers';
 // tslint:disable:no-parameter-reassignment
 // tslint:disable-next-line:class-name
 export class ForwarderContract extends BaseContract {
+    /**
+     * Attempt to purchase makerAssetFillAmount of makerAsset by selling ETH provided with transaction.
+     * Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+     * Any ETH not spent will be refunded to sender.
+     */
     public marketBuyOrdersWithEth = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -109,6 +130,23 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -177,6 +215,21 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -248,6 +301,22 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -365,6 +434,21 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param makerAssetFillAmount Desired amount of makerAsset to purchase.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -422,8 +506,99 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketBuyOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],uint256,bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
+    /**
+     * Withdraws assets from this contract. The contract requires a ZRX balance in order to
+     * function optimally, and this function allows the ZRX to be withdrawn by owner. It may also be
+     * used to withdraw assets that were accidentally sent to this contract.
+     */
     public withdrawAsset = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param assetData Byte array encoded for the respective asset proxy.
+         * @param amount Amount of ERC20 token to withdraw.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             assetData: string,
             amount: BigNumber,
@@ -449,6 +624,15 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param assetData Byte array encoded for the respective asset proxy.
+         * @param amount Amount of ERC20 token to withdraw.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             assetData: string,
             amount: BigNumber,
@@ -472,6 +656,13 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param assetData Byte array encoded for the respective asset proxy.
+         * @param amount Amount of ERC20 token to withdraw.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(
             assetData: string,
             amount: BigNumber,
@@ -496,6 +687,13 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param assetData Byte array encoded for the respective asset proxy.
+         * @param amount Amount of ERC20 token to withdraw.
+         */
         async callAsync(
             assetData: string,
             amount: BigNumber,
@@ -534,6 +732,13 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param assetData Byte array encoded for the respective asset proxy.
+         * @param amount Amount of ERC20 token to withdraw.
+         */
         getABIEncodedTransactionData(assetData: string, amount: BigNumber): string {
             assert.isString('assetData', assetData);
             assert.isBigNumber('amount', amount);
@@ -544,8 +749,27 @@ export class ForwarderContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('withdrawAsset(bytes,uint256)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public owner = {
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<string> {
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
                 schemas.addressSchema,
@@ -577,13 +801,53 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(): string {
             const self = (this as any) as ForwarderContract;
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(callData: string): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<string>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('owner()');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
+            return abiDecodedReturnData;
+        },
     };
+    /**
+     * Purchases as much of orders' makerAssets as possible by selling up to 95% of transaction's ETH value.
+     * Any ZRX required to pay fees for primary orders will automatically be purchased by this contract.
+     * 5% of ETH value is reserved for paying fees to order feeRecipients (in ZRX) and forwarding contract feeRecipient (in ETH).
+     * Any ETH not spent will be refunded to sender.
+     */
     public marketSellOrdersWithEth = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(
             orders: Array<{
                 makerAddress: string;
@@ -654,6 +918,22 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             orders: Array<{
                 makerAddress: string;
@@ -719,6 +999,20 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(
             orders: Array<{
                 makerAddress: string;
@@ -780,6 +1074,21 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         * @returns Amounts filled and fees paid by maker and taker for both sets of orders.
+         */
         async callAsync(
             orders: Array<{
                 makerAddress: string;
@@ -887,6 +1196,20 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         * @param orders Array of order specifications used containing desired
+         *     makerAsset and WETH as takerAsset.
+         * @param signatures Proofs that orders have been created by makers.
+         * @param feeOrders Array of order specifications containing ZRX as makerAsset
+         *     and WETH as takerAsset. Used to purchase ZRX for primary order fees.
+         * @param feeSignatures Proofs that feeOrders have been created by makers.
+         * @param feePercentage Percentage of WETH sold that will payed as fee to
+         *     forwarding contract feeRecipient.
+         * @param feeRecipient Address that will receive ETH when orders are filled.
+         */
         getABIEncodedTransactionData(
             orders: Array<{
                 makerAddress: string;
@@ -934,8 +1257,92 @@ export class ForwarderContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
+        getABIDecodedTransactionData(
+            callData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(
+            returnData: string,
+        ): [
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            },
+            {
+                makerAssetFilledAmount: BigNumber;
+                takerAssetFilledAmount: BigNumber;
+                makerFeePaid: BigNumber;
+                takerFeePaid: BigNumber;
+            }
+        ] {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder(
+                'marketSellOrdersWithEth((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],(address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes)[],bytes[],uint256,address)',
+            );
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<
+                [
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    },
+                    {
+                        makerAssetFilledAmount: BigNumber;
+                        takerAssetFilledAmount: BigNumber;
+                        makerFeePaid: BigNumber;
+                        takerFeePaid: BigNumber;
+                    }
+                ]
+            >(returnData);
+            return abiDecodedReturnData;
+        },
     };
     public transferOwnership = {
+        /**
+         * Sends an Ethereum transaction executing this method with the supplied parameters. This is a read/write
+         * Ethereum operation and will cost gas.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async sendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -956,6 +1363,13 @@ export class ForwarderContract extends BaseContract {
             const txHash = await self._web3Wrapper.sendTransactionAsync(txDataWithDefaults);
             return txHash;
         },
+        /**
+         * Sends an Ethereum transaction and waits until the transaction has been successfully mined without reverting.
+         * If the transaction was mined, but reverted, an error is thrown.
+         * @param txData Additional data for transaction
+         * @param pollingIntervalMs Interval at which to poll for success
+         * @returns A promise that resolves when the transaction is successful
+         */
         awaitTransactionSuccessAsync(
             newOwner: string,
             txData?: Partial<TxData>,
@@ -977,6 +1391,11 @@ export class ForwarderContract extends BaseContract {
                 })(),
             );
         },
+        /**
+         * Estimates the gas cost of sending an Ethereum transaction calling this method with these arguments.
+         * @param txData Additional data for transaction
+         * @returns The hash of the transaction
+         */
         async estimateGasAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<number> {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -996,6 +1415,11 @@ export class ForwarderContract extends BaseContract {
             const gas = await self._web3Wrapper.estimateGasAsync(txDataWithDefaults);
             return gas;
         },
+        /**
+         * Sends a read-only call to the contract method. Returns the result that would happen if one were to send an
+         * Ethereum transaction to this method, given the current state of the blockchain. Calls do not cost gas
+         * since they don't modify state.
+         */
         async callAsync(newOwner: string, callData: Partial<CallData> = {}, defaultBlock?: BlockParam): Promise<void> {
             assert.isString('newOwner', newOwner);
             assert.doesConformToSchema('callData', callData, schemas.callDataSchema, [
@@ -1028,6 +1452,11 @@ export class ForwarderContract extends BaseContract {
             // tslint:enable boolean-naming
             return result;
         },
+        /**
+         * Returns the ABI encoded transaction data needed to send an Ethereum transaction calling this method. Before
+         * sending the Ethereum tx, this encoded tx data can first be sent to a separate signing service or can be used
+         * to create a 0x transaction (see protocol spec for more details).
+         */
         getABIEncodedTransactionData(newOwner: string): string {
             assert.isString('newOwner', newOwner);
             const self = (this as any) as ForwarderContract;
@@ -1035,6 +1464,20 @@ export class ForwarderContract extends BaseContract {
                 newOwner.toLowerCase(),
             ]);
             return abiEncodedTransactionData;
+        },
+        getABIDecodedTransactionData(callData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedCallData = abiEncoder.strictDecode<void>(callData);
+            return abiDecodedCallData;
+        },
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ForwarderContract;
+            const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
+            // tslint:disable boolean-naming
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
+            return abiDecodedReturnData;
         },
     };
     public static async deployFrom0xArtifactAsync(
@@ -1058,8 +1501,10 @@ export class ForwarderContract extends BaseContract {
         const bytecode = artifact.compilerOutput.evm.bytecode.object;
         const abi = artifact.compilerOutput.abi;
         const logDecodeDependenciesAbiOnly: { [contractName: string]: ContractAbi } = {};
-        for (const key of Object.keys(logDecodeDependencies)) {
-            logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+        if (Object.keys(logDecodeDependencies) !== undefined) {
+            for (const key of Object.keys(logDecodeDependencies)) {
+                logDecodeDependenciesAbiOnly[key] = logDecodeDependencies[key].compilerOutput.abi;
+            }
         }
         return ForwarderContract.deployAsync(
             bytecode,

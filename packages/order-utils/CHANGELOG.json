@@ -3,14 +3,29 @@
         "version": "8.3.0",
         "changes": [
             {
-                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
-                "pr": 1995
-            },
-            {
-                "note": "Fix isValidValidatorSignatureAsync",
+                "note": "Fix isValidValidatorSignatureAsync, allow to pass exchangeAddress to isValidSignatureAsync.",
                 "pr": 2017
             }
         ]
+    },
+    {
+        "timestamp": 1565296576,
+        "version": "8.2.5",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "8.2.4",
+        "changes": [
+            {
+                "note": "Updated calls to <contract wrapper>.deploy0xArtifactAsync to include log decode dependencies.",
+                "pr": 1995
+            }
+        ],
+        "timestamp": 1564604963
     },
     {
         "version": "8.2.3",

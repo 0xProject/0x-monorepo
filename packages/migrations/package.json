@@ -1,6 +1,6 @@
 {
     "name": "@0x/migrations",
-    "version": "4.1.10",
+    "version": "4.2.0",
     "engines": {
         "node": ">=6.12"
     },
@@ -21,7 +21,8 @@
         "build:snapshot": "rm -rf ${npm_package_config_snapshot_name} && yarn migrate:v2:snapshot && zip -r \"${npm_package_config_snapshot_name}-${npm_package_version}.zip\" ${npm_package_config_snapshot_name}",
         "build:snapshot:docker": "docker build --tag ${npm_package_config_docker_snapshot_name}:${npm_package_version} --tag ${npm_package_config_docker_snapshot_name}:latest .",
         "publish:snapshot": "aws s3 cp ${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket} && aws s3 cp ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-${npm_package_version}.zip ${npm_package_config_s3_snapshot_bucket}/${npm_package_config_snapshot_name}-latest.zip",
-        "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest"
+        "publish:snapshot:docker": "docker push ${npm_package_config_docker_snapshot_name}:latest",
+        "test_contract_configs": "node ./lib/test_contract_configs.js"
     },
     "config": {
         "s3_snapshot_bucket": "s3://ganache-snapshots.0x.org",
@@ -36,7 +37,7 @@
     },
     "license": "Apache-2.0",
     "devDependencies": {
-        "@0x/dev-utils": "^2.2.5",
+        "@0x/dev-utils": "^2.3.0",
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.4.1",
         "@types/yargs": "^11.0.0",
@@ -50,16 +51,16 @@
         "yargs": "^10.0.3"
     },
     "dependencies": {
-        "@0x/abi-gen-wrappers": "^5.0.3",
-        "@0x/base-contract": "^5.1.2",
-        "@0x/contract-addresses": "^3.0.2",
-        "@0x/contract-artifacts": "^2.0.2",
-        "@0x/order-utils": "^8.2.3",
-        "@0x/sol-compiler": "^3.1.10",
-        "@0x/subproviders": "^4.1.2",
+        "@0x/abi-gen-wrappers": "^5.2.0",
+        "@0x/base-contract": "^5.3.1",
+        "@0x/contract-addresses": "^3.0.3",
+        "@0x/contract-artifacts": "^2.0.4",
+        "@0x/order-utils": "^8.2.5",
+        "@0x/sol-compiler": "^3.1.12",
+        "@0x/subproviders": "^5.0.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
-        "@0x/web3-wrapper": "^6.0.8",
+        "@0x/utils": "^4.5.0",
+        "@0x/web3-wrapper": "^6.0.10",
         "@ledgerhq/hw-app-eth": "^4.3.0",
         "@types/web3-provider-engine": "^14.0.0",
         "ethereum-types": "^2.1.4",

@@ -256,9 +256,10 @@ export interface MarketBuySwapQuoteWithAffiliateFee extends SwapQuoteWithAffilia
 export type SwapQuoteWithAffiliateFee = MarketBuySwapQuoteWithAffiliateFee | MarketSellSwapQuoteWithAffiliateFee;
 
 /**
- * assetEthAmount: The amount of eth required to pay for the requested asset.
- * feeEthAmount: The amount of eth required to pay any fee concerned with completing the swap.
- * totalEthAmount: The total amount of eth required to complete the buy (filling orders, feeOrders, and paying affiliate fee).
+ * feeTakerTokenAmount: The amount of takerToken required any fee concerned with completing the swap.
+ * takerTokenAmount: The amount of takerToken required to conduct the swap.
+ * totalTakerTokenAmount: The total amount of takerToken required to complete the swap (filling orders, feeOrders, and paying affiliate fee)
+ * makerTokenAmount: The amount of makerToken that will be acquired through the swap.
  */
 export interface SwapQuoteInfo {
     feeTakerTokenAmount: BigNumber;

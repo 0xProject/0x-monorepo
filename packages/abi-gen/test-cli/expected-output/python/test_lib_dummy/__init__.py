@@ -11,35 +11,16 @@ from typing import (  # pylint: disable=unused-import
     Union,
 )
 
+from eth_utils import to_checksum_address
 from mypy_extensions import TypedDict  # pylint: disable=unused-import
 from hexbytes import HexBytes
+from web3 import Web3
+from web3.contract import ContractFunction
 from web3.datastructures import AttributeDict
 from web3.providers.base import BaseProvider
 
-from zero_ex.contract_wrappers._base_contract_wrapper import BaseContractWrapper
+from zero_ex.contract_wrappers.bases import ContractMethod, Validator
 from zero_ex.contract_wrappers.tx_params import TxParams
-
-
-class TestLibDummyValidatorBase:
-    """Base class for validating inputs to TestLibDummy methods."""
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        private_key: str = None,
-    ):
-        """Initialize the instance."""
-
-    def assert_valid(
-        self, method_name: str, parameter_name: str, argument_value: Any
-    ):
-        """Raise an exception if method input is not valid.
-
-        :param method_name: Name of the method whose input is to be validated.
-        :param parameter_name: Name of the parameter whose input is to be
-            validated.
-        :param argument_value: Value of argument to parameter to be validated.
-        """
 
 
 # Try to import a custom validator class definition; if there isn't one,
@@ -53,62 +34,25 @@ try:
     )
 except ImportError:
 
-    class TestLibDummyValidator(TestLibDummyValidatorBase):  # type: ignore
+    class TestLibDummyValidator(  # type: ignore
+        Validator
+    ):
         """No-op input validator."""
 
 
 
 
 
-# pylint: disable=too-many-public-methods
-class TestLibDummy(BaseContractWrapper):
-    """Wrapper class for TestLibDummy Solidity contract."""
+class PublicAddConstantMethod(ContractMethod):
+    """Various interfaces to the publicAddConstant method."""
 
-    def __init__(
-        self,
-        provider: BaseProvider,
-        contract_address: str,
-        validator: TestLibDummyValidator = None,
-        private_key: str = None,
-    ):
-        """Get an instance of wrapper for smart contract.
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
 
-        :param provider: instance of :class:`web3.providers.base.BaseProvider`
-        :param contract_address: where the contract has been deployed
-        :param private_key: If specified, transactions will be signed locally,
-            via Web3.py's `eth.account.signTransaction()`:code:, before being
-            sent via `eth.sendRawTransaction()`:code:.
-        """
-        super().__init__(
-            provider=provider,
-            contract_address=contract_address,
-            private_key=private_key,
-        )
-
-        if not validator:
-            validator = TestLibDummyValidator(provider, contract_address, private_key)
-
-        self.validator = validator
-
-    def _get_contract_instance(self, token_address):
-        """Get an instance of the smart contract at a specific address.
-
-        :returns: contract object
-        """
-        return self._contract_instance(
-            address=token_address, abi=TestLibDummy.abi()
-        )
-
-    def public_add_constant(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
-
-        :param tx_params: transaction parameters
-
-        """
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the publicAddConstant method."""
         self.validator.assert_valid(
             method_name='publicAddConstant',
             parameter_name='x',
@@ -116,27 +60,44 @@ class TestLibDummy(BaseContractWrapper):
         )
         # safeguard against fractional inputs
         x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.publicAddConstant(
-            x
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (x)
 
-    def public_add_one(
-        self,
-        x: int,
-        tx_params: Optional[TxParams] = None,
-    ) -> int:
-        """Execute underlying, same-named contract method.
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying contract method via eth_call.
 
         :param tx_params: transaction parameters
 
         """
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).call(tx_params.as_dict())
+
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
+
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+
+class PublicAddOneMethod(ContractMethod):
+    """Various interfaces to the publicAddOne method."""
+
+    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+        """Persist instance data."""
+        super().__init__(provider, contract_address, validator)
+        self.underlying_method = contract_function
+
+    def validate_and_normalize_inputs(self, x: int):
+        """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
             method_name='publicAddOne',
             parameter_name='x',
@@ -144,16 +105,75 @@ class TestLibDummy(BaseContractWrapper):
         )
         # safeguard against fractional inputs
         x = int(x)
-        func = self._get_contract_instance(
-            self.contract_address
-        ).functions.publicAddOne(
-            x
-        )
-        return self._invoke_function_call(
-            func=func,
-            tx_params=tx_params,
-            view_only=True
-        )
+        return (x)
+
+    def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Execute underlying contract method via eth_call.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).call(tx_params.as_dict())
+
+    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+        """Execute underlying contract method via eth_sendTransaction.
+
+        :param tx_params: transaction parameters
+
+        """
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).transact(tx_params.as_dict())
+
+    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+        """Estimate gas consumption of method call."""
+        (x) = self.validate_and_normalize_inputs(x)
+        tx_params = super().normalize_tx_params(tx_params)
+        return self.underlying_method(x).estimateGas(tx_params.as_dict())
+
+# pylint: disable=too-many-public-methods,too-many-instance-attributes
+class TestLibDummy:
+    """Wrapper class for TestLibDummy Solidity contract."""
+    public_add_constant: PublicAddConstantMethod
+    """Constructor-initialized instance of
+    :class:`PublicAddConstantMethod`.
+    """
+
+    public_add_one: PublicAddOneMethod
+    """Constructor-initialized instance of
+    :class:`PublicAddOneMethod`.
+    """
+
+
+    def __init__(
+        self,
+        provider: BaseProvider,
+        contract_address: str,
+        validator: TestLibDummyValidator = None,
+    ):
+        """Get an instance of wrapper for smart contract.
+
+        :param provider: instance of :class:`web3.providers.base.BaseProvider`
+        :param contract_address: where the contract has been deployed
+        :param validator: for validation of method inputs.
+        """
+        self.contract_address = contract_address
+
+        if not validator:
+            validator = TestLibDummyValidator(provider, contract_address)
+
+        self._web3_eth = Web3(  # type: ignore # pylint: disable=no-member
+            provider
+        ).eth
+
+        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=TestLibDummy.abi()).functions
+
+        self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator)
+
+        self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator)
+
 
     @staticmethod
     def abi():

@@ -1,5 +1,69 @@
 [
     {
+        "version": "4.1.0",
+        "changes": [
+            {
+                "note": "Updated expected typescript output for cli tests to include `getABIDecodedTransactionData` and `getABIDecodedReturnData`",
+                "pr": 2018
+            },
+            {
+                "note": "Added tests for`getABIDecodedTransactionData` and `getABIDecodedReturnData` in contract wrappers.",
+                "pr": 2018
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
+        "version": "4.0.0",
+        "changes": [
+            {
+                "note": "whitespace changes to generated Python code",
+                "pr": 1996
+            },
+            {
+                "note": "move Python Validator base class from generated code to common package",
+                "pr": 1996
+            },
+            {
+                "note": "Changed fundamental thing-to-be-wrapped from the contract to the contract method.  That is, now there is a base contract method wrapper class rather than a base contract wrapper class, and individual contract methods are represented by named classes inheriting from that base, and the different operations on a method are now represented by a nested-object dot notation, ie, WrappedContract.ContractMethod.call() and WrappedContract.ContractMethod.send_transaction().",
+                "pr": 1996
+            },
+            {
+                "note": "added gas estimation functionality to contract methods",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning multiple values",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods returning arrays of structs",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with methods that return a struct that contains another struct where the inner struct was not otherwise directly referenced by any method",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with tuples sometimes being used before they were declared",
+                "pr": 1996
+            },
+            {
+                "note": "Python: fixed bug with supporting overloaded methods",
+                "pr": 1996
+            }
+        ]
+    },
+    {
+        "version": "3.1.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ],
+        "timestamp": 1564604963
+    },
+    {
         "version": "3.1.1",
         "changes": [
             {

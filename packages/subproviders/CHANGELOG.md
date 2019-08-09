@@ -5,6 +5,14 @@ Edit the package's CHANGELOG.json file only.
 
 CHANGELOG
 
+## v5.0.1 - _August 8, 2019_
+
+    * Dependencies updated
+
+## v5.0.0 - _July 31, 2019_
+
+    * Remove eth-lightwallet subprovider
+
 ## v4.1.2 - _July 24, 2019_
 
     * Fix bug in Private Key subprovider causing checksummed tx.origin addresses to be rejected. (#1962)

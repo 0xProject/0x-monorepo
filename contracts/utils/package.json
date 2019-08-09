@@ -1,6 +1,6 @@
 {
     "name": "@0x/contracts-utils",
-    "version": "3.1.10",
+    "version": "3.2.1",
     "engines": {
         "node": ">=6.12"
     },
@@ -47,16 +47,16 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/contracts/utils/README.md",
     "devDependencies": {
-        "@0x/abi-gen": "^3.1.1",
-        "@0x/contracts-gen": "^1.0.11",
-        "@0x/contracts-test-utils": "^3.1.11",
-        "@0x/dev-utils": "^2.2.5",
-        "@0x/sol-compiler": "^3.1.10",
+        "@0x/abi-gen": "^4.1.0",
+        "@0x/contracts-gen": "^1.0.13",
+        "@0x/contracts-test-utils": "^3.1.13",
+        "@0x/dev-utils": "^2.3.0",
+        "@0x/sol-compiler": "^3.1.12",
         "@0x/tslint-config": "^3.0.1",
         "@types/bn.js": "^4.11.0",
         "@types/lodash": "4.14.104",
-        "@types/node": "*",
         "@types/mocha": "^5.2.7",
+        "@types/node": "*",
         "chai": "^4.0.1",
         "chai-as-promised": "^7.1.0",
         "chai-bignumber": "^3.0.0",
@@ -70,12 +70,12 @@
         "typescript": "3.0.1"
     },
     "dependencies": {
-        "@0x/base-contract": "^5.1.2",
-        "@0x/order-utils": "^8.2.3",
+        "@0x/base-contract": "^5.3.1",
+        "@0x/order-utils": "^8.2.5",
         "@0x/types": "^2.4.1",
         "@0x/typescript-typings": "^4.2.4",
-        "@0x/utils": "^4.4.1",
-        "@0x/web3-wrapper": "^6.0.8",
+        "@0x/utils": "^4.5.0",
+        "@0x/web3-wrapper": "^6.0.10",
         "bn.js": "^4.11.8",
         "ethereum-types": "^2.1.4",
         "ethereumjs-util": "^5.1.1",

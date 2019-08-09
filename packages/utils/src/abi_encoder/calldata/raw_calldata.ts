@@ -31,8 +31,13 @@ export class RawCalldata {
     }
 
     public popBytes(lengthInBytes: number): Buffer {
-        const value = this._value.slice(this._offset, this._offset + lengthInBytes);
-        this.setOffset(this._offset + lengthInBytes);
+        const popBegin = this._offset;
+        const popEnd = popBegin + lengthInBytes;
+        if (popEnd > this._value.byteLength) {
+            throw new Error(`Tried to decode beyond the end of calldata`);
+        }
+        const value = this._value.slice(popBegin, popEnd);
+        this.setOffset(popEnd);
         return value;
     }
 
