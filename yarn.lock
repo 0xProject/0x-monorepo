@@ -806,10 +806,10 @@
   optionalDependencies:
     "@ledgerhq/hw-transport-node-hid" "^4.3.0"
 
-"@0x/ts-doc-gen@0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.7.tgz#1856870fcd182ebe5caa81b71bbd5d460228f3c9"
-  integrity sha512-sMclk5BiAt2DlnoevYxas7n+X38CTqIsyTvfpOED08g/Te7p2bwk0KEI4JeN5rOdpZAp4jJAkZGPsvzIVlEQdw==
+"@0x/ts-doc-gen@0.0.10":
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/@0x/ts-doc-gen/-/ts-doc-gen-0.0.10.tgz#3ae85d6187197df4b11721706e2dd43efe167db2"
+  integrity sha512-xjf9NHbuF0sFiLIQPm2sO5oLuOI7UpOls7T4cti09F0/6zDgIik5xBMGwofHBA6YxHeDUMjGnN3jNBHM9/k4tQ==
   dependencies:
     "@0x/typescript-typings" "^4.2.2"
     "@0x/utils" "^4.3.3"
