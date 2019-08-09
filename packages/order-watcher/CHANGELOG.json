@@ -1,5 +1,14 @@
 [
     {
+        "version": "4.0.18",
+        "changes": [
+            {
+                "note": "Pass `signedOrder.exchangeAddress` to `signatureUtils.isValidSignatureAsync` when adding an order to watcher.",
+                "pr": 2017
+            }
+        ]
+    },
+    {
         "timestamp": 1565296576,
         "version": "4.0.17",
         "changes": [

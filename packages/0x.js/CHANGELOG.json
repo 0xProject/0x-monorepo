@@ -1,5 +1,13 @@
 [
     {
+        "version": "6.1.0",
+        "changes": [
+            {
+                "note": "Add optional `exchangeAddress` parameter to `signatureUtils.isValidSignatureAsync` to fix `Validator` type signatures."
+            }
+        ]
+    },
+    {
         "timestamp": 1565296576,
         "version": "6.0.15",
         "changes": [
