@@ -2,12 +2,14 @@ import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 import { connectAutoComplete, Highlight, Snippet } from 'react-instantsearch-dom';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { scroller } from 'react-scroll';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
 import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_overlay';
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
 
+import { docs } from 'ts/style/docs';
 import { searchIndices } from 'ts/utils/algolia_search';
 
 interface IHit {
@@ -46,6 +48,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     currentRefinement,
     refine,
     history,
+    location,
 }) => {
     const [value, setValue] = React.useState<string>('');
     let inputRef: HTMLInputElement;
@@ -69,14 +72,22 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const onSuggestionsClearRequested = (): void => refine('');
 
     const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
-        if (event.key === 'Enter' && suggestion.url) {
-            // Without using route props / withRouter HOC this could simply be (with full page load):
-            // location.href = suggestion.url;
+        const [pathname, fragment] = suggestion.url.split('#');
+        // If the url contains a hash (fragment identifier) and the user is currently
+        // on the same page, scroll to content. If not, route away to the doc page.
+        if (fragment && location.pathname === pathname) {
+            scroller.scrollTo(fragment, {
+                smooth: true,
+                duration: docs.scrollDuration,
+                offset: -docs.headerOffset,
+            });
+        } else {
             history.push(suggestion.url);
             window.scrollTo(0, 0);
         }
+
         setValue(''); // Clear input value
-        inputRef.blur(); // Blur input, used for keyboard choices in connection with focusInputOnSuggestionClick prop on autosuggest for mouse clicks
+        inputRef.blur(); // Blur input
     };
 
     const getSuggestionValue = (hit: IHit): string => hit.textContent;
@@ -143,7 +154,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
                     suggestions={hits}
                     ref={storeInputRef}
                     multiSection={true}
-                    focusInputOnSuggestionClick={false}
+                    // focusInputOnSuggestionClick={false}
                     onSuggestionSelected={onSuggestionSelected}
                     onSuggestionsFetchRequested={onSuggestionsFetchRequested}
                     onSuggestionsClearRequested={onSuggestionsClearRequested}
