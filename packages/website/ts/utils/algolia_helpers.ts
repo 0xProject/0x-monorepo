@@ -49,7 +49,7 @@ function addHashToChildren(item: any, start: any): void {
         for (const child of item.children) {
             if (child.type === 'text') {
                 child.data = child.data || {};
-                child.data.hash = start.data.id;
+                child.data.hash = `#${start.data.id}`;
             }
             addHashToChildren(child, start);
         }
@@ -84,11 +84,12 @@ function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
         const titleSlug = slugify(meta.title, { lower: true });
-        const formattedUrl = node.hash ? `${url}#${node.hash}` : url; // If we have the hash, append it to url, if not - use the base url
 
         content.push({
             ...meta,
-            url: formattedUrl,
+            url,
+            urlWithHash: url + node.hash,
+            hash: node.hash,
             textContent: node.textContent,
             id: titleSlug,
             objectID: `${titleSlug}_${index}`,
@@ -167,6 +168,8 @@ interface Meta {
 
 interface Content extends Meta {
     url: string;
+    urlWithHash: string;
+    hash: string;
     textContent: string;
     id: string;
     objectID: string;

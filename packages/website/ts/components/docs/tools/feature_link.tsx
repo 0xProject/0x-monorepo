@@ -5,7 +5,6 @@ import MediaQuery from 'react-responsive';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
 import { Icon } from 'ts/components/icon';
 import { Heading, Paragraph } from 'ts/components/text';
 
@@ -54,7 +53,6 @@ const StyledIcon = styled(Icon)`
 `;
 
 const FeatureLinkWrapper = styled(Link)`
-    background-color: ${colors.backgroundLight};
     border: 1px solid #dbdfdd;
     padding: 30px;
     margin-bottom: 0.56rem;
@@ -62,6 +60,13 @@ const FeatureLinkWrapper = styled(Link)`
     display: flex;
     align-items: center;
     flex-direction: column;
+
+    background: ${colors.backgroundLight};
+    transition: background 250ms ease-in-out;
+
+    &:hover {
+        background: ${colors.backgroundLightHover};
+    }
 
     @media (min-width: 500px) {
         flex-direction: row;

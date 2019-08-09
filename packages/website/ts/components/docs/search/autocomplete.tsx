@@ -15,6 +15,7 @@ import { searchIndices } from 'ts/utils/algolia_search';
 interface IHit {
     description: string;
     difficulty: string;
+    hash: string;
     id: number | string;
     isCommunity?: boolean;
     isFeatured?: boolean;
@@ -25,6 +26,7 @@ interface IHit {
     title: string;
     type?: string;
     url: string;
+    urlWithHash: string;
     _highlightResult: any;
     _snippetResult: any;
 }
@@ -66,17 +68,18 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const onSuggestionsClearRequested = (): void => refine('');
 
     const onSuggestionSelected = (event: React.KeyboardEvent, { suggestion }: any): void => {
-        const [pathname, fragment] = suggestion.url.split('#');
+        const { hash, url, urlWithHash } = suggestion;
         // If the url contains a hash (fragment identifier) and the user is currently
         // on the same page, scroll to content. If not, route away to the doc page.
-        if (fragment && location.pathname === pathname) {
-            scroller.scrollTo(fragment, {
+        if (hash && location.pathname === url) {
+            const id = hash.substring(1); // Get rid of # symbol
+            scroller.scrollTo(id, {
                 smooth: true,
                 duration: docs.scrollDuration,
                 offset: -docs.headerOffset,
             });
         } else {
-            history.push(suggestion.url);
+            history.push(urlWithHash);
             window.scrollTo(0, 0);
         }
 
@@ -88,7 +91,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
 
     const renderSuggestion = (hit: IHit): React.ReactNode => {
         return (
-            <Link to={hit.url}>
+            <Link to={hit.urlWithHash}>
                 <Highlight attribute="title" hit={hit} nonHighlightedTagName="h6" />
                 <Snippet attribute="textContent" hit={hit} nonHighlightedTagName="p" tagName="span" />
             </Link>
