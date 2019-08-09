@@ -23,7 +23,7 @@ jobs:
             #       command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
             - run:
                   name: install-yarn
-                  command: npm install --global yarn@1.9.4
+                  command: npm install --global yarn@1.17.0
             - run:
                   name: yarn
                   command: yarn --frozen-lockfile --ignore-engines install || yarn --frozen-lockfile --ignore-engines install
