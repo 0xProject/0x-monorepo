@@ -71,11 +71,15 @@ export class MetamaskSubprovider extends Subprovider {
                 [address, message] = payload.params;
                 try {
                     // Metamask incorrectly implements eth_sign and does not prefix the message as per the spec
-                    // Source: https://github.com/MetaMask/metamask-extension/commit/a9d36860bec424dcee8db043d3e7da6a5ff5672e
-                    const msgBuff = ethUtil.toBuffer(message);
-                    const prefixedMsgBuff = ethUtil.hashPersonalMessage(msgBuff);
-                    const prefixedMsgHex = ethUtil.bufferToHex(prefixedMsgBuff);
-                    const signature = await this._web3Wrapper.signMessageAsync(address, prefixedMsgHex);
+                    // It does however implement personal_sign and will leave off the prefix when used as a proxy for hardware wallets
+                    // Source: https://metamask.github.io/metamask-docs/API_Reference/Signing_Data/Personal_Sign
+                    // See: https://github.com/MetaMask/eth-ledger-bridge-keyring/blob/master/index.js#L192
+                    // and https://github.com/MetaMask/eth-trezor-keyring/blob/master/index.js#L211
+                    // and https://github.com/MetaMask/eth-sig-util/blob/master/index.js#L250
+                    const signature = await this._web3Wrapper.sendRawPayloadAsync<string>({
+                        method: 'personal_sign',
+                        params: [message, address],
+                    });
                     signature ? end(null, signature) : end(new Error('Error performing eth_sign'), null);
                 } catch (err) {
                     end(err);
