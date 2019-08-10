@@ -39,7 +39,7 @@
     },
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/web3-wrapper/README.md",
     "devDependencies": {
-        "@0x/ts-doc-gen": "0.0.10",
+        "@0x/ts-doc-gen": "^0.0.13",
         "@0x/tslint-config": "^3.0.1",
         "@types/lodash": "4.14.104",
         "@types/mocha": "^5.2.7",
