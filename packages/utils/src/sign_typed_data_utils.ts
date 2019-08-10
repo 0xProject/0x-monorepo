@@ -21,6 +21,15 @@ export const signTypedDataUtils = {
         );
     },
     /**
+     * Generates the EIP712 Typed Data hash for a typed data object without using the domain field. This
+     * makes hashing easier for non-EIP712 data.
+     * @param   typedData An object that conforms to the EIP712TypedData interface
+     * @return  A Buffer containing the hash of the typed data.
+     */
+    generateTypedDataHashWithoutDomain(typedData: EIP712TypedData): Buffer {
+        return signTypedDataUtils._structHash(typedData.primaryType, typedData.message, typedData.types);
+    },
+    /**
      * Generates the hash of a EIP712 Domain with the default schema
      * @param  domain An EIP712 domain with the default schema containing a name, version, chain id,
      *                and verifying address.

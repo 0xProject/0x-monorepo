@@ -41,25 +41,6 @@ async function testHashEIP712DomainAsync(
     expect(actualHash).to.be.eq(hexConcat(expectedHash));
 }
 
-/**
- * Tests a specific instance of EIP712 message hashing.
- * @param lib The LibEIP712 contract to call.
- * @param domainHash The hash of the EIP712 domain of this instance.
- * @param hashStruct The hash of the struct of this instance.
- */
-async function testHashEIP712MessageAsync(
-    lib: TestLibEIP712Contract,
-    domainHash: string,
-    hashStruct: string,
-): Promise<void> {
-    const input = '0x1901'.concat(
-        domainHash.slice(2, domainHash.length).concat(hashStruct.slice(2, hashStruct.length)),
-    );
-    const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
-    const actualHash = await lib.externalHashEIP712Message.callAsync(domainHash, hashStruct);
-    expect(actualHash).to.be.eq(expectedHash);
-}
-
 describe('LibEIP712', () => {
     let lib: TestLibEIP712Contract;
 
@@ -72,6 +53,32 @@ describe('LibEIP712', () => {
     after(async () => {
         await blockchainLifecycle.revertAsync();
     });
+
+    /**
+     * Tests a specific instance of EIP712 message hashing.
+     * @param lib The LibEIP712 contract to call.
+     * @param domainHash The hash of the EIP712 domain of this instance.
+     * @param hashStruct The hash of the struct of this instance.
+     */
+    async function testHashEIP712MessageAsync(
+        lib: TestLibEIP712Contract,
+        domainHash: string,
+        hashStruct: string,
+    ): Promise<void> {
+        // Remove the hex prefix from the domain hash and the hash struct
+        const unprefixedDomainHash = domainHash.slice(2, domainHash.length);
+        const unprefixedHashStruct = hashStruct.slice(2, hashStruct.length);
+
+        // Hash the provided input to get the expected hash
+        const input = '0x1901'.concat(unprefixedDomainHash.concat(unprefixedHashStruct));
+        const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
+
+        // Get the actual hash by calling the smart contract
+        const actualHash = await lib.externalHashEIP712Message.callAsync(domainHash, hashStruct);
+
+        // Verify that the actual hash matches the expected hash
+        expect(actualHash).to.be.eq(expectedHash);
+    }
 
     describe('_hashEIP712Domain', async () => {
         it('should correctly hash empty input', async () => {
