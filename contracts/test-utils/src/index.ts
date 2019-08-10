@@ -35,12 +35,15 @@ export {
     ERC20BalancesByOwner,
     ERC1155FungibleHoldingsByOwner,
     ERC1155HoldingsByOwner,
+    ERC1155Holdings,
     ERC1155NonFungibleHoldingsByOwner,
     ERC721TokenIdsByOwner,
+    FillEventArgs,
     MarketBuyOrders,
     MarketSellOrders,
     OrderStatus,
     Token,
+    TokenBalances,
     TransactionDataParams,
 } from './types';
 export { blockchainTests, BlockchainTestsEnvironment, describe } from './mocha_blockchain';

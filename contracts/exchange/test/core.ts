@@ -13,7 +13,6 @@ import { ERC1155MintableContract } from '@0x/contracts-erc1155';
 import {
     artifacts as erc20Artifacts,
     DummyERC20TokenContract,
-    DummyERC20TokenTransferEventArgs,
     DummyNoReturnERC20TokenContract,
 } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
@@ -55,6 +54,8 @@ import {
 chaiSetup.configure();
 const expect = chai.expect;
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+
+import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
 describe('Exchange core', () => {
@@ -99,6 +100,8 @@ describe('Exchange core', () => {
     let defaultTakerAssetAddress: string;
     let defaultFeeAssetAddress: string;
 
+    let fillOrderWrapper: FillOrderWrapper;
+
     before(async () => {
         await blockchainLifecycle.startAsync();
     });
@@ -132,6 +135,16 @@ describe('Exchange core', () => {
             numDummyErc20ToDeploy,
             constants.DUMMY_TOKEN_DECIMALS,
         );
+        noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
+            erc20Artifacts.DummyNoReturnERC20Token,
+            provider,
+            txDefaults,
+            constants.DUMMY_TOKEN_NAME,
+            constants.DUMMY_TOKEN_SYMBOL,
+            constants.DUMMY_TOKEN_DECIMALS,
+            constants.DUMMY_TOKEN_TOTAL_SUPPLY,
+        );
+        erc20Wrapper.addDummyTokenContract(noReturnErc20Token);
         [erc721Token] = await erc721Wrapper.deployDummyTokensAsync();
         erc1155Proxy = await erc1155ProxyWrapper.deployProxyAsync();
         [erc1155Wrapper] = await erc1155ProxyWrapper.deployDummyContractsAsync();
@@ -225,6 +238,7 @@ describe('Exchange core', () => {
         };
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
+        fillOrderWrapper = new FillOrderWrapper(exchange, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper, provider);
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
@@ -390,37 +404,7 @@ describe('Exchange core', () => {
         });
 
         it('should not emit transfer events for transfers where from == to', async () => {
-            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, makerAddress);
-            const logs = txReceipt.logs;
-            const transferLogs = _.filter(
-                logs,
-                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
-            );
-            expect(transferLogs.length).to.be.equal(2);
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                feeToken.address,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                feeRecipientAddress,
-            );
-            expect(
-                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.makerFee);
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                feeToken.address,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                feeRecipientAddress,
-            );
-            expect(
-                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.takerFee);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, makerAddress);
         });
 
         it('should revert if order is expired', async () => {
@@ -476,37 +460,7 @@ describe('Exchange core', () => {
             await erc20TokenA.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
                 from: owner,
             });
-            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            const logs = txReceipt.logs;
-            const transferLogs = _.filter(
-                logs,
-                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
-            );
-            expect(transferLogs.length).to.be.equal(2);
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenA.address,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                takerAddress,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                makerAddress,
-            );
-            expect(
-                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenA.address,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                takerAddress,
-            );
-            expect(
-                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow the taker to pay fees with an asset that received by the maker', async () => {
             const makerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenA.address);
@@ -519,49 +473,7 @@ describe('Exchange core', () => {
             await erc20TokenA.setBalance.awaitTransactionSuccessAsync(takerAddress, constants.ZERO_AMOUNT, {
                 from: owner,
             });
-            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            const logs = txReceipt.logs;
-            const transferLogs = _.filter(
-                logs,
-                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
-            );
-            expect(transferLogs.length).to.be.equal(3);
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenB.address,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                takerAddress,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                makerAddress,
-            );
-            expect(
-                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenA.address,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                takerAddress,
-            );
-            expect(
-                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenA.address,
-            );
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                takerAddress,
-            );
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                feeRecipientAddress,
-            );
-            expect(
-                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.takerFee);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow the maker to pay fees with an asset that received by the taker', async () => {
             const takerAssetData = assetDataUtils.encodeERC20AssetData(erc20TokenB.address);
@@ -574,62 +486,11 @@ describe('Exchange core', () => {
             await erc20TokenB.setBalance.awaitTransactionSuccessAsync(makerAddress, constants.ZERO_AMOUNT, {
                 from: owner,
             });
-            const txReceipt = await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            const logs = txReceipt.logs;
-            const transferLogs = _.filter(
-                logs,
-                log => (log as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).event === 'Transfer',
-            );
-            expect(transferLogs.length).to.be.equal(3);
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenB.address,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                takerAddress,
-            );
-            expect((transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                makerAddress,
-            );
-            expect(
-                (transferLogs[0] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.takerAssetAmount);
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenA.address,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                takerAddress,
-            );
-            expect(
-                (transferLogs[1] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.makerAssetAmount);
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).address).to.be.equal(
-                erc20TokenB.address,
-            );
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._from).to.be.equal(
-                makerAddress,
-            );
-            expect((transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._to).to.be.equal(
-                feeRecipientAddress,
-            );
-            expect(
-                (transferLogs[2] as LogWithDecodedArgs<DummyERC20TokenTransferEventArgs>).args._value,
-            ).to.be.bignumber.equal(signedOrder.makerFee);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
     });
     describe('Testing exchange of ERC20 tokens with no return values', () => {
         before(async () => {
-            noReturnErc20Token = await DummyNoReturnERC20TokenContract.deployFrom0xArtifactAsync(
-                erc20Artifacts.DummyNoReturnERC20Token,
-                provider,
-                txDefaults,
-                constants.DUMMY_TOKEN_NAME,
-                constants.DUMMY_TOKEN_SYMBOL,
-                constants.DUMMY_TOKEN_DECIMALS,
-                constants.DUMMY_TOKEN_TOTAL_SUPPLY,
-            );
             await noReturnErc20Token.setBalance.awaitTransactionSuccessAsync(
                 makerAddress,
                 constants.INITIAL_ERC20_BALANCE,
@@ -646,38 +507,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
             });
-
-            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
-            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
-            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
-            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(signedOrder.makerFee),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(signedOrder.takerFee),
-            );
-            expect(finalFeeRecipientFeeTokenBalance).to.be.bignumber.equal(
-                initialFeeRecipientFeeTokenBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
-            );
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should transfer the correct amounts when makerAssetAmount > takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
@@ -685,38 +515,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
             });
-
-            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
-            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
-            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
-            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(signedOrder.makerFee),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(signedOrder.takerFee),
-            );
-            expect(finalFeeRecipientFeeTokenBalance).to.be.bignumber.equal(
-                initialFeeRecipientFeeTokenBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
-            );
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should transfer the correct amounts when makerAssetAmount < takerAssetAmount', async () => {
             signedOrder = await orderFactory.newSignedOrderAsync({
@@ -724,38 +523,7 @@ describe('Exchange core', () => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(200), 18),
             });
-
-            const initialMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await noReturnErc20Token.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
-            expect(finalMakerBalanceB).to.be.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
-            expect(finalTakerBalanceA).to.be.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
-            expect(finalTakerBalanceB).to.be.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(signedOrder.makerFee),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(signedOrder.takerFee),
-            );
-            expect(finalFeeRecipientFeeTokenBalance).to.be.bignumber.equal(
-                initialFeeRecipientFeeTokenBalance.plus(signedOrder.makerFee.plus(signedOrder.takerFee)),
-            );
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
     });
 
@@ -1070,39 +838,7 @@ describe('Exchange core', () => {
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
             });
-
-            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(
-                initialMakerBalanceA.minus(makerAmounts[0].times(makerAssetAmount)),
-            );
-            expect(finalMakerBalanceB).to.be.bignumber.equal(
-                initialMakerBalanceB.minus(makerAmounts[1].times(makerAssetAmount)),
-            );
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(initialMakerFeeTokenBalance.plus(takerAssetAmount));
-            expect(finalTakerBalanceA).to.be.bignumber.equal(
-                initialTakerBalanceA.plus(makerAmounts[0].times(makerAssetAmount)),
-            );
-            expect(finalTakerBalanceB).to.be.bignumber.equal(
-                initialTakerBalanceB.plus(makerAmounts[1].times(makerAssetAmount)),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(takerAssetAmount),
-            );
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow multiple assets to be exchanged for multiple assets', async () => {
             const makerAmounts = [new BigNumber(10), new BigNumber(20)];
@@ -1128,45 +864,7 @@ describe('Exchange core', () => {
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
             });
-
-            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
-            expect(initialOwnerTakerAsset).to.be.bignumber.equal(takerAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalOwnerTakerAsset = await erc721Token.ownerOf.callAsync(takerAssetId);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(
-                initialMakerBalanceA.minus(makerAmounts[0].times(makerAssetAmount)),
-            );
-            expect(finalMakerBalanceB).to.be.bignumber.equal(
-                initialMakerBalanceB.minus(makerAmounts[1].times(makerAssetAmount)),
-            );
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.plus(takerAmounts[0].times(takerAssetAmount)),
-            );
-            expect(finalTakerBalanceA).to.be.bignumber.equal(
-                initialTakerBalanceA.plus(makerAmounts[0].times(makerAssetAmount)),
-            );
-            expect(finalTakerBalanceB).to.be.bignumber.equal(
-                initialTakerBalanceB.plus(makerAmounts[1].times(makerAssetAmount)),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(takerAmounts[0].times(takerAssetAmount)),
-            );
-            expect(finalOwnerTakerAsset).to.be.equal(makerAddress);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should allow an order selling multiple assets to be partially filled', async () => {
             const makerAmounts = [new BigNumber(10), new BigNumber(20)];
@@ -1187,63 +885,8 @@ describe('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
 
-            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
             const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount,
-            });
-
-            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(
-                initialMakerBalanceA.minus(
-                    makerAmounts[0].times(
-                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalMakerBalanceB).to.be.bignumber.equal(
-                initialMakerBalanceB.minus(
-                    makerAmounts[1].times(
-                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.plus(
-                    takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                ),
-            );
-            expect(finalTakerBalanceA).to.be.bignumber.equal(
-                initialTakerBalanceA.plus(
-                    makerAmounts[0].times(
-                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalTakerBalanceB).to.be.bignumber.equal(
-                initialTakerBalanceB.plus(
-                    makerAmounts[1].times(
-                        makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(
-                    takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                ),
-            );
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, { takerAssetFillAmount });
         });
         it('should allow an order buying multiple assets to be partially filled', async () => {
             const takerAmounts = [new BigNumber(10), new BigNumber(20)];
@@ -1263,83 +906,21 @@ describe('Exchange core', () => {
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
             });
-
-            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
             const takerAssetFillAmount = takerAssetAmount.dividedToIntegerBy(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-
-            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-
-            expect(finalMakerBalanceA).to.be.bignumber.equal(
-                initialMakerBalanceA.plus(
-                    takerAmounts[0].times(
-                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalMakerBalanceB).to.be.bignumber.equal(
-                initialMakerBalanceB.plus(
-                    takerAmounts[1].times(
-                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalMakerFeeTokenBalance).to.be.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(
-                    makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                ),
-            );
-            expect(finalTakerBalanceA).to.be.bignumber.equal(
-                initialTakerBalanceA.minus(
-                    takerAmounts[0].times(
-                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalTakerBalanceB).to.be.bignumber.equal(
-                initialTakerBalanceB.minus(
-                    takerAmounts[1].times(
-                        takerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                    ),
-                ),
-            );
-            expect(finalTakerFeeTokenBalance).to.be.bignumber.equal(
-                initialTakerFeeTokenBalance.plus(
-                    makerAssetAmount.times(takerAssetFillAmount).dividedToIntegerBy(takerAssetAmount),
-                ),
-            );
         });
     });
     describe('Testing exchange of erc1155 assets', () => {
         it('should allow a single fungible erc1155 asset to be exchanged for another', async () => {
             // setup test parameters
-            const tokenHolders = [makerAddress, takerAddress];
             const makerAssetsToTransfer = erc1155FungibleTokens.slice(0, 1);
             const takerAssetsToTransfer = erc1155FungibleTokens.slice(1, 2);
             const makerValuesToTransfer = [new BigNumber(500)];
             const takerValuesToTransfer = [new BigNumber(200)];
-            const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
-                return value.times(makerAssetAmount);
-            });
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
-                return value.times(takerAssetAmount);
-            });
             const receiverCallbackData = '0x';
             const makerAssetData = assetDataUtils.encodeERC1155AssetData(
                 erc1155Contract.address,
@@ -1362,51 +943,19 @@ describe('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
             const takerAssetFillAmount = new BigNumber(1);
-            // check balances before transfer
-            const expectedInitialBalances = [
-                // makerAddress / makerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / takerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / takerToken
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
             // execute transfer
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-            // check balances after transfer
-            const expectedFinalBalances = [
-                // makerAddress / makerToken
-                expectedInitialBalances[0].minus(totalMakerValuesTransferred[0]),
-                // makerAddress / takerToken
-                expectedInitialBalances[1].plus(totalTakerValuesTransferred[0]),
-                // takerAddress / makerToken
-                expectedInitialBalances[2].plus(totalMakerValuesTransferred[0]),
-                // takerAddress / takerToken
-                expectedInitialBalances[3].minus(totalTakerValuesTransferred[0]),
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
         it('should allow a single non-fungible erc1155 asset to be exchanged for another', async () => {
             // setup test parameters
-            const tokenHolders = [makerAddress, takerAddress];
             const makerAssetsToTransfer = erc1155NonFungibleTokensOwnedByMaker.slice(0, 1);
             const takerAssetsToTransfer = erc1155NonFungibleTokensOwnedByTaker.slice(0, 1);
             const makerValuesToTransfer = [new BigNumber(1)];
             const takerValuesToTransfer = [new BigNumber(1)];
-            const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
-                return value.times(makerAssetAmount);
-            });
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
-                return value.times(takerAssetAmount);
-            });
             const receiverCallbackData = '0x';
             const makerAssetData = assetDataUtils.encodeERC1155AssetData(
                 erc1155Contract.address,
@@ -1429,53 +978,18 @@ describe('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
             const takerAssetFillAmount = new BigNumber(1);
-            // check balances before transfer
-            const nftOwnerBalance = new BigNumber(1);
-            const nftNotOwnerBalance = new BigNumber(0);
-            const expectedInitialBalances = [
-                // makerAddress / makerToken
-                nftOwnerBalance,
-                // makerAddress / takerToken
-                nftNotOwnerBalance,
-                // takerAddress / makerToken
-                nftNotOwnerBalance,
-                // takerAddress / takerToken
-                nftOwnerBalance,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-            // check balances after transfer
-            const expectedFinalBalances = [
-                // makerAddress / makerToken
-                expectedInitialBalances[0].minus(totalMakerValuesTransferred[0]),
-                // makerAddress / takerToken
-                expectedInitialBalances[1].plus(totalTakerValuesTransferred[0]),
-                // takerAddress / makerToken
-                expectedInitialBalances[2].plus(totalMakerValuesTransferred[0]),
-                // takerAddress / takerToken
-                expectedInitialBalances[3].minus(totalTakerValuesTransferred[0]),
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
         it('should allow multiple erc1155 assets to be exchanged for a single asset', async () => {
             // setup test parameters
-            const tokenHolders = [makerAddress, takerAddress];
             const makerAssetsToTransfer = erc1155FungibleTokens.slice(0, 3);
             const takerAssetsToTransfer = erc1155NonFungibleTokensOwnedByTaker.slice(0, 1);
             const makerValuesToTransfer = [new BigNumber(500), new BigNumber(700), new BigNumber(900)];
             const takerValuesToTransfer = [new BigNumber(1)];
-            const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
-                return value.times(makerAssetAmount);
-            });
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
-                return value.times(takerAssetAmount);
-            });
             const receiverCallbackData = '0x';
             const makerAssetData = assetDataUtils.encodeERC1155AssetData(
                 erc1155Contract.address,
@@ -1498,58 +1012,14 @@ describe('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
             const takerAssetFillAmount = new BigNumber(1);
-            // check balances before transfer
-            const nftOwnerBalance = new BigNumber(1);
-            const nftNotOwnerBalance = new BigNumber(0);
-            const expectedInitialBalances = [
-                // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / makerToken[2]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / takerToken
-                nftNotOwnerBalance,
-                // takerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[2]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / takerToken
-                nftOwnerBalance,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-            // check balances after transfer
-            const expectedFinalBalances = [
-                // makerAddress / makerToken[0]
-                expectedInitialBalances[0].minus(totalMakerValuesTransferred[0]),
-                // makerAddress / makerToken[1]
-                expectedInitialBalances[1].minus(totalMakerValuesTransferred[1]),
-                // makerAddress / makerToken[2]
-                expectedInitialBalances[2].minus(totalMakerValuesTransferred[2]),
-                // makerAddress / takerToken
-                expectedInitialBalances[3].plus(totalTakerValuesTransferred[0]),
-                // takerAddress / makerToken[0]
-                expectedInitialBalances[4].plus(totalMakerValuesTransferred[0]),
-                // takerAddress / makerToken[1]
-                expectedInitialBalances[5].plus(totalMakerValuesTransferred[1]),
-                // takerAddress / makerToken[2]
-                expectedInitialBalances[6].plus(totalMakerValuesTransferred[2]),
-                // takerAddress / takerToken
-                expectedInitialBalances[7].minus(totalTakerValuesTransferred[0]),
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
         it('should allow multiple erc1155 assets to be exchanged for multiple erc1155 assets, mixed fungible/non-fungible', async () => {
             // setup test parameters
             // the maker is trading two fungibles & one non-fungible
             // the taker is trading one fungible & two non-fungibles
-            const tokenHolders = [makerAddress, takerAddress];
             const makerFungibleAssetsToTransfer = erc1155FungibleTokens.slice(0, 2);
             const makerNonFungibleAssetsToTransfer = erc1155NonFungibleTokensOwnedByMaker.slice(0, 1);
             const makerAssetsToTransfer = makerFungibleAssetsToTransfer.concat(makerNonFungibleAssetsToTransfer);
@@ -1558,15 +1028,8 @@ describe('Exchange core', () => {
             const takerAssetsToTransfer = takerFungibleAssetsToTransfer.concat(takerNonFungibleAssetsToTransfer);
             const makerValuesToTransfer = [new BigNumber(500), new BigNumber(700), new BigNumber(1)];
             const takerValuesToTransfer = [new BigNumber(900), new BigNumber(1), new BigNumber(1)];
-            const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(1);
             const takerAssetAmount = new BigNumber(1);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
-                return value.times(makerAssetAmount);
-            });
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
-                return value.times(takerAssetAmount);
-            });
             const receiverCallbackData = '0x';
             const makerAssetData = assetDataUtils.encodeERC1155AssetData(
                 erc1155Contract.address,
@@ -1589,68 +1052,9 @@ describe('Exchange core', () => {
                 takerFee: constants.ZERO_AMOUNT,
             });
             const takerAssetFillAmount = new BigNumber(1);
-            // check balances before transfer
-            const nftOwnerBalance = new BigNumber(1);
-            const nftNotOwnerBalance = new BigNumber(0);
-            const expectedInitialBalances = [
-                // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / makerToken[2]
-                nftOwnerBalance,
-                // makerAddress / takerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / takerToken[1]
-                nftNotOwnerBalance,
-                // makerAddress / takerToken[2]
-                nftNotOwnerBalance,
-                // takerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[2]
-                nftNotOwnerBalance,
-                // takerAddress / takerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / takerToken[1]
-                nftOwnerBalance,
-                // takerAddress / takerToken[2]
-                nftOwnerBalance,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-            // check balances after transfer
-            const expectedFinalBalances = [
-                // makerAddress / makerToken[0]
-                expectedInitialBalances[0].minus(totalMakerValuesTransferred[0]),
-                // makerAddress / makerToken[1]
-                expectedInitialBalances[1].minus(totalMakerValuesTransferred[1]),
-                // makerAddress / makerToken[2]
-                expectedInitialBalances[2].minus(totalMakerValuesTransferred[2]),
-                // makerAddress / takerToken[0]
-                expectedInitialBalances[3].plus(totalTakerValuesTransferred[0]),
-                // makerAddress / takerToken[1]
-                expectedInitialBalances[4].plus(totalTakerValuesTransferred[1]),
-                // makerAddress / takerToken[2]
-                expectedInitialBalances[5].plus(totalTakerValuesTransferred[2]),
-                // takerAddress / makerToken[0]
-                expectedInitialBalances[6].plus(totalMakerValuesTransferred[0]),
-                // takerAddress / makerToken[1]
-                expectedInitialBalances[7].plus(totalMakerValuesTransferred[1]),
-                // takerAddress / makerToken[2]
-                expectedInitialBalances[8].plus(totalMakerValuesTransferred[2]),
-                // takerAddress / takerToken[0]
-                expectedInitialBalances[9].minus(totalTakerValuesTransferred[0]),
-                // takerAddress / takerToken[1]
-                expectedInitialBalances[10].minus(totalTakerValuesTransferred[1]),
-                // takerAddress / takerToken[2]
-                expectedInitialBalances[11].minus(totalTakerValuesTransferred[2]),
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
         });
         it('should allow an order exchanging erc1155 assets to be partially filled', async () => {
             // NOTICE:
@@ -1665,26 +1069,12 @@ describe('Exchange core', () => {
             // note that this will result in a partial fill because the `takerAssetAmount`
             // less than the `takerAssetAmount` of the order.
             const takerAssetFillAmount = new BigNumber(6);
-            const tokenHolders = [makerAddress, takerAddress];
             const makerAssetsToTransfer = erc1155FungibleTokens.slice(0, 2);
             const takerAssetsToTransfer = erc1155FungibleTokens.slice(2, 3);
             const makerValuesToTransfer = [new BigNumber(500), new BigNumber(700)];
             const takerValuesToTransfer = [new BigNumber(900)];
-            const tokensToTransfer = makerAssetsToTransfer.concat(takerAssetsToTransfer);
             const makerAssetAmount = new BigNumber(10);
             const takerAssetAmount = new BigNumber(20);
-            const totalMakerValuesTransferred = _.map(makerValuesToTransfer, (value: BigNumber) => {
-                return value
-                    .times(makerAssetAmount)
-                    .times(takerAssetFillAmount)
-                    .dividedToIntegerBy(takerAssetAmount);
-            });
-            const totalTakerValuesTransferred = _.map(takerValuesToTransfer, (value: BigNumber) => {
-                return value
-                    .times(takerAssetAmount)
-                    .times(takerAssetFillAmount)
-                    .dividedToIntegerBy(takerAssetAmount);
-            });
             const receiverCallbackData = '0x';
             const makerAssetData = assetDataUtils.encodeERC1155AssetData(
                 erc1155Contract.address,
@@ -1706,50 +1096,9 @@ describe('Exchange core', () => {
                 makerFee: constants.ZERO_AMOUNT,
                 takerFee: constants.ZERO_AMOUNT,
             });
-            // check balances before transfer
-            const expectedInitialBalances = [
-                // makerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // makerAddress / takerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / makerToken[1]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-                // takerAddress / takerToken[0]
-                constants.INITIAL_ERC1155_FUNGIBLE_BALANCE,
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedInitialBalances);
-            // execute transfer
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
             });
-            // check balances after transfer
-            const expectedFinalBalances = [
-                // makerAddress / makerToken[0]
-                expectedInitialBalances[0].minus(totalMakerValuesTransferred[0]),
-                // makerAddress / makerToken[1]
-                expectedInitialBalances[1].minus(totalMakerValuesTransferred[1]),
-                // makerAddress / takerToken[0]
-                expectedInitialBalances[2].plus(totalTakerValuesTransferred[0]),
-                // takerAddress / makerToken[0]
-                expectedInitialBalances[3].plus(totalMakerValuesTransferred[0]),
-                // takerAddress / makerToken[1]
-                expectedInitialBalances[4].plus(totalMakerValuesTransferred[1]),
-                // takerAddress / takerToken[0]
-                expectedInitialBalances[5].minus(totalTakerValuesTransferred[0]),
-            ];
-            await erc1155Wrapper.assertBalancesAsync(tokenHolders, tokensToTransfer, expectedFinalBalances);
-            // check that the order is partially filled
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
-            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedTakerAssetFilledAmount = takerAssetFillAmount;
-            const expectedOrderStatus = OrderStatus.Fillable;
-            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
         });
     });
 
@@ -1788,32 +1137,7 @@ describe('Exchange core', () => {
                 constants.KECCAK256_NULL,
             );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
-
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-
-            expect(finalMakerFeeTokenBalance).to.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(signedOrder.makerFee),
-            );
-            expect(finalTakerFeeTokenBalance).to.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(signedOrder.takerFee),
-            );
-            expect(finalFeeRecipientFeeTokenBalance).to.bignumber.equal(
-                initialFeeRecipientFeeTokenBalance.plus(signedOrder.makerFee).plus(signedOrder.takerFee),
-            );
-            expect(finalMakerBalanceB).to.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
-            expect(finalTakerBalanceB).to.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should revert if the staticcall is unsuccessful using the MultiAssetProxy', async () => {
             const staticCallData = staticCallTarget.assertEvenNumber.getABIEncodedTransactionData(new BigNumber(1));
@@ -1850,38 +1174,7 @@ describe('Exchange core', () => {
                 [assetDataUtils.encodeERC20AssetData(defaultMakerAssetAddress), staticCallAssetData],
             );
             signedOrder = await orderFactory.newSignedOrderAsync({ makerAssetData: assetData });
-
-            const initialMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const initialTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const initialFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-            const initialMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const initialMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const initialTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-
-            const finalMakerFeeTokenBalance = await feeToken.balanceOf.callAsync(makerAddress);
-            const finalTakerFeeTokenBalance = await feeToken.balanceOf.callAsync(takerAddress);
-            const finalFeeRecipientFeeTokenBalance = await feeToken.balanceOf.callAsync(feeRecipientAddress);
-            const finalMakerBalanceA = await erc20TokenA.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceA = await erc20TokenA.balanceOf.callAsync(takerAddress);
-            const finalMakerBalanceB = await erc20TokenB.balanceOf.callAsync(makerAddress);
-            const finalTakerBalanceB = await erc20TokenB.balanceOf.callAsync(takerAddress);
-
-            expect(finalMakerFeeTokenBalance).to.bignumber.equal(
-                initialMakerFeeTokenBalance.minus(signedOrder.makerFee),
-            );
-            expect(finalTakerFeeTokenBalance).to.bignumber.equal(
-                initialTakerFeeTokenBalance.minus(signedOrder.takerFee),
-            );
-            expect(finalFeeRecipientFeeTokenBalance).to.bignumber.equal(
-                initialFeeRecipientFeeTokenBalance.plus(signedOrder.makerFee).plus(signedOrder.takerFee),
-            );
-            expect(finalMakerBalanceA).to.bignumber.equal(initialMakerBalanceA.minus(signedOrder.makerAssetAmount));
-            expect(finalTakerBalanceA).to.bignumber.equal(initialTakerBalanceA.plus(signedOrder.makerAssetAmount));
-            expect(finalMakerBalanceB).to.bignumber.equal(initialMakerBalanceB.plus(signedOrder.takerAssetAmount));
-            expect(finalTakerBalanceB).to.bignumber.equal(initialTakerBalanceB.minus(signedOrder.takerAssetAmount));
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
     });
 
@@ -1899,25 +1192,11 @@ describe('Exchange core', () => {
             expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
         });
         it('should return the correct orderInfo for a fully filled order', async () => {
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
-            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedTakerAssetFilledAmount = signedOrder.takerAssetAmount;
-            const expectedOrderStatus = OrderStatus.FullyFilled;
-            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress);
         });
         it('should return the correct orderInfo for a partially filled order', async () => {
             const takerAssetFillAmount = signedOrder.takerAssetAmount.div(2);
-            await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, { takerAssetFillAmount });
-            const orderInfo = await exchangeWrapper.getOrderInfoAsync(signedOrder);
-            const expectedOrderHash = orderHashUtils.getOrderHashHex(signedOrder);
-            const expectedTakerAssetFilledAmount = takerAssetFillAmount;
-            const expectedOrderStatus = OrderStatus.Fillable;
-            expect(orderInfo.orderHash).to.be.equal(expectedOrderHash);
-            expect(orderInfo.orderTakerAssetFilledAmount).to.be.bignumber.equal(expectedTakerAssetFilledAmount);
-            expect(orderInfo.orderStatus).to.equal(expectedOrderStatus);
+            await fillOrderWrapper.fillOrderAndAssertEffectsAsync(signedOrder, takerAddress, { takerAssetFillAmount });
         });
         it('should return the correct orderInfo for a cancelled and unfilled order', async () => {
             await exchangeWrapper.cancelOrderAsync(signedOrder, makerAddress);
