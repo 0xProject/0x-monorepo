@@ -1,19 +1,19 @@
 const algoliasearch = require('algoliasearch/lite');
 
-const ALGOLIA_APP_ID = 'T7V7WKELRY';
-const ALGOLIA_CLIENT_API_KEY = '4c367b8cc6d6e175ae537cc61e4d8dfd';
+const ALGOLIA_APP_ID = 'Z5HRK3F1BK';
+const ALGOLIA_CLIENT_API_KEY = '53793d35f5e6b0583d273c4015373c3b';
 // @TODO: Move the following somewhere safe / out of the repo
-const ALGOLIA_ADMIN_API_KEY = 'ccc472dee2aa991ca4bc935975e76b5d';
+const ALGOLIA_ADMIN_API_KEY = 'b158fad22eba28a2660ae045c5766378';
 
 interface ISearchIndices {
     [index: string]: string;
 }
 
 interface ISettingsIndex {
-    [index: string]: Settings;
+    [index: string]: IAlgoliaSettings;
 }
 
-interface Settings {
+export interface IAlgoliaSettings {
     distinct: boolean;
     attributeForDistinct: string;
     attributesForFaceting: string[];

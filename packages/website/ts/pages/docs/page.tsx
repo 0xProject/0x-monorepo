@@ -32,6 +32,8 @@ import { Paragraph } from 'ts/components/text';
 import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 
+import { meta } from 'ts/utils/algolia_meta';
+
 interface IDocsPageProps extends RouteComponentProps<any> {}
 interface IDocsPageState {
     Component: React.ReactNode;
@@ -50,14 +52,19 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
         wasNotFound: false,
     });
 
-    const { Component, contents, title, subtitle, wasNotFound } = state;
+    const { Component, contents, wasNotFound } = state;
     const isLoading = !Component && !wasNotFound;
     const { page, type } = props.match.params;
     const { hash } = props.location;
 
-    React.useEffect(() => {
-        void loadPageAsync(page, type);
-    }, [page, type]);
+    const { subtitle, title } = meta[page];
+
+    React.useEffect(
+        () => {
+            void loadPageAsync(page, type);
+        },
+        [page, type],
+    );
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
@@ -67,8 +74,6 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
                 ...state,
                 Component: component.default,
                 contents: component.tableOfContents(),
-                subtitle: component.meta.subtitle,
-                title: component.meta.title,
             });
 
             if (hash) {
