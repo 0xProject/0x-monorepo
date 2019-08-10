@@ -1,17 +1,28 @@
-const fs = require('fs');
-const path = require('path');
-const { read } = require('to-vfile');
-const remark = require('remark');
-const mdx = require('remark-mdx');
-const slug = require('remark-slug');
-const slugify = require('slugify');
-const findAfter = require('unist-util-find-after');
-const modifyChildren = require('unist-util-modify-children');
-const { selectAll } = require('unist-util-select');
+import * as path from 'path';
+// @ts-ignore
+import * as remark from 'remark';
+// @ts-ignore
+import * as mdx from 'remark-mdx';
+// @ts-ignore
+import * as slug from 'remark-slug';
+import slugify from 'slugify';
+// @ts-ignore
+import { read } from 'to-vfile';
+// @ts-ignore
+import * as findAfter from 'unist-util-find-after';
+// @ts-ignore
+import * as modifyChildren from 'unist-util-modify-children';
+// @ts-ignore
+import { selectAll } from 'unist-util-select';
 
-const extractMdxMeta = require('extract-mdx-metadata');
+import * as glob from 'glob';
 
-function processContentTree(tree: Node[], url: string, meta: Meta, index: any, settings: Settings): void {
+import compareVersions from 'compare-versions';
+
+import { meta } from './algolia_meta';
+import { adminClient, searchIndices, settings, IAlgoliaSettings } from './algolia_search';
+
+function processContentTree(tree: Node[], file: any, indexName: string): void {
     const modify = modifyChildren(modifier);
     // We first modify the tree to get slugified ids from headings to all text nodes
     modify(tree);
@@ -20,10 +31,13 @@ function processContentTree(tree: Node[], url: string, meta: Meta, index: any, s
 
     if (textNodes) {
         const formattedTextNodes = formatTextNodes(textNodes);
-        const content = getContent(meta, url, formattedTextNodes);
+        const content = getContent(file, formattedTextNodes);
 
-        setIndexSettings(index, settings);
-        pushObjectsToAlgolia(index, content);
+        const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
+        const algoliaSettings = settings[indexName];
+
+        setIndexSettings(algoliaIndex, algoliaSettings);
+        pushObjectsToAlgolia(algoliaIndex, content);
     }
 }
 
@@ -56,16 +70,16 @@ function addHashToChildren(item: any, start: any): void {
     }
 }
 
-function setIndexSettings(index: any, settings: Settings): void {
-    index.setSettings(settings, (err: string) => {
+function setIndexSettings(algoliaIndex: any, algoliaSettings: IAlgoliaSettings): void {
+    algoliaIndex.setSettings(algoliaSettings, (err: string) => {
         if (err) {
             throw Error(`Error: ${err}`);
         }
     });
 }
 
-function pushObjectsToAlgolia(index: any, content: Content): void {
-    index
+function pushObjectsToAlgolia(algoliaIndex: any, content: Content): void {
+    algoliaIndex
         .saveObjects(content)
         .then(({ objectIDs }: { objectIDs: string[] }) =>
             console.log(
@@ -77,16 +91,16 @@ function pushObjectsToAlgolia(index: any, content: Content): void {
         });
 }
 
-function getContent(meta: Meta, url: string, formattedTextNodes: FormattedNode[]): any {
-    // META SHAPE TOOLS // const { description, difficulty, isCommunity, subtitle, tags, title, type } = meta;
-    // META SHAPE GUIDES // const {  description, difficulty, subtitle, tags, title, topics } = meta;
+function getContent(file: any, formattedTextNodes: FormattedNode[]): any {
+    const { name, url }: { name: string; url: string } = file;
+    const metaData: Meta = meta[name];
     const content: Content[] = [];
 
     formattedTextNodes.forEach((node: FormattedNode, index: number) => {
-        const titleSlug = slugify(meta.title, { lower: true });
+        const titleSlug = slugify(metaData.title, { lower: true });
 
         content.push({
-            ...meta,
+            ...metaData,
             url,
             urlWithHash: url + node.hash,
             hash: node.hash,
@@ -122,36 +136,71 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     return formattedTextNodes;
 }
 
-async function processMdxAsync(
-    index: any,
-    dirPath: string,
-    dirName: string,
-    fileName: string,
-    settings: Settings,
-): Promise<void> {
-    const filePath = `${dirPath}/${fileName}`;
-    const { name } = path.parse(filePath); // Name without file extension
-    const url = `/docs/${dirName}/${name}`;
-
-    const rawContent = fs.readFileSync(filePath);
-    const file = await read(filePath);
-    const meta = await extractMdxMeta(rawContent);
+async function processMdxAsync(indexName: any, file: any): Promise<void> {
+    const content = await read(file.path);
 
     await remark()
         .use(slug) // slugify heading text as ids
         .use(mdx)
-        .use(() => (tree: Node[]) => processContentTree(tree, url, meta, index, settings))
-        .process(file);
+        .use(() => (tree: Node[]) => processContentTree(tree, file, indexName))
+        .process(content);
 }
 
-export async function indexFilesAsync(index: any, dirName: string, settings: Settings): Promise<void> {
+function getFiles(dirName: string): any {
     const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
+    const files = glob.sync(dirPath + '/**/*.mdx');
+    const processedFiles: any[] = [];
 
-    fs.readdir(dirPath, async (err: string, items: string[]) => {
-        for (const fileName of items) {
-            await processMdxAsync(index, dirPath, dirName, fileName, settings);
+    if (dirName === 'tools') {
+        for (const file of files) {
+            // For now we are looking for all mdx files (which for now should only be 'reference.mdx')
+            // We can look for a different filename in the future, i.e. README and do some stuff with it
+            // const { name } = path.parse(file);
+            // if (name === 'reference') {
+            const toolName = path.basename(path.join(file, '../../'));
+            const version = path.basename(path.dirname(file));
+            const url = `/docs/${toolName}/${version}`; // could become `/docs/tools/${toolName}/${version}` in the future
+
+            const fileIndex = processedFiles.findIndex((tool: any) => tool.name === toolName);
+            const isIndexPresent = fileIndex > -1;
+
+            if (isIndexPresent) {
+                if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
+                    processedFiles[fileIndex] = { name: toolName, path: file, version, url };
+                }
+            } else {
+                processedFiles.push({ name: toolName, path: file, version, url });
+            }
         }
-    });
+    }
+
+    if (dirName === 'guides') {
+        for (const file of files) {
+            const { name } = path.parse(file);
+            const url = `/docs/guides/${name}`;
+            processedFiles.push({ name, path: file, url });
+        }
+    }
+
+    if (dirName === 'core-concepts' || dirName === 'api-explorer') {
+        for (const file of files) {
+            const url = `/docs/${dirName}`;
+            processedFiles.push({ name: dirName, path: file, url });
+        }
+    }
+
+    return processedFiles;
+}
+
+export async function indexFilesAsync(indexName: string): Promise<void> {
+    // const dirPath = path.join(__dirname, `../../mdx/${indexName}`);
+    const files = getFiles(indexName);
+    console.log('\n\nfiles', files);
+
+    for (const file of files) {
+        console.log('\n\nFILE PATH', file.path);
+        await processMdxAsync(indexName, file);
+    }
 }
 
 interface Meta {
@@ -173,15 +222,6 @@ interface Content extends Meta {
     textContent: string;
     id: string;
     objectID: string;
-}
-
-interface Settings {
-    distinct: boolean;
-    attributeForDistinct: string;
-    attributesForFaceting: string[];
-    attributesToSnippet: string[];
-    searchableAttributes: string[];
-    snippetEllipsisText: string;
 }
 
 interface FormattedNode {
