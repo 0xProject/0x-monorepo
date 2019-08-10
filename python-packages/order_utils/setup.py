@@ -183,6 +183,7 @@ setup(
     ],
     extras_require={
         "dev": [
+            "0x-contract-wrappers",
             "bandit",
             "black",
             "coverage",

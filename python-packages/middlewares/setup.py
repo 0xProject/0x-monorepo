@@ -160,6 +160,7 @@ setup(
     extras_require={
         "dev": [
             "0x-contract-addresses",
+            "0x-contract-wrappers",
             "0x-order-utils",
             "web3",
             "bandit",
