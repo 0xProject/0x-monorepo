@@ -6,14 +6,12 @@ const args = process.argv.slice(2);
 
 function processIndices(indices: string[]): void {
     for (const indexName of indices) {
-        indexFilesAsync(indexName);
+        void indexFilesAsync(indexName);
     }
 }
 
 if (args.length > 0) {
-    // Use args given to process and push to algolia
-    processIndices(args);
+    processIndices(args); // Use args given to process and push to algolia
 } else {
-    // Process and push all indices
-    processIndices(Object.getOwnPropertyNames(searchIndices));
+    processIndices(Object.getOwnPropertyNames(searchIndices)); // Process and push all indices
 }
