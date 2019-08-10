@@ -7,6 +7,7 @@ import {
     LogEntry,
     LogWithDecodedArgs,
     RawLog,
+    TransactionReceipt,
     TransactionReceiptWithDecodedLogs,
 } from 'ethereum-types';
 import * as _ from 'lodash';
@@ -44,8 +45,14 @@ export class LogDecoder {
         return logWithDecodedArgsOrLog;
     }
     public async getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const tx = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash, constants.AWAIT_TRANSACTION_MINED_MS);
-        tx.logs = _.map(tx.logs, log => this.decodeLogOrThrow(log));
-        return tx;
+        const receipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
+            txHash,
+            constants.AWAIT_TRANSACTION_MINED_MS,
+        );
+        return this.decodeReceiptLogs(receipt);
+    }
+    public decodeReceiptLogs(receipt: TransactionReceipt): TransactionReceiptWithDecodedLogs {
+        const decodedLogs = (receipt.logs as LogEntry[]).map(log => this.decodeLogOrThrow(log));
+        return _.merge({}, receipt, { logs: decodedLogs });
     }
 }

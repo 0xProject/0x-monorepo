@@ -15,6 +15,7 @@ export {
 export { getLatestBlockTimestampAsync, increaseTimeAndMineBlockAsync } from './block_timestamp';
 export { provider, txDefaults, web3Wrapper } from './web3_wrapper';
 export { LogDecoder } from './log_decoder';
+export { filterLogs, filterLogsToArguments } from './log_utils';
 export { signingUtils } from './signing_utils';
 export { orderUtils } from './order_utils';
 export { typeEncodingUtils } from './type_encoding_utils';
@@ -23,12 +24,12 @@ export { coverage } from './coverage';
 export { Web3ProviderEngine } from '@0x/subproviders';
 export { addressUtils } from './address_utils';
 export { OrderFactory } from './order_factory';
-export { bytes32Values, testCombinatoriallyWithReferenceFuncAsync, uint256Values } from './combinatorial_utils';
+export { bytes32Values, testCombinatoriallyWithReferenceFunc, uint256Values } from './combinatorial_utils';
 export { TransactionFactory } from './transaction_factory';
+export { MutatorContractFunction, TransactionHelper } from './transaction_helper';
 export { testWithReferenceFuncAsync } from './test_with_reference';
-export { hexConcat } from './hex_utils';
+export { hexConcat, hexRandom } from './hex_utils';
 export {
-    BatchMatchedFillResults,
     BatchMatchOrder,
     ContractName,
     ERC20BalancesByOwner,
@@ -36,11 +37,8 @@ export {
     ERC1155HoldingsByOwner,
     ERC1155NonFungibleHoldingsByOwner,
     ERC721TokenIdsByOwner,
-    FillResults,
     MarketBuyOrders,
     MarketSellOrders,
-    MatchedFillResults,
-    OrderInfo,
     OrderStatus,
     Token,
     TransactionDataParams,

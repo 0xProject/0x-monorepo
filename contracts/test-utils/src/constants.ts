@@ -16,6 +16,8 @@ const TESTRPC_PRIVATE_KEYS_STRINGS = [
     '0x23cb7121166b9a2f93ae0b7c05bde02eae50d64449b2cbb42bc84e9d38d6cc89',
 ];
 
+const MAX_UINT256 = new BigNumber(2).pow(256).minus(1);
+
 export const constants = {
     BASE_16: 16,
     INVALID_OPCODE: 'invalid opcode',
@@ -43,7 +45,8 @@ export const constants = {
     NUM_ERC1155_NONFUNGIBLE_TOKENS_MINT: 4,
     NULL_ADDRESS: '0x0000000000000000000000000000000000000000',
     NULL_BYTES32: '0x0000000000000000000000000000000000000000000000000000000000000000',
-    UNLIMITED_ALLOWANCE_IN_BASE_UNITS: new BigNumber(2).pow(256).minus(1),
+    UNLIMITED_ALLOWANCE_IN_BASE_UNITS: MAX_UINT256,
+    MAX_UINT256,
     TESTRPC_PRIVATE_KEYS: _.map(TESTRPC_PRIVATE_KEYS_STRINGS, privateKeyString => ethUtil.toBuffer(privateKeyString)),
     INITIAL_ERC20_BALANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
     INITIAL_ERC20_ALLOWANCE: Web3Wrapper.toBaseUnitAmount(new BigNumber(10000), 18),
@@ -56,8 +59,11 @@ export const constants = {
         takerFee: Web3Wrapper.toBaseUnitAmount(new BigNumber(1), 18),
     },
     WORD_LENGTH: 32,
+    ADDRESS_LENGTH: 20,
     ZERO_AMOUNT: new BigNumber(0),
     PERCENTAGE_DENOMINATOR: new BigNumber(10).pow(18),
     TIME_BUFFER: new BigNumber(1000),
     KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.SHA3_NULL)),
+    MAX_UINT256_ROOT: new BigNumber('340282366920938463463374607431768211456'),
+    ONE_ETHER: new BigNumber(1e18),
 };

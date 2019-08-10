@@ -1,29 +1,7 @@
 [
     {
-        "timestamp": 1563193019,
-        "version": "3.0.2",
+        "version": "3.1.0",
         "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
-        "timestamp": 1563047529,
-        "version": "3.0.1",
-        "changes": [
-            {
-                "note": "Dependencies updated"
-            }
-        ]
-    },
-    {
-        "version": "3.0.0",
-        "changes": [
-            {
-                "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
-                "pr": 1848
-            },
             {
                 "note": "Break up `LibEIP712` into reusable components",
                 "pr": 1742
@@ -75,6 +53,53 @@
             {
                 "note": "Add `expirationTimeSeconds` to `ZeroExTransaction` struct",
                 "pr": 1823
+            },
+            {
+                "note": "Add reference functions for `LibMath` and `LibFillResults`",
+                "pr": 2031
+            },
+            {
+                "note": "Move in revamped `LibMath` tests from the `contracts-exchange` package.",
+                "pr": 2031
+            },
+            {
+                "note": "Move in revamped `LibFillResults` tests from the `contracts-exchange` package.",
+                "pr": 2031
+            },
+            {
+                "note": "Remove unecessary zero-denominator checks in `LibMath`.",
+                "pr": 2031
+            },
+            {
+                "note": "Fix coverage hooks.",
+                "pr": 2031
+            }
+        ]
+    },
+    {
+        "timestamp": 1563193019,
+        "version": "3.0.2",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "timestamp": 1563047529,
+        "version": "3.0.1",
+        "changes": [
+            {
+                "note": "Dependencies updated"
+            }
+        ]
+    },
+    {
+        "version": "3.0.0",
+        "changes": [
+            {
+                "note": "Move `LibTransactionDecoder` to contracts/dev-utils package",
+                "pr": 1848
             }
         ],
         "timestamp": 1563006338

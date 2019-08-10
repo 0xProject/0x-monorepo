@@ -189,14 +189,6 @@ blockchainTests.resets('FillOrder Tests', ({ web3Wrapper, txDefaults }) => {
             await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
         });
 
-        it('should revert if takerAssetFillAmount is 0', async () => {
-            const fillScenario = {
-                ...defaultFillScenario,
-                takerAssetFillAmountScenario: TakerAssetFillAmountScenario.Zero,
-            };
-            await fillOrderCombinatorialUtils.testFillOrderScenarioFailureAsync(fillScenario);
-        });
-
         it('should revert if an order is expired', async () => {
             const fillScenario = {
                 ...defaultFillScenario,

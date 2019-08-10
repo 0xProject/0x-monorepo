@@ -11,6 +11,7 @@ import {
 import { ERC1155Contract as ERC1155TokenContract, Erc1155Wrapper as ERC1155Wrapper } from '@0x/contracts-erc1155';
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
+import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import {
     chaiSetup,
     constants,
@@ -34,7 +35,6 @@ import {
     ExchangeContract,
     ExchangeWrapper,
     ReentrantERC20TokenContract,
-    TestExchangeMathContract,
 } from '../src';
 
 import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
@@ -42,6 +42,7 @@ import { MatchOrderTester, TokenBalances } from './utils/match_order_tester';
 const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
 const TWO = new BigNumber(2);
+const { isRoundingErrorCeil, isRoundingErrorFloor } = LibReferenceFunctions;
 
 const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 chaiSetup.configure();
@@ -87,8 +88,6 @@ describe('matchOrders', () => {
     let defaultFeeTokenAddress: string;
 
     let matchOrderTester: MatchOrderTester;
-
-    let testExchangeMath: TestExchangeMathContract;
 
     before(async () => {
         await blockchainLifecycle.startAsync();
@@ -240,11 +239,6 @@ describe('matchOrders', () => {
         orderFactoryLeft = new OrderFactory(privateKeyLeft, defaultOrderParamsLeft);
         const privateKeyRight = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddressRight)];
         orderFactoryRight = new OrderFactory(privateKeyRight, defaultOrderParamsRight);
-        testExchangeMath = await TestExchangeMathContract.deployFrom0xArtifactAsync(
-            artifacts.TestExchangeMath,
-            provider,
-            txDefaults,
-        );
         // Create match order tester
         matchOrderTester = new MatchOrderTester(exchangeWrapper, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
         tokenBalances = await matchOrderTester.getBalancesAsync();
@@ -276,18 +270,10 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorCeil).to.be.true();
-            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorFloor).to.be.false();
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
+            expect(_isRoundingErrorCeil).to.be.true();
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
+            expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the left maker received a slightly better sell price.
             // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
@@ -342,20 +328,11 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.takerAssetAmount;
             const denominator = signedOrderRight.makerAssetAmount;
             const target = signedOrderLeft.takerAssetAmount;
-            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorFloor).to.be.true();
-            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorCeil).to.be.false();
-            // Match signedOrderLeft with signedOrderRight
-            // Note that the right maker received a slightly better purchase price.
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
+            expect(_isRoundingErrorFloor).to.be.true();
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
+            expect(_isRoundingErrorCeil).to.be.false();
+            // Match signedOrderLeft isRoundingErrorFloor right maker received a slightly better purchase price.
             // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
             // Because the right maker received a slightly more favorable buy price, the fee
             // paid by the right taker is slightly higher than that paid by the right maker.
@@ -1421,18 +1398,10 @@ describe('matchOrders', () => {
             const numerator = signedOrderLeft.makerAssetAmount;
             const denominator = signedOrderLeft.takerAssetAmount;
             const target = signedOrderRight.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorCeil).to.be.true();
-            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorFloor).to.be.false();
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
+            expect(_isRoundingErrorCeil).to.be.true();
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
+            expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the left maker received a slightly better sell price.
             // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.
@@ -1487,18 +1456,10 @@ describe('matchOrders', () => {
             const numerator = signedOrderRight.makerAssetAmount;
             const denominator = signedOrderRight.takerAssetAmount;
             const target = signedOrderLeft.makerAssetAmount;
-            const isRoundingErrorCeil = await testExchangeMath.isRoundingErrorCeil.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorCeil).to.be.false();
-            const isRoundingErrorFloor = await testExchangeMath.isRoundingErrorFloor.callAsync(
-                numerator,
-                denominator,
-                target,
-            );
-            expect(isRoundingErrorFloor).to.be.false();
+            const _isRoundingErrorCeil = isRoundingErrorCeil(numerator, denominator, target);
+            expect(_isRoundingErrorCeil).to.be.false();
+            const _isRoundingErrorFloor = isRoundingErrorFloor(numerator, denominator, target);
+            expect(_isRoundingErrorFloor).to.be.false();
             // Match signedOrderLeft with signedOrderRight
             // Note that the right maker received a slightly better purchase price.
             // This is intentional; see note in MixinMatchOrders.calculateMatchedFillResults.

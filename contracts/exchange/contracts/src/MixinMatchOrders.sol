@@ -680,22 +680,6 @@ contract MixinMatchOrders is
             shouldMaximallyFillOrders
         );
 
-        // Validate fill contexts
-        _assertValidFill(
-            leftOrder,
-            leftOrderInfo,
-            matchedFillResults.left.takerAssetFilledAmount,
-            matchedFillResults.left.takerAssetFilledAmount,
-            matchedFillResults.left.makerAssetFilledAmount
-        );
-        _assertValidFill(
-            rightOrder,
-            rightOrderInfo,
-            matchedFillResults.right.takerAssetFilledAmount,
-            matchedFillResults.right.takerAssetFilledAmount,
-            matchedFillResults.right.makerAssetFilledAmount
-        );
-
         // Update exchange state
         _updateFilledState(
             leftOrder,

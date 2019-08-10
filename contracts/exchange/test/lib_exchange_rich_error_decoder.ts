@@ -1,37 +1,16 @@
-import {
-    addressUtils,
-    chaiSetup,
-    OrderStatus,
-    orderUtils,
-    provider,
-    txDefaults,
-    web3Wrapper,
-} from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
+import { addressUtils, blockchainTests, expect, hexRandom, OrderStatus, orderUtils } from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
 import { RevertError } from '@0x/utils';
-import * as chai from 'chai';
-import * as crypto from 'crypto';
 import * as _ from 'lodash';
 
 import { artifacts, TestLibExchangeRichErrorDecoderContract } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
-describe('LibExchangeRichErrorDecoder', () => {
+blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults }) => {
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;
     const ERROR_DATA_LENGTH = 100;
     let decoder: TestLibExchangeRichErrorDecoderContract;
 
-    before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
     before(async () => {
         decoder = await TestLibExchangeRichErrorDecoderContract.deployFrom0xArtifactAsync(
             artifacts.TestLibExchangeRichErrorDecoder,
@@ -39,11 +18,6 @@ describe('LibExchangeRichErrorDecoder', () => {
             txDefaults,
         );
     });
-
-    function generateRandomBytes(length: number): string {
-        const bytes = crypto.randomBytes(length).toString('hex');
-        return `0x${bytes}`;
-    }
 
     function createDecodeTest(revertType: new (...args: any[]) => RevertError, parameters: any[]): void {
         const revert = new revertType(...parameters);
@@ -76,8 +50,8 @@ describe('LibExchangeRichErrorDecoder', () => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
         const signer = addressUtils.generatePseudoRandomAddress();
         const validator = addressUtils.generatePseudoRandomAddress();
-        const signature = generateRandomBytes(SIGNATURE_LENGTH);
-        const errorData = generateRandomBytes(ERROR_DATA_LENGTH);
+        const signature = hexRandom(SIGNATURE_LENGTH);
+        const errorData = hexRandom(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.SignatureError, [errorCode, orderHash, signer, signature]);
         createDecodeTest(ExchangeRevertErrors.SignatureValidatorNotApprovedError, [signer, validator]);
         createDecodeTest(ExchangeRevertErrors.SignatureValidatorError, [
@@ -125,14 +99,14 @@ describe('LibExchangeRichErrorDecoder', () => {
     (() => {
         const errorCode = ExchangeRevertErrors.AssetProxyDispatchErrorCode.UnknownAssetProxy;
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const assetData = generateRandomBytes(ASSET_DATA_LENGTH);
+        const assetData = hexRandom(ASSET_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.AssetProxyDispatchError, [errorCode, orderHash, assetData]);
     })();
 
     (() => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        const assetData = generateRandomBytes(ASSET_DATA_LENGTH);
-        const errorData = generateRandomBytes(ERROR_DATA_LENGTH);
+        const assetData = hexRandom(ASSET_DATA_LENGTH);
+        const errorData = hexRandom(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.AssetProxyTransferError, [orderHash, assetData, errorData]);
     })();
 
@@ -151,13 +125,13 @@ describe('LibExchangeRichErrorDecoder', () => {
     (() => {
         const transactionHash = orderUtils.generatePseudoRandomOrderHash();
         const signer = addressUtils.generatePseudoRandomAddress();
-        const signature = generateRandomBytes(SIGNATURE_LENGTH);
+        const signature = hexRandom(SIGNATURE_LENGTH);
         createDecodeTest(ExchangeRevertErrors.TransactionSignatureError, [transactionHash, signer, signature]);
     })();
 
     (() => {
         const transactionHash = orderUtils.generatePseudoRandomOrderHash();
-        const errorData = generateRandomBytes(ERROR_DATA_LENGTH);
+        const errorData = hexRandom(ERROR_DATA_LENGTH);
         createDecodeTest(ExchangeRevertErrors.TransactionExecutionError, [transactionHash, errorData]);
     })();
 

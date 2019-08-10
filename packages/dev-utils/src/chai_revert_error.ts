@@ -34,7 +34,7 @@ export function revertErrorHelper(_chai: Chai): void {
         return async function(this: ChaiAssertionInstance, expected: any, ...rest: any[]): Promise<void> {
             const maybePromise = this._obj;
             // Make sure we're working with a promise.
-            chaiAssert(_chai, maybePromise instanceof Promise, `Expected ${maybePromise} to be a promise`);
+            assertIsPromiseLike(_chai, maybePromise);
             // Wait for the promise to reject.
             let resolveValue;
             let rejectValue: any;
@@ -58,7 +58,7 @@ export function revertErrorHelper(_chai: Chai): void {
         return async function(this: ChaiAssertionInstance, expected: any, ...rest: any[]): Promise<void> {
             const maybePromise = this._obj;
             // Make sure we're working with a promise.
-            chaiAssert(_chai, maybePromise instanceof Promise, `Expected ${maybePromise} to be a promise`);
+            assertIsPromiseLike(_chai, maybePromise);
             // Wait for the promise to resolve.
             if (!compareRevertErrors.call(this, _chai, await maybePromise, expected)) {
                 // Wasn't handled by the comparison function so call the previous handler.
@@ -132,4 +132,11 @@ function chaiAssert(_chai: Chai, condition: boolean, failMessage?: string, expec
 function chaiFail(_chai: Chai, failMessage?: string, expected?: any, actual?: any): void {
     const assert = new _chai.Assertion();
     assert.assert(false, failMessage, undefined, expected, actual);
+}
+
+function assertIsPromiseLike(_chai: Chai, maybePromise: any): void {
+    if (maybePromise.then instanceof Function && maybePromise.catch instanceof Function) {
+        return;
+    }
+    chaiFail(_chai, `Expected ${maybePromise} to be a promise`, Promise.resolve(), maybePromise);
 }

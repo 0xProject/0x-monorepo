@@ -1,17 +1,15 @@
 import {
     addressUtils,
-    chaiSetup,
+    blockchainTests,
     constants,
+    expect,
     hexConcat,
+    hexRandom,
     LogDecoder,
     OrderFactory,
     orderUtils,
-    provider,
     TransactionFactory,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import {
     assetDataUtils,
     ExchangeRevertErrors,
@@ -20,9 +18,7 @@ import {
     transactionHashUtils,
 } from '@0x/order-utils';
 import { SignatureType, SignedOrder, SignedZeroExTransaction } from '@0x/types';
-import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
-import * as chai from 'chai';
-import * as crypto from 'crypto';
+import { BigNumber, StringRevertError } from '@0x/utils';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import ethUtil = require('ethereumjs-util');
 
@@ -35,11 +31,8 @@ import {
 
 import { ValidatorWalletAction, ValidatorWalletDataType } from './utils';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
 // tslint:disable:no-unnecessary-type-assertion
-describe('MixinSignatureValidator', () => {
+blockchainTests.resets('MixinSignatureValidator', env => {
     let chainId: number;
     let signatureValidator: TestSignatureValidatorContract;
     let validatorWallet: TestValidatorWalletContract;
@@ -49,26 +42,20 @@ describe('MixinSignatureValidator', () => {
     let notSignerAddress: string;
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        chainId = await env.getChainIdAsync();
+        const accounts = await env.getAccountAddressesAsync();
         signerAddress = accounts[0];
         notSignerAddress = accounts[1];
         signatureValidator = await TestSignatureValidatorContract.deployFrom0xArtifactAsync(
             artifacts.TestSignatureValidator,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             new BigNumber(chainId),
         );
         validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
             artifacts.TestValidatorWallet,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             signatureValidator.address,
         );
         validatorWalletRevertReason = await validatorWallet.REVERT_REASON.callAsync();
@@ -87,16 +74,8 @@ describe('MixinSignatureValidator', () => {
         signerPrivateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(signerAddress)];
     });
 
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-
     const SIGNATURE_LENGTH = 65;
-    const generateRandomBytes = (count: number): string => ethUtil.bufferToHex(crypto.randomBytes(count));
-    const generateRandomSignature = (): string => generateRandomBytes(SIGNATURE_LENGTH);
+    const generateRandomSignature = (): string => hexRandom(SIGNATURE_LENGTH);
     const hashBytes = (bytesHex: string): string => ethUtil.bufferToHex(ethUtil.sha3(ethUtil.toBuffer(bytesHex)));
     const signDataHex = (dataHex: string, privateKey: Buffer): string => {
         const ecSignature = ethUtil.ecsign(ethUtil.toBuffer(dataHex), signerPrivateKey);
@@ -609,7 +588,7 @@ describe('MixinSignatureValidator', () => {
             // We don't actually do anything with the transaction so we can just
             // fill it with random data.
             signedTransaction = await transactionFactory.newSignedTransactionAsync({
-                data: generateRandomBytes(TRANSACTION_DATA_LENGTH),
+                data: hexRandom(TRANSACTION_DATA_LENGTH),
             });
         });
 
@@ -807,7 +786,7 @@ describe('MixinSignatureValidator', () => {
         let signatureValidatorLogDecoder: LogDecoder;
 
         before(async () => {
-            signatureValidatorLogDecoder = new LogDecoder(web3Wrapper, artifacts);
+            signatureValidatorLogDecoder = new LogDecoder(env.web3Wrapper, artifacts);
         });
 
         it('should emit a SignatureValidatorApprovalSet with correct args when a validator is approved', async () => {

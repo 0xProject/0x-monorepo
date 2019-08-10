@@ -30,6 +30,13 @@ contract SafeMath {
         pure
         returns (uint256)
     {
+        if (b == 0) {
+            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+                LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_DIVISION_BY_ZERO,
+                a,
+                b
+            ));
+        }
         uint256 c = a / b;
         return c;
     }
