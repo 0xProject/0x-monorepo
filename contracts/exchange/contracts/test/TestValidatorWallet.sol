@@ -45,6 +45,8 @@ contract TestValidatorWallet is
 {
     using LibBytes for bytes;
 
+    // Magic bytes to be returned by `Wallet` signature type validators.
+    // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
     bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
 
     /// @dev Revert reason for `Revert` `ValidatorAction`.
