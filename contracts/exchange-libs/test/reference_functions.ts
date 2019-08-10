@@ -222,19 +222,19 @@ describe('Reference Functions', () => {
 
         describe('isRoundingErrorFloor', () => {
             describe('explicit tests', () => {
-                it('returns true for a rounding error', () => {
-                    const numerator = new BigNumber(1e3);
-                    const denominator = new BigNumber(1e4);
-                    const target = new BigNumber(333);
+                it('returns true when `numerator * target / denominator` produces an error >= 0.1%', async () => {
+                    const numerator = new BigNumber(100);
+                    const denominator = new BigNumber(102);
+                    const target = new BigNumber(52);
                     // tslint:disable-next-line: boolean-naming
                     const actual = isRoundingErrorFloor(numerator, denominator, target);
                     expect(actual).to.eq(true);
                 });
 
-                it('returns false for not a rounding error', () => {
-                    const numerator = new BigNumber(1e3);
-                    const denominator = new BigNumber(1e4);
-                    const target = new BigNumber(5e2);
+                it('returns false when `numerator * target / denominator` produces an error < 0.1%', async () => {
+                    const numerator = new BigNumber(100);
+                    const denominator = new BigNumber(101);
+                    const target = new BigNumber(92);
                     // tslint:disable-next-line: boolean-naming
                     const actual = isRoundingErrorFloor(numerator, denominator, target);
                     expect(actual).to.eq(false);
@@ -268,19 +268,19 @@ describe('Reference Functions', () => {
 
         describe('isRoundingErrorCeil', () => {
             describe('explicit tests', () => {
-                it('returns true for a rounding error', () => {
-                    const numerator = new BigNumber(1e3);
-                    const denominator = new BigNumber(1e4);
-                    const target = new BigNumber(333);
+                it('returns true when `numerator * target / (denominator - 1)` produces an error >= 0.1%', async () => {
+                    const numerator = new BigNumber(100);
+                    const denominator = new BigNumber(101);
+                    const target = new BigNumber(92);
                     // tslint:disable-next-line: boolean-naming
                     const actual = isRoundingErrorCeil(numerator, denominator, target);
                     expect(actual).to.eq(true);
                 });
 
-                it('returns false for not a rounding error', () => {
-                    const numerator = new BigNumber(1e3);
-                    const denominator = new BigNumber(1e4);
-                    const target = new BigNumber(5e2);
+                it('returns false when `numerator * target / (denominator - 1)` produces an error < 0.1%', async () => {
+                    const numerator = new BigNumber(100);
+                    const denominator = new BigNumber(102);
+                    const target = new BigNumber(52);
                     // tslint:disable-next-line: boolean-naming
                     const actual = isRoundingErrorCeil(numerator, denominator, target);
                     expect(actual).to.eq(false);
