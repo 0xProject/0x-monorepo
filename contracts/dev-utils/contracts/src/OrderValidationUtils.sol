@@ -23,14 +23,15 @@ import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "./LibAssetData.sol";
 
 
 contract OrderValidationUtils is
-    LibAssetData,
-    LibMath
+    LibAssetData
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     constructor (address _exchange)
         public
@@ -79,9 +80,9 @@ contract OrderValidationUtils is
         if (order.makerAssetData.equals(order.makerFeeAssetData)) {
             // If `makerAsset` equals `makerFeeAsset`, the % that can be filled is
             // transferableMakerAssetAmount / (makerAssetAmount + makerFee)
-            transferableTakerAssetAmount = _getPartialAmountFloor(
+            transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                 transferableMakerAssetAmount,
-                _safeAdd(order.makerAssetAmount, makerFee),
+                order.makerAssetAmount.safeAdd(makerFee),
                 takerAssetAmount
             );
         } else {
@@ -90,7 +91,7 @@ contract OrderValidationUtils is
 
             // If `makerFee` is 0, the % that can be filled is (transferableMakerAssetAmount / makerAssetAmount)
             if (makerFee == 0) {
-                transferableTakerAssetAmount = _getPartialAmountFloor(
+                transferableTakerAssetAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
@@ -99,23 +100,23 @@ contract OrderValidationUtils is
             // If `makerAsset` does not equal `makerFeeAsset`, the % that can be filled is the lower of
             // (transferableMakerAssetAmount / makerAssetAmount) and (transferableMakerAssetFeeAmount / makerFee)
             } else {
-                uint256 transferableMakerToTakerAmount = _getPartialAmountFloor(
+                uint256 transferableMakerToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerAssetAmount,
                     order.makerAssetAmount,
                     takerAssetAmount
                 );
-                uint256 transferableMakerFeeToTakerAmount = _getPartialAmountFloor(
+                uint256 transferableMakerFeeToTakerAmount = LibMath.getPartialAmountFloor(
                     transferableMakerFeeAssetAmount,
                     makerFee,
                     takerAssetAmount
                 );
-                transferableTakerAssetAmount = _min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
+                transferableTakerAssetAmount = LibSafeMath.min256(transferableMakerToTakerAmount, transferableMakerFeeToTakerAmount);
             }
         }
 
         // `fillableTakerAssetAmount` is the lower of the order's remaining `takerAssetAmount` and the `transferableTakerAssetAmount`
-        fillableTakerAssetAmount = _min256(
-            _safeSub(takerAssetAmount, orderInfo.orderTakerAssetFilledAmount),
+        fillableTakerAssetAmount = LibSafeMath.min256(
+            takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount),
             transferableTakerAssetAmount
         );
 
@@ -170,7 +171,7 @@ contract OrderValidationUtils is
         returns (uint256 transferableAssetAmount)
     {
         (uint256 balance, uint256 allowance) = getBalanceAndAssetProxyAllowance(ownerAddress, assetData);
-        transferableAssetAmount = _min256(balance, allowance);
+        transferableAssetAmount = LibSafeMath.min256(balance, allowance);
         return transferableAssetAmount;
     }
 }
