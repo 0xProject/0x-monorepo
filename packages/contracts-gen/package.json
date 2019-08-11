@@ -28,6 +28,7 @@
     "homepage": "https://github.com/0xProject/0x-monorepo/packages/contracts-gen/README.md",
     "dependencies": {
         "@0x/sol-resolver": "^2.0.8",
+        "@0x/sol-compiler": "^3.1.9",
         "@0x/types": "^2.4.0",
         "@0x/typescript-typings": "^4.2.3",
         "@0x/utils": "^4.4.0",
