@@ -21,6 +21,5 @@
                 ]
             }
         }
-    },
-    "contracts": ["src/IStaking.sol", "src/Staking.sol"]
+    }
 }

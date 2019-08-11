@@ -22,27 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "examples/ExchangeWrapper.sol",
-        "examples/Whitelist.sol",
-        "src/Exchange.sol",
-        "src/interfaces/IAssetProxyDispatcher.sol",
-        "src/interfaces/IEIP1271Wallet.sol",
-        "src/interfaces/IExchange.sol",
-        "src/interfaces/IExchangeCore.sol",
-        "src/interfaces/IMatchOrders.sol",
-        "src/interfaces/ISignatureValidator.sol",
-        "src/interfaces/ITransactions.sol",
-        "src/interfaces/IWallet.sol",
-        "src/interfaces/IWrapperFunctions.sol",
-        "test/IsolatedExchange.sol",
-        "test/ReentrancyTester.sol",
-        "test/TestAssetProxyDispatcher.sol",
-        "test/TestExchangeInternals.sol",
-        "test/TestLibExchangeRichErrorDecoder.sol",
-        "test/TestSignatureValidator.sol",
-        "test/TestValidatorWallet.sol",
-        "test/TestWrapperFunctions.sol"
-    ]
+    }
 }

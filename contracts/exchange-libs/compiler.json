@@ -22,17 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/LibEIP712ExchangeDomain.sol",
-        "src/LibFillResults.sol",
-        "src/LibMath.sol",
-        "src/LibOrder.sol",
-        "src/LibZeroExTransaction.sol",
-        "test/TestLibEIP712ExchangeDomain.sol",
-        "test/TestLibFillResults.sol",
-        "test/TestLibMath.sol",
-        "test/TestLibOrder.sol",
-        "test/TestLibZeroExTransaction.sol"
-    ]
+    }
 }

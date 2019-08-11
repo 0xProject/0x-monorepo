@@ -22,12 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/DevUtils.sol",
-        "src/EthBalanceChecker.sol",
-        "src/LibAssetData.sol",
-        "src/LibTransactionDecoder.sol",
-        "src/OrderTransferSimulationUtils.sol"
-    ]
+    }
 }

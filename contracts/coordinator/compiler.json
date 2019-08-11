@@ -21,6 +21,5 @@
                 ]
             }
         }
-    },
-    "contracts": ["src/Coordinator.sol", "src/registry/CoordinatorRegistry.sol"]
+    }
 }

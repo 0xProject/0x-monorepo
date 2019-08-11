@@ -22,25 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/Authorizable.sol",
-        "src/LibAddress.sol",
-        "src/LibBytes.sol",
-        "src/LibEIP1271.sol",
-        "src/LibEIP712.sol",
-        "src/Ownable.sol",
-        "src/ReentrancyGuard.sol",
-        "src/SafeMath.sol",
-        "src/interfaces/IAuthorizable.sol",
-        "src/interfaces/IOwnable.sol",
-        "test/TestLibAddress.sol",
-        "test/TestLibAddressArray.sol",
-        "test/TestLibBytes.sol",
-        "test/TestLibEIP712.sol",
-        "test/TestLibRichErrors.sol",
-        "test/TestOwnable.sol",
-        "test/TestReentrancyGuard.sol",
-        "test/TestSafeMath.sol"
-    ]
+    }
 }

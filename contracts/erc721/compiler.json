@@ -22,14 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/ERC721Token.sol",
-        "src/MintableERC721Token.sol",
-        "src/interfaces/IERC721Receiver.sol",
-        "src/interfaces/IERC721Token.sol",
-        "test/DummyERC721Receiver.sol",
-        "test/DummyERC721Token.sol",
-        "test/InvalidERC721Receiver.sol"
-    ]
+    }
 }

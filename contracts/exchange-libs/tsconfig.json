@@ -6,6 +6,7 @@
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
+        "generated-artifacts/LibMathRichErrors.json",
         "generated-artifacts/LibOrder.json",
         "generated-artifacts/LibZeroExTransaction.json",
         "generated-artifacts/TestLibEIP712ExchangeDomain.json",

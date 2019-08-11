@@ -10,10 +10,12 @@ import * as EthBalanceChecker from '../generated-artifacts/EthBalanceChecker.jso
 import * as LibAssetData from '../generated-artifacts/LibAssetData.json';
 import * as LibTransactionDecoder from '../generated-artifacts/LibTransactionDecoder.json';
 import * as OrderTransferSimulationUtils from '../generated-artifacts/OrderTransferSimulationUtils.json';
+import * as OrderValidationUtils from '../generated-artifacts/OrderValidationUtils.json';
 export const artifacts = {
     DevUtils: DevUtils as ContractArtifact,
+    EthBalanceChecker: EthBalanceChecker as ContractArtifact,
     LibAssetData: LibAssetData as ContractArtifact,
     LibTransactionDecoder: LibTransactionDecoder as ContractArtifact,
-    EthBalanceChecker: EthBalanceChecker as ContractArtifact,
     OrderTransferSimulationUtils: OrderTransferSimulationUtils as ContractArtifact,
+    OrderValidationUtils: OrderValidationUtils as ContractArtifact,
 };
