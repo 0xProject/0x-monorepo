@@ -171,7 +171,10 @@ library LibFillResults {
     /// @param fillResults1 The first FillResults.
     /// @param fillResults2 The second FillResults.
     /// @return The sum of both fill results.
-    function addFillResults(FillResults memory fillResults1, FillResults memory fillResults2)
+    function addFillResults(
+        FillResults memory fillResults1,
+        FillResults memory fillResults2
+    )
         internal
         pure
         returns (FillResults memory totalFillResults)

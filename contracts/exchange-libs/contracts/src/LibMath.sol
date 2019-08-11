@@ -42,7 +42,7 @@ library LibMath {
         pure
         returns (uint256 partialAmount)
     {
-        if (_isRoundingErrorFloor(
+        if (isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
@@ -73,7 +73,7 @@ library LibMath {
         pure
         returns (uint256 partialAmount)
     {
-        if (_isRoundingErrorCeil(
+        if (isRoundingErrorCeil(
                 numerator,
                 denominator,
                 target
