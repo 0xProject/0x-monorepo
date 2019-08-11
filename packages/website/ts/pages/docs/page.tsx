@@ -59,12 +59,9 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
     const { subtitle, title } = meta[page];
 
-    React.useEffect(
-        () => {
-            void loadPageAsync(page, type);
-        },
-        [page, type],
-    );
+    React.useEffect(() => {
+        void loadPageAsync(page, type);
+    }, [page, type]);
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
@@ -117,7 +114,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
             {wasNotFound ? (
                 <FullscreenMessage
                     headerText={'Not found'}
-                    headerTextColor={colors.brandDark}
+                    headerTextColor={'#000'}
                     bodyText={"Hm... looks like we couldn't find what you are looking for."}
                 />
             ) : (
