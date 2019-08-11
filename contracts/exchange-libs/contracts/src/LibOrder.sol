@@ -17,7 +17,6 @@
 */
 
 pragma solidity ^0.5.9;
-pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
