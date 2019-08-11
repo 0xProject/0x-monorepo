@@ -29,6 +29,10 @@
         "src/LibMath.sol",
         "src/LibOrder.sol",
         "src/LibZeroExTransaction.sol",
-        "test/TestLibs.sol"
+        "test/TestLibEIP712ExchangeDomain.sol",
+        "test/TestLibFillResults.sol",
+        "test/TestLibMath.sol",
+        "test/TestLibOrder.sol",
+        "test/TestLibZeroExTransaction.sol"
     ]
 }

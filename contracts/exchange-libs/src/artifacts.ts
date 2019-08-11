@@ -10,12 +10,20 @@ import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
 import * as LibMath from '../generated-artifacts/LibMath.json';
 import * as LibOrder from '../generated-artifacts/LibOrder.json';
 import * as LibZeroExTransaction from '../generated-artifacts/LibZeroExTransaction.json';
-import * as TestLibs from '../generated-artifacts/TestLibs.json';
+import * as TestLibEIP712ExchangeDomain from '../generated-artifacts/TestLibEIP712ExchangeDomain.json';
+import * as TestLibFillResults from '../generated-artifacts/TestLibFillResults.json';
+import * as TestLibMath from '../generated-artifacts/TestLibMath.json';
+import * as TestLibOrder from '../generated-artifacts/TestLibOrder.json';
+import * as TestLibZeroExTransaction from '../generated-artifacts/TestLibZeroExTransaction.json';
 export const artifacts = {
     LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
     LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
     LibOrder: LibOrder as ContractArtifact,
     LibZeroExTransaction: LibZeroExTransaction as ContractArtifact,
-    TestLibs: TestLibs as ContractArtifact,
+    TestLibMath: TestLibMath as ContractArtifact,
+    TestLibOrder: TestLibOrder as ContractArtifact,
+    TestLibZeroExTransaction: TestLibZeroExTransaction as ContractArtifact,
+    TestLibFillResults: TestLibFillResults as ContractArtifact,
+    TestLibEIP712ExchangeDomain: TestLibEIP712ExchangeDomain as ContractArtifact,
 };

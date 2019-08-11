@@ -8,7 +8,11 @@
         "generated-artifacts/LibMath.json",
         "generated-artifacts/LibOrder.json",
         "generated-artifacts/LibZeroExTransaction.json",
-        "generated-artifacts/TestLibs.json"
+        "generated-artifacts/TestLibEIP712ExchangeDomain.json",
+        "generated-artifacts/TestLibFillResults.json",
+        "generated-artifacts/TestLibMath.json",
+        "generated-artifacts/TestLibOrder.json",
+        "generated-artifacts/TestLibZeroExTransaction.json"
     ],
     "exclude": ["./deploy/solc/solc_bin"]
 }

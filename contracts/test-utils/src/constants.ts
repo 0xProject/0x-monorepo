@@ -66,4 +66,6 @@ export const constants = {
     KECCAK256_NULL: ethUtil.addHexPrefix(ethUtil.bufferToHex(ethUtil.SHA3_NULL)),
     MAX_UINT256_ROOT: new BigNumber('340282366920938463463374607431768211456'),
     ONE_ETHER: new BigNumber(1e18),
+    EIP712_DOMAIN_NAME: '0x Protocol',
+    EIP712_DOMAIN_VERSION: '3.0.0',
 };
