@@ -68,7 +68,7 @@ contract MixinExchangeCore is
 
         // Ensure orderEpoch is monotonically increasing
         if (newOrderEpoch <= oldOrderEpoch) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderEpochError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.OrderEpochError(
                 makerAddress,
                 orderSenderAddress,
                 oldOrderEpoch
@@ -330,7 +330,7 @@ contract MixinExchangeCore is
     {
         // An order can only be filled if its status is FILLABLE.
         if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderStatusError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.OrderStatusError(
                 orderInfo.orderHash,
                 LibOrder.OrderStatus(orderInfo.orderStatus)
             ));
@@ -339,7 +339,7 @@ contract MixinExchangeCore is
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(
                     orderInfo.orderHash, msg.sender
                 ));
             }
@@ -348,7 +348,7 @@ contract MixinExchangeCore is
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             if (order.takerAddress != takerAddress) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidTakerError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidTakerError(
                     orderInfo.orderHash, takerAddress
                 ));
             }
@@ -367,7 +367,7 @@ contract MixinExchangeCore is
                     order,
                     orderInfo.orderHash,
                     signature)) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                     IExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
@@ -390,14 +390,14 @@ contract MixinExchangeCore is
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
             }
         }
 
         // Validate transaction signed by maker
         address makerAddress = _getCurrentContextAddress();
         if (order.makerAddress != makerAddress) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
+            LibRichErrors.rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
         }
     }
 

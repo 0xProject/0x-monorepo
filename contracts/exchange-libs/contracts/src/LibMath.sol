@@ -47,7 +47,7 @@ library LibMath {
                 denominator,
                 target
         )) {
-            LibRichErrors._rrevert(LibMathRichErrors.RoundingError(
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
                 numerator,
                 denominator,
                 target
@@ -78,7 +78,7 @@ library LibMath {
                 denominator,
                 target
         )) {
-            LibRichErrors._rrevert(LibMathRichErrors.RoundingError(
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
                 numerator,
                 denominator,
                 target
@@ -152,7 +152,7 @@ library LibMath {
         returns (bool isError)
     {
         if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
         }
 
         // The absolute rounding error is the difference between the rounded
@@ -205,7 +205,7 @@ library LibMath {
         returns (bool isError)
     {
         if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
         }
 
         // See the comments in `isRoundingError`.

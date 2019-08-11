@@ -111,7 +111,7 @@ contract MixinSignatureValidator is
             signatureType == SignatureType.Validator ||
             signatureType == SignatureType.EIP1271Wallet
         ) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
                 signerAddress,
@@ -307,7 +307,7 @@ contract MixinSignatureValidator is
         // a correctly formatted but incorrect signature.
         if (signatureType == SignatureType.Invalid) {
             if (signature.length != 1) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                     IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
@@ -319,7 +319,7 @@ contract MixinSignatureValidator is
         // Signature using EIP712
         } else if (signatureType == SignatureType.EIP712) {
             if (signature.length != 66) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                     IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
@@ -340,7 +340,7 @@ contract MixinSignatureValidator is
         // Signed using web3.eth_sign
         } else if (signatureType == SignatureType.EthSign) {
             if (signature.length != 66) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                     IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
@@ -399,7 +399,7 @@ contract MixinSignatureValidator is
         }
 
         if (signature.length == 0) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                 hash,
                 signerAddress,
@@ -412,7 +412,7 @@ contract MixinSignatureValidator is
 
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
                 hash,
                 signerAddress,
@@ -426,7 +426,7 @@ contract MixinSignatureValidator is
         // it an explicit option. This aids testing and analysis. It is
         // also the initialization value for the enum type.
         if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
                 hash,
                 signerAddress,
@@ -481,7 +481,7 @@ contract MixinSignatureValidator is
             return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
         }
         // Static call to verifier failed.
-        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
+        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
             hash,
             walletAddress,
             signature,
@@ -535,7 +535,7 @@ contract MixinSignatureValidator is
             return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
-        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
+        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureWalletError(
             hash,
             walletAddress,
             signature,
@@ -571,7 +571,7 @@ contract MixinSignatureValidator is
         address validatorAddress = signature.readAddress(signatureLength - 21);
         // Ensure signer has approved validator.
         if (!allowedValidators[signerAddress][validatorAddress]) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureValidatorNotApprovedError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorNotApprovedError(
                 signerAddress,
                 validatorAddress
             ));
@@ -599,7 +599,7 @@ contract MixinSignatureValidator is
             return returnData.readBytes4(0) == EIP1271_MAGIC_VALUE;
         }
         // Static call to verifier failed.
-        LibRichErrors._rrevert(LibExchangeRichErrors.SignatureValidatorError(
+        LibRichErrors.rrevert(LibExchangeRichErrors.SignatureValidatorError(
             hash,
             signerAddress,
             validatorAddress,

@@ -27,6 +27,6 @@ contract TestLibRichErrors {
         external
         pure
     {
-        LibRichErrors._rrevert(errorData);
+        LibRichErrors.rrevert(errorData);
     }
 }

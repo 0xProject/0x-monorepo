@@ -308,7 +308,7 @@ contract MixinWrapperFunctions is
             signature
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.IncompleteFillError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
                 getOrderInfo(order).orderHash
             ));
         }

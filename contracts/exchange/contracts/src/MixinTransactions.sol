@@ -91,7 +91,7 @@ contract MixinTransactions is
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= transaction.expirationTimeSeconds) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
                 IExchangeRichErrors.TransactionErrorCodes.EXPIRED,
                 transactionHash
             ));
@@ -99,7 +99,7 @@ contract MixinTransactions is
 
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
                 IExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
                 transactionHash
             ));
@@ -107,7 +107,7 @@ contract MixinTransactions is
 
         // Validate transaction has not been executed
         if (transactionsExecuted[transactionHash]) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
                 IExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
             ));
@@ -121,7 +121,7 @@ contract MixinTransactions is
                     transaction,
                     transactionHash,
                     signature)) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.TransactionSignatureError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.TransactionSignatureError(
                     transactionHash,
                     signerAddress,
                     signature
@@ -136,7 +136,7 @@ contract MixinTransactions is
         transactionsExecuted[transactionHash] = true;
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(transaction.data);
         if (!didSucceed) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.TransactionExecutionError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.TransactionExecutionError(
                 transactionHash,
                 returnData
             ));

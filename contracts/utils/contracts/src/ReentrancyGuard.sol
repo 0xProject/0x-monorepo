@@ -37,7 +37,7 @@ contract ReentrancyGuard {
         // If the counter value is different from what we remember, the function
         // was called more than once and an illegal reentrancy occured.
         if (localCounter != reentrancyGuardCounter) {
-            LibRichErrors._rrevert(
+            LibRichErrors.rrevert(
                 LibReentrancyGuardRichErrors.IllegalReentrancyError()
             );
         }

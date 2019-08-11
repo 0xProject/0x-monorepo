@@ -16,7 +16,7 @@ contract SafeMath {
         }
         uint256 c = a * b;
         if (c / a != b) {
-            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
                 LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_MULTIPLICATION_OVERFLOW,
                 a,
                 b
@@ -31,7 +31,7 @@ contract SafeMath {
         returns (uint256)
     {
         if (b == 0) {
-            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
                 LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_DIVISION_BY_ZERO,
                 a,
                 b
@@ -47,7 +47,7 @@ contract SafeMath {
         returns (uint256)
     {
         if (b > a) {
-            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
                 LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_SUBTRACTION_UNDERFLOW,
                 a,
                 b
@@ -63,7 +63,7 @@ contract SafeMath {
     {
         uint256 c = a + b;
         if (c < a) {
-            LibRichErrors._rrevert(LibSafeMathRichErrors.SafeMathError(
+            LibRichErrors.rrevert(LibSafeMathRichErrors.SafeMathError(
                 LibSafeMathRichErrors.SafeMathErrorCodes.UINT256_ADDITION_OVERFLOW,
                 a,
                 b
