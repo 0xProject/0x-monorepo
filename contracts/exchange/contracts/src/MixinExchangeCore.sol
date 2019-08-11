@@ -246,7 +246,7 @@ contract MixinExchangeCore is
         _assertValidCancel(order, orderInfo);
 
         // Noop if order is already unfillable
-        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
+        if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
             return;
         }
 

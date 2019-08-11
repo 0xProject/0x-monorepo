@@ -19,6 +19,7 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "../src/Exchange.sol";
 
 
@@ -71,7 +72,7 @@ contract IsolatedExchange is
     /// @dev Overriden to simplify signature validation.
     ///      Unfortunately, this is `view`, so it can't log arguments.
     function _isValidOrderWithHashSignature(
-        Order memory order,
+        LibOrder.Order memory order,
         bytes32 orderHash,
         bytes memory signature
     )

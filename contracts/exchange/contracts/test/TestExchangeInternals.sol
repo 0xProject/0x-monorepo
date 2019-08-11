@@ -44,7 +44,7 @@ contract TestExchangeInternals is
     /// @dev Call `_updateFilledState()` but first set `filled[order]` to
     ///      `orderTakerAssetFilledAmount`.
     function testUpdateFilledState(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
@@ -52,7 +52,7 @@ contract TestExchangeInternals is
     )
         public
     {
-        filled[getOrderHash(order)] = orderTakerAssetFilledAmount;
+        filled[LibOrder.getOrderHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
         _updateFilledState(
             order,
             takerAddress,
