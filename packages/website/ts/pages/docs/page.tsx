@@ -29,7 +29,6 @@ import { FullscreenMessage } from 'ts/pages/fullscreen_message';
 
 import { Paragraph } from 'ts/components/text';
 
-import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 
 import { meta } from 'ts/utils/algolia_meta';
