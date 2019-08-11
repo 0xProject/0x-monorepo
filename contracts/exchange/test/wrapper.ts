@@ -216,14 +216,13 @@ blockchainTests.resets('Exchange wrappers', env => {
                 signedOrder.signature,
                 { from: takerAddress },
             );
-            const txReceipt = await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
+            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress, {
                 takerAssetFillAmount,
                 // HACK(albrow): We need to hardcode the gas estimate here because
                 // the Geth gas estimator doesn't work with the way we use
                 // delegatecall and swallow errors.
                 gas: 250000,
             });
-            console.log(txReceipt.gasUsed);
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             const makerAssetFilledAmount = takerAssetFillAmount
