@@ -1,26 +1,19 @@
-import * as path from 'path';
-// @ts-ignore
-import * as remark from 'remark';
-// @ts-ignore
-import * as mdx from 'remark-mdx';
-// @ts-ignore
-import * as slug from 'remark-slug';
-import slugify from 'slugify';
-// @ts-ignore
-import { read } from 'to-vfile';
-// @ts-ignore
-import * as findAfter from 'unist-util-find-after';
-// @ts-ignore
-import * as modifyChildren from 'unist-util-modify-children';
-// @ts-ignore
-import { selectAll } from 'unist-util-select';
-
-import * as glob from 'glob';
-
 import compareVersions from 'compare-versions';
+import * as glob from 'glob';
+import * as path from 'path';
+import slugify from 'slugify';
 
+import { adminClient, IAlgoliaSettings, searchIndices, settings } from './algolia_constants';
 import { meta } from './algolia_meta';
-import { adminClient, searchIndices, settings, IAlgoliaSettings } from './algolia_search';
+
+// Note (piotr): can't find type definitions for these
+const remark = require('remark');
+const mdx = require('remark-mdx');
+const slug = require('remark-slug');
+const { read } = require('to-vfile');
+const findAfter = require('unist-util-find-after');
+const modifyChildren = require('unist-util-modify-children');
+const { selectAll } = require('unist-util-select');
 
 function processContentTree(tree: Node[], file: any, indexName: string): void {
     const modify = modifyChildren(modifier);
@@ -151,8 +144,8 @@ function getFiles(dirName: string): any {
     const files = glob.sync(dirPath + '/**/*.mdx');
     const processedFiles: any[] = [];
 
-    if (dirName === 'tools') {
-        for (const file of files) {
+    for (const file of files) {
+        if (dirName === 'tools') {
             // For now we are looking for all mdx files (which for now should only be 'reference.mdx')
             // We can look for a different filename in the future, i.e. README and do some stuff with it
             // const { name } = path.parse(file);
@@ -172,18 +165,14 @@ function getFiles(dirName: string): any {
                 processedFiles.push({ name: toolName, path: file, version, url });
             }
         }
-    }
 
-    if (dirName === 'guides') {
-        for (const file of files) {
+        if (dirName === 'guides') {
             const { name } = path.parse(file);
             const url = `/docs/guides/${name}`;
             processedFiles.push({ name, path: file, url });
         }
-    }
 
-    if (dirName === 'core-concepts' || dirName === 'api-explorer') {
-        for (const file of files) {
+        if (dirName === 'core-concepts' || dirName === 'api-explorer') {
             const url = `/docs/${dirName}`;
             processedFiles.push({ name: dirName, path: file, url });
         }
@@ -193,12 +182,9 @@ function getFiles(dirName: string): any {
 }
 
 export async function indexFilesAsync(indexName: string): Promise<void> {
-    // const dirPath = path.join(__dirname, `../../mdx/${indexName}`);
     const files = getFiles(indexName);
-    console.log('\n\nfiles', files);
 
     for (const file of files) {
-        console.log('\n\nFILE PATH', file.path);
         await processMdxAsync(indexName, file);
     }
 }

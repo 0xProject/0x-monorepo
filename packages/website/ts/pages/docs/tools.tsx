@@ -13,7 +13,7 @@ import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Separator } from 'ts/components/docs/separator';
 
-import { searchClient, searchIndices } from 'ts/utils/algolia_search';
+import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
 
 interface IHitsProps {
     hits: IHit[];

@@ -2,44 +2,34 @@ const { toJSX } = require('@mdx-js/mdx/mdx-hast-to-jsx');
 
 function mdxTableOfContents(options = {}) {
     let OldCompiler = this.Compiler;
-    let info;
+    let tableOfContents;
 
     this.Compiler = tree => {
         let code = OldCompiler(tree, {}, options);
 
-        if (!info.hasTableOfContentsExport) {
-            code += `\nexport const tableOfContents = (components={}) => ${tableOfContentsListSerializer(
-                info.tableOfContents,
-            )}\n`;
-        }
+        code += `\nexport const tableOfContents = (components={}) => ${tableOfContentsListSerializer(
+            tableOfContents,
+        )}\n`;
 
         return code;
     };
 
     return function transformer(node) {
-        info = getInfo(node, options);
+        tableOfContents = getTableOfContents(node, options);
     };
 }
 
-function getInfo(root, { minLevel = 1, maxLevel = 3 } = {}) {
-    let info = {
-        hasFrontMatterExport: false,
-        hasTableOfContentsExport: false,
-        tableOfContents: [],
-    };
+function getTableOfContents(root, { minLevel = 0, maxLevel = 2 } = {}) {
+    let tableOfContents = [];
 
-    addSections(info.tableOfContents, root.children, minLevel, maxLevel);
+    addSections(tableOfContents, root.children, minLevel, maxLevel);
 
-    return info;
+    return tableOfContents;
 }
 
 function addSections(parent, children, minLevel, maxLevel) {
     for (let i = 0; i < children.length; i++) {
         let node = children[i];
-
-        if (node.type === 'export' && node.value.indexOf('tableOfContents') !== -1) {
-            info.hasTableOfContentsExport = true;
-        }
 
         if (isSlugifiedSection(node)) {
             let level = node.properties.depth;

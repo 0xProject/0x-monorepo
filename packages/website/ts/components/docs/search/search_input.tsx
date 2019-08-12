@@ -3,7 +3,7 @@ import { Configure, Index, InstantSearch } from 'react-instantsearch-dom';
 
 import { AutoComplete } from 'ts/components/docs/search/autocomplete';
 
-import { searchClient, searchIndices } from 'ts/utils/algolia_search';
+import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
 
 interface ISearchInputProps {
     isHome?: boolean;

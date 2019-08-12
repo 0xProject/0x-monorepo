@@ -1,16 +1,9 @@
 import styled from 'styled-components';
 import { Heading } from 'ts/components/text';
 
-import { docs } from 'ts/style/docs';
-
 const H1 = styled(Heading).attrs({
-    size: 'large',
-    marginBottom: docs.marginBottom,
-})``;
-
-const H2 = styled(Heading).attrs({
     size: 34,
-    asElement: 'h2',
+    asElement: 'h1',
     marginBottom: '1rem',
 })`
     /* @TODO: adjust the heading size variables in global styles instead of using custom size here */
@@ -19,14 +12,20 @@ const H2 = styled(Heading).attrs({
     }
 `;
 
-const H3 = styled(Heading).attrs({
+const H2 = styled(Heading).attrs({
     size: 'default',
+    asElement: 'h2',
+    marginBottom: '1rem',
+})``;
+
+const H3 = styled(Heading).attrs({
+    size: 'small',
     asElement: 'h3',
+    fontWeight: '300',
     marginBottom: '1rem',
 })``;
 
 const H4 = styled(Heading).attrs({
-    size: 'small',
     asElement: 'h4',
     fontWeight: '300',
     marginBottom: '1rem',

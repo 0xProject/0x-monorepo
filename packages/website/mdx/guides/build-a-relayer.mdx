@@ -1,10 +1,12 @@
+# Intro
+
 They provide a way for users to add, remove and update this orderbook through an API, GUI or both. In doing so, relayers help traders discover counter-parties and ferry cryptographically signed orders between them. Once two parties agree on the terms of an order, the order is settled directly on the Ethereum blockchain via the 0x protocol smart contracts.
 
-### Advantages of decentralized exchange
+## Advantages of decentralized exchange
 
 There are many advantages to a decentralized exchange over centralized exchange. One of the largest problems with centralized Exchanges is that they must hold and secure the funds of all the traders on their platform. This causes there to be a single point of failure that if hacked or mismanaged, means that all these traders could lose their funds. Hundreds of millions have already been stolen in this way. With a decentralized exchange, traders do not need to deposit funds with a centralized entity, but instead can trade directly from their individual wallets (including hardware wallets!). This means the user is in control of their funds at all times, eliminating this single point of failure from the equation.
 
-### 0x protocol overview
+## 0x protocol overview
 
 In 0x protocol, orders are transported off-chain over any arbitrary medium, massively reducing gas costs and reducing blockchain bloat. Relayers help broadcast orders and can choose to collect a fee each time they facilitate a transaction. Anyone can build a relayer.
 
@@ -22,7 +24,7 @@ To simplify the process of interacting with the 0x protocol, we have written a J
 
 Before getting started with [0x.js](http://0x.org/docs/0x.js), [0x-launch-kit](https://github.com/0xproject/0x-launch-kit) or the 0x protocol, it is helpful to introduce a few concepts. There are two parties involved in every trade, a maker and a taker. The maker creates an order for an amount of TokenA in exchange for an amount of TokenB. The maker then submits these to a relayer. Takers discover orders via a relayer and fill them by sending them directly to the 0x protocol smart contracts. The 0x protocol smart contracts performs an atomic swap, exchanging the maker and taker tokens.
 
-### Order
+## Order
 
 Below is an interface description of the 0x protocol order format:
 
@@ -62,18 +64,18 @@ Check out this tutorial on how to [Create, Validate, and Fill Orders](https://0x
 
 If you want to take a deep-dive into the 0x protocol, take a look at the [0x Protocol Specification](https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
 
-### Relayer strategies
+## Relayer strategies
 
 The 0x protocol leaves room for some flexibility on how exactly relayers operate. There are a few different strategies relayers have employed so far, each with their respective advantages and drawbacks. You can read more about the different strategies in the [Relayer Strategies](https://0x.org/wiki#Matching) section of the wiki to discover the strategy that suits your needs the best.
 
-### Shared liquidity
+## Shared liquidity
 
 Because all relayers represent orders using the 0x protocol order format, an order created on one relayer (using the open-orderbook strategy) can be filled by users on another relayer. What this means is that rather than each relayer having a siloed liquidity pool, they can share orders to create a shared liquidity pool. New relayers can bootstrap their liquidity off of existing relayers, immediately becoming an interesting place to trade. It is important to note that fees always go to the relayer where the order was first submitted. We have defined a [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) to help relayers share liquidity and to simplify the integration process for market makers, providing a unified interface for them to build against.
 
-### Pruning your orderbooks
+## Pruning your orderbooks
 
 Over time, orders may expire, partially filled, cancelled or no longer fillable. It is best to keep your orderbook free of expired or unfillable orders. Iterating over the orderbook periodically and checking each order's validity is a simple way to accomplish this. For a more advanced and efficient approach, you could use an [OrderWatcher](https://0x.org/wiki#0x-OrderWatcher). [0x-launch-kit](https://github.com/0xProject/0x-launch-kit/) is built using OrderWatcher out-of-the-box.
 
-### Next steps
+## Next steps
 
 Now that you have a high level idea of what a relayer does, it's time to get started learning how they work. Check out [0x-launch-kit](https://github.com/0xProject/0x-launch-kit/) for a fully-working relayer example, or dive into the [Create, Validate, and Fill Orders](https://0x.org/wiki#Create,-Validate,-Fill-Order) tutorial to master the basics of dealing with 0x orders. You may also want to decide on a [Relayer Strategy](https://0x.org/wiki#Open-Orderbook). We recommend the open orderbook strategy. If you're looking for more orders to add to your orderbook, take a look at the [Standard Relayer API](https://github.com/0xProject/standard-relayer-api) and [0x Connect](https://0x.org/docs/connect). There are several relayers that have already implemented it and are broadcasting orders. Remember to keep your orderbook free of stale orders by using an [OrderWatcher](https://0x.org/wiki#0x-OrderWatcher).
