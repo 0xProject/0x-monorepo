@@ -73,6 +73,10 @@ contract TestValidatorWallet is
         UpdateState,
         // Ensure the signature hash matches what was prepared
         MatchSignatureHash,
+        // Return boolean `true`,
+        ReturnTrue,
+        // Return no data.
+        ReturnNothing,
         NTypes
     }
 
@@ -150,6 +154,15 @@ contract TestValidatorWallet is
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
             _updateState();
+        } else if (action == ValidatorAction.ReturnNothing) {
+            assembly {
+                return(0x0, 0)
+            }
+        } else if (action == ValidatorAction.ReturnTrue) {
+            assembly {
+                mstore(0x0, 1)
+                return(0x0, 32)
+            }
         } else {
             assert(action == ValidatorAction.MatchSignatureHash);
             bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
@@ -179,6 +192,15 @@ contract TestValidatorWallet is
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
             _updateState();
+        } else if (action == ValidatorAction.ReturnNothing) {
+            assembly {
+                return(0x0, 0)
+            }
+        } else if (action == ValidatorAction.ReturnTrue) {
+            assembly {
+                mstore(0x0, 1)
+                return(0x0, 32)
+            }
         } else {
             assert(action == ValidatorAction.MatchSignatureHash);
             bytes32 expectedSignatureHash = _hashSignatureHashes[hash];

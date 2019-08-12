@@ -29,7 +29,9 @@ export enum ValidatorWalletAction {
     Revert = 2,
     UpdateState = 3,
     MatchSignatureHash = 4,
-    NTypes = 5,
+    ReturnTrue = 5,
+    ReturnNothing = 6,
+    NTypes = 7,
 }
 
 export enum ValidatorWalletDataType {
