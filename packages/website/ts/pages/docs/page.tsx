@@ -60,14 +60,12 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
-            // const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
-            const component = await import(`../../../mdx/tools/@0x/asset-buyer/v6.1.11/reference.mdx`);
-            // const component = await import(`../../../mdx/guides/develop-on-ethereum.mdx`);
+            const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
+            // const component = await import(`../../../mdx/tools/@0x/asset-buyer/v6.1.11/reference.mdx`);
 
             setState({
                 ...state,
                 Component: component.default,
-                // @ts-ignore
                 contents: component.tableOfContents(),
             });
 
