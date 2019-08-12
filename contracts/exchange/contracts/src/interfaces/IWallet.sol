@@ -27,7 +27,7 @@ contract IWallet {
     /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return `bytes4(0xb0671381)` if the signature check succeeds.
+    /// @return magicValue `bytes4(0xb0671381)` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         bytes calldata signature

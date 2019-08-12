@@ -73,7 +73,6 @@ contract IsolatedExchange is
     function _isValidOrderWithHashSignature(
         Order memory order,
         bytes32 orderHash,
-        address signerAddress,
         bytes memory signature
     )
         internal

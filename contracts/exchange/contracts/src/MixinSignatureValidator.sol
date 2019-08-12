@@ -98,8 +98,6 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        _assertValidSigner(signerAddress, hash, signature);
-
         SignatureType signatureType = _readValidSignatureType(
             hash,
             signerAddress,
@@ -128,12 +126,10 @@ contract MixinSignatureValidator is
 
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given order and signer.
     function isValidOrderSignature(
         Order memory order,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -144,19 +140,16 @@ contract MixinSignatureValidator is
         return _isValidOrderWithHashSignature(
             order,
             orderHash,
-            signerAddress,
             signature
         );
     }
 
     /// @dev Verifies that a signature for a transaction is valid.
     /// @param transaction The transaction.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given transaction and signer.
     function isValidTransactionSignature(
         ZeroExTransaction memory transaction,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -167,7 +160,6 @@ contract MixinSignatureValidator is
         isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,
-            signerAddress,
             signature
         );
     }
@@ -203,21 +195,18 @@ contract MixinSignatureValidator is
     ///      by the given signer.
     /// @param order The order.
     /// @param orderHash The hash of the order.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given order and signer.
     function _isValidOrderWithHashSignature(
         Order memory order,
         bytes32 orderHash,
-        address signerAddress,
         bytes memory signature
     )
         internal
         view
         returns (bool isValid)
     {
-        _assertValidSigner(signerAddress, orderHash, signature);
-
+        address signerAddress = order.makerAddress;
         SignatureType signatureType = _readValidSignatureType(
             orderHash,
             signerAddress,
@@ -254,21 +243,18 @@ contract MixinSignatureValidator is
     ///      by the given signer.
     /// @param transaction The transaction.
     /// @param transactionHash The hash of the transaction.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given transaction and signer.
     function _isValidTransactionWithHashSignature(
         ZeroExTransaction memory transaction,
         bytes32 transactionHash,
-        address signerAddress,
         bytes memory signature
     )
         internal
         view
         returns (bool isValid)
     {
-        _assertValidSigner(signerAddress, transactionHash, signature);
-
+        address signerAddress = transaction.signerAddress;
         SignatureType signatureType = _readValidSignatureType(
             transactionHash,
             signerAddress,
@@ -399,6 +385,17 @@ contract MixinSignatureValidator is
         pure
         returns (SignatureType signatureType)
     {
+        // Disallow address zero because it is ecrecover() returns zero on
+        // failure.
+        if (signerAddress == address(0)) {
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+
         if (signature.length == 0) {
             LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
@@ -607,23 +604,5 @@ contract MixinSignatureValidator is
             signature,
             returnData
         ));
-    }
-
-    function _assertValidSigner(
-        address signerAddress,
-        bytes32 hash,
-        bytes memory signature
-    )
-        private
-        pure
-    {
-        if (signerAddress == address(0)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
-                hash,
-                signerAddress,
-                signature
-            ));
-        }
     }
 }

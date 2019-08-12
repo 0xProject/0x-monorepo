@@ -78,7 +78,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
     const generateRandomSignature = (): string => hexRandom(SIGNATURE_LENGTH);
     const hashBytes = (bytesHex: string): string => ethUtil.bufferToHex(ethUtil.sha3(ethUtil.toBuffer(bytesHex)));
     const signDataHex = (dataHex: string, privateKey: Buffer): string => {
-        const ecSignature = ethUtil.ecsign(ethUtil.toBuffer(dataHex), signerPrivateKey);
+        const ecSignature = ethUtil.ecsign(ethUtil.toBuffer(dataHex), privateKey);
         return hexConcat(ecSignature.v, ecSignature.r, ecSignature.s);
     };
 
@@ -432,23 +432,23 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                     expectedSignatureHashHex,
                 );
             }
-            return signatureValidator.isValidOrderSignature.callAsync(order, order.makerAddress, signatureHex);
+            return signatureValidator.isValidOrderSignature.callAsync(order, signatureHex);
         };
 
         it('should revert when signerAddress == 0', async () => {
             const signatureHex = hexConcat(SignatureType.EIP712);
-            const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
+            const nullMakerOrder = {
+                ...signedOrder,
+                makerAddress: constants.NULL_ADDRESS,
+            };
+            const orderHashHex = orderHashUtils.getOrderHashHex(nullMakerOrder);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InvalidSigner,
                 orderHashHex,
                 constants.NULL_ADDRESS,
                 signatureHex,
             );
-            const tx = signatureValidator.isValidOrderSignature.callAsync(
-                signedOrder,
-                constants.NULL_ADDRESS,
-                signatureHex,
-            );
+            const tx = signatureValidator.isValidOrderSignature.callAsync(nullMakerOrder, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -604,7 +604,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 new BigNumber(0),
                 new BigNumber(4),
             );
-            const tx = signatureValidator.isValidOrderSignature.callAsync(signedOrder, signerAddress, signatureHex);
+            const tx = signatureValidator.isValidOrderSignature.callAsync(signedOrder, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -621,7 +621,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 true,
                 { from: signerAddress },
             );
-            const tx = signatureValidator.isValidOrderSignature.callAsync(signedOrder, signerAddress, signatureHex);
+            const tx = signatureValidator.isValidOrderSignature.callAsync(signedOrder, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -678,27 +678,23 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                     expectedSignatureHashHex,
                 );
             }
-            return signatureValidator.isValidTransactionSignature.callAsync(
-                transaction,
-                transaction.signerAddress,
-                signatureHex,
-            );
+            return signatureValidator.isValidTransactionSignature.callAsync(transaction, signatureHex);
         };
 
         it('should revert when signerAddress == 0', async () => {
             const signatureHex = hexConcat(SignatureType.EIP712);
-            const transactionHashHex = transactionHashUtils.getTransactionHashHex(signedTransaction);
+            const nullSignerTransaction = {
+                ...signedTransaction,
+                signerAddress: constants.NULL_ADDRESS,
+            };
+            const transactionHashHex = transactionHashUtils.getTransactionHashHex(nullSignerTransaction);
             const expectedError = new ExchangeRevertErrors.SignatureError(
                 ExchangeRevertErrors.SignatureErrorCode.InvalidSigner,
                 transactionHashHex,
                 constants.NULL_ADDRESS,
                 signatureHex,
             );
-            const tx = signatureValidator.isValidTransactionSignature.callAsync(
-                signedTransaction,
-                constants.NULL_ADDRESS,
-                signatureHex,
-            );
+            const tx = signatureValidator.isValidTransactionSignature.callAsync(nullSignerTransaction, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -856,11 +852,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 new BigNumber(0),
                 new BigNumber(4),
             );
-            const tx = signatureValidator.isValidTransactionSignature.callAsync(
-                signedTransaction,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = signatureValidator.isValidTransactionSignature.callAsync(signedTransaction, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 
@@ -877,11 +869,7 @@ blockchainTests.resets('MixinSignatureValidator', env => {
                 true,
                 { from: signerAddress },
             );
-            const tx = signatureValidator.isValidTransactionSignature.callAsync(
-                signedTransaction,
-                signerAddress,
-                signatureHex,
-            );
+            const tx = signatureValidator.isValidTransactionSignature.callAsync(signedTransaction, signatureHex);
             return expect(tx).to.revertWith(expectedError);
         });
 

@@ -366,7 +366,6 @@ contract MixinExchangeCore is
             if (!_isValidOrderWithHashSignature(
                     order,
                     orderInfo.orderHash,
-                    makerAddress,
                     signature)) {
                 LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
                     SignatureErrorCodes.BAD_SIGNATURE,
