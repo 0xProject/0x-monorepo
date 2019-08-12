@@ -52,8 +52,8 @@ const linkRows: LinkRows[] = [
             { url: WebsitePaths.AboutMission, text: 'Mission' },
             { url: WebsitePaths.AboutTeam, text: 'Team' },
             { url: WebsitePaths.AboutJobs, text: 'Jobs' },
-            { url: WebsitePaths.AboutPress, text: 'Press' },
-            { url: WebsitePaths.Ecosystem, text: 'Grant Program' },
+            { url: WebsitePaths.PrivacyPolicy, text: 'Privacy Policy' },
+            { url: WebsitePaths.TermsOfService, text: 'Terms of Service' },
         ],
     },
     {
