@@ -1,7 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import { colors } from 'ts/style/colors';
-import { docs } from 'ts/style/docs';
+
+import { Paragraph } from 'ts/components/text';
 
 export interface ISelectItemConfig {
     label: string;
@@ -27,27 +28,37 @@ export const Select: React.FunctionComponent<SelectProps> = ({
     onChange,
 }) => {
     return (
-        <Container>
-            <StyledSelect id={id} onChange={onChange} defaultValue={value}>
-                {shouldIncludeEmpty && <option value="">{emptyText}</option>}
-                {items.map((item, index) => (
-                    <option key={`${id}-item-${index}`} value={item.value} onClick={item.onClick}>
-                        {item.label ? item.label : item.value}
-                    </option>
-                ))}
-            </StyledSelect>
-            <svg width="12" height="8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 7l5-5 5 5" stroke={colors.brandDark} strokeWidth="1.5" />
-            </svg>
-        </Container>
+        <Wrapper>
+            <Paragraph color="#999" size={17} lineHeight={1.6} marginBottom="0">
+                Version
+            </Paragraph>
+            <Container>
+                <StyledSelect id={id} onChange={onChange} defaultValue={value}>
+                    {shouldIncludeEmpty && <option value="">{emptyText}</option>}
+                    {items.map((item, index) => (
+                        <option key={`${id}-item-${index}`} value={item.value} onClick={item.onClick}>
+                            {item.label ? item.label : item.value}
+                        </option>
+                    ))}
+                </StyledSelect>
+                <svg width="12" height="8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 7l5-5 5 5" stroke={colors.brandDark} strokeWidth="1.5" />
+                </svg>
+            </Container>
+        </Wrapper>
     );
 };
+
+const Wrapper = styled.div`
+    display: flex;
+    margin-bottom: 1rem;
+`;
 
 const Container = styled.div`
     border: 1px solid ${colors.brandDark};
     border-radius: 4px;
     display: inline-block;
-    margin-bottom: ${docs.marginBottom};
+    margin-left: 12px;
     position: relative;
 
     svg {
