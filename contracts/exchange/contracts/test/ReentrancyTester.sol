@@ -97,7 +97,8 @@ contract ReentrancyTester is
         internal
         returns (bytes memory resultData)
     {
-        resultData = new bytes(0);
+        // Should already point to an empty array.
+        return resultData;
     }
 
     /// @dev Overriden to do nothing.
