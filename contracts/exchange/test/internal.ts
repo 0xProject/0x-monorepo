@@ -25,7 +25,7 @@ import {
     TestExchangeInternalsFillEventArgs,
 } from '../src';
 
-blockchainTests('Exchange core internal functions', env => {
+blockchainTests.only('Exchange core internal functions', env => {
     const CHAIN_ID = 1337;
     const ONE_ETHER = constants.ONE_ETHER;
     const EMPTY_ORDER: Order = {
@@ -44,6 +44,34 @@ blockchainTests('Exchange core internal functions', env => {
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
     };
+    const EMPTY_FILL_RESULTS: FillResults = {
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
+    };
+    const EMPTY_MATCHED_FILL_RESULTS: MatchedFillResults = {
+        left: EMPTY_FILL_RESULTS,
+        right: EMPTY_FILL_RESULTS,
+        profitInLeftMakerAsset: constants.ZERO_AMOUNT,
+        profitInRightMakerAsset: constants.ZERO_AMOUNT,
+    };
+    const COMMON_MATCHED_FILL_RESULTS = {
+        left: {
+            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+        },
+        right: {
+            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+        },
+        profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
+        profitInRightMakerAsset: constants.ZERO_AMOUNT,
+    };
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomHash = () => hexRandom(constants.WORD_LENGTH);
     const randomAssetData = () => hexRandom(36);
@@ -54,6 +82,57 @@ blockchainTests('Exchange core internal functions', env => {
     let makerAddressRight: string;
     let orderFactoryLeft: OrderFactory;
     let orderFactoryRight: OrderFactory;
+
+    function createMatchedFillResultsFromFilled(
+        leftMakerAssetFilledAmount: BigNumber,
+        leftTakerAssetFilledAmount: BigNumber,
+        rightMakerAssetFilledAmount: BigNumber,
+        rightTakerAssetFilledAmount: BigNumber,
+    ): MatchedFillResults {
+        return {
+            ...EMPTY_MATCHED_FILL_RESULTS,
+            left: {
+                ...EMPTY_FILL_RESULTS,
+                makerAssetFilledAmount: leftMakerAssetFilledAmount,
+                takerAssetFilledAmount: leftTakerAssetFilledAmount,
+            },
+            right: {
+                ...EMPTY_FILL_RESULTS,
+                makerAssetFilledAmount: rightMakerAssetFilledAmount,
+                takerAssetFilledAmount: rightTakerAssetFilledAmount,
+            },
+        };
+    }
+
+    function createMatchedFillResults(
+        leftMakerAssetFilledAmount: BigNumber,
+        leftTakerAssetFilledAmount: BigNumber,
+        leftMakerFeePaid: BigNumber,
+        leftTakerFeePaid: BigNumber,
+        rightMakerAssetFilledAmount: BigNumber,
+        rightTakerAssetFilledAmount: BigNumber,
+        rightMakerFeePaid: BigNumber,
+        rightTakerFeePaid: BigNumber,
+        profitInLeftMakerAsset?: BigNumber,
+        profitInRightMakerAsset?: BigNumber,
+    ): MatchedFillResults {
+        return {
+            left: {
+                makerAssetFilledAmount: leftMakerAssetFilledAmount,
+                takerAssetFilledAmount: leftTakerAssetFilledAmount,
+                makerFeePaid: leftMakerFeePaid,
+                takerFeePaid: leftTakerFeePaid,
+            },
+            right: {
+                makerAssetFilledAmount: rightMakerAssetFilledAmount,
+                takerAssetFilledAmount: rightTakerAssetFilledAmount,
+                makerFeePaid: rightMakerFeePaid,
+                takerFeePaid: rightTakerFeePaid,
+            },
+            profitInLeftMakerAsset: profitInLeftMakerAsset || constants.ZERO_AMOUNT,
+            profitInRightMakerAsset: profitInRightMakerAsset || constants.ZERO_AMOUNT,
+        };
+    }
 
     before(async () => {
         const accounts = await env.getAccountAddressesAsync();
@@ -166,24 +245,8 @@ blockchainTests('Exchange core internal functions', env => {
         }
 
         it('should assign everything to zero if all inputs are zero', async () => {
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: constants.ZERO_AMOUNT,
-                    takerAssetFilledAmount: constants.ZERO_AMOUNT,
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: constants.ZERO_AMOUNT,
-                    takerAssetFilledAmount: constants.ZERO_AMOUNT,
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateCompleteFillBothAsync(
-                expectedMatchedFillResults,
+                EMPTY_MATCHED_FILL_RESULTS,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
                 constants.ZERO_AMOUNT,
@@ -194,22 +257,12 @@ blockchainTests('Exchange core internal functions', env => {
         // Note: This call would never be able to be made through our contracts, since these orders will not actually be
         // fully filled. This is just a test case to make sure.
         it('should correctly update the fillResults with nonzero input', async () => {
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(17, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(98, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(17, 0),
+                Web3Wrapper.toBaseUnitAmount(98, 0),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+            );
             await assertCalculateCompleteFillBothAsync(
                 expectedMatchedFillResults,
                 new BigNumber(17),
@@ -220,22 +273,12 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should correctly update the fillResults with nonzero input', async () => {
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(5, 0),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+                Web3Wrapper.toBaseUnitAmount(5, 0),
+            );
             await assertCalculateCompleteFillBothAsync(
                 expectedMatchedFillResults,
                 new BigNumber(5),
@@ -246,22 +289,12 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should correctly update the fillResults with nonzero input', async () => {
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+            );
             await assertCalculateCompleteFillBothAsync(
                 expectedMatchedFillResults,
                 Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -272,22 +305,12 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should correctly update the fillResults with nonzero input', async () => {
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+            );
             await assertCalculateCompleteFillBothAsync(
                 expectedMatchedFillResults,
                 Web3Wrapper.toBaseUnitAmount(5, 18),
@@ -321,22 +344,12 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(17, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(98, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+            );
             await assertCalculateCompleteRightFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -350,22 +363,12 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(12, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(97, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(11, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+            );
             await assertCalculateCompleteRightFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -379,22 +382,12 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: constants.ZERO_AMOUNT,
-                    takerFeePaid: constants.ZERO_AMOUNT,
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResultsFromFilled(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+            );
             await assertCalculateCompleteRightFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -650,22 +643,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -684,22 +671,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(97, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(14, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.85%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(2, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(15, 0),
+                Web3Wrapper.toBaseUnitAmount(90, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('92.7835051546391752'), 16), // 92.85%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('92.8571428571428571'), 16), // 92.85%
+                Web3Wrapper.toBaseUnitAmount(2, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -720,22 +702,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(83, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5060240963855421'), 16), // 26.506%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('26.5306122448979591'), 16), // 26.531%
+                Web3Wrapper.toBaseUnitAmount(3, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -756,22 +733,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(11, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -794,22 +766,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
                 takerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(2650, 0),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(2653, 0),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(2650, 0),
+                Web3Wrapper.toBaseUnitAmount(2653, 0),
+                Web3Wrapper.toBaseUnitAmount(3, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -833,22 +800,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(9166, 0),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(9175, 0),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(11, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(9166, 0),
+                Web3Wrapper.toBaseUnitAmount(9175, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -859,7 +821,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
@@ -870,22 +831,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2126, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1063, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(503, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(497, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(1000, 0),
+                Web3Wrapper.toBaseUnitAmount(1005, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(1005, 0),
+                Web3Wrapper.toBaseUnitAmount(503, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('47.2718720602069614'), 16), // 47.27%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('47.3189087488240827'), 16), // 47.31%
+                Web3Wrapper.toBaseUnitAmount(497, 0),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -896,7 +852,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when orders completely fill each other', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -905,22 +860,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(3, 18),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -931,7 +881,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -940,22 +889,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(0, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -966,7 +909,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when left order is completely filled and right order is partially filled', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -975,22 +917,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(20, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(4, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(50, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(50, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+                Web3Wrapper.toBaseUnitAmount(50, 16),
+                Web3Wrapper.toBaseUnitAmount(50, 16),
+                Web3Wrapper.toBaseUnitAmount(3, 18),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1001,7 +938,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when right order is completely filled and left order is partially filled', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
@@ -1010,22 +946,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(3, 18),
+            );
             await assertCalculateMatchedFillResultsAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1046,24 +977,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1072,7 +987,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if taker == leftMaker', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1081,24 +995,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1108,7 +1006,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if taker == leftMaker', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1117,24 +1014,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1145,8 +1026,6 @@ blockchainTests('Exchange core internal functions', env => {
 
         it('should transfer the correct amounts if taker == leftFeeRecipient', async () => {
             const feeRecipientAddressLeft = randomAddress();
-
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1156,24 +1035,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1184,8 +1047,6 @@ blockchainTests('Exchange core internal functions', env => {
 
         it('should transfer the correct amounts if taker == rightFeeRecipient', async () => {
             const feeRecipientAddressRight = randomAddress();
-
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1195,24 +1056,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress: feeRecipientAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1222,7 +1067,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && rightMaker == rightFeeRecipient', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1233,24 +1077,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1259,7 +1087,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && leftMakerFeeAsset == leftTakerAsset', async () => {
-            // Create orders to match
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
@@ -1270,24 +1097,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderRight.makerAssetData,
                 feeRecipientAddress: makerAddressLeft,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1296,7 +1107,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightMakerFeeAsset == rightTakerAsset', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1307,24 +1117,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderLeft.makerAssetData,
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1333,7 +1127,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightTakerAsset == rightMakerFeeAsset && leftMaker == leftFeeRecipient && leftTakerAsset == leftMakerFeeAsset', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1345,24 +1138,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderLeft.makerAssetData,
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1405,22 +1182,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(75, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(13, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('76.4705882352941176'), 16), // 76.47%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('76.5306122448979591'), 16), // 76.53%
+                Web3Wrapper.toBaseUnitAmount(75, 0),
+                Web3Wrapper.toBaseUnitAmount(13, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1431,7 +1202,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should transfer correct amounts when left order is fully filled', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
@@ -1442,22 +1212,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(196, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(28, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(105, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(15, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(15, 0),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(15, 0),
+                Web3Wrapper.toBaseUnitAmount(90, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(105, 0),
+                Web3Wrapper.toBaseUnitAmount(15, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('53.5714285714285714'), 16), // 53.57%
+                constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(15, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1468,7 +1234,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should transfer correct amounts when left order is fully filled', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
@@ -1479,22 +1244,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(87, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(48, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(7, 0),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(29, 0),
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('33.3333333333333333'), 16), // 33.33%
+                constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(7, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1505,7 +1266,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should fully fill both orders and pay out profit in both maker assets', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
@@ -1516,22 +1276,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(8, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(6, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(7, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(4, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(8, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(6, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(1, 0),
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(4, 0),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(7, 0),
+                Web3Wrapper.toBaseUnitAmount(4, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(8, 0),
+                Web3Wrapper.toBaseUnitAmount(6, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+                Web3Wrapper.toBaseUnitAmount(4, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1542,7 +1298,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should give left maker a better sell price when rounding', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(12, 0),
@@ -1553,22 +1308,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(11, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('91.6666666666666666'), 16), // 91.6%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('91.7525773195876288'), 16), // 91.75%
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1579,7 +1329,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should give right maker and right taker a favorable fee price when rounding', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
@@ -1592,22 +1341,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
                 takerFee: Web3Wrapper.toBaseUnitAmount(10000, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(22, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(29, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(16, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(3333, 0),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(3333, 0),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(7, 0),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(22, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(29, 0),
+                Web3Wrapper.toBaseUnitAmount(16, 0),
+                Web3Wrapper.toBaseUnitAmount(3333, 0),
+                Web3Wrapper.toBaseUnitAmount(3333, 0),
+                constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(7, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1618,7 +1363,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should give left maker and left taker a favorable fee price when rounding', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(12, 0),
@@ -1631,22 +1375,17 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(11, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(9166, 0),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(9175, 0),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(89, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(10, 0),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(11, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(9166, 0),
+                Web3Wrapper.toBaseUnitAmount(9175, 0),
+                Web3Wrapper.toBaseUnitAmount(89, 0),
+                Web3Wrapper.toBaseUnitAmount(1, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1657,7 +1396,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when consecutive calls are used to completely fill the left order', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
@@ -1667,20 +1405,12 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
             const expectedMatchedFillResults = {
+                ...COMMON_MATCHED_FILL_RESULTS,
                 left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+                    ...COMMON_MATCHED_FILL_RESULTS.left,
                     makerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
                     takerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
                 },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
             };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
@@ -1693,22 +1423,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
             });
-            const expectedMatchedFillResults2 = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults2 = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(45, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 18),
+                Web3Wrapper.toBaseUnitAmount(45, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults2,
                 signedOrderLeft,
@@ -1719,7 +1443,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('Should transfer correct amounts when right order fill amount deviates from amount derived by `Exchange.fillOrder`', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAddress: makerAddressLeft,
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
@@ -1730,22 +1453,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(2126, 0),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(1063, 0),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1005, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2000, 0),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(1000, 0),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(995, 0),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(1000, 0),
+                Web3Wrapper.toBaseUnitAmount(1005, 0),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(2000, 0),
+                Web3Wrapper.toBaseUnitAmount(1000, 0),
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
+                Web3Wrapper.toBaseUnitAmount(new BigNumber('94.0733772342427093'), 16), // 94.07%
+                constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(995, 0),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1756,7 +1475,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when orders completely fill each other and taker doesnt take a profit', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1765,22 +1483,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1791,7 +1503,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts when consecutive calls are used to completely fill the right order', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
@@ -1801,22 +1512,18 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(10, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-            };
+            const expectedMatchedFillResults = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(2, 18),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(100, 16),
+                Web3Wrapper.toBaseUnitAmount(5, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 18),
+                Web3Wrapper.toBaseUnitAmount(10, 16),
+                Web3Wrapper.toBaseUnitAmount(10, 16),
+                constants.ZERO_AMOUNT,
+                Web3Wrapper.toBaseUnitAmount(3, 18),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults,
                 signedOrderLeft,
@@ -1832,22 +1539,16 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
             });
-            const expectedMatchedFillResults2 = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(45, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(90, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(90, 16),
-                },
-                profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
+            const expectedMatchedFillResults2 = createMatchedFillResults(
+                Web3Wrapper.toBaseUnitAmount(90, 18),
+                Web3Wrapper.toBaseUnitAmount(45, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(45, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 18),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+                Web3Wrapper.toBaseUnitAmount(90, 16),
+            );
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
                 expectedMatchedFillResults2,
                 signedOrderLeft2,
@@ -1869,24 +1570,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1895,7 +1580,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if taker == leftMaker', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1904,24 +1588,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1931,7 +1599,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if taker == rightMaker', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -1940,24 +1607,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -1977,24 +1628,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -2014,24 +1649,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -2041,7 +1660,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && rightMaker == rightFeeRecipient', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -2052,24 +1670,8 @@ blockchainTests('Exchange core internal functions', env => {
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -2078,7 +1680,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if leftMaker == leftFeeRecipient && leftMakerFeeAsset == leftTakerAsset', async () => {
-            // Create orders to match
             const signedOrderRight = await orderFactoryRight.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
@@ -2089,24 +1690,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderRight.makerAssetData,
                 feeRecipientAddress: makerAddressLeft,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -2115,7 +1700,6 @@ blockchainTests('Exchange core internal functions', env => {
         });
 
         it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightMakerFeeAsset == rightTakerAsset', async () => {
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -2126,24 +1710,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderLeft.makerAssetData,
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
@@ -2153,7 +1721,6 @@ blockchainTests('Exchange core internal functions', env => {
 
         it('should transfer the correct amounts if rightMaker == rightFeeRecipient && rightTakerAsset == rightMakerFeeAsset && leftMaker == leftFeeRecipient && leftTakerAsset == leftMakerFeeAsset', async () => {
             const makerFeeAssetData = randomAssetData();
-            // Create orders to match
             const signedOrderLeft = await orderFactoryLeft.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
                 takerAssetAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
@@ -2166,24 +1733,8 @@ blockchainTests('Exchange core internal functions', env => {
                 makerFeeAssetData: signedOrderLeft.makerAssetData,
                 feeRecipientAddress: makerAddressRight,
             });
-            const expectedMatchedFillResults = {
-                left: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                right: {
-                    makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-                    takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-                    makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                    takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-                },
-                profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-                profitInRightMakerAsset: constants.ZERO_AMOUNT,
-            };
             await assertCalculateMatchedFillResultsWithMaximalFillAsync(
-                expectedMatchedFillResults,
+                COMMON_MATCHED_FILL_RESULTS,
                 signedOrderLeft,
                 signedOrderRight,
                 constants.ZERO_AMOUNT,
