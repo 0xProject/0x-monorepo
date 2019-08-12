@@ -68,7 +68,7 @@ blockchainTests('LibZeroExTransaction', env => {
             });
         });
 
-        it('should correctly hash a non-empty order', async () => {
+        it('should correctly hash a non-empty transaction', async () => {
             await testGetTransactionHashAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),
