@@ -36,6 +36,7 @@ contract ReentrancyTester is
     // solhint-disable no-unused-vars
     constructor ()
         public
+        // Initialize the exchange with a fixed chainId ("test" in hex).
         Exchange(0x74657374)
     {}
 

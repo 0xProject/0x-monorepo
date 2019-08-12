@@ -172,7 +172,7 @@ contract TestValidatorWallet is
     {
         ValidatorAction action = _hashActions[hash];
         if (action == ValidatorAction.Reject) {
-            magicValue = 0x0;
+            magicValue = bytes4(0);
         } else if (action == ValidatorAction.Accept) {
             magicValue = LEGACY_WALLET_MAGIC_VALUE;
         } else if (action == ValidatorAction.Revert) {

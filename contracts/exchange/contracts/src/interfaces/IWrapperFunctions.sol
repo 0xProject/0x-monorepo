@@ -91,8 +91,7 @@ contract IWrapperFunctions {
         public
         returns (LibFillResults.FillResults[] memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
     /// @param signatures Proofs that orders have been signed by makers.
@@ -105,8 +104,7 @@ contract IWrapperFunctions {
         public
         returns (LibFillResults.FillResults memory fillResults);
 
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.

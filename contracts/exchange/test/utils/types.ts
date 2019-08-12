@@ -24,7 +24,7 @@ export enum ExchangeFunctionName {
     MarketBuyOrders = 'marketBuyOrders',
     MarketSellOrders = 'marketSellOrders',
     MatchOrders = 'matchOrders',
-    MatchOrdersWithMaximalfill = 'matchOrdersWithMaximalFill',
+    MatchOrdersWithMaximalFill = 'matchOrdersWithMaximalFill',
     PreSign = 'preSign',
     RegisterAssetProxy = 'registerAssetProxy',
     SetSignatureValidatorApproval = 'setSignatureValidatorApproval',

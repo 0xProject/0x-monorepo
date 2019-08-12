@@ -78,9 +78,10 @@ contract MixinWrapperFunctions is
             signature
         );
 
-        (bool didSucceed, bytes memory resultData) = address(this).delegatecall(fillOrderCalldata);
+        (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
         if (didSucceed) {
-            fillResults = abi.decode(resultData, (FillResults));
+            assert(returnData == 128);
+            fillResults = abi.decode(returnData, (FillResults));
         }
         // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
@@ -187,7 +188,7 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount - fillResults.takerAssetFilledAmount;
+            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             FillResults memory singleFillResults = fillOrderNoThrow(
