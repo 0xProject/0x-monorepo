@@ -1,4 +1,4 @@
-## Sol-coverage
+# Sol-coverage
 
 Sol-coverage uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with `ProviderEngine`, please read the [Web3 Provider explained](https://0x.org/wiki#Web3-Provider-Explained) wiki article.
 
@@ -8,7 +8,7 @@ Coverage subprovider needs some info about your contracts (`srcMap`, `bytecode`)
 
 In order to use `CoverageSubprovider` with your favorite framework you need to pass an `artifactsAdapter` to it.
 
-### Sol-compiler
+## Sol-compiler
 
 If you are generating your artifacts with [@0x/sol-compiler](https://0x.org/docs/sol-compiler) you can use the `SolCompilerArtifactAdapter` we've implemented for you.
 
@@ -18,7 +18,7 @@ import { SolCompilerArtifactAdapter } from '@0x/sol-coverage';
 const artifactAdapter = new SolCompilerArtifactAdapter(artifactsDir, contractsDir);
 ```
 
-### Truffle
+## Truffle
 
 If your project is using [Truffle](https://truffleframework.com/), we've written a `TruffleArtifactsAdapter`for you.
 
@@ -39,7 +39,7 @@ const solcVersion = '0.5.0';
 const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
 ```
 
-## Code Tabs
+# Code Tabs
 
 <CodeTabs tabs={['Typescript', 'Python']}>
 
@@ -61,7 +61,7 @@ const artifactAdapter = new TruffleArtifactAdapter(projectRoot, solcVersion);
 
 Because truffle artifacts don't have all the data we need - we actually will recompile your contracts under the hood. That's why you don't need to pass an `artifactsPath`.
 
-### Other framework/toolset
+## Other framework/toolset
 
 You'll need to write your own artifacts adapter. It should extend `AbstractArtifactsAdapter`.
 
@@ -108,13 +108,13 @@ istanbul report html
 open coverage/index.html
 ```
 
-## Notifications
+# Notifications
 
 <Notification>This is a standard notification</Notification>
 <Notification type="alert">Something isn’t quite right</Notification>
 <Notification type="success">This is a success message</Notification>
 
-### Lists
+## Lists
 
 1. First ordered list item
 2. Another item
@@ -126,7 +126,7 @@ open coverage/index.html
 -   Actual numbers don't matter, just that it's a number
 -   And another item.
 
-### Tabs
+## Tabs
 
 ## Separator
 

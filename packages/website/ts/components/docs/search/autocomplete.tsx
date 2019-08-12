@@ -10,7 +10,7 @@ import { AutocompleteOverlay } from 'ts/components/docs/search/autocomplete_over
 import { AutocompleteWrapper } from 'ts/components/docs/search/autocomplete_wrapper';
 
 import { docs } from 'ts/style/docs';
-import { searchIndices } from 'ts/utils/algolia_search';
+import { searchIndices } from 'ts/utils/algolia_constants';
 
 interface IHit {
     description: string;

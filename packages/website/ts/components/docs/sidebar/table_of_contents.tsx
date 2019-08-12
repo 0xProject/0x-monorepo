@@ -32,6 +32,7 @@ const Contents: React.FC<ITableOfContentsProps> = ({ contents }) => {
         <ContentsList>
             {contents.map(content => {
                 const { children, id, level, title } = content;
+
                 return (
                     <li key={id}>
                         {/* containerId is set to an empty string to make body element the scroll container */}
@@ -71,7 +72,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     }
 
     ${({ level }) =>
-        level === 2 &&
+        level === 1 &&
         `
         font-size: 0.8333rem;
         margin-bottom: 1rem;
@@ -79,7 +80,7 @@ const ContentLink = styled(Link)<{ level: number }>`
     `}
 
     ${({ level }) =>
-        level === 3 &&
+        level === 2 &&
         `
         font-size: 0.7222rem;
         line-height: 1.45;

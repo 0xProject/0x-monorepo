@@ -434,7 +434,7 @@ export enum WebsitePaths {
     Wiki = '/wiki',
     Docs = '/docs',
     DocsApiExplorer = '/docs/api-explorer/index',
-    DocsCoreConcepts = '/docs/core-concepts/index',
+    DocsCoreConcepts = '/docs/core-concepts/core-concepts',
     DocsGuides = '/docs/guides',
     DocsTools = '/docs/tools',
     ZeroExJs = '/docs/0x.js',

@@ -10,7 +10,7 @@ You can find all the `@0x/connect` documentation [here](https://0x.org/docs/conn
 
 You can find a list of relayers that comply with the Standard Relayer API [here](https://github.com/0xProject/0x-relayer-registry)
 
-## Setup
+# Setup
 
 Since 0x.js helps you build apps that interface with Ethereum, you will need to use it in conjunction with an Ethereum node. For development, we recommend using [Ganache CLI](https://github.com/trufflesuite/ganache-cli). Since there is some setup required to getting started with Ganache and the 0x smart contracts, we are going to use a [0x starter project](https://github.com/0xProject/0x-starter-project) which handles a lot of this for us.
 
@@ -50,7 +50,7 @@ You can now run the code we are going to walk you through in the rest of this tu
 yarn scenario:fill_order_sra
 ```
 
-### Importing packages
+## Importing packages
 
 The first step to interacting with `@0x/connect` is to import the following relevant packages:
 
@@ -75,7 +75,7 @@ import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
 **Web3Wrapper** is a package for interacting with an Ethereum node, retrieving account information. This is an optional package and you can choose to use alternatives like Web3.js or Ethers.js.
 **contract-addresses** is a package where we have our deployed contract addresses for the various networks. This also includes an address for a deployed Wrapped Ether contract.
 
-### Instantiating a Provider and ContractWrappers
+## Instantiating a Provider and ContractWrappers
 
 First, we need to instantiate an instance of ContractWrappers and a Provider. In our case, since we are using our local node (ganache), we will use **http://localhost:8545**. You can read about what providers are [here](#Web3-Provider-Explained).
 
@@ -91,7 +91,7 @@ const contractWrappers = new ContractWrappers(providerEngine, {
 });
 ```
 
-### Retreiving Accounts from the Provider
+## Retreiving Accounts from the Provider
 
 We will use Web3Wrapper to retrieve accounts from the provider. The first account will the the maker, and the second account will be the taker for the purposes of this tutorial.
 
@@ -100,7 +100,7 @@ const web3Wrapper = new Web3Wrapper(providerEngine);
 const [maker, taker] = await web3Wrapper.getAvailableAddressesAsync();
 ```
 
-### Declaring decimals and addresses
+## Declaring decimals and addresses
 
 Since we are dealing with a few contracts, we will specify them now to reduce the syntax load. Fortunately for us, `0x.js` library comes with a couple of contract addresses that can be useful to have at hand. One thing that is important to remember is that there are no decimals in the Ethereum virtual machine (EVM), which means you always need to keep track of how many "decimals" each token possesses. Since we will sell some ZRX for some ETH and since they both have 18 decimals, we can use a shared constant.
 
@@ -130,7 +130,7 @@ const takerAssetAmount = Web3Wrapper.toBaseUnitAmount(
 );
 ```
 
-### Approvals and WETH Balance
+## Approvals and WETH Balance
 
 To trade on 0x, the participants (maker and taker) require a small amount of initial set up. They need to approve the 0x smart contracts to move funds on their behalf. In order to give 0x protocol smart contract access to funds, we need to set _allowances_ (you can read about allowances [here](https://tokenallowance.io/)). In this tutorial the taker is using WETH (or Wrapper ETH), as ETH is not an ERC20 token it must first be converted into WETH to be used on 0x. Concretely, "converting" ETH to WETH means that we will deposit some ETH in a smart contract acting as a ERC20 wrapper. In exchange of depositing ETH, we will get some ERC20 compliant tokens called WETH at a 1:1 conversion rate. For example, depositing 10 ETH will give us back 10 WETH and we can revert the process at any time. The ContractWrappers package has helpers for general ERC20 tokens as well as the WETH token.
 
@@ -170,7 +170,7 @@ const relayerApiUrl = 'http://localhost:3000/v2';
 const relayerClient = new HttpClient(relayerApiUrl);
 ```
 
-### Getting configuration information
+## Getting configuration information
 
 Before creating an order to submit to a relayer, it is necessary to understand the requirements a relayer may have to host the order on their orderbook. This is what the `/order_config` endpoint is for.
 
@@ -215,7 +215,7 @@ Here are the fields that are provided in the order config response:
 
 You can see that together they form a full Order object, except for the salt.
 
-### Creating an order
+## Creating an order
 
 Now that we have the configuration information, we can create a full order.
 
@@ -228,7 +228,7 @@ const order: Order = {
 };
 ```
 
-### Signing the order
+## Signing the order
 
 Now that we created an order as a **Maker**, we need to prove that we actually own the address specified as `makerAddress`. After all, we could always try pretending to be someone else just to annoy an exchange and other traders! To do so, we will sign the orders with the corresponding private key and append the signature to our order.
 
@@ -253,7 +253,7 @@ await contractWrappers.exchange.validateOrderFillableOrThrowAsync(signedOrder);
 
 If something was wrong with our order, this function would throw an informative error. If it passes, then the order is currently fillable. A relayer should constantly be [pruning their orderbook](#0x-OrderWatcher) of invalid orders using this method.
 
-### Submitting the order to the relayer
+## Submitting the order to the relayer
 
 We can finally submit our signed order to the relayer for them to host on their orderbook.
 
@@ -262,7 +262,7 @@ We can finally submit our signed order to the relayer for them to host on their 
 await httpClient.submitOrderAsync(signedOrder, { networkId: NETWORK_CONFIGS.networkId };
 ```
 
-### Requesting an orderbook
+## Requesting an orderbook
 
 If in an application we need exchange functionality between two assets, we can find a suitable order for our needs using the `getOrderbookAsync()` method of `HttpClient`. In this example, we use the addresses of the ZRX and WETH tokens we retrieved earlier and use them to generate an `OrderbookRequest` to send to the relayerClient. In response, we get an `OrderbookResponse` containing orders that correspond with the provided `quoteAssetData` and `baseAssetData` (learn more about the quote/base token terminology [here](https://en.wikipedia.org/wiki/Currency_pair)).
 
@@ -280,7 +280,7 @@ if (response.asks.total === 0) {
 }
 ```
 
-### Filling an order
+## Filling an order
 
 `OrderbookResponse` contains two fields, `bids` and `asks`. `Bids` is a [`PaginatedCollection`](https://0x.org/docs/connect#types-PaginatedCollection) of [`APIOrder`](https://0x.org/docs/connect#types-APIOrder)s where for each order, the `makerAssetData` field is equal to the `quoteAssetData` provided by the `OrderbookRequest` and the `takerAssetData` field is equal to `baseAssetData`. `Asks` is the opposite of `bids`. For each order, the `makerAssetData` field is equal to the `baseAssetData` and the `takerAssetData` field is equal to `quoteAssetData`.
 
@@ -316,7 +316,7 @@ txHash = await contractWrappers.exchange.fillOrderAsync(
 await web3Wrapper.awaitTransactionSuccessAsync(txHash);
 ```
 
-### Wrapping up
+## Wrapping up
 
 Through this tutorial we learned how to:
 

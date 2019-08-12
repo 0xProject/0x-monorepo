@@ -37,8 +37,6 @@ interface IDocsPageProps extends RouteComponentProps<any> {}
 interface IDocsPageState {
     Component: React.ReactNode;
     contents: IContents[];
-    title: string;
-    subtitle: string;
     wasNotFound: boolean;
 }
 
@@ -46,8 +44,6 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     const [state, setState] = React.useState<IDocsPageState>({
         Component: '',
         contents: [],
-        title: '',
-        subtitle: '',
         wasNotFound: false,
     });
 
@@ -64,11 +60,14 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
     const loadPageAsync = async (fileName: string, dirName: string) => {
         try {
-            const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
+            // const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
+            const component = await import(`../../../mdx/tools/@0x/asset-buyer/v6.1.11/reference.mdx`);
+            // const component = await import(`../../../mdx/guides/develop-on-ethereum.mdx`);
 
             setState({
                 ...state,
                 Component: component.default,
+                // @ts-ignore
                 contents: component.tableOfContents(),
             });
 
@@ -77,7 +76,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
                 scrollToHash(hash); // ...and then scroll to hash when ready not to push the content down
             }
         } catch (error) {
-            setState({ ...state, title: '404', wasNotFound: true });
+            setState({ ...state, wasNotFound: true });
         }
     };
 
@@ -109,7 +108,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     };
 
     return (
-        <DocsPageLayout title={title} subtitle={subtitle} loading={isLoading}>
+        <DocsPageLayout title={wasNotFound ? '404' : title} subtitle={subtitle} loading={isLoading}>
             {wasNotFound ? (
                 <FullscreenMessage
                     headerText={'Not found'}
