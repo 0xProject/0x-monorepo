@@ -1,0 +1,49 @@
+{
+    "name": "@0x/orderbook",
+    "version": "0.0.1",
+    "description": "Library for retrieving and syncing a remote orderbook to storing locally",
+    "main": "lib/src/index.js",
+    "types": "lib/src/index.d.ts",
+    "bugs": {
+        "url": "https://github.com/0xProject/0x-monorepo/issues"
+    },
+    "homepage": "https://github.com/0xProject/0x-monorepo/packages/orderbook/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/0xProject/0x-monorepo.git"
+    },
+    "scripts": {
+        "clean": "shx rm -rf lib",
+        "test": "jest",
+        "test:coverage": "jest --coverage",
+        "build": "tsc -p tsconfig.json",
+        "watch": "tsc -w -p tsconfig.json",
+        "prettier": "prettier --write 'src/**/*.ts' --config .prettierrc",
+        "test:circleci": "yarn test:coverage",
+        "lint": "tslint --project . --format stylish"
+    },
+    "author": "",
+    "license": "Apache-2.0",
+    "devDependencies": {
+        "@0x/tslint-config": "^3.0.1",
+        "@0x/types": "^2.4.1",
+        "@types/jest": "^24.0.17",
+        "@types/mocha": "^5.2.7",
+        "@types/sinon": "^7.0.13",
+        "@types/websocket": "^0.0.40",
+        "jest": "^24.8.0",
+        "mocha": "^6.2.0",
+        "prettier": "^1.18.2",
+        "sinon": "^7.4.1",
+        "ts-jest": "^24.0.2",
+        "shx": "^0.2.2",
+        "typescript": "^3.5.3"
+    },
+    "dependencies": {
+        "@0x/assert": "^2.1.3",
+        "@0x/connect": "^5.0.16",
+        "@0x/mesh-rpc-client": "^3.0.0-beta",
+        "@0x/order-utils": "^8.2.5",
+        "@0x/utils": "^4.5.0"
+    }
+}
