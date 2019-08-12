@@ -477,6 +477,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            takerAssetFillAmounts: BigNumber[],
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).batchFillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
+            const txHash = await (this as any).batchFillOrders.sendTransactionAsync(
+                orders,
+                takerAssetFillAmounts,
+                signatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     public cancelled = {
         /**
@@ -749,6 +777,16 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            hash: string,
+            signerAddress: string,
+            signature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).preSign.callAsync(hash, signerAddress, signature, txData);
+            const txHash = await (this as any).preSign.sendTransactionAsync(hash, signerAddress, signature, txData);
+            return txHash;
         },
     };
     /**
@@ -1193,6 +1231,49 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            leftOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            rightOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            leftSignature: string,
+            rightSignature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).matchOrders.callAsync(leftOrder, rightOrder, leftSignature, rightSignature, txData);
+            const txHash = await (this as any).matchOrders.sendTransactionAsync(
+                leftOrder,
+                rightOrder,
+                leftSignature,
+                rightSignature,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Fills the input order.
@@ -1504,6 +1585,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            takerAssetFillAmount: BigNumber,
+            signature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).fillOrderNoThrow.callAsync(order, takerAssetFillAmount, signature, txData);
+            const txHash = await (this as any).fillOrderNoThrow.sendTransactionAsync(
+                order,
+                takerAssetFillAmount,
+                signature,
+                txData,
+            );
+            return txHash;
+        },
     };
     public assetProxies = {
         /**
@@ -1812,6 +1921,27 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).batchCancelOrders.callAsync(orders, txData);
+            const txHash = await (this as any).batchCancelOrders.sendTransactionAsync(orders, txData);
+            return txHash;
         },
     };
     /**
@@ -2133,6 +2263,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            takerAssetFillAmounts: BigNumber[],
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).batchFillOrKillOrders.callAsync(orders, takerAssetFillAmounts, signatures, txData);
+            const txHash = await (this as any).batchFillOrKillOrders.sendTransactionAsync(
+                orders,
+                takerAssetFillAmounts,
+                signatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Cancels all orders created by makerAddress with a salt less than or equal to the targetOrderEpoch
@@ -2294,6 +2452,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            targetOrderEpoch: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).cancelOrdersUpTo.callAsync(targetOrderEpoch, txData);
+            const txHash = await (this as any).cancelOrdersUpTo.sendTransactionAsync(targetOrderEpoch, txData);
+            return txHash;
         },
     };
     /**
@@ -2615,6 +2781,34 @@ export class ExchangeContract extends BaseContract {
                 takerFeePaid: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            takerAssetFillAmounts: BigNumber[],
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).batchFillOrdersNoThrow.callAsync(orders, takerAssetFillAmounts, signatures, txData);
+            const txHash = await (this as any).batchFillOrdersNoThrow.sendTransactionAsync(
+                orders,
+                takerAssetFillAmounts,
+                signatures,
+                txData,
+            );
+            return txHash;
         },
     };
     /**
@@ -3067,6 +3261,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            takerAssetFillAmount: BigNumber,
+            signature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).fillOrKillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
+            const txHash = await (this as any).fillOrKillOrder.sendTransactionAsync(
+                order,
+                takerAssetFillAmount,
+                signature,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Approves/unnapproves a Validator contract to verify signatures on signer's behalf.
@@ -3260,6 +3482,19 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            validatorAddress: string,
+            approval: boolean,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setSignatureValidatorApproval.callAsync(validatorAddress, approval, txData);
+            const txHash = await (this as any).setSignatureValidatorApproval.sendTransactionAsync(
+                validatorAddress,
+                approval,
+                txData,
+            );
+            return txHash;
         },
     };
     public allowedValidators = {
@@ -3652,6 +3887,34 @@ export class ExchangeContract extends BaseContract {
                 takerFeePaid: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            takerAssetFillAmount: BigNumber,
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketSellOrders.callAsync(orders, takerAssetFillAmount, signatures, txData);
+            const txHash = await (this as any).marketSellOrders.sendTransactionAsync(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+                txData,
+            );
+            return txHash;
         },
     };
     /**
@@ -4324,6 +4587,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            makerAssetFillAmount: BigNumber,
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketBuyOrdersNoThrow.callAsync(orders, makerAssetFillAmount, signatures, txData);
+            const txHash = await (this as any).marketBuyOrdersNoThrow.sendTransactionAsync(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Fills the input order.
@@ -4629,6 +4920,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            takerAssetFillAmount: BigNumber,
+            signature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).fillOrder.callAsync(order, takerAssetFillAmount, signature, txData);
+            const txHash = await (this as any).fillOrder.sendTransactionAsync(
+                order,
+                takerAssetFillAmount,
+                signature,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Executes an exchange method call in the context of signer.
@@ -4855,6 +5174,23 @@ export class ExchangeContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            salt: BigNumber,
+            signerAddress: string,
+            data: string,
+            signature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).executeTransaction.callAsync(salt, signerAddress, data, signature, txData);
+            const txHash = await (this as any).executeTransaction.sendTransactionAsync(
+                salt,
+                signerAddress,
+                data,
+                signature,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Registers an asset proxy to its asset proxy id.
@@ -5011,6 +5347,14 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            assetProxy: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).registerAssetProxy.callAsync(assetProxy, txData);
+            const txHash = await (this as any).registerAssetProxy.sendTransactionAsync(assetProxy, txData);
+            return txHash;
         },
     };
     /**
@@ -5376,6 +5720,27 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).cancelOrder.callAsync(order, txData);
+            const txHash = await (this as any).cancelOrder.sendTransactionAsync(order, txData);
+            return txHash;
         },
     };
     public orderEpoch = {
@@ -5832,6 +6197,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            takerAssetFillAmount: BigNumber,
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketSellOrdersNoThrow.callAsync(orders, takerAssetFillAmount, signatures, txData);
+            const txHash = await (this as any).marketSellOrdersNoThrow.sendTransactionAsync(
+                orders,
+                takerAssetFillAmount,
+                signatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     public EIP712_DOMAIN_HASH = {
         /**
@@ -6209,6 +6602,34 @@ export class ExchangeContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            makerAssetFillAmount: BigNumber,
+            signatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketBuyOrders.callAsync(orders, makerAssetFillAmount, signatures, txData);
+            const txHash = await (this as any).marketBuyOrders.sendTransactionAsync(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     public currentContextAddress = {
         /**
@@ -6414,6 +6835,11 @@ export class ExchangeContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     public VERSION = {

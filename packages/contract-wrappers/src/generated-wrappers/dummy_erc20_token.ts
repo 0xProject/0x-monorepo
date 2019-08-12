@@ -302,6 +302,15 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _spender: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(_spender, _value, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
+            return txHash;
+        },
     };
     /**
      * Query total supply of token
@@ -577,6 +586,16 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
+            return txHash;
         },
     };
     public decimals = {
@@ -988,6 +1007,14 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).mint.callAsync(_value, txData);
+            const txHash = await (this as any).mint.sendTransactionAsync(_value, txData);
+            return txHash;
+        },
     };
     /**
      * send `value` token to `to` from `msg.sender`
@@ -1161,6 +1188,15 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transfer.callAsync(_to, _value, txData);
+            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
+            return txHash;
         },
     };
     public allowance = {
@@ -1430,6 +1466,15 @@ export class DummyERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _target: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setBalance.callAsync(_target, _value, txData);
+            const txHash = await (this as any).setBalance.sendTransactionAsync(_target, _value, txData);
+            return txHash;
+        },
     };
     public transferOwnership = {
         /**
@@ -1573,6 +1618,11 @@ export class DummyERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     public MAX_MINT_AMOUNT = {
