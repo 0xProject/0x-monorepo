@@ -24,7 +24,7 @@ A validator for [JSON-schemas](http://json-schema.org/)
 
 \+ **new SchemaValidator**(): *[SchemaValidator](#class-schemavalidator)*
 
-*Defined in [schema_validator.ts:15](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/json-schemas/src/schema_validator.ts#L15)*
+*Defined in [schema_validator.ts:15](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/json-schemas/src/schema_validator.ts#L15)*
 
 Instantiates a SchemaValidator instance
 
@@ -36,7 +36,7 @@ Instantiates a SchemaValidator instance
 
 ▸ **addSchema**(`schema`: `Schema`): *void*
 
-*Defined in [schema_validator.ts:32](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/json-schemas/src/schema_validator.ts#L32)*
+*Defined in [schema_validator.ts:32](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/json-schemas/src/schema_validator.ts#L32)*
 
 Add a schema to the validator. All schemas and sub-schemas must be added to
 the validator before the `validate` and `isValid` methods can be called with
@@ -56,7 +56,7 @@ ___
 
 ▸ **isValid**(`instance`: any, `schema`: `Schema`): *boolean*
 
-*Defined in [schema_validator.ts:57](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/json-schemas/src/schema_validator.ts#L57)*
+*Defined in [schema_validator.ts:57](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/json-schemas/src/schema_validator.ts#L57)*
 
 Check whether an instance properly adheres to a JSON schema
 
@@ -77,7 +77,7 @@ ___
 
 ▸ **validate**(`instance`: any, `schema`: `Schema`): *`ValidatorResult`*
 
-*Defined in [schema_validator.ts:46](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/json-schemas/src/schema_validator.ts#L46)*
+*Defined in [schema_validator.ts:46](https://github.com/0xProject/0x-monorepo/blob/b834b7060/packages/json-schemas/src/schema_validator.ts#L46)*
 
 Validate the JS object conforms to a specific JSON schema
 
@@ -91,17 +91,6 @@ Name | Type | Description |
 **Returns:** *`ValidatorResult`*
 
 The results of the validation
-
-<hr />
-
-* [Globals](globals.md)
-* [External Modules]()
-  * [index](modules/_index_.md)
-  * [schema_validator](modules/_schema_validator_.md)
-  * [schema_validator.SchemaValidator](#class-schemavalidator)
-  * [schemas](modules/_schemas_.md)
-* [Classes]()
-  * [schema_validator.SchemaValidator](#class-schemavalidator)
 
 <hr />
 
