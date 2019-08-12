@@ -21,11 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/ITransactions.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./LibExchangeRichErrors.sol";
 
 
 contract MixinTransactions is
@@ -92,7 +91,7 @@ contract MixinTransactions is
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= transaction.expirationTimeSeconds) {
             LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                IExchangeRichErrors.TransactionErrorCodes.EXPIRED,
+                LibExchangeRichErrors.TransactionErrorCodes.EXPIRED,
                 transactionHash
             ));
         }
@@ -100,7 +99,7 @@ contract MixinTransactions is
         // Prevent reentrancy
         if (currentContextAddress != address(0)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                IExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
+                LibExchangeRichErrors.TransactionErrorCodes.NO_REENTRANCY,
                 transactionHash
             ));
         }
@@ -108,7 +107,7 @@ contract MixinTransactions is
         // Validate transaction has not been executed
         if (transactionsExecuted[transactionHash]) {
             LibRichErrors.rrevert(LibExchangeRichErrors.TransactionError(
-                IExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
+                LibExchangeRichErrors.TransactionErrorCodes.ALREADY_EXECUTED,
                 transactionHash
             ));
         }

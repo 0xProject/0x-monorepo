@@ -24,10 +24,9 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IExchangeCore.sol";
-import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/IWrapperFunctions.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinExchangeCore.sol";
 
 

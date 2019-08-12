@@ -26,11 +26,10 @@ import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IWallet.sol";
 import "./interfaces/IEIP1271Wallet.sol";
-import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/ISignatureValidator.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinTransactions.sol";
 
 
@@ -112,7 +111,7 @@ contract MixinSignatureValidator is
             signatureType == SignatureType.EIP1271Wallet
         ) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
+                LibExchangeRichErrors.SignatureErrorCodes.INAPPROPRIATE_SIGNATURE_TYPE,
                 hash,
                 signerAddress,
                 signature
@@ -308,7 +307,7 @@ contract MixinSignatureValidator is
         if (signatureType == SignatureType.Invalid) {
             if (signature.length != 1) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -320,7 +319,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EIP712) {
             if (signature.length != 66) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -341,7 +340,7 @@ contract MixinSignatureValidator is
         } else if (signatureType == SignatureType.EthSign) {
             if (signature.length != 66) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                    LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                     hash,
                     signerAddress,
                     signature
@@ -400,7 +399,7 @@ contract MixinSignatureValidator is
 
         if (signature.length == 0) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
                 hash,
                 signerAddress,
                 signature
@@ -413,7 +412,7 @@ contract MixinSignatureValidator is
         // Ensure signature is supported
         if (signatureTypeRaw >= uint8(SignatureType.NSignatureTypes)) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
+                LibExchangeRichErrors.SignatureErrorCodes.UNSUPPORTED,
                 hash,
                 signerAddress,
                 signature
@@ -427,7 +426,7 @@ contract MixinSignatureValidator is
         // also the initialization value for the enum type.
         if (SignatureType(signatureTypeRaw) == SignatureType.Illegal) {
             LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
+                LibExchangeRichErrors.SignatureErrorCodes.ILLEGAL,
                 hash,
                 signerAddress,
                 signature

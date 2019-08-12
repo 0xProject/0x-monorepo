@@ -24,9 +24,8 @@ import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IExchangeCore.sol";
-import "./interfaces/IExchangeRichErrors.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinSignatureValidator.sol";
 
@@ -368,7 +367,7 @@ contract MixinExchangeCore is
                     orderInfo.orderHash,
                     signature)) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
-                    IExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
+                    LibExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature

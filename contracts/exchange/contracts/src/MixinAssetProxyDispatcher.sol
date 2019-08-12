@@ -21,10 +21,9 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
-import "./interfaces/IExchangeRichErrors.sol";
-import "./LibExchangeRichErrors.sol";
 
 
 contract MixinAssetProxyDispatcher is
@@ -89,7 +88,7 @@ contract MixinAssetProxyDispatcher is
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
-                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
+                    LibExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,
                     assetData
                 ));
@@ -102,7 +101,7 @@ contract MixinAssetProxyDispatcher is
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
                 LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
-                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
+                    LibExchangeRichErrors.AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
                     orderHash,
                     assetData
                 ));

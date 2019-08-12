@@ -12,7 +12,6 @@ import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispat
 import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
 import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
-import * as IExchangeRichErrors from '../generated-artifacts/IExchangeRichErrors.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
@@ -21,7 +20,6 @@ import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
 import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
 import * as LibExchangeRichErrorDecoder from '../generated-artifacts/LibExchangeRichErrorDecoder.json';
-import * as LibExchangeRichErrors from '../generated-artifacts/LibExchangeRichErrors.json';
 import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
 import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.json';
 import * as MixinMatchOrders from '../generated-artifacts/MixinMatchOrders.json';
@@ -41,7 +39,6 @@ export const artifacts = {
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Whitelist: Whitelist as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
-    LibExchangeRichErrors: LibExchangeRichErrors as ContractArtifact,
     MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
     MixinExchangeCore: MixinExchangeCore as ContractArtifact,
     MixinMatchOrders: MixinMatchOrders as ContractArtifact,
@@ -54,7 +51,6 @@ export const artifacts = {
     IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IExchangeCore: IExchangeCore as ContractArtifact,
-    IExchangeRichErrors: IExchangeRichErrors as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,

@@ -21,8 +21,8 @@ pragma experimental ABIEncoderV2;
 
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange/contracts/src/libs/LibExchangeRichErrorDecoder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 

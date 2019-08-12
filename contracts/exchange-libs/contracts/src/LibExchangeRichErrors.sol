@@ -19,11 +19,43 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "./interfaces/IExchangeRichErrors.sol";
+import "./LibOrder.sol";
 
 
 library LibExchangeRichErrors {
+
+    enum AssetProxyDispatchErrorCodes {
+        INVALID_ASSET_DATA_LENGTH,
+        UNKNOWN_ASSET_PROXY
+    }
+
+    enum BatchMatchOrdersErrorCodes {
+        ZERO_LEFT_ORDERS,
+        ZERO_RIGHT_ORDERS,
+        INVALID_LENGTH_LEFT_SIGNATURES,
+        INVALID_LENGTH_RIGHT_SIGNATURES
+    }
+
+    enum FillErrorCodes {
+        INVALID_TAKER_AMOUNT,
+        TAKER_OVERPAY,
+        OVERFILL,
+        INVALID_FILL_PRICE
+    }
+
+    enum SignatureErrorCodes {
+        BAD_SIGNATURE,
+        INVALID_LENGTH,
+        UNSUPPORTED,
+        ILLEGAL,
+        INAPPROPRIATE_SIGNATURE_TYPE
+    }
+
+    enum TransactionErrorCodes {
+        NO_REENTRANCY,
+        ALREADY_EXECUTED,
+        EXPIRED
+    }
 
     // bytes4(keccak256("SignatureError(uint8,bytes32,address,bytes)"))
     bytes4 internal constant SIGNATURE_ERROR_SELECTOR =
@@ -255,7 +287,7 @@ library LibExchangeRichErrors {
     }
 
     function BatchMatchOrdersError(
-        IExchangeRichErrors.BatchMatchOrdersErrorCodes errorCode
+        BatchMatchOrdersErrorCodes errorCode
     )
         internal
         pure
@@ -268,7 +300,7 @@ library LibExchangeRichErrors {
     }
 
     function SignatureError(
-        IExchangeRichErrors.SignatureErrorCodes errorCode,
+        SignatureErrorCodes errorCode,
         bytes32 hash,
         address signerAddress,
         bytes memory signature
@@ -387,7 +419,7 @@ library LibExchangeRichErrors {
     }
 
     function FillError(
-        IExchangeRichErrors.FillErrorCodes errorCode,
+        FillErrorCodes errorCode,
         bytes32 orderHash
     )
         internal
@@ -447,7 +479,7 @@ library LibExchangeRichErrors {
     }
 
     function AssetProxyDispatchError(
-        IExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
+        AssetProxyDispatchErrorCodes errorCode,
         bytes32 orderHash,
         bytes memory assetData
     )
@@ -496,7 +528,7 @@ library LibExchangeRichErrors {
     }
 
     function TransactionError(
-        IExchangeRichErrors.TransactionErrorCodes errorCode,
+        TransactionErrorCodes errorCode,
         bytes32 transactionHash
     )
         internal

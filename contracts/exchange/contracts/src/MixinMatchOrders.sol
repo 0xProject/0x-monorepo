@@ -18,9 +18,8 @@ import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
-import "./interfaces/IExchangeRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IMatchOrders.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinExchangeCore.sol";
 
 
@@ -197,24 +196,24 @@ contract MixinMatchOrders is
         // Ensure that the left and right orders have nonzero lengths.
         if (leftOrders.length == 0) {
             LibRichErrors.rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                IExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS
+                LibExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_LEFT_ORDERS
             ));
         }
         if (rightOrders.length == 0) {
             LibRichErrors.rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                IExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS
+                LibExchangeRichErrors.BatchMatchOrdersErrorCodes.ZERO_RIGHT_ORDERS
             ));
         }
 
         // Ensure that the left and right arrays are compatible.
         if (leftOrders.length != leftSignatures.length) {
             LibRichErrors.rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                IExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_LEFT_SIGNATURES
+                LibExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_LEFT_SIGNATURES
             ));
         }
         if (rightOrders.length != rightSignatures.length) {
             LibRichErrors.rrevert(LibExchangeRichErrors.BatchMatchOrdersError(
-                IExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_RIGHT_SIGNATURES
+                LibExchangeRichErrors.BatchMatchOrdersErrorCodes.INVALID_LENGTH_RIGHT_SIGNATURES
             ));
         }
 

@@ -19,18 +19,18 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "./MixinMatchOrders.sol";
-import "./MixinSignatureValidator.sol";
 import "./MixinWrapperFunctions.sol";
 import "./MixinTransferSimulator.sol";
 
 
 // solhint-disable no-empty-blocks
-// MixinAssetProxyDispatcher, MixinExchangeCore, MixinExchangeRichErrors,
+// MixinAssetProxyDispatcher, MixinExchangeCore, MixinSignatureValidator,
 // and MixinTransactions are all inherited via the other Mixins that are
 // used.
 contract Exchange is
-    MixinSignatureValidator,
+    LibEIP712ExchangeDomain,
     MixinMatchOrders,
     MixinWrapperFunctions,
     MixinTransferSimulator
@@ -42,12 +42,5 @@ contract Exchange is
     constructor (uint256 chainId)
         public
         LibEIP712ExchangeDomain(chainId, address(0))
-        MixinExchangeCore()
-        MixinMatchOrders()
-        MixinSignatureValidator()
-        MixinTransactions()
-        MixinAssetProxyDispatcher()
-        MixinTransferSimulator()
-        MixinWrapperFunctions()
     {}
 }
