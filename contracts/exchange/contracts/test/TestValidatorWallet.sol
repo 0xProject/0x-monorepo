@@ -21,22 +21,10 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
 import "@0x/contracts-erc20/contracts/src/interfaces/IERC20Token.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibEIP1271.sol";
-
-
-interface ISimplifiedExchange {
-    function getOrderHash(LibOrder.Order calldata order)
-        external
-        view
-        returns (bytes32 orderHash);
-
-    function getTransactionHash(LibZeroExTransaction.ZeroExTransaction calldata transaction)
-        external
-        view
-        returns (bytes32 transactionHash);
-}
 
 
 // solhint-disable no-unused-vars
@@ -80,8 +68,8 @@ contract TestValidatorWallet is
         NTypes
     }
 
-    /// @dev The Exchange contract.
-    ISimplifiedExchange internal _exchange;
+    /// @dev The Exchange domain hash..
+    LibEIP712ExchangeDomain internal _exchange;
     /// @dev Internal state to modify.
     uint256 internal _state = 1;
     /// @dev What action to execute when a hash is validated .
@@ -92,7 +80,7 @@ contract TestValidatorWallet is
     mapping (bytes32 => bytes32) internal _hashSignatureHashes;
 
     constructor(address exchange) public {
-        _exchange = ISimplifiedExchange(exchange);
+        _exchange = LibEIP712ExchangeDomain(exchange);
     }
 
     /// @dev Approves an ERC20 token to spend tokens from this address.
@@ -239,7 +227,7 @@ contract TestValidatorWallet is
             // Use the Exchange to calculate the hash of the order and assert
             // that it matches the one we extracted previously.
             require(
-                _exchange.getOrderHash(order) == hash,
+                LibOrder.getOrderHash(order, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
                 "UNEXPECTED_ORDER_HASH"
             );
         } else {
@@ -250,7 +238,7 @@ contract TestValidatorWallet is
             // Use the Exchange to calculate the hash of the transaction and assert
             // that it matches the one we extracted previously.
             require(
-                _exchange.getTransactionHash(transaction) == hash,
+                LibZeroExTransaction.getTransactionHash(transaction, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
                 "UNEXPECTED_TRANSACTION_HASH"
             );
         }
