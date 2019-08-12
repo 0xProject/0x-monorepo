@@ -24,15 +24,15 @@ import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 
 contract IWallet {
 
-    /// @dev Verifies that a signature is valid.
+    /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return Validity of order signature.
+    /// @return `bytes4(0xb0671381)` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         bytes calldata signature
     )
         external
         view
-        returns (bool isValid);
+        returns (bytes4 magicValue);
 }
