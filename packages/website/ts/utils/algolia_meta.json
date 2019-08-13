@@ -11,91 +11,57 @@
     "build-a-relayer": {
         "title": "Build a relayer",
         "description": "A relayer is any party or entity which hosts an off-chain orderbook.",
-        "tags": [
-            "Relayer",
-            "Trader",
-            "Protocol Developer"
-        ],
-        "topics": [
-            "Coordinator Model",
-            "Mesh"
-        ],
+        "tags": ["Relayer", "Trader", "Protocol Developer"],
+        "topics": ["Coordinator Model", "Mesh"],
         "difficulty": "Advanced",
         "path": "guides/build-a-relayer.mdx"
     },
     "develop-on-ethereum": {
         "title": "Develop on Ethereum",
         "description": "Welcome to the exciting world of building applications on the Ethereum Blockchain",
-        "tags": [
-            "Relayer",
-            "Trader"
-        ],
-        "topics": [
-            "Mesh",
-            "Protocol Developer"
-        ],
-        "difficulty": "Beginner"
+        "tags": ["Relayer", "Trader"],
+        "topics": ["Mesh", "Protocol Developer"],
+        "difficulty": "Beginner",
+        "path": "guides/develop-on-ethereum.mdx"
     },
     "page-template": {
         "title": "Page template",
         "description": "A relayer is any party or entity which hosts an off-chain orderbook.",
-        "tags": [
-            "Relayer",
-            "Trader",
-            "Protocol Developer"
-        ],
-        "topics": [
-            "Coordinator Model",
-            "Mesh"
-        ],
-        "difficulty": "Advanced"
+        "tags": ["Relayer", "Trader", "Protocol Developer"],
+        "topics": ["Coordinator Model", "Mesh"],
+        "difficulty": "Advanced",
+        "path": "guides/page-template.mdx"
     },
     "use-networked-liquidity": {
         "title": "Use networked liquidity",
         "description": "In this tutorial, we will show you how you can use the @0x/connect package in conjunction with 0x.js in order to",
-        "tags": [
-            "Protocol Developer"
-        ],
-        "topics": [
-            "Mesh"
-        ],
-        "difficulty": "Intermediate"
+        "tags": ["Protocol Developer"],
+        "topics": ["Mesh"],
+        "difficulty": "Intermediate",
+        "path": "guides/use-networked-liquidity.mdx"
     },
     "asset-buyer": {
         "title": "Asset buyer",
         "description": "",
-        "topics": [
-            "Mesh"
-        ],
+        "topics": ["Mesh"],
         "difficulty": "Intermediate",
         "isCommunity": true,
         "isFeatured": true,
-        "tags": [
-            "Relayer"
-        ],
+        "tags": ["Relayer"],
         "type": "Docker images",
-        "versions": [
-            "v6.1.11",
-            "v6.1.10"
-        ],
-        "path": "tools/@0x/asset-buyer/v6.1.11/reference.mdx"
+        "path": "tools/@0x/asset-buyer/v6.1.11/reference.mdx",
+        "versions": ["v6.1.11", "v6.1.10"]
     },
     "ethereum-types": {
         "title": "Ethereum types",
         "description": "",
-        "topics": [
-            "Mesh"
-        ],
+        "topics": ["Mesh"],
         "difficulty": "Intermediate",
         "isCommunity": true,
         "isFeatured": true,
-        "tags": [
-            "Protocol developer"
-        ],
+        "tags": ["Protocol developer"],
         "type": "Command-line tools",
-        "versions": [
-            "v2.1.4"
-        ],
-        "path": "tools/ethereum-types/v2.1.4/reference.mdx"
+        "path": "tools/ethereum-types/v2.1.4/reference.mdx",
+        "versions": ["v2.1.4"]
     }
 }

@@ -136,6 +136,7 @@
         "compare-versions": "^3.5.1",
         "css-loader": "0.23.x",
         "glob": "^7.1.4",
+        "json-stringify-pretty-compact": "^2.0.0",
         "less-loader": "^4.1.0",
         "make-promises-safe": "^1.1.0",
         "raw-loader": "^0.5.1",

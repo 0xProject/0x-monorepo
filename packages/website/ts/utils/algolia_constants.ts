@@ -26,6 +26,7 @@ export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY
 export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
 
 export const searchIndices: ISearchIndices = {
+    'api-explorer': '0x_api_explorer',
     'core-concepts': '0x_core_concepts',
     guides: '0x_guides',
     tools: '0x_tools',
