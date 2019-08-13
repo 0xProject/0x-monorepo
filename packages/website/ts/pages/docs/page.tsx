@@ -52,7 +52,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     const { page, type, version } = props.match.params;
     const { hash } = props.location;
     // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
-    const key: string = page ? page : type;
+    const key = page ? page : type;
     // @ts-ignore
     const { path, subtitle, title, versions } = meta[key];
 
@@ -116,7 +116,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
                 />
             ) : (
                 <Columns>
-                    <TableOfContents contents={contents} />
+                    <TableOfContents contents={contents} versions={versions} />
                     <Separator />
                     <ContentWrapper>
                         <MDXProvider components={mdxComponents}>
