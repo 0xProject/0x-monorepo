@@ -15,6 +15,7 @@ export interface ContractAddresses {
     multiAssetProxy: string;
     staticCallProxy: string;
     erc1155Proxy: string;
+    devUtils: string;
 }
 
 export enum NetworkId {
@@ -43,6 +44,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xef701d5389ae74503d633396c4d654eabedc9d78',
         staticCallProxy: '0x3517b88c19508c08650616019062b898ab65ed29',
         erc1155Proxy: '0x7eefbd48fd63d441ec7435d024ec7c5131019add',
+        devUtils: NULL_ADDRESS,
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
@@ -59,6 +61,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xab8fbd189c569ccdee3a4d929bb7f557be4028f6',
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
+        devUtils: '0x3e0b46bad8e374e4a110c12b832cb120dbe4a479',
     },
     4: {
         exchange: '0xbff9493f92a3df4b0429b6d00743b3cfb4c85831',
@@ -75,6 +78,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xb34cde0ad3a83d04abebc0b66e75196f22216621',
         staticCallProxy: '0xe1b97e47aa3796276033a5341e884d2ba46b6ac1',
         erc1155Proxy: '0x19bb6caa3bc34d39e5a23cedfa3e6c7e7f3c931d',
+        devUtils: '0x2d4a9abda7b8b3605c8dbd34e3550a7467c78287',
     },
     42: {
         erc20Proxy: '0xf1ec01d6236d3cd881a0bf0130ea25fe4234003e',
@@ -91,6 +95,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xf6313a772c222f51c28f2304c0703b8cf5428fd8',
         staticCallProxy: '0x48e94bdb9033640d45ea7c721e25f380f8bffa43',
         erc1155Proxy: '0x64517fa2b480ba3678a2a3c0cf08ef7fd4fad36f',
+        devUtils: '0x1e3616bc5144362f95d72de41874395567697e93',
     },
     // NetworkId 50 represents our Ganache snapshot generated from migrations.
     50: {
@@ -108,6 +113,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         coordinator: '0x0d8b0dd11f5d34ed41d556def5f841900d5b1c6b',
         multiAssetProxy: '0xcfc18cec799fbd1793b5c43e773c98d4d61cc2db',
         staticCallProxy: '0x6dfff22588be9b3ef8cf0ad6dc9b84796f9fb45f',
+        devUtils: '0x38ef19fdf8e8415f18c307ed71967e19aac28ba1',
     },
 };
 

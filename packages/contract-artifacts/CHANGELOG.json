@@ -1,5 +1,13 @@
 [
     {
+        "version": "2.1.0",
+        "changes": [
+            {
+                "note": "Added DevUtils"
+            }
+        ]
+    },
+    {
         "timestamp": 1565296576,
         "version": "2.0.4",
         "changes": [
