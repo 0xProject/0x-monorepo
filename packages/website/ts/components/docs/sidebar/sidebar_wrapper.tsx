@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { Collapse } from 'ts/components/docs/sidebar/collapse';
 
+import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 
 interface ISidebarWrapperProps {
@@ -31,8 +32,21 @@ const SidebarAside = styled.aside`
 const SidebarContent = styled.div`
     position: sticky;
     top: ${docs.headerOffset}px; /* To make space for the header (react-headroom) when clicking on links */
-    max-height: 60vh;
+    max-height: 85vh;
     overflow-y: auto;
+
+    /* Slim scroll bar */
+    scrollbar-color: ${colors.grey500};
+    scrollbar-width: 1px; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    &::-webkit-scrollbar {
+        height: 1px;
+        width: 1px;
+        background: transparent; /* Chrome / Safari / Webkit */
+    }
+    &::-webkit-scrollbar-thumb {
+        background-color: ${colors.grey350};
+    }
 
     @media (max-width: 900px) {
         max-height: 100%;

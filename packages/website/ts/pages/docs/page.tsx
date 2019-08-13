@@ -49,19 +49,20 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
     const { Component, contents, wasNotFound } = state;
     const isLoading = !Component && !wasNotFound;
-    const { page, type } = props.match.params;
+    const { page, type, version } = props.match.params;
     const { hash } = props.location;
+    // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
+    const key = page ? page : type;
 
-    const { subtitle, title } = meta[page];
+    const { path, subtitle, title, versions } = meta[key];
 
     React.useEffect(() => {
-        void loadPageAsync(page, type);
-    }, [page, type]);
+        void loadPageAsync(path);
+    }, [path]);
 
-    const loadPageAsync = async (fileName: string, dirName: string) => {
+    const loadPageAsync = async (path: string) => {
         try {
-            const component = await import(`../../../mdx/${dirName}/${fileName}.mdx`);
-            // const component = await import(`../../../mdx/tools/@0x/asset-buyer/v6.1.11/reference.mdx`);
+            const component = await import(`mdx/${path}`);
 
             setState({
                 ...state,
@@ -125,7 +126,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
                         </MDXProvider>
                         <NewsletterWidget />
                         <HelpCallout />
-                        <HelpfulCta page={page} />
+                        <HelpfulCta page={key} />
                     </ContentWrapper>
                 </Columns>
             )}

@@ -34,6 +34,7 @@ const config = {
             less: path.join(__dirname, '/less'),
             sass: path.join(__dirname, '/sass'),
             md: path.join(__dirname, '/md'),
+            mdx: path.join(__dirname, '/mdx'),
         },
     },
     module: {
