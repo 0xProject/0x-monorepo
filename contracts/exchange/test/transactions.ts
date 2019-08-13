@@ -37,6 +37,7 @@ import {
     ExchangeTransactionExecutionEventArgs,
     ExchangeWrapper,
     ExchangeWrapperContract,
+    TestTransactionsContract,
     WhitelistContract,
 } from '../src/';
 
@@ -52,6 +53,7 @@ blockchainTests.resets('Exchange transactions', env => {
     let feeRecipientAddress: string;
     let validatorAddress: string;
     let taker2Address: string;
+    let transactionsContract: TestTransactionsContract;
 
     let erc20TokenA: DummyERC20TokenContract;
     let erc20TokenB: DummyERC20TokenContract;
@@ -138,6 +140,13 @@ blockchainTests.resets('Exchange transactions', env => {
         makerTransactionFactory = new TransactionFactory(makerPrivateKey, exchangeInstance.address, chainId);
         takerTransactionFactory = new TransactionFactory(takerPrivateKey, exchangeInstance.address, chainId);
         taker2TransactionFactory = new TransactionFactory(taker2PrivateKey, exchangeInstance.address, chainId);
+
+        transactionsContract = await TestTransactionsContract.deployFrom0xArtifactAsync(
+            artifacts.TestTransactions,
+            env.provider,
+            env.txDefaults,
+            {},
+        );
     });
     describe('executeTransaction', () => {
         describe('general functionality', () => {
@@ -1185,6 +1194,27 @@ blockchainTests.resets('Exchange transactions', env => {
                     expect(fillLogArgs.orderHash).to.eq(orderHashUtils.getOrderHashHex(signedOrder));
                 });
             });
+        });
+    });
+    describe('getCurrentContext', () => {
+        it('should return the sender address when there is not a saved context address', async () => {
+            const currentContextAddress = await transactionsContract.getCurrentContextAddress.callAsync({
+                from: makerAddress,
+            });
+            expect(currentContextAddress).to.be.eq(makerAddress);
+        });
+
+        it('should return the sender address when there is a saved context address', async () => {
+            // Set the current context address to the taker address
+            await transactionsContract.setCurrentContextAddress.sendTransactionAsync(takerAddress, {
+                from: makerAddress,
+            });
+
+            // Ensure that the queried current context address is the same as the address that was set.
+            const currentContextAddress = await transactionsContract.getCurrentContextAddress.callAsync({
+                from: makerAddress,
+            });
+            expect(currentContextAddress).to.be.eq(takerAddress);
         });
     });
 });
