@@ -4,6 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 export * from '../generated-wrappers/lib_e_i_p712_exchange_domain';
+export * from '../generated-wrappers/lib_exchange_rich_errors';
 export * from '../generated-wrappers/lib_fill_results';
 export * from '../generated-wrappers/lib_math';
 export * from '../generated-wrappers/lib_math_rich_errors';
