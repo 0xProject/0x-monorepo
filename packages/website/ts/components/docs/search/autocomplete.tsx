@@ -101,8 +101,10 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const renderSectionTitle = (section: any): React.ReactNode => {
         const { tools, guides } = searchIndices;
         const coreConcepts = searchIndices['core-concepts'];
+        // const apiExplorer = searchIndices['api-explorer'];
 
         const titles: { [key: string]: string } = {
+            // [apiExplorer]: 'Api explorer',
             [coreConcepts]: 'Core concepts',
             [tools]: 'Tools',
             [guides]: 'Guides',
