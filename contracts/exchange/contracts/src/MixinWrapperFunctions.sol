@@ -82,7 +82,7 @@ contract MixinWrapperFunctions is
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
         if (didSucceed) {
             assert(returnData.length == 128);
-            fillResults = abi.decode(returnData, (FillResults));
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
         }
         // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;

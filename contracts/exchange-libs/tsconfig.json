@@ -5,6 +5,7 @@
     "files": [
         "generated-artifacts/LibEIP712ExchangeDomain.json",
         "generated-artifacts/LibExchangeRichErrors.json",
+        "generated-artifacts/LibExchangeSelectors.json",
         "generated-artifacts/LibFillResults.json",
         "generated-artifacts/LibMath.json",
         "generated-artifacts/LibMathRichErrors.json",

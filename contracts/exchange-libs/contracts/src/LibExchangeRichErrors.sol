@@ -48,7 +48,8 @@ library LibExchangeRichErrors {
         INVALID_LENGTH,
         UNSUPPORTED,
         ILLEGAL,
-        INAPPROPRIATE_SIGNATURE_TYPE
+        INAPPROPRIATE_SIGNATURE_TYPE,
+        INVALID_SIGNER
     }
 
     enum TransactionErrorCodes {

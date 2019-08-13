@@ -389,8 +389,8 @@ contract MixinSignatureValidator is
         // Disallow address zero because it is ecrecover() returns zero on
         // failure.
         if (signerAddress == address(0)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
-                IExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
+            LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                LibExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
                 hash,
                 signerAddress,
                 signature

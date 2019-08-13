@@ -7,6 +7,7 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as LibEIP712ExchangeDomain from '../generated-artifacts/LibEIP712ExchangeDomain.json';
 import * as LibExchangeRichErrors from '../generated-artifacts/LibExchangeRichErrors.json';
+import * as LibExchangeSelectors from '../generated-artifacts/LibExchangeSelectors.json';
 import * as LibFillResults from '../generated-artifacts/LibFillResults.json';
 import * as LibMath from '../generated-artifacts/LibMath.json';
 import * as LibMathRichErrors from '../generated-artifacts/LibMathRichErrors.json';
@@ -20,6 +21,7 @@ import * as TestLibZeroExTransaction from '../generated-artifacts/TestLibZeroExT
 export const artifacts = {
     LibEIP712ExchangeDomain: LibEIP712ExchangeDomain as ContractArtifact,
     LibExchangeRichErrors: LibExchangeRichErrors as ContractArtifact,
+    LibExchangeSelectors: LibExchangeSelectors as ContractArtifact,
     LibFillResults: LibFillResults as ContractArtifact,
     LibMath: LibMath as ContractArtifact,
     LibMathRichErrors: LibMathRichErrors as ContractArtifact,
