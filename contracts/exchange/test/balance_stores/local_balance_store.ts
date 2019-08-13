@@ -17,12 +17,14 @@ export class LocalBalanceStore extends BalanceStore {
         }
         return localBalanceStore;
     }
+
     /**
      * Constructor.
      */
     public constructor() {
         super();
     }
+
     /**
      * Transfers assets from `fromAddress` to `toAddress`.
      * @param fromAddress Sender of asset(s)
@@ -84,7 +86,7 @@ export class LocalBalanceStore extends BalanceStore {
                     }
                 }
                 // sort NFT's by name
-                toBalances.nonFungible = _.sortBy(toBalances.nonFungible);
+                toBalances.nonFungible.sort();
                 break;
             }
             case AssetProxyId.MultiAsset: {

@@ -1,9 +1,15 @@
-import { artifacts as proxyArtifacts , ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
+import {
+    artifacts as proxyArtifacts,
+    ERC1155ProxyWrapper,
+    ERC20Wrapper,
+    ERC721Wrapper,
+} from '@0x/contracts-asset-proxy';
 import { artifacts as erc20Artifacts } from '@0x/contracts-erc20';
 import { artifacts as erc721Artifacts } from '@0x/contracts-erc721';
 import {
-    chaiSetup,
+    expect,
     FillEventArgs,
+    filterLogsToArguments,
     LogDecoder,
     OrderStatus,
     orderUtils,
@@ -13,22 +19,20 @@ import { orderHashUtils } from '@0x/order-utils';
 import { FillResults, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
-import { LogWithDecodedArgs, TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
+import { TransactionReceiptWithDecodedLogs, ZeroExProvider } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import { artifacts, ExchangeContract } from '../../src';
+import { calculateFillResults } from '../../src/reference_functions';
 import { BalanceStore } from '../balance_stores/balance_store';
 import { BlockchainBalanceStore } from '../balance_stores/blockchain_balance_store';
 import { LocalBalanceStore } from '../balance_stores/local_balance_store';
-
-chaiSetup.configure();
-const expect = chai.expect;
 
 export class FillOrderWrapper {
     private readonly _exchange: ExchangeContract;
     private readonly _blockchainBalanceStore: BlockchainBalanceStore;
     private readonly _web3Wrapper: Web3Wrapper;
+
     /**
      * Simulates matching two orders by transferring amounts defined in
      * `transferAmounts` and returns the results.
@@ -43,16 +47,11 @@ export class FillOrderWrapper {
         takerAddress: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
         initBalanceStore: BalanceStore,
-        partialFillResults: Partial<FillResults>,
     ): [FillResults, FillEventArgs, BalanceStore] {
         const balanceStore = LocalBalanceStore.create(initBalanceStore);
         const takerAssetFillAmount =
             opts.takerAssetFillAmount !== undefined ? opts.takerAssetFillAmount : signedOrder.takerAssetAmount;
-        const fillResults = FillOrderWrapper._createFillResultsFromPartial(
-            partialFillResults,
-            signedOrder,
-            takerAssetFillAmount,
-        );
+        const fillResults = calculateFillResults(signedOrder, takerAssetFillAmount);
         const fillEvent = FillOrderWrapper.simulateFillEvent(signedOrder, takerAddress, fillResults);
         // Taker -> Maker
         balanceStore.transferAsset(
@@ -61,19 +60,19 @@ export class FillOrderWrapper {
             fillResults.takerAssetFilledAmount,
             signedOrder.takerAssetData,
         );
-        // Taker -> Fee Recipient
-        balanceStore.transferAsset(
-            takerAddress,
-            signedOrder.feeRecipientAddress,
-            fillResults.takerFeePaid,
-            signedOrder.takerFeeAssetData,
-        );
         // Maker -> Taker
         balanceStore.transferAsset(
             signedOrder.makerAddress,
             takerAddress,
             fillResults.makerAssetFilledAmount,
             signedOrder.makerAssetData,
+        );
+        // Taker -> Fee Recipient
+        balanceStore.transferAsset(
+            takerAddress,
+            signedOrder.feeRecipientAddress,
+            fillResults.takerFeePaid,
+            signedOrder.takerFeeAssetData,
         );
         // Maker -> Fee Recipient
         balanceStore.transferAsset(
@@ -84,6 +83,7 @@ export class FillOrderWrapper {
         );
         return [fillResults, fillEvent, balanceStore];
     }
+
     /**
      *  Simulates the event emitted by the exchange contract when an order is filled.
      */
@@ -99,61 +99,24 @@ export class FillOrderWrapper {
             takerFeePaid: fillResults.takerFeePaid,
         };
     }
+
     /**
      * Extract the exchanges `Fill` event from a transaction receipt.
      */
-    public static _extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs): FillEventArgs[] {
-        interface RawFillEventArgs {
-            orderHash: string;
-            makerAddress: string;
-            takerAddress: string;
-            makerAssetFilledAmount: string;
-            takerAssetFilledAmount: string;
-            makerFeePaid: string;
-            takerFeePaid: string;
-        }
-        const actualFills = (_.filter(receipt.logs, ['event', 'Fill']) as any) as Array<
-            LogWithDecodedArgs<RawFillEventArgs>
-        >;
-        // Convert RawFillEventArgs to FillEventArgs.
-        return actualFills.map(fill => ({
-            orderHash: fill.args.orderHash,
-            makerAddress: fill.args.makerAddress,
-            takerAddress: fill.args.takerAddress,
-            makerAssetFilledAmount: new BigNumber(fill.args.makerAssetFilledAmount),
-            takerAssetFilledAmount: new BigNumber(fill.args.takerAssetFilledAmount),
-            makerFeePaid: new BigNumber(fill.args.makerFeePaid),
-            takerFeePaid: new BigNumber(fill.args.takerFeePaid),
-        }));
+    private static _extractFillEventsfromReceipt(receipt: TransactionReceiptWithDecodedLogs): FillEventArgs[] {
+        const events = filterLogsToArguments<FillEventArgs>(receipt.logs, 'Fill');
+        const fieldsOfInterest = [
+            'orderHash',
+            'makerAddress',
+            'takerAddress',
+            'makerAssetFilledAmount',
+            'takerAssetFilledAmount',
+            'makerFeePaid',
+            'takerFeePaid',
+        ];
+        return events.map(event => _.pick(event, fieldsOfInterest)) as FillEventArgs[];
     }
-    /**
-     * Returns a completed `FillResults` given a partial instance. The correct values are inferred by the
-     * values in the `signedOrder` and `takerAssetFillAmount`.
-     */
-    private static _createFillResultsFromPartial(
-        partialFillResults: Partial<FillResults>,
-        signedOrder: SignedOrder,
-        takerAssetFillAmount: BigNumber,
-    ): FillResults {
-        return {
-            makerAssetFilledAmount:
-                partialFillResults.makerAssetFilledAmount !== undefined
-                    ? partialFillResults.makerAssetFilledAmount
-                    : signedOrder.makerAssetAmount.times(takerAssetFillAmount).dividedBy(signedOrder.takerAssetAmount),
-            takerAssetFilledAmount:
-                partialFillResults.takerAssetFilledAmount !== undefined
-                    ? partialFillResults.takerAssetFilledAmount
-                    : signedOrder.takerAssetAmount.times(takerAssetFillAmount).dividedBy(signedOrder.takerAssetAmount),
-            makerFeePaid:
-                partialFillResults.makerFeePaid !== undefined
-                    ? partialFillResults.makerFeePaid
-                    : signedOrder.makerFee.times(takerAssetFillAmount).dividedBy(signedOrder.takerAssetAmount),
-            takerFeePaid:
-                partialFillResults.takerFeePaid !== undefined
-                    ? partialFillResults.takerFeePaid
-                    : signedOrder.takerFee.times(takerAssetFillAmount).dividedBy(signedOrder.takerAssetAmount),
-        };
-    }
+
     /**
      * Constructor.
      * @param exchangeContract Insstance of the deployed exchange contract
@@ -173,12 +136,14 @@ export class FillOrderWrapper {
         this._blockchainBalanceStore = new BlockchainBalanceStore(erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper);
         this._web3Wrapper = new Web3Wrapper(provider);
     }
+
     /**
      * Returns the balance store used by this wrapper.
      */
     public getBlockchainBalanceStore(): BlockchainBalanceStore {
         return this._blockchainBalanceStore;
     }
+
     /**
      * Fills an order and asserts the effects. This includes
      * 1. The order info (via `getOrderInfo`)
@@ -190,7 +155,6 @@ export class FillOrderWrapper {
         signedOrder: SignedOrder,
         from: string,
         opts: { takerAssetFillAmount?: BigNumber } = {},
-        expectedFillResults: Partial<FillResults> = {},
     ): Promise<void> {
         // Get init state
         await this._blockchainBalanceStore.updateBalancesAsync();
@@ -204,13 +168,7 @@ export class FillOrderWrapper {
             simulatedFillResults,
             simulatedFillEvent,
             simulatedFinalBalanceStore,
-        ] = FillOrderWrapper.simulateFillOrder(
-            signedOrder,
-            from,
-            opts,
-            this._blockchainBalanceStore,
-            expectedFillResults,
-        );
+        ] = FillOrderWrapper.simulateFillOrder(signedOrder, from, opts, this._blockchainBalanceStore);
         const [fillResults, fillEvent] = await this._fillOrderAsync(signedOrder, from, opts);
         // Assert state transition
         expect(simulatedFillResults, 'Fill Results').to.be.deep.equal(fillResults);
@@ -221,6 +179,7 @@ export class FillOrderWrapper {
         const finalTakerAssetFilledAmount = initTakerAssetFilledAmount.plus(fillResults.takerAssetFilledAmount);
         await this._assertOrderStateAsync(signedOrder, finalTakerAssetFilledAmount);
     }
+
     /**
      * Fills an order on-chain. As an optimization this function auto-updates the blockchain balance store
      * used by this contract.
@@ -255,6 +214,7 @@ export class FillOrderWrapper {
         await this._blockchainBalanceStore.updateBalancesAsync();
         return [fillResults, fillEvent];
     }
+
     /**
      * Asserts that the provided order's fill amount and order status
      * are the expected values.

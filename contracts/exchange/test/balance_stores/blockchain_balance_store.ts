@@ -1,5 +1,4 @@
 import { ERC1155ProxyWrapper, ERC20Wrapper, ERC721Wrapper } from '@0x/contracts-asset-proxy';
-import * as _ from 'lodash';
 
 import { BalanceStore } from './balance_store';
 
@@ -7,6 +6,7 @@ export class BlockchainBalanceStore extends BalanceStore {
     private readonly _erc20Wrapper: ERC20Wrapper;
     private readonly _erc721Wrapper: ERC721Wrapper;
     private readonly _erc1155ProxyWrapper: ERC1155ProxyWrapper;
+
     /**
      * Constructor.
      * @param erc20Wrapper The ERC20 Wrapper used to interface with deployed erc20 tokens.
@@ -23,6 +23,7 @@ export class BlockchainBalanceStore extends BalanceStore {
         this._erc721Wrapper = erc721Wrapper;
         this._erc1155ProxyWrapper = erc1155ProxyWrapper;
     }
+
     /**
      * Updates balances by querying on-chain values managed by the erc20, erc721, and erc1155 wrappers.
      */

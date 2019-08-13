@@ -17,9 +17,11 @@ import {
 } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
+    describe,
     ERC20BalancesByOwner,
+    expect,
     getLatestBlockTimestampAsync,
     hexConcat,
     increaseTimeAndMineBlockAsync,
@@ -29,12 +31,10 @@ import {
     txDefaults,
     web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, LibMathRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
 import { BigNumber, providerUtils, ReentrancyGuardRevertErrors, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
@@ -51,14 +51,10 @@ import {
     ValidatorWalletDataType,
 } from '../src';
 
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
-
 import { FillOrderWrapper } from './assertion_wrappers/fill_order_wrapper';
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange core', () => {
+blockchainTests.resets('Exchange core', () => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -102,12 +98,6 @@ describe('Exchange core', () => {
 
     let fillOrderWrapper: FillOrderWrapper;
 
-    before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
     before(async () => {
         chainId = await providerUtils.getChainIdAsync(provider);
         const accounts = await web3Wrapper.getAvailableAddressesAsync();
@@ -239,12 +229,6 @@ describe('Exchange core', () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
         fillOrderWrapper = new FillOrderWrapper(exchange, erc20Wrapper, erc721Wrapper, erc1155ProxyWrapper, provider);
-    });
-    beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
     });
     describe('fillOrder', () => {
         beforeEach(async () => {
