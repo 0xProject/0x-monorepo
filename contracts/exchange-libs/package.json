@@ -31,8 +31,7 @@
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
-        "generate-exchange-selectors": "node lib/scripts/generate-exchange-selectors.js ../../../exchange/generated-artifacts/Exchange.json ./contracts/src/LibExchangeSelectors.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
     },
     "config": {
         "abis": "./generated-artifacts/@(LibEIP712ExchangeDomain|LibExchangeRichErrors|LibExchangeSelectors|LibFillResults|LibMath|LibMathRichErrors|LibOrder|LibZeroExTransaction|TestLibEIP712ExchangeDomain|TestLibFillResults|TestLibMath|TestLibOrder|TestLibZeroExTransaction).json",
