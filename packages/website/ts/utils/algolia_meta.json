@@ -63,5 +63,16 @@
         "type": "Command-line tools",
         "path": "tools/ethereum-types/v2.1.4/reference.mdx",
         "versions": ["v2.1.4"]
+    },
+    "ganache-setup": {
+        "title": "How to Set Up Ganache",
+        "description": "",
+        "topics": ["Ganache"],
+        "difficulty": "Intermediate",
+        "isCommunity": false,
+        "isFeatured": false,
+        "tags": ["Protocol developer"],
+        "type": "Command-line tools",
+        "path": "guides/ganache-setup.mdx"
     }
 }
