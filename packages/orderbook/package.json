@@ -17,6 +17,7 @@
         "test": "jest",
         "test:coverage": "jest --coverage",
         "build": "tsc -p tsconfig.json",
+        "build:ci": "yarn build",
         "watch": "tsc -w -p tsconfig.json",
         "prettier": "prettier --write 'src/**/*.ts' --config .prettierrc",
         "test:circleci": "yarn test:coverage",
