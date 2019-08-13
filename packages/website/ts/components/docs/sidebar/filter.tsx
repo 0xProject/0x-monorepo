@@ -5,18 +5,33 @@ import { colors } from 'ts/style/colors';
 
 export interface IFilterProps extends IFilterCheckboxProps {
     label: string;
+    currentRefinement: string[];
     customLabel?: string;
     isDisabled?: boolean;
     value: string;
-    refine: (value: string) => void;
+    refine: (value: string | string[]) => void;
 }
 
 interface IFilterCheckboxProps {
     isRefined: boolean;
 }
 
-export const Filter: React.FC<IFilterProps> = ({ isDisabled, isRefined, label, value, customLabel, refine }) => {
-    const handleClick = () => refine(value);
+export const Filter: React.FC<IFilterProps> = ({
+    currentRefinement,
+    customLabel,
+    isDisabled,
+    isRefined,
+    label,
+    refine,
+}) => {
+    const handleClick = () => {
+        if (isRefined) {
+            const refinement = [...currentRefinement].filter((item: string) => item !== label); // Remove from current refinement
+            refine(refinement);
+        } else {
+            refine([...currentRefinement, label]); // Add to current refinement
+        }
+    };
 
     return (
         <FilterWrapper isDisabled={isDisabled} onClick={handleClick}>
