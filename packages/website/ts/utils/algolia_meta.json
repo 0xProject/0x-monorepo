@@ -1,6 +1,6 @@
 {
     "api-explorer": {
-        "title": "0x API Explorer",
+        "title": "API Explorer",
         "path": "api-explorer/index.mdx"
     },
     "core-concepts": {
