@@ -5,7 +5,6 @@ import * as path from 'path';
 import slugify from 'slugify';
 
 import { adminClient, IAlgoliaSettings, searchIndices, settings } from './algolia_constants';
-const meta = require('./algolia_meta.json');
 
 // Note (piotr): can't find type definitions for these
 const stringify = require('json-stringify-pretty-compact');
@@ -16,6 +15,8 @@ const { read } = require('to-vfile');
 const findAfter = require('unist-util-find-after');
 const modifyChildren = require('unist-util-modify-children');
 const { selectAll } = require('unist-util-select');
+
+const meta = require('./algolia_meta.json');
 
 function processContentTree(tree: Node[], file: any, indexName: string): void {
     const modify = modifyChildren(modifier);
@@ -31,8 +32,8 @@ function processContentTree(tree: Node[], file: any, indexName: string): void {
         const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
         const algoliaSettings = settings[indexName];
 
-        // setIndexSettings(algoliaIndex, algoliaSettings);
-        // pushObjectsToAlgolia(algoliaIndex, content);
+        setIndexSettings(algoliaIndex, algoliaSettings);
+        pushObjectsToAlgolia(algoliaIndex, content);
     }
 }
 
