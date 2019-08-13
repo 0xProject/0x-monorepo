@@ -52,7 +52,7 @@ export const DocsTools: React.FC = () => {
 
 function getUniqueContentTypes(hits: IHit[]): string[] {
     const contentTypes: string[] = [];
-    // @ts-ignore
+
     for (const hit of hits) {
         if (!contentTypes.includes(hit.type)) {
             contentTypes.push(hit.type);
