@@ -32,33 +32,30 @@ const baseUnitAmount = (unitAmount: number, decimals = TOKEN_DECIMALS): BigNumbe
 };
 
 const assetsToAssetPairItems = (makerAssetData: string, takerAssetData: string): AssetPairsItem[] => {
+    const defaultAssetPairItem = {
+        minAmount: ZERO,
+        maxAmount: ZERO,
+        precision: TOKEN_DECIMALS,
+    };
     return [
         {
             assetDataA: {
+                ...defaultAssetPairItem,
                 assetData: makerAssetData,
-                minAmount: ZERO,
-                maxAmount: ZERO,
-                precision: TOKEN_DECIMALS,
             },
             assetDataB: {
+                ...defaultAssetPairItem,
                 assetData: takerAssetData,
-                minAmount: ZERO,
-                maxAmount: ZERO,
-                precision: TOKEN_DECIMALS,
             },
         },
         {
             assetDataA: {
+                ...defaultAssetPairItem,
                 assetData: takerAssetData,
-                minAmount: ZERO,
-                maxAmount: ZERO,
-                precision: TOKEN_DECIMALS,
             },
             assetDataB: {
+                ...defaultAssetPairItem,
                 assetData: makerAssetData,
-                minAmount: ZERO,
-                maxAmount: ZERO,
-                precision: TOKEN_DECIMALS,
             },
         },
     ];

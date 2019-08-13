@@ -68,7 +68,7 @@ export class SwapQuoter {
             pollingIntervalMs:
                 options.orderRefreshIntervalMs || constants.DEFAULT_SWAP_QUOTER_OPTS.orderRefreshIntervalMs,
             networkId: options.networkId || constants.DEFAULT_SWAP_QUOTER_OPTS.networkId,
-            perPage: options.perPage,
+            perPage: options.perPage || constants.DEFAULT_PER_PAGE,
         });
         const swapQuoter = new SwapQuoter(provider, orderbook, options);
         return swapQuoter;
