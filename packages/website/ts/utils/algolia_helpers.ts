@@ -8,6 +8,7 @@ import { adminClient, IAlgoliaSettings, searchIndices, settings } from './algoli
 const meta = require('./algolia_meta.json');
 
 // Note (piotr): can't find type definitions for these
+const stringify = require('json-stringify-pretty-compact');
 const remark = require('remark');
 const mdx = require('remark-mdx');
 const slug = require('remark-slug');
@@ -147,41 +148,23 @@ function getFiles(dirName: string): any {
 
     for (const file of files) {
         if (dirName === 'tools') {
-            // For now we are looking for all mdx files (which for now should only be 'reference.mdx')
-            // We can look for a different filename in the future, i.e. README and do some stuff with it
-            // const { name } = path.parse(file);
-            // if (name === 'reference') {
-            const toolName = path.basename(path.join(file, '../../'));
+            const name = path.basename(path.join(file, '../../'));
             const version = path.basename(path.dirname(file));
-            const url = `/docs/tools/${toolName}/${version}`;
+            const url = `/docs/tools/${name}/${version}`;
 
-            const [_, relativePath] = file.split('mdx/');
-
-            const fileIndex = processedFiles.findIndex((tool: any) => tool.name === toolName);
+            const fileIndex = processedFiles.findIndex((tool: any) => tool.name === name);
             const isIndexPresent = fileIndex > -1;
+
+            const fileObject = { name, path: file, version, versions: [version], url };
 
             if (isIndexPresent) {
                 if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
-                    const versions = [...processedFiles[fileIndex].versions, version].sort(compareVersions).reverse();
-                    meta[toolName].versions = versions;
-
-                    processedFiles[fileIndex] = {
-                        name: toolName,
-                        path: file,
-                        relativePath,
-                        version,
-                        versions,
-                        url,
-                    };
+                    const versions = [...processedFiles[fileIndex].versions, version];
+                    processedFiles[fileIndex] = { ...fileObject, versions };
                 }
             } else {
-                processedFiles.push({ name: toolName, path: file, relativePath, version, versions: [version], url });
-                meta[toolName].versions = [version];
+                processedFiles.push(fileObject);
             }
-            // @ts-ignore
-            meta[toolName].path = relativePath;
-
-            fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), JSON.stringify(meta, null, 4));
         }
 
         if (dirName === 'guides') {
@@ -195,14 +178,27 @@ function getFiles(dirName: string): any {
             processedFiles.push({ name: dirName, path: file, url });
         }
     }
-    console.log('processedFiles', processedFiles);
+
     return processedFiles;
+}
+
+function updateMetaFile(file: any): void {
+    const [_, relativePath] = file.path.split('mdx/');
+    meta[file.name].path = relativePath;
+
+    if (file.versions) {
+        const versionsSortedDesc = file.versions.sort(compareVersions).reverse();
+        meta[file.name].versions = versionsSortedDesc;
+    }
+
+    fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), stringify(meta, { replacer: null, indent: 4 }));
 }
 
 export async function indexFilesAsync(indexName: string): Promise<void> {
     const files = getFiles(indexName);
 
     for (const file of files) {
+        updateMetaFile(file);
         await processMdxAsync(indexName, file);
     }
 }
