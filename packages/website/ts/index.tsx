@@ -31,6 +31,8 @@ import { Next0xInstant } from 'ts/pages/instant';
 import { NextLanding } from 'ts/pages/landing';
 import { NextLaunchKit } from 'ts/pages/launch_kit';
 import { NextMarketMaker } from 'ts/pages/market_maker';
+import { PrivacyPolicy } from 'ts/pages/privacy';
+import { TermsOfService } from 'ts/pages/terms';
 import { NextWhy } from 'ts/pages/why';
 
 // Check if we've introduced an update that requires us to clear the tradeHistory local storage entries
@@ -128,6 +130,16 @@ render(
                                 <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
                                 <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
                                 <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.PrivacyPolicy}
+                                    component={PrivacyPolicy as any}
+                                />
+                                <Route
+                                    exact={true}
+                                    path={WebsitePaths.TermsOfService}
+                                    component={TermsOfService as any}
+                                />
                                 <Route
                                     exact={true}
                                     path={WebsitePaths.AboutMission}

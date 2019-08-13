@@ -457,6 +457,8 @@ export enum WebsitePaths {
     MarketMaker = '/market-maker',
     Governance = '/governance',
     Why = '/why',
+    PrivacyPolicy = '/privacy',
+    TermsOfService = '/terms',
     Whitepaper = '/pdfs/0x_white_paper.pdf',
     SmartContracts = '/docs/contracts',
     Connect = '/docs/connect',

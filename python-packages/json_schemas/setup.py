@@ -139,7 +139,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-json-schemas",
-    version="2.0.0",
+    version="1.1.0",
     description="JSON schemas for 0x applications",
     long_description=README_MD,
     long_description_content_type="text/markdown",
@@ -161,6 +161,8 @@ setup(
     install_requires=["jsonschema", "mypy_extensions", "stringcase"],
     extras_require={
         "dev": [
+            "0x-contract-addresses",
+            "0x-contract-wrappers",
             "bandit",
             "black",
             "coverage",

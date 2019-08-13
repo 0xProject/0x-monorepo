@@ -97,4 +97,14 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         description: 'Support new types of trading on your relayer with 0x Extensions',
         keywords: '',
     },
+    PRIVACY_POLICY: {
+        title: '0x: Privacy Policy',
+        description: '',
+        keywords: '',
+    },
+    TERMS_OF_SERVICE: {
+        title: '0x: Terms of Service',
+        description: '',
+        keywords: '',
+    },
 };
