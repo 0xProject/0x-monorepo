@@ -7,11 +7,11 @@ import { colors } from 'ts/style/colors';
 import { docs } from 'ts/style/docs';
 
 import { SidebarWrapper } from 'ts/components/docs/sidebar/sidebar_wrapper';
-
-import { Select } from 'ts/components/docs/sidebar/select';
+import { VersionPicker } from 'ts/components/docs/sidebar/version_picker';
 
 interface ITableOfContentsProps {
     contents: IContents[];
+    versions?: string[];
 }
 
 export interface IContents {
@@ -27,29 +27,10 @@ export interface ISelectItemConfig {
     onClick?: () => void;
 }
 
-const items: ISelectItemConfig[] = [
-    {
-        label: 'v6.1.10',
-        onClick: () => {
-            console.log('YEAH 10');
-        },
-    },
-    {
-        label: 'v6.1.11',
-        onClick: () => {
-            console.log('YEAH 11');
-        },
-    },
-];
-
-const onChange = () => {
-    console.log('ON CHANGE!');
-};
-
-export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents }) => {
+export const TableOfContents: React.FC<ITableOfContentsProps> = ({ contents, versions }) => {
     return (
         <SidebarWrapper>
-            <Select emptyText="6.1.11" id="select-versions" items={items} value="6.1.11" onChange={onChange} />
+            {versions && <VersionPicker versions={versions} />}
             <Contents contents={contents} />
         </SidebarWrapper>
     );
