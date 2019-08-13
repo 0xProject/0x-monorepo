@@ -1,19 +1,29 @@
 import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
 import styled from 'styled-components';
 
 import { Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
-interface IVersionPickerProps {
+interface IVersionPickerProps extends RouteComponentProps<IMatchParams> {
     versions: string[];
 }
 
-const onChange = (e: any) => {
-    console.log('CHANGED', e.target.value);
-};
+interface IMatchParams {
+    page?: string;
+    type?: string;
+}
 
-export const VersionPicker: React.FunctionComponent<IVersionPickerProps> = ({ versions }) => {
+const VersionSelect: React.FC<IVersionPickerProps> = ({ history, location, match, versions }) => {
+    const onChange = (e: any) => {
+        const { type, page } = match.params;
+        const version = e.target.value;
+        const url = `/docs/${type}/${page}/${version}`;
+        history.push(url);
+        window.scrollTo(0, 0);
+    };
+
     return (
         <VersionPickerWrapper>
             <Paragraph color="#999" size={17} lineHeight={1.6} marginBottom="0">
@@ -38,6 +48,8 @@ export const VersionPicker: React.FunctionComponent<IVersionPickerProps> = ({ ve
         </VersionPickerWrapper>
     );
 };
+
+export const VersionPicker = withRouter(VersionSelect);
 
 const VersionPickerWrapper = styled.div`
     display: flex;

@@ -35,16 +35,15 @@ export const searchIndices: ISearchIndices = {
 const sharedSettings = {
     distinct: true,
     attributeForDistinct: 'id',
+    attributesForFaceting: [''],
     attributesToSnippet: ['textContent:20'], // attribute:nbWords (number of words to show in a snippet)
     searchableAttributes: ['title', 'textContent'],
     snippetEllipsisText: '…',
 };
 
 export const settings: ISettingsIndex = {
-    'core-concepts': {
-        ...sharedSettings,
-        attributesForFaceting: [],
-    },
+    'api-explorer': sharedSettings,
+    'core-concepts': sharedSettings,
     guides: {
         ...sharedSettings,
         attributesForFaceting: ['topics', 'difficulty'],
