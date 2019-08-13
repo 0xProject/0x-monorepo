@@ -29,10 +29,8 @@ export const mockAvailableAssetDatas = (
     availableAssetDatas: AssetPairsItem[],
 ) => {
     mockOrderbook
-        .setup(op => op.getAvailableAssetDatasAsync())
-        .returns(() => {
-            return Promise.resolve(availableAssetDatas);
-        })
+        .setup(async op => op.getAvailableAssetDatasAsync())
+        .returns(async () => Promise.resolve(availableAssetDatas))
         .verifiable(TypeMoq.Times.once());
     mockOrderbook
         .setup(o => (o as any)._orderProvider)
@@ -58,8 +56,8 @@ const mockGetOrdersAndAvailableAmounts = (
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
 ): void => {
     mockedSwapQuoter
-        .setup(a => a.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData))
-        .returns(() => Promise.resolve(ordersAndFillableAmounts))
+        .setup(async a => a.getOrdersAndFillableAmountsAsync(makerAssetData, takerAssetData))
+        .returns(async () => Promise.resolve(ordersAndFillableAmounts))
         .verifiable(TypeMoq.Times.once());
 };
 
