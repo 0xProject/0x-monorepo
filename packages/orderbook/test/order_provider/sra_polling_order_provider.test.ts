@@ -1,5 +1,4 @@
 import { HttpClient } from '@0x/connect';
-import 'mocha';
 import * as sinon from 'sinon';
 
 import { SRAPollingOrderProvider } from '../../src';

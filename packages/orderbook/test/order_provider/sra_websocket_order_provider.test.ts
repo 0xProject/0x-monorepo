@@ -1,5 +1,4 @@
 import { HttpClient, ordersChannelFactory, OrdersChannelHandler } from '@0x/connect';
-import 'mocha';
 import * as sinon from 'sinon';
 
 import { SRAWebsocketOrderProvider } from '../../src';

@@ -13,6 +13,7 @@ export const utils = {
         }
     },
     async delayAsync(ms: number): Promise<void> {
+        // tslint:disable:no-inferred-empty-object-type
         return new Promise(resolve => setTimeout(resolve, ms));
     },
     async attemptAsync<T>(

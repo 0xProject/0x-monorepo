@@ -1,6 +1,5 @@
 import { BigNumber, WSClient } from '@0x/mesh-rpc-client';
 import { SERVER_PORT, setupServerAsync, stopServer } from '@0x/mesh-rpc-client/lib/test/utils/mock_ws_server';
-import 'mocha';
 import * as sinon from 'sinon';
 
 import { MeshOrderProvider } from '../../src';
