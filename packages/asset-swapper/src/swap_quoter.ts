@@ -1,6 +1,6 @@
 import { ContractWrappers } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { MarketOperation, ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { SupportedProvider, ZeroExProvider } from 'ethereum-types';
@@ -23,7 +23,6 @@ import {
 } from './types';
 
 import { assert } from './utils/assert';
-import { assetDataUtils } from './utils/asset_data_utils';
 import { calculateLiquidity } from './utils/calculate_liquidity';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 import { swapQuoteCalculator } from './utils/swap_quote_calculator';
@@ -382,14 +381,14 @@ export class SwapQuoter {
         swapQuote: SwapQuote,
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
-        const orderValidatorWrapper = this._contractWrappers.orderValidator;
-        const balanceAndAllowance = await orderValidatorWrapper.getBalanceAndAllowanceAsync(
+        const orderValidator = this._contractWrappers.orderValidator;
+        const [balance, allowance] = await orderValidator.getBalanceAndAllowance.callAsync(
             takerAddress,
             swapQuote.takerAssetData,
         );
         return [
-            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
-            balanceAndAllowance.allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
+            allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
+            allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),
         ];
     }
 
@@ -398,7 +397,7 @@ export class SwapQuoter {
      * Will throw if ZRX does not exist for the current network.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
-        return this._contractWrappers.exchange.getZRXAssetData();
+        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);
     }
 
     /**
