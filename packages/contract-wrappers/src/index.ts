@@ -24,4 +24,6 @@ export * from '@0x/contract-addresses';
 
 export { ContractWrappers } from './contract_wrappers';
 export { CoordinatorWrapper } from './coordinator_wrapper';
-export { OrderStatus } from './types';
+export { OrderStatus, ContractError, ForwarderError, OrderAndTraderInfo } from './types';
+
+export { calldataOptimizationUtils } from './utils/calldata_optimization_utils';

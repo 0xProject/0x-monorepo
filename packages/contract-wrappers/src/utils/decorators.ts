@@ -1,6 +1,6 @@
 import * as _ from 'lodash';
 
-export enum ContractWrappersError {
+export enum ContractError {
     ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
     InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
     InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
@@ -31,10 +31,10 @@ type ErrorTransformer = (err: Error) => Error;
 
 const contractCallErrorTransformer = (error: Error) => {
     if (_.includes(error.message, constants.INVALID_JUMP_PATTERN)) {
-        return new Error(ContractWrappersError.InvalidJump);
+        return new Error(ContractError.InvalidJump);
     }
     if (_.includes(error.message, constants.OUT_OF_GAS_PATTERN)) {
-        return new Error(ContractWrappersError.OutOfGas);
+        return new Error(ContractError.OutOfGas);
     }
     if (_.includes(error.message, constants.REVERT)) {
         const revertReason = error.message.split(constants.REVERT)[1].trim();
@@ -57,7 +57,7 @@ const signatureRequestErrorTransformer = (error: Error) => {
         _.includes(error.message, constants.METAMASK_USER_DENIED_SIGNATURE_PATTERN) ||
         _.includes(error.message, constants.TRUST_WALLET_USER_DENIED_SIGNATURE_PATTERN)
     ) {
-        const errMsg = ContractWrappersError.SignatureRequestDenied;
+        const errMsg = ContractError.SignatureRequestDenied;
         return new Error(errMsg);
     }
     return error;

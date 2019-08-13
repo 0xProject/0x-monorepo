@@ -1,3 +1,4 @@
+import { ContractAddresses } from '@0x/contract-addresses';
 import {
     Coordinator,
     DutchAuction,
@@ -22,17 +23,21 @@ import { ERC721ProxyContract } from './generated-wrappers/erc721_proxy';
 import { ExchangeContract } from './generated-wrappers/exchange';
 import { ForwarderContract } from './generated-wrappers/forwarder';
 import { OrderValidatorContract } from './generated-wrappers/order_validator';
-
 import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
+import { constants as wrapperConstants } from './utils/constants';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
 /**
  * The ContractWrappers class contains smart contract wrappers helpful when building on 0x protocol.
  */
 export class ContractWrappers {
+    /**
+     * An index of the default contract addresses for this network.
+     */
+    public contractAddresses: ContractAddresses;
     /**
      * An instance of the ExchangeContract class containing methods for interacting with the 0x Exchange smart contract.
      */
@@ -68,6 +73,8 @@ export class ContractWrappers {
      * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorWrapper;
+
+    public constants: { [key: string]: any } = wrapperConstants;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**
@@ -116,6 +123,7 @@ export class ContractWrappers {
             contractAddresses.exchange,
             contractAddresses.coordinatorRegistry,
         );
+        this.contractAddresses = contractAddresses;
     }
     /**
      * Unsubscribes from all subscriptions for all contracts.

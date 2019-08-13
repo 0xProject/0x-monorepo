@@ -1,5 +1,15 @@
 [
     {
+        "version": "11.1.0",
+        "changes": [
+            {
+                "note": "Add `contractAddresses` to `ContractWrappers` class",
+                "pr": 1
+            }
+        ],
+        "timestamp": 1565296576
+    },
+    {
         "version": "11.0.0",
         "changes": [
             {
