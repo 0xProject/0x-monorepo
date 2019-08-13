@@ -1,10 +1,11 @@
-import compareVersions from 'compare-versions';
+import * as compareVersions from 'compare-versions';
+import * as fs from 'fs';
 import * as glob from 'glob';
 import * as path from 'path';
 import slugify from 'slugify';
 
 import { adminClient, IAlgoliaSettings, searchIndices, settings } from './algolia_constants';
-import { meta } from './algolia_meta';
+const meta = require('./algolia_meta.json');
 
 // Note (piotr): can't find type definitions for these
 const remark = require('remark');
@@ -29,8 +30,8 @@ function processContentTree(tree: Node[], file: any, indexName: string): void {
         const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
         const algoliaSettings = settings[indexName];
 
-        setIndexSettings(algoliaIndex, algoliaSettings);
-        pushObjectsToAlgolia(algoliaIndex, content);
+        // setIndexSettings(algoliaIndex, algoliaSettings);
+        // pushObjectsToAlgolia(algoliaIndex, content);
     }
 }
 
@@ -152,18 +153,40 @@ function getFiles(dirName: string): any {
             // if (name === 'reference') {
             const toolName = path.basename(path.join(file, '../../'));
             const version = path.basename(path.dirname(file));
-            const url = `/docs/${toolName}/${version}`; // could become `/docs/tools/${toolName}/${version}` in the future
+            const url = `/docs/tools/${toolName}/${version}`;
 
             const fileIndex = processedFiles.findIndex((tool: any) => tool.name === toolName);
             const isIndexPresent = fileIndex > -1;
 
             if (isIndexPresent) {
                 if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
-                    processedFiles[fileIndex] = { name: toolName, path: file, version, url };
+                    const versions = [...processedFiles[fileIndex].versions, version].sort(compareVersions).reverse();
+
+                    processedFiles[fileIndex] = {
+                        name: toolName,
+                        path: file,
+                        version,
+                        versions,
+                        url,
+                    };
                 }
             } else {
-                processedFiles.push({ name: toolName, path: file, version, url });
+                processedFiles.push({ name: toolName, path: file, version, versions: [version], url });
             }
+
+            // const { test: testScript } = packageJson.scripts;
+
+            // if (testScript.includes('--outputFile')) {
+            //     console.log('No changes needed in test script');
+            // } else {
+            //     packageJson.scripts.test = testScript + ' --json --outputFile=jest-test-results.json';
+            //     console.log('Updating test script');
+            // }
+
+            // packageJson.scripts.foo = 'bar';
+
+            // fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
+            // console.log('Package saved');
         }
 
         if (dirName === 'guides') {
@@ -177,7 +200,7 @@ function getFiles(dirName: string): any {
             processedFiles.push({ name: dirName, path: file, url });
         }
     }
-
+    console.log('processedFiles', processedFiles);
     return processedFiles;
 }
 
