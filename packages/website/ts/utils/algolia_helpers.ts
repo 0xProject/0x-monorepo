@@ -155,38 +155,33 @@ function getFiles(dirName: string): any {
             const version = path.basename(path.dirname(file));
             const url = `/docs/tools/${toolName}/${version}`;
 
+            const [_, relativePath] = file.split('mdx/');
+
             const fileIndex = processedFiles.findIndex((tool: any) => tool.name === toolName);
             const isIndexPresent = fileIndex > -1;
 
             if (isIndexPresent) {
                 if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
                     const versions = [...processedFiles[fileIndex].versions, version].sort(compareVersions).reverse();
+                    meta[toolName].versions = versions;
 
                     processedFiles[fileIndex] = {
                         name: toolName,
                         path: file,
+                        relativePath,
                         version,
                         versions,
                         url,
                     };
                 }
             } else {
-                processedFiles.push({ name: toolName, path: file, version, versions: [version], url });
+                processedFiles.push({ name: toolName, path: file, relativePath, version, versions: [version], url });
+                meta[toolName].versions = [version];
             }
+            // @ts-ignore
+            meta[toolName].path = relativePath;
 
-            // const { test: testScript } = packageJson.scripts;
-
-            // if (testScript.includes('--outputFile')) {
-            //     console.log('No changes needed in test script');
-            // } else {
-            //     packageJson.scripts.test = testScript + ' --json --outputFile=jest-test-results.json';
-            //     console.log('Updating test script');
-            // }
-
-            // packageJson.scripts.foo = 'bar';
-
-            // fs.writeFileSync('package.json', JSON.stringify(packageJson, null, 2));
-            // console.log('Package saved');
+            fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), JSON.stringify(meta, null, 4));
         }
 
         if (dirName === 'guides') {
