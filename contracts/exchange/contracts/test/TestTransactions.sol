@@ -26,15 +26,65 @@ import "../src/MixinTransactions.sol";
 contract TestTransactions is
     Exchange
 {
+    // Indicates whether or not the overridden _isValidTransactionWithHashSignature should return true or false.
+    bool public shouldBeValid;
+
+    // Indicates whether or not the fallback function should succeed.
+    bool public shouldSucceedCall;
+
+    // The returndata of the fallback function.
+    bytes public fallbackReturnData;
+
     constructor ()
         public
         Exchange(1337)
     {} // solhint-disable-line no-empty-blocks
 
+    // This fallback function will succeed if the bool `shouldSucceedCall` has been set
+    // to true, and will fail otherwise. It will return returndata `fallbackReturnData`
+    // in either case.
+    function ()
+        external
+    {
+        // Circumvent the compiler to return data through the fallback
+        bool success = shouldSucceedCall;
+        bytes memory returnData = fallbackReturnData;
+        assembly {
+            if iszero(success) {
+                revert(add(0x20, returnData), mload(returnData))
+            }
+            return(add(0x20, returnData), mload(returnData))
+        }
+    }
+
     function setCurrentContextAddress(address context)
         external
     {
         currentContextAddress = context;
+    }
+
+    function setFallbackReturnData(bytes calldata returnData)
+        external
+    {
+        fallbackReturnData = returnData;
+    }
+
+    function setShouldBeValid(bool isValid)
+        external
+    {
+        shouldBeValid = isValid;
+    }
+
+    function setShouldCallSucceed(bool shouldSucceed)
+        external
+    {
+        shouldSucceedCall = shouldSucceed;
+    }
+
+    function setTransactionHash(bytes32 hash)
+        external
+    {
+        transactionsExecuted[hash] = true;
     }
 
     function getCurrentContextAddress()
@@ -43,5 +93,18 @@ contract TestTransactions is
         returns (address)
     {
         return _getCurrentContextAddress();
+    }
+
+    function _isValidTransactionWithHashSignature(
+        ZeroExTransaction memory,
+        bytes32,
+        address,
+        bytes memory
+    )
+        internal
+        view
+        returns (bool)
+    {
+        return shouldBeValid;
     }
 }
