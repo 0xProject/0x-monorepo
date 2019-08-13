@@ -3,7 +3,7 @@
         "version": "4.3.0",
         "changes": [
             {
-                "note": "Added DevUtils",
+                "note": "Added DevUtils to migration script",
                 "pr": 2060
             }
         ]
