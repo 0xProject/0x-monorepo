@@ -1,7 +1,7 @@
 import { addressUtils, blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
 import { transactionHashUtils } from '@0x/order-utils';
 import { ZeroExTransaction } from '@0x/types';
-import { BigNumber, providerUtils, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, TestLibZeroExTransactionContract } from '../src';
@@ -9,17 +9,15 @@ import { artifacts, TestLibZeroExTransactionContract } from '../src';
 blockchainTests('LibZeroExTransaction', env => {
     let libZeroExTransactionContract: TestLibZeroExTransactionContract;
     let zeroExTransaction: ZeroExTransaction;
-    let chainId: number;
     before(async () => {
         libZeroExTransactionContract = await TestLibZeroExTransactionContract.deployFrom0xArtifactAsync(
             artifacts.TestLibZeroExTransaction,
             env.provider,
             env.txDefaults,
         );
-        chainId = await providerUtils.getChainIdAsync(env.provider);
         const domain = {
             verifyingContractAddress: libZeroExTransactionContract.address,
-            chainId,
+            chainId: 1,
         };
         zeroExTransaction = {
             signerAddress: addressUtils.generatePseudoRandomAddress(),

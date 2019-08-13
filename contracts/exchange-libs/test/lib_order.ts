@@ -1,7 +1,7 @@
 import { addressUtils, blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
 import { assetDataUtils, orderHashUtils } from '@0x/order-utils';
 import { Order } from '@0x/types';
-import { BigNumber, providerUtils, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, TestLibOrderContract } from '../src';
@@ -9,17 +9,15 @@ import { artifacts, TestLibOrderContract } from '../src';
 blockchainTests('LibOrder', env => {
     let libOrderContract: TestLibOrderContract;
     let order: Order;
-    let chainId: number;
     before(async () => {
         libOrderContract = await TestLibOrderContract.deployFrom0xArtifactAsync(
             artifacts.TestLibOrder,
             env.provider,
             env.txDefaults,
         );
-        chainId = await providerUtils.getChainIdAsync(env.provider);
         const domain = {
             verifyingContractAddress: libOrderContract.address,
-            chainId,
+            chainId: 1,
         };
         order = {
             ...constants.STATIC_ORDER_PARAMS,

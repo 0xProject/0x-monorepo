@@ -1,17 +1,13 @@
 import { addressUtils, blockchainTests, constants, expect } from '@0x/contracts-test-utils';
-import { BigNumber, providerUtils, signTypedDataUtils } from '@0x/utils';
+import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 
 import { artifacts, TestLibEIP712ExchangeDomainContract } from '../src';
 
 blockchainTests('LibEIP712ExchangeDomain', env => {
-    let chainId: number;
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(env.provider);
-    });
-
     describe('constructor', () => {
         it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to null', async () => {
+            const chainId = 1;
             const libEIP712ExchangeDomainContract = await TestLibEIP712ExchangeDomainContract.deployFrom0xArtifactAsync(
                 artifacts.TestLibEIP712ExchangeDomain,
                 env.provider,
@@ -30,6 +26,7 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
             expect(actualDomainHash).to.be.equal(expectedDomainHash);
         });
         it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to a non-null address', async () => {
+            const chainId = 1;
             const verifyingContractAddress = addressUtils.generatePseudoRandomAddress();
             const libEIP712ExchangeDomainContract = await TestLibEIP712ExchangeDomainContract.deployFrom0xArtifactAsync(
                 artifacts.TestLibEIP712ExchangeDomain,
