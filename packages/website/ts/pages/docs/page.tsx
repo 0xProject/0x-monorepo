@@ -55,14 +55,16 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     const key = page ? page : type;
     // @ts-ignore
     const { path, subtitle, title, versions } = meta[key];
+    // If the route path includes a version, replace the initial version on path
+    const filePath = versions && version ? path.replace(versions[0], version) : path;
 
     React.useEffect(() => {
-        void loadPageAsync(path);
-    }, [path]);
+        void loadPageAsync(filePath);
+    }, [filePath]);
 
-    const loadPageAsync = async (path: string) => {
+    const loadPageAsync = async (filePath: string) => {
         try {
-            const component = await import(`mdx/${path}`);
+            const component = await import(`mdx/${filePath}`);
 
             setState({
                 ...state,
