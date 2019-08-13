@@ -109,139 +109,121 @@ render(
     <>
         <MetaTags title={DOCUMENT_TITLE} description={DOCUMENT_DESCRIPTION} />
         <Router>
-                <MuiThemeProvider muiTheme={muiTheme}>
-                    <Provider store={store}>
-                            <Switch>
-                                {/* Next (new site) routes */}
-                                <Route exact={true} path="/" component={NextLanding as any} />
-                                <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
-                                <Route
-                                    exact={true}
-                                    path={WebsitePaths.MarketMaker}
-                                    component={NextMarketMaker as any}
-                                />
-                                <Route exact={true} path={WebsitePaths.Explore} component={Explore as any} />
-                                <Route exact={true} path={WebsitePaths.Credits} component={Credits as any} />
-                                <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
-                                <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
-                                <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
-                                <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
-                                <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
-                                <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
-                                <Route exact={true} path={WebsitePaths.AssetSwapperPage} component={CFL as any} />
-                                <Route
-                                    exact={true}
-                                    path={WebsitePaths.PrivacyPolicy}
-                                    component={PrivacyPolicy as any}
-                                />
-                                <Route
-                                    exact={true}
-                                    path={WebsitePaths.TermsOfService}
-                                    component={TermsOfService as any}
-                                />
-                                <Route
-                                    exact={true}
-                                    path={WebsitePaths.AboutMission}
-                                    component={NextAboutMission as any}
-                                />
-                                <Route exact={true} path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
-                                <Route exact={true} path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
-                                <Route exact={true} path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
-                                {/*
+            <MuiThemeProvider muiTheme={muiTheme}>
+                <Provider store={store}>
+                    <Switch>
+                        {/* Next (new site) routes */}
+                        <Route exact={true} path="/" component={NextLanding as any} />
+                        <Route exact={true} path={WebsitePaths.Why} component={NextWhy as any} />
+                        <Route exact={true} path={WebsitePaths.MarketMaker} component={NextMarketMaker as any} />
+                        <Route exact={true} path={WebsitePaths.Explore} component={Explore as any} />
+                        <Route exact={true} path={WebsitePaths.Credits} component={Credits as any} />
+                        <Route exact={true} path={WebsitePaths.Instant} component={Next0xInstant as any} />
+                        <Route exact={true} path={WebsitePaths.LaunchKit} component={NextLaunchKit as any} />
+                        <Route exact={true} path={WebsitePaths.Ecosystem} component={NextEcosystem as any} />
+                        <Route exact={true} path={`${WebsitePaths.Vote}/:zeip`} component={Governance as any} />
+                        <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
+                        <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
+                        <Route exact={true} path={WebsitePaths.AssetSwapperPage} component={CFL as any} />
+                        <Route
+                            exact={true}
+                            path={WebsitePaths.PrivacyPolicy}
+                            component={PrivacyPolicy as any}
+                        />
+                        <Route
+                            exact={true}
+                            path={WebsitePaths.TermsOfService}
+                            component={TermsOfService as any}
+                        />
+                        <Route exact={true} path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
+                        <Route exact={true} path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
+                        <Route exact={true} path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
+                        <Route exact={true} path={WebsitePaths.AboutJobs} component={NextAboutJobs as any} />
+                        {/*
                                   Note(ez): We remove/replace all old routes with next routes
                                   once we're ready to put a ring on it. for now let's keep em there for reference
                                 */}
-                                <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
-                                <Route path={WebsitePaths.Portal} component={LazyPortal} />
-                                <Route path={WebsitePaths.Wiki} component={Wiki as any} />
-                                <Route
-                                    path={`${WebsitePaths.ZeroExJs}/:version?`}
-                                    component={LazyZeroExJSDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.ContractWrappers}/:version?`}
-                                    component={LazyContractWrappersDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Migrations}/:version?`}
-                                    component={LazyMigrationsDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Connect}/:version?`}
-                                    component={LazyConnectDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.SolCompiler}/:version?`}
-                                    component={LazySolCompilerDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.SolCoverage}/:version?`}
-                                    component={LazySolCoverageDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.SolTrace}/:version?`}
-                                    component={LazySolTraceDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.SolProfiler}/:version?`}
-                                    component={LazySolProfilerDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.JSONSchemas}/:version?`}
-                                    component={LazyJSONSchemasDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Subproviders}/:version?`}
-                                    component={LazySubprovidersDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.OrderUtils}/:version?`}
-                                    component={LazyOrderUtilsDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.Web3Wrapper}/:version?`}
-                                    component={LazyWeb3WrapperDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.SmartContracts}/:version?`}
-                                    component={LazySmartContractsDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.EthereumTypes}/:version?`}
-                                    component={LazyEthereumTypesDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.AssetBuyer}/:version?`}
-                                    component={LazyAssetBuyerDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
-                                    component={LazyAssetSwapperDocumentation}
-                                />
-                                <Route path={`${WebsitePaths.Docs}/:type/:page`} component={DocsPage as any} />
-                                <Route exact={true} path={WebsitePaths.DocsCoreConcepts} component={DocsPage as any} />
-                                <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
-                                <Route exact={true} path={WebsitePaths.DocsTools} component={DocsTools as any} />
-                                <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />
-                                {/* Legacy endpoints */}
-                                <Route
-                                    path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
-                                    component={LazyZeroExJSDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
-                                    component={LazyWeb3WrapperDocumentation}
-                                />
-                                <Route
-                                    path={`${WebsiteLegacyPaths.Deployer}/:version?`}
-                                    component={LazySolCompilerDocumentation}
-                                />
-                                <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
-                                <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
-                                <Route component={NotFound as any} />
-                            </Switch>
-                    </Provider>
-                </MuiThemeProvider>
+                        <Redirect from="/otc" to={`${WebsitePaths.Portal}`} />
+                        <Route path={WebsitePaths.Portal} component={LazyPortal} />
+                        <Route path={WebsitePaths.FAQ} component={FAQ as any} />
+                        <Route path={WebsitePaths.Wiki} component={Wiki as any} />
+                        <Route path={`${WebsitePaths.ZeroExJs}/:version?`} component={LazyZeroExJSDocumentation} />
+                        <Route
+                            path={`${WebsitePaths.ContractWrappers}/:version?`}
+                            component={LazyContractWrappersDocumentation}
+                        />
+                        <Route path={`${WebsitePaths.Migrations}/:version?`} component={LazyMigrationsDocumentation} />
+                        <Route
+                            path={`${WebsitePaths.OrderWatcher}/:version?`}
+                            component={LazyOrderWatcherDocumentation}
+                        />
+                        <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
+                        <Route
+                            path={`${WebsitePaths.SolCompiler}/:version?`}
+                            component={LazySolCompilerDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.SolCoverage}/:version?`}
+                            component={LazySolCoverageDocumentation}
+                        />
+                        <Route path={`${WebsitePaths.SolTrace}/:version?`} component={LazySolTraceDocumentation} />
+                        <Route
+                            path={`${WebsitePaths.SolProfiler}/:version?`}
+                            component={LazySolProfilerDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.JSONSchemas}/:version?`}
+                            component={LazyJSONSchemasDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.Subproviders}/:version?`}
+                            component={LazySubprovidersDocumentation}
+                        />
+                        <Route path={`${WebsitePaths.OrderUtils}/:version?`} component={LazyOrderUtilsDocumentation} />
+                        <Route
+                            path={`${WebsitePaths.Web3Wrapper}/:version?`}
+                            component={LazyWeb3WrapperDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.SmartContracts}/:version?`}
+                            component={LazySmartContractsDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.EthereumTypes}/:version?`}
+                            component={LazyEthereumTypesDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.AssetBuyer}/:version?`}
+                            component={LazyAssetBuyerDocumentation}
+                        />
+                        <Route
+                            path={`${WebsitePaths.AssetSwapperDocs}/:version?`}
+                            component={LazyAssetSwapperDocumentation}
+                        />
+                        <Route exact={true} path={WebsitePaths.Docs} component={DocsHome as any} />
+                        <Route exact={true} path={WebsitePaths.DocsGuides} component={DocsGuides as any} />
+                        <Route exact={true} path={WebsitePaths.DocsTools} component={DocsTools as any} />
+                        <Route path={`${WebsitePaths.Docs}/:type/:page?/:version?`} component={DocsPage as any} />
+
+                        {/* Legacy endpoints */}
+                        <Route
+                            path={`${WebsiteLegacyPaths.ZeroExJs}/:version?`}
+                            component={LazyZeroExJSDocumentation}
+                        />
+                        <Route
+                            path={`${WebsiteLegacyPaths.Web3Wrapper}/:version?`}
+                            component={LazyWeb3WrapperDocumentation}
+                        />
+                        <Route
+                            path={`${WebsiteLegacyPaths.Deployer}/:version?`}
+                            component={LazySolCompilerDocumentation}
+                        />
+                        <Redirect from={WebsiteLegacyPaths.Jobs} to={WebsitePaths.AboutJobs} />
+                        <Redirect from={WebsitePaths.Careers} to={WebsitePaths.AboutJobs} />
+                        <Route component={NotFound as any} />
+                    </Switch>
+                </Provider>
+            </MuiThemeProvider>
         </Router>
     </>,
     document.getElementById('app'),

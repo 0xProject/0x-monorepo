@@ -1,5 +1,5 @@
 export const docs = {
-    scrollDuration: 500,
+    scrollDuration: 0,
     headerOffset: 116,
     marginBottom: '1.875rem',
 };

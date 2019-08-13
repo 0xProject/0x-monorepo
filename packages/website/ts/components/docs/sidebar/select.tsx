@@ -55,11 +55,16 @@ const Wrapper = styled.div`
 `;
 
 const Container = styled.div`
-    border: 1px solid ${colors.brandDark};
+    border: 1px solid #e3e3e3;
     border-radius: 4px;
     display: inline-block;
     margin-left: 12px;
     position: relative;
+
+    transition: all 250ms ease-in-out;
+    &:hover {
+        border-color: ${colors.brandDark};
+    }
 
     svg {
         pointer-events: none;
@@ -72,7 +77,7 @@ const Container = styled.div`
 
 const StyledSelect = styled.select`
     appearance: none;
-    background-color: #fff;
+    background-color: transparent;
     border: none;
     cursor: pointer;
     outline: none;

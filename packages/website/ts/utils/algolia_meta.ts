@@ -1,13 +1,15 @@
+// @TODO: Fix all descriptions!
 export const meta: { [key: string]: any } = {
     // Api explorer
     'api-explorer': {
         title: '0x API Explorer',
-        // @TODO: adjust api explorer meta here
+        path: 'api-explorer/index.mdx',
     },
     // Core concepts
     'core-concepts': {
         title: '0x Core Concepts',
         subtitle: "Learn all the core concepts you'll need to build effectively on 0x",
+        path: 'core-concepts/index.mdx',
     },
     // Guides
     'build-a-relayer': {
@@ -16,6 +18,7 @@ export const meta: { [key: string]: any } = {
         tags: ['Relayer', 'Trader', 'Protocol Developer'],
         topics: ['Coordinator Model', 'Mesh'],
         difficulty: 'Advanced',
+        path: 'guides/build-a-relayer.mdx',
     },
 
     'develop-on-ethereum': {
@@ -44,7 +47,6 @@ export const meta: { [key: string]: any } = {
     },
     // Tools
     'asset-buyer': {
-        // @TODO: Fix description
         title: 'Asset buyer',
         description: '',
         topics: ['Mesh'],
@@ -53,9 +55,10 @@ export const meta: { [key: string]: any } = {
         isFeatured: true,
         tags: ['Relayer'],
         type: 'Docker images',
+
+        path: 'tools/@0x/asset-buyer/v6.1.11/reference.mdx',
     },
     'ethereum-types': {
-        // @TODO: Fix description
         title: 'Ethereum types',
         description: '',
         topics: ['Mesh'],
@@ -64,5 +67,7 @@ export const meta: { [key: string]: any } = {
         isFeatured: true,
         tags: ['Protocol developer'],
         type: 'Command-line tools',
+
+        path: 'tools/ethereum-types/v2.1.4/reference.mdx',
     },
 };
