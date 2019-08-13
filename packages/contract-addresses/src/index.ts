@@ -44,7 +44,7 @@ const networkToAddresses: { [networkId: number]: ContractAddresses } = {
         multiAssetProxy: '0xef701d5389ae74503d633396c4d654eabedc9d78',
         staticCallProxy: '0x3517b88c19508c08650616019062b898ab65ed29',
         erc1155Proxy: '0x7eefbd48fd63d441ec7435d024ec7c5131019add',
-        devUtils: NULL_ADDRESS,
+        devUtils: '0x92d9a4d50190ae04e03914db2ee650124af844e6',
     },
     3: {
         erc20Proxy: '0xb1408f4c245a23c31b98d2c626777d4c0d766caa',
