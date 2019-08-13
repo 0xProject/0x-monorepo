@@ -31,7 +31,7 @@ import { Paragraph } from 'ts/components/text';
 
 import { docs } from 'ts/style/docs';
 
-import { meta } from 'ts/utils/algolia_meta';
+import meta from 'ts/utils/algolia_meta.json';
 
 interface IDocsPageProps extends RouteComponentProps<any> {}
 interface IDocsPageState {
@@ -52,8 +52,8 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     const { page, type, version } = props.match.params;
     const { hash } = props.location;
     // For api explorer / core-concepts the url does not include the page, i.e. it's only 'docs/core-concepts'
-    const key = page ? page : type;
-
+    const key: string = page ? page : type;
+    // @ts-ignore
     const { path, subtitle, title, versions } = meta[key];
 
     React.useEffect(() => {
