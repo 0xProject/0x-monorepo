@@ -32,6 +32,7 @@ import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxy
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
 import * as TestLibExchangeRichErrorDecoder from '../generated-artifacts/TestLibExchangeRichErrorDecoder.json';
 import * as TestSignatureValidator from '../generated-artifacts/TestSignatureValidator.json';
+import * as TestTransactions from '../generated-artifacts/TestTransactions.json';
 import * as TestValidatorWallet from '../generated-artifacts/TestValidatorWallet.json';
 import * as TestWrapperFunctions from '../generated-artifacts/TestWrapperFunctions.json';
 import * as Whitelist from '../generated-artifacts/Whitelist.json';
@@ -64,6 +65,7 @@ export const artifacts = {
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
     TestSignatureValidator: TestSignatureValidator as ContractArtifact,
+    TestTransactions: TestTransactions as ContractArtifact,
     TestValidatorWallet: TestValidatorWallet as ContractArtifact,
     TestWrapperFunctions: TestWrapperFunctions as ContractArtifact,
 };
