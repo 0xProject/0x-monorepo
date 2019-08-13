@@ -1,6 +1,5 @@
 import { BigNumber, WSClient } from '@0x/mesh-rpc-client';
 import { SERVER_PORT, setupServerAsync, stopServer } from '@0x/mesh-rpc-client/lib/test/utils/mock_ws_server';
-import 'mocha';
 import * as sinon from 'sinon';
 
 import { MeshOrderProvider } from '../../src';
@@ -12,6 +11,8 @@ import { createOrder } from '../utils';
 describe('MeshOrderProvider', () => {
     let orderStore: OrderStore;
     let provider: BaseOrderProvider;
+    const stubs: sinon.SinonStub[] = [];
+
     const websocketEndpoint = `ws://localhost:${SERVER_PORT}`;
     const makerAssetData = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359';
     const takerAssetData = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
@@ -62,14 +63,16 @@ describe('MeshOrderProvider', () => {
     let connection: any;
     afterEach(() => {
         void provider.destroyAsync();
-        sinon.restore();
+        stubs.forEach(s => s.restore());
         stopServer();
     });
     beforeEach(async () => {
         orderStore = new OrderStore();
-        sinon
-            .stub(WSClient.prototype as any, '_startInternalLivenessCheckAsync')
-            .callsFake(async () => Promise.resolve());
+        stubs.push(
+            sinon
+                .stub(WSClient.prototype as any, '_startInternalLivenessCheckAsync')
+                .callsFake(async () => Promise.resolve()),
+        );
     });
     describe('#createSubscriptionForAssetPairAsync', () => {
         beforeEach(async () => {
@@ -94,9 +97,11 @@ describe('MeshOrderProvider', () => {
             const getOrdersStub = sinon
                 .stub(WSClient.prototype, 'getOrdersAsync')
                 .callsFake(async () => Promise.resolve([]));
+            stubs.push(getOrdersStub);
             const subscriptionStub = sinon
                 .stub(WSClient.prototype, 'subscribeToOrdersAsync')
                 .callsFake(async () => Promise.resolve('suscriptionId'));
+            stubs.push(subscriptionStub);
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             expect(getOrdersStub.callCount).toBe(1);
@@ -104,9 +109,12 @@ describe('MeshOrderProvider', () => {
         });
         test('fetches once when the same subscription is called', async () => {
             const stub = sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([]));
-            sinon
-                .stub(WSClient.prototype, 'subscribeToOrdersAsync')
-                .callsFake(async () => Promise.resolve(subscriptionId));
+            stubs.push(stub);
+            stubs.push(
+                sinon
+                    .stub(WSClient.prototype, 'subscribeToOrdersAsync')
+                    .callsFake(async () => Promise.resolve(subscriptionId)),
+            );
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
@@ -120,10 +128,14 @@ describe('MeshOrderProvider', () => {
                 signedOrder: order.order,
                 fillableTakerAssetAmount: new BigNumber(1),
             };
-            sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([orderInfo]));
-            sinon
-                .stub(WSClient.prototype, 'subscribeToOrdersAsync')
-                .callsFake(async () => Promise.resolve(subscriptionId));
+            stubs.push(
+                sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([orderInfo])),
+            );
+            stubs.push(
+                sinon
+                    .stub(WSClient.prototype, 'subscribeToOrdersAsync')
+                    .callsFake(async () => Promise.resolve(subscriptionId)),
+            );
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
@@ -131,7 +143,7 @@ describe('MeshOrderProvider', () => {
         });
         test('stores the orders from a subscription update', async () => {
             const eventResponse = JSON.stringify(addedResponse);
-            sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([]));
+            stubs.push(sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([])));
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(eventResponse);
@@ -142,7 +154,7 @@ describe('MeshOrderProvider', () => {
         test('stores removed orders on a subscription update', async () => {
             const added = JSON.stringify(addedResponse);
             const removed = JSON.stringify(removedResponse);
-            sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([]));
+            stubs.push(sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([])));
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             connection.sendUTF(added);
@@ -193,6 +205,8 @@ describe('MeshOrderProvider', () => {
             const addOrdersStub = sinon
                 .stub(WSClient.prototype, 'addOrdersAsync')
                 .callsFake(async () => Promise.resolve({ accepted: [], rejected: [] }));
+            stubs.push(getOrdersStub);
+            stubs.push(addOrdersStub);
             provider = new MeshOrderProvider(
                 {
                     websocketEndpoint,
@@ -228,10 +242,14 @@ describe('MeshOrderProvider', () => {
                 signedOrder: order.order,
                 fillableTakerAssetAmount: new BigNumber(1),
             };
-            sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([orderInfo]));
-            sinon
-                .stub(WSClient.prototype, 'subscribeToOrdersAsync')
-                .callsFake(async () => Promise.resolve(subscriptionId));
+            stubs.push(
+                sinon.stub(WSClient.prototype, 'getOrdersAsync').callsFake(async () => Promise.resolve([orderInfo])),
+            );
+            stubs.push(
+                sinon
+                    .stub(WSClient.prototype, 'subscribeToOrdersAsync')
+                    .callsFake(async () => Promise.resolve(subscriptionId)),
+            );
             provider = new MeshOrderProvider({ websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             const assetPairs = await provider.getAvailableAssetDatasAsync();

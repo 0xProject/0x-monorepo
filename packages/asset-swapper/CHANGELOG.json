@@ -1,5 +1,14 @@
 [
     {
+        "version": "2.0.0",
+        "changes": [
+            {
+                "note": "AssetSwapper to use `@0x/orderbook` to fetch and subscribe to order updates",
+                "pr": 2056 
+            }
+        ]
+    },
+    {
         "timestamp": 1567521715,
         "version": "1.0.3",
         "changes": [

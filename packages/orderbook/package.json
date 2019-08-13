@@ -17,6 +17,7 @@
         "test": "jest",
         "test:coverage": "jest --coverage",
         "build": "tsc -p tsconfig.json",
+        "build:ci": "yarn build",
         "watch": "tsc -w -p tsconfig.json",
         "prettier": "prettier --write 'src/**/*.ts' --config .prettierrc",
         "test:circleci": "yarn test:coverage",
@@ -28,16 +29,13 @@
         "@0x/tslint-config": "^3.0.1",
         "@0x/types": "^2.4.1",
         "@types/jest": "^24.0.17",
-        "@types/mocha": "^5.2.7",
-        "@types/sinon": "^7.0.13",
-        "@types/websocket": "^0.0.40",
+        "@types/sinon": "^2.2.2",
+        "@types/websocket": "^0.0.39",
         "jest": "^24.8.0",
-        "mocha": "^6.2.0",
-        "prettier": "^1.18.2",
-        "sinon": "^7.4.1",
+        "sinon": "^4.0.0",
         "ts-jest": "^24.0.2",
         "shx": "^0.2.2",
-        "typescript": "^3.5.3"
+        "typescript": "^3.0.1"
     },
     "dependencies": {
         "@0x/assert": "^2.1.3",

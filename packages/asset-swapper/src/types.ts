@@ -269,21 +269,13 @@ export interface SwapQuoteInfo {
 }
 
 /**
- * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
  * shouldDisableRequestingFeeOrders: If set to true, requesting a swapQuote will not perform any computation or requests for fees.
  * slippagePercentage: The percentage buffer to add to account for slippage. Affects max ETH price estimates. Defaults to 0.2 (20%).
  */
 export interface SwapQuoteRequestOpts {
-    shouldForceOrderRefresh: boolean;
     shouldDisableRequestingFeeOrders: boolean;
     slippagePercentage: number;
 }
-
-/*
- * Options for checking liquidity
- * shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
- */
-export type LiquidityRequestOpts = Pick<SwapQuoteRequestOpts, 'shouldForceOrderRefresh'>;
 
 /**
  * networkId: The ethereum network id. Defaults to 1 (mainnet).
