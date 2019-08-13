@@ -1,5 +1,6 @@
 import { assert as sharedAssert } from '@0x/assert';
 import { schemas } from '@0x/json-schemas';
+import { Orderbook } from '@0x/orderbook';
 import { MarketOperation, SignedOrder } from '@0x/types';
 import * as _ from 'lodash';
 
@@ -69,7 +70,7 @@ export const assert = {
         sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.takerTokenAmount);
         sharedAssert.isBigNumber(`${variableName}.takerTokenAmount`, swapQuoteInfo.makerTokenAmount);
     },
-    isValidOrderProvider(variableName: string, orderFetcher: OrderProvider): void {
+    isValidOrderProvider(variableName: string, orderFetcher: Orderbook): void {
         sharedAssert.isFunction(`${variableName}.getOrdersAsync`, orderFetcher.getOrdersAsync);
     },
     isValidOrderProviderRequest(variableName: string, orderFetcherRequest: OrderProviderRequest): void {

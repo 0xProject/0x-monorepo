@@ -1,6 +1,7 @@
 import { orderFactory } from '@0x/order-utils/lib/src/order_factory';
+import { Orderbook } from '@0x/orderbook';
 import { Web3ProviderEngine } from '@0x/subproviders';
-import { SignedOrder } from '@0x/types';
+import { AssetPairsItem, SignedOrder } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
@@ -9,14 +10,10 @@ import * as TypeMoq from 'typemoq';
 
 import { SwapQuoter } from '../src';
 import { constants } from '../src/constants';
-import { LiquidityForAssetData, OrderProvider, OrdersAndFillableAmounts } from '../src/types';
+import { LiquidityForAssetData, OrdersAndFillableAmounts } from '../src/types';
 
 import { chaiSetup } from './utils/chai_setup';
-import {
-    mockAvailableMakerAssetDatas,
-    mockedSwapQuoterWithOrdersAndFillableAmounts,
-    orderProviderMock,
-} from './utils/mocks';
+import { mockAvailableAssetDatas, mockedSwapQuoterWithOrdersAndFillableAmounts, orderbookMock } from './utils/mocks';
 
 chaiSetup.configure();
 const expect = chai.expect;
@@ -28,20 +25,54 @@ const TOKEN_DECIMALS = 18;
 const DAI_ASSET_DATA = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359"';
 const WETH_ASSET_DATA = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
 const WETH_DECIMALS = constants.ETHER_TOKEN_DECIMALS;
+const ZERO = new BigNumber(0);
 
 const baseUnitAmount = (unitAmount: number, decimals = TOKEN_DECIMALS): BigNumber => {
     return Web3Wrapper.toBaseUnitAmount(new BigNumber(unitAmount), decimals);
 };
 
+const assetsToAssetPairItems = (makerAssetData: string, takerAssetData: string): AssetPairsItem[] => {
+    return [
+        {
+            assetDataA: {
+                assetData: makerAssetData,
+                minAmount: ZERO,
+                maxAmount: ZERO,
+                precision: TOKEN_DECIMALS,
+            },
+            assetDataB: {
+                assetData: takerAssetData,
+                minAmount: ZERO,
+                maxAmount: ZERO,
+                precision: TOKEN_DECIMALS,
+            },
+        },
+        {
+            assetDataA: {
+                assetData: takerAssetData,
+                minAmount: ZERO,
+                maxAmount: ZERO,
+                precision: TOKEN_DECIMALS,
+            },
+            assetDataB: {
+                assetData: makerAssetData,
+                minAmount: ZERO,
+                maxAmount: ZERO,
+                precision: TOKEN_DECIMALS,
+            },
+        },
+    ];
+};
+
 const expectLiquidityResult = async (
     web3Provider: Web3ProviderEngine,
-    orderProvider: OrderProvider,
+    orderbook: Orderbook,
     ordersAndFillableAmounts: OrdersAndFillableAmounts,
     expectedLiquidityResult: LiquidityForAssetData,
 ) => {
     const mockedSwapQuoter = mockedSwapQuoterWithOrdersAndFillableAmounts(
         web3Provider,
-        orderProvider,
+        orderbook,
         FAKE_MAKER_ASSET_DATA,
         WETH_ASSET_DATA,
         ordersAndFillableAmounts,
@@ -57,16 +88,16 @@ const expectLiquidityResult = async (
 describe('SwapQuoter', () => {
     describe('getLiquidityForMakerTakerAssetDataPairAsync', () => {
         const mockWeb3Provider = TypeMoq.Mock.ofType(Web3ProviderEngine);
-        const mockOrderProvider = orderProviderMock();
+        const mockOrderbook = orderbookMock();
 
         beforeEach(() => {
             mockWeb3Provider.reset();
-            mockOrderProvider.reset();
+            mockOrderbook.reset();
         });
 
         afterEach(() => {
             mockWeb3Provider.verifyAll();
-            mockOrderProvider.verifyAll();
+            mockOrderbook.verifyAll();
         });
 
         describe('validation', () => {
@@ -94,9 +125,9 @@ describe('SwapQuoter', () => {
 
         describe('asset pair not supported', () => {
             it('should return 0s when no asset pair are supported', async () => {
-                mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, []);
+                mockAvailableAssetDatas(mockOrderbook, []);
 
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
+                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,
@@ -108,9 +139,9 @@ describe('SwapQuoter', () => {
             });
 
             it('should return 0s when only other asset pair supported', async () => {
-                mockAvailableMakerAssetDatas(mockOrderProvider, FAKE_TAKER_ASSET_DATA, [DAI_ASSET_DATA]);
+                mockAvailableAssetDatas(mockOrderbook, assetsToAssetPairItems(FAKE_MAKER_ASSET_DATA, DAI_ASSET_DATA));
 
-                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderProvider.object);
+                const swapQuoter = new SwapQuoter(mockWeb3Provider.object, mockOrderbook.object);
                 const liquidityResult = await swapQuoter.getLiquidityForMakerTakerAssetDataPairAsync(
                     FAKE_MAKER_ASSET_DATA,
                     FAKE_TAKER_ASSET_DATA,
@@ -134,7 +165,7 @@ describe('SwapQuoter', () => {
             });
 
             beforeEach(() => {
-                mockAvailableMakerAssetDatas(mockOrderProvider, WETH_ASSET_DATA, [FAKE_MAKER_ASSET_DATA]);
+                mockAvailableAssetDatas(mockOrderbook, assetsToAssetPairItems(WETH_ASSET_DATA, FAKE_MAKER_ASSET_DATA));
             });
 
             it('should return 0s when no orders available', async () => {
@@ -148,7 +179,7 @@ describe('SwapQuoter', () => {
                 };
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
-                    mockOrderProvider.object,
+                    mockOrderbook.object,
                     ordersAndFillableAmounts,
                     expectedResult,
                 );
@@ -171,7 +202,7 @@ describe('SwapQuoter', () => {
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
-                    mockOrderProvider.object,
+                    mockOrderbook.object,
                     ordersAndFillableAmounts,
                     expectedResult,
                 );
@@ -190,7 +221,7 @@ describe('SwapQuoter', () => {
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
-                    mockOrderProvider.object,
+                    mockOrderbook.object,
                     ordersAndFillableAmounts,
                     expectedResult,
                 );
@@ -209,7 +240,7 @@ describe('SwapQuoter', () => {
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
-                    mockOrderProvider.object,
+                    mockOrderbook.object,
                     ordersAndFillableAmounts,
                     expectedResult,
                 );
@@ -228,7 +259,7 @@ describe('SwapQuoter', () => {
 
                 await expectLiquidityResult(
                     mockWeb3Provider.object,
-                    mockOrderProvider.object,
+                    mockOrderbook.object,
                     ordersAndFillableAmounts,
                     expectedResult,
                 );

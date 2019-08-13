@@ -53,10 +53,3 @@ export interface MeshOrderProviderOpts {
     // Additional options to configure the Mesh client, e.g reconnectAfter
     wsOpts?: WSOpts;
 }
-
-export interface OrderProviderRequest {
-    // The assetData representing the desired maker asset
-    makerAssetData: string;
-    // The assetData representing the desired taker asset
-    takerAssetData: string;
-}

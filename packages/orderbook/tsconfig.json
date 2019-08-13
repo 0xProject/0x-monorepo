@@ -1,17 +1,8 @@
 {
+    "extends": "../../tsconfig",
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "esnext",
         "outDir": "lib",
-        "strict": true,
-        "noUnusedLocals": true,
-        "resolveJsonModule": true,
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "sourceMap": false,
-        "declaration": true,
-        "typeRoots": ["./node_modules/@0x/typescript-typings/types", "./node_modules/@types"],
-        "noUnusedParameters": true
+        "rootDir": "."
     },
     "include": ["src", "test"]
 }

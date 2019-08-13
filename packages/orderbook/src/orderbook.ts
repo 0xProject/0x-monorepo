@@ -4,6 +4,7 @@ import { AssetPairsItem, SignedOrder } from '@0x/types';
 
 import { BaseOrderProvider } from './order_provider/base_order_provider';
 import { MeshOrderProvider } from './order_provider/mesh_order_provider';
+import { ProvidedOrdersOrderProvider } from './order_provider/provider_orders_order_provider';
 import { SRAPollingOrderProvider } from './order_provider/sra_polling_order_provider';
 import { SRAWebsocketOrderProvider } from './order_provider/sra_websocket_order_provider';
 import { OrderStore } from './order_store';
@@ -17,6 +18,15 @@ import {
 export class Orderbook {
     private readonly _orderProvider: BaseOrderProvider;
     private readonly _orderStore: OrderStore;
+    /**
+     * Creates an Orderbook with the provided orders. This provider simply stores the
+     * orders and allows querying. No validation or subscriptions occur.
+     * @param orders the set of SignedOrders
+     */
+    public static getOrderbookForProvidedOrders(orders: SignedOrder[]): Orderbook {
+        const orderStore = new OrderStore();
+        return new Orderbook(new ProvidedOrdersOrderProvider(orders, orderStore), orderStore);
+    }
     /**
      * Creates an Orderbook with the SRA Websocket Provider. This Provider fetches orders via
      * the SRA http endpoint and then subscribes to the asset pair for future updates.
