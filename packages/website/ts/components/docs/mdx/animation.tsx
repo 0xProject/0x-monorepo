@@ -1,6 +1,6 @@
 import * as React from 'react';
-// @ts-ignore
-const AnimationLoader = React.lazy(() =>
+
+const AnimationLoader = React.lazy(async () =>
     import('ts/components/docs/animations/animation_loader').then(({ AnimationLoader }) => ({
         default: AnimationLoader,
     })),
