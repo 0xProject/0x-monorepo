@@ -36,17 +36,14 @@ blockchainTests('LibOrder', env => {
         expirationTimeSeconds: constants.ZERO_AMOUNT,
     };
 
-    /**
-     * Tests the `_hashOrder()` function against a reference hash.
-     */
-    async function testHashOrderAsync(order: Order): Promise<void> {
-        const typedData = eip712Utils.createOrderTypedData(order);
-        const expectedHash = '0x'.concat(
-            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
+    before(async () => {
+        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibs,
+            env.provider,
+            env.txDefaults,
+            new BigNumber(CHAIN_ID),
         );
-        const actualHash = await libsContract.hashOrder.callAsync(order);
-        expect(actualHash).to.be.eq(expectedHash);
-    }
+    });
 
     /**
      * Tests the `getOrderHash()` function against a reference hash.
@@ -56,15 +53,6 @@ blockchainTests('LibOrder', env => {
         const actualHash = await libsContract.getOrderHash.callAsync(order);
         expect(actualHash).to.be.eq(expectedHash);
     }
-
-    before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
-            env.provider,
-            env.txDefaults,
-            new BigNumber(CHAIN_ID),
-        );
-    });
 
     describe('getOrderHash', () => {
         it('should correctly hash an empty order', async () => {
@@ -100,6 +88,18 @@ blockchainTests('LibOrder', env => {
             });
         });
     });
+
+    /**
+     * Tests the `_hashOrder()` function against a reference hash.
+     */
+    async function testHashOrderAsync(order: Order): Promise<void> {
+        const typedData = eip712Utils.createOrderTypedData(order);
+        const expectedHash = '0x'.concat(
+            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
+        );
+        const actualHash = await libsContract.hashOrder.callAsync(order);
+        expect(actualHash).to.be.eq(expectedHash);
+    }
 
     describe('hashOrder', () => {
         it('should correctly hash an empty order', async () => {

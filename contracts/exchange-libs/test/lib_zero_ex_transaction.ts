@@ -26,17 +26,14 @@ blockchainTests('LibZeroExTransaction', env => {
         },
     };
 
-    /**
-     * Tests the `_hashZeroExTransaction()` function against a reference hash.
-     */
-    async function testHashZeroExTransactionAsync(transaction: ZeroExTransaction): Promise<void> {
-        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
-        const expectedHash = '0x'.concat(
-            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
+    before(async () => {
+        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibs,
+            env.provider,
+            env.txDefaults,
+            new BigNumber(CHAIN_ID),
         );
-        const actualHash = await libsContract.hashZeroExTransaction.callAsync(transaction);
-        expect(actualHash).to.be.eq(expectedHash);
-    }
+    });
 
     /**
      * Tests the `getTransactionHash()` function against a reference hash.
@@ -47,15 +44,6 @@ blockchainTests('LibZeroExTransaction', env => {
         const actualHash = await libsContract.getTransactionHash.callAsync(transaction);
         expect(actualHash).to.be.eq(expectedHash);
     }
-
-    before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
-            env.provider,
-            env.txDefaults,
-            new BigNumber(CHAIN_ID),
-        );
-    });
 
     describe('getTransactionHash', () => {
         it('should correctly hash an empty transaction', async () => {
@@ -82,12 +70,24 @@ blockchainTests('LibZeroExTransaction', env => {
         });
     });
 
+    /**
+     * Tests the `_hashZeroExTransaction()` function against a reference hash.
+     */
+    async function testHashZeroExTransactionAsync(transaction: ZeroExTransaction): Promise<void> {
+        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
+        const expectedHash = '0x'.concat(
+            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
+        );
+        const actualHash = await libsContract.hashZeroExTransaction.callAsync(transaction);
+        expect(actualHash).to.be.eq(expectedHash);
+    }
+
     describe('hashOrder', () => {
-        it('should correctly hash an empty order', async () => {
+        it('should correctly hash an empty transaction', async () => {
             await testHashZeroExTransactionAsync(EMPTY_TRANSACTION);
         });
 
-        it('should correctly hash a non-empty order', async () => {
+        it('should correctly hash a non-empty transaction', async () => {
             await testHashZeroExTransactionAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),

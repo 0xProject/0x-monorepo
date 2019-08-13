@@ -1,6 +1,4 @@
 import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { eip712Utils, orderHashUtils } from '@0x/order-utils';
-import { Order } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
@@ -13,7 +11,6 @@ blockchainTests('LibEIP712ExchangeDomain', env => {
     const CHAIN_ID = 1337;
 
     // Random generator functions
-    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomHash = () => hexRandom(constants.WORD_LENGTH);
 
     /**
