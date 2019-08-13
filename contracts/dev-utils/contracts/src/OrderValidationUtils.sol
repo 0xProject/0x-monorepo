@@ -63,7 +63,6 @@ contract OrderValidationUtils is
         address makerAddress = order.makerAddress;
         isValidSignature = _EXCHANGE.isValidOrderSignature(
             order,
-            makerAddress,
             signature
         );
 
@@ -163,7 +162,7 @@ contract OrderValidationUtils is
     /// @return The amount of the asset tranferable by the owner.
     /// NOTE: If the `assetData` encodes data for multiple assets, the `transferableAssetAmount`
     /// will represent the amount of times the entire `assetData` can be transferred. To calculate
-    /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by 
+    /// the total individual transferable amounts, this scaled `transferableAmount` must be multiplied by
     /// the individual asset amounts located within the `assetData`.
     function getTransferableAssetAmount(address ownerAddress, bytes memory assetData)
         public

@@ -100,9 +100,7 @@ contract MixinCoordinatorApprovalVerifier is
             selector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
             selector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR ||
             selector == MARKET_BUY_ORDERS_SELECTOR ||
-            selector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR ||
-            selector == MARKET_SELL_ORDERS_SELECTOR ||
-            selector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
+            selector == MARKET_SELL_ORDERS_SELECTOR
         ) {
             // Decode all orders
             // solhint-disable indent

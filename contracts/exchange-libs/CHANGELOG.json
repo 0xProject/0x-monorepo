@@ -73,6 +73,10 @@
             {
                 "note": "Fix coverage hooks.",
                 "pr": 2031
+            },
+            {
+                "note": "Regenerate selectors.",
+                "pr": 2042
             }
         ]
     },

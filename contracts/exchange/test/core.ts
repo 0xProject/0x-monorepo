@@ -33,7 +33,7 @@ import {
 import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, LibMathRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { RevertReason, SignatureType, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils, ReentrancyGuardRevertErrors, StringRevertError } from '@0x/utils';
+import { BigNumber, providerUtils, StringRevertError } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as chai from 'chai';
 import { LogWithDecodedArgs } from 'ethereum-types';
@@ -42,11 +42,9 @@ import * as _ from 'lodash';
 import { Erc1155Wrapper } from '../../erc1155/lib/src';
 import {
     artifacts,
-    constants as exchangeConstants,
     ExchangeCancelEventArgs,
     ExchangeContract,
     ExchangeWrapper,
-    ReentrantERC20TokenContract,
     TestValidatorWalletContract,
     ValidatorWalletAction,
     ValidatorWalletDataType,
@@ -69,7 +67,6 @@ describe('Exchange core', () => {
     let feeToken: DummyERC20TokenContract;
     let erc721Token: DummyERC721TokenContract;
     let noReturnErc20Token: DummyNoReturnERC20TokenContract;
-    let reentrantErc20Token: ReentrantERC20TokenContract;
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
@@ -144,12 +141,6 @@ describe('Exchange core', () => {
         );
         validatorWallet = await TestValidatorWalletContract.deployFrom0xArtifactAsync(
             artifacts.TestValidatorWallet,
-            provider,
-            txDefaults,
-            exchange.address,
-        );
-        reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.ReentrantERC20Token,
             provider,
             txDefaults,
             exchange.address,
@@ -237,22 +228,6 @@ describe('Exchange core', () => {
             erc20Balances = await erc20Wrapper.getBalancesAsync();
             signedOrder = await orderFactory.newSignedOrderAsync();
         });
-
-        const reentrancyTest = (functionNames: string[]) => {
-            _.forEach(functionNames, (functionName: string, functionId: number) => {
-                const description = `should not allow fillOrder to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: await assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                    });
-                    await reentrantErc20Token.setReentrantFunction.awaitTransactionSuccessAsync(functionId);
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.fillOrderAsync(signedOrder, takerAddress);
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            });
-        };
-        describe('fillOrder reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
         describe('repeatable signature types', () => {
             beforeEach(async () => {

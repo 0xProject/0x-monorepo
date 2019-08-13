@@ -53,6 +53,10 @@
             {
                 "note": "Remove unused `RevertError` types.",
                 "pr": 1885
+            },
+            {
+                "note": "Add `ExchangeRevertErrors.SignatureErrorCode.InvalidSigner`.",
+                "pr": 2042
             }
         ]
     },

@@ -2,38 +2,25 @@ import { ERC20ProxyContract, ERC20Wrapper, ERC721ProxyContract, ERC721Wrapper } 
 import { DummyERC20TokenContract } from '@0x/contracts-erc20';
 import { DummyERC721TokenContract } from '@0x/contracts-erc721';
 import {
-    chaiSetup,
+    blockchainTests,
     constants,
+    describe,
     ERC20BalancesByOwner,
+    expect,
     getLatestBlockTimestampAsync,
     increaseTimeAndMineBlockAsync,
     OrderFactory,
-    provider,
-    txDefaults,
-    web3Wrapper,
 } from '@0x/contracts-test-utils';
-import { BlockchainLifecycle } from '@0x/dev-utils';
 import { assetDataUtils, ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
 import { FillResults, OrderStatus, SignedOrder } from '@0x/types';
-import { BigNumber, providerUtils, ReentrancyGuardRevertErrors } from '@0x/utils';
+import { BigNumber } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
-import * as chai from 'chai';
 import * as _ from 'lodash';
 
-import {
-    artifacts,
-    constants as exchangeConstants,
-    ExchangeContract,
-    ExchangeWrapper,
-    ReentrantERC20TokenContract,
-} from '../src';
-
-chaiSetup.configure();
-const expect = chai.expect;
-const blockchainLifecycle = new BlockchainLifecycle(web3Wrapper);
+import { artifacts, ExchangeContract, ExchangeWrapper } from '../src';
 
 // tslint:disable:no-unnecessary-type-assertion
-describe('Exchange wrappers', () => {
+blockchainTests.resets('Exchange wrappers', env => {
     let chainId: number;
     let makerAddress: string;
     let owner: string;
@@ -47,7 +34,6 @@ describe('Exchange wrappers', () => {
     let exchange: ExchangeContract;
     let erc20Proxy: ERC20ProxyContract;
     let erc721Proxy: ERC721ProxyContract;
-    let reentrantErc20Token: ReentrantERC20TokenContract;
 
     let exchangeWrapper: ExchangeWrapper;
     let erc20Wrapper: ERC20Wrapper;
@@ -70,18 +56,12 @@ describe('Exchange wrappers', () => {
     };
 
     before(async () => {
-        await blockchainLifecycle.startAsync();
-    });
-    after(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    before(async () => {
-        chainId = await providerUtils.getChainIdAsync(provider);
-        const accounts = await web3Wrapper.getAvailableAddressesAsync();
+        chainId = await env.getChainIdAsync();
+        const accounts = await env.getAccountAddressesAsync();
         const usedAddresses = ([owner, makerAddress, takerAddress, feeRecipientAddress] = _.slice(accounts, 0, 4));
 
-        erc20Wrapper = new ERC20Wrapper(provider, usedAddresses, owner);
-        erc721Wrapper = new ERC721Wrapper(provider, usedAddresses, owner);
+        erc20Wrapper = new ERC20Wrapper(env.provider, usedAddresses, owner);
+        erc721Wrapper = new ERC721Wrapper(env.provider, usedAddresses, owner);
 
         const numDummyErc20ToDeploy = 3;
         [erc20TokenA, erc20TokenB, feeToken] = await erc20Wrapper.deployDummyTokensAsync(
@@ -100,33 +80,20 @@ describe('Exchange wrappers', () => {
 
         exchange = await ExchangeContract.deployFrom0xArtifactAsync(
             artifacts.Exchange,
-            provider,
-            txDefaults,
+            env.provider,
+            env.txDefaults,
             new BigNumber(chainId),
         );
-        exchangeWrapper = new ExchangeWrapper(exchange, provider);
+        exchangeWrapper = new ExchangeWrapper(exchange, env.provider);
         await exchangeWrapper.registerAssetProxyAsync(erc20Proxy.address, owner);
         await exchangeWrapper.registerAssetProxyAsync(erc721Proxy.address, owner);
 
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc20Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-        await web3Wrapper.awaitTransactionSuccessAsync(
-            await erc721Proxy.addAuthorizedAddress.sendTransactionAsync(exchange.address, {
-                from: owner,
-            }),
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
-
-        reentrantErc20Token = await ReentrantERC20TokenContract.deployFrom0xArtifactAsync(
-            artifacts.ReentrantERC20Token,
-            provider,
-            txDefaults,
-            exchange.address,
-        );
+        await erc20Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
+        await erc721Proxy.addAuthorizedAddress.awaitTransactionSuccessAsync(exchange.address, {
+            from: owner,
+        });
 
         defaultMakerAssetAddress = erc20TokenA.address;
         defaultTakerAssetAddress = erc20TokenB.address;
@@ -148,33 +115,12 @@ describe('Exchange wrappers', () => {
         const privateKey = constants.TESTRPC_PRIVATE_KEYS[accounts.indexOf(makerAddress)];
         orderFactory = new OrderFactory(privateKey, defaultOrderParams);
     });
+
     beforeEach(async () => {
-        await blockchainLifecycle.startAsync();
         erc20Balances = await erc20Wrapper.getBalancesAsync();
     });
-    afterEach(async () => {
-        await blockchainLifecycle.revertAsync();
-    });
-    describe('fillOrKillOrder', () => {
-        const reentrancyTest = (functionNames: string[]) => {
-            for (const [functionId, functionName] of functionNames.entries()) {
-                const description = `should not allow fillOrKillOrder to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                    });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                    const tx = exchangeWrapper.fillOrKillOrderAsync(signedOrder, takerAddress);
-                    return expect(tx).to.revertWith(expectedError);
-                });
-            }
-        };
-        describe('fillOrKillOrder reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
 
+    describe('fillOrKillOrder', () => {
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
@@ -257,25 +203,6 @@ describe('Exchange wrappers', () => {
     });
 
     describe('fillOrderNoThrow', () => {
-        const reentrancyTest = (functionNames: string[]) => {
-            for (const [functionId, functionName] of functionNames.entries()) {
-                const description = `should not allow fillOrderNoThrow to reenter the Exchange contract via ${functionName}`;
-                it(description, async () => {
-                    const signedOrder = await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                    });
-                    await web3Wrapper.awaitTransactionSuccessAsync(
-                        await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                        constants.AWAIT_TRANSACTION_MINED_MS,
-                    );
-                    await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-                    const newBalances = await erc20Wrapper.getBalancesAsync();
-                    expect(erc20Balances).to.deep.equal(newBalances);
-                });
-            }
-        };
-        describe('fillOrderNoThrow reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
         it('should transfer the correct amounts', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync({
                 makerAssetAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(100), 18),
@@ -375,24 +302,19 @@ describe('Exchange wrappers', () => {
         it('should not change erc20Balances if maker allowances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
 
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                    from: makerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await erc20TokenA.approve.awaitTransactionSuccessAsync(erc20Proxy.address, new BigNumber(0), {
+                from: makerAddress,
+            });
             const fillResults = await exchange.fillOrderNoThrow.callAsync(
                 signedOrder,
                 signedOrder.takerAssetAmount,
                 signedOrder.signature,
                 { from: takerAddress },
             );
-            await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenA.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                    from: makerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
+            await erc20TokenA.approve.awaitTransactionSuccessAsync(
+                erc20Proxy.address,
+                constants.INITIAL_ERC20_ALLOWANCE,
+                { from: makerAddress },
             );
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
@@ -403,12 +325,9 @@ describe('Exchange wrappers', () => {
         it('should not change erc20Balances if taker allowances are too low to fill order', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
 
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, new BigNumber(0), {
-                    from: takerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await erc20TokenB.approve.awaitTransactionSuccessAsync(erc20Proxy.address, new BigNumber(0), {
+                from: takerAddress,
+            });
             const fillResults = await exchange.fillOrderNoThrow.callAsync(
                 signedOrder,
                 signedOrder.takerAssetAmount,
@@ -416,12 +335,9 @@ describe('Exchange wrappers', () => {
                 { from: takerAddress },
             );
             await exchangeWrapper.fillOrderNoThrowAsync(signedOrder, takerAddress);
-            await web3Wrapper.awaitTransactionSuccessAsync(
-                await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
-                    from: takerAddress,
-                }),
-                constants.AWAIT_TRANSACTION_MINED_MS,
-            );
+            await erc20TokenB.approve.sendTransactionAsync(erc20Proxy.address, constants.INITIAL_ERC20_ALLOWANCE, {
+                from: takerAddress,
+            });
             const newBalances = await erc20Wrapper.getBalancesAsync();
 
             expect(fillResults).to.deep.equal(nullFillResults);
@@ -559,25 +475,6 @@ describe('Exchange wrappers', () => {
         });
 
         describe('batchFillOrders', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow batchFillOrders to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.batchFillOrdersAsync([signedOrder], takerAddress);
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('batchFillOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
             it('should transfer the correct amounts', async () => {
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
@@ -645,26 +542,6 @@ describe('Exchange wrappers', () => {
         });
 
         describe('batchFillOrKillOrders', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow batchFillOrKillOrders to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.batchFillOrKillOrdersAsync([signedOrder], takerAddress);
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('batchFillOrKillOrders reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
             it('should transfer the correct amounts', async () => {
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
@@ -748,26 +625,6 @@ describe('Exchange wrappers', () => {
         });
 
         describe('batchFillOrdersNoThrow', async () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow batchFillOrdersNoThrow to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        await exchangeWrapper.batchFillOrdersNoThrowAsync([signedOrder], takerAddress);
-                        const newBalances = await erc20Wrapper.getBalancesAsync();
-                        expect(erc20Balances).to.deep.equal(newBalances);
-                    });
-                }
-            };
-            describe('batchFillOrdersNoThrow reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
             it('should transfer the correct amounts', async () => {
                 const makerAssetAddress = erc20TokenA.address;
                 const takerAssetAddress = erc20TokenB.address;
@@ -914,27 +771,6 @@ describe('Exchange wrappers', () => {
         });
 
         describe('marketSellOrders', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketSellOrders to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.marketSellOrdersAsync([signedOrder], takerAddress, {
-                            takerAssetFillAmount: signedOrder.takerAssetAmount,
-                        });
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('marketSellOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
             it('should stop when the entire takerAssetFillAmount is filled', async () => {
                 const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
                     signedOrders[1].takerAssetAmount.div(2),
@@ -947,167 +783,6 @@ describe('Exchange wrappers', () => {
                     { from: takerAddress },
                 );
                 await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const makerAssetFilledAmount = signedOrders[0].makerAssetAmount.plus(
-                    signedOrders[1].makerAssetAmount.dividedToIntegerBy(2),
-                );
-                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
-
-                expect(fillResults.makerAssetFilledAmount).to.bignumber.equal(makerAssetFilledAmount);
-                expect(fillResults.takerAssetFilledAmount).to.bignumber.equal(takerAssetFillAmount);
-                expect(fillResults.makerFeePaid).to.bignumber.equal(makerFee);
-                expect(fillResults.takerFeePaid).to.bignumber.equal(takerFee);
-
-                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFilledAmount),
-                );
-                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(takerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][feeToken.address].minus(makerFee),
-                );
-                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerAssetAddress].minus(takerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFilledAmount),
-                );
-                expect(newBalances[takerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][feeToken.address].minus(takerFee),
-                );
-                expect(newBalances[feeRecipientAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][feeToken.address].plus(makerFee.plus(takerFee)),
-                );
-            });
-
-            it('should fill all signedOrders if cannot fill entire takerAssetFillAmount', async () => {
-                const takerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                _.forEach(signedOrders, signedOrder => {
-                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultMakerAssetAddress
-                    ].minus(signedOrder.makerAssetAmount);
-                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultTakerAssetAddress
-                    ].plus(signedOrder.takerAssetAmount);
-                    erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
-                        signedOrder.makerFee,
-                    );
-                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultMakerAssetAddress
-                    ].plus(signedOrder.makerAssetAmount);
-                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultTakerAssetAddress
-                    ].minus(signedOrder.takerAssetAmount);
-                    erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
-                        signedOrder.takerFee,
-                    );
-                    erc20Balances[feeRecipientAddress][feeToken.address] = erc20Balances[feeRecipientAddress][
-                        feeToken.address
-                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
-                });
-
-                const fillResults = await exchange.marketSellOrders.callAsync(
-                    signedOrders,
-                    takerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                        }),
-                        nullFillResults,
-                    );
-
-                expect(fillResults).to.deep.equal(expectedFillResults);
-                expect(newBalances).to.be.deep.equal(erc20Balances);
-            });
-
-            it('should revert when a signedOrder does not use the same takerAssetAddress', async () => {
-                signedOrders = [
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync({
-                        takerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
-                    }),
-                    await orderFactory.newSignedOrderAsync(),
-                ];
-                const reconstructedOrder = {
-                    ...signedOrders[1],
-                    takerAssetData: signedOrders[0].takerAssetData,
-                };
-                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
-                    orderHashHex,
-                    signedOrders[1].makerAddress,
-                    signedOrders[1].signature,
-                );
-                const tx = exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
-                    takerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                });
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('marketSellOrdersNoThrow', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketSellOrdersNoThrow to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        await exchangeWrapper.marketSellOrdersNoThrowAsync([signedOrder], takerAddress, {
-                            takerAssetFillAmount: signedOrder.takerAssetAmount,
-                        });
-                        const newBalances = await erc20Wrapper.getBalancesAsync();
-                        expect(erc20Balances).to.deep.equal(newBalances);
-                    });
-                }
-            };
-            describe('marketSellOrdersNoThrow reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
-            it('should stop when the entire takerAssetFillAmount is filled', async () => {
-                const takerAssetFillAmount = signedOrders[0].takerAssetAmount.plus(
-                    signedOrders[1].takerAssetAmount.div(2),
-                );
-
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
-                    signedOrders,
-                    takerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1176,13 +851,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketSellOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1250,13 +925,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketSellOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketSellOrders.callAsync(
                     signedOrders,
                     takerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketSellOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketSellOrdersAsync(signedOrders, takerAddress, {
                     takerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1292,27 +967,6 @@ describe('Exchange wrappers', () => {
         });
 
         describe('marketBuyOrders', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketBuyOrders to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        const expectedError = new ReentrancyGuardRevertErrors.IllegalReentrancyError();
-                        const tx = exchangeWrapper.marketBuyOrdersAsync([signedOrder], takerAddress, {
-                            makerAssetFillAmount: signedOrder.makerAssetAmount,
-                        });
-                        return expect(tx).to.revertWith(expectedError);
-                    });
-                }
-            };
-            describe('marketBuyOrders reentrancy tests', () => reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
             it('should stop when the entire makerAssetFillAmount is filled', async () => {
                 const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
                     signedOrders[1].makerAssetAmount.div(2),
@@ -1325,167 +979,6 @@ describe('Exchange wrappers', () => {
                     { from: takerAddress },
                 );
                 await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const makerAmountBought = signedOrders[0].takerAssetAmount.plus(
-                    signedOrders[1].takerAssetAmount.dividedToIntegerBy(2),
-                );
-                const makerFee = signedOrders[0].makerFee.plus(signedOrders[1].makerFee.dividedToIntegerBy(2));
-                const takerFee = signedOrders[0].takerFee.plus(signedOrders[1].takerFee.dividedToIntegerBy(2));
-
-                expect(fillResults.makerAssetFilledAmount).to.bignumber.equal(makerAssetFillAmount);
-                expect(fillResults.takerAssetFilledAmount).to.bignumber.equal(makerAmountBought);
-                expect(fillResults.makerFeePaid).to.bignumber.equal(makerFee);
-                expect(fillResults.takerFeePaid).to.bignumber.equal(takerFee);
-
-                expect(newBalances[makerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultMakerAssetAddress].minus(makerAssetFillAmount),
-                );
-                expect(newBalances[makerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][defaultTakerAssetAddress].plus(makerAmountBought),
-                );
-                expect(newBalances[makerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[makerAddress][feeToken.address].minus(makerFee),
-                );
-                expect(newBalances[takerAddress][defaultTakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultTakerAssetAddress].minus(makerAmountBought),
-                );
-                expect(newBalances[takerAddress][defaultMakerAssetAddress]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][defaultMakerAssetAddress].plus(makerAssetFillAmount),
-                );
-                expect(newBalances[takerAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[takerAddress][feeToken.address].minus(takerFee),
-                );
-                expect(newBalances[feeRecipientAddress][feeToken.address]).to.be.bignumber.equal(
-                    erc20Balances[feeRecipientAddress][feeToken.address].plus(makerFee.plus(takerFee)),
-                );
-            });
-
-            it('should fill all signedOrders if cannot fill entire makerAssetFillAmount', async () => {
-                const makerAssetFillAmount = Web3Wrapper.toBaseUnitAmount(new BigNumber(100000), 18);
-                _.forEach(signedOrders, signedOrder => {
-                    erc20Balances[makerAddress][defaultMakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultMakerAssetAddress
-                    ].minus(signedOrder.makerAssetAmount);
-                    erc20Balances[makerAddress][defaultTakerAssetAddress] = erc20Balances[makerAddress][
-                        defaultTakerAssetAddress
-                    ].plus(signedOrder.takerAssetAmount);
-                    erc20Balances[makerAddress][feeToken.address] = erc20Balances[makerAddress][feeToken.address].minus(
-                        signedOrder.makerFee,
-                    );
-                    erc20Balances[takerAddress][defaultMakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultMakerAssetAddress
-                    ].plus(signedOrder.makerAssetAmount);
-                    erc20Balances[takerAddress][defaultTakerAssetAddress] = erc20Balances[takerAddress][
-                        defaultTakerAssetAddress
-                    ].minus(signedOrder.takerAssetAmount);
-                    erc20Balances[takerAddress][feeToken.address] = erc20Balances[takerAddress][feeToken.address].minus(
-                        signedOrder.takerFee,
-                    );
-                    erc20Balances[feeRecipientAddress][feeToken.address] = erc20Balances[feeRecipientAddress][
-                        feeToken.address
-                    ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
-                });
-
-                const fillResults = await exchange.marketBuyOrders.callAsync(
-                    signedOrders,
-                    makerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount,
-                });
-                const newBalances = await erc20Wrapper.getBalancesAsync();
-
-                const expectedFillResults = signedOrders
-                    .map(signedOrder => ({
-                        makerAssetFilledAmount: signedOrder.makerAssetAmount,
-                        takerAssetFilledAmount: signedOrder.takerAssetAmount,
-                        makerFeePaid: signedOrder.makerFee,
-                        takerFeePaid: signedOrder.takerFee,
-                    }))
-                    .reduce(
-                        (totalFillResults, currentFillResults) => ({
-                            makerAssetFilledAmount: totalFillResults.makerAssetFilledAmount.plus(
-                                currentFillResults.makerAssetFilledAmount,
-                            ),
-                            takerAssetFilledAmount: totalFillResults.takerAssetFilledAmount.plus(
-                                currentFillResults.takerAssetFilledAmount,
-                            ),
-                            makerFeePaid: totalFillResults.makerFeePaid.plus(currentFillResults.makerFeePaid),
-                            takerFeePaid: totalFillResults.takerFeePaid.plus(currentFillResults.takerFeePaid),
-                        }),
-                        nullFillResults,
-                    );
-
-                expect(fillResults).to.deep.equal(expectedFillResults);
-                expect(newBalances).to.be.deep.equal(erc20Balances);
-            });
-
-            it('should revert when a signedOrder does not use the same makerAssetAddress', async () => {
-                signedOrders = [
-                    await orderFactory.newSignedOrderAsync(),
-                    await orderFactory.newSignedOrderAsync({
-                        makerAssetData: assetDataUtils.encodeERC20AssetData(feeToken.address),
-                    }),
-                    await orderFactory.newSignedOrderAsync(),
-                ];
-                const reconstructedOrder = {
-                    ...signedOrders[1],
-                    makerAssetData: signedOrders[0].makerAssetData,
-                };
-                const orderHashHex = orderHashUtils.getOrderHashHex(reconstructedOrder);
-                const expectedError = new ExchangeRevertErrors.SignatureError(
-                    ExchangeRevertErrors.SignatureErrorCode.BadSignature,
-                    orderHashHex,
-                    signedOrders[1].makerAddress,
-                    signedOrders[1].signature,
-                );
-                const tx = exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
-                    makerAssetFillAmount: Web3Wrapper.toBaseUnitAmount(new BigNumber(1000), 18),
-                });
-                return expect(tx).to.revertWith(expectedError);
-            });
-        });
-
-        describe('marketBuyOrdersNoThrow', () => {
-            const reentrancyTest = (functionNames: string[]) => {
-                for (const [functionId, functionName] of functionNames.entries()) {
-                    const description = `should not allow marketBuyOrdersNoThrow to reenter the Exchange contract via ${functionName}`;
-                    it(description, async () => {
-                        const signedOrder = await orderFactory.newSignedOrderAsync({
-                            makerAssetData: assetDataUtils.encodeERC20AssetData(reentrantErc20Token.address),
-                        });
-                        await web3Wrapper.awaitTransactionSuccessAsync(
-                            await reentrantErc20Token.setReentrantFunction.sendTransactionAsync(functionId),
-                            constants.AWAIT_TRANSACTION_MINED_MS,
-                        );
-                        await exchangeWrapper.marketBuyOrdersNoThrowAsync([signedOrder], takerAddress, {
-                            makerAssetFillAmount: signedOrder.makerAssetAmount,
-                        });
-                        const newBalances = await erc20Wrapper.getBalancesAsync();
-                        expect(erc20Balances).to.deep.equal(newBalances);
-                    });
-                }
-            };
-            describe('marketBuyOrdersNoThrow reentrancy tests', () =>
-                reentrancyTest(exchangeConstants.FUNCTIONS_WITH_MUTEX));
-
-            it('should stop when the entire makerAssetFillAmount is filled', async () => {
-                const makerAssetFillAmount = signedOrders[0].makerAssetAmount.plus(
-                    signedOrders[1].makerAssetAmount.div(2),
-                );
-
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
-                    signedOrders,
-                    makerAssetFillAmount,
-                    signedOrders.map(signedOrder => signedOrder.signature),
-                    { from: takerAddress },
-                );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1554,13 +1047,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketBuyOrders.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use
@@ -1629,13 +1122,13 @@ describe('Exchange wrappers', () => {
                     ].plus(signedOrder.makerFee.plus(signedOrder.takerFee));
                 });
 
-                const fillResults = await exchange.marketBuyOrdersNoThrow.callAsync(
+                const fillResults = await exchange.marketBuyOrders.callAsync(
                     signedOrders,
                     makerAssetFillAmount,
                     signedOrders.map(signedOrder => signedOrder.signature),
                     { from: takerAddress },
                 );
-                await exchangeWrapper.marketBuyOrdersNoThrowAsync(signedOrders, takerAddress, {
+                await exchangeWrapper.marketBuyOrdersAsync(signedOrders, takerAddress, {
                     makerAssetFillAmount,
                     // HACK(albrow): We need to hardcode the gas estimate here because
                     // the Geth gas estimator doesn't work with the way we use

@@ -117,7 +117,6 @@ contract MixinTransactions is
             if (!_isValidTransactionWithHashSignature(
                     transaction,
                     transactionHash,
-                    signerAddress,
                     signature)) {
                 LibRichErrors._rrevert(LibExchangeRichErrors.TransactionSignatureError(
                     transactionHash,

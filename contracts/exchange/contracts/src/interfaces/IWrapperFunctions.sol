@@ -91,10 +91,10 @@ contract IWrapperFunctions {
         public
         returns (LibFillResults.FillResults[] memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of takerAsset is sold by taker.
     /// @param orders Array of order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signatures Proofs that orders have been created by makers.
+    /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketSellOrders(
         LibOrder.Order[] memory orders,
@@ -104,40 +104,12 @@ contract IWrapperFunctions {
         public
         returns (LibFillResults.FillResults memory fillResults);
 
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of takerAsset is sold by taker.
-    ///      Returns false if the transaction would otherwise revert.
-    /// @param orders Array of order specifications.
-    /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
-    /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketSellOrdersNoThrow(
-        LibOrder.Order[] memory orders,
-        uint256 takerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        returns (LibFillResults.FillResults memory fillResults);
-
-    /// @dev Synchronously executes multiple calls of fillOrder until total amount of makerAsset is bought by taker.
+    /// @dev Executes multiple calls of fillOrderNoThrow until total amount of makerAsset is bought by taker.
     /// @param orders Array of order specifications.
     /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
     /// @param signatures Proofs that orders have been signed by makers.
     /// @return Amounts filled and fees paid by makers and taker.
     function marketBuyOrders(
-        LibOrder.Order[] memory orders,
-        uint256 makerAssetFillAmount,
-        bytes[] memory signatures
-    )
-        public
-        returns (LibFillResults.FillResults memory fillResults);
-
-    /// @dev Synchronously executes multiple fill orders in a single transaction until total amount is bought by taker.
-    ///      Returns false if the transaction would otherwise revert.
-    /// @param orders Array of order specifications.
-    /// @param makerAssetFillAmount Desired amount of makerAsset to buy.
-    /// @param signatures Proofs that orders have been signed by makers.
-    /// @return Amounts filled and fees paid by makers and taker.
-    function marketBuyOrdersNoThrow(
         LibOrder.Order[] memory orders,
         uint256 makerAssetFillAmount,
         bytes[] memory signatures

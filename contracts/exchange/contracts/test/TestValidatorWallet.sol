@@ -45,6 +45,10 @@ contract TestValidatorWallet is
 {
     using LibBytes for bytes;
 
+    // Magic bytes to be returned by `Wallet` signature type validators.
+    // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
+
     /// @dev Revert reason for `Revert` `ValidatorAction`.
     string constant public REVERT_REASON = "you shall not pass";
 
@@ -69,6 +73,10 @@ contract TestValidatorWallet is
         UpdateState,
         // Ensure the signature hash matches what was prepared
         MatchSignatureHash,
+        // Return boolean `true`,
+        ReturnTrue,
+        // Return no data.
+        ReturnNothing,
         NTypes
     }
 
@@ -146,6 +154,15 @@ contract TestValidatorWallet is
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
             _updateState();
+        } else if (action == ValidatorAction.ReturnNothing) {
+            assembly {
+                return(0x0, 0)
+            }
+        } else if (action == ValidatorAction.ReturnTrue) {
+            assembly {
+                mstore(0x0, 1)
+                return(0x0, 32)
+            }
         } else {
             assert(action == ValidatorAction.MatchSignatureHash);
             bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
@@ -158,28 +175,37 @@ contract TestValidatorWallet is
     /// @dev Validates a hash with the `Wallet` signature type.
     /// @param hash Message hash that is signed.
     /// @param signature Proof of signing.
-    /// @return isValid `true` if the signature check succeeds.
+    /// @return `LEGACY_WALLET_MAGIC_VALUE` if the signature check succeeds.
     function isValidSignature(
         bytes32 hash,
         bytes memory signature
     )
         public
-        returns (bool isValid)
+        returns (bytes4 magicValue)
     {
         ValidatorAction action = _hashActions[hash];
         if (action == ValidatorAction.Reject) {
-            isValid = false;
+            magicValue = bytes4(0);
         } else if (action == ValidatorAction.Accept) {
-            isValid = true;
+            magicValue = LEGACY_WALLET_MAGIC_VALUE;
         } else if (action == ValidatorAction.Revert) {
             revert(REVERT_REASON);
         } else if (action == ValidatorAction.UpdateState) {
             _updateState();
+        } else if (action == ValidatorAction.ReturnNothing) {
+            assembly {
+                return(0x0, 0)
+            }
+        } else if (action == ValidatorAction.ReturnTrue) {
+            assembly {
+                mstore(0x0, 1)
+                return(0x0, 32)
+            }
         } else {
             assert(action == ValidatorAction.MatchSignatureHash);
             bytes32 expectedSignatureHash = _hashSignatureHashes[hash];
             if (keccak256(signature) == expectedSignatureHash) {
-                isValid = true;
+                magicValue = LEGACY_WALLET_MAGIC_VALUE;
             }
         }
     }

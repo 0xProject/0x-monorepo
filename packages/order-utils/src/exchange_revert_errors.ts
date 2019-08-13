@@ -24,6 +24,7 @@ export enum SignatureErrorCode {
     Unsupported,
     Illegal,
     InappropriateSignatureType,
+    InvalidSigner,
 }
 
 export enum AssetProxyDispatchErrorCode {

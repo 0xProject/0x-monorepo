@@ -12,8 +12,6 @@ import {
 } from 'ethereum-types';
 import * as _ from 'lodash';
 
-import { constants } from './constants';
-
 export class LogDecoder {
     private readonly _web3Wrapper: Web3Wrapper;
     private readonly _abiDecoder: AbiDecoder;
@@ -45,10 +43,7 @@ export class LogDecoder {
         return logWithDecodedArgsOrLog;
     }
     public async getTxWithDecodedLogsAsync(txHash: string): Promise<TransactionReceiptWithDecodedLogs> {
-        const receipt = await this._web3Wrapper.awaitTransactionSuccessAsync(
-            txHash,
-            constants.AWAIT_TRANSACTION_MINED_MS,
-        );
+        const receipt = await this._web3Wrapper.awaitTransactionSuccessAsync(txHash);
         return this.decodeReceiptLogs(receipt);
     }
     public decodeReceiptLogs(receipt: TransactionReceipt): TransactionReceiptWithDecodedLogs {

@@ -61,7 +61,6 @@ contract ISignatureValidator {
 
     /// @dev Verifies that a hash has been signed by the given signer.
     /// @param hash Any 32-byte hash.
-    /// @param signerAddress Address that should have signed the given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given hash and signer.
     function isValidHashSignature(
@@ -75,12 +74,10 @@ contract ISignatureValidator {
 
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid true if the signature is valid for the given order and signer.
     function isValidOrderSignature(
         LibOrder.Order memory order,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -89,12 +86,10 @@ contract ISignatureValidator {
 
     /// @dev Verifies that a signature for a transaction is valid.
     /// @param transaction The transaction.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid true if the signature is valid for the given transaction and signer.
     function isValidTransactionSignature(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -103,13 +98,12 @@ contract ISignatureValidator {
 
     /// @dev Checks if a signature is of a type that should be verified for
     /// every subsequent fill.
-    /// @param orderHash The hash of the order.
-    /// @param signerAddress The address of the signer.
-    /// @param signature The signature for `orderHash`.
+    /// @param hash The hash of the order/transaction.
+    /// @param signature The signature for `hash`.
     /// @return needsRegularValidation True if the signature should be validated
     ///                                for every operation.
     function doesSignatureRequireRegularValidation(
-        bytes32 orderHash,
+        bytes32 hash,
         address signerAddress,
         bytes memory signature
     )
@@ -121,13 +115,11 @@ contract ISignatureValidator {
     ///      by the given signer.
     /// @param order The order.
     /// @param orderHash The hash of the order.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given order and signer.
     function _isValidOrderWithHashSignature(
         LibOrder.Order memory order,
         bytes32 orderHash,
-        address signerAddress,
         bytes memory signature
     )
         internal
@@ -138,13 +130,11 @@ contract ISignatureValidator {
     ///      by the given signer.
     /// @param transaction The transaction.
     /// @param transactionHash The hash of the transaction.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given transaction and signer.
     function _isValidTransactionWithHashSignature(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes32 transactionHash,
-        address signerAddress,
         bytes memory signature
     )
         internal

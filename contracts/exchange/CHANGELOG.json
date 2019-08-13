@@ -137,6 +137,22 @@
             {
                 "note": "Remove `_assertValidFill()`",
                 "pr": 2031
+            },
+            {
+                "note": "Add `wrapper_unit_tests` tests and `TestWrapperFunctions` contract",
+                "pr": 2042
+            },
+            {
+                "note": "Disallow `signerAddress == 0` in signature validation functions.",
+                "pr": 2042
+            },
+            {
+                "note": "Update `Wallet` signature type behavior to be in line with v2.1.",
+                "pr": 2042
+            },
+            {
+                "note": "Add (semi) automated reentrancy tests and remove manual ones",
+                "pr": 2042
             }
         ]
     },

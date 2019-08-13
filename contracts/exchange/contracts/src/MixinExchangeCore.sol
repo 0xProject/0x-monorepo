@@ -20,7 +20,6 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
@@ -34,7 +33,6 @@ import "./MixinSignatureValidator.sol";
 contract MixinExchangeCore is
     IExchangeCore,
     IExchangeRichErrors,
-    LibExchangeSelectors,
     LibMath,
     LibFillResults,
     MixinAssetProxyDispatcher,
@@ -368,7 +366,6 @@ contract MixinExchangeCore is
             if (!_isValidOrderWithHashSignature(
                     order,
                     orderInfo.orderHash,
-                    makerAddress,
                     signature)) {
                 LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
                     SignatureErrorCodes.BAD_SIGNATURE,

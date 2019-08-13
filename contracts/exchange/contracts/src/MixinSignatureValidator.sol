@@ -43,6 +43,10 @@ contract MixinSignatureValidator is
 {
     using LibBytes for bytes;
 
+    // Magic bytes to be returned by `Wallet` signature type validators.
+    // bytes4(keccak256("isValidWalletSignature(bytes32,address,bytes)"))
+    bytes4 private constant LEGACY_WALLET_MAGIC_VALUE = 0xb0671381;
+
     // Mapping of hash => signer => signed
     mapping (bytes32 => mapping (address => bool)) public preSigned;
 
@@ -122,12 +126,10 @@ contract MixinSignatureValidator is
 
     /// @dev Verifies that a signature for an order is valid.
     /// @param order The order.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given order and signer.
     function isValidOrderSignature(
         Order memory order,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -138,19 +140,16 @@ contract MixinSignatureValidator is
         return _isValidOrderWithHashSignature(
             order,
             orderHash,
-            signerAddress,
             signature
         );
     }
 
     /// @dev Verifies that a signature for a transaction is valid.
     /// @param transaction The transaction.
-    /// @param signerAddress Address that should have signed the given order.
     /// @param signature Proof that the order has been signed by signer.
     /// @return isValid `true` if the signature is valid for the given transaction and signer.
     function isValidTransactionSignature(
         ZeroExTransaction memory transaction,
-        address signerAddress,
         bytes memory signature
     )
         public
@@ -161,7 +160,6 @@ contract MixinSignatureValidator is
         isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,
-            signerAddress,
             signature
         );
     }
@@ -197,19 +195,18 @@ contract MixinSignatureValidator is
     ///      by the given signer.
     /// @param order The order.
     /// @param orderHash The hash of the order.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given order and signer.
     function _isValidOrderWithHashSignature(
         Order memory order,
         bytes32 orderHash,
-        address signerAddress,
         bytes memory signature
     )
         internal
         view
         returns (bool isValid)
     {
+        address signerAddress = order.makerAddress;
         SignatureType signatureType = _readValidSignatureType(
             orderHash,
             signerAddress,
@@ -246,19 +243,18 @@ contract MixinSignatureValidator is
     ///      by the given signer.
     /// @param transaction The transaction.
     /// @param transactionHash The hash of the transaction.
-    /// @param signerAddress Address that should have signed the.Signat given hash.
     /// @param signature Proof that the hash has been signed by signer.
     /// @return isValid True if the signature is valid for the given transaction and signer.
     function _isValidTransactionWithHashSignature(
         ZeroExTransaction memory transaction,
         bytes32 transactionHash,
-        address signerAddress,
         bytes memory signature
     )
         internal
         view
         returns (bool isValid)
     {
+        address signerAddress = transaction.signerAddress;
         SignatureType signatureType = _readValidSignatureType(
             transactionHash,
             signerAddress,
@@ -389,6 +385,17 @@ contract MixinSignatureValidator is
         pure
         returns (SignatureType signatureType)
     {
+        // Disallow address zero because it is ecrecover() returns zero on
+        // failure.
+        if (signerAddress == address(0)) {
+            LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
+                IExchangeRichErrors.SignatureErrorCodes.INVALID_SIGNER,
+                hash,
+                signerAddress,
+                signature
+            ));
+        }
+
         if (signature.length == 0) {
             LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
                 IExchangeRichErrors.SignatureErrorCodes.INVALID_LENGTH,
@@ -467,9 +474,9 @@ contract MixinSignatureValidator is
         }
         // Static call the verification function.
         (bool didSucceed, bytes memory returnData) = walletAddress.staticcall(callData);
-        // Return data should be a single bool.
-        if (didSucceed && returnData.length == 32) {
-            return returnData.readUint256(0) == 1;
+        // Return data should be `LEGACY_WALLET_MAGIC_VALUE`.
+        if (didSucceed && returnData.length <= 32) {
+            return returnData.readBytes4(0) == LEGACY_WALLET_MAGIC_VALUE;
         }
         // Static call to verifier failed.
         LibRichErrors._rrevert(LibExchangeRichErrors.SignatureWalletError(
@@ -598,5 +605,4 @@ contract MixinSignatureValidator is
             returnData
         ));
     }
-
 }
