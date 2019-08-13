@@ -39,11 +39,7 @@ export const artifacts = {
     IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
     IsolatedExchange: IsolatedExchange as ContractArtifact,
-<<<<<<< HEAD
     ReentrancyTester: ReentrancyTester as ContractArtifact,
-=======
-    ReentrantERC20Token: ReentrantERC20Token as ContractArtifact,
->>>>>>> Removed unused reference functions
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,
     TestExchangeInternals: TestExchangeInternals as ContractArtifact,
     TestLibExchangeRichErrorDecoder: TestLibExchangeRichErrorDecoder as ContractArtifact,
