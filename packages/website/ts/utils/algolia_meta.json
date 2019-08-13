@@ -1,5 +1,5 @@
 {
-    "api-explorer": {"title": "API Explorer", "path": "api-explorer/index.mdx"},
+    "api-explorer": { "title": "API Explorer", "path": "api-explorer/index.mdx" },
     "core-concepts": {
         "title": "0x Core Concepts",
         "subtitle": "Learn all the core concepts you'll need to build effectively on 0x",
@@ -20,6 +20,17 @@
         "topics": ["Mesh", "Protocol Developer"],
         "difficulty": "Beginner",
         "path": "guides/develop-on-ethereum.mdx"
+    },
+    "ganache-setup": {
+        "title": "How to Set Up Ganache",
+        "description": "",
+        "topics": ["Ganache"],
+        "difficulty": "Intermediate",
+        "isCommunity": false,
+        "isFeatured": false,
+        "tags": ["Protocol developer"],
+        "type": "Command-line tools",
+        "path": "guides/ganache-setup.mdx"
     },
     "page-template": {
         "title": "Page template",
@@ -60,16 +71,5 @@
         "type": "Command-line tools",
         "path": "tools/ethereum-types/v2.1.4/reference.mdx",
         "versions": ["v2.1.4"]
-    },
-    "ganache-setup": {
-        "title": "How to Set Up Ganache",
-        "description": "",
-        "topics": ["Ganache"],
-        "difficulty": "Intermediate",
-        "isCommunity": false,
-        "isFeatured": false,
-        "tags": ["Protocol developer"],
-        "type": "Command-line tools",
-        "path": "guides/ganache-setup.mdx"
     }
 }
