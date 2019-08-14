@@ -252,6 +252,16 @@ export async function runMigrationsAsync(
         exchange.address,
     );
 
+    // Dev Utils
+    const devUtils = await wrappers.DevUtilsContract.deployFrom0xArtifactAsync(
+        artifacts.DevUtils,
+        provider,
+        txDefaults,
+        artifacts,
+        exchange.address,
+        zrxAssetData,
+    );
+
     const contractAddresses = {
         erc20Proxy: erc20Proxy.address,
         erc721Proxy: erc721Proxy.address,
@@ -267,6 +277,7 @@ export async function runMigrationsAsync(
         coordinator: coordinator.address,
         multiAssetProxy: multiAssetProxy.address,
         staticCallProxy: staticCallProxy.address,
+        devUtils: devUtils.address,
     };
 
     return contractAddresses;

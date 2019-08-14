@@ -22,6 +22,7 @@ CONTRACTS_TO_BE_WRAPPED = [
     "asset_proxy_owner",
     "coordinator",
     "coordinator_registry",
+    "dev_utils",
     "dummy_erc20_token",
     "dummy_erc721_token",
     "dutch_auction",

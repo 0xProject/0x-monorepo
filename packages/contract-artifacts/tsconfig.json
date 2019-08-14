@@ -8,6 +8,7 @@
     "include": ["./src/**/*", "./test/**/*"],
     "files": [
         "./artifacts/AssetProxyOwner.json",
+        "./artifacts/DevUtils.json",
         "./artifacts/DutchAuction.json",
         "./artifacts/DummyERC20Token.json",
         "./artifacts/DummyERC721Token.json",
