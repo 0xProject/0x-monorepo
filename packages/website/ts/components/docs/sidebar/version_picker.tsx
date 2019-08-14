@@ -16,7 +16,7 @@ interface IMatchParams {
 }
 
 const VersionSelect: React.FC<IVersionPickerProps> = ({ history, location, match, versions }) => {
-    const onChange = (e: any) => {
+    const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { type, page } = match.params;
         const version = e.target.value;
         const url = `/docs/${type}/${page}/${version}`;

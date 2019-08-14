@@ -18,7 +18,7 @@ const { selectAll } = require('unist-util-select');
 
 const meta = require('./algolia_meta.json');
 
-function processContentTree(tree: Node[], file: any, indexName: string): void {
+function processContentTree(tree: Node[], file: File, indexName: string): void {
     const modify = modifyChildren(modifier);
     // We first modify the tree to get slugified ids from headings to all text nodes
     modify(tree);
@@ -54,7 +54,7 @@ function modifier(node: Node, index: number, parent: Node): void {
     }
 }
 
-function addHashToChildren(item: any, start: any): void {
+function addHashToChildren(item: Node, start: Node): void {
     if (item.children) {
         for (const child of item.children) {
             if (child.type === 'text') {
@@ -74,7 +74,7 @@ function setIndexSettings(algoliaIndex: any, algoliaSettings: IAlgoliaSettings):
     });
 }
 
-function pushObjectsToAlgolia(algoliaIndex: any, content: Content): void {
+function pushObjectsToAlgolia(algoliaIndex: any, content: Content[]): void {
     algoliaIndex
         .saveObjects(content)
         .then(({ objectIDs }: { objectIDs: string[] }) =>
@@ -87,8 +87,8 @@ function pushObjectsToAlgolia(algoliaIndex: any, content: Content): void {
         });
 }
 
-function getContent(file: any, formattedTextNodes: FormattedNode[]): any {
-    const { name, url }: { name: string; url: string } = file;
+function getContent(file: File, formattedTextNodes: FormattedNode[]): Content[] {
+    const { name, url } = file;
     const metaData: Meta = meta[name];
     const content: Content[] = [];
 
@@ -132,7 +132,7 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     return formattedTextNodes;
 }
 
-async function processMdxAsync(indexName: any, file: any): Promise<void> {
+async function processMdxAsync(indexName: string, file: File): Promise<void> {
     const content = await read(file.path);
 
     await remark()
@@ -142,10 +142,10 @@ async function processMdxAsync(indexName: any, file: any): Promise<void> {
         .process(content);
 }
 
-function getFiles(dirName: string): any {
+function getFiles(dirName: string): File[] {
     const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
     const files = glob.sync(dirPath + '/**/*.mdx');
-    const processedFiles: any[] = [];
+    const processedFiles: File[] = [];
 
     for (const file of files) {
         if (dirName === 'tools') {
@@ -153,7 +153,7 @@ function getFiles(dirName: string): any {
             const version = path.basename(path.dirname(file));
             const url = `/docs/tools/${name}/${version}`;
 
-            const fileIndex = processedFiles.findIndex((tool: any) => tool.name === name);
+            const fileIndex = processedFiles.findIndex((tool: File) => tool.name === name);
             const isIndexPresent = fileIndex > -1;
 
             const fileObject = { name, path: file, version, versions: [version], url };
@@ -183,7 +183,7 @@ function getFiles(dirName: string): any {
     return processedFiles;
 }
 
-function updateMetaFile(file: any): void {
+function updateMetaFile(file: File): void {
     const [_, relativePath] = file.path.split('mdx/');
     meta[file.name].path = relativePath;
 
@@ -202,6 +202,14 @@ export async function indexFilesAsync(indexName: string): Promise<void> {
         updateMetaFile(file);
         await processMdxAsync(indexName, file);
     }
+}
+
+interface File {
+    name: string;
+    path: string;
+    version?: string;
+    versions?: string[];
+    url: string;
 }
 
 interface Meta {
