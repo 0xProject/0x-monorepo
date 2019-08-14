@@ -62,7 +62,7 @@ const Wrap = styled.div<WrapProps>`
 `;
 
 interface TitleProps {
-    isLarge?: any;
+    isLarge?: boolean;
     maxWidth?: string;
 }
 const Title = styled.h1<TitleProps>`

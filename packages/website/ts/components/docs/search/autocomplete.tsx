@@ -63,7 +63,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
         };
     }, []);
 
-    const onSuggestionsFetchRequested = ({ value: newValue }: any): void => refine(newValue);
+    const onSuggestionsFetchRequested = ({ value: newValue }: { value: string }): void => refine(newValue);
 
     const onSuggestionsClearRequested = (): void => refine('');
 
@@ -124,7 +124,7 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
         }
     };
 
-    const onChange = (event: React.KeyboardEvent, { newValue, method }: any): void => {
+    const onChange = (event: React.KeyboardEvent, { newValue, method }: { newValue: string; method: string }): void => {
         // Only set value if the user typed it in, without it it leads to populating the input with snippet or highlight text
         if (method === 'type') {
             setValue(newValue);
