@@ -1,4 +1,4 @@
-import { ERC20TokenWrapper } from '0x.js';
+import { ERC20TokenContract, SupportedProvider } from '0x.js';
 import { BigNumber, logUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
 import * as _ from 'lodash';
@@ -37,7 +37,7 @@ export const dispenseAssetTasks = {
         recipientAddress: string,
         tokenSymbol: string,
         networkId: number,
-        erc20TokenWrapper: ERC20TokenWrapper,
+        provider: SupportedProvider,
     ): AsyncTask {
         return async () => {
             logUtils.log(`Processing ${tokenSymbol} ${recipientAddress}`);
@@ -47,8 +47,8 @@ export const dispenseAssetTasks = {
                 throw new Error(`Unsupported asset type: ${tokenSymbol}`);
             }
             const baseUnitAmount = Web3Wrapper.toBaseUnitAmount(amountToDispense, tokenIfExists.decimals);
-            const userBalanceBaseUnits = await erc20TokenWrapper.getBalanceAsync(
-                tokenIfExists.address,
+            const erc20Token = new ERC20TokenContract(tokenIfExists.address, provider);
+            const userBalanceBaseUnits = await erc20Token.balanceOf.callAsync(
                 recipientAddress,
             );
             const maxAmountBaseUnits = Web3Wrapper.toBaseUnitAmount(
@@ -61,11 +61,12 @@ export const dispenseAssetTasks = {
                 );
                 return;
             }
-            const txHash = await erc20TokenWrapper.transferAsync(
-                tokenIfExists.address,
-                configs.DISPENSER_ADDRESS,
+            const txHash = await erc20Token.transfer.sendTransactionAsync(
                 recipientAddress,
                 baseUnitAmount,
+                {
+                    from: configs.DISPENSER_ADDRESS,
+                },
             );
             logUtils.log(`Sent ${amountToDispense} ${tokenSymbol} to ${recipientAddress} tx: ${txHash}`);
         };

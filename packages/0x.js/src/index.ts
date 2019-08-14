@@ -13,36 +13,21 @@ export {
     CoordinatorWrapper,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
-    DutchAuctionWrapper,
-    ERC20TokenWrapper,
-    ERC721TokenWrapper,
-    EtherTokenWrapper,
-    ExchangeWrapper,
-    ERC20ProxyWrapper,
-    ERC721ProxyWrapper,
-    ForwarderWrapper,
-    OrderValidatorWrapper,
     IndexedFilterValues,
-    BlockRange,
     ContractWrappersConfig,
-    MethodOpts,
     OrderTransactionOpts,
     TransactionOpts,
-    OrderStatus,
     OrderInfo,
     EventCallback,
     DecodedLogEvent,
-    TransactionEncoder,
-    BalanceAndAllowance,
-    OrderAndTraderInfo,
     TraderInfo,
-    ValidateOrderFillableOpts,
-} from '@0x/contract-wrappers';
-
-export {
+    OrderStatus,
+    OrderAndTraderInfo,
     DutchAuctionContract,
     ERC20ProxyContract,
+    ERC20TokenContract,
     ERC721ProxyContract,
+    ERC721TokenContract,
     ExchangeContract,
     ForwarderContract,
     OrderValidatorContract,
@@ -69,7 +54,7 @@ export {
     ExchangeCancelEventArgs,
     ExchangeEventArgs,
     ExchangeEvents,
-} from '@0x/abi-gen-wrappers';
+} from '@0x/contract-wrappers';
 
 export import Web3ProviderEngine = require('web3-provider-engine');
 
