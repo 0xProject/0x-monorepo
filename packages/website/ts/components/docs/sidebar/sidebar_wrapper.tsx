@@ -36,8 +36,8 @@ const SidebarContent = styled.div`
     overflow-y: auto;
 
     /* Slim scroll bar */
-    scrollbar-color: ${colors.grey500};
-    scrollbar-width: 1px; /* Firefox */
+    scrollbar-color: ${colors.grey500} transparent;
+    scrollbar-width: thin; /* Firefox */
     -ms-overflow-style: none; /* IE 10+ */
     &::-webkit-scrollbar {
         height: 1px;
