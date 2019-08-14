@@ -13,16 +13,20 @@ interface IVersionPickerProps extends RouteComponentProps<IMatchParams> {
 interface IMatchParams {
     page?: string;
     type?: string;
+    version?: string;
 }
 
 const VersionSelect: React.FC<IVersionPickerProps> = ({ history, location, match, versions }) => {
+    const { page, type, version: versionParam } = match.params;
+
     const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { type, page } = match.params;
         const version = e.target.value;
         const url = `/docs/${type}/${page}/${version}`;
         history.push(url);
         window.scrollTo(0, 0);
     };
+
+    const getNumericVersion = (version: string) => version.replace(/^v/, '');
 
     return (
         <VersionPickerWrapper>
@@ -30,16 +34,17 @@ const VersionSelect: React.FC<IVersionPickerProps> = ({ history, location, match
                 Version
             </Paragraph>
             <Container>
-                <StyledSelect onChange={onChange}>
-                    {versions.map((version: string) => {
-                        const numericVersion = version.replace(/^v/, '');
-
-                        return (
-                            <option key={version} value={version}>
-                                {numericVersion}
-                            </option>
-                        );
-                    })}
+                <StyledSelect defaultValue={versionParam} onChange={onChange}>
+                    {versionParam && (
+                        <option hidden={true} value="">
+                            {getNumericVersion(versionParam)}
+                        </option>
+                    )}
+                    {versions.map((version: string) => (
+                        <option key={version} value={version}>
+                            {getNumericVersion(version)}
+                        </option>
+                    ))}
                 </StyledSelect>
                 <svg width="12" height="8" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M1 7l5-5 5 5" stroke={colors.brandDark} strokeWidth="1.5" />
