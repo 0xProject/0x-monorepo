@@ -227,7 +227,7 @@ contract TestValidatorWallet is
             // Use the Exchange to calculate the hash of the order and assert
             // that it matches the one we extracted previously.
             require(
-                LibOrder.getOrderHash(order, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
+                LibOrder.getTypedDataHash(order, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
                 "UNEXPECTED_ORDER_HASH"
             );
         } else {
@@ -238,7 +238,7 @@ contract TestValidatorWallet is
             // Use the Exchange to calculate the hash of the transaction and assert
             // that it matches the one we extracted previously.
             require(
-                LibZeroExTransaction.getTransactionHash(transaction, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
+                LibZeroExTransaction.getTypedDataHash(transaction, _exchange.EIP712_EXCHANGE_DOMAIN_HASH()) == hash,
                 "UNEXPECTED_TRANSACTION_HASH"
             );
         }

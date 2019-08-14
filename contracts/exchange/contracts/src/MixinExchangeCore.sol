@@ -125,7 +125,7 @@ contract MixinExchangeCore is
         returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Compute the order hash
-        orderInfo.orderHash = order.getOrderHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
         // Fetch filled amount
         orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];

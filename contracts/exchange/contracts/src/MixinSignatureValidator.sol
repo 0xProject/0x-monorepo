@@ -137,7 +137,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes32 orderHash = order.getOrderHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        bytes32 orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
         return _isValidOrderWithHashSignature(
             order,
             orderHash,
@@ -157,7 +157,7 @@ contract MixinSignatureValidator is
         view
         returns (bool isValid)
     {
-        bytes32 transactionHash = transaction.getTransactionHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        bytes32 transactionHash = transaction.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
         isValid = _isValidTransactionWithHashSignature(
             transaction,
             transactionHash,

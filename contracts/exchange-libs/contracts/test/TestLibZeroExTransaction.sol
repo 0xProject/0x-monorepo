@@ -24,21 +24,21 @@ import "../src/LibZeroExTransaction.sol";
 
 contract TestLibZeroExTransaction {
 
-    function getZeroExTransactionHash(LibZeroExTransaction.ZeroExTransaction memory transaction, bytes32 eip712ExchangeDomainHash)
+    function getTypedDataHash(LibZeroExTransaction.ZeroExTransaction memory transaction, bytes32 eip712ExchangeDomainHash)
         public
         pure
         returns (bytes32 transactionHash)
     {
-        transactionHash = LibZeroExTransaction.getTransactionHash(transaction, eip712ExchangeDomainHash);
+        transactionHash = LibZeroExTransaction.getTypedDataHash(transaction, eip712ExchangeDomainHash);
         return transactionHash;
     }
 
-    function hashZeroExTransaction(LibZeroExTransaction.ZeroExTransaction memory transaction)
+    function getStructHash(LibZeroExTransaction.ZeroExTransaction memory transaction)
         public
         pure
         returns (bytes32 result)
     {
-        result = LibZeroExTransaction.hashZeroExTransaction(transaction);
+        result = LibZeroExTransaction.getStructHash(transaction);
         return result;
     }
 }

@@ -52,7 +52,7 @@ contract TestExchangeInternals is
     )
         public
     {
-        filled[LibOrder.getOrderHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
+        filled[LibOrder.getTypedDataHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
         _updateFilledState(
             order,
             takerAddress,

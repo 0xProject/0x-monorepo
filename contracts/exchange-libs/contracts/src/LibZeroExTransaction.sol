@@ -44,10 +44,10 @@ library LibZeroExTransaction {
         bytes data;                     // AbiV2 encoded calldata.
     }
 
-    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @return EIP712 hash of the transaction with the domain separator of this contract.
-    function getTransactionHash(ZeroExTransaction memory transaction, bytes32 eip712ExchangeDomainHash)
+    /// @dev Calculates the EIP712 typed data hash of a transaction with a given domain separator.
+    /// @param transaction 0x transaction structure.
+    /// @return EIP712 typed data hash of the transaction.
+    function getTypedDataHash(ZeroExTransaction memory transaction, bytes32 eip712ExchangeDomainHash)
         internal
         pure
         returns (bytes32 transactionHash)
@@ -55,15 +55,15 @@ library LibZeroExTransaction {
         // Hash the transaction with the domain separator of the Exchange contract.
         transactionHash = LibEIP712.hashEIP712Message(
             eip712ExchangeDomainHash,
-            transaction.hashZeroExTransaction()
+            transaction.getStructHash()
         );
         return transactionHash;
     }
 
-    /// @dev Calculates EIP712 hash of the 0x transaction with no domain separator.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @return EIP712 hash of the transaction with no domain separator.
-    function hashZeroExTransaction(ZeroExTransaction memory transaction)
+    /// @dev Calculates EIP712 hash of the 0x transaction struct.
+    /// @param transaction 0x transaction structure.
+    /// @return EIP712 hash of the transaction struct.
+    function getStructHash(ZeroExTransaction memory transaction)
         internal
         pure
         returns (bytes32 result)

@@ -45,7 +45,7 @@ blockchainTests('LibOrder', env => {
                         version: constants.EIP712_DOMAIN_VERSION,
                     }),
                 );
-                const orderHashHex = await libOrderContract.getOrderHash.callAsync(order, domainHash);
+                const orderHashHex = await libOrderContract.getTypedDataHash.callAsync(order, domainHash);
                 expect(orderHashUtils.getOrderHashHex(order)).to.be.equal(orderHashHex);
             });
             it('orderHash should differ if the domain hash is different', async () => {
@@ -64,8 +64,8 @@ blockchainTests('LibOrder', env => {
                         chainId: 1337,
                     }),
                 );
-                const orderHashHex1 = await libOrderContract.getOrderHash.callAsync(order, domainHash1);
-                const orderHashHex2 = await libOrderContract.getOrderHash.callAsync(order, domainHash2);
+                const orderHashHex1 = await libOrderContract.getTypedDataHash.callAsync(order, domainHash1);
+                const orderHashHex2 = await libOrderContract.getTypedDataHash.callAsync(order, domainHash2);
                 expect(orderHashHex1).to.be.not.equal(orderHashHex2);
             });
         });

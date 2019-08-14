@@ -48,7 +48,7 @@ library LibOrder {
         0xf80322eb8376aafb64eadf8f0d7623f22130fd9491a221e902b713cb984a7534;
 
     // A valid order remains fillable until it is expired, fully filled, or cancelled.
-    // An order's state is unaffected by external factors, like account balances.
+    // An order's status is unaffected by external factors, like account balances.
     enum OrderStatus {
         INVALID,                     // Default value
         INVALID_MAKER_ASSET_AMOUNT,  // Order does not have a valid maker asset amount
@@ -67,42 +67,42 @@ library LibOrder {
         address senderAddress;          // Address that is allowed to call Exchange contract methods that affect this order. If set to 0, any address is allowed to call these methods.
         uint256 makerAssetAmount;       // Amount of makerAsset being offered by maker. Must be greater than 0.
         uint256 takerAssetAmount;       // Amount of takerAsset being bid on by maker. Must be greater than 0.
-        uint256 makerFee;               // Amount of ZRX paid to feeRecipient by maker when order is filled. If set to 0, no transfer of ZRX from maker to feeRecipient will be attempted.
-        uint256 takerFee;               // Amount of ZRX paid to feeRecipient by taker when order is filled. If set to 0, no transfer of ZRX from taker to feeRecipient will be attempted.
+        uint256 makerFee;               // Fee paid to feeRecipient by maker when order is filled. 
+        uint256 takerFee;               // Fee paid to feeRecipient by taker when order is filled.
         uint256 expirationTimeSeconds;  // Timestamp in seconds at which order expires.
         uint256 salt;                   // Arbitrary number to facilitate uniqueness of the order's hash.
         bytes makerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset. The leading bytes4 references the id of the asset proxy.
         bytes takerAssetData;           // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset. The leading bytes4 references the id of the asset proxy.
-        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerAsset fees. The leading bytes4 references the id of the asset proxy.
-        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerAsset fees. The leading bytes4 references the id of the asset proxy.
+        bytes makerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring makerFeeAsset. The leading bytes4 references the id of the asset proxy.
+        bytes takerFeeAssetData;        // Encoded data that can be decoded by a specified proxy contract when transferring takerFeeAsset. The leading bytes4 references the id of the asset proxy.
     }
     // solhint-enable max-line-length
 
     struct OrderInfo {
         uint8 orderStatus;                    // Status that describes order's validity and fillability.
-        bytes32 orderHash;                    // EIP712 hash of the order (see LibOrder.getOrderHash).
+        bytes32 orderHash;                    // EIP712 typed data hash of the order (see LibOrder.getTypedDataHash).
         uint256 orderTakerAssetFilledAmount;  // Amount of order that has already been filled.
     }
 
-    /// @dev Calculates Keccak-256 hash of the order.
+    /// @dev Calculates the EIP712 typed data hash of an order with a given domain separator.
     /// @param order The order structure.
-    /// @return Keccak-256 EIP712 hash of the order.
-    function getOrderHash(Order memory order, bytes32 eip712ExchangeDomainHash)
+    /// @return EIP712 typed data hash of the order.
+    function getTypedDataHash(Order memory order, bytes32 eip712ExchangeDomainHash)
         internal
         pure
         returns (bytes32 orderHash)
     {
         orderHash = LibEIP712.hashEIP712Message(
             eip712ExchangeDomainHash,
-            order.hashOrder()
+            order.getStructHash()
         );
         return orderHash;
     }
 
-    /// @dev Calculates EIP712 hash of the order.
+    /// @dev Calculates EIP712 hash of the order struct.
     /// @param order The order structure.
-    /// @return EIP712 hash of the order.
-    function hashOrder(Order memory order)
+    /// @return EIP712 hash of the order struct.
+    function getStructHash(Order memory order)
         internal
         pure
         returns (bytes32 result)

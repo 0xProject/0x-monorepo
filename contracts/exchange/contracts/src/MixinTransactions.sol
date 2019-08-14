@@ -85,7 +85,7 @@ contract MixinTransactions is
         internal
         returns (bytes memory)
     {
-        bytes32 transactionHash = transaction.getTransactionHash(EIP712_EXCHANGE_DOMAIN_HASH);
+        bytes32 transactionHash = transaction.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
         // Check transaction is not expired
         // solhint-disable-next-line not-rely-on-time

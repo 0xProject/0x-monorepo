@@ -62,7 +62,7 @@ contract TestWrapperFunctions is
         orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
         // High byte of `order.salt` is the `orderStatus`.
         orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
-        orderInfo.orderHash = _getOrderHash(order);
+        orderInfo.orderHash = _getTypedDataHash(order);
     }
 
     /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
@@ -111,7 +111,7 @@ contract TestWrapperFunctions is
     }
 
     /// @dev Simplified order hashing.
-    function _getOrderHash(LibOrder.Order memory order)
+    function _getTypedDataHash(LibOrder.Order memory order)
         internal
         pure
         returns (bytes32 hash)

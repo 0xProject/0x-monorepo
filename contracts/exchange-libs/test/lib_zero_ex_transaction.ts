@@ -38,7 +38,7 @@ blockchainTests('LibZeroExTransaction', env => {
                         version: constants.EIP712_DOMAIN_VERSION,
                     }),
                 );
-                const orderHashHex = await libZeroExTransactionContract.getZeroExTransactionHash.callAsync(
+                const orderHashHex = await libZeroExTransactionContract.getTypedDataHash.callAsync(
                     zeroExTransaction,
                     domainHash,
                 );
@@ -60,11 +60,11 @@ blockchainTests('LibZeroExTransaction', env => {
                         chainId: 1337,
                     }),
                 );
-                const transactionHashHex1 = await libZeroExTransactionContract.getZeroExTransactionHash.callAsync(
+                const transactionHashHex1 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
                     zeroExTransaction,
                     domainHash1,
                 );
-                const transactionHashHex2 = await libZeroExTransactionContract.getZeroExTransactionHash.callAsync(
+                const transactionHashHex2 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
                     zeroExTransaction,
                     domainHash2,
                 );

@@ -24,21 +24,21 @@ import "../src/LibOrder.sol";
 
 contract TestLibOrder {
 
-    function getOrderHash(LibOrder.Order memory order, bytes32 eip712ExchangeDomainHash)
+    function getTypedDataHash(LibOrder.Order memory order, bytes32 eip712ExchangeDomainHash)
         public
         pure
         returns (bytes32 orderHash)
     {
-        orderHash = LibOrder.getOrderHash(order, eip712ExchangeDomainHash);
+        orderHash = LibOrder.getTypedDataHash(order, eip712ExchangeDomainHash);
         return orderHash;
     }
 
-    function hashOrder(LibOrder.Order memory order)
+    function getStructHash(LibOrder.Order memory order)
         public
         pure
         returns (bytes32 result)
     {
-        result = LibOrder.hashOrder(order);
+        result = LibOrder.getStructHash(order);
         return result;
     }
 }
