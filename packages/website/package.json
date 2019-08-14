@@ -70,7 +70,7 @@
         "react-dom": "^16.8.6",
         "react-flickity-component": "^3.1.0",
         "react-headroom": "2.2.2",
-        "react-helmet": "^5.2.0",
+        "react-helmet": "^5.2.1",
         "react-highlight": "0xproject/react-highlight#react-peer-deps",
         "react-instantsearch-dom": "^5.7.0",
         "react-lazyload": "^2.3.0",
