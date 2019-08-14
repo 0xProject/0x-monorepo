@@ -1,5 +1,13 @@
 [
     {
+        "version": "7.0.0",
+        "changes": [
+            {
+                "note": "Removed @0x/order-watcher"
+            }
+        ]
+    },
+    {
         "timestamp": 1565296576,
         "version": "6.0.15",
         "changes": [

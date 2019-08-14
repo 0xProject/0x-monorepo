@@ -109,7 +109,6 @@ jobs:
             - run: yarn wsrun test:circleci @0x/dev-utils
             - run: yarn wsrun test:circleci @0x/json-schemas
             - run: yarn wsrun test:circleci @0x/order-utils
-            - run: yarn wsrun test:circleci @0x/order-watcher
             - run: yarn wsrun test:circleci @0x/sol-compiler
             - run: yarn wsrun test:circleci @0x/sol-tracing-utils
             - run: yarn wsrun test:circleci @0x/sol-doc
@@ -153,10 +152,6 @@ jobs:
                   key: coverage-order-utils-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
                       - ~/repo/packages/order-utils/coverage/lcov.info
-            - save_cache:
-                  key: coverage-order-watcher-{{ .Environment.CIRCLE_SHA1 }}
-                  paths:
-                      - ~/repo/packages/order-watcher/coverage/lcov.info
             - save_cache:
                   key: coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}
                   paths:
@@ -350,9 +345,6 @@ jobs:
             - restore_cache:
                   keys:
                       - coverage-order-utils-{{ .Environment.CIRCLE_SHA1 }}
-            - restore_cache:
-                  keys:
-                      - coverage-order-watcher-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
                   keys:
                       - coverage-sol-compiler-{{ .Environment.CIRCLE_SHA1 }}

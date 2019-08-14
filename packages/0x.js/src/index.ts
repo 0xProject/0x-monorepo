@@ -71,8 +71,6 @@ export {
     ExchangeEvents,
 } from '@0x/abi-gen-wrappers';
 
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0x/order-watcher';
-
 export import Web3ProviderEngine = require('web3-provider-engine');
 
 export {
@@ -88,14 +86,10 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export { BigNumber } from '@0x/utils';
 
 export {
-    ExchangeContractErrs,
     Order,
     SignedOrder,
     DutchAuctionData,
     ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
     AssetProxyId,
     AssetData,
     SingleAssetData,
@@ -106,9 +100,6 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     StaticCallAssetData,
     SignatureType,
-    ObjectMap,
-    OrderRelevantState,
-    Stats,
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
