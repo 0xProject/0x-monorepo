@@ -1,7 +1,6 @@
 import { providerUtils } from '@0x/utils';
 import { marshaller, Web3Wrapper } from '@0x/web3-wrapper';
 import { JSONRPCRequestPayload, SupportedProvider, ZeroExProvider } from 'ethereum-types';
-import * as ethUtil from 'ethereumjs-util';
 
 import { Callback, ErrorCallback } from '../types';
 
