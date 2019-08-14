@@ -71,8 +71,6 @@ export {
     ExchangeEvents,
 } from '@0x/abi-gen-wrappers';
 
-export { OrderWatcher, OnOrderStateChangeCallback, OrderWatcherConfig } from '@0x/order-watcher';
-
 export import Web3ProviderEngine = require('web3-provider-engine');
 
 export {

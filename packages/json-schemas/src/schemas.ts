@@ -16,8 +16,6 @@ import * as orderFillOrKillRequestsSchema from '../schemas/order_fill_or_kill_re
 import * as orderFillRequestsSchema from '../schemas/order_fill_requests_schema.json';
 import * as orderHashSchema from '../schemas/order_hash_schema.json';
 import * as orderSchema from '../schemas/order_schema.json';
-import * as orderWatcherWebSocketRequestSchema from '../schemas/order_watcher_web_socket_request_schema.json';
-import * as orderWatcherWebSocketUtf8MessageSchema from '../schemas/order_watcher_web_socket_utf8_message_schema.json';
 import * as orderBookRequestSchema from '../schemas/orderbook_request_schema.json';
 import * as ordersRequestOptsSchema from '../schemas/orders_request_opts_schema.json';
 import * as ordersSchema from '../schemas/orders_schema.json';
@@ -68,8 +66,6 @@ export const schemas = {
     jsNumber,
     requestOptsSchema,
     pagedRequestOptsSchema,
-    orderWatcherWebSocketRequestSchema,
-    orderWatcherWebSocketUtf8MessageSchema,
     ordersRequestOptsSchema,
     orderBookRequestSchema,
     orderConfigRequestSchema,

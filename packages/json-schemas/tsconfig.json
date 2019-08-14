@@ -23,8 +23,6 @@
         "./schemas/order_schema.json",
         "./schemas/signed_order_schema.json",
         "./schemas/orders_schema.json",
-        "./schemas/order_watcher_web_socket_request_schema.json",
-        "./schemas/order_watcher_web_socket_utf8_message_schema.json",
         "./schemas/paginated_collection_schema.json",
         "./schemas/relayer_api_asset_data_pairs_response_schema.json",
         "./schemas/relayer_api_asset_data_pairs_schema.json",

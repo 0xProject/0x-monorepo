@@ -36,7 +36,6 @@ const docIdToSubpackageName: { [id: string]: string } = {
     [DocPackages.SolTrace]: 'sol-trace',
     [DocPackages.Subproviders]: 'subproviders',
     [DocPackages.OrderUtils]: 'order-utils',
-    [DocPackages.OrderWatcher]: 'order-watcher',
     [DocPackages.EthereumTypes]: 'ethereum-types',
     [DocPackages.AssetBuyer]: 'asset-buyer',
     [DocPackages.AssetSwapper]: 'asset-swapper',
