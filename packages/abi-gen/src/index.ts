@@ -181,7 +181,9 @@ function registerPythonHelpers(): void {
     Handlebars.registerHelper(
         'makeReturnDocstringRole',
         (description: string, indent: number) =>
-            new Handlebars.SafeString(utils.wrapPythonDocstringRole(`:returns: ${description}`, indent)),
+            new Handlebars.SafeString(
+                utils.wrapPythonDocstringRole(`:returns: ${description.replace(/  +/g, ' ')}`, indent),
+            ),
     );
     Handlebars.registerHelper(
         'makeEventParameterDocstringRole',

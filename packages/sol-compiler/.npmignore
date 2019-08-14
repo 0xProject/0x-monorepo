@@ -9,3 +9,5 @@
 # Package specific ignore
 !bin/**/*
 !solc_bin/.gitkeep
+lib/solc_bin/*
+!lib/solc_bin/.gitkeep

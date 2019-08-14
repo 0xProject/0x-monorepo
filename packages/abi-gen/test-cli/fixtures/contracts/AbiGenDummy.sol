@@ -86,7 +86,7 @@ contract AbiGenDummy
     /// @param v    some v, recovery id
     /// @param r    ECDSA r output
     /// @param s    ECDSA s output
-    /// @return     the signerAddress that created this signature
+    /// @return     the signerAddress that created this signature.  this line too is super long in order to demonstrate the proper hanging indentation in generated code.
     function ecrecoverFn(bytes32 hash, uint8 v, bytes32 r, bytes32 s)
         public
         pure
@@ -179,7 +179,7 @@ contract AbiGenDummy
 
     function overloadedMethod(int a) public pure {}
     function overloadedMethod(string memory a) public pure {}
-    
+
     // begin tests for `decodeTransactionData`, `decodeReturnData`
 
     /// @dev complex input is dynamic and more difficult to decode than simple input.
@@ -196,7 +196,7 @@ contract AbiGenDummy
         bytes ipsum;
         string dolor;
     }
-    
+
     /// @dev Tests decoding when both input and output are empty.
     function noInputNoOutput()
         public

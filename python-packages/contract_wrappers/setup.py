@@ -22,6 +22,7 @@ CONTRACTS_TO_BE_WRAPPED = [
     "asset_proxy_owner",
     "coordinator",
     "coordinator_registry",
+    "dev_utils",
     "dummy_erc20_token",
     "dummy_erc721_token",
     "dutch_auction",
@@ -226,7 +227,7 @@ with open("README.md", "r") as file_handle:
 
 setup(
     name="0x-contract-wrappers",
-    version="1.0.0",
+    version="1.0.3",
     description="Python wrappers for 0x smart contracts",
     long_description=README_MD,
     long_description_content_type="text/markdown",

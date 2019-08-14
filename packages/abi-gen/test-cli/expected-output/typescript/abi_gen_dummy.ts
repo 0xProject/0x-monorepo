@@ -496,7 +496,7 @@ export class AbiGenDummyContract extends BaseContract {
          * @param v some v, recovery id
          * @param r ECDSA r output
          * @param s ECDSA s output
-         * @returns the signerAddress that created this signature
+         * @returns the signerAddress that created this signature.  this line too is super long in order to demonstrate the proper hanging indentation in generated code.
          */
         async callAsync(
             hash: string,
