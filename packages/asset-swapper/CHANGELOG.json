@@ -5,6 +5,10 @@
             {
                 "note": "AssetSwapper to use `@0x/orderbook` to fetch and subscribe to order updates",
                 "pr": 2056
+            },
+            {
+                "note": "Add support for consuming Coordinator Orders",
+                "pr": 2065
             }
         ]
     },

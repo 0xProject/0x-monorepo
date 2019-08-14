@@ -18,6 +18,7 @@ import {
 import { assert } from '../utils/assert';
 import { swapQuoteConsumerUtils } from '../utils/swap_quote_consumer_utils';
 
+import { CoordinatorSwapQuoteConsumer } from './coordinator_swap_quote_consumer';
 import { ExchangeSwapQuoteConsumer } from './exchange_swap_quote_consumer';
 import { ForwarderSwapQuoteConsumer } from './forwarder_swap_quote_consumer';
 
@@ -28,6 +29,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
     private readonly _contractWrappers: ContractWrappers;
     private readonly _exchangeConsumer: ExchangeSwapQuoteConsumer;
     private readonly _forwarderConsumer: ForwarderSwapQuoteConsumer;
+    private readonly _coordinatorConsumer: CoordinatorSwapQuoteConsumer;
 
     constructor(supportedProvider: SupportedProvider, options: Partial<SwapQuoteConsumerOpts> = {}) {
         const { networkId } = _.merge({}, constants.DEFAULT_SWAP_QUOTER_OPTS, options);
@@ -42,6 +44,7 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
 
         this._exchangeConsumer = new ExchangeSwapQuoteConsumer(supportedProvider, options);
         this._forwarderConsumer = new ForwarderSwapQuoteConsumer(supportedProvider, options);
+        this._coordinatorConsumer = new CoordinatorSwapQuoteConsumer(supportedProvider, options);
     }
 
     /**
@@ -102,6 +105,8 @@ export class SwapQuoteConsumer implements SwapQuoteConsumerBase<SmartContractPar
             return this._exchangeConsumer;
         } else if (useConsumerType === ConsumerType.Forwarder) {
             return this._forwarderConsumer;
+        } else if (useConsumerType === ConsumerType.Coordinator) {
+            return this._coordinatorConsumer;
         }
         return this._exchangeConsumer;
     }

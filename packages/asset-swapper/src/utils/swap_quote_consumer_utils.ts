@@ -68,6 +68,13 @@ export const swapQuoteConsumerUtils = {
     isValidForwarderSignedOrder(order: SignedOrder, wethAssetData: string): boolean {
         return order.takerAssetData === wethAssetData;
     },
+    isValidCoordinatorSwapQuote(swapQuote: SwapQuote, coordinatorAddress: string): boolean {
+        const coordinatorOrders = [...swapQuote.orders, ...swapQuote.feeOrders].filter(
+            o => o.senderAddress === coordinatorAddress,
+        );
+        const isCoordinatorOrders = coordinatorOrders.length > 0;
+        return isCoordinatorOrders;
+    },
     optimizeOrdersForMarketExchangeOperation(orders: SignedOrder[], operation: MarketOperation): SignedOrder[] {
         return _.map(orders, (order: SignedOrder, index: number) => {
             const optimizedOrder = _.clone(order);
@@ -86,7 +93,9 @@ export const swapQuoteConsumerUtils = {
         opts: Partial<SwapQuoteGetOutputOpts>,
     ): Promise<ConsumerType> {
         const wethAssetData = assetDataUtils.encodeERC20AssetData(contractWrappers.contractAddresses.etherToken);
-        if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
+        if (swapQuoteConsumerUtils.isValidCoordinatorSwapQuote(quote, contractWrappers.coordinator.address)) {
+            return ConsumerType.Coordinator;
+        } else if (swapQuoteConsumerUtils.isValidForwarderSwapQuote(quote, wethAssetData)) {
             if (opts.takerAddress !== undefined) {
                 assert.isETHAddressHex('takerAddress', opts.takerAddress);
             }

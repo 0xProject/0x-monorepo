@@ -1,4 +1,4 @@
-import { MarketOperation, SignedOrder } from '@0x/types';
+import { MarketOperation, SignedOrder, SignedZeroExTransaction } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 import { MethodAbi } from 'ethereum-types';
 
@@ -100,12 +100,23 @@ export interface ExchangeMarketSellSmartContractParams extends SmartContractPara
 export enum ConsumerType {
     Forwarder,
     Exchange,
+    Coordinator,
 }
 
 /**
  * Represents all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
  */
 export type ExchangeSmartContractParams = ExchangeMarketBuySmartContractParams | ExchangeMarketSellSmartContractParams;
+
+/**
+ * Represents all the parameters to interface with 0x exchange contracts via the Coordinator
+ */
+export interface CoordinatorSmartContractParams {
+    signedZeroExTransaction: SignedZeroExTransaction;
+    txOrigin: string;
+    coordinatorExpirationTimes: BigNumber[];
+    coordinatorSignatures: string[];
+}
 
 /**
  * feeOrders: An array of objects conforming to SignedOrder. These orders can be used to cover the fees for the orders param above.
@@ -141,7 +152,10 @@ export type ForwarderSmartContractParams =
 /**
  * Object containing all the parameters to interface with 0x exchange contracts' marketSell and marketBuy functions.
  */
-export type SmartContractParams = ForwarderSmartContractParams | ExchangeSmartContractParams;
+export type SmartContractParams =
+    | ForwarderSmartContractParams
+    | ExchangeSmartContractParams
+    | CoordinatorSmartContractParams;
 
 /**
  * Interface that varying SwapQuoteConsumers adhere to (exchange consumer, router consumer, forwarder consumer, coordinator consumer)
@@ -168,7 +182,16 @@ export interface SwapQuoteConsumerOpts {
 /**
  * Represents the options provided to a generic SwapQuoteConsumer
  */
-export interface SwapQuoteGetOutputOptsBase {}
+export interface SwapQuoteGetOutputOptsBase {
+    takerAddress?: string;
+}
+
+/**
+ * Represents the options provided to CoordinatorSwapQuoteConsumer
+ */
+export interface CoordinatorSwapQuoteGetOutputOptsBase extends SwapQuoteGetOutputOptsBase {
+    txOrigin?: string;
+}
 
 /**
  * takerAddress: The address to perform the buy. Defaults to the first available address from the provider.

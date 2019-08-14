@@ -673,25 +673,29 @@ export class CoordinatorWrapper {
         return signerAddress;
     }
 
-    private _getAbiEncodedTransactionData<K extends keyof ExchangeContract>(methodName: K, ...args: any[]): string {
-        return getAbiEncodedTransactionData(this._exchangeInstance, methodName, ...args);
-    }
-
-    private async _handleFillsAsync(
-        data: string,
-        takerAddress: string,
+    /**
+     * Requests fill approvals from the appropriate coordinator. Returns the approval
+     * signtures and expiration times for later submission.
+     * @param signedOrders An array of `SignedOrder` to request approval for.
+     * @param signedZeroExTransaction The `SignedZeroExTransaction` containing the orders and the 0x operation.
+     * @param txOrigin The transaction origin address to distinguish from the taker address. Contracts filling
+     * Coordinator orders have a different `txOrigin` to the taker address. Defaults to the
+     * `ZeroExTransaction` signer address.
+     */
+    public async getCoordinatorApprovalsAsync(
         signedOrders: SignedOrder[],
-        orderTransactionOpts: OrderTransactionOpts,
-    ): Promise<string> {
+        signedZeroExTransaction: SignedZeroExTransaction,
+        txOrigin?: string,
+    ): Promise<{ coordinatorSignatures: string[]; coordinatorExpirationTimes: BigNumber[] }> {
         const coordinatorOrders = signedOrders.filter(o => o.senderAddress === this.address);
         const serverEndpointsToOrders = await this._mapServerEndpointsToOrdersAsync(coordinatorOrders);
+        const txOriginOrSigner = txOrigin || signedZeroExTransaction.signerAddress;
 
         // make server requests
         const errorResponses: CoordinatorServerResponse[] = [];
         const approvalResponses: CoordinatorServerResponse[] = [];
-        const transaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
         for (const endpoint of Object.keys(serverEndpointsToOrders)) {
-            const response = await this._executeServerRequestAsync(transaction, takerAddress, endpoint);
+            const response = await this._executeServerRequestAsync(signedZeroExTransaction, txOriginOrSigner, endpoint);
             if (response.isError) {
                 errorResponses.push(response);
             } else {
@@ -706,19 +710,9 @@ export class CoordinatorWrapper {
                 formatRawResponse(resp.body as CoordinatorServerApprovalRawResponse),
             );
 
-            const allSignatures = flatten(allApprovals.map(a => a.signatures));
-            const allExpirationTimes = flatten(allApprovals.map(a => a.expirationTimeSeconds));
-
-            // submit transaction with approvals
-            const txHash = await this._submitCoordinatorTransactionAsync(
-                transaction,
-                takerAddress,
-                transaction.signature,
-                allExpirationTimes,
-                allSignatures,
-                orderTransactionOpts,
-            );
-            return txHash;
+            const coordinatorSignatures = flatten(allApprovals.map(a => a.signatures));
+            const coordinatorExpirationTimes = flatten(allApprovals.map(a => a.expirationTimeSeconds));
+            return { coordinatorSignatures, coordinatorExpirationTimes };
         } else {
             // format errors and approvals
             // concatenate approvals
@@ -759,6 +753,33 @@ export class CoordinatorWrapper {
                 ),
             };
         }
+    }
+
+    private _getAbiEncodedTransactionData<K extends keyof ExchangeContract>(methodName: K, ...args: any[]): string {
+        return getAbiEncodedTransactionData(this._exchangeInstance, methodName, ...args);
+    }
+
+    private async _handleFillsAsync(
+        data: string,
+        takerAddress: string,
+        signedOrders: SignedOrder[],
+        orderTransactionOpts: OrderTransactionOpts,
+    ): Promise<string> {
+        const signedZeroExTransaction = await this._generateSignedZeroExTransactionAsync(data, takerAddress);
+        const { coordinatorSignatures, coordinatorExpirationTimes } = await this.getCoordinatorApprovalsAsync(
+            signedOrders,
+            signedZeroExTransaction,
+        );
+        // submit transaction with approvals
+        const txHash = await this._submitCoordinatorTransactionAsync(
+            signedZeroExTransaction,
+            signedZeroExTransaction.signerAddress,
+            signedZeroExTransaction.signature,
+            coordinatorExpirationTimes,
+            coordinatorSignatures,
+            orderTransactionOpts,
+        );
+        return txHash;
     }
 
     private async _getServerEndpointOrThrowAsync(feeRecipientAddress: string): Promise<string> {
