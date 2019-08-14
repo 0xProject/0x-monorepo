@@ -173,4 +173,28 @@ contract TestLibs is
         _addFillResults(totalFillResults, singleFillResults);
         return totalFillResults;
     }
+
+    function hashOrder(Order memory order)
+        public
+        pure
+        returns (bytes32)
+    {
+        return _hashOrder(order);
+    }
+
+    function hashZeroExTransaction(ZeroExTransaction memory transaction)
+        public
+        pure
+        returns (bytes32)
+    {
+        return _hashZeroExTransaction(transaction);
+    }
+
+    function hashEIP712ExchangeMessage(bytes32 hashStruct)
+        public
+        view
+        returns (bytes32)
+    {
+        return _hashEIP712ExchangeMessage(hashStruct);
+    }
 }
