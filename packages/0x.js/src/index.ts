@@ -86,14 +86,10 @@ export { AbiDecoder, DecodedCalldata } from '@0x/utils';
 export { BigNumber } from '@0x/utils';
 
 export {
-    ExchangeContractErrs,
     Order,
     SignedOrder,
     DutchAuctionData,
     ECSignature,
-    OrderStateValid,
-    OrderStateInvalid,
-    OrderState,
     AssetProxyId,
     AssetData,
     SingleAssetData,
@@ -104,9 +100,6 @@ export {
     MultiAssetDataWithRecursiveDecoding,
     StaticCallAssetData,
     SignatureType,
-    ObjectMap,
-    OrderRelevantState,
-    Stats,
     ZeroExTransaction,
     SignedZeroExTransaction,
 } from '@0x/types';
