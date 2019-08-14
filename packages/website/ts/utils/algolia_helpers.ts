@@ -18,15 +18,90 @@ const { selectAll } = require('unist-util-select');
 
 const meta = require('./algolia_meta.json');
 
+export async function indexFilesAsync(indexName: string): Promise<void> {
+    const files = getFiles(indexName); // Get file objects processed to get their meta information (name, path, versions, etc.)
+
+    for (const file of files) {
+        updateMetaFile(file); // Update the meta file shared between algolia and the page rendering the mdx content on the client
+        await processMdxAsync(indexName, file);
+    }
+}
+
+function getFiles(dirName: string): File[] {
+    const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
+    const files = glob.sync(`${dirPath}/**/*.mdx`);
+    const processedFiles: File[] = [];
+
+    for (const file of files) {
+        if (dirName === 'tools') {
+            const name = path.basename(path.join(file, '../../'));
+            const version = path.basename(path.dirname(file));
+            const url = `/docs/tools/${name}/${version}`;
+
+            const fileIndex = processedFiles.findIndex((tool: File) => tool.name === name);
+            const isIndexPresent = fileIndex > -1;
+
+            const fileObject = { name, path: file, version, versions: [version], url };
+
+            if (isIndexPresent) {
+                if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
+                    const versions = [...processedFiles[fileIndex].versions, version]; // Add current version to versions array
+                    processedFiles[fileIndex] = { ...fileObject, versions };
+                }
+            } else {
+                processedFiles.push(fileObject);
+            }
+        }
+
+        if (dirName === 'guides') {
+            const { name } = path.parse(file);
+            const url = `/docs/guides/${name}`;
+            processedFiles.push({ name, path: file, url });
+        }
+
+        if (dirName === 'core-concepts' || dirName === 'api-explorer') {
+            const url = `/docs/${dirName}`;
+            processedFiles.push({ name: dirName, path: file, url });
+        }
+    }
+
+    return processedFiles;
+}
+
+function updateMetaFile(file: File): void {
+    const [_, relativePath] = file.path.split('mdx/');
+    meta[file.name].path = relativePath;
+
+    if (file.versions) {
+        const versionsSortedDesc = file.versions.sort(compareVersions).reverse();
+        meta[file.name].versions = versionsSortedDesc;
+    }
+
+    fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), stringify(meta, { replacer: null, indent: 4 }));
+}
+
+async function processMdxAsync(indexName: string, file: File): Promise<void> {
+    const content = await read(file.path);
+
+    await remark()
+        .use(slug) // slugify heading text as ids
+        .use(mdx)
+        .use(() => (tree: Node[]) => processContentTree(tree, file, indexName))
+        .process(content);
+}
+
 function processContentTree(tree: Node[], file: File, indexName: string): void {
     const modify = modifyChildren(modifier);
     // We first modify the tree to get slugified ids from headings to all text nodes
+    // This is done to be able to link to a certain section in a doc after clicking a search suggestion
     modify(tree);
     // Get all text nodes. I.e. 'heading', 'paragraph', 'list' all can have (nested) child text nodes
     const textNodes = selectAll('text', tree);
 
     if (textNodes) {
+        // Combines text nodes that exist on the same line. I.e. if a paragraph contains 7 text nodes it combines them into 1. This makes text snippets in algolia more descriptive.
         const formattedTextNodes = formatTextNodes(textNodes);
+        // Adds meta and formats information on all formatted text nodes
         const content = getContent(file, formattedTextNodes);
 
         const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
@@ -130,78 +205,6 @@ function formatTextNodes(textNodes: Node[]): FormattedNode[] {
     });
 
     return formattedTextNodes;
-}
-
-async function processMdxAsync(indexName: string, file: File): Promise<void> {
-    const content = await read(file.path);
-
-    await remark()
-        .use(slug) // slugify heading text as ids
-        .use(mdx)
-        .use(() => (tree: Node[]) => processContentTree(tree, file, indexName))
-        .process(content);
-}
-
-function getFiles(dirName: string): File[] {
-    const dirPath = path.join(__dirname, `../../mdx/${dirName}`);
-    const files = glob.sync(dirPath + '/**/*.mdx');
-    const processedFiles: File[] = [];
-
-    for (const file of files) {
-        if (dirName === 'tools') {
-            const name = path.basename(path.join(file, '../../'));
-            const version = path.basename(path.dirname(file));
-            const url = `/docs/tools/${name}/${version}`;
-
-            const fileIndex = processedFiles.findIndex((tool: File) => tool.name === name);
-            const isIndexPresent = fileIndex > -1;
-
-            const fileObject = { name, path: file, version, versions: [version], url };
-
-            if (isIndexPresent) {
-                if (compareVersions.compare(version, processedFiles[fileIndex].version, '>')) {
-                    const versions = [...processedFiles[fileIndex].versions, version];
-                    processedFiles[fileIndex] = { ...fileObject, versions };
-                }
-            } else {
-                processedFiles.push(fileObject);
-            }
-        }
-
-        if (dirName === 'guides') {
-            const { name } = path.parse(file);
-            const url = `/docs/guides/${name}`;
-            processedFiles.push({ name, path: file, url });
-        }
-
-        if (dirName === 'core-concepts' || dirName === 'api-explorer') {
-            const url = `/docs/${dirName}`;
-            processedFiles.push({ name: dirName, path: file, url });
-        }
-    }
-
-    return processedFiles;
-}
-
-function updateMetaFile(file: File): void {
-    const [_, relativePath] = file.path.split('mdx/');
-    meta[file.name].path = relativePath;
-
-    if (file.versions) {
-        const versionsSortedDesc = file.versions.sort(compareVersions).reverse();
-        meta[file.name].versions = versionsSortedDesc;
-    }
-
-    fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), stringify(meta, { replacer: null, indent: 4 }));
-}
-
-export async function indexFilesAsync(indexName: string): Promise<void> {
-    const files = getFiles(indexName);
-
-    for (const file of files) {
-        updateMetaFile(file);
-        await processMdxAsync(indexName, file);
-    }
 }
 
 interface File {
