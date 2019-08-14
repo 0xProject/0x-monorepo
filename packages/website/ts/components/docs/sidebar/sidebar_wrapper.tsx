@@ -34,6 +34,7 @@ const SidebarContent = styled.div`
     top: ${docs.headerOffset}px; /* To make space for the header (react-headroom) when clicking on links */
     max-height: 85vh;
     overflow-y: auto;
+    overflow-x: hidden;
 
     /* Slim scroll bar */
     scrollbar-color: ${colors.grey500} transparent;
