@@ -34,14 +34,14 @@ const FiltersList: React.FC<IFilterListProps> = ({ items, currentRefinement, cus
                 for (const filter of updatedFilters) {
                     // Look for item corresponding to the filter we already have
                     const currentItem = items.find(item => item.label === filter.label);
-                    // No match found means that algolia does not return the filter and we disable it on the initial list
-                    if (!currentItem) {
-                        filter.isDisabled = true;
-                    }
-                    // If there is a matching item and it is in the current refinement, we update our list of filters so that the filter is checked
                     if (currentItem) {
+                        // If there is a matching item and it is in the current refinement, we update our list of filters so that the filter is checked
                         const isRefined = currentRefinement.includes(filter.label);
                         filter.isRefined = isRefined;
+                        filter.isDisabled = false;
+                    } else {
+                        // No match found means that algolia does not return the filter and we disable it on the initial list
+                        filter.isDisabled = true;
                     }
                 }
                 setFilters(updatedFilters);
