@@ -151,7 +151,8 @@ export const AutocompleteWrapper = styled.div<IWrapperProps>`
         overflow-y: auto;
 
         /* Slim scroll bar */
-        scrollbar-width: 1px; /* Firefox */
+        scrollbar-color: ${colors.grey500} transparent;
+        scrollbar-width: thin; /* Firefox */
         -ms-overflow-style: none; /* IE 10+ */
         &::-webkit-scrollbar {
             width: 1px;
