@@ -271,7 +271,7 @@ describe('AssetProxyDispatcher', () => {
             return expect(tx).to.revertWith(expectedError);
         });
 
-        it('should should revert with the correct error when assetData length < 4 bytes', async () => {
+        it('should revert with the correct error when assetData length < 4 bytes', async () => {
             await assetProxyDispatcher.registerAssetProxy.awaitTransactionSuccessAsync(erc20Proxy.address, {
                 from: owner,
             });

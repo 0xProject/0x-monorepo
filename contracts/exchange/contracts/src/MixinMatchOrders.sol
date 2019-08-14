@@ -473,6 +473,116 @@ contract MixinMatchOrders is
         );
     }
 
+    /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
+    /// @param leftOrderHash First matched order hash.
+    /// @param rightOrderHash Second matched order hash.
+    /// @param leftOrder First matched order.
+    /// @param rightOrder Second matched order.
+    /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
+    /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
+    function _settleMatchedOrders(
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash,
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        internal
+    {
+        address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
+        address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
+
+        // Right maker asset -> left maker
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightOrder.makerAssetData,
+            rightOrder.makerAddress,
+            leftOrder.makerAddress,
+            matchedFillResults.left.takerAssetFilledAmount
+        );
+
+        // Left maker asset -> right maker
+        _dispatchTransferFrom(
+            leftOrderHash,
+            leftOrder.makerAssetData,
+            leftOrder.makerAddress,
+            rightOrder.makerAddress,
+            matchedFillResults.right.takerAssetFilledAmount
+        );
+
+        // Right maker fee -> right fee recipient
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightOrder.makerFeeAssetData,
+            rightOrder.makerAddress,
+            rightFeeRecipientAddress,
+            matchedFillResults.right.makerFeePaid
+        );
+
+        // Left maker fee -> left fee recipient
+        _dispatchTransferFrom(
+            leftOrderHash,
+            leftOrder.makerFeeAssetData,
+            leftOrder.makerAddress,
+            leftFeeRecipientAddress,
+            matchedFillResults.left.makerFeePaid
+        );
+
+        // Settle taker profits.
+        _dispatchTransferFrom(
+            leftOrderHash,
+            leftOrder.makerAssetData,
+            leftOrder.makerAddress,
+            takerAddress,
+            matchedFillResults.profitInLeftMakerAsset
+        );
+        _dispatchTransferFrom(
+            rightOrderHash,
+            rightOrder.makerAssetData,
+            rightOrder.makerAddress,
+            takerAddress,
+            matchedFillResults.profitInRightMakerAsset
+        );
+
+        // Settle taker fees.
+        if (
+            leftFeeRecipientAddress == rightFeeRecipientAddress &&
+            leftOrder.takerFeeAssetData.equals(rightOrder.takerFeeAssetData)
+        ) {
+            // Fee recipients and taker fee assets are identical, so we can
+            // transfer them in one go.
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                _safeAdd(
+                    matchedFillResults.left.takerFeePaid,
+                    matchedFillResults.right.takerFeePaid
+                )
+            );
+        } else {
+            // Right taker fee -> right fee recipient
+            _dispatchTransferFrom(
+                rightOrderHash,
+                rightOrder.takerFeeAssetData,
+                takerAddress,
+                rightFeeRecipientAddress,
+                matchedFillResults.right.takerFeePaid
+            );
+
+            // Left taker fee -> left fee recipient
+            _dispatchTransferFrom(
+                leftOrderHash,
+                leftOrder.takerFeeAssetData,
+                takerAddress,
+                leftFeeRecipientAddress,
+                matchedFillResults.left.takerFeePaid
+            );
+        }
+    }
+
     /// @dev Match complementary orders that have a profitable spread.
     ///      Each order is filled at their respective price point, and
     ///      the matcher receives a profit denominated in the left maker asset.
@@ -707,116 +817,5 @@ contract MixinMatchOrders is
         );
 
         return matchedFillResults;
-    }
-
-    /// @dev Settles matched order by transferring appropriate funds between order makers, taker, and fee recipient.
-    /// @param leftOrderHash First matched order hash.
-    /// @param rightOrderHash Second matched order hash.
-    /// @param leftOrder First matched order.
-    /// @param rightOrder Second matched order.
-    /// @param takerAddress Address that matched the orders. The taker receives the spread between orders as profit.
-    /// @param matchedFillResults Struct holding amounts to transfer between makers, taker, and fee recipients.
-    function _settleMatchedOrders(
-        bytes32 leftOrderHash,
-        bytes32 rightOrderHash,
-        LibOrder.Order memory leftOrder,
-        LibOrder.Order memory rightOrder,
-        address takerAddress,
-        LibFillResults.MatchedFillResults memory matchedFillResults
-    )
-        private
-    {
-        address leftFeeRecipientAddress = leftOrder.feeRecipientAddress;
-        address rightFeeRecipientAddress = rightOrder.feeRecipientAddress;
-
-        // Right maker asset -> left maker
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightOrder.makerAssetData,
-            rightOrder.makerAddress,
-            leftOrder.makerAddress,
-            matchedFillResults.left.takerAssetFilledAmount
-        );
-
-        // Left maker asset -> right maker
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftOrder.makerAssetData,
-            leftOrder.makerAddress,
-            rightOrder.makerAddress,
-            matchedFillResults.right.takerAssetFilledAmount
-        );
-
-        // Right maker fee -> right fee recipient
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightOrder.makerFeeAssetData,
-            rightOrder.makerAddress,
-            rightFeeRecipientAddress,
-            matchedFillResults.right.makerFeePaid
-        );
-
-        // Left maker fee -> left fee recipient
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftOrder.makerFeeAssetData,
-            leftOrder.makerAddress,
-            leftFeeRecipientAddress,
-            matchedFillResults.left.makerFeePaid
-        );
-
-        // Settle taker profits.
-        _dispatchTransferFrom(
-            leftOrderHash,
-            leftOrder.makerAssetData,
-            leftOrder.makerAddress,
-            takerAddress,
-            matchedFillResults.profitInLeftMakerAsset
-        );
-
-        _dispatchTransferFrom(
-            rightOrderHash,
-            rightOrder.makerAssetData,
-            rightOrder.makerAddress,
-            takerAddress,
-            matchedFillResults.profitInRightMakerAsset
-        );
-
-        // Settle taker fees.
-        if (
-            leftFeeRecipientAddress == rightFeeRecipientAddress &&
-            leftOrder.takerFeeAssetData.equals(rightOrder.takerFeeAssetData)
-        ) {
-            // Fee recipients and taker fee assets are identical, so we can
-            // transfer them in one go.
-            _dispatchTransferFrom(
-                leftOrderHash,
-                leftOrder.takerFeeAssetData,
-                takerAddress,
-                leftFeeRecipientAddress,
-                _safeAdd(
-                    matchedFillResults.left.takerFeePaid,
-                    matchedFillResults.right.takerFeePaid
-                )
-            );
-        } else {
-            // Right taker fee -> right fee recipient
-            _dispatchTransferFrom(
-                rightOrderHash,
-                rightOrder.takerFeeAssetData,
-                takerAddress,
-                rightFeeRecipientAddress,
-                matchedFillResults.right.takerFeePaid
-            );
-
-            // Left taker fee -> left fee recipient
-            _dispatchTransferFrom(
-                leftOrderHash,
-                leftOrder.takerFeeAssetData,
-                takerAddress,
-                leftFeeRecipientAddress,
-                matchedFillResults.left.takerFeePaid
-            );
-        }
     }
 }
