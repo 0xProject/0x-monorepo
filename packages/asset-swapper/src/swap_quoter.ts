@@ -382,10 +382,11 @@ export class SwapQuoter {
         takerAddress: string,
     ): Promise<[boolean, boolean]> {
         const orderValidator = this._contractWrappers.orderValidator;
-        const [balance, allowance] = await orderValidator.getBalanceAndAllowance.callAsync(
+        const balanceAndAllowance = await orderValidator.getBalanceAndAllowance.callAsync(
             takerAddress,
             swapQuote.takerAssetData,
         );
+        const allowance = balanceAndAllowance[1];
         return [
             allowance.isGreaterThanOrEqualTo(swapQuote.bestCaseQuoteInfo.totalTakerTokenAmount),
             allowance.isGreaterThanOrEqualTo(swapQuote.worstCaseQuoteInfo.totalTakerTokenAmount),

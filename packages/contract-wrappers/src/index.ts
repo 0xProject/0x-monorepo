@@ -28,7 +28,10 @@ export { CoordinatorWrapper } from './coordinator_wrapper';
 export { calldataOptimizationUtils } from './utils/calldata_optimization_utils';
 export { BlockRange } from '@0x/base-contract';
 export {
-    OrderStatus, ContractError, ForwarderError, OrderAndTraderInfo,
+    OrderStatus,
+    ContractError,
+    ForwarderError,
+    OrderAndTraderInfo,
     CoordinatorServerCancellationResponse,
     CoordinatorServerError,
     IndexedFilterValues,

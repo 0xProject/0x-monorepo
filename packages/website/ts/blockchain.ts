@@ -278,14 +278,10 @@ export class Blockchain {
 
         this._showFlashMessageIfLedger();
         const erc20Token = new ERC20TokenContract(token.address, this._contractWrappers.getProvider());
-        const txHash = await erc20Token.transfer.validateAndSendTransactionAsync(
-            toAddress,
-            amountInBaseUnits,
-            {
-                from: this._userAddressIfExists,
-                gasPrice: this._defaultGasPrice,
-            },
-        );
+        const txHash = await erc20Token.transfer.validateAndSendTransactionAsync(toAddress, amountInBaseUnits, {
+            from: this._userAddressIfExists,
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
         const etherScanLinkIfExists = utils.getEtherScanLinkIfExists(txHash, this.networkId, EtherscanLinkSuffixes.Tx);
         this._dispatcher.showFlashMessage(
@@ -429,13 +425,11 @@ export class Blockchain {
 
         this._showFlashMessageIfLedger();
         const etherToken = new WETH9Contract(etherTokenAddress, this._contractWrappers.getProvider());
-        const txHash = await etherToken.deposit.validateAndSendTransactionAsync(
-            {
-                value: amount,
-                from: this._userAddressIfExists,
-                gasPrice: this._defaultGasPrice,
-            },
-        );
+        const txHash = await etherToken.deposit.validateAndSendTransactionAsync({
+            value: amount,
+            from: this._userAddressIfExists,
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async convertWrappedEthTokensToEthAsync(etherTokenAddress: string, amount: BigNumber): Promise<void> {
@@ -444,13 +438,10 @@ export class Blockchain {
 
         this._showFlashMessageIfLedger();
         const etherToken = new WETH9Contract(etherTokenAddress, this._contractWrappers.getProvider());
-        const txHash = await etherToken.withdraw.validateAndSendTransactionAsync(
-            amount,
-            {
-                from: this._userAddressIfExists,
-                gasPrice: this._defaultGasPrice,
-            },
-        );
+        const txHash = await etherToken.withdraw.validateAndSendTransactionAsync(amount, {
+            from: this._userAddressIfExists,
+            gasPrice: this._defaultGasPrice,
+        });
         await this._showEtherScanLinkAndAwaitTransactionMinedAsync(txHash);
     }
     public async doesContractExistAtAddressAsync(address: string): Promise<boolean> {
@@ -482,7 +473,11 @@ export class Blockchain {
             const erc20Token = new ERC20TokenContract(tokenAddress, this._contractWrappers.getProvider());
             [balance, allowance] = await Promise.all([
                 erc20Token.balanceOf.callAsync(ownerAddressIfExists),
-                erc20Token.allowance.callAsync(ownerAddressIfExists, this._contractWrappers.contractAddresses.erc20Proxy, {}),
+                erc20Token.allowance.callAsync(
+                    ownerAddressIfExists,
+                    this._contractWrappers.contractAddresses.erc20Proxy,
+                    {},
+                ),
             ]);
         }
         return [balance, allowance];

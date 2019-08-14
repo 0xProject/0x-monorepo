@@ -271,10 +271,10 @@ export class AssetBuyer {
             const value = ethAmount || worstCaseQuoteInfo.totalEthAmount;
 
             const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
-                orders,
+                optimizedMarketOrders,
                 assetBuyAmount,
                 orders.map(o => o.signature),
-                feeOrders,
+                optimizedFeeOrders,
                 feeOrders.map(o => o.signature),
                 formattedFeePercentage,
                 feeRecipient,
