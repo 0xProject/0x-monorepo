@@ -16,9 +16,10 @@ describe('SRAWebsocketOrderProvider', () => {
     const websocketEndpoint = 'wss://localhost';
     const makerAssetData = '0xf47261b000000000000000000000000089d24a6b4ccb1b6faa2625fe562bdd9a23260359';
     const takerAssetData = '0xf47261b0000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2';
+    const stubs: sinon.SinonStub[] = [];
     afterEach(() => {
         void provider.destroyAsync();
-        sinon.restore();
+        stubs.forEach(s => s.restore());
     });
     beforeEach(() => {
         orderStore = new OrderStore();
@@ -28,9 +29,12 @@ describe('SRAWebsocketOrderProvider', () => {
             const httpStub = sinon
                 .stub(HttpClient.prototype, 'getOrdersAsync')
                 .callsFake(async () => Promise.resolve({ records: [], total: 0, perPage: 0, page: 1 }));
-            sinon
-                .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
-                .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP }));
+            stubs.push(
+                sinon
+                    .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
+                    .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP })),
+            );
+            stubs.push(httpStub);
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             expect(httpStub.callCount).toBe(2);
@@ -39,9 +43,12 @@ describe('SRAWebsocketOrderProvider', () => {
             const stub = sinon
                 .stub(HttpClient.prototype, 'getOrdersAsync')
                 .callsFake(async () => Promise.resolve({ records: [], total: 0, perPage: 0, page: 1 }));
-            sinon
-                .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
-                .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP }));
+            stubs.push(
+                sinon
+                    .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
+                    .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP })),
+            );
+            stubs.push(stub);
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
@@ -57,6 +64,7 @@ describe('SRAWebsocketOrderProvider', () => {
                     page: 1,
                 }),
             );
+            stubs.push(stub);
             let handler: OrdersChannelHandler | undefined;
             const wsStub = sinon
                 .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
@@ -64,6 +72,7 @@ describe('SRAWebsocketOrderProvider', () => {
                     handler = updateHandler;
                     return Promise.resolve({ subscribe: NOOP, close: NOOP });
                 });
+            stubs.push(wsStub);
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             expect(handler).not.toBe(undefined);
@@ -79,30 +88,36 @@ describe('SRAWebsocketOrderProvider', () => {
             expect(storedOrders.size()).toBe(1);
         });
         test('stores the orders', async () => {
-            sinon.stub(HttpClient.prototype, 'getOrdersAsync').callsFake(async () =>
-                Promise.resolve({
-                    records: [createOrder(makerAssetData, takerAssetData)],
-                    total: 1,
-                    perPage: 1,
-                    page: 1,
-                }),
+            stubs.push(
+                sinon.stub(HttpClient.prototype, 'getOrdersAsync').callsFake(async () =>
+                    Promise.resolve({
+                        records: [createOrder(makerAssetData, takerAssetData)],
+                        total: 1,
+                        perPage: 1,
+                        page: 1,
+                    }),
+                ),
             );
-            sinon
-                .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
-                .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP }));
+            stubs.push(
+                sinon
+                    .stub(ordersChannelFactory, 'createWebSocketOrdersChannelAsync')
+                    .callsFake(async () => Promise.resolve({ subscribe: NOOP, close: NOOP })),
+            );
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             const orders = orderStore.getOrderSetForAssets(makerAssetData, takerAssetData);
             expect(orders.size()).toBe(1);
         });
         test('reconnects on channel close', async () => {
-            sinon.stub(HttpClient.prototype, 'getOrdersAsync').callsFake(async () =>
-                Promise.resolve({
-                    records: [],
-                    total: 0,
-                    perPage: 1,
-                    page: 1,
-                }),
+            stubs.push(
+                sinon.stub(HttpClient.prototype, 'getOrdersAsync').callsFake(async () =>
+                    Promise.resolve({
+                        records: [],
+                        total: 0,
+                        perPage: 1,
+                        page: 1,
+                    }),
+                ),
             );
             let handler: OrdersChannelHandler | undefined;
             const wsStub = sinon
@@ -111,6 +126,7 @@ describe('SRAWebsocketOrderProvider', () => {
                     handler = updateHandler;
                     return Promise.resolve({ subscribe: NOOP, close: NOOP });
                 });
+            stubs.push(wsStub);
             provider = new SRAWebsocketOrderProvider({ httpEndpoint, websocketEndpoint }, orderStore);
             await provider.createSubscriptionForAssetPairAsync(makerAssetData, takerAssetData);
             expect(handler).not.toBe(undefined);
