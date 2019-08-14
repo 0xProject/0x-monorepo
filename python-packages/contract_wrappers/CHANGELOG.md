@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0 - TBD
+
+-   Added wrapper for DevUtils contract.
+
 ## 1.0.3 - 2019-08-10
 
 -   Added erroneously missing source files.
