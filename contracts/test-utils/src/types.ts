@@ -137,3 +137,38 @@ export interface MatchOrder {
     leftSignature: string;
     rightSignature: string;
 }
+
+export interface ERC1155Holdings {
+    [owner: string]: {
+        [contract: string]: {
+            fungible: {
+                [tokenId: string]: BigNumber;
+            };
+            nonFungible: BigNumber[];
+        };
+    };
+}
+
+export interface TokenBalances {
+    erc20: {
+        [owner: string]: {
+            [contract: string]: BigNumber;
+        };
+    };
+    erc721: {
+        [owner: string]: {
+            [contract: string]: BigNumber[];
+        };
+    };
+    erc1155: ERC1155Holdings;
+}
+
+export interface FillEventArgs {
+    orderHash: string;
+    makerAddress: string;
+    takerAddress: string;
+    makerAssetFilledAmount: BigNumber;
+    takerAssetFilledAmount: BigNumber;
+    makerFeePaid: BigNumber;
+    takerFeePaid: BigNumber;
+}
