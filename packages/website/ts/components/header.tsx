@@ -4,8 +4,6 @@ import MediaQuery from 'react-responsive';
 import styled, { css, withTheme } from 'styled-components';
 import { Link } from 'ts/components/documentation/shared/link';
 
-import { Link } from '@0x/react-shared';
-
 import { Button } from 'ts/components/button';
 import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
 import { DropdownResources } from 'ts/components/dropdowns/dropdown_resources';
