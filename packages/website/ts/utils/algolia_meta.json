@@ -41,6 +41,16 @@
         "tags": ["Relayers"],
         "path": "guides/relayer-strategies.mdx"
     },
+    "legal-guide": {
+        "title": "0x Legal Guide",
+        "description": "",
+        "topics": ["Legal"],
+        "difficulty": "Beginner",
+        "isCommunity": false,
+        "isFeatured": true,
+        "tags": ["Legal"],
+        "path": "guides/legal-guide.mdx"
+    },
     "page-template": {
         "title": "Page template",
         "description": "A relayer is any party or entity which hosts an off-chain orderbook.",
