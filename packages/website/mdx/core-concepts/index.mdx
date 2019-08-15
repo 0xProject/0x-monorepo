@@ -82,6 +82,8 @@ A [cryptographic hash function](https://en.wikipedia.org/wiki/Cryptographic_hash
 
 0x uses a hash function to create an `order digest` (order hash) that uniquely identifies all the order fields chosen by the maker. Changing any of the fields of the order will cause the order hash to change. Thanks to this property of hash functions, the order hash can be used as a unique identifier for an order. Another nice aspect of using a hash function is that all order hashes will have the same fixed length, regardless of the complexity or size of the order's fields.
 
+![Hashing](/images/docs/hashing.svg "Hashing")
+
 We now have a unique, fixed-length identifier we can generate for every single permutation of a 0x order. The next step is to allow a maker to cryptographically commit to this succinct representation of their 0x order.
 
 ### Digital signature
@@ -93,6 +95,8 @@ A [digital signature](https://en.wikipedia.org/wiki/Digital_signature) is a math
 
 0x uses a digital signature to allow order makers to cryptographically commit to the 0x order they author. This allows the maker to rest assured that they cannot be tricked into filling any order except the ones they've authored. In turn, the potential counter-parties can verify that the maker did indeed author their 0x order(s).
 
+![Signing](/images/docs/signing.svg "Signing")
+
 For a 0x order to be considered valid and fillable, it must have all the stipulated fields mentioned above and include a digital signature from the maker attesting to all the chosen field values. At this point, the 0x order is ready to be shared with potential counter-parties.
 
 ## Off-chain relay, on-chain settlement
@@ -103,9 +107,13 @@ If the maker already knows their desired counter-party, they can simply send the
 
 Once someone finds and wishes to fill the 0x order authored by the maker, they are able to fill it by submitting the order, along with the amount they wish to fill it for, to the blockchain. The 0x protocol's settlement logic will verify the makers digital signature and that all the conditions of the trade are satisfied. If so, the assets involved will be atomically swapped between the maker and taker. If any of the orders conditions are not met however, the fill request is rejected.
 
+<Animation name="onOff" />
+
 ## A non-custodial exchange protocol
 
 Centralized exchanges require traders to deposit the assets they wish to trade with the exchange. From this point onwards, the exchange has full custody over the assets and the trader can only trade with other traders at that specific exchange. Centralized exchanges become large targets for hackers because they aggregate the assets of all their users into one place. There have been [over $1.5 billion stolen](https://discover.ledger.com/hackstimeline/) from centralized exchanges in the last 10 years. In response to this, the 0x protocol enables developers to build non-custodial exchanges; ones that never take custody over traders assets. Instead, the assets are settled directly between the two trader's wallets when an order is filled. This drastically reduces the counter-party risk involved with exchanging assets. Traders only need to trust a small amount of the 0x protocol source code running on the blockchain. All source code with the priviledge to move trader funds is open source, immutable and verifiable on-chain.
+
+<Animation name="cexDex" />
 
 ## Networked liquidity
 
@@ -114,6 +122,8 @@ Because the 0x protocol is non-custodial and a shared standard used by many rela
 In order to help relayers share liquidity, the 0x core team has published [a standard relayer API](https://github.com/0xProject/standard-relayer-api/) any relayer can implement in order to make it easier for other relayers to pull orders from their orderbook. In this way, relayers can tap into each others liquidity.
 
 In addition to an API standard, the 0x core team is also building  [0x Mesh](https://blog.0xproject.com/0x-roadmap-2019-part-3-networked-liquidity-0x-mesh-9a24026202b3), a peer-to-peer network for sharing 0x orders. Anyone can [spin up a Mesh node](https://github.com/0xProject/0x-mesh/) and immediately start sharing 0x orders with others in the ecosystem. We hope to enable the creation of a globally accessible, physically distributed orderbook with more liquidity then any single centralized exchange.
+
+<Animation name="mesh" />
 
 ## Extending the 0x protocol
 
@@ -151,6 +161,8 @@ An EOA is an Ethereum account that is directly controlled by a human being. Both
 
 A smart contract account is generated everytime a smart contract program is deployed to the blockchain. The contract code lives at this address. In order to invoke a function defined within a smart contract program, one must send a transaction to it's address. The transaction will also specify which function of this program the caller wishes to invoke, along with which parameters to supply. E.g., when filling an order using 0x, the taker will send an Etherem transaction to the 0x exchange contract address, specifying it should invoke the `fillOrder` function, and supply as parameters the order they want filled, and how much they want to fill it for.
 
+![EOA vs smart contract](/images/docs/eoa_smart_contract.svg "EOA vs smart contract")
+
 ### Gas
 
 Blockchain transactions cost a fee to get mined and this fee is paid to the miner. The fee should correspond to the amount of work the transaction will require the miner to do. Since smart contracts can involve arbitrary logic, Ethereum invented a system of accounting that sets a price for every  program instruction available to smart contract developers. This accounting unit is called "gas" and anyone can figure out how much gas a transaction will cost by adding up the gas cost of all the instructions a particular transaction will execute. Since fees are paid to miners in Ether, there needs to be an exchange rate between a unit of gas and Ether. Instead of setting a fixed exchange rate, the Ethereum core developers decided to let the transaction sender specify the amount they are willing to pay per unit of gas consumed by their transaction.
@@ -164,6 +176,8 @@ In this way, miners can optimize their reward by including the transactions that
 ### Ethereum clients
 
 Ethereum is a peer-to-peer network of nodes that all keep a record of the blocks mined, and many of which participate in mining the blocks as well. By sending a transaction to any one node, it will quickly propogate to all other nodes through the networks gossip channels. Once a transaction is mined, the block it was included in will also be gossiped to all the nodes. In order to send an Ethereum transaction to a miner, all one has to do is send it to a single Ethereum node that is part of the P2P network. This node will take care of propogating it to the rest of the network.
+
+<Animation name="network" />
 
 The main functions of an Ethereum client are to:
 
