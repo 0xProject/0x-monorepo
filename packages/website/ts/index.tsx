@@ -125,16 +125,8 @@ render(
                         <Route exact={true} path={WebsitePaths.Vote} component={VoteIndex as any} />
                         <Route exact={true} path={WebsitePaths.Extensions} component={Extensions as any} />
                         <Route exact={true} path={WebsitePaths.AssetSwapperPage} component={CFL as any} />
-                        <Route
-                            exact={true}
-                            path={WebsitePaths.PrivacyPolicy}
-                            component={PrivacyPolicy as any}
-                        />
-                        <Route
-                            exact={true}
-                            path={WebsitePaths.TermsOfService}
-                            component={TermsOfService as any}
-                        />
+                        <Route exact={true} path={WebsitePaths.PrivacyPolicy} component={PrivacyPolicy as any} />
+                        <Route exact={true} path={WebsitePaths.TermsOfService} component={TermsOfService as any} />
                         <Route exact={true} path={WebsitePaths.AboutMission} component={NextAboutMission as any} />
                         <Route exact={true} path={WebsitePaths.AboutTeam} component={NextAboutTeam as any} />
                         <Route exact={true} path={WebsitePaths.AboutPress} component={NextAboutPress as any} />
@@ -153,10 +145,6 @@ render(
                             component={LazyContractWrappersDocumentation}
                         />
                         <Route path={`${WebsitePaths.Migrations}/:version?`} component={LazyMigrationsDocumentation} />
-                        <Route
-                            path={`${WebsitePaths.OrderWatcher}/:version?`}
-                            component={LazyOrderWatcherDocumentation}
-                        />
                         <Route path={`${WebsitePaths.Connect}/:version?`} component={LazyConnectDocumentation} />
                         <Route
                             path={`${WebsitePaths.SolCompiler}/:version?`}
