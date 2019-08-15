@@ -124,7 +124,7 @@ export class Next0xInstant extends React.Component<Props> {
                 <ConfiguratorSection
                     id="configurator"
                     maxWidth="1386px"
-                    padding="0 58px 70px"
+                    padding="10px 58px 70px"
                     bgColor={colors.backgroundDark}
                 >
                     <Heading>0x Instant Configurator</Heading>

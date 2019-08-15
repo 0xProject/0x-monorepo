@@ -27,6 +27,11 @@ const navData = [
         description: 'Vote on changes to the 0x protocol',
         url: WebsitePaths.Vote,
     },
+    {
+        title: 'Contract Liquidity',
+        description: 'Consume 0x liquidity from your smart contracts',
+        url: WebsitePaths.ContractFillableLiquidity,
+    },
 ];
 
 export const DropdownProducts: React.FunctionComponent<{}> = () => (

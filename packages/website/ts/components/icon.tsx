@@ -10,7 +10,7 @@ interface IconProps extends PaddingInterface {
     color?: string;
     name?: string;
     component?: React.ReactNode;
-    size?: 'small' | 'medium' | 'large' | 'hero' | number;
+    size?: 'small' | 'medium' | 'large' | 'hero' | 'natural' | number;
 }
 
 export const Icon: React.FunctionComponent<IconProps> = (props: IconProps) => {
@@ -49,8 +49,11 @@ export const InlineIconWrap = styled.div<PaddingInterface>`
     }
 `;
 
-const _getSize = (size: string | number = 'small'): string => {
+const _getSize = (size: string | number = 'small'): string | undefined => {
     if (typeof size === 'string') {
+        if (size === 'natural') {
+            return undefined;
+        }
         return `var(--${size}Icon)`;
     }
 

@@ -107,4 +107,9 @@ export const documentConstants: { [s: string]: DocumentMetadata } = {
         description: '',
         keywords: '',
     },
+    CFL: {
+        title: '0x: Contract Fillable Liquidity',
+        description: '',
+        keywords: '',
+    },
 };
