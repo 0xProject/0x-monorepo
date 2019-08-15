@@ -178,6 +178,11 @@ export class IAssetProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).addAuthorizedAddress.callAsync(target, txData);
+            const txHash = await (this as any).addAuthorizedAddress.sendTransactionAsync(target, txData);
+            return txHash;
+        },
     };
     /**
      * Removes authorizion of an address.
@@ -329,6 +334,11 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).removeAuthorizedAddress.callAsync(target, txData);
+            const txHash = await (this as any).removeAuthorizedAddress.sendTransactionAsync(target, txData);
+            return txHash;
         },
     };
     /**
@@ -519,6 +529,19 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            target: string,
+            index: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
+            const txHash = await (this as any).removeAuthorizedAddressAtIndex.sendTransactionAsync(
+                target,
+                index,
+                txData,
+            );
+            return txHash;
         },
     };
     /**
@@ -745,6 +768,17 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            assetData: string,
+            from: string,
+            to: string,
+            amount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(assetData, from, to, amount, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(assetData, from, to, amount, txData);
+            return txHash;
         },
     };
     /**
@@ -1021,6 +1055,11 @@ export class IAssetProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     public static async deployFrom0xArtifactAsync(

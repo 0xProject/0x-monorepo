@@ -201,6 +201,14 @@ export class CoordinatorRegistryContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            coordinatorEndpoint: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setCoordinatorEndpoint.callAsync(coordinatorEndpoint, txData);
+            const txHash = await (this as any).setCoordinatorEndpoint.sendTransactionAsync(coordinatorEndpoint, txData);
+            return txHash;
+        },
     };
     /**
      * Gets the endpoint for a Coordinator.
