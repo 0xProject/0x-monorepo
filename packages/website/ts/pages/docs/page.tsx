@@ -58,12 +58,9 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
     // If the route path includes a version, replace the initial version on path
     const filePath = versions && version ? path.replace(versions[0], version) : path;
 
-    React.useEffect(
-        () => {
-            void loadPageAsync(filePath);
-        },
-        [filePath],
-    );
+    React.useEffect(() => {
+        void loadPageAsync(filePath);
+    }, [filePath]);
 
     const loadPageAsync = async (filePath: string) => {
         try {
@@ -129,7 +126,6 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
                                 // @ts-ignore */}
                             <Component />
                         </MDXProvider>
-                        <NewsletterWidget />
                         <HelpCallout />
                         <HelpfulCta page={key} />
                     </ContentWrapper>
@@ -156,5 +152,6 @@ const mdxComponents = {
     ul: UnorderedList,
     Animation,
     CodeTabs,
+    NewsletterWidget,
     Notification,
 };
