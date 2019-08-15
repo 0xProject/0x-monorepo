@@ -13,6 +13,7 @@ import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
 import { InlineCode } from 'ts/components/docs/mdx/inline_code';
 import { InlineLink } from 'ts/components/docs/mdx/inline_link';
 import { NewsletterWidget } from 'ts/components/docs/mdx/newsletter_widget';
+import { Note } from 'ts/components/docs/mdx/note';
 import { Notification } from 'ts/components/docs/mdx/notification';
 import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
 import { Table } from 'ts/components/docs/mdx/table';
@@ -153,5 +154,6 @@ const mdxComponents = {
     Animation,
     CodeTabs,
     NewsletterWidget,
+    Note,
     Notification,
 };
