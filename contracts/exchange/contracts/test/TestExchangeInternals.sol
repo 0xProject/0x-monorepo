@@ -41,6 +41,21 @@ contract TestExchangeInternals is
         Exchange(chainId)
     {}
 
+    function assertValidMatch(
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder
+    )
+        public
+        view
+    {
+        _assertValidMatch(
+            leftOrder,
+            rightOrder,
+            getOrderInfo(leftOrder),
+            getOrderInfo(rightOrder)
+        );
+    }
+
     /// @dev Call `_updateFilledState()` but first set `filled[order]` to
     ///      `orderTakerAssetFilledAmount`.
     function testUpdateFilledState(
@@ -71,6 +86,26 @@ contract TestExchangeInternals is
         public
     {
         _settleOrder(orderHash, order, takerAddress, fillResults);
+    }
+
+    function settleMatchOrders(
+        bytes32 leftOrderHash,
+        bytes32 rightOrderHash,
+        LibOrder.Order memory leftOrder,
+        LibOrder.Order memory rightOrder,
+        address takerAddress,
+        LibFillResults.MatchedFillResults memory matchedFillResults
+    )
+        public
+    {
+        _settleMatchedOrders(
+            leftOrderHash,
+            rightOrderHash,
+            leftOrder,
+            rightOrder,
+            takerAddress,
+            matchedFillResults
+        );
     }
 
     /// @dev Overidden to only log arguments so we can test `_settleOrder()`.

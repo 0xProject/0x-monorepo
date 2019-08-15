@@ -1,12 +1,14 @@
+import { ReferenceFunctions as LibReferenceFunctions } from '@0x/contracts-exchange-libs';
 import { blockchainTests, constants, expect, hexRandom, LogDecoder } from '@0x/contracts-test-utils';
-import { OrderWithoutDomain as Order } from '@0x/types';
+import { ExchangeRevertErrors, orderHashUtils } from '@0x/order-utils';
+import { Order, OrderWithoutDomain } from '@0x/types';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
+import { Web3Wrapper } from '@0x/web3-wrapper';
 import { LogWithDecodedArgs } from 'ethereum-types';
 import * as _ from 'lodash';
 
 import {
     artifacts,
-    ReferenceFunctions,
     TestExchangeInternalsContract,
     TestExchangeInternalsDispatchTransferFromCalledEventArgs,
     TestExchangeInternalsFillEventArgs,
@@ -23,7 +25,9 @@ blockchainTests('Exchange core internal functions', env => {
     let senderAddress: string;
 
     before(async () => {
-        [senderAddress] = await env.getAccountAddressesAsync();
+        const accounts = await env.getAccountAddressesAsync();
+        senderAddress = accounts[0];
+
         testExchange = await TestExchangeInternalsContract.deployFrom0xArtifactAsync(
             artifacts.TestExchangeInternals,
             env.provider,
@@ -31,6 +35,110 @@ blockchainTests('Exchange core internal functions', env => {
             new BigNumber(CHAIN_ID),
         );
         logDecoder = new LogDecoder(env.web3Wrapper, artifacts);
+    });
+
+    blockchainTests('assertValidMatch', () => {
+        const ORDER_DEFAULTS = {
+            senderAddress: randomAddress(),
+            makerAddress: randomAddress(),
+            takerAddress: randomAddress(),
+            makerFee: ONE_ETHER.times(0.001),
+            takerFee: ONE_ETHER.times(0.003),
+            makerAssetAmount: ONE_ETHER,
+            takerAssetAmount: ONE_ETHER.times(0.5),
+            makerAssetData: randomAssetData(),
+            takerAssetData: randomAssetData(),
+            makerFeeAssetData: randomAssetData(),
+            takerFeeAssetData: randomAssetData(),
+            salt: new BigNumber(_.random(0, 1e8)),
+            feeRecipientAddress: randomAddress(),
+            expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
+            domain: {
+                verifyingContractAddress: constants.NULL_ADDRESS,
+                chainId: 1337, // The chain id for the isolated exchange
+            },
+        };
+
+        function makeOrder(details?: Partial<Order>): Order {
+            return _.assign({}, ORDER_DEFAULTS, details);
+        }
+
+        before(async () => {
+            ORDER_DEFAULTS.domain.verifyingContractAddress = testExchange.address;
+        });
+
+        it('should revert if the maker asset multiplication should overflow', async () => {
+            const leftOrder = makeOrder({
+                makerAssetAmount: constants.MAX_UINT256,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const rightOrder = makeOrder({
+                makerAssetAmount: constants.MAX_UINT256_ROOT,
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                leftOrder.makerAssetAmount,
+                rightOrder.makerAssetAmount,
+            );
+            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+        });
+
+        it('should revert if the taker asset multiplication should overflow', async () => {
+            const leftOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: constants.MAX_UINT256,
+            });
+            const rightOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+                takerAssetAmount: constants.MAX_UINT256_ROOT,
+            });
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256MultiplicationOverflow,
+                leftOrder.takerAssetAmount,
+                rightOrder.takerAssetAmount,
+            );
+            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+        });
+
+        it('should revert if the prices of the left order is less than the price of the right order', async () => {
+            const leftOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(49, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const rightOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            const orderHashHexLeft = orderHashUtils.getOrderHashHex(leftOrder);
+            const orderHashHexRight = orderHashUtils.getOrderHashHex(rightOrder);
+            const expectedError = new ExchangeRevertErrors.NegativeSpreadError(orderHashHexLeft, orderHashHexRight);
+            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.revertWith(expectedError);
+        });
+
+        it('should succeed if the prices of the left and right orders are equal', async () => {
+            const leftOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const rightOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.be.fulfilled('');
+        });
+
+        it('should succeed if the price of the left order is higher than the price of the right', async () => {
+            const leftOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+            });
+            const rightOrder = makeOrder({
+                makerAssetAmount: Web3Wrapper.toBaseUnitAmount(100, 18),
+                takerAssetAmount: Web3Wrapper.toBaseUnitAmount(50, 18),
+            });
+            return expect(testExchange.assertValidMatch.callAsync(leftOrder, rightOrder)).to.be.fulfilled('');
+        });
     });
 
     blockchainTests.resets('updateFilledState', async () => {
@@ -51,18 +159,18 @@ blockchainTests('Exchange core internal functions', env => {
             expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
         };
 
-        function makeOrder(details?: Partial<Order>): Order {
+        function makeOrder(details?: Partial<OrderWithoutDomain>): OrderWithoutDomain {
             return _.assign({}, ORDER_DEFAULTS, details);
         }
 
         async function testUpdateFilledStateAsync(
-            order: Order,
+            order: OrderWithoutDomain,
             orderTakerAssetFilledAmount: BigNumber,
             takerAddress: string,
             takerAssetFillAmount: BigNumber,
         ): Promise<void> {
             const orderHash = randomHash();
-            const fillResults = ReferenceFunctions.calculateFillResults(order, takerAssetFillAmount);
+            const fillResults = LibReferenceFunctions.calculateFillResults(order, takerAssetFillAmount);
             const expectedFilledState = orderTakerAssetFilledAmount.plus(takerAssetFillAmount);
             // CAll `testUpdateFilledState()`, which will set the `filled`
             // state for this order to `orderTakerAssetFilledAmount` before
@@ -196,6 +304,306 @@ blockchainTests('Exchange core internal functions', env => {
             expect(logs[3].args.from).to.eq(order.makerAddress);
             expect(logs[3].args.to).to.eq(order.feeRecipientAddress);
             expect(logs[3].args.amount).to.bignumber.eq(fillResults.makerFeePaid);
+        });
+    });
+
+    blockchainTests('settleMatchOrders', () => {
+        const getOrder = () => {
+            return {
+                senderAddress: randomAddress(),
+                makerAddress: randomAddress(),
+                takerAddress: randomAddress(),
+                makerFee: ONE_ETHER.times(0.001),
+                takerFee: ONE_ETHER.times(0.003),
+                makerAssetAmount: ONE_ETHER,
+                takerAssetAmount: ONE_ETHER.times(0.5),
+                makerAssetData: randomAssetData(),
+                takerAssetData: randomAssetData(),
+                makerFeeAssetData: randomAssetData(),
+                takerFeeAssetData: randomAssetData(),
+                salt: new BigNumber(_.random(0, 1e8)),
+                feeRecipientAddress: randomAddress(),
+                expirationTimeSeconds: new BigNumber(_.random(0, 1e8)),
+            };
+        };
+
+        it('should revert if the taker fee paid fields addition overflow and left.feeRecipient == right.feeRecipient && left.takerFeeAssetData == right.takerFeeAssetData', async () => {
+            // Get the arguments for the call to `settleMatchOrders()`.
+            const leftOrder = getOrder();
+            const rightOrder = getOrder();
+            const leftOrderHash = randomHash();
+            const rightOrderHash = randomHash();
+            const takerAddress = randomAddress();
+            const matchedFillResults = {
+                left: {
+                    makerAssetFilledAmount: ONE_ETHER.times(2),
+                    takerAssetFilledAmount: ONE_ETHER.times(10),
+                    makerFeePaid: ONE_ETHER.times(0.01),
+                    takerFeePaid: constants.MAX_UINT256,
+                },
+                right: {
+                    takerAssetFilledAmount: ONE_ETHER.times(20),
+                    makerAssetFilledAmount: ONE_ETHER.times(4),
+                    makerFeePaid: ONE_ETHER.times(0.02),
+                    takerFeePaid: constants.MAX_UINT256_ROOT,
+                },
+                profitInLeftMakerAsset: ONE_ETHER,
+                profitInRightMakerAsset: ONE_ETHER.times(2),
+            };
+
+            // Set the fee recipient addresses and the taker fee asset data fields to be the same
+            rightOrder.feeRecipientAddress = leftOrder.feeRecipientAddress;
+            rightOrder.takerFeeAssetData = leftOrder.takerFeeAssetData;
+
+            // The expected error that should be thrown by the function.
+            const expectedError = new SafeMathRevertErrors.SafeMathError(
+                SafeMathRevertErrors.SafeMathErrorCodes.Uint256AdditionOverflow,
+                matchedFillResults.left.takerFeePaid,
+                matchedFillResults.right.takerFeePaid,
+            );
+
+            // Ensure that the call to `settleMatchOrders()` fails with the expected error.
+            const tx = testExchange.settleMatchOrders.sendTransactionAsync(
+                leftOrderHash,
+                rightOrderHash,
+                leftOrder,
+                rightOrder,
+                takerAddress,
+                matchedFillResults,
+            );
+            return expect(tx).to.revertWith(expectedError);
+        });
+
+        it('should succeed if the taker fee paid fields addition overflow and left.feeRecipient != right.feeRecipient || left.takerFeeAssetData != right.takerFeeAssetData', async () => {
+            // Get the arguments for the call to `settleMatchOrders()`.
+            const leftOrder = getOrder();
+            const rightOrder = getOrder();
+            const leftOrderHash = randomHash();
+            const rightOrderHash = randomHash();
+            const takerAddress = randomAddress();
+            const matchedFillResults = {
+                left: {
+                    makerAssetFilledAmount: ONE_ETHER.times(2),
+                    takerAssetFilledAmount: ONE_ETHER.times(10),
+                    makerFeePaid: ONE_ETHER.times(0.01),
+                    takerFeePaid: constants.MAX_UINT256,
+                },
+                right: {
+                    takerAssetFilledAmount: ONE_ETHER.times(20),
+                    makerAssetFilledAmount: ONE_ETHER.times(4),
+                    makerFeePaid: ONE_ETHER.times(0.02),
+                    takerFeePaid: constants.MAX_UINT256_ROOT,
+                },
+                profitInLeftMakerAsset: ONE_ETHER,
+                profitInRightMakerAsset: ONE_ETHER.times(2),
+            };
+
+            // The call to `settleMatchOrders()` should be successful.
+            return expect(
+                testExchange.settleMatchOrders.sendTransactionAsync(
+                    leftOrderHash,
+                    rightOrderHash,
+                    leftOrder,
+                    rightOrder,
+                    takerAddress,
+                    matchedFillResults,
+                ),
+            ).to.be.fulfilled('');
+        });
+
+        it('calls `_dispatchTransferFrom()` to collect fees from the left order when left.feeRecipient == right.feeRecipient && left.takerFeeAssetData == right.takerFeeAssetData', async () => {
+            const leftOrder = getOrder();
+            const rightOrder = getOrder();
+            const leftOrderHash = randomHash();
+            const rightOrderHash = randomHash();
+            const takerAddress = randomAddress();
+            const matchedFillResults = {
+                left: {
+                    makerAssetFilledAmount: ONE_ETHER.times(2),
+                    takerAssetFilledAmount: ONE_ETHER.times(10),
+                    makerFeePaid: ONE_ETHER.times(0.01),
+                    takerFeePaid: ONE_ETHER.times(0.025),
+                },
+                right: {
+                    takerAssetFilledAmount: ONE_ETHER.times(20),
+                    makerAssetFilledAmount: ONE_ETHER.times(4),
+                    makerFeePaid: ONE_ETHER.times(0.02),
+                    takerFeePaid: ONE_ETHER.times(0.05),
+                },
+                profitInLeftMakerAsset: ONE_ETHER,
+                profitInRightMakerAsset: ONE_ETHER.times(2),
+            };
+
+            // Set the fee recipient addresses and the taker fee asset data fields to be the same
+            rightOrder.feeRecipientAddress = leftOrder.feeRecipientAddress;
+            rightOrder.takerFeeAssetData = leftOrder.takerFeeAssetData;
+
+            // Call settleMatchOrders and collect the logs
+            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
+                await testExchange.settleMatchOrders.sendTransactionAsync(
+                    leftOrderHash,
+                    rightOrderHash,
+                    leftOrder,
+                    rightOrder,
+                    takerAddress,
+                    matchedFillResults,
+                ),
+            );
+            const logs = receipt.logs as Array<
+                LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
+            >;
+
+            // Ensure that the logs have the correct lengths and names
+            expect(logs.length).to.be.eq(7);
+            expect(_.every(logs, log => log.event === 'DispatchTransferFromCalled')).to.be.true();
+
+            // Right maker asset -> left maker
+            expect(logs[0].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[0].args.assetData).to.be.eq(rightOrder.makerAssetData);
+            expect(logs[0].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[0].args.to).to.be.eq(leftOrder.makerAddress);
+            expect(logs[0].args.amount).bignumber.to.be.eq(matchedFillResults.left.takerAssetFilledAmount);
+
+            // Left maker asset -> right maker
+            expect(logs[1].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[1].args.assetData).to.be.eq(leftOrder.makerAssetData);
+            expect(logs[1].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[1].args.to).to.be.eq(rightOrder.makerAddress);
+            expect(logs[1].args.amount).bignumber.to.be.eq(matchedFillResults.right.takerAssetFilledAmount);
+
+            // Right maker fee -> right fee recipient
+            expect(logs[2].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[2].args.assetData).to.be.eq(rightOrder.makerFeeAssetData);
+            expect(logs[2].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[2].args.to).to.be.eq(rightOrder.feeRecipientAddress);
+            expect(logs[2].args.amount).bignumber.to.be.eq(matchedFillResults.right.makerFeePaid);
+
+            // Left maker fee -> left fee recipient
+            expect(logs[3].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[3].args.assetData).to.be.eq(leftOrder.makerFeeAssetData);
+            expect(logs[3].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[3].args.to).to.be.eq(leftOrder.feeRecipientAddress);
+            expect(logs[3].args.amount).bignumber.to.be.eq(matchedFillResults.left.makerFeePaid);
+
+            // Left maker -> taker profit
+            expect(logs[4].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[4].args.assetData).to.be.eq(leftOrder.makerAssetData);
+            expect(logs[4].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[4].args.to).to.be.eq(takerAddress);
+            expect(logs[4].args.amount).bignumber.to.be.eq(matchedFillResults.profitInLeftMakerAsset);
+
+            // right maker -> taker profit
+            expect(logs[5].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[5].args.assetData).to.be.eq(rightOrder.makerAssetData);
+            expect(logs[5].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[5].args.to).to.be.eq(takerAddress);
+            expect(logs[5].args.amount).bignumber.to.be.eq(matchedFillResults.profitInRightMakerAsset);
+
+            // taker fees -> fee recipient
+            expect(logs[6].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[6].args.assetData).to.be.eq(leftOrder.takerFeeAssetData);
+            expect(logs[6].args.from).to.be.eq(takerAddress);
+            expect(logs[6].args.to).to.be.eq(leftOrder.feeRecipientAddress);
+            expect(logs[6].args.amount).bignumber.to.be.eq(ONE_ETHER.times(0.075));
+        });
+
+        it('calls `_dispatchTransferFrom()` from in the right order when the fee recipients and taker fee asset data are not the same', async () => {
+            const leftOrder = getOrder();
+            const rightOrder = getOrder();
+            const leftOrderHash = randomHash();
+            const rightOrderHash = randomHash();
+            const takerAddress = randomAddress();
+            const matchedFillResults = {
+                left: {
+                    makerAssetFilledAmount: ONE_ETHER.times(2),
+                    takerAssetFilledAmount: ONE_ETHER.times(10),
+                    makerFeePaid: ONE_ETHER.times(0.01),
+                    takerFeePaid: ONE_ETHER.times(0.025),
+                },
+                right: {
+                    takerAssetFilledAmount: ONE_ETHER.times(20),
+                    makerAssetFilledAmount: ONE_ETHER.times(4),
+                    makerFeePaid: ONE_ETHER.times(0.02),
+                    takerFeePaid: ONE_ETHER.times(0.05),
+                },
+                profitInLeftMakerAsset: ONE_ETHER,
+                profitInRightMakerAsset: ONE_ETHER.times(2),
+            };
+
+            // Call settleMatchOrders and collect the logs
+            const receipt = await logDecoder.getTxWithDecodedLogsAsync(
+                await testExchange.settleMatchOrders.sendTransactionAsync(
+                    leftOrderHash,
+                    rightOrderHash,
+                    leftOrder,
+                    rightOrder,
+                    takerAddress,
+                    matchedFillResults,
+                ),
+            );
+            const logs = receipt.logs as Array<
+                LogWithDecodedArgs<TestExchangeInternalsDispatchTransferFromCalledEventArgs>
+            >;
+
+            // Ensure that the logs have the correct lengths and names
+            expect(logs.length).to.be.eq(8);
+            expect(_.every(logs, log => log.event === 'DispatchTransferFromCalled')).to.be.true();
+
+            // Right maker asset -> left maker
+            expect(logs[0].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[0].args.assetData).to.be.eq(rightOrder.makerAssetData);
+            expect(logs[0].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[0].args.to).to.be.eq(leftOrder.makerAddress);
+            expect(logs[0].args.amount).bignumber.to.be.eq(matchedFillResults.left.takerAssetFilledAmount);
+
+            // Left maker asset -> right maker
+            expect(logs[1].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[1].args.assetData).to.be.eq(leftOrder.makerAssetData);
+            expect(logs[1].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[1].args.to).to.be.eq(rightOrder.makerAddress);
+            expect(logs[1].args.amount).bignumber.to.be.eq(matchedFillResults.right.takerAssetFilledAmount);
+
+            // Right maker fee -> right fee recipient
+            expect(logs[2].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[2].args.assetData).to.be.eq(rightOrder.makerFeeAssetData);
+            expect(logs[2].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[2].args.to).to.be.eq(rightOrder.feeRecipientAddress);
+            expect(logs[2].args.amount).bignumber.to.be.eq(matchedFillResults.right.makerFeePaid);
+
+            // Left maker fee -> left fee recipient
+            expect(logs[3].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[3].args.assetData).to.be.eq(leftOrder.makerFeeAssetData);
+            expect(logs[3].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[3].args.to).to.be.eq(leftOrder.feeRecipientAddress);
+            expect(logs[3].args.amount).bignumber.to.be.eq(matchedFillResults.left.makerFeePaid);
+
+            // Left maker -> taker profit
+            expect(logs[4].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[4].args.assetData).to.be.eq(leftOrder.makerAssetData);
+            expect(logs[4].args.from).to.be.eq(leftOrder.makerAddress);
+            expect(logs[4].args.to).to.be.eq(takerAddress);
+            expect(logs[4].args.amount).bignumber.to.be.eq(matchedFillResults.profitInLeftMakerAsset);
+
+            // right maker -> taker profit
+            expect(logs[5].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[5].args.assetData).to.be.eq(rightOrder.makerAssetData);
+            expect(logs[5].args.from).to.be.eq(rightOrder.makerAddress);
+            expect(logs[5].args.to).to.be.eq(takerAddress);
+            expect(logs[5].args.amount).bignumber.to.be.eq(matchedFillResults.profitInRightMakerAsset);
+
+            // Right taker fee -> right fee recipient
+            expect(logs[6].args.orderHash).to.be.eq(rightOrderHash);
+            expect(logs[6].args.assetData).to.be.eq(rightOrder.takerFeeAssetData);
+            expect(logs[6].args.from).to.be.eq(takerAddress);
+            expect(logs[6].args.to).to.be.eq(rightOrder.feeRecipientAddress);
+            expect(logs[6].args.amount).bignumber.to.be.eq(matchedFillResults.right.takerFeePaid);
+
+            // Right taker fee -> right fee recipient
+            expect(logs[7].args.orderHash).to.be.eq(leftOrderHash);
+            expect(logs[7].args.assetData).to.be.eq(leftOrder.takerFeeAssetData);
+            expect(logs[7].args.from).to.be.eq(takerAddress);
+            expect(logs[7].args.to).to.be.eq(leftOrder.feeRecipientAddress);
+            expect(logs[7].args.amount).bignumber.to.be.eq(matchedFillResults.left.takerFeePaid);
         });
     });
 });

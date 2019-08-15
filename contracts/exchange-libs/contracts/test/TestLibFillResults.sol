@@ -25,6 +25,8 @@ import "../src/LibFillResults.sol";
 
 contract TestLibFillResults {
 
+    using LibFillResults for *;
+
     function calculateFillResults(
         LibOrder.Order memory order,
         uint256 takerAssetFilledAmount

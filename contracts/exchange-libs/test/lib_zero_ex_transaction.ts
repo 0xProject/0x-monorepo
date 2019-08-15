@@ -1,74 +1,132 @@
-import { addressUtils, blockchainTests, constants, describe, expect } from '@0x/contracts-test-utils';
-import { transactionHashUtils } from '@0x/order-utils';
+import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
+import { eip712Utils, transactionHashUtils } from '@0x/order-utils';
 import { ZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
+import * as _ from 'lodash';
 
 import { artifacts, TestLibZeroExTransactionContract } from '../src';
 
 blockchainTests('LibZeroExTransaction', env => {
     let libZeroExTransactionContract: TestLibZeroExTransactionContract;
-    let zeroExTransaction: ZeroExTransaction;
+
+    const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
+    const randomHash = () => hexRandom(constants.WORD_LENGTH);
+    const randomUint256 = () => new BigNumber(randomHash());
+    const randomAssetData = () => hexRandom(36);
+
+    const EMPTY_TRANSACTION: ZeroExTransaction = {
+        salt: constants.ZERO_AMOUNT,
+        expirationTimeSeconds: constants.ZERO_AMOUNT,
+        signerAddress: constants.NULL_ADDRESS,
+        data: constants.NULL_BYTES,
+        domain: {
+            verifyingContractAddress: constants.NULL_ADDRESS,
+            chainId: 0,
+        },
+    };
+
     before(async () => {
         libZeroExTransactionContract = await TestLibZeroExTransactionContract.deployFrom0xArtifactAsync(
             artifacts.TestLibZeroExTransaction,
             env.provider,
             env.txDefaults,
         );
-        const domain = {
-            verifyingContractAddress: libZeroExTransactionContract.address,
-            chainId: 1,
-        };
-        zeroExTransaction = {
-            signerAddress: addressUtils.generatePseudoRandomAddress(),
-            salt: new BigNumber(0),
-            expirationTimeSeconds: new BigNumber(0),
-            data: constants.NULL_BYTES,
-            domain,
-        };
     });
 
-    describe('LibZeroExTransaction', () => {
-        describe('getTransactionHash', () => {
-            it('should return the correct transactionHash', async () => {
-                const domainHash = ethUtil.bufferToHex(
-                    signTypedDataUtils.generateDomainHash({
-                        ...zeroExTransaction.domain,
-                        name: constants.EIP712_DOMAIN_NAME,
-                        version: constants.EIP712_DOMAIN_VERSION,
-                    }),
-                );
-                const orderHashHex = await libZeroExTransactionContract.getTypedDataHash.callAsync(
-                    zeroExTransaction,
-                    domainHash,
-                );
-                expect(transactionHashUtils.getTransactionHashHex(zeroExTransaction)).to.be.equal(orderHashHex);
+    /**
+     * Tests the `getTypedDataHash()` function against a reference hash.
+     */
+    async function testGetTypedDataHashAsync(transaction: ZeroExTransaction): Promise<void> {
+        const expectedHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const domainHash = ethUtil.bufferToHex(
+            signTypedDataUtils.generateDomainHash({
+                ...transaction.domain,
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+            }),
+        );
+        const actualHash = await libZeroExTransactionContract.getTypedDataHash.callAsync(transaction, domainHash);
+        expect(actualHash).to.be.eq(expectedHash);
+    }
+
+    describe('getTypedDataHash', () => {
+        it('should correctly hash an empty transaction', async () => {
+            await testGetTypedDataHashAsync({
+                ...EMPTY_TRANSACTION,
+                domain: {
+                    ...EMPTY_TRANSACTION.domain,
+                    verifyingContractAddress: libZeroExTransactionContract.address,
+                },
             });
-            it('transactionHash should differ if the domain hash is different', async () => {
-                const domainHash1 = ethUtil.bufferToHex(
-                    signTypedDataUtils.generateDomainHash({
-                        ...zeroExTransaction.domain,
-                        name: constants.EIP712_DOMAIN_NAME,
-                        version: constants.EIP712_DOMAIN_VERSION,
-                    }),
-                );
-                const domainHash2 = ethUtil.bufferToHex(
-                    signTypedDataUtils.generateDomainHash({
-                        ...zeroExTransaction.domain,
-                        name: constants.EIP712_DOMAIN_NAME,
-                        version: constants.EIP712_DOMAIN_VERSION,
-                        chainId: 1337,
-                    }),
-                );
-                const transactionHashHex1 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
-                    zeroExTransaction,
-                    domainHash1,
-                );
-                const transactionHashHex2 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
-                    zeroExTransaction,
-                    domainHash2,
-                );
-                expect(transactionHashHex1).to.be.not.equal(transactionHashHex2);
+        });
+
+        it('should correctly hash a non-empty transaction', async () => {
+            await testGetTypedDataHashAsync({
+                salt: randomUint256(),
+                expirationTimeSeconds: randomUint256(),
+                signerAddress: randomAddress(),
+                data: randomAssetData(),
+                domain: {
+                    ...EMPTY_TRANSACTION.domain,
+                    verifyingContractAddress: libZeroExTransactionContract.address,
+                },
+            });
+        });
+        it('transactionHash should differ if the domain hash is different', async () => {
+            const domainHash1 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_TRANSACTION.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                }),
+            );
+            const domainHash2 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_TRANSACTION.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                    chainId: 1337,
+                }),
+            );
+            const transactionHashHex1 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
+                EMPTY_TRANSACTION,
+                domainHash1,
+            );
+            const transactionHashHex2 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
+                EMPTY_TRANSACTION,
+                domainHash2,
+            );
+            expect(transactionHashHex1).to.be.not.equal(transactionHashHex2);
+        });
+    });
+
+    /**
+     * Tests the `getStructHash()` function against a reference hash.
+     */
+    async function testGetStructHashAsync(transaction: ZeroExTransaction): Promise<void> {
+        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
+        const expectedHash = ethUtil.bufferToHex(signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData));
+        const actualHash = await libZeroExTransactionContract.getStructHash.callAsync(transaction);
+        expect(actualHash).to.be.eq(expectedHash);
+    }
+
+    describe('getStructHash', () => {
+        it('should correctly hash an empty transaction', async () => {
+            await testGetStructHashAsync(EMPTY_TRANSACTION);
+        });
+
+        it('should correctly hash a non-empty transaction', async () => {
+            await testGetStructHashAsync({
+                salt: randomUint256(),
+                expirationTimeSeconds: randomUint256(),
+                signerAddress: randomAddress(),
+                data: randomAssetData(),
+                // The domain is not used in this test, so it's okay if it is left empty.
+                domain: {
+                    verifyingContractAddress: constants.NULL_ADDRESS,
+                    chainId: 0,
+                },
             });
         });
     });
