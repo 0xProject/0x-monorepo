@@ -1,5 +1,4 @@
 import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
-import { calldataOptimizationUtils } from '@0x/contract-wrappers/lib/src/utils/calldata_optimization_utils';
 import { assetDataUtils } from '@0x/order-utils';
 import { MarketOperation } from '@0x/types';
 import { AbiEncoder, providerUtils } from '@0x/utils';
@@ -103,9 +102,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         // lowercase input addresses
         const normalizedFeeRecipientAddress = feeRecipient.toLowerCase();
-        // optimize orders
-        const optimizedOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
-        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
 
         const signatures = _.map(orders, o => o.signature);
         const feeSignatures = _.map(feeOrders, o => o.signature);
@@ -119,10 +115,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             const { makerAssetFillAmount } = quoteWithAffiliateFee;
 
             params = {
-                orders: optimizedOrders,
+                orders,
                 makerAssetFillAmount,
                 signatures,
-                feeOrders: optimizedFeeOrders,
+                feeOrders,
                 feeSignatures,
                 feePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
@@ -132,9 +128,9 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             methodName = 'marketBuyOrdersWithEth';
         } else {
             params = {
-                orders: optimizedOrders,
+                orders,
                 signatures,
-                feeOrders: optimizedFeeOrders,
+                feeOrders,
                 feeSignatures,
                 feePercentage,
                 feeRecipient: normalizedFeeRecipientAddress,
@@ -191,9 +187,6 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
 
         const { orders, feeOrders, worstCaseQuoteInfo } = quoteWithAffiliateFee;
 
-        // optimize orders
-        const optimizedMarketOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
-        const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
         // get taker address
         const finalTakerAddress = await swapQuoteConsumerUtils.getTakerAddressOrThrowAsync(this.provider, opts);
         // if no ethAmount is provided, default to the worst totalTakerTokenAmount
@@ -205,11 +198,11 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
             if (quoteWithAffiliateFee.type === MarketOperation.Buy) {
                 const { makerAssetFillAmount } = quoteWithAffiliateFee;
                 txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
-                    optimizedMarketOrders,
+                    orders,
                     makerAssetFillAmount,
-                    optimizedMarketOrders.map(o => o.signature),
-                    optimizedFeeOrders,
-                    optimizedFeeOrders.map(o => o.signature),
+                    orders.map(o => o.signature),
+                    feeOrders,
+                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {
@@ -221,10 +214,10 @@ export class ForwarderSwapQuoteConsumer implements SwapQuoteConsumerBase<Forward
                 );
             } else {
                 txHash = await this._contractWrappers.forwarder.marketSellOrdersWithEth.validateAndSendTransactionAsync(
-                    optimizedMarketOrders,
-                    optimizedMarketOrders.map(o => o.signature),
-                    optimizedFeeOrders,
-                    optimizedFeeOrders.map(o => o.signature),
+                    orders,
+                    orders.map(o => o.signature),
+                    feeOrders,
+                    feeOrders.map(o => o.signature),
                     formattedFeePercentage,
                     feeRecipient,
                     {

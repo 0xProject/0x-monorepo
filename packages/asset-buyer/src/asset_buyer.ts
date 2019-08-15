@@ -1,4 +1,4 @@
-import { calldataOptimizationUtils, ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
+import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
 import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
@@ -264,18 +264,15 @@ export class AssetBuyer {
         try {
             // format fee percentage
             const formattedFeePercentage = numberPercentageToEtherTokenAmountPercentage(feePercentage || 0);
-            // optimize orders
-            const optimizedMarketOrders = calldataOptimizationUtils.optimizeForwarderOrders(orders);
-            const optimizedFeeOrders = calldataOptimizationUtils.optimizeForwarderFeeOrders(feeOrders);
             // if no ethAmount is provided, default to the worst ethAmount from buyQuote
             const value = ethAmount || worstCaseQuoteInfo.totalEthAmount;
 
             const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
-                optimizedMarketOrders,
+                orders,
                 assetBuyAmount,
-                optimizedMarketOrders.map(o => o.signature),
-                optimizedFeeOrders,
-                optimizedFeeOrders.map(o => o.signature),
+                orders.map(o => o.signature),
+                feeOrders,
+                feeOrders.map(o => o.signature),
                 formattedFeePercentage,
                 feeRecipient,
                 {
