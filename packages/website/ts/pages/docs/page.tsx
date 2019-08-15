@@ -7,6 +7,7 @@ import { MDXProvider } from '@mdx-js/react';
 import { Animation } from 'ts/components/docs/mdx/animation';
 import { Code } from 'ts/components/docs/mdx/code';
 import { CodeTabs } from 'ts/components/docs/mdx/code_tabs';
+import { Emphasis } from 'ts/components/docs/mdx/emphasis';
 import { H1, H2, H3, H4, H5, H6 } from 'ts/components/docs/mdx/headings';
 import { HelpCallout } from 'ts/components/docs/mdx/help_callout';
 import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
@@ -146,6 +147,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 
 const mdxComponents = {
     code: Code,
+    em: Emphasis,
     h1: H1,
     h2: H2,
     h3: H3,
