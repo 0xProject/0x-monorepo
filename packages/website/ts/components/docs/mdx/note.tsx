@@ -31,6 +31,12 @@ const NoteWrapper = styled.span`
     max-width: 300px;
     margin-left: 30px;
     margin-bottom: 30px;
+
+    @media (max-width: 500px) {
+        max-width: 100%;
+        margin-top: 30px;
+        margin-left: 0;
+    }
 `;
 
 const Description = styled.span`
