@@ -19,6 +19,7 @@ interface IDocsPageLayoutProps {
     children: React.ReactNode;
     title: string;
     description?: string;
+    keywords?: string;
     subtitle?: string;
     loading?: boolean;
     isHome?: boolean;
@@ -33,9 +34,9 @@ export const DocsPageLayout: React.FC<IDocsPageLayoutProps> = props => {
     return (
         <SiteWrap isDocs={true} theme="light">
             <DocumentTitle
-                title={`${title}: ${props.title}`}
+                title={props.isHome ? title : `${title}: ${props.title}`}
                 description={props.description ? props.description : description}
-                keywords={keywords}
+                keywords={props.keywords ? props.keywords : keywords}
             />
             <Hero title={props.title} subtitle={props.subtitle} isHome={props.isHome} />
             <Section maxWidth={SECTION_WIDTH} minHeight={SECTION_MIN_HEIGHT} isPadded={false} overflow="visible">

@@ -222,6 +222,7 @@ interface Meta {
     difficulty?: 'Beginner' | 'Intermediate' | 'Advanced';
     isCommunity?: boolean;
     isFeatured?: boolean;
+    keywords?: string;
     tags?: string[];
     topics?: string[];
     type?: string;
