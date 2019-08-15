@@ -50,7 +50,7 @@ contract TestTransactions is
         bool success = shouldSucceedCall;
         bytes memory returnData = fallbackReturnData;
         assembly {
-            if iszero(success) {
+            if or(iszero(success), gt(calldatasize, 0x0)) {
                 revert(add(0x20, returnData), mload(returnData))
             }
             return(add(0x20, returnData), mload(returnData))
