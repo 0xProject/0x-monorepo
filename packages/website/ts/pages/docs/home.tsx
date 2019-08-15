@@ -4,7 +4,7 @@ import { CommunityLinks } from 'ts/components/docs/home/community_links';
 import { MiddleSection } from 'ts/components/docs/home/middle_section';
 import { ShortcutLinks } from 'ts/components/docs/home/shortcut_links';
 
-import { Separator } from 'ts/components/docs/separator';
+import { Separator } from 'ts/components/docs/shared/separator';
 
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 

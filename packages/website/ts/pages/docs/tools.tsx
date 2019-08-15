@@ -11,7 +11,7 @@ import { Heading } from 'ts/components/text';
 import { Columns } from 'ts/components/docs/layout/columns';
 import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
-import { Separator } from 'ts/components/docs/separator';
+import { Separator } from 'ts/components/docs/shared/separator';
 
 import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
 
