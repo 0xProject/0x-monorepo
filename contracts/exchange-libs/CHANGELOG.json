@@ -77,6 +77,30 @@
             {
                 "note": "Regenerate selectors.",
                 "pr": 2042
+            },
+            {
+                "note": "Convert `LibFillResults`, `LibOrder`, `LibZeroExTransaction`, and `LibMath` to libraries",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `LibExchangeSelectors`",
+                "pr": 2055
+            },
+            {
+                "note": "Add `LibExchangeRichErrors`",
+                "pr": 2055
+            },
+            {
+                "note": "Add `calculateFillResults` and `calculateMatchedFillResults` to `LibFillResults`",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `_hashEIP712ExchangeMessage` from `LibEIP712ExchangeDomain`",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
             }
         ]
     },

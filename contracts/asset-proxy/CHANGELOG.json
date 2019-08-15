@@ -5,6 +5,14 @@
             {
                 "note": "Disallow the zero address from being made an authorized address in MixinAuthorizable, and created an archive directory that includes an old version of Ownable",
                 "pr": 2019
+            },
+            {
+                "note": "Remove `LibAssetProxyIds` contract",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
             }
         ]
     },

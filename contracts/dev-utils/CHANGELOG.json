@@ -1,5 +1,18 @@
 [
     {
+        "version": "1.0.0",
+        "changes": [
+            {
+                "note": "Use built in selectors instead of hard coded constants",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
+            }
+        ]
+    },
+    {
         "timestamp": 1563193019,
         "version": "0.0.4",
         "changes": [
