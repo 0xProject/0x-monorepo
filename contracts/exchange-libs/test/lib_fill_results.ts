@@ -40,49 +40,10 @@ blockchainTests('LibFillResults', env => {
         feeRecipientAddress: constants.NULL_ADDRESS,
         expirationTimeSeconds: constants.ZERO_AMOUNT,
     };
-    const EMPTY_FILL_RESULTS: FillResults = {
-        makerAssetFilledAmount: constants.ZERO_AMOUNT,
-        takerAssetFilledAmount: constants.ZERO_AMOUNT,
-        makerFeePaid: constants.ZERO_AMOUNT,
-        takerFeePaid: constants.ZERO_AMOUNT,
-    };
-    const EMPTY_MATCHED_FILL_RESULTS: MatchedFillResults = {
-        left: EMPTY_FILL_RESULTS,
-        right: EMPTY_FILL_RESULTS,
-        profitInLeftMakerAsset: constants.ZERO_AMOUNT,
-        profitInRightMakerAsset: constants.ZERO_AMOUNT,
-    };
-    const COMMON_MATCHED_FILL_RESULTS = {
-        left: {
-            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
-            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-        },
-        right: {
-            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
-            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
-            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
-        },
-        profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
-        profitInRightMakerAsset: constants.ZERO_AMOUNT,
-    };
 
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomAssetData = () => hexRandom(36);
     const randomUint256 = () => new BigNumber(hexRandom(constants.WORD_LENGTH));
-
-    function createMatchedFillResults(partialMatchedFillResults: PartialMatchedFillResults): MatchedFillResults {
-        const matchedFillResults = EMPTY_MATCHED_FILL_RESULTS;
-        matchedFillResults.left = _.assign({}, EMPTY_FILL_RESULTS, partialMatchedFillResults.left);
-        matchedFillResults.right = _.assign({}, EMPTY_FILL_RESULTS, partialMatchedFillResults.right);
-        matchedFillResults.profitInLeftMakerAsset =
-            partialMatchedFillResults.profitInLeftMakerAsset || constants.ZERO_AMOUNT;
-        matchedFillResults.profitInRightMakerAsset =
-            partialMatchedFillResults.profitInRightMakerAsset || constants.ZERO_AMOUNT;
-        return matchedFillResults;
-    }
 
     let libsContract: TestLibFillResultsContract;
     let makerAddressLeft: string;
@@ -383,6 +344,48 @@ blockchainTests('LibFillResults', env => {
             });
         });
     });
+
+    const EMPTY_FILL_RESULTS: FillResults = {
+        makerAssetFilledAmount: constants.ZERO_AMOUNT,
+        takerAssetFilledAmount: constants.ZERO_AMOUNT,
+        makerFeePaid: constants.ZERO_AMOUNT,
+        takerFeePaid: constants.ZERO_AMOUNT,
+    };
+
+    const EMPTY_MATCHED_FILL_RESULTS: MatchedFillResults = {
+        left: EMPTY_FILL_RESULTS,
+        right: EMPTY_FILL_RESULTS,
+        profitInLeftMakerAsset: constants.ZERO_AMOUNT,
+        profitInRightMakerAsset: constants.ZERO_AMOUNT,
+    };
+
+    const COMMON_MATCHED_FILL_RESULTS = {
+        left: {
+            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(5, 18),
+            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+        },
+        right: {
+            makerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(10, 18),
+            takerAssetFilledAmount: Web3Wrapper.toBaseUnitAmount(2, 18),
+            makerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+            takerFeePaid: Web3Wrapper.toBaseUnitAmount(100, 16),
+        },
+        profitInLeftMakerAsset: Web3Wrapper.toBaseUnitAmount(3, 18),
+        profitInRightMakerAsset: constants.ZERO_AMOUNT,
+    };
+
+    function createMatchedFillResults(partialMatchedFillResults: PartialMatchedFillResults): MatchedFillResults {
+        const matchedFillResults = EMPTY_MATCHED_FILL_RESULTS;
+        matchedFillResults.left = _.assign({}, EMPTY_FILL_RESULTS, partialMatchedFillResults.left);
+        matchedFillResults.right = _.assign({}, EMPTY_FILL_RESULTS, partialMatchedFillResults.right);
+        matchedFillResults.profitInLeftMakerAsset =
+            partialMatchedFillResults.profitInLeftMakerAsset || constants.ZERO_AMOUNT;
+        matchedFillResults.profitInRightMakerAsset =
+            partialMatchedFillResults.profitInRightMakerAsset || constants.ZERO_AMOUNT;
+        return matchedFillResults;
+    }
 
     blockchainTests('calculateMatchedFillResults', async () => {
         /**
