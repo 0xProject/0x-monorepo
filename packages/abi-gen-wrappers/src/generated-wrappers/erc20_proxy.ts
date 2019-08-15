@@ -162,15 +162,11 @@ export class ERC20ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (void
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('addAuthorizedAddress(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -222,15 +218,11 @@ export class ERC20ProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('authorities(uint256)', [index_0]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (string
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorities(uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -350,15 +342,11 @@ export class ERC20ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (void
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddress(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -404,15 +392,11 @@ export class ERC20ProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('owner()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (string
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('owner()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -563,15 +547,11 @@ export class ERC20ProxyContract extends BaseContract {
             );
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (void
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('removeAuthorizedAddressAtIndex(address,uint256)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -617,15 +597,11 @@ export class ERC20ProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getProxyId()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (string
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): string {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getProxyId()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -679,15 +655,11 @@ export class ERC20ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (boolean
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): boolean {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('authorized(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -733,15 +705,11 @@ export class ERC20ProxyContract extends BaseContract {
             const abiEncodedTransactionData = self._strictEncodeArguments('getAuthorizedAddresses()', []);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (string[]
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): string[] {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('getAuthorizedAddresses()');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<string[]>(returnData);
             return abiDecodedReturnData;
         },
     };
@@ -861,15 +829,11 @@ export class ERC20ProxyContract extends BaseContract {
             ]);
             return abiEncodedTransactionData;
         },
-        getABIDecodedReturnData(
-            returnData: string
-        ): (void
-        ) {
-            const self = this as any as ERC20ProxyContract;
+        getABIDecodedReturnData(returnData: string): void {
+            const self = (this as any) as ERC20ProxyContract;
             const abiEncoder = self._lookupAbiEncoder('transferOwnership(address)');
             // tslint:disable boolean-naming
-            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void
-        >(returnData);
+            const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
     };

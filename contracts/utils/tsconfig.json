@@ -3,7 +3,6 @@
     "compilerOptions": { "outDir": "lib", "rootDir": ".", "resolveJsonModule": true },
     "include": ["./src/**/*", "./test/**/*", "./generated-wrappers/**/*"],
     "files": [
-        "generated-artifacts/Authorizable.json",
         "generated-artifacts/IAuthorizable.json",
         "generated-artifacts/IOwnable.json",
         "generated-artifacts/LibAddress.json",
@@ -19,6 +18,7 @@
         "generated-artifacts/LibRichErrors.json",
         "generated-artifacts/LibSafeMath.json",
         "generated-artifacts/LibSafeMathRichErrors.json",
+        "generated-artifacts/MAuthorizable.json",
         "generated-artifacts/Ownable.json",
         "generated-artifacts/ReentrancyGuard.json",
         "generated-artifacts/SafeMath.json",

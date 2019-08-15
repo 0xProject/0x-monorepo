@@ -5,7 +5,6 @@
  */
 import { ContractArtifact } from 'ethereum-types';
 
-import * as Authorizable from '../generated-artifacts/Authorizable.json';
 import * as IAuthorizable from '../generated-artifacts/IAuthorizable.json';
 import * as IOwnable from '../generated-artifacts/IOwnable.json';
 import * as LibAddress from '../generated-artifacts/LibAddress.json';
@@ -21,6 +20,7 @@ import * as LibReentrancyGuardRichErrors from '../generated-artifacts/LibReentra
 import * as LibRichErrors from '../generated-artifacts/LibRichErrors.json';
 import * as LibSafeMath from '../generated-artifacts/LibSafeMath.json';
 import * as LibSafeMathRichErrors from '../generated-artifacts/LibSafeMathRichErrors.json';
+import * as MAuthorizable from '../generated-artifacts/MAuthorizable.json';
 import * as Ownable from '../generated-artifacts/Ownable.json';
 import * as ReentrancyGuard from '../generated-artifacts/ReentrancyGuard.json';
 import * as SafeMath from '../generated-artifacts/SafeMath.json';
@@ -33,7 +33,6 @@ import * as TestOwnable from '../generated-artifacts/TestOwnable.json';
 import * as TestReentrancyGuard from '../generated-artifacts/TestReentrancyGuard.json';
 import * as TestSafeMath from '../generated-artifacts/TestSafeMath.json';
 export const artifacts = {
-    Authorizable: Authorizable as ContractArtifact,
     LibAddress: LibAddress as ContractArtifact,
     LibAddressArray: LibAddressArray as ContractArtifact,
     LibAddressArrayRichErrors: LibAddressArrayRichErrors as ContractArtifact,
@@ -52,6 +51,7 @@ export const artifacts = {
     SafeMath: SafeMath as ContractArtifact,
     IAuthorizable: IAuthorizable as ContractArtifact,
     IOwnable: IOwnable as ContractArtifact,
+    MAuthorizable: MAuthorizable as ContractArtifact,
     TestLibAddress: TestLibAddress as ContractArtifact,
     TestLibAddressArray: TestLibAddressArray as ContractArtifact,
     TestLibBytes: TestLibBytes as ContractArtifact,
