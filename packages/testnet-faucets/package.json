@@ -20,6 +20,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "0x.js": "^6.0.15",
+        "@0x/contract-wrappers": "^11.0.0",
         "@0x/subproviders": "^5.0.1",
         "@0x/typescript-typings": "^4.2.4",
         "@0x/utils": "^4.5.0",

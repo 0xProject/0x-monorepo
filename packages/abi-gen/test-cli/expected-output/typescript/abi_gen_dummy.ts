@@ -396,6 +396,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).withdraw.callAsync(wad, txData);
+            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
+            return txHash;
+        },
     };
     /**
      * Tests decoding when the input and output are complex and have more than one argument.
@@ -1353,6 +1358,11 @@ export class AbiGenDummyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<BigNumber>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).nonPureMethod.callAsync(txData);
+            const txHash = await (this as any).nonPureMethod.sendTransactionAsync(txData);
+            return txHash;
+        },
     };
     /**
      * Tests decoding when the input and output are complex.
@@ -1715,6 +1725,11 @@ export class AbiGenDummyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).nonPureMethodThatReturnsNothing.callAsync(txData);
+            const txHash = await (this as any).nonPureMethodThatReturnsNothing.sendTransactionAsync(txData);
+            return txHash;
         },
     };
     public simplePureFunction = {

@@ -4,6 +4,10 @@
         "changes": [
             {
                 "note": "Removed @0x/order-watcher"
+            },
+            {
+                "note": "Update to latest @0x/contract-wrappers v11",
+                "pr": 2068
             }
         ]
     },

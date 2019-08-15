@@ -1,4 +1,3 @@
-import { CoordinatorRegistryContract } from '@0x/abi-gen-wrappers';
 import { constants } from '@0x/contracts-test-utils';
 import { defaultOrmConfig, getAppAsync } from '@0x/coordinator-server';
 import { BlockchainLifecycle, tokenUtils } from '@0x/dev-utils';
@@ -12,6 +11,7 @@ import 'mocha';
 import * as nock from 'nock';
 
 import { ContractWrappers } from '../src';
+import { CoordinatorRegistryContract } from '../src/index';
 import { CoordinatorServerErrorMsg } from '../src/utils/coordinator_server_types';
 
 import { chaiSetup } from './utils/chai_setup';

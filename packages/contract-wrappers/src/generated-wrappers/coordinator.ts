@@ -567,6 +567,32 @@ export class CoordinatorContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            transaction: { salt: BigNumber; signerAddress: string; data: string },
+            txOrigin: string,
+            transactionSignature: string,
+            approvalExpirationTimeSeconds: BigNumber[],
+            approvalSignatures: string[],
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).executeTransaction.callAsync(
+                transaction,
+                txOrigin,
+                transactionSignature,
+                approvalExpirationTimeSeconds,
+                approvalSignatures,
+                txData,
+            );
+            const txHash = await (this as any).executeTransaction.sendTransactionAsync(
+                transaction,
+                txOrigin,
+                transactionSignature,
+                approvalExpirationTimeSeconds,
+                approvalSignatures,
+                txData,
+            );
+            return txHash;
+        },
     };
     public EIP712_EXCHANGE_DOMAIN_HASH = {
         /**

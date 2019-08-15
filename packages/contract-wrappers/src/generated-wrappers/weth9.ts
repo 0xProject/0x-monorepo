@@ -287,6 +287,15 @@ export class WETH9Contract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            guy: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(guy, wad, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(guy, wad, txData);
+            return txHash;
+        },
     };
     public totalSupply = {
         /**
@@ -540,6 +549,16 @@ export class WETH9Contract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            src: string,
+            dst: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(src, dst, wad, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(src, dst, wad, txData);
+            return txHash;
+        },
     };
     public withdraw = {
         /**
@@ -681,6 +700,11 @@ export class WETH9Contract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(wad: BigNumber, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).withdraw.callAsync(wad, txData);
+            const txHash = await (this as any).withdraw.sendTransactionAsync(wad, txData);
+            return txHash;
         },
     };
     public decimals = {
@@ -1032,6 +1056,15 @@ export class WETH9Contract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            dst: string,
+            wad: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transfer.callAsync(dst, wad, txData);
+            const txHash = await (this as any).transfer.sendTransactionAsync(dst, wad, txData);
+            return txHash;
+        },
     };
     public deposit = {
         /**
@@ -1167,6 +1200,11 @@ export class WETH9Contract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).deposit.callAsync(txData);
+            const txHash = await (this as any).deposit.sendTransactionAsync(txData);
+            return txHash;
         },
     };
     public allowance = {
