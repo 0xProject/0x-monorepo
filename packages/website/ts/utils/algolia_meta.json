@@ -29,8 +29,17 @@
         "isCommunity": false,
         "isFeatured": false,
         "tags": ["Protocol developer"],
-        "type": "Command-line tools",
         "path": "guides/ganache-setup.mdx"
+    },
+    "relayer-strategies": {
+        "title": "Relayer Strategies",
+        "description": "",
+        "topics": ["Relayers"],
+        "difficulty": "Beginner",
+        "isCommunity": false,
+        "isFeatured": false,
+        "tags": ["Relayers"],
+        "path": "guides/relayer-strategies.mdx"
     },
     "page-template": {
         "title": "Page template",
