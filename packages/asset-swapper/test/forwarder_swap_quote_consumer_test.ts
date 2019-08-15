@@ -30,6 +30,7 @@ const MARKET_OPERATION = MarketOperation.Sell;
 const FILLABLE_AMOUNTS = [new BigNumber(2), new BigNumber(3), new BigNumber(5)].map(value =>
     value.multipliedBy(ONE_ETH_IN_WEI),
 );
+const UNLIMITED_ALLOWANCE_IN_BASE_UNITS = new BigNumber(2).pow(256).minus(1); // tslint:disable-line:custom-no-magic-numbers
 
 describe('ForwarderSwapQuoteConsumer', () => {
     let contractWrappers: ContractWrappers;
@@ -76,7 +77,7 @@ describe('ForwarderSwapQuoteConsumer', () => {
     });
     beforeEach(async () => {
         await blockchainLifecycle.startAsync();
-        const UNLIMITED_ALLOWANCE = contractWrappers.constants.UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
+        const UNLIMITED_ALLOWANCE = UNLIMITED_ALLOWANCE_IN_BASE_UNITS;
         erc20ProxyAddress = contractWrappers.erc20Proxy.address;
 
         const totalFillableAmount = FILLABLE_AMOUNTS.reduce(

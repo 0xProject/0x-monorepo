@@ -330,7 +330,7 @@ export class Blockchain {
     public async getUnavailableTakerAmountAsync(orderHash: string): Promise<BigNumber> {
         utils.assert(orderHashUtils.isValidOrderHash(orderHash), 'Must be valid orderHash');
         utils.assert(this._contractWrappers !== undefined, 'ContractWrappers must be instantiated.');
-        const unavailableTakerAmount = await this._contractWrappers.exchange.filled.callAsync(orderHash, {});
+        const unavailableTakerAmount = await this._contractWrappers.exchange.filled.callAsync(orderHash);
         return unavailableTakerAmount;
     }
     public getExchangeContractAddressIfExists(): string | undefined {
@@ -476,7 +476,6 @@ export class Blockchain {
                 erc20Token.allowance.callAsync(
                     ownerAddressIfExists,
                     this._contractWrappers.contractAddresses.erc20Proxy,
-                    {},
                 ),
             ]);
         }

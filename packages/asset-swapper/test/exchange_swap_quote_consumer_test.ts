@@ -125,24 +125,24 @@ describe('ExchangeSwapQuoteConsumer', () => {
          * Does not test the validity of the state change performed by the forwarder smart contract
          */
         it('should perform a marketSell execution when provided a MarketSell type swapQuote', async () => {
-            let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-            let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+            let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+            let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
             expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
             expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
             await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketSellSwapQuote, { takerAddress });
-            makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-            takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+            makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+            takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
             expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
             expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
         it('should perform a marketBuy execution when provided a MarketBuy type swapQuote', async () => {
-            let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-            let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+            let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+            let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
             expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
             expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
             await swapQuoteConsumer.executeSwapQuoteOrThrowAsync(marketBuySwapQuote, { takerAddress });
-            makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-            takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+            makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+            takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
             expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
             expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
         });
@@ -185,8 +185,8 @@ describe('ExchangeSwapQuoteConsumer', () => {
     describe('getCalldataOrThrow', () => {
         describe('valid swap quote', async () => {
             it('provide correct and optimized calldata options with default options for a marketSell SwapQuote (no affiliate fees)', async () => {
-                let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-                let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+                let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+                let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
                 const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
@@ -200,14 +200,14 @@ describe('ExchangeSwapQuoteConsumer', () => {
                     data: calldataHexString,
                     gas: 4000000,
                 });
-                makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-                takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+                makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+                takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
                 expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
             });
             it('provide correct and optimized calldata options with default options for a marketBuy SwapQuote (no affiliate fees)', async () => {
-                let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-                let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+                let makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+                let takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
                 expect(makerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(takerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
                 const { calldataHexString, toAddress } = await swapQuoteConsumer.getCalldataOrThrowAsync(
@@ -221,8 +221,8 @@ describe('ExchangeSwapQuoteConsumer', () => {
                     data: calldataHexString,
                     gas: 4000000,
                 });
-                makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress, {});
-                takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress, {});
+                makerBalance = await erc20TokenContract.balanceOf.callAsync(makerAddress);
+                takerBalance = await erc20TokenContract.balanceOf.callAsync(takerAddress);
                 expect(takerBalance).to.bignumber.equal(new BigNumber(10).multipliedBy(ONE_ETH_IN_WEI));
                 expect(makerBalance).to.bignumber.equal(constants.ZERO_AMOUNT);
             });

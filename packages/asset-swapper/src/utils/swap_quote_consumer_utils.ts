@@ -53,7 +53,7 @@ export const swapQuoteConsumerUtils = {
     ): Promise<[BigNumber, BigNumber]> {
         const web3Wrapper = new Web3Wrapper(provider);
         const ethBalance = await web3Wrapper.getBalanceInWeiAsync(takerAddress);
-        const wethBalance = await contractWrappers.weth9.balanceOf.callAsync(takerAddress, {});
+        const wethBalance = await contractWrappers.weth9.balanceOf.callAsync(takerAddress);
         return [ethBalance, wethBalance];
     },
     isValidForwarderSwapQuote(swapQuote: SwapQuote, wethAssetData: string): boolean {

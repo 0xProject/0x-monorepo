@@ -27,7 +27,6 @@ import { WETH9Contract } from './generated-wrappers/weth9';
 import { ContractWrappersConfigSchema } from './schemas/contract_wrappers_config_schema';
 import { ContractWrappersConfig } from './types';
 import { assert } from './utils/assert';
-import { constants as wrapperConstants } from './utils/constants';
 import { _getDefaultContractAddresses } from './utils/contract_addresses';
 
 /**
@@ -73,8 +72,6 @@ export class ContractWrappers {
      * An instance of the CoordinatorWrapper class containing methods for interacting with the Coordinator extension contract.
      */
     public coordinator: CoordinatorWrapper;
-
-    public constants: { [key: string]: any } = wrapperConstants;
 
     private readonly _web3Wrapper: Web3Wrapper;
     /**

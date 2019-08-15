@@ -273,9 +273,9 @@ export class AssetBuyer {
             const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
                 optimizedMarketOrders,
                 assetBuyAmount,
-                orders.map(o => o.signature),
+                optimizedMarketOrders.map(o => o.signature),
                 optimizedFeeOrders,
-                feeOrders.map(o => o.signature),
+                optimizedFeeOrders.map(o => o.signature),
                 formattedFeePercentage,
                 feeRecipient,
                 {
