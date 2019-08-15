@@ -19,11 +19,13 @@ import { OrderedList } from 'ts/components/docs/mdx/ordered_list';
 import { Table } from 'ts/components/docs/mdx/table';
 import { UnorderedList } from 'ts/components/docs/mdx/unordered_list';
 
+import { Separator } from 'ts/components/docs/shared/separator';
+import { StepLinks } from 'ts/components/docs/shared/step_links';
+
 import { Columns } from 'ts/components/docs/layout/columns';
 import { ContentWrapper } from 'ts/components/docs/layout/content_wrapper';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 
-import { Separator } from 'ts/components/docs/separator';
 import { IContents, TableOfContents } from 'ts/components/docs/sidebar/table_of_contents';
 
 import { FullscreenMessage } from 'ts/pages/fullscreen_message';
@@ -156,4 +158,5 @@ const mdxComponents = {
     NewsletterWidget,
     Note,
     Notification,
+    StepLinks,
 };

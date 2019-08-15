@@ -2,11 +2,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Button } from 'ts/components/button';
-import { Paragraph } from 'ts/components/text';
+import { Heading, Paragraph } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
 
 interface IGetStartedLinksProps {
+    heading?: string;
     links: IGetStartedLinkProps[];
 }
 
@@ -16,12 +17,13 @@ export interface IGetStartedLinkProps {
     url: string;
 }
 
-export const GetStartedLinks: React.FC<IGetStartedLinksProps> = ({ links }) => (
-    <>
+export const GetStartedLinks: React.FC<IGetStartedLinksProps> = ({ heading, links }) => (
+    <div>
+        {heading && <Heading size="default">{heading}</Heading>}
         {links.map((link, index) => (
             <GetStartedLink key={`getStartedLink-${index}`} {...link} />
         ))}
-    </>
+    </div>
 );
 
 export const GetStartedLink: React.FC<IGetStartedLinkProps> = props => (

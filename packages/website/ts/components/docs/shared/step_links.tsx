@@ -2,24 +2,30 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
+import { Heading } from 'ts/components/text';
 
 import { colors } from 'ts/style/colors';
+import { docs } from 'ts/style/docs';
+
+interface IStepLinksProps {
+    heading?: string;
+    links: IStepLinkProps[];
+}
 
 export interface IStepLinkProps {
     title: string;
     url: string;
 }
 
-interface IStepLinksProps {
-    links: IStepLinkProps[];
-}
-
-export const StepLinks: React.FC<IStepLinksProps> = ({ links }) => (
-    <StepLinksWrapper>
-        {links.map((link, index) => (
-            <StepLink key={`step-${index}`} {...link} />
-        ))}
-    </StepLinksWrapper>
+export const StepLinks: React.FC<IStepLinksProps> = ({ heading, links }) => (
+    <div>
+        {heading && <Heading size="default">{heading}</Heading>}
+        <StepLinksWrapper>
+            {links.map((link, index) => (
+                <StepLink key={`step-${index}`} {...link} />
+            ))}
+        </StepLinksWrapper>
+    </div>
 );
 
 export const StepLink: React.FC<IStepLinkProps> = props => (
@@ -38,6 +44,7 @@ export const StepLink: React.FC<IStepLinkProps> = props => (
 
 const StepLinksWrapper = styled.div`
     border: 1px solid #dbdfdd;
+    margin-bottom: ${docs.marginBottom};
 `;
 
 const StepLinkWrapper = styled(Link)`

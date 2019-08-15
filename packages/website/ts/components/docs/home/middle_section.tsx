@@ -1,10 +1,8 @@
 import * as React from 'react';
 import styled from 'styled-components';
 
-import { Heading } from 'ts/components/text';
-
 import { GetStartedLinks, IGetStartedLinkProps } from 'ts/components/docs/home/get_started_links';
-import { IStepLinkProps, StepLinks } from 'ts/components/docs/home/step_links';
+import { IStepLinkProps, StepLinks } from 'ts/components/docs/shared/step_links';
 
 interface IMiddleSectionProps {
     getStartedLinks: IGetStartedLinkProps[];
@@ -13,14 +11,8 @@ interface IMiddleSectionProps {
 
 export const MiddleSection: React.FC<IMiddleSectionProps> = ({ getStartedLinks, usefulLinks }) => (
     <MiddleSectionWrapper>
-        <div>
-            <Heading size="default">Get Started</Heading>
-            <GetStartedLinks links={getStartedLinks} />
-        </div>
-        <div>
-            <Heading size="default">Useful Links</Heading>
-            <StepLinks links={usefulLinks} />
-        </div>
+        <GetStartedLinks heading="Get started" links={getStartedLinks} />
+        <StepLinks heading="Useful Links" links={usefulLinks} />
     </MiddleSectionWrapper>
 );
 

@@ -1,3 +1,24 @@
+export const links = [
+    {
+        title: 'Core Concepts',
+        url: '/docs/core-concepts',
+    },
+    {
+        title: 'Tools',
+        url: '/docs/tools',
+    },
+    {
+        title: 'Guides',
+        url: '/docs/guides',
+    },
+    {
+        title: 'External link (Github)',
+        url: 'https://github.com',
+    },
+]
+
+<StepLinks heading="Useful Links" links={links} />
+
 # Sol-coverage
 
 Sol-coverage <Note heading="Test note">This is a side-info callout used to explain things a little more when needed</Note> uses transaction traces in order to figure out which lines of Solidity source code have been covered by your tests. In order for it to gather these traces, you must add the `CoverageSubprovider` to the [ProviderEngine](https://github.com/MetaMask/provider-engine) instance you use when running your Solidity tests. If you're unfamiliar with `ProviderEngine`, please read the [Web3 Provider explained](https://0x.org/wiki#Web3-Provider-Explained) wiki article.

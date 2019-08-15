@@ -4,7 +4,7 @@ import { Hits, InstantSearch } from 'react-instantsearch-dom';
 import { Columns } from 'ts/components/docs/layout/columns';
 import { DocsPageLayout } from 'ts/components/docs/layout/docs_page_layout';
 import { Resource } from 'ts/components/docs/resource/resource';
-import { Separator } from 'ts/components/docs/separator';
+import { Separator } from 'ts/components/docs/shared/separator';
 import { Filters } from 'ts/components/docs/sidebar/filters';
 
 import { searchClient, searchIndices } from 'ts/utils/algolia_constants';
