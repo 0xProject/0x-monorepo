@@ -4,7 +4,7 @@ jobs:
     build:
         resource_class: medium+
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         environment:
             CONTRACTS_COMMIT_HASH: '9ed05f5'
         working_directory: ~/repo
@@ -42,7 +42,7 @@ jobs:
     build-website:
         resource_class: medium+
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -51,7 +51,7 @@ jobs:
             - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -60,7 +60,7 @@ jobs:
             - run: yarn wsrun test:circleci @0x/contracts-multisig @0x/contracts-utils @0x/contracts-exchange-libs @0x/contracts-erc20 @0x/contracts-erc721 @0x/contracts-erc1155 @0x/contracts-extensions @0x/contracts-asset-proxy @0x/contracts-exchange @0x/contracts-exchange-forwarder @0x/contracts-coordinator @0x/contracts-dev-utils
     test-contracts-geth:
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/devnet
         working_directory: ~/repo
         steps:
@@ -73,7 +73,7 @@ jobs:
     test-publish:
         resource_class: medium+
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/verdaccio
         working_directory: ~/repo
         steps:
@@ -83,7 +83,7 @@ jobs:
             - run: yarn test:publish:circleci
     test-doc-generation:
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -92,7 +92,7 @@ jobs:
             - run: yarn test:generate_docs:circleci
     test-rest:
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
         steps:
             - restore_cache:
@@ -175,7 +175,7 @@ jobs:
     test-python:
         working_directory: ~/repo
         docker:
-            - image: circleci/python
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
             - image: 0xorg/ganache-cli:2.2.2
             - image: 0xorg/launch-kit-backend:74bcc39
               environment:
@@ -253,7 +253,7 @@ jobs:
     test-rest-python:
         working_directory: ~/repo
         docker:
-            - image: circleci/python
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -281,7 +281,7 @@ jobs:
     static-tests-python:
         working_directory: ~/repo
         docker:
-            - image: circleci/python
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         steps:
             - checkout
             - run: sudo chown -R circleci:circleci /usr/local/bin
@@ -300,7 +300,7 @@ jobs:
     static-tests:
         working_directory: ~/repo
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         steps:
             - restore_cache:
                   keys:
@@ -312,7 +312,7 @@ jobs:
             - run: yarn bundlewatch
     submit-coverage:
         docker:
-            - image: circleci/node:9-browsers
+            - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
         steps:
             - restore_cache:
