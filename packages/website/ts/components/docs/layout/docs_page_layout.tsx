@@ -18,6 +18,7 @@ import { colors } from 'ts/style/colors';
 interface IDocsPageLayoutProps {
     children: React.ReactNode;
     title: string;
+    description?: string;
     subtitle?: string;
     loading?: boolean;
     isHome?: boolean;
@@ -26,10 +27,16 @@ interface IDocsPageLayoutProps {
 const SECTION_MIN_HEIGHT = '50vh';
 const SECTION_WIDTH = '1150px';
 
+const { description, keywords, title } = documentConstants.DOCS;
+
 export const DocsPageLayout: React.FC<IDocsPageLayoutProps> = props => {
     return (
         <SiteWrap isDocs={true} theme="light">
-            <DocumentTitle {...documentConstants.DOCS} />
+            <DocumentTitle
+                title={`${title}: ${props.title}`}
+                description={props.description ? props.description : description}
+                keywords={keywords}
+            />
             <Hero title={props.title} subtitle={props.subtitle} isHome={props.isHome} />
             <Section maxWidth={SECTION_WIDTH} minHeight={SECTION_MIN_HEIGHT} isPadded={false} overflow="visible">
                 {props.loading ? (
