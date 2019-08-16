@@ -99,7 +99,9 @@ function processContentTree(tree: Node[], file: File, indexName: string): void {
     const textNodes = selectAll('text', tree);
 
     if (textNodes) {
-        // Combines text nodes that exist on the same line. I.e. if a paragraph contains 7 text nodes it combines them into 1. This makes text snippets in algolia more descriptive.
+        // Combines text nodes that exist on the same line. I.e. if a paragraph
+        // contains 7 text nodes it combines them into 1. This makes text snippets
+        // in algolia more descriptive.
         const formattedTextNodes = formatTextNodes(textNodes);
         // Adds meta and formats information on all formatted text nodes
         const content = getContent(file, formattedTextNodes);
