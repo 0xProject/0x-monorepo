@@ -1,17 +1,11 @@
 const algoliasearch = require('algoliasearch/lite');
 
+import { ObjectMap } from '@0x/types';
+
 const ALGOLIA_APP_ID = 'Z5HRK3F1BK';
 const ALGOLIA_CLIENT_API_KEY = '53793d35f5e6b0583d273c4015373c3b';
 // @TODO: Move the following somewhere safe / out of the repo
 const ALGOLIA_ADMIN_API_KEY = 'b158fad22eba28a2660ae045c5766378';
-
-interface ISearchIndices {
-    [index: string]: string;
-}
-
-interface ISettingsIndex {
-    [index: string]: IAlgoliaSettings;
-}
 
 export interface IAlgoliaSettings {
     distinct: boolean;
@@ -25,7 +19,7 @@ export interface IAlgoliaSettings {
 export const searchClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_CLIENT_API_KEY);
 export const adminClient = algoliasearch(ALGOLIA_APP_ID, ALGOLIA_ADMIN_API_KEY);
 
-export const searchIndices: ISearchIndices = {
+export const searchIndices: ObjectMap<string> = {
     'api-explorer': '0x_api_explorer',
     'core-concepts': '0x_core_concepts',
     guides: '0x_guides',
@@ -41,7 +35,7 @@ const sharedSettings = {
     snippetEllipsisText: '…',
 };
 
-export const settings: ISettingsIndex = {
+export const settings: ObjectMap<IAlgoliaSettings> = {
     'api-explorer': sharedSettings,
     'core-concepts': sharedSettings,
     guides: {
