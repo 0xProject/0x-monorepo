@@ -98,6 +98,21 @@ contracts/dev-utils/generated-artifacts/
 packages/sol-tracing-utils/test/fixtures/artifacts/
 python-packages/contract_artifacts/src/zero_ex/contract_artifacts/artifacts/
 
+# generated truffle contract artifacts/
+contracts/staking/build/
+contracts/coordinator/build/
+contracts/exchange/build/
+contracts/asset-proxy/build/
+contracts/multisig/build/
+contracts/utils/build/
+contracts/exchange-libs/build/
+contracts/erc20/build/
+contracts/erc721/build/
+contracts/erc1155/build/
+contracts/extensions/build/
+contracts/exchange-forwarder/build/
+contracts/dev-utils/build/
+
 # generated contract wrappers
 packages/abi-gen-wrappers/src/generated-wrappers/
 packages/python-contract-wrappers/generated/

@@ -31,7 +31,8 @@
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
+        "compile:truffle": "truffle compile"
     },
     "config": {
         "abis": "./generated-artifacts/@(DummyERC1155Receiver|ERC1155|ERC1155Mintable|IERC1155|IERC1155Mintable|IERC1155Receiver|MixinNonFungibleToken).json",
@@ -64,6 +65,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "solhint": "^1.4.1",
+        "truffle": "^5.0.32",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },

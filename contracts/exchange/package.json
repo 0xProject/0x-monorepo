@@ -31,7 +31,8 @@
         "coverage:report:lcov": "istanbul report lcov",
         "test:circleci": "yarn test",
         "contracts:gen": "contracts-gen",
-        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol"
+        "lint-contracts": "solhint -c ../.solhint.json contracts/**/**/**/**/*.sol",
+        "compile:truffle": "truffle compile"
     },
     "config": {
         "abis": "./generated-artifacts/@(Exchange|ExchangeWrapper|IAssetProxy|IAssetProxyDispatcher|IEIP1271Wallet|IExchange|IExchangeCore|IExchangeRichErrors|IMatchOrders|ISignatureValidator|ITransactions|ITransferSimulator|IWallet|IWrapperFunctions|IsolatedExchange|LibExchangeRichErrorDecoder|MixinAssetProxyDispatcher|MixinExchangeCore|MixinMatchOrders|MixinSignatureValidator|MixinTransactions|MixinTransferSimulator|MixinWrapperFunctions|ReentrancyTester|TestAssetProxyDispatcher|TestExchangeInternals|TestLibExchangeRichErrorDecoder|TestSignatureValidator|TestValidatorWallet|TestWrapperFunctions|Whitelist).json",
@@ -65,6 +66,7 @@
         "npm-run-all": "^4.1.2",
         "shx": "^0.2.2",
         "solhint": "^1.4.1",
+        "truffle": "^5.0.32",
         "tslint": "5.11.0",
         "typescript": "3.0.1"
     },
