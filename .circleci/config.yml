@@ -11,11 +11,16 @@ jobs:
         steps:
             - checkout
             - run: echo 'export PATH=$HOME/CIRCLE_PROJECT_REPONAME/node_modules/.bin:$PATH' >> $BASH_ENV
-            - run:
-                  # HACK(albrow): Without this, yarn commands will sometimes
-                  # fail with a "permission denied" error.
-                  name: Set npm path
-                  command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
+            # HACK(feuGeneA): commented out this hack as we're changing
+            # from a circleci-maintained container to a different
+            # container, and this hack may not apply anymore, as
+            # suggested by the non-existance of `/home/circleci/.bashrc`
+            # when running the command below.
+            # - run:
+            #       # HACK(albrow): Without this, yarn commands will sometimes
+            #       # fail with a "permission denied" error.
+            #       name: Set npm path
+            #       command: npm set prefix=/home/circleci/npm && echo 'export PATH=$HOME/circleci/npm/bin:$PATH' >> /home/circleci/.bashrc
             - run:
                   name: install-yarn
                   command: npm install --global yarn@1.9.4
