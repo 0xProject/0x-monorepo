@@ -19,11 +19,14 @@ interface TabProps {
     isActive: boolean;
 }
 
-const TabbedWrapper = styled.div`
+export const TabbedWrapper = styled.div`
     background-color: #0c2320;
     width: 100%;
     height: 586px;
     margin-left: 50px;
+    @media (max-width: 768px) {
+        display: none;
+    }
 `;
 
 const Tab = styled.div<TabProps>`

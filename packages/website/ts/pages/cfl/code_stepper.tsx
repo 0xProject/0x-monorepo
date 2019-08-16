@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Definition, DefinitionProps } from 'ts/components/definition';
-import { CodeTab, TabbedCodeDemo } from 'ts/components/tabbed_code_demo';
+import { CodeTab, TabbedCodeDemo, TabbedWrapper } from 'ts/components/tabbed_code_demo';
 
 const StepperContainer = styled.div`
     display: flex;
@@ -14,16 +14,23 @@ interface InteractiveDefinitionProps extends DefinitionProps {
 }
 
 const InteractiveDefinition = styled(Definition)<InteractiveDefinitionProps>`
-    padding: 20px;
-    background-color: ${props => (props.isSelected ? '#0D1413' : '')};
-    border-left: ${props => (props.isSelected ? '3px solid #00AE99' : '3px solid rgba(0,0,0,0)')};
-    width: 600px;
-    p {
-        margin-bottom: 0px;
+    @media (min-width: 768px) {
+        padding: 20px;
+        background-color: ${props => (props.isSelected ? '#0D1413' : '')};
+        border-left: ${props => (props.isSelected ? '3px solid #00AE99' : '3px solid rgba(0,0,0,0)')};
+        width: 600px;
+        p {
+            margin-bottom: 0px;
+        }
+        &:hover {
+            background-color: #0d1413;
+            cursor: pointer;
+        }
     }
-    &:hover {
-        background-color: #0d1413;
-        cursor: pointer;
+
+    @media (max-width: 768px) {
+        text-align: center;
+        margin-top: 60px;
     }
 `;
 
@@ -124,6 +131,7 @@ export class CodeStepper extends React.Component<CodeStepperProps, CodeStepperSt
                                 titleSize="small"
                                 description={item.description}
                                 isWithMargin={false}
+                                isCentered={true}
                                 isSelected={index === selectedSideTabIndex}
                             />
                         </div>

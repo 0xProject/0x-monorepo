@@ -32,6 +32,17 @@ const DeveloperLink = styled(Button)`
     }
 `;
 
+const DeFiHeading = styled(Heading)`
+    text-align: center;
+    @media (min-width: 768px) {
+        padding-bottom: 80px;
+    }
+    @media (max-width: 768px) {
+        font-size: 34px !important;
+        padding: 15px 0px;
+    }
+`;
+
 const useCasesData = [
     {
         title: 'DeFi Lending and Margin Trading Platforms',
@@ -81,7 +92,8 @@ export class CFL extends React.Component<Props> {
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
-                        </Button>}
+                        </Button>
+                    }
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>
@@ -103,9 +115,7 @@ export class CFL extends React.Component<Props> {
                     <CodeStepper />
                 </Section>
                 <Section>
-                    <FlexWrap justifyContent="center" padding="0px 0px 80px">
-                        <Heading size="medium">Use Cases in DeFi</Heading>
-                    </FlexWrap>
+                    <DeFiHeading size="medium">Use Cases in DeFi</DeFiHeading>
                     {useCasesData.map(useCase => (
                         <Definition
                             key={useCase.title}
