@@ -101,9 +101,13 @@ const CustomAutoComplete: React.FC<IAutoCompleteProps> = ({
     const renderSectionTitle = (section: any): React.ReactNode => {
         const { tools, guides } = searchIndices;
         const coreConcepts = searchIndices['core-concepts'];
+        // TODO: Add this back in when api - explorer page is ready
+        // to be indexed and included in the search results (ditto in search_input.tsx)
         // const apiExplorer = searchIndices['api-explorer'];
 
         const titles: { [key: string]: string } = {
+            // TODO: Add this back in when api - explorer page is ready
+            // to be indexed and included in the search results (ditto in search_input.tsx)
             // [apiExplorer]: 'Api explorer',
             [coreConcepts]: 'Core concepts',
             [tools]: 'Tools',

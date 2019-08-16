@@ -17,6 +17,10 @@ export const SearchInput: React.FC<ISearchInputProps> = ({ isHome }) => (
         <Index indexName={searchIndices.tools} />
         <Index indexName={searchIndices.guides} />
         <Index indexName={searchIndices['core-concepts']} />
-        {/* <Index indexName={searchIndices['api-explorer']} /> */}
+        {/*
+            TODO: Add this back in when api-explorer page is ready
+            to be indexed and included in the search results (ditto in autocomplete.tsx)
+            <Index indexName={searchIndices['api-explorer']} />
+        */}
     </InstantSearch>
 );
