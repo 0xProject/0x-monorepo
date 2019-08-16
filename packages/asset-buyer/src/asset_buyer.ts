@@ -1,6 +1,6 @@
-import { ContractWrappers, ContractWrappersError, ForwarderWrapperError } from '@0x/contract-wrappers';
+import { ContractError, ContractWrappers, ForwarderError } from '@0x/contract-wrappers';
 import { schemas } from '@0x/json-schemas';
-import { SignedOrder } from '@0x/order-utils';
+import { assetDataUtils, SignedOrder } from '@0x/order-utils';
 import { ObjectMap } from '@0x/types';
 import { BigNumber, providerUtils } from '@0x/utils';
 import { Web3Wrapper } from '@0x/web3-wrapper';
@@ -21,11 +21,10 @@ import {
     OrderProvider,
     OrdersAndFillableAmounts,
 } from './types';
-
 import { assert } from './utils/assert';
-import { assetDataUtils } from './utils/asset_data_utils';
 import { buyQuoteCalculator } from './utils/buy_quote_calculator';
 import { calculateLiquidity } from './utils/calculate_liquidity';
+import { numberPercentageToEtherTokenAmountPercentage } from './utils/number_percentage_to_ethertoken_amount_percentage';
 import { orderProviderResponseProcessor } from './utils/order_provider_response_processor';
 
 interface OrdersEntry {
@@ -263,26 +262,32 @@ export class AssetBuyer {
             }
         }
         try {
+            // format fee percentage
+            const formattedFeePercentage = numberPercentageToEtherTokenAmountPercentage(feePercentage || 0);
             // if no ethAmount is provided, default to the worst ethAmount from buyQuote
-            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEthAsync(
+            const value = ethAmount || worstCaseQuoteInfo.totalEthAmount;
+
+            const txHash = await this._contractWrappers.forwarder.marketBuyOrdersWithEth.validateAndSendTransactionAsync(
                 orders,
                 assetBuyAmount,
-                finalTakerAddress,
-                ethAmount || worstCaseQuoteInfo.totalEthAmount,
+                orders.map(o => o.signature),
                 feeOrders,
-                feePercentage,
+                feeOrders.map(o => o.signature),
+                formattedFeePercentage,
                 feeRecipient,
                 {
-                    gasLimit,
+                    value,
+                    from: finalTakerAddress.toLowerCase(),
+                    gas: gasLimit,
                     gasPrice,
-                    shouldValidate: true,
                 },
             );
+
             return txHash;
         } catch (err) {
-            if (_.includes(err.message, ContractWrappersError.SignatureRequestDenied)) {
+            if (_.includes(err.message, ContractError.SignatureRequestDenied)) {
                 throw new Error(AssetBuyerError.SignatureRequestDenied);
-            } else if (_.includes(err.message, ForwarderWrapperError.CompleteFillFailed)) {
+            } else if (_.includes(err.message, ForwarderError.CompleteFillFailed)) {
                 throw new Error(AssetBuyerError.TransactionValueTooLow);
             } else {
                 throw err;
@@ -357,13 +362,13 @@ export class AssetBuyer {
      * Will throw if WETH does not exist for the current network.
      */
     private _getEtherTokenAssetDataOrThrow(): string {
-        return assetDataUtils.getEtherTokenAssetData(this._contractWrappers);
+        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.etherToken);
     }
     /**
      * Get the assetData that represents the ZRX token.
      * Will throw if ZRX does not exist for the current network.
      */
     private _getZrxTokenAssetDataOrThrow(): string {
-        return this._contractWrappers.exchange.getZRXAssetData();
+        return assetDataUtils.encodeERC20AssetData(this._contractWrappers.contractAddresses.zrxToken);
     }
 }

@@ -24,6 +24,25 @@ export interface IndexedFilterValues {
     [index: string]: ContractEventArg;
 }
 
+export enum ForwarderError {
+    CompleteFillFailed = 'COMPLETE_FILL_FAILED',
+}
+
+export enum ContractError {
+    ContractNotDeployedOnNetwork = 'CONTRACT_NOT_DEPLOYED_ON_NETWORK',
+    InsufficientAllowanceForTransfer = 'INSUFFICIENT_ALLOWANCE_FOR_TRANSFER',
+    InsufficientBalanceForTransfer = 'INSUFFICIENT_BALANCE_FOR_TRANSFER',
+    InsufficientEthBalanceForDeposit = 'INSUFFICIENT_ETH_BALANCE_FOR_DEPOSIT',
+    InsufficientWEthBalanceForWithdrawal = 'INSUFFICIENT_WETH_BALANCE_FOR_WITHDRAWAL',
+    InvalidJump = 'INVALID_JUMP',
+    OutOfGas = 'OUT_OF_GAS',
+    SubscriptionNotFound = 'SUBSCRIPTION_NOT_FOUND',
+    SubscriptionAlreadyPresent = 'SUBSCRIPTION_ALREADY_PRESENT',
+    ERC721OwnerNotFound = 'ERC_721_OWNER_NOT_FOUND',
+    ERC721NoApproval = 'ERC_721_NO_APPROVAL',
+    SignatureRequestDenied = 'SIGNATURE_REQUEST_DENIED',
+}
+
 /**
  * networkId: The id of the underlying ethereum network your provider is connected to. (1-mainnet, 3-ropsten, 4-rinkeby, 42-kovan, 50-testrpc)
  * gasPrice: Gas price to use with every transaction
@@ -70,6 +89,22 @@ export enum OrderStatus {
     Expired,
     FullyFilled,
     Cancelled,
+}
+
+export interface TraderInfo {
+    makerBalance: BigNumber;
+    makerAllowance: BigNumber;
+    takerBalance: BigNumber;
+    takerAllowance: BigNumber;
+    makerZrxBalance: BigNumber;
+    makerZrxAllowance: BigNumber;
+    takerZrxBalance: BigNumber;
+    takerZrxAllowance: BigNumber;
+}
+
+export interface OrderAndTraderInfo {
+    orderInfo: OrderInfo;
+    traderInfo: TraderInfo;
 }
 
 export { CoordinatorServerCancellationResponse, CoordinatorServerError } from './utils/coordinator_server_types';

@@ -134,14 +134,6 @@ const CATEGORY_TO_PACKAGES: ObjectMap<Package[]> = {
         },
         {
             description:
-                "A daemon that watches a set of 0x orders and emits events when an order's fillability has changed. Can be used by a relayer to prune their orderbook or by a trader to keep their view of the market up-to-date.",
-            link: {
-                title: '@0x/order-watcher [Deprecated]',
-                to: WebsitePaths.OrderWatcher,
-            },
-        },
-        {
-            description:
                 'A tiny utility library for getting known deployed contract addresses for a particular network.',
             link: {
                 title: '@0x/contract-addresses',

@@ -311,6 +311,27 @@ export class DutchAuctionContract extends BaseContract {
             }>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            order: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).getAuctionDetails.callAsync(order, txData);
+            const txHash = await (this as any).getAuctionDetails.sendTransactionAsync(order, txData);
+            return txHash;
+        },
     };
     /**
      * Matches the buy and sell orders at an amount given the following: the current block time, the auction
@@ -774,6 +795,49 @@ export class DutchAuctionContract extends BaseContract {
                 leftMakerAssetSpreadAmount: BigNumber;
             }>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            buyOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            sellOrder: {
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            },
+            buySignature: string,
+            sellSignature: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).matchOrders.callAsync(buyOrder, sellOrder, buySignature, sellSignature, txData);
+            const txHash = await (this as any).matchOrders.sendTransactionAsync(
+                buyOrder,
+                sellOrder,
+                buySignature,
+                sellSignature,
+                txData,
+            );
+            return txHash;
         },
     };
     public static async deployFrom0xArtifactAsync(

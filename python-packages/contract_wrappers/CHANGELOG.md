@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1.0 - TBD
+## 1.1.0 - 2019-08-14
 
 -   Added wrapper for DevUtils contract.
 

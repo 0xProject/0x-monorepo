@@ -1,4 +1,4 @@
-import { ContractWrappersError } from '@0x/contract-wrappers';
+import { ContractError } from '@0x/contract-wrappers';
 import { assetDataUtils, TypedDataError } from '@0x/order-utils';
 import { ExchangeContractErrs } from '@0x/types';
 import { BigNumber } from '@0x/utils';
@@ -233,13 +233,13 @@ export const utils = {
         const isUniqueSymbol = tokenWithSameSymbolIfExists === undefined;
         return isUniqueName && isUniqueSymbol;
     },
-    zeroExErrToHumanReadableErrMsg(error: ContractWrappersError | ExchangeContractErrs, takerAddress: string): string {
-        const ContractWrappersErrorToHumanReadableError: { [error: string]: string } = {
+    zeroExErrToHumanReadableErrMsg(error: ContractError | ExchangeContractErrs, takerAddress: string): string {
+        const ContractErrorToHumanReadableError: { [error: string]: string } = {
             [BlockchainCallErrs.UserHasNoAssociatedAddresses]: 'User has no addresses available',
             [TypedDataError.InvalidSignature]: 'Order signature is not valid',
-            [ContractWrappersError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
-            [ContractWrappersError.InvalidJump]: 'Invalid jump occured while executing the transaction',
-            [ContractWrappersError.OutOfGas]: 'Transaction ran out of gas',
+            [ContractError.ContractNotDeployedOnNetwork]: 'Contract is not deployed on the detected network',
+            [ContractError.InvalidJump]: 'Invalid jump occured while executing the transaction',
+            [ContractError.OutOfGas]: 'Transaction ran out of gas',
         };
         const exchangeContractErrorToHumanReadableError: {
             [error: string]: string;
@@ -269,7 +269,7 @@ export const utils = {
             [ExchangeContractErrs.InsufficientRemainingFillAmount]: 'Insufficient remaining fill amount',
         };
         const humanReadableErrorMsg =
-            exchangeContractErrorToHumanReadableError[error] || ContractWrappersErrorToHumanReadableError[error];
+            exchangeContractErrorToHumanReadableError[error] || ContractErrorToHumanReadableError[error];
         return humanReadableErrorMsg;
     },
     isParityNode(nodeVersion: string): boolean {

@@ -124,7 +124,7 @@ export class Handler {
                     recipient,
                     requestedAssetType,
                     networkConfig.networkId,
-                    networkConfig.contractWrappers.erc20Token,
+                    networkConfig.contractWrappers.getProvider(),
                 );
                 break;
             default:

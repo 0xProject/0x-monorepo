@@ -584,6 +584,64 @@ export class ForwarderContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            makerAssetFillAmount: BigNumber,
+            signatures: string[],
+            feeOrders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            feeSignatures: string[],
+            feePercentage: BigNumber,
+            feeRecipient: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketBuyOrdersWithEth.callAsync(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+                txData,
+            );
+            const txHash = await (this as any).marketBuyOrdersWithEth.sendTransactionAsync(
+                orders,
+                makerAssetFillAmount,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+                txData,
+            );
+            return txHash;
+        },
     };
     /**
      * Withdraws assets from this contract. The contract requires a ZRX balance in order to
@@ -762,6 +820,15 @@ export class ForwarderContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            assetData: string,
+            amount: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).withdrawAsset.callAsync(assetData, amount, txData);
+            const txHash = await (this as any).withdrawAsset.sendTransactionAsync(assetData, amount, txData);
+            return txHash;
         },
     };
     public owner = {
@@ -1335,6 +1402,61 @@ export class ForwarderContract extends BaseContract {
             >(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            orders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            signatures: string[],
+            feeOrders: Array<{
+                makerAddress: string;
+                takerAddress: string;
+                feeRecipientAddress: string;
+                senderAddress: string;
+                makerAssetAmount: BigNumber;
+                takerAssetAmount: BigNumber;
+                makerFee: BigNumber;
+                takerFee: BigNumber;
+                expirationTimeSeconds: BigNumber;
+                salt: BigNumber;
+                makerAssetData: string;
+                takerAssetData: string;
+            }>,
+            feeSignatures: string[],
+            feePercentage: BigNumber,
+            feeRecipient: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).marketSellOrdersWithEth.callAsync(
+                orders,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+                txData,
+            );
+            const txHash = await (this as any).marketSellOrdersWithEth.sendTransactionAsync(
+                orders,
+                signatures,
+                feeOrders,
+                feeSignatures,
+                feePercentage,
+                feeRecipient,
+                txData,
+            );
+            return txHash;
+        },
     };
     public transferOwnership = {
         /**
@@ -1478,6 +1600,11 @@ export class ForwarderContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     public static async deployFrom0xArtifactAsync(

@@ -100,4 +100,22 @@ public {{languageSpecificName}} = {
     return gas;
     },
     {{> callAsync}}
+    async validateAndSendTransactionAsync(
+        {{> typed_params inputs=inputs}}
+        txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+        await (this as any).{{languageSpecificName}}.callAsync(
+        {{#each inputs~}}
+            {{name}},
+        {{/each~}}
+            txData,
+        );
+        const txHash =  await (this as any).{{languageSpecificName}}.sendTransactionAsync(
+        {{#each inputs~}}
+            {{name}},
+        {{/each~}}
+            txData,
+        ); 
+        return txHash;
+    }
 };

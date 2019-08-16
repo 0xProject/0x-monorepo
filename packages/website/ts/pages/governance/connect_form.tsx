@@ -1,5 +1,5 @@
 import { getContractAddressesForNetworkOrThrow } from '@0x/contract-addresses';
-import { ContractWrappers } from '@0x/contract-wrappers';
+import { ContractWrappers, ERC20TokenContract } from '@0x/contract-wrappers';
 import {
     ledgerEthereumBrowserClientFactoryAsync,
     LedgerSubprovider,
@@ -221,8 +221,9 @@ export class ConnectForm extends React.Component<Props, State> {
         utils.assert(this._contractWrappers !== undefined, 'ContractWrappers must be instantiated.');
         const contractAddresses = getContractAddressesForNetworkOrThrow(this.networkId);
         const tokenAddress: string = contractAddresses.zrxToken;
+        const erc20Token = new ERC20TokenContract(tokenAddress, this._contractWrappers.getProvider());
         try {
-            const amount = await this._contractWrappers.erc20Token.getBalanceAsync(tokenAddress, owner);
+            const amount = await erc20Token.balanceOf.callAsync(owner);
             return amount;
         } catch (error) {
             return ZERO;

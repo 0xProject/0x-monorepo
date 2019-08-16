@@ -23,7 +23,7 @@
     "dependencies": {
         "@0x/asset-buyer": "^6.1.11",
         "@0x/contract-addresses": "^3.0.3",
-        "@0x/contract-wrappers": "^9.1.7",
+        "@0x/contract-wrappers": "^11.0.0",
         "@0x/json-schemas": "^3.1.13",
         "@0x/order-utils": "^8.2.5",
         "@0x/subproviders": "^5.0.1",

@@ -240,6 +240,15 @@ export class ERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _spender: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(_spender, _value, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(_spender, _value, txData);
+            return txHash;
+        },
     };
     /**
      * Query total supply of token
@@ -516,6 +525,16 @@ export class ERC20TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(_from, _to, _value, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _value, txData);
+            return txHash;
+        },
     };
     /**
      * Query the balance of owner
@@ -763,6 +782,15 @@ export class ERC20TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<boolean>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _to: string,
+            _value: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transfer.callAsync(_to, _value, txData);
+            const txHash = await (this as any).transfer.sendTransactionAsync(_to, _value, txData);
+            return txHash;
         },
     };
     public allowance = {

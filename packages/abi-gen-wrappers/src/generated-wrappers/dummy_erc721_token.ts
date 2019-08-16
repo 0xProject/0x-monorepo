@@ -387,6 +387,15 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _approved: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).approve.callAsync(_approved, _tokenId, txData);
+            const txHash = await (this as any).approve.sendTransactionAsync(_approved, _tokenId, txData);
+            return txHash;
+        },
     };
     /**
      * Throws unless `msg.sender` is the current owner, an authorized
@@ -599,6 +608,16 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).transferFrom.callAsync(_from, _to, _tokenId, txData);
+            const txHash = await (this as any).transferFrom.sendTransactionAsync(_from, _to, _tokenId, txData);
+            return txHash;
+        },
     };
     /**
      * Function to mint a new token
@@ -776,6 +795,15 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).mint.callAsync(_to, _tokenId, txData);
+            const txHash = await (this as any).mint.sendTransactionAsync(_to, _tokenId, txData);
+            return txHash;
         },
     };
     /**
@@ -986,6 +1014,16 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).safeTransferFrom1.callAsync(_from, _to, _tokenId, txData);
+            const txHash = await (this as any).safeTransferFrom1.sendTransactionAsync(_from, _to, _tokenId, txData);
+            return txHash;
         },
     };
     /**
@@ -1439,6 +1477,15 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _owner: string,
+            _tokenId: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).burn.callAsync(_owner, _tokenId, txData);
+            const txHash = await (this as any).burn.sendTransactionAsync(_owner, _tokenId, txData);
+            return txHash;
+        },
     };
     /**
      * Emits the ApprovalForAll event. The contract MUST allow
@@ -1629,6 +1676,15 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            _operator: string,
+            _approved: boolean,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).setApprovalForAll.callAsync(_operator, _approved, txData);
+            const txHash = await (this as any).setApprovalForAll.sendTransactionAsync(_operator, _approved, txData);
+            return txHash;
         },
     };
     /**
@@ -1868,6 +1924,23 @@ export class DummyERC721TokenContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(
+            _from: string,
+            _to: string,
+            _tokenId: BigNumber,
+            _data: string,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).safeTransferFrom2.callAsync(_from, _to, _tokenId, _data, txData);
+            const txHash = await (this as any).safeTransferFrom2.sendTransactionAsync(
+                _from,
+                _to,
+                _tokenId,
+                _data,
+                txData,
+            );
+            return txHash;
+        },
     };
     public isApprovedForAll = {
         /**
@@ -2093,6 +2166,11 @@ export class DummyERC721TokenContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<DummyERC721TokenEventArgs, DummyERC721TokenEvents>;

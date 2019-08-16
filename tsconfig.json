@@ -49,7 +49,6 @@
         { "path": "./packages/migrations" },
         { "path": "./packages/monorepo-scripts" },
         { "path": "./packages/order-utils" },
-        { "path": "./packages/order-watcher" },
         { "path": "./packages/sol-compiler" },
         { "path": "./packages/sol-coverage" },
         { "path": "./packages/sol-profiler" },

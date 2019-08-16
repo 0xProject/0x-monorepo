@@ -205,6 +205,11 @@ export class ERC721ProxyContract extends BaseContract {
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
         },
+        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).addAuthorizedAddress.callAsync(target, txData);
+            const txHash = await (this as any).addAuthorizedAddress.sendTransactionAsync(target, txData);
+            return txHash;
+        },
     };
     public authorities = {
         /**
@@ -424,6 +429,11 @@ export class ERC721ProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(target: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).removeAuthorizedAddress.callAsync(target, txData);
+            const txHash = await (this as any).removeAuthorizedAddress.sendTransactionAsync(target, txData);
+            return txHash;
         },
     };
     public owner = {
@@ -676,6 +686,19 @@ export class ERC721ProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(
+            target: string,
+            index: BigNumber,
+            txData?: Partial<TxData> | undefined,
+        ): Promise<string> {
+            await (this as any).removeAuthorizedAddressAtIndex.callAsync(target, index, txData);
+            const txHash = await (this as any).removeAuthorizedAddressAtIndex.sendTransactionAsync(
+                target,
+                index,
+                txData,
+            );
+            return txHash;
         },
     };
     /**
@@ -1022,6 +1045,11 @@ export class ERC721ProxyContract extends BaseContract {
             // tslint:disable boolean-naming
             const abiDecodedReturnData = abiEncoder.strictDecodeReturnValue<void>(returnData);
             return abiDecodedReturnData;
+        },
+        async validateAndSendTransactionAsync(newOwner: string, txData?: Partial<TxData> | undefined): Promise<string> {
+            await (this as any).transferOwnership.callAsync(newOwner, txData);
+            const txHash = await (this as any).transferOwnership.sendTransactionAsync(newOwner, txData);
+            return txHash;
         },
     };
     private readonly _subscriptionManager: SubscriptionManager<ERC721ProxyEventArgs, ERC721ProxyEvents>;
