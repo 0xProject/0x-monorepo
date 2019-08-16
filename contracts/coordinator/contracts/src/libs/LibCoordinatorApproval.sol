@@ -34,7 +34,7 @@ contract LibCoordinatorApproval is
     //     "uint256 approvalExpirationTimeSeconds",
     //     ")"
     // ));
-    bytes32 constant internal EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = 0x2fbcdbaa76bc7589916958ae919dfbef04d23f6bbf26de6ff317b32c6cc01e05;
+    bytes32 constant public EIP712_COORDINATOR_APPROVAL_SCHEMA_HASH = 0x2fbcdbaa76bc7589916958ae919dfbef04d23f6bbf26de6ff317b32c6cc01e05;
 
     struct CoordinatorApproval {
         address txOrigin;                       // Required signer of Ethereum transaction that is submitting approval.

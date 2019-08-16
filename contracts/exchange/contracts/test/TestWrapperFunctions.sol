@@ -19,6 +19,8 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/Exchange.sol";
 
 
@@ -28,19 +30,19 @@ import "../src/Exchange.sol";
 contract TestWrapperFunctions is
     Exchange
 {
-    uint8 internal constant MAX_ORDER_STATUS = uint8(OrderStatus.CANCELLED);
+    uint8 internal constant MAX_ORDER_STATUS = uint8(LibOrder.OrderStatus.CANCELLED);
     uint256 internal constant ALWAYS_FAILING_SALT = uint256(-1);
     string internal constant ALWAYS_FAILING_SALT_REVERT_REASON = "ALWAYS_FAILING_SALT";
 
     // solhint-disable no-unused-vars
     event FillOrderCalled(
-        Order order,
+        LibOrder.Order order,
         uint256 takerAssetFillAmount,
         bytes signature
     );
 
     event CancelOrderCalled(
-        Order order
+        LibOrder.Order order
     );
 
     // solhint-disable no-empty-blocks
@@ -51,26 +53,26 @@ contract TestWrapperFunctions is
     {}
 
     /// @dev Overridden to be deterministic and simplified.
-    function getOrderInfo(Order memory order)
+    function getOrderInfo(LibOrder.Order memory order)
         public
         view
-        returns (OrderInfo memory orderInfo)
+        returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Lower uint128 of `order.salt` is the `orderTakerAssetFilledAmount`.
         orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
         // High byte of `order.salt` is the `orderStatus`.
         orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
-        orderInfo.orderHash = _getOrderHash(order);
+        orderInfo.orderHash = _getTypedDataHash(order);
     }
 
     /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
     function _fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         emit FillOrderCalled(
             order,
@@ -94,7 +96,7 @@ contract TestWrapperFunctions is
 
     /// @dev Overridden to only log arguments and revert with certain inputs.
     function _cancelOrder(
-        Order memory order
+        LibOrder.Order memory order
     )
         internal
     {
@@ -109,7 +111,7 @@ contract TestWrapperFunctions is
     }
 
     /// @dev Simplified order hashing.
-    function _getOrderHash(Order memory order)
+    function _getTypedDataHash(LibOrder.Order memory order)
         internal
         pure
         returns (bytes32 hash)

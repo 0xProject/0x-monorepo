@@ -18,21 +18,22 @@
 
 pragma solidity ^0.5.9;
 
-import "@0x/contracts-utils/contracts/src/SafeMath.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "./LibMathRichErrors.sol";
 
 
-contract LibMath is
-    SafeMath
-{
+library LibMath {
+
+    using LibSafeMath for uint256;
+
     /// @dev Calculates partial value given a numerator and denominator rounded down.
     ///      Reverts if rounding error is >= 0.1%
     /// @param numerator Numerator.
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded down.
-    function _safeGetPartialAmountFloor(
+    function safeGetPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -41,22 +42,19 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (_isRoundingErrorFloor(
+        if (isRoundingErrorFloor(
                 numerator,
                 denominator,
                 target
         )) {
-            LibRichErrors._rrevert(LibMathRichErrors.RoundingError(
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
                 numerator,
                 denominator,
                 target
             ));
         }
 
-        partialAmount = _safeDiv(
-            _safeMul(numerator, target),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target).safeDiv(denominator);
         return partialAmount;
     }
 
@@ -66,7 +64,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded up.
-    function _safeGetPartialAmountCeil(
+    function safeGetPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -75,12 +73,12 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        if (_isRoundingErrorCeil(
+        if (isRoundingErrorCeil(
                 numerator,
                 denominator,
                 target
         )) {
-            LibRichErrors._rrevert(LibMathRichErrors.RoundingError(
+            LibRichErrors.rrevert(LibMathRichErrors.RoundingError(
                 numerator,
                 denominator,
                 target
@@ -90,13 +88,10 @@ contract LibMath is
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
-        partialAmount = _safeDiv(
-            _safeAdd(
-                _safeMul(numerator, target),
-                _safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target)
+            .safeAdd(denominator.safeSub(1))
+            .safeDiv(denominator);
+
         return partialAmount;
     }
 
@@ -105,7 +100,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded down.
-    function _getPartialAmountFloor(
+    function getPartialAmountFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -114,10 +109,7 @@ contract LibMath is
         pure
         returns (uint256 partialAmount)
     {
-        partialAmount = _safeDiv(
-            _safeMul(numerator, target),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target).safeDiv(denominator);
         return partialAmount;
     }
 
@@ -126,7 +118,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to calculate partial of.
     /// @return Partial value of target rounded up.
-    function _getPartialAmountCeil(
+    function getPartialAmountCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -138,13 +130,10 @@ contract LibMath is
         // _safeDiv computes `floor(a / b)`. We use the identity (a, b integer):
         //       ceil(a / b) = floor((a + b - 1) / b)
         // To implement `ceil(a / b)` using _safeDiv.
-        partialAmount = _safeDiv(
-            _safeAdd(
-                _safeMul(numerator, target),
-                _safeSub(denominator, 1)
-            ),
-            denominator
-        );
+        partialAmount = numerator.safeMul(target)
+            .safeAdd(denominator.safeSub(1))
+            .safeDiv(denominator);
+
         return partialAmount;
     }
 
@@ -153,7 +142,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function _isRoundingErrorFloor(
+    function isRoundingErrorFloor(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -163,7 +152,7 @@ contract LibMath is
         returns (bool isError)
     {
         if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
         }
 
         // The absolute rounding error is the difference between the rounded
@@ -197,7 +186,7 @@ contract LibMath is
             numerator,
             denominator
         );
-        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
+        isError = remainder.safeMul(1000) >= numerator.safeMul(target);
         return isError;
     }
 
@@ -206,7 +195,7 @@ contract LibMath is
     /// @param denominator Denominator.
     /// @param target Value to multiply with numerator/denominator.
     /// @return Rounding error is present.
-    function _isRoundingErrorCeil(
+    function isRoundingErrorCeil(
         uint256 numerator,
         uint256 denominator,
         uint256 target
@@ -216,7 +205,7 @@ contract LibMath is
         returns (bool isError)
     {
         if (denominator == 0) {
-            LibRichErrors._rrevert(LibMathRichErrors.DivisionByZeroError());
+            LibRichErrors.rrevert(LibMathRichErrors.DivisionByZeroError());
         }
 
         // See the comments in `isRoundingError`.
@@ -232,8 +221,8 @@ contract LibMath is
             numerator,
             denominator
         );
-        remainder = _safeSub(denominator, remainder) % denominator;
-        isError = _safeMul(1000, remainder) >= _safeMul(numerator, target);
+        remainder = denominator.safeSub(remainder) % denominator;
+        isError = remainder.safeMul(1000) >= numerator.safeMul(target);
         return isError;
     }
 }

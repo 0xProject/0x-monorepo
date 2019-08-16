@@ -18,7 +18,7 @@ contract Ownable is
 
     modifier onlyOwner() {
         if (msg.sender != owner) {
-            LibRichErrors._rrevert(LibOwnableRichErrors.OnlyOwnerError(
+            LibRichErrors.rrevert(LibOwnableRichErrors.OnlyOwnerError(
                 msg.sender,
                 owner
             ));
@@ -31,7 +31,7 @@ contract Ownable is
         onlyOwner
     {
         if (newOwner == address(0)) {
-            LibRichErrors._rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
+            LibRichErrors.rrevert(LibOwnableRichErrors.TransferOwnerToZeroError());
         } else {
             owner = newOwner;
         }

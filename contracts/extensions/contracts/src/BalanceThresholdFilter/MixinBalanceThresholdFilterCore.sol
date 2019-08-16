@@ -19,16 +19,15 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "./MixinExchangeCalldata.sol";
 import "./interfaces/IBalanceThresholdFilterCore.sol";
 
 
 contract MixinBalanceThresholdFilterCore is
     IBalanceThresholdFilterCore,
-    MixinExchangeCalldata,
-    LibExchangeSelectors
+    MixinExchangeCalldata
 {
 
     /// @dev Executes an Exchange transaction iff the maker and taker meet
@@ -100,34 +99,34 @@ contract MixinBalanceThresholdFilterCore is
         bytes4 exchangeFunctionSelector = bytes4(_exchangeCalldataload(0));
         // solhint-disable expression-indent
         if (
-            exchangeFunctionSelector == BATCH_FILL_ORDERS_SELECTOR              ||
-            exchangeFunctionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR     ||
-            exchangeFunctionSelector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR      ||
-            exchangeFunctionSelector == MARKET_BUY_ORDERS_SELECTOR              ||
-            exchangeFunctionSelector == MARKET_BUY_ORDERS_NO_THROW_SELECTOR     ||
-            exchangeFunctionSelector == MARKET_SELL_ORDERS_SELECTOR             ||
-            exchangeFunctionSelector == MARKET_SELL_ORDERS_NO_THROW_SELECTOR
+            exchangeFunctionSelector == IExchange(address(0)).batchFillOrders.selector              ||
+            exchangeFunctionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector     ||
+            exchangeFunctionSelector == IExchange(address(0)).batchFillOrKillOrders.selector      ||
+            exchangeFunctionSelector == IExchange(address(0)).marketBuyOrders.selector              ||
+            exchangeFunctionSelector == IExchange(address(0)).marketBuyOrdersNoThrow.selector     ||
+            exchangeFunctionSelector == IExchange(address(0)).marketSellOrders.selector             ||
+            exchangeFunctionSelector == IExchange(address(0)).marketSellOrdersNoThrow.selector
         ) {
             addressesToValidate = _loadMakerAddressesFromOrderArray(0);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
-            exchangeFunctionSelector == FILL_ORDER_SELECTOR             ||
-            exchangeFunctionSelector == FILL_ORDER_NO_THROW_SELECTOR    ||
-            exchangeFunctionSelector == FILL_OR_KILL_ORDER_SELECTOR
+            exchangeFunctionSelector == IExchange(address(0)).fillOrder.selector             ||
+            exchangeFunctionSelector == IExchange(address(0)).fillOrderNoThrow.selector    ||
+            exchangeFunctionSelector == IExchange(address(0)).fillOrKillOrder.selector
         ) {
             address makerAddress = _loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(makerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
-        } else if (exchangeFunctionSelector == MATCH_ORDERS_SELECTOR) {
+        } else if (exchangeFunctionSelector == IExchange(address(0)).matchOrders.selector) {
             address leftMakerAddress = _loadMakerAddressFromOrder(0);
             addressesToValidate = addressesToValidate.append(leftMakerAddress);
             address rightMakerAddress = _loadMakerAddressFromOrder(1);
             addressesToValidate = addressesToValidate.append(rightMakerAddress);
             addressesToValidate = addressesToValidate.append(signerAddress);
         } else if (
-            exchangeFunctionSelector != CANCEL_ORDER_SELECTOR           &&
-            exchangeFunctionSelector != BATCH_CANCEL_ORDERS_SELECTOR    &&
-            exchangeFunctionSelector != CANCEL_ORDERS_UP_TO_SELECTOR
+            exchangeFunctionSelector != IExchange(address(0)).cancelOrder.selector           &&
+            exchangeFunctionSelector != IExchange(address(0)).batchCancelOrders.selector    &&
+            exchangeFunctionSelector != IExchange(address(0)).cancelOrdersUpTo.selector
         ) {
             revert("INVALID_OR_BLOCKED_EXCHANGE_SELECTOR");
         }

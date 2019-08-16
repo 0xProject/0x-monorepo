@@ -19,14 +19,13 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
 
-contract LibTransactionDecoder is
-    LibExchangeSelectors
-{
+contract LibTransactionDecoder {
+
     using LibBytes for bytes;
 
     /// @dev Decodes the call data for an Exchange contract method call.
@@ -47,66 +46,65 @@ contract LibTransactionDecoder is
     {
         bytes4 functionSelector = transactionData.readBytes4(0);
 
-        if (functionSelector == BATCH_CANCEL_ORDERS_SELECTOR) {
+        if (functionSelector == IExchange(address(0)).batchCancelOrders.selector) {
             functionName = "batchCancelOrders";
-        } else if (functionSelector == BATCH_FILL_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).batchFillOrders.selector) {
             functionName = "batchFillOrders";
-        } else if (functionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector) {
             functionName = "batchFillOrdersNoThrow";
-        } else if (functionSelector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector) {
             functionName = "batchFillOrKillOrders";
-        } else if (functionSelector == CANCEL_ORDER_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).cancelOrder.selector) {
             functionName = "cancelOrder";
-        } else if (functionSelector == FILL_ORDER_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).fillOrder.selector) {
             functionName = "fillOrder";
-        } else if (functionSelector == FILL_ORDER_NO_THROW_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).fillOrderNoThrow.selector) {
             functionName = "fillOrderNoThrow";
-        } else if (functionSelector == FILL_OR_KILL_ORDER_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).fillOrKillOrder.selector) {
             functionName = "fillOrKillOrder";
-        } else if (functionSelector == MARKET_BUY_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).marketBuyOrders.selector) {
             functionName = "marketBuyOrders";
-        } else if (functionSelector == MARKET_SELL_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).marketSellOrders.selector) {
             functionName = "marketSellOrders";
-        } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).matchOrders.selector) {
             functionName = "matchOrders";
         } else if (
-            functionSelector == CANCEL_ORDERS_UP_TO_SELECTOR ||
-            functionSelector == EXECUTE_TRANSACTION_SELECTOR
-            // TODO: add new noThrow cancel functions when https://github.com/0xProject/ZEIPs/issues/35 is merged.
+            functionSelector == IExchange(address(0)).cancelOrdersUpTo.selector ||
+            functionSelector == IExchange(address(0)).executeTransaction.selector
         ) {
             revert("UNIMPLEMENTED");
         } else {
             revert("UNKNOWN_FUNCTION_SELECTOR");
         }
 
-        if (functionSelector == BATCH_CANCEL_ORDERS_SELECTOR) {
+        if (functionSelector == IExchange(address(0)).batchCancelOrders.selector) {
             // solhint-disable-next-line indent
             orders = abi.decode(transactionData.slice(4, transactionData.length), (LibOrder.Order[]));
             takerAssetFillAmounts = new uint256[](0);
             signatures = new bytes[](0);
         } else if (
-            functionSelector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR ||
-            functionSelector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
-            functionSelector == BATCH_FILL_ORDERS_SELECTOR
+            functionSelector == IExchange(address(0)).batchFillOrKillOrders.selector ||
+            functionSelector == IExchange(address(0)).batchFillOrdersNoThrow.selector ||
+            functionSelector == IExchange(address(0)).batchFillOrders.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForBatchFill(transactionData);
-        } else if (functionSelector == CANCEL_ORDER_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).cancelOrder.selector) {
             orders = new LibOrder.Order[](1);
             orders[0] = abi.decode(transactionData.slice(4, transactionData.length), (LibOrder.Order));
             takerAssetFillAmounts = new uint256[](0);
             signatures = new bytes[](0);
         } else if (
-            functionSelector == FILL_OR_KILL_ORDER_SELECTOR ||
-            functionSelector == FILL_ORDER_SELECTOR ||
-            functionSelector == FILL_ORDER_NO_THROW_SELECTOR
+            functionSelector == IExchange(address(0)).fillOrKillOrder.selector ||
+            functionSelector == IExchange(address(0)).fillOrder.selector ||
+            functionSelector == IExchange(address(0)).fillOrderNoThrow.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForSingleOrderFill(transactionData);
         } else if (
-            functionSelector == MARKET_BUY_ORDERS_SELECTOR ||
-            functionSelector == MARKET_SELL_ORDERS_SELECTOR
+            functionSelector == IExchange(address(0)).marketBuyOrders.selector ||
+            functionSelector == IExchange(address(0)).marketSellOrders.selector
         ) {
             (orders, takerAssetFillAmounts, signatures) = _makeReturnValuesForMarketFill(transactionData);
-        } else if (functionSelector == MATCH_ORDERS_SELECTOR) {
+        } else if (functionSelector == IExchange(address(0)).matchOrders.selector) {
             (
                 LibOrder.Order memory leftOrder,
                 LibOrder.Order memory rightOrder,

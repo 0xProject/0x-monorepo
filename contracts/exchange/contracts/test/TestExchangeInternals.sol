@@ -19,6 +19,8 @@
 pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/Exchange.sol";
 
 
@@ -46,69 +48,26 @@ contract TestExchangeInternals is
         public
         view
     {
-        _assertValidMatch(leftOrder, rightOrder);
-    }
-
-    function calculateFillResults(
-        Order memory order,
-        uint256 takerAssetFilledAmount
-    )
-        public
-        pure
-        returns (FillResults memory fillResults)
-    {
-        return _calculateFillResults(order, takerAssetFilledAmount);
-    }
-
-    function calculateCompleteFillBoth(
-        uint256 leftMakerAssetAmountRemaining,
-        uint256 leftTakerAssetAmountRemaining,
-        uint256 rightMakerAssetAmountRemaining,
-        uint256 rightTakerAssetAmountRemaining
-    )
-        public
-        pure
-        returns (MatchedFillResults memory fillResults)
-    {
-        _calculateCompleteFillBoth(
-            fillResults,
-            leftMakerAssetAmountRemaining,
-            leftTakerAssetAmountRemaining,
-            rightMakerAssetAmountRemaining,
-            rightTakerAssetAmountRemaining
-        );
-        return fillResults;
-    }
-
-    function calculateCompleteRightFill(
-        LibOrder.Order memory leftOrder,
-        uint256 rightMakerAssetAmountRemaining,
-        uint256 rightTakerAssetAmountRemaining
-    )
-        public
-        pure
-        returns (MatchedFillResults memory fillResults)
-    {
-        _calculateCompleteRightFill(
-            fillResults,
+        _assertValidMatch(
             leftOrder,
-            rightMakerAssetAmountRemaining,
-            rightTakerAssetAmountRemaining
+            rightOrder,
+            getOrderInfo(leftOrder),
+            getOrderInfo(rightOrder)
         );
     }
 
     /// @dev Call `_updateFilledState()` but first set `filled[order]` to
     ///      `orderTakerAssetFilledAmount`.
     function testUpdateFilledState(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         public
     {
-        filled[getOrderHash(order)] = orderTakerAssetFilledAmount;
+        filled[LibOrder.getTypedDataHash(order, EIP712_EXCHANGE_DOMAIN_HASH)] = orderTakerAssetFilledAmount;
         _updateFilledState(
             order,
             takerAddress,

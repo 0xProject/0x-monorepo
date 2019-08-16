@@ -1,6 +1,6 @@
 import { ReferenceFunctions } from '@0x/contracts-utils';
 import { LibMathRevertErrors } from '@0x/order-utils';
-import { FillResults } from '@0x/types';
+import { FillResults, OrderWithoutDomain } from '@0x/types';
 import { BigNumber } from '@0x/utils';
 
 const { safeAdd, safeSub, safeMul, safeDiv } = ReferenceFunctions;
@@ -85,5 +85,24 @@ export function addFillResults(a: FillResults, b: FillResults): FillResults {
         takerAssetFilledAmount: safeAdd(a.takerAssetFilledAmount, b.takerAssetFilledAmount),
         makerFeePaid: safeAdd(a.makerFeePaid, b.makerFeePaid),
         takerFeePaid: safeAdd(a.takerFeePaid, b.takerFeePaid),
+    };
+}
+
+/**
+ * Calculates amounts filled and fees paid by maker and taker.
+ */
+export function calculateFillResults(order: OrderWithoutDomain, takerAssetFilledAmount: BigNumber): FillResults {
+    const makerAssetFilledAmount = safeGetPartialAmountFloor(
+        takerAssetFilledAmount,
+        order.takerAssetAmount,
+        order.makerAssetAmount,
+    );
+    const makerFeePaid = safeGetPartialAmountFloor(makerAssetFilledAmount, order.makerAssetAmount, order.makerFee);
+    const takerFeePaid = safeGetPartialAmountFloor(takerAssetFilledAmount, order.takerAssetAmount, order.takerFee);
+    return {
+        makerAssetFilledAmount,
+        takerAssetFilledAmount,
+        makerFeePaid,
+        takerFeePaid,
     };
 }

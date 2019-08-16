@@ -9,19 +9,17 @@ import {
 import { LibMathRevertErrors } from '@0x/order-utils';
 import { BigNumber, SafeMathRevertErrors } from '@0x/utils';
 
-import { artifacts, ReferenceFunctions, TestLibsContract } from '../src';
+import { artifacts, ReferenceFunctions, TestLibMathContract } from '../src';
 
 blockchainTests('LibMath', env => {
-    const CHAIN_ID = 1337;
     const { ONE_ETHER, MAX_UINT256, MAX_UINT256_ROOT, ZERO_AMOUNT } = constants;
-    let libsContract: TestLibsContract;
+    let libsContract: TestLibMathContract;
 
     before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
+        libsContract = await TestLibMathContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibMath,
             env.provider,
             env.txDefaults,
-            new BigNumber(CHAIN_ID),
         );
     });
 

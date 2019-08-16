@@ -23,14 +23,13 @@ import "./libs/LibConstants.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
+import "@0x/contracts/exchange/contracts/src/interfaces/IExchange.sol";
 
 
 contract MixinExchangeWrapper is
     LibFillResults,
     LibMath,
-    LibConstants,
-    LibExchangeSelectors
+    LibConstants
 {
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
@@ -48,9 +47,7 @@ contract MixinExchangeWrapper is
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            // bytes4(keccak256("fillOrder((address,address,address,address,uint256,uint256,uint256,uint256,uint256,uint256,bytes,bytes,bytes,bytes),uint256,bytes)"))
-            // = 0x9b44d556
-            0x9b44d556,
+            IExchange(address(0)).fillOrder.selector,
             order,
             takerAssetFillAmount,
             signature

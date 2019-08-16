@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,16 +17,28 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
-import "../src/LibRichErrors.sol";
+import "../src/LibOrder.sol";
 
 
-contract TestLibRichErrors {
+contract TestLibOrder {
 
-    function externalRRevert(bytes calldata errorData)
-        external
+    function getTypedDataHash(LibOrder.Order memory order, bytes32 eip712ExchangeDomainHash)
+        public
         pure
+        returns (bytes32 orderHash)
     {
-        LibRichErrors.rrevert(errorData);
+        orderHash = LibOrder.getTypedDataHash(order, eip712ExchangeDomainHash);
+        return orderHash;
+    }
+
+    function getStructHash(LibOrder.Order memory order)
+        public
+        pure
+        returns (bytes32 result)
+    {
+        result = LibOrder.getStructHash(order);
+        return result;
     }
 }

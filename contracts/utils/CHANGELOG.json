@@ -41,6 +41,18 @@
             {
                 "note": "Throw a `SafeMathError` in `SafeMath._safeDiv()` when denominator is zero.",
                 "pr": 2031
+            },
+            {
+                "note": "Create `LibSafeMath`",
+                "pr": 2055
+            },
+            {
+                "note": "Rename `_rrevert` to `rrevert` in `LibRichErrors` contract",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
             }
         ]
     },

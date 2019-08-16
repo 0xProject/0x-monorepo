@@ -465,20 +465,6 @@ describe('LibAssetData', () => {
         });
     });
 
-    describe('getERC721TokenOwner', async () => {
-        it('should return the null address when tokenId is not owned', async () => {
-            const nonexistentTokenId = new BigNumber(1234567890);
-            expect(
-                await libAssetData.getERC721TokenOwner.callAsync(erc721Token.address, nonexistentTokenId),
-            ).to.be.equal(constants.NULL_ADDRESS);
-        });
-        it('should return the owner address when tokenId is owned', async () => {
-            expect(
-                await libAssetData.getERC721TokenOwner.callAsync(erc721Token.address, firstERC721TokenId),
-            ).to.be.equal(tokenOwnerAddress);
-        });
-    });
-
     describe('getBalanceAndAllowance', () => {
         it('should query balance and allowance together, from asset data', async () => {
             const allowance = new BigNumber(1);

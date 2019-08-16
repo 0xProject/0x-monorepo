@@ -21,9 +21,8 @@ pragma solidity ^0.5.9;
 import "../src/LibEIP712.sol";
 
 
-contract TestLibEIP712 is
-    LibEIP712
-{
+contract TestLibEIP712 {
+
     function externalHashEIP712DomainSeperator(
         string calldata name,
         string calldata version,
@@ -34,7 +33,7 @@ contract TestLibEIP712 is
         pure
         returns (bytes32)
     {
-        return _hashEIP712Domain(
+        return LibEIP712.hashEIP712Domain(
             name,
             version,
             chainid,
@@ -47,6 +46,6 @@ contract TestLibEIP712 is
         pure
         returns (bytes32)
     {
-        return _hashEIP712Message(eip712DomainHash, hashStruct);
+        return LibEIP712.hashEIP712Message(eip712DomainHash, hashStruct);
     }
 }

@@ -1,9 +1,13 @@
 [
     {
-        "version": "3.1.10",
+        "version": "3.2.0",
         "changes": [
             {
                 "note": "re-export new ethereum-types types, TupleDataItem",
+                "pr": 1919
+            },
+            {
+                "note": "Convert `getContractNamesToCompile` to public function of `Compiler` class",
                 "pr": 1919
             }
         ]

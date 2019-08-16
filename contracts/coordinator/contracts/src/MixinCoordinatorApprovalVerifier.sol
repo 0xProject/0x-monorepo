@@ -19,11 +19,11 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-exchange-libs/contracts/src/LibExchangeSelectors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibAddressArray.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
 import "./libs/LibCoordinatorApproval.sol";
 import "./interfaces/ISignatureValidator.sol";
 import "./interfaces/ICoordinatorApprovalVerifier.sol";
@@ -31,7 +31,6 @@ import "./interfaces/ICoordinatorApprovalVerifier.sol";
 
 // solhint-disable avoid-tx-origin
 contract MixinCoordinatorApprovalVerifier is
-    LibExchangeSelectors,
     LibCoordinatorApproval,
     LibZeroExTransaction,
     ISignatureValidator,
@@ -84,9 +83,9 @@ contract MixinCoordinatorApprovalVerifier is
     {
         bytes4 selector = data.readBytes4(0);
         if (
-            selector == FILL_ORDER_SELECTOR ||
-            selector == FILL_ORDER_NO_THROW_SELECTOR ||
-            selector == FILL_OR_KILL_ORDER_SELECTOR
+            selector == IExchange(address(0)).fillOrder.selector ||
+            selector == IExchange(address(0)).fillOrderNoThrow.selector ||
+            selector == IExchange(address(0)).fillOrKillOrder.selector
         ) {
             // Decode single order
             (LibOrder.Order memory order) = abi.decode(
@@ -96,11 +95,11 @@ contract MixinCoordinatorApprovalVerifier is
             orders = new LibOrder.Order[](1);
             orders[0] = order;
         } else if (
-            selector == BATCH_FILL_ORDERS_SELECTOR ||
-            selector == BATCH_FILL_ORDERS_NO_THROW_SELECTOR ||
-            selector == BATCH_FILL_OR_KILL_ORDERS_SELECTOR ||
-            selector == MARKET_BUY_ORDERS_SELECTOR ||
-            selector == MARKET_SELL_ORDERS_SELECTOR
+            selector == IExchange(address(0)).batchFillOrders.selector ||
+            selector == IExchange(address(0)).batchFillOrdersNoThrow.selector ||
+            selector == IExchange(address(0)).batchFillOrKillOrders.selector ||
+            selector == IExchange(address(0)).marketBuyOrders.selector ||
+            selector == IExchange(address(0)).marketSellOrders.selector
         ) {
             // Decode all orders
             // solhint-disable indent
@@ -108,7 +107,7 @@ contract MixinCoordinatorApprovalVerifier is
                 data.slice(4, data.length),
                 (LibOrder.Order[])
             );
-        } else if (selector == MATCH_ORDERS_SELECTOR) {
+        } else if (selector == IExchange(address(0)).matchOrders.selector) {
             // Decode left and right orders
             (LibOrder.Order memory leftOrder, LibOrder.Order memory rightOrder) = abi.decode(
                 data.slice(4, data.length),

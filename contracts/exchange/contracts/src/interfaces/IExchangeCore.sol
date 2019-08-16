@@ -32,14 +32,14 @@ contract IExchangeCore {
         bytes makerAssetData,                 // Encoded data specific to makerAsset.
         bytes takerAssetData,                 // Encoded data specific to takerAsset.
         bytes makerFeeAssetData,              // Encoded data specific to makerFeeAsset.
-        bytes takerFeeAssetData,               // Encoded data specific to takerFeeAsset.
+        bytes takerFeeAssetData,              // Encoded data specific to takerFeeAsset.
         uint256 makerAssetFilledAmount,       // Amount of makerAsset sold by maker and bought by taker.
         uint256 takerAssetFilledAmount,       // Amount of takerAsset sold by taker and bought by maker.
         uint256 makerFeePaid,                 // Amount of makerFeeAssetData paid to feeRecipient by maker.
         uint256 takerFeePaid,                 // Amount of takerFeeAssetData paid to feeRecipient by taker.
         address takerAddress,                 // Address that filled the order.
         address senderAddress,                // Address that called the Exchange contract (msg.sender).
-        bytes32 indexed orderHash            // EIP712 hash of order (see LibOrder.getOrderHash).
+        bytes32 indexed orderHash             // EIP712 hash of order (see LibOrder.getTypedDataHash).
     );
 
     // Cancel event is emitted whenever an individual order is cancelled.
@@ -47,7 +47,7 @@ contract IExchangeCore {
         address indexed makerAddress,         // Address that created the order.
         address indexed feeRecipientAddress,  // Address that would have recieved fees if order was filled.
         address senderAddress,                // Address that called the Exchange contract (msg.sender).
-        bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getOrderHash).
+        bytes32 indexed orderHash,            // EIP712 hash of order (see LibOrder.getTypedDataHash).
         bytes makerAssetData,                 // Encoded data specific to makerAsset.
         bytes takerAssetData                  // Encoded data specific to takerAsset.
     );

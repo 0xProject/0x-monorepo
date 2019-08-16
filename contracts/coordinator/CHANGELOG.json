@@ -33,6 +33,14 @@
             {
                 "note": "Update for new `marketXOrders` consolidation.",
                 "pr": 2042
+            },
+            {
+                "note": "Use built in selectors instead of hard coded constants",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
             }
         ]
     },

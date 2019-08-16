@@ -54,7 +54,7 @@ library LibAddressArray {
         //  `freeMemPtr` > `addressArrayEndPtr`: Some value occupies memory after `addressArray`
         //  `freeMemPtr` < `addressArrayEndPtr`: Memory has not been managed properly.
         if (freeMemPtr < addressArrayEndPtr) {
-            LibRichErrors._rrevert(LibAddressArrayRichErrors.MismanagedMemoryError(
+            LibRichErrors.rrevert(LibAddressArrayRichErrors.MismanagedMemoryError(
                 freeMemPtr,
                 addressArrayEndPtr
             ));

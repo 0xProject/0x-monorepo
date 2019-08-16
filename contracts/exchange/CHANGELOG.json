@@ -153,6 +153,26 @@
             {
                 "note": "Add (semi) automated reentrancy tests and remove manual ones",
                 "pr": 2042
+            },
+            {
+                "note": "Refactor to use new `LibFillResults`, `LibOrder`, `LibZeroExTransaction`, and `LibMath` to libraries",
+                "pr": 2055
+            },
+            {
+                "note": "Remove `LibExchangeRichErrors` and `IExchangeRichErrors`",
+                "pr": 2055
+            },
+            {
+                "note": "Use built in selectors instead of `LibExchangeSelectors` constants",
+                "pr": 2055
+            },
+            {
+                "note": "Move `calculateFillResults` and `calculateMatchedFillResults` to `LibFillResults` in `exchange-libs` package",
+                "pr": 2055
+            },
+            {
+                "note": "Compile and export all contracts, artifacts, and wrappers by default",
+                "pr": 2055
             }
         ]
     },

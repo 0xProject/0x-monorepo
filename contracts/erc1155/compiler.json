@@ -22,14 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "src/ERC1155.sol",
-        "src/ERC1155Mintable.sol",
-        "src/MixinNonFungibleToken.sol",
-        "src/interfaces/IERC1155.sol",
-        "src/interfaces/IERC1155Mintable.sol",
-        "src/interfaces/IERC1155Receiver.sol",
-        "test/DummyERC1155Receiver.sol"
-    ]
+    }
 }

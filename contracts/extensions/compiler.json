@@ -22,13 +22,5 @@
                 ]
             }
         }
-    },
-    "contracts": [
-        "@0x/contracts-erc20/contracts/src/WETH9.sol",
-        "@0x/contracts-exchange/contracts/examples/ExchangeWrapper.sol",
-        "@0x/contracts-exchange/contracts/src/Exchange.sol",
-        "src/BalanceThresholdFilter/BalanceThresholdFilter.sol",
-        "src/DutchAuction/DutchAuction.sol",
-        "src/OrderMatcher/OrderMatcher.sol"
-    ]
+    }
 }

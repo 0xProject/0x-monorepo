@@ -1,65 +1,49 @@
-import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
+import { addressUtils, blockchainTests, constants, expect } from '@0x/contracts-test-utils';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
 import * as ethUtil from 'ethereumjs-util';
-import * as _ from 'lodash';
 
-import { artifacts, TestLibsContract } from '../src';
+import { artifacts, TestLibEIP712ExchangeDomainContract } from '../src';
 
 blockchainTests('LibEIP712ExchangeDomain', env => {
-    let libsContract: TestLibsContract;
-    let exchangeDomainHash: string;
-    const CHAIN_ID = 1337;
-
-    // Random generator functions
-    const randomHash = () => hexRandom(constants.WORD_LENGTH);
-
-    /**
-     * Tests a specific instance of EIP712 message hashing.
-     * @param lib The LibEIP712 contract to call.
-     * @param domainHash The hash of the EIP712 domain of this instance.
-     * @param hashStruct The hash of the struct of this instance.
-     */
-    async function testHashEIP712MessageAsync(hashStruct: string): Promise<void> {
-        // Remove the hex-prefix from the exchangeDomainHash and the hashStruct
-        const unprefixedHashStruct = hashStruct.slice(2, hashStruct.length);
-
-        // Hash the provided input to get the expected hash
-        const input = '0x1901'.concat(exchangeDomainHash, unprefixedHashStruct);
-        const expectedHash = '0x'.concat(ethUtil.sha3(input).toString('hex'));
-
-        // Get the actual hash by calling the smart contract
-        const actualHash = await libsContract.hashEIP712ExchangeMessage.callAsync(hashStruct);
-
-        // Verify that the actual hash matches the expected hash
-        expect(actualHash).to.be.eq(expectedHash);
-    }
-
-    before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
-            env.provider,
-            env.txDefaults,
-            new BigNumber(CHAIN_ID),
-        );
-
-        // Generate the domain hash of 0x Exchange V3
-        exchangeDomainHash = signTypedDataUtils
-            .generateDomainHash({
-                name: '0x Protocol',
-                version: '3.0.0',
-                chainId: CHAIN_ID,
-                verifyingContractAddress: libsContract.address,
-            })
-            .toString('hex');
-    });
-
-    describe('hashEIP712ExchangeMessage', () => {
-        it('should correctly match an empty hash', async () => {
-            await testHashEIP712MessageAsync(constants.NULL_BYTES32);
+    describe('constructor', () => {
+        it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to null', async () => {
+            const chainId = 1;
+            const libEIP712ExchangeDomainContract = await TestLibEIP712ExchangeDomainContract.deployFrom0xArtifactAsync(
+                artifacts.TestLibEIP712ExchangeDomain,
+                env.provider,
+                env.txDefaults,
+                new BigNumber(chainId),
+                constants.NULL_ADDRESS,
+            );
+            const domain = {
+                verifyingContractAddress: libEIP712ExchangeDomainContract.address,
+                chainId,
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+            };
+            const expectedDomainHash = ethUtil.bufferToHex(signTypedDataUtils.generateDomainHash(domain));
+            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH.callAsync();
+            expect(actualDomainHash).to.be.equal(expectedDomainHash);
         });
-
-        it('should correctly match a non-empty hash', async () => {
-            await testHashEIP712MessageAsync(randomHash());
+        it('should calculate the correct domain hash when verifyingContractAddressIfExists is set to a non-null address', async () => {
+            const chainId = 1;
+            const verifyingContractAddress = addressUtils.generatePseudoRandomAddress();
+            const libEIP712ExchangeDomainContract = await TestLibEIP712ExchangeDomainContract.deployFrom0xArtifactAsync(
+                artifacts.TestLibEIP712ExchangeDomain,
+                env.provider,
+                env.txDefaults,
+                new BigNumber(chainId),
+                verifyingContractAddress,
+            );
+            const domain = {
+                verifyingContractAddress,
+                chainId,
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+            };
+            const expectedDomainHash = ethUtil.bufferToHex(signTypedDataUtils.generateDomainHash(domain));
+            const actualDomainHash = await libEIP712ExchangeDomainContract.EIP712_EXCHANGE_DOMAIN_HASH.callAsync();
+            expect(actualDomainHash).to.be.equal(expectedDomainHash);
         });
     });
 });

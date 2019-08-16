@@ -1,14 +1,14 @@
 import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/contracts-test-utils';
-import { eip712Utils } from '@0x/order-utils';
+import { eip712Utils, transactionHashUtils } from '@0x/order-utils';
 import { ZeroExTransaction } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibsContract } from '../src';
+import { artifacts, TestLibZeroExTransactionContract } from '../src';
 
 blockchainTests('LibZeroExTransaction', env => {
-    const CHAIN_ID = 1337;
-    let libsContract: TestLibsContract;
+    let libZeroExTransactionContract: TestLibZeroExTransactionContract;
 
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomHash = () => hexRandom(constants.WORD_LENGTH);
@@ -27,68 +27,97 @@ blockchainTests('LibZeroExTransaction', env => {
     };
 
     before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
+        libZeroExTransactionContract = await TestLibZeroExTransactionContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibZeroExTransaction,
             env.provider,
             env.txDefaults,
-            new BigNumber(CHAIN_ID),
         );
     });
 
     /**
-     * Tests the `getTransactionHash()` function against a reference hash.
+     * Tests the `getTypedDataHash()` function against a reference hash.
      */
-    async function testGetTransactionHashAsync(transaction: ZeroExTransaction): Promise<void> {
-        const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
-        const expectedHash = '0x'.concat(signTypedDataUtils.generateTypedDataHash(typedData).toString('hex'));
-        const actualHash = await libsContract.getTransactionHash.callAsync(transaction);
+    async function testGetTypedDataHashAsync(transaction: ZeroExTransaction): Promise<void> {
+        const expectedHash = transactionHashUtils.getTransactionHashHex(transaction);
+        const domainHash = ethUtil.bufferToHex(
+            signTypedDataUtils.generateDomainHash({
+                ...transaction.domain,
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+            }),
+        );
+        const actualHash = await libZeroExTransactionContract.getTypedDataHash.callAsync(transaction, domainHash);
         expect(actualHash).to.be.eq(expectedHash);
     }
 
-    describe('getTransactionHash', () => {
+    describe('getTypedDataHash', () => {
         it('should correctly hash an empty transaction', async () => {
-            await testGetTransactionHashAsync({
+            await testGetTypedDataHashAsync({
                 ...EMPTY_TRANSACTION,
                 domain: {
-                    verifyingContractAddress: libsContract.address,
-                    chainId: 1337,
+                    ...EMPTY_TRANSACTION.domain,
+                    verifyingContractAddress: libZeroExTransactionContract.address,
                 },
             });
         });
 
         it('should correctly hash a non-empty transaction', async () => {
-            await testGetTransactionHashAsync({
+            await testGetTypedDataHashAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),
                 signerAddress: randomAddress(),
                 data: randomAssetData(),
                 domain: {
-                    verifyingContractAddress: libsContract.address,
-                    chainId: 1337,
+                    ...EMPTY_TRANSACTION.domain,
+                    verifyingContractAddress: libZeroExTransactionContract.address,
                 },
             });
+        });
+        it('transactionHash should differ if the domain hash is different', async () => {
+            const domainHash1 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_TRANSACTION.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                }),
+            );
+            const domainHash2 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_TRANSACTION.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                    chainId: 1337,
+                }),
+            );
+            const transactionHashHex1 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
+                EMPTY_TRANSACTION,
+                domainHash1,
+            );
+            const transactionHashHex2 = await libZeroExTransactionContract.getTypedDataHash.callAsync(
+                EMPTY_TRANSACTION,
+                domainHash2,
+            );
+            expect(transactionHashHex1).to.be.not.equal(transactionHashHex2);
         });
     });
 
     /**
-     * Tests the `_hashZeroExTransaction()` function against a reference hash.
+     * Tests the `getStructHash()` function against a reference hash.
      */
-    async function testHashZeroExTransactionAsync(transaction: ZeroExTransaction): Promise<void> {
+    async function testGetStructHashAsync(transaction: ZeroExTransaction): Promise<void> {
         const typedData = eip712Utils.createZeroExTransactionTypedData(transaction);
-        const expectedHash = '0x'.concat(
-            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
-        );
-        const actualHash = await libsContract.hashZeroExTransaction.callAsync(transaction);
+        const expectedHash = ethUtil.bufferToHex(signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData));
+        const actualHash = await libZeroExTransactionContract.getStructHash.callAsync(transaction);
         expect(actualHash).to.be.eq(expectedHash);
     }
 
-    describe('hashOrder', () => {
+    describe('getStructHash', () => {
         it('should correctly hash an empty transaction', async () => {
-            await testHashZeroExTransactionAsync(EMPTY_TRANSACTION);
+            await testGetStructHashAsync(EMPTY_TRANSACTION);
         });
 
         it('should correctly hash a non-empty transaction', async () => {
-            await testHashZeroExTransactionAsync({
+            await testGetStructHashAsync({
                 salt: randomUint256(),
                 expirationTimeSeconds: randomUint256(),
                 signerAddress: randomAddress(),

@@ -1,6 +1,6 @@
 /*
 
-  Copyright 2019 ZeroEx Intl.
+  Copyright 2018 ZeroEx Intl.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -17,16 +17,20 @@
 */
 
 pragma solidity ^0.5.9;
+pragma experimental ABIEncoderV2;
 
-import "../src/LibRichErrors.sol";
+import "../src/LibEIP712ExchangeDomain.sol";
 
 
-contract TestLibRichErrors {
+contract TestLibEIP712ExchangeDomain is 
+    LibEIP712ExchangeDomain
+{
 
-    function externalRRevert(bytes calldata errorData)
-        external
-        pure
-    {
-        LibRichErrors.rrevert(errorData);
-    }
+    constructor(
+        uint256 chainId,
+        address verifyingContractAddressIfExists
+    )
+        public
+        LibEIP712ExchangeDomain(chainId, verifyingContractAddressIfExists)
+    {}
 }

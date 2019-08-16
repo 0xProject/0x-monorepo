@@ -31,7 +31,7 @@ contract Authorizable is
     /// @dev Only authorized addresses can invoke functions with this modifier.
     modifier onlyAuthorized {
         if (!authorized[msg.sender]) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.SenderNotAuthorizedError(msg.sender));
         }
         _;
     }
@@ -47,12 +47,12 @@ contract Authorizable is
     {
         // Ensure that the target is not the zero address.
         if (target == address(0)) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.ZeroCantBeAuthorizedError());
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.ZeroCantBeAuthorizedError());
         }
 
         // Ensure that the target is not already authorized.
         if (authorized[target]) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetAlreadyAuthorizedError(target));
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetAlreadyAuthorizedError(target));
         }
 
         authorized[target] = true;
@@ -67,7 +67,7 @@ contract Authorizable is
         onlyOwner
     {
         if (!authorized[target]) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
         }
 
         delete authorized[target];
@@ -92,16 +92,16 @@ contract Authorizable is
         onlyOwner
     {
         if (!authorized[target]) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.TargetNotAuthorizedError(target));
         }
         if (index >= authorities.length) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.IndexOutOfBoundsError(
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.IndexOutOfBoundsError(
                 index,
                 authorities.length
             ));
         }
         if (authorities[index] != target) {
-            LibRichErrors._rrevert(LibAuthorizableRichErrors.AuthorizedAddressMismatchError(
+            LibRichErrors.rrevert(LibAuthorizableRichErrors.AuthorizedAddressMismatchError(
                 authorities[index],
                 target
             ));

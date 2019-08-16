@@ -132,7 +132,7 @@ export class Compiler {
     public async compileAsync(): Promise<void> {
         await createDirIfDoesNotExistAsync(this._artifactsDir);
         await createDirIfDoesNotExistAsync(constants.SOLC_BIN_DIR);
-        await this._compileContractsAsync(this._getContractNamesToCompile(), true);
+        await this._compileContractsAsync(this.getContractNamesToCompile(), true);
     }
     /**
      * Compiles Solidity files specified during instantiation, and returns the
@@ -143,7 +143,7 @@ export class Compiler {
      * that version.
      */
     public async getCompilerOutputsAsync(): Promise<StandardOutput[]> {
-        const promisedOutputs = this._compileContractsAsync(this._getContractNamesToCompile(), false);
+        const promisedOutputs = this._compileContractsAsync(this.getContractNamesToCompile(), false);
         return promisedOutputs;
     }
     public async watchAsync(): Promise<void> {
@@ -180,8 +180,23 @@ export class Compiler {
             onFileChangedAsync(); // tslint:disable-line no-floating-promises
         });
     }
+    /**
+     * Gets a list of contracts to compile.
+     */
+    public getContractNamesToCompile(): string[] {
+        let contractNamesToCompile;
+        if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
+            const allContracts = this._nameResolver.getAll();
+            contractNamesToCompile = _.map(allContracts, contractSource =>
+                path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
+            );
+        } else {
+            return this._specifiedContracts;
+        }
+        return contractNamesToCompile;
+    }
     private _getPathsToWatch(): string[] {
-        const contractNames = this._getContractNamesToCompile();
+        const contractNames = this.getContractNamesToCompile();
         const spyResolver = new SpyResolver(this._resolver);
         for (const contractName of contractNames) {
             const contractSource = spyResolver.resolve(contractName);
@@ -193,18 +208,6 @@ export class Compiler {
         }
         const pathsToWatch = _.uniq(spyResolver.resolvedContractSources.map(cs => cs.absolutePath));
         return pathsToWatch;
-    }
-    private _getContractNamesToCompile(): string[] {
-        let contractNamesToCompile;
-        if (this._specifiedContracts === ALL_CONTRACTS_IDENTIFIER) {
-            const allContracts = this._nameResolver.getAll();
-            contractNamesToCompile = _.map(allContracts, contractSource =>
-                path.basename(contractSource.path, constants.SOLIDITY_FILE_EXTENSION),
-            );
-        } else {
-            return this._specifiedContracts;
-        }
-        return contractNamesToCompile;
     }
     /**
      * Compiles contracts, and, if `shouldPersist` is true, saves artifacts to artifactsDir.

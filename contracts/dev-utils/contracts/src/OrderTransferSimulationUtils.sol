@@ -21,8 +21,8 @@ pragma experimental ABIEncoderV2;
 
 
 import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
-import "@0x/contracts-exchange/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange/contracts/src/libs/LibExchangeRichErrorDecoder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 
@@ -39,9 +39,6 @@ contract OrderTransferSimulationUtils is
         MakerFeeAssetDataFailed,  // Transfer of makerFeeAsset failed
         TransfersSuccessful       // All transfers in the order were successful
     }
-
-    // simulateDispatchTransferFromCalls(bytes[],address[],address[],uint256[])
-    bytes4 constant internal _SIMULATE_DISPATCH_TRANSFER_FROM_CALLS_SELECTOR = 0xb04fbddd;
 
     // keccak256(abi.encodeWithSignature("Error(string)", "TRANSFERS_SUCCESSFUL"));
     bytes32 constant internal _TRANSFERS_SUCCESSFUL_RESULT_HASH = 0xf43f26ea5a94b478394a975e856464913dc1a8a1ca70939d974aa7c238aa0ce0;
@@ -101,7 +98,7 @@ contract OrderTransferSimulationUtils is
 
         // Encode data for `simulateDispatchTransferFromCalls(assetData, fromAddresses, toAddresses, amounts)`
         bytes memory simulateDispatchTransferFromCallsData = abi.encodeWithSelector(
-            _SIMULATE_DISPATCH_TRANSFER_FROM_CALLS_SELECTOR,
+            IExchange(address(0)).simulateDispatchTransferFromCalls.selector,
             assetData,
             fromAddresses,
             toAddresses,

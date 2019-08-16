@@ -19,14 +19,12 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
-import "../interfaces/IExchangeRichErrors.sol";
-import "../LibExchangeRichErrors.sol";
 
 
-contract LibExchangeRichErrorDecoder is
-    IExchangeRichErrors
-{
+contract LibExchangeRichErrorDecoder {
+
     /// @dev Decompose an ABI-encoded SignatureError.
     /// @param encoded ABI-encoded revert error.
     /// @return errorCode The error code.
@@ -36,14 +34,14 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            SignatureErrorCodes errorCode,
+            LibExchangeRichErrors.SignatureErrorCodes errorCode,
             bytes32 hash,
             address signerAddress,
             bytes memory signature
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.SignatureErrorSelector());
-        errorCode = SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = LibExchangeRichErrors.SignatureErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         hash = _readErrorParameterAsBytes32(encoded, 1);
         signerAddress = _readErrorParameterAsAddress(encoded, 2);
         signature = _readErrorParameterAsBytes(encoded, 3);
@@ -189,12 +187,12 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            FillErrorCodes errorCode,
+            LibExchangeRichErrors.FillErrorCodes errorCode,
             bytes32 orderHash
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.FillErrorSelector());
-        errorCode = FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = LibExchangeRichErrors.FillErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 
@@ -239,13 +237,13 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            AssetProxyDispatchErrorCodes errorCode,
+            LibExchangeRichErrors.AssetProxyDispatchErrorCodes errorCode,
             bytes32 orderHash,
             bytes memory assetData
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.AssetProxyDispatchErrorSelector());
-        errorCode = AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = LibExchangeRichErrors.AssetProxyDispatchErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         orderHash = _readErrorParameterAsBytes32(encoded, 1);
         assetData = _readErrorParameterAsBytes(encoded, 2);
     }
@@ -295,12 +293,12 @@ contract LibExchangeRichErrorDecoder is
         public
         pure
         returns (
-            TransactionErrorCodes errorCode,
+            LibExchangeRichErrors.TransactionErrorCodes errorCode,
             bytes32 transactionHash
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.TransactionErrorSelector());
-        errorCode = TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
+        errorCode = LibExchangeRichErrors.TransactionErrorCodes(_readErrorParameterAsUint256(encoded, 0));
         transactionHash = _readErrorParameterAsBytes32(encoded, 1);
     }
 

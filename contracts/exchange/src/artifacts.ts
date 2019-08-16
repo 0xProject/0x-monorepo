@@ -7,16 +7,27 @@ import { ContractArtifact } from 'ethereum-types';
 
 import * as Exchange from '../generated-artifacts/Exchange.json';
 import * as ExchangeWrapper from '../generated-artifacts/ExchangeWrapper.json';
+import * as IAssetProxy from '../generated-artifacts/IAssetProxy.json';
 import * as IAssetProxyDispatcher from '../generated-artifacts/IAssetProxyDispatcher.json';
 import * as IEIP1271Wallet from '../generated-artifacts/IEIP1271Wallet.json';
 import * as IExchange from '../generated-artifacts/IExchange.json';
 import * as IExchangeCore from '../generated-artifacts/IExchangeCore.json';
+import * as IExchangeRichErrors from '../generated-artifacts/IExchangeRichErrors.json';
 import * as IMatchOrders from '../generated-artifacts/IMatchOrders.json';
 import * as ISignatureValidator from '../generated-artifacts/ISignatureValidator.json';
 import * as ITransactions from '../generated-artifacts/ITransactions.json';
+import * as ITransferSimulator from '../generated-artifacts/ITransferSimulator.json';
 import * as IWallet from '../generated-artifacts/IWallet.json';
 import * as IWrapperFunctions from '../generated-artifacts/IWrapperFunctions.json';
 import * as IsolatedExchange from '../generated-artifacts/IsolatedExchange.json';
+import * as LibExchangeRichErrorDecoder from '../generated-artifacts/LibExchangeRichErrorDecoder.json';
+import * as MixinAssetProxyDispatcher from '../generated-artifacts/MixinAssetProxyDispatcher.json';
+import * as MixinExchangeCore from '../generated-artifacts/MixinExchangeCore.json';
+import * as MixinMatchOrders from '../generated-artifacts/MixinMatchOrders.json';
+import * as MixinSignatureValidator from '../generated-artifacts/MixinSignatureValidator.json';
+import * as MixinTransactions from '../generated-artifacts/MixinTransactions.json';
+import * as MixinTransferSimulator from '../generated-artifacts/MixinTransferSimulator.json';
+import * as MixinWrapperFunctions from '../generated-artifacts/MixinWrapperFunctions.json';
 import * as ReentrancyTester from '../generated-artifacts/ReentrancyTester.json';
 import * as TestAssetProxyDispatcher from '../generated-artifacts/TestAssetProxyDispatcher.json';
 import * as TestExchangeInternals from '../generated-artifacts/TestExchangeInternals.json';
@@ -29,15 +40,26 @@ export const artifacts = {
     ExchangeWrapper: ExchangeWrapper as ContractArtifact,
     Whitelist: Whitelist as ContractArtifact,
     Exchange: Exchange as ContractArtifact,
+    MixinAssetProxyDispatcher: MixinAssetProxyDispatcher as ContractArtifact,
+    MixinExchangeCore: MixinExchangeCore as ContractArtifact,
+    MixinMatchOrders: MixinMatchOrders as ContractArtifact,
+    MixinSignatureValidator: MixinSignatureValidator as ContractArtifact,
+    MixinTransactions: MixinTransactions as ContractArtifact,
+    MixinTransferSimulator: MixinTransferSimulator as ContractArtifact,
+    MixinWrapperFunctions: MixinWrapperFunctions as ContractArtifact,
+    IAssetProxy: IAssetProxy as ContractArtifact,
     IAssetProxyDispatcher: IAssetProxyDispatcher as ContractArtifact,
     IEIP1271Wallet: IEIP1271Wallet as ContractArtifact,
     IExchange: IExchange as ContractArtifact,
     IExchangeCore: IExchangeCore as ContractArtifact,
+    IExchangeRichErrors: IExchangeRichErrors as ContractArtifact,
     IMatchOrders: IMatchOrders as ContractArtifact,
     ISignatureValidator: ISignatureValidator as ContractArtifact,
     ITransactions: ITransactions as ContractArtifact,
+    ITransferSimulator: ITransferSimulator as ContractArtifact,
     IWallet: IWallet as ContractArtifact,
     IWrapperFunctions: IWrapperFunctions as ContractArtifact,
+    LibExchangeRichErrorDecoder: LibExchangeRichErrorDecoder as ContractArtifact,
     IsolatedExchange: IsolatedExchange as ContractArtifact,
     ReentrancyTester: ReentrancyTester as ContractArtifact,
     TestAssetProxyDispatcher: TestAssetProxyDispatcher as ContractArtifact,

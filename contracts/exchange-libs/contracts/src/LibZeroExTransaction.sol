@@ -19,12 +19,13 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "./LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-utils/contracts/src/LibEIP712.sol";
 
 
-contract LibZeroExTransaction is
-    LibEIP712ExchangeDomain
-{
+library LibZeroExTransaction {
+
+    using LibZeroExTransaction for ZeroExTransaction;
+
     // Hash for the EIP712 0x transaction schema
     // keccak256(abi.encodePacked(
     //    "ZeroExTransaction(",
@@ -34,7 +35,7 @@ contract LibZeroExTransaction is
     //    "bytes data",
     //    ")"
     // ));
-    bytes32 constant public EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = 0x6b4c70d217b44d0ff0d3bf7aeb18eb8604c5cd06f615a4b497aeefa4f01d2775;
+    bytes32 constant internal _EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH = 0x6b4c70d217b44d0ff0d3bf7aeb18eb8604c5cd06f615a4b497aeefa4f01d2775;
 
     struct ZeroExTransaction {
         uint256 salt;                   // Arbitrary number to ensure uniqueness of transaction hash.
@@ -43,28 +44,31 @@ contract LibZeroExTransaction is
         bytes data;                     // AbiV2 encoded calldata.
     }
 
-    /// @dev Calculates the EIP712 hash of a 0x transaction using the domain separator of the Exchange contract.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @return EIP712 hash of the transaction with the domain separator of this contract.
-    function getTransactionHash(ZeroExTransaction memory transaction)
-        public
-        view
+    /// @dev Calculates the EIP712 typed data hash of a transaction with a given domain separator.
+    /// @param transaction 0x transaction structure.
+    /// @return EIP712 typed data hash of the transaction.
+    function getTypedDataHash(ZeroExTransaction memory transaction, bytes32 eip712ExchangeDomainHash)
+        internal
+        pure
         returns (bytes32 transactionHash)
     {
         // Hash the transaction with the domain separator of the Exchange contract.
-        transactionHash = _hashEIP712ExchangeMessage(_hashZeroExTransaction(transaction));
+        transactionHash = LibEIP712.hashEIP712Message(
+            eip712ExchangeDomainHash,
+            transaction.getStructHash()
+        );
         return transactionHash;
     }
 
-    /// @dev Calculates EIP712 hash of the 0x transaction with no domain separator.
-    /// @param transaction 0x transaction containing salt, signerAddress, and data.
-    /// @return EIP712 hash of the transaction with no domain separator.
-    function _hashZeroExTransaction(ZeroExTransaction memory transaction)
+    /// @dev Calculates EIP712 hash of the 0x transaction struct.
+    /// @param transaction 0x transaction structure.
+    /// @return EIP712 hash of the transaction struct.
+    function getStructHash(ZeroExTransaction memory transaction)
         internal
         pure
         returns (bytes32 result)
     {
-        bytes32 schemaHash = EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
+        bytes32 schemaHash = _EIP712_ZEROEX_TRANSACTION_SCHEMA_HASH;
         bytes memory data = transaction.data;
         uint256 salt = transaction.salt;
         uint256 expirationTimeSeconds = transaction.expirationTimeSeconds;

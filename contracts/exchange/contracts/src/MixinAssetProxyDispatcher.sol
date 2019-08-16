@@ -21,10 +21,9 @@ pragma solidity ^0.5.9;
 import "@0x/contracts-utils/contracts/src/Ownable.sol";
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IAssetProxy.sol";
 import "./interfaces/IAssetProxyDispatcher.sol";
-import "./interfaces/IExchangeRichErrors.sol";
-import "./LibExchangeRichErrors.sol";
 
 
 contract MixinAssetProxyDispatcher is
@@ -47,7 +46,7 @@ contract MixinAssetProxyDispatcher is
         bytes4 assetProxyId = IAssetProxy(assetProxy).getProxyId();
         address currentAssetProxy = assetProxies[assetProxyId];
         if (currentAssetProxy != address(0)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyExistsError(currentAssetProxy));
+            LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyExistsError(currentAssetProxy));
         }
 
         // Add asset proxy and log registration.
@@ -88,8 +87,8 @@ contract MixinAssetProxyDispatcher is
         if (amount > 0 && from != to) {
             // Ensure assetData length is valid
             if (assetData.length <= 3) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
-                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
+                LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
+                    LibExchangeRichErrors.AssetProxyDispatchErrorCodes.INVALID_ASSET_DATA_LENGTH,
                     orderHash,
                     assetData
                 ));
@@ -101,8 +100,8 @@ contract MixinAssetProxyDispatcher is
 
             // Ensure that assetProxy exists
             if (assetProxy == address(0)) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
-                    IExchangeRichErrors.AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
+                LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyDispatchError(
+                    LibExchangeRichErrors.AssetProxyDispatchErrorCodes.UNKNOWN_ASSET_PROXY,
                     orderHash,
                     assetData
                 ));
@@ -122,7 +121,7 @@ contract MixinAssetProxyDispatcher is
 
             // If the transaction did not succeed, revert with the returned data.
             if (!didSucceed) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.AssetProxyTransferError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.AssetProxyTransferError(
                     orderHash,
                     assetData,
                     revertData

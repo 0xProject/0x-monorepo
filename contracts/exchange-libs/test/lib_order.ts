@@ -2,13 +2,13 @@ import { blockchainTests, constants, describe, expect, hexRandom } from '@0x/con
 import { eip712Utils, orderHashUtils } from '@0x/order-utils';
 import { Order } from '@0x/types';
 import { BigNumber, signTypedDataUtils } from '@0x/utils';
+import * as ethUtil from 'ethereumjs-util';
 import * as _ from 'lodash';
 
-import { artifacts, TestLibsContract } from '../src';
+import { artifacts, TestLibOrderContract } from '../src';
 
 blockchainTests('LibOrder', env => {
-    const CHAIN_ID = 1337;
-    let libsContract: TestLibsContract;
+    let libOrderContract: TestLibOrderContract;
 
     const randomAddress = () => hexRandom(constants.ADDRESS_LENGTH);
     const randomHash = () => hexRandom(constants.WORD_LENGTH);
@@ -37,38 +37,44 @@ blockchainTests('LibOrder', env => {
     };
 
     before(async () => {
-        libsContract = await TestLibsContract.deployFrom0xArtifactAsync(
-            artifacts.TestLibs,
+        libOrderContract = await TestLibOrderContract.deployFrom0xArtifactAsync(
+            artifacts.TestLibOrder,
             env.provider,
             env.txDefaults,
-            new BigNumber(CHAIN_ID),
         );
     });
 
     /**
-     * Tests the `getOrderHash()` function against a reference hash.
+     * Tests the `getTypedDataHash()` function against a reference hash.
      */
-    async function testGetOrderHashAsync(order: Order): Promise<void> {
+    async function testGetTypedDataHashAsync(order: Order): Promise<void> {
         const expectedHash = orderHashUtils.getOrderHashHex(order);
-        const actualHash = await libsContract.getOrderHash.callAsync(order);
+        const domainHash = ethUtil.bufferToHex(
+            signTypedDataUtils.generateDomainHash({
+                ...order.domain,
+                name: constants.EIP712_DOMAIN_NAME,
+                version: constants.EIP712_DOMAIN_VERSION,
+            }),
+        );
+        const actualHash = await libOrderContract.getTypedDataHash.callAsync(order, domainHash);
         expect(actualHash).to.be.eq(expectedHash);
     }
 
-    describe('getOrderHash', () => {
+    describe('getTypedDataHash', () => {
         it('should correctly hash an empty order', async () => {
-            await testGetOrderHashAsync({
+            await testGetTypedDataHashAsync({
                 ...EMPTY_ORDER,
                 domain: {
-                    verifyingContractAddress: libsContract.address,
-                    chainId: 1337,
+                    ...EMPTY_ORDER.domain,
+                    verifyingContractAddress: libOrderContract.address,
                 },
             });
         });
 
         it('should correctly hash a non-empty order', async () => {
-            await testGetOrderHashAsync({
+            await testGetTypedDataHashAsync({
                 domain: {
-                    verifyingContractAddress: libsContract.address,
+                    verifyingContractAddress: libOrderContract.address,
                     chainId: 1337,
                 },
                 senderAddress: randomAddress(),
@@ -87,27 +93,46 @@ blockchainTests('LibOrder', env => {
                 expirationTimeSeconds: randomUint256(),
             });
         });
+
+        it('orderHash should differ if the domain hash is different', async () => {
+            const domainHash1 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_ORDER.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                }),
+            );
+            const domainHash2 = ethUtil.bufferToHex(
+                signTypedDataUtils.generateDomainHash({
+                    ...EMPTY_ORDER.domain,
+                    name: constants.EIP712_DOMAIN_NAME,
+                    version: constants.EIP712_DOMAIN_VERSION,
+                    chainId: 1337,
+                }),
+            );
+            const orderHashHex1 = await libOrderContract.getTypedDataHash.callAsync(EMPTY_ORDER, domainHash1);
+            const orderHashHex2 = await libOrderContract.getTypedDataHash.callAsync(EMPTY_ORDER, domainHash2);
+            expect(orderHashHex1).to.be.not.equal(orderHashHex2);
+        });
     });
 
     /**
-     * Tests the `_hashOrder()` function against a reference hash.
+     * Tests the `getStructHash()` function against a reference hash.
      */
-    async function testHashOrderAsync(order: Order): Promise<void> {
+    async function testGetStructHashAsync(order: Order): Promise<void> {
         const typedData = eip712Utils.createOrderTypedData(order);
-        const expectedHash = '0x'.concat(
-            signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData).toString('hex'),
-        );
-        const actualHash = await libsContract.hashOrder.callAsync(order);
+        const expectedHash = ethUtil.bufferToHex(signTypedDataUtils.generateTypedDataHashWithoutDomain(typedData));
+        const actualHash = await libOrderContract.getStructHash.callAsync(order);
         expect(actualHash).to.be.eq(expectedHash);
     }
 
-    describe('hashOrder', () => {
+    describe('getStructHash', () => {
         it('should correctly hash an empty order', async () => {
-            await testHashOrderAsync(EMPTY_ORDER);
+            await testGetStructHashAsync(EMPTY_ORDER);
         });
 
         it('should correctly hash a non-empty order', async () => {
-            await testHashOrderAsync({
+            await testGetStructHashAsync({
                 // The domain is not used in this test, so it's okay if it is left empty.
                 domain: {
                     verifyingContractAddress: constants.NULL_ADDRESS,

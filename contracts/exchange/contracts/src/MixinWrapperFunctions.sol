@@ -19,15 +19,14 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/ReentrancyGuard.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IExchangeCore.sol";
-import "./interfaces/IExchangeRichErrors.sol";
 import "./interfaces/IWrapperFunctions.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinExchangeCore.sol";
 
 
@@ -35,6 +34,8 @@ contract MixinWrapperFunctions is
     IWrapperFunctions,
     MixinExchangeCore
 {
+    using LibSafeMath for uint256;
+
     /// @dev Fills the input order. Reverts if exact takerAssetFillAmount not filled.
     /// @param order Order struct containing order specifications.
     /// @param takerAssetFillAmount Desired amount of takerAsset to sell.
@@ -46,7 +47,7 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrKillOrder(
             order,
@@ -68,11 +69,11 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
-            IExchangeCore(0).fillOrder.selector,
+            IExchangeCore(address(0)).fillOrder.selector,
             order,
             takerAssetFillAmount,
             signature
@@ -81,7 +82,7 @@ contract MixinWrapperFunctions is
         (bool didSucceed, bytes memory returnData) = address(this).delegatecall(fillOrderCalldata);
         if (didSucceed) {
             assert(returnData.length == 128);
-            fillResults = abi.decode(returnData, (FillResults));
+            fillResults = abi.decode(returnData, (LibFillResults.FillResults));
         }
         // fillResults values will be 0 by default if call was unsuccessful
         return fillResults;
@@ -99,10 +100,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrder(
                 orders[i],
@@ -125,10 +126,10 @@ contract MixinWrapperFunctions is
     )
         public
         nonReentrant
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = _fillOrKillOrder(
                 orders[i],
@@ -150,10 +151,10 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults[] memory fillResults)
+        returns (LibFillResults.FillResults[] memory fillResults)
     {
         uint256 ordersLength = orders.length;
-        fillResults = new FillResults[](ordersLength);
+        fillResults = new LibFillResults.FillResults[](ordersLength);
         for (uint256 i = 0; i != ordersLength; i++) {
             fillResults[i] = fillOrderNoThrow(
                 orders[i],
@@ -175,7 +176,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory takerAssetData = orders[0].takerAssetData;
 
@@ -188,17 +189,17 @@ contract MixinWrapperFunctions is
             orders[i].takerAssetData = takerAssetData;
 
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _safeSub(takerAssetFillAmount, fillResults.takerAssetFilledAmount);
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of takerAsset has been sold
             if (fillResults.takerAssetFilledAmount >= takerAssetFillAmount) {
@@ -219,7 +220,7 @@ contract MixinWrapperFunctions is
         bytes[] memory signatures
     )
         public
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         bytes memory makerAssetData = orders[0].makerAssetData;
 
@@ -232,25 +233,25 @@ contract MixinWrapperFunctions is
             orders[i].makerAssetData = makerAssetData;
 
             // Calculate the remaining amount of makerAsset to buy
-            uint256 remainingMakerAssetFillAmount = _safeSub(makerAssetFillAmount, fillResults.makerAssetFilledAmount);
+            uint256 remainingMakerAssetFillAmount = makerAssetFillAmount.safeSub(fillResults.makerAssetFilledAmount);
 
             // Convert the remaining amount of makerAsset to buy into remaining amount
             // of takerAsset to sell, assuming entire amount can be sold in the current order
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountFloor(
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountFloor(
                 orders[i].takerAssetAmount,
                 orders[i].makerAssetAmount,
                 remainingMakerAssetFillAmount
             );
 
             // Attempt to sell the remaining amount of takerAsset
-            FillResults memory singleFillResults = fillOrderNoThrow(
+            LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
 
             // Update amounts filled and fees paid by maker and taker
-            _addFillResults(fillResults, singleFillResults);
+            fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
 
             // Stop execution if the entire amount of makerAsset has been bought
             if (fillResults.makerAssetFilledAmount >= makerAssetFillAmount) {
@@ -298,7 +299,7 @@ contract MixinWrapperFunctions is
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
             order,
@@ -306,7 +307,7 @@ contract MixinWrapperFunctions is
             signature
         );
         if (fillResults.takerAssetFilledAmount != takerAssetFillAmount) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.IncompleteFillError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.IncompleteFillError(
                 getOrderInfo(order).orderHash
             ));
         }

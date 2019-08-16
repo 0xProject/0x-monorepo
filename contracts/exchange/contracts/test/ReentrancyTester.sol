@@ -20,6 +20,9 @@ pragma solidity ^0.5.5;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibReentrancyGuardRichErrors.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibZeroExTransaction.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "../src/Exchange.sol";
 
 
@@ -71,27 +74,27 @@ contract ReentrancyTester is
 
     /// @dev Overriden to do nothing.
     function _fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {}
 
     /// @dev Overriden to do nothing.
     function _fillOrKillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {}
 
     /// @dev Overridden to do nothing.
     function _executeTransaction(
-        ZeroExTransaction memory transaction,
+        LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
     )
         internal
@@ -126,7 +129,7 @@ contract ReentrancyTester is
     {}
 
     /// @dev Overriden to do nothing.
-    function _cancelOrder(Order memory order)
+    function _cancelOrder(LibOrder.Order memory order)
         internal
     {}
 }

@@ -18,27 +18,26 @@
 pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
-import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibEIP712ExchangeDomain.sol";
+import "@0x/contracts-exchange-libs/contracts/src/LibExchangeRichErrors.sol";
 import "./interfaces/IExchangeCore.sol";
-import "./interfaces/IExchangeRichErrors.sol";
-import "./LibExchangeRichErrors.sol";
 import "./MixinAssetProxyDispatcher.sol";
 import "./MixinSignatureValidator.sol";
 
 
 contract MixinExchangeCore is
+    LibEIP712ExchangeDomain,
     IExchangeCore,
-    IExchangeRichErrors,
-    LibMath,
-    LibFillResults,
     MixinAssetProxyDispatcher,
     MixinSignatureValidator
 {
-    using LibBytes for bytes;
+    using LibOrder for LibOrder.Order;
+    using LibSafeMath for uint256;
 
     // Mapping of orderHash => amount of takerAsset already bought by maker
     mapping (bytes32 => uint256) public filled;
@@ -68,7 +67,7 @@ contract MixinExchangeCore is
 
         // Ensure orderEpoch is monotonically increasing
         if (newOrderEpoch <= oldOrderEpoch) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderEpochError(
+            LibRichErrors.rrevert(LibExchangeRichErrors.OrderEpochError(
                 makerAddress,
                 orderSenderAddress,
                 oldOrderEpoch
@@ -90,13 +89,13 @@ contract MixinExchangeCore is
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         public
         nonReentrant
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         fillResults = _fillOrder(
             order,
@@ -109,7 +108,7 @@ contract MixinExchangeCore is
     /// @dev After calling, the order can not be filled anymore.
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    function cancelOrder(Order memory order)
+    function cancelOrder(LibOrder.Order memory order)
         public
         nonReentrant
     {
@@ -120,13 +119,13 @@ contract MixinExchangeCore is
     /// @param order Order to gather information on.
     /// @return OrderInfo Information about the order and its state.
     ///         See LibOrder.OrderInfo for a complete description.
-    function getOrderInfo(Order memory order)
+    function getOrderInfo(LibOrder.Order memory order)
         public
         view
-        returns (OrderInfo memory orderInfo)
+        returns (LibOrder.OrderInfo memory orderInfo)
     {
         // Compute the order hash
-        orderInfo.orderHash = getOrderHash(order);
+        orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
 
         // Fetch filled amount
         orderInfo.orderTakerAssetFilledAmount = filled[orderInfo.orderHash];
@@ -136,7 +135,7 @@ contract MixinExchangeCore is
         // edge cases in the supporting infrastructure because they have
         // an 'infinite' price when computed by a simple division.
         if (order.makerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(OrderStatus.INVALID_MAKER_ASSET_AMOUNT);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.INVALID_MAKER_ASSET_AMOUNT);
             return orderInfo;
         }
 
@@ -145,35 +144,35 @@ contract MixinExchangeCore is
         // Instead of distinguishing between unfilled and filled zero taker
         // amount orders, we choose not to support them.
         if (order.takerAssetAmount == 0) {
-            orderInfo.orderStatus = uint8(OrderStatus.INVALID_TAKER_ASSET_AMOUNT);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.INVALID_TAKER_ASSET_AMOUNT);
             return orderInfo;
         }
 
         // Validate order availability
         if (orderInfo.orderTakerAssetFilledAmount >= order.takerAssetAmount) {
-            orderInfo.orderStatus = uint8(OrderStatus.FULLY_FILLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.FULLY_FILLED);
             return orderInfo;
         }
 
         // Validate order expiration
         // solhint-disable-next-line not-rely-on-time
         if (block.timestamp >= order.expirationTimeSeconds) {
-            orderInfo.orderStatus = uint8(OrderStatus.EXPIRED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.EXPIRED);
             return orderInfo;
         }
 
         // Check if order has been cancelled
         if (cancelled[orderInfo.orderHash]) {
-            orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.CANCELLED);
             return orderInfo;
         }
         if (orderEpoch[order.makerAddress][order.senderAddress] > order.salt) {
-            orderInfo.orderStatus = uint8(OrderStatus.CANCELLED);
+            orderInfo.orderStatus = uint8(LibOrder.OrderStatus.CANCELLED);
             return orderInfo;
         }
 
         // All other statuses are ruled out: order is Fillable
-        orderInfo.orderStatus = uint8(OrderStatus.FILLABLE);
+        orderInfo.orderStatus = uint8(LibOrder.OrderStatus.FILLABLE);
         return orderInfo;
     }
 
@@ -183,15 +182,15 @@ contract MixinExchangeCore is
     /// @param signature Proof that order has been created by maker.
     /// @return Amounts filled and fees paid by maker and taker.
     function _fillOrder(
-        Order memory order,
+        LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // Fetch order info
-        OrderInfo memory orderInfo = getOrderInfo(order);
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Fetch taker address
         address takerAddress = _getCurrentContextAddress();
@@ -205,11 +204,11 @@ contract MixinExchangeCore is
         );
 
         // Get amount of takerAsset to fill
-        uint256 remainingTakerAssetAmount = _safeSub(order.takerAssetAmount, orderInfo.orderTakerAssetFilledAmount);
-        uint256 takerAssetFilledAmount = _min256(takerAssetFillAmount, remainingTakerAssetAmount);
+        uint256 remainingTakerAssetAmount = order.takerAssetAmount.safeSub(orderInfo.orderTakerAssetFilledAmount);
+        uint256 takerAssetFilledAmount = LibSafeMath.min256(takerAssetFillAmount, remainingTakerAssetAmount);
 
         // Compute proportional fill amounts
-        fillResults = _calculateFillResults(order, takerAssetFilledAmount);
+        fillResults = LibFillResults.calculateFillResults(order, takerAssetFilledAmount);
 
         bytes32 orderHash = orderInfo.orderHash;
 
@@ -236,17 +235,17 @@ contract MixinExchangeCore is
     /// @dev After calling, the order can not be filled anymore.
     ///      Throws if order is invalid or sender does not have permission to cancel.
     /// @param order Order to cancel. Order must be OrderStatus.FILLABLE.
-    function _cancelOrder(Order memory order)
+    function _cancelOrder(LibOrder.Order memory order)
         internal
     {
         // Fetch current order status
-        OrderInfo memory orderInfo = getOrderInfo(order);
+        LibOrder.OrderInfo memory orderInfo = getOrderInfo(order);
 
         // Validate context
         _assertValidCancel(order, orderInfo);
 
         // Noop if order is already unfillable
-        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
+        if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
             return;
         }
 
@@ -259,16 +258,16 @@ contract MixinExchangeCore is
     /// @param takerAddress Address of taker who filled the order.
     /// @param orderTakerAssetFilledAmount Amount of order already filled.
     function _updateFilledState(
-        Order memory order,
+        LibOrder.Order memory order,
         address takerAddress,
         bytes32 orderHash,
         uint256 orderTakerAssetFilledAmount,
-        FillResults memory fillResults
+        LibFillResults.FillResults memory fillResults
     )
         internal
     {
         // Update state
-        filled[orderHash] = _safeAdd(orderTakerAssetFilledAmount, fillResults.takerAssetFilledAmount);
+        filled[orderHash] = orderTakerAssetFilledAmount.safeAdd(fillResults.takerAssetFilledAmount);
 
         // Emit a Fill() event THE HARD WAY to avoid a stack overflow.
         // All this logic is equivalent to:
@@ -295,7 +294,7 @@ contract MixinExchangeCore is
     /// @param order that was cancelled.
     /// @param orderHash Hash of order that was cancelled.
     function _updateCancelledState(
-        Order memory order,
+        LibOrder.Order memory order,
         bytes32 orderHash
     )
         internal
@@ -320,8 +319,8 @@ contract MixinExchangeCore is
     /// @param takerAddress Address of order taker.
     /// @param signature Proof that the orders was created by its maker.
     function _assertFillableOrder(
-        Order memory order,
-        OrderInfo memory orderInfo,
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo,
         address takerAddress,
         bytes memory signature
     )
@@ -329,17 +328,17 @@ contract MixinExchangeCore is
         view
     {
         // An order can only be filled if its status is FILLABLE.
-        if (orderInfo.orderStatus != uint8(OrderStatus.FILLABLE)) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.OrderStatusError(
+        if (orderInfo.orderStatus != uint8(LibOrder.OrderStatus.FILLABLE)) {
+            LibRichErrors.rrevert(LibExchangeRichErrors.OrderStatusError(
                 orderInfo.orderHash,
-                OrderStatus(orderInfo.orderStatus)
+                LibOrder.OrderStatus(orderInfo.orderStatus)
             ));
         }
 
         // Validate sender is allowed to fill this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(
                     orderInfo.orderHash, msg.sender
                 ));
             }
@@ -348,7 +347,7 @@ contract MixinExchangeCore is
         // Validate taker is allowed to fill this order
         if (order.takerAddress != address(0)) {
             if (order.takerAddress != takerAddress) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidTakerError(
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidTakerError(
                     orderInfo.orderHash, takerAddress
                 ));
             }
@@ -367,8 +366,8 @@ contract MixinExchangeCore is
                     order,
                     orderInfo.orderHash,
                     signature)) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.SignatureError(
-                    SignatureErrorCodes.BAD_SIGNATURE,
+                LibRichErrors.rrevert(LibExchangeRichErrors.SignatureError(
+                    LibExchangeRichErrors.SignatureErrorCodes.BAD_SIGNATURE,
                     orderInfo.orderHash,
                     makerAddress,
                     signature
@@ -381,8 +380,8 @@ contract MixinExchangeCore is
     /// @param order to be cancelled.
     /// @param orderInfo OrderStatus, orderHash, and amount already filled of order.
     function _assertValidCancel(
-        Order memory order,
-        OrderInfo memory orderInfo
+        LibOrder.Order memory order,
+        LibOrder.OrderInfo memory orderInfo
     )
         internal
         view
@@ -390,48 +389,15 @@ contract MixinExchangeCore is
         // Validate sender is allowed to cancel this order
         if (order.senderAddress != address(0)) {
             if (order.senderAddress != msg.sender) {
-                LibRichErrors._rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
+                LibRichErrors.rrevert(LibExchangeRichErrors.InvalidSenderError(orderInfo.orderHash, msg.sender));
             }
         }
 
         // Validate transaction signed by maker
         address makerAddress = _getCurrentContextAddress();
         if (order.makerAddress != makerAddress) {
-            LibRichErrors._rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
+            LibRichErrors.rrevert(LibExchangeRichErrors.InvalidMakerError(orderInfo.orderHash, makerAddress));
         }
-    }
-
-    /// @dev Calculates amounts filled and fees paid by maker and taker.
-    /// @param order to be filled.
-    /// @param takerAssetFilledAmount Amount of takerAsset that will be filled.
-    /// @return fillResults Amounts filled and fees paid by maker and taker.
-    function _calculateFillResults(
-        Order memory order,
-        uint256 takerAssetFilledAmount
-    )
-        internal
-        pure
-        returns (FillResults memory fillResults)
-    {
-        // Compute proportional transfer amounts
-        fillResults.takerAssetFilledAmount = takerAssetFilledAmount;
-        fillResults.makerAssetFilledAmount = _safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.makerAssetAmount
-        );
-        fillResults.makerFeePaid = _safeGetPartialAmountFloor(
-            fillResults.makerAssetFilledAmount,
-            order.makerAssetAmount,
-            order.makerFee
-        );
-        fillResults.takerFeePaid = _safeGetPartialAmountFloor(
-            takerAssetFilledAmount,
-            order.takerAssetAmount,
-            order.takerFee
-        );
-
-        return fillResults;
     }
 
     /// @dev Settles an order by transferring assets between counterparties.
