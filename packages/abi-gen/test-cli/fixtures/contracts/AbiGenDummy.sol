@@ -134,11 +134,11 @@ contract AbiGenDummy
     /// @return a Struct struct
     function structOutput() public pure returns(Struct memory s) {
         bytes[] memory byteArray = new bytes[](2);
-        byteArray[0] = '0x123';
-        byteArray[1] = '0x321';
+        byteArray[0] = "0x123";
+        byteArray[1] = "0x321";
 
         return Struct({
-            someBytes: '0x123',
+            someBytes: "0x123",
             anInteger: 5,
             aDynamicArrayOfBytes: byteArray,
             aString: "abc"
@@ -181,7 +181,6 @@ contract AbiGenDummy
     function overloadedMethod(string memory a) public pure {}
 
     // begin tests for `decodeTransactionData`, `decodeReturnData`
-
     /// @dev complex input is dynamic and more difficult to decode than simple input.
     struct ComplexInput {
         uint256 foo;
