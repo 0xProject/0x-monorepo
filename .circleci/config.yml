@@ -55,6 +55,7 @@ jobs:
                       - repo-{{ .Environment.CIRCLE_SHA1 }}
             - run: cd packages/website && yarn build:prod
     test-contracts-ganache:
+        resource_class: medium+
         docker:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
         working_directory: ~/repo
