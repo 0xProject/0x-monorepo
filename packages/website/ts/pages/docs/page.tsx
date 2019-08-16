@@ -11,6 +11,7 @@ import { Emphasis } from 'ts/components/docs/mdx/emphasis';
 import { H1, H2, H3, H4, H5, H6 } from 'ts/components/docs/mdx/headings';
 import { HelpCallout } from 'ts/components/docs/mdx/help_callout';
 import { HelpfulCta } from 'ts/components/docs/mdx/helpful_cta';
+import { Image } from 'ts/components/docs/mdx/image';
 import { InlineCode } from 'ts/components/docs/mdx/inline_code';
 import { InlineLink } from 'ts/components/docs/mdx/inline_link';
 import { NewsletterWidget } from 'ts/components/docs/mdx/newsletter_widget';
@@ -146,6 +147,7 @@ export const DocsPage: React.FC<IDocsPageProps> = props => {
 };
 
 const mdxComponents = {
+    a: InlineLink,
     code: Code,
     em: Emphasis,
     h1: H1,
@@ -155,8 +157,8 @@ const mdxComponents = {
     h5: H5,
     h6: H6,
     hr: Separator,
+    img: Image,
     inlineCode: InlineCode,
-    a: InlineLink,
     ol: OrderedList,
     p: Paragraph,
     table: Table,
