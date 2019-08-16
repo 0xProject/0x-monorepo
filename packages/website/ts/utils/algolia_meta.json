@@ -1,5 +1,5 @@
 {
-    "api-explorer": {"title": "API Explorer", "path": "api-explorer/index.mdx"},
+    "api-explorer": { "title": "API Explorer", "path": "api-explorer/index.mdx" },
     "core-concepts": {
         "title": "0x Core Concepts",
         "subtitle": "Learn all the core concepts you'll need to build effectively on 0x",
@@ -180,7 +180,7 @@
     "order-utils": {
         "title": "@0x/order-utils",
         "description": "A set of utilities for generating, parsing, signing and validating 0x orders",
-        "difficulty": "Beginnner",
+        "difficulty": "Beginner",
         "topics": [],
         "isCommunity": false,
         "isFeatured": false,
