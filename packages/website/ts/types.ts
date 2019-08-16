@@ -331,15 +331,6 @@ export interface ExploreTile {
     component?: React.ReactNode;
 }
 
-export interface FAQQuestion {
-    prompt: string;
-    answer: React.ReactNode;
-}
-export interface FAQSection {
-    name: string;
-    questions: FAQQuestion[];
-}
-
 export interface S3FileObject {
     Key: {
         _text: string;
@@ -444,7 +435,6 @@ export enum WebsitePaths {
     Docs = '/docs',
     ZeroExJs = '/docs/0x.js',
     Home = '/',
-    FAQ = '/faq', // tslint:disable-line:enum-naming
     About = '/about',
     AboutMission = '/about/mission',
     AboutTeam = '/about/team',
@@ -569,7 +559,6 @@ export enum Key {
     Web3Wrapper = 'WEB3_WRAPPER',
     OrderUtils = 'ORDER_UTILS',
     And = 'AND',
-    Faq = 'FAQ',
     SmartContracts = 'SMART_CONTRACTS',
     StandardRelayerApi = 'STANDARD_RELAYER_API',
     PortalDApp = 'PORTAL_DAPP',
