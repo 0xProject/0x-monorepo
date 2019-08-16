@@ -7,7 +7,7 @@ import { Definition } from 'ts/components/definition';
 import { DocumentTitle } from 'ts/components/document_title';
 import { Hero } from 'ts/components/hero';
 import { Icon, InlineIconWrap } from 'ts/components/icon';
-import { FlexWrap, Section } from 'ts/components/newLayout';
+import { Section } from 'ts/components/newLayout';
 import { SiteWrap } from 'ts/components/siteWrap';
 import { Heading, Paragraph } from 'ts/components/text';
 import { CodeStepper } from 'ts/pages/cfl/code_stepper';
@@ -84,16 +84,16 @@ export class CFL extends React.Component<Props> {
             <SiteWrap theme="dark">
                 <DocumentTitle {...documentConstants.CFL} />
                 <Hero
-                    title="Swap Tokens by tapping into 0x's networked liquidity pool"
+                    title="Swap Tokens by tapping into 0x's networked liquidity"
                     isLargeTitle={false}
                     isFullWidth={true}
                     description="Source liquidity for your DeFi users by filling orders at the best prices."
+                    showFigureBottomMobile={true}
                     figure={'TODO: LIQUIDITY DATA'}
                     actions={
                         <Button href={constants.CFL_DOCS} isInline={true}>
                             Get Started
-                        </Button>
-                    }
+                        </Button>}
                 />
                 <Section bgColor="dark" isTextCentered={true}>
                     <InlineIconWrap>

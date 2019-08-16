@@ -2,7 +2,7 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 import { Definition, DefinitionProps } from 'ts/components/definition';
-import { CodeTab, TabbedCodeDemo, TabbedWrapper } from 'ts/components/tabbed_code_demo';
+import { CodeTab, TabbedCodeDemo } from 'ts/components/tabbed_code_demo';
 
 const StepperContainer = styled.div`
     display: flex;

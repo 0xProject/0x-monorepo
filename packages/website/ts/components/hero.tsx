@@ -17,6 +17,7 @@ interface Props {
     background?: React.ReactNode;
     announcement?: AnnouncementProps;
     sectionPadding?: string;
+    showFigureBottomMobile?: boolean;
 }
 
 interface SectionProps {
@@ -36,6 +37,7 @@ interface WrapProps {
     isCentered?: boolean;
     isFullWidth?: boolean;
     isCenteredMobile?: boolean;
+    showFigureBottomMobile?: boolean;
 }
 const Wrap = styled.div<WrapProps>`
     width: calc(100% - 60px);
@@ -52,6 +54,9 @@ const Wrap = styled.div<WrapProps>`
 
     @media (max-width: 768px) {
         text-align: ${props => (props.isCenteredMobile ? `center` : 'left')};
+        flex-direction: ${props => (props.showFigureBottomMobile ? 'column-reverse' : 'column')};
+        display: flex;
+        align-items: center;
     }
 `;
 
@@ -156,6 +161,7 @@ export class Hero extends React.Component<Props> {
                     isCentered={!props.figure}
                     isFullWidth={props.isFullWidth}
                     isCenteredMobile={props.isCenteredMobile}
+                    showFigureBottomMobile={props.showFigureBottomMobile}
                 >
                     {props.figure && <Content width="400px">{props.figure}</Content>}
 
