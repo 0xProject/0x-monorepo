@@ -6,8 +6,7 @@
                 "note": "Allow for array types in `RevertError`s.",
                 "pr": 2075
             }
-        ],
-        "timestamp": 1565296576
+        ]
     },
     {
         "version": "4.5.0",

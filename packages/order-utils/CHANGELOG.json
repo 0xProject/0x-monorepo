@@ -60,11 +60,11 @@
             },
             {
                 "note": "Add `takerAssetFillAmount` field to `IncompleteFillError` type",
-                "pr": "TODO"
+                "pr": 2075
             },
             {
                 "note": "Add `IncompleteMarketSellError` and `IncompleteMarketBuyError` `RevertError` types",
-                "pr": "TODO"
+                "pr": 2075
             }
         ]
     },

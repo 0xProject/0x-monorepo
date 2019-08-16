@@ -176,23 +176,23 @@
             },
             {
                 "note": "Rename `marketSellOrders` and `marketBuyOrders` back to `marketSellOrdersNoThrow` and `marketBuyOrdersNoThrow`.",
-                "pr": "TODO"
+                "pr": 2075
             },
             {
                 "note": "Introduce new `marketSellOrdersFillOrKill` and `marketBuyOrdersFillOrKill` functions.",
-                "pr": "TODO"
+                "pr": 2075
             },
             {
                 "note": "Add new rich error types: `IncompleteMarketBuyError` and `IncompleteMarketSellError`.",
-                "pr": "TODO"
+                "pr": 2075
             },
             {
                 "note": "Use `abi.decode()` in `LibExchangeRichErrorDecoder` over `LibBytes`.",
-                "pr": "TODO"
+                "pr": 2075
             },
             {
                 "note": "Overridden functions in `ReentrancyTester` now return sane values.",
-                "pr": "TODO"
+                "pr": 2075
             }
         ]
     },
