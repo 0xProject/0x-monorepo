@@ -21,9 +21,10 @@ export const exchangeDataEncoder = {
                 orders.map(order => order.signature),
             );
         } else if (exchangeConstants.MARKET_FILL_FN_NAMES.indexOf(fnName) !== -1) {
+            const fillAsset = /Buy/.test(fnName) ? 'makerAssetAmount' : 'takerAssetAmount';
             data = (exchangeInstance as any)[fnName].getABIEncodedTransactionData(
                 orders,
-                orders.map(order => order.takerAssetAmount).reduce((prev, curr) => prev.plus(curr)),
+                orders.map(order => order[fillAsset]).reduce((prev, curr) => prev.plus(curr)),
                 orders.map(order => order.signature),
             );
         } else if (fnName === ExchangeFunctionName.MatchOrders) {
