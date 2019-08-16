@@ -191,10 +191,10 @@ blockchainTests.resets('Exchange wrappers', env => {
 
         it('should revert if entire takerAssetFillAmount not filled', async () => {
             const signedOrder = await orderFactory.newSignedOrderAsync();
-            const takerAssetFillAmount = signedOrder.takerAssetAmount.dividedToIntegerBy(2);
+            const takerAssetFillAmount = signedOrder.takerAssetAmount;
 
             await exchangeWrapper.fillOrderAsync(signedOrder, takerAddress, {
-                takerAssetFillAmount,
+                takerAssetFillAmount: signedOrder.takerAssetAmount.dividedToIntegerBy(2),
             });
 
             const orderHashHex = orderHashUtils.getOrderHashHex(signedOrder);
