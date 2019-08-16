@@ -6,8 +6,8 @@ const RollbarSourceMapPlugin = require('rollbar-sourcemap-webpack-plugin');
 const childProcess = require('child_process');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const remarkSlug = require('remark-slug');
-const sectionizeHeadings = require('./webpack/sectionize-headings');
-const mdxSectionTOC = require('./webpack/mdx-section-toc');
+const remarkSectionizeHeadings = require('./webpack/remark_sectionize_headings');
+const mdxTableOfContents = require('./webpack/mdx_table_of_contents');
 
 const GIT_SHA = childProcess
     .execSync('git rev-parse HEAD')
@@ -82,8 +82,8 @@ const config = {
                     {
                         loader: '@mdx-js/loader',
                         options: {
-                            remarkPlugins: [remarkSlug, sectionizeHeadings],
-                            compilers: [mdxSectionTOC],
+                            remarkPlugins: [remarkSlug, remarkSectionizeHeadings],
+                            compilers: [mdxTableOfContents],
                         },
                     },
                 ],
