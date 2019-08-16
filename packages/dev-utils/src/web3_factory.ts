@@ -58,6 +58,9 @@ export const web3Factory = {
                 new GanacheSubprovider({
                     vmErrorsOnRPCResponse: shouldThrowErrorsOnGanacheRPCResponse,
                     db_path: config.ganacheDatabasePath,
+                    // HACK(dorothy-zbornak): Mainnet gas limit is 8M, but ganache won't
+                    // go beyond 7M, which means we can't deploy certain large contracts.
+                    allowUnlimitedContractSize: true,
                     gasLimit: constants.GAS_LIMIT,
                     logger,
                     verbose: env.parseBoolean(EnvVars.VerboseGanache),
