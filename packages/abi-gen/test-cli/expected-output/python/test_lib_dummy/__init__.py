@@ -40,13 +40,16 @@ except ImportError:
         """No-op input validator."""
 
 
-
-
-
 class PublicAddConstantMethod(ContractMethod):
     """Various interfaces to the publicAddConstant method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+    def __init__(
+        self,
+        provider: BaseProvider,
+        contract_address: str,
+        contract_function: ContractFunction,
+        validator: Validator = None,
+    ):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
@@ -54,13 +57,13 @@ class PublicAddConstantMethod(ContractMethod):
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddConstant method."""
         self.validator.assert_valid(
-            method_name='publicAddConstant',
-            parameter_name='x',
+            method_name="publicAddConstant",
+            parameter_name="x",
             argument_value=x,
         )
         # safeguard against fractional inputs
         x = int(x)
-        return (x)
+        return x
 
     def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -72,7 +75,9 @@ class PublicAddConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).call(tx_params.as_dict())
 
-    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+    def send_transaction(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
@@ -82,16 +87,25 @@ class PublicAddConstantMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).transact(tx_params.as_dict())
 
-    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+    def estimate_gas(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> int:
         """Estimate gas consumption of method call."""
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).estimateGas(tx_params.as_dict())
 
+
 class PublicAddOneMethod(ContractMethod):
     """Various interfaces to the publicAddOne method."""
 
-    def __init__(self, provider: BaseProvider, contract_address: str, contract_function: ContractFunction, validator: Validator=None):
+    def __init__(
+        self,
+        provider: BaseProvider,
+        contract_address: str,
+        contract_function: ContractFunction,
+        validator: Validator = None,
+    ):
         """Persist instance data."""
         super().__init__(provider, contract_address, validator)
         self.underlying_method = contract_function
@@ -99,13 +113,11 @@ class PublicAddOneMethod(ContractMethod):
     def validate_and_normalize_inputs(self, x: int):
         """Validate the inputs to the publicAddOne method."""
         self.validator.assert_valid(
-            method_name='publicAddOne',
-            parameter_name='x',
-            argument_value=x,
+            method_name="publicAddOne", parameter_name="x", argument_value=x
         )
         # safeguard against fractional inputs
         x = int(x)
-        return (x)
+        return x
 
     def call(self, x: int, tx_params: Optional[TxParams] = None) -> int:
         """Execute underlying contract method via eth_call.
@@ -117,7 +129,9 @@ class PublicAddOneMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).call(tx_params.as_dict())
 
-    def send_transaction(self, x: int, tx_params: Optional[TxParams] = None) -> Union[HexBytes, bytes]:
+    def send_transaction(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> Union[HexBytes, bytes]:
         """Execute underlying contract method via eth_sendTransaction.
 
         :param tx_params: transaction parameters
@@ -127,15 +141,19 @@ class PublicAddOneMethod(ContractMethod):
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).transact(tx_params.as_dict())
 
-    def estimate_gas(self, x: int, tx_params: Optional[TxParams] = None) -> int:
+    def estimate_gas(
+        self, x: int, tx_params: Optional[TxParams] = None
+    ) -> int:
         """Estimate gas consumption of method call."""
         (x) = self.validate_and_normalize_inputs(x)
         tx_params = super().normalize_tx_params(tx_params)
         return self.underlying_method(x).estimateGas(tx_params.as_dict())
 
+
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class TestLibDummy:
     """Wrapper class for TestLibDummy Solidity contract."""
+
     public_add_constant: PublicAddConstantMethod
     """Constructor-initialized instance of
     :class:`PublicAddConstantMethod`.
@@ -145,7 +163,6 @@ class TestLibDummy:
     """Constructor-initialized instance of
     :class:`PublicAddOneMethod`.
     """
-
 
     def __init__(
         self,
@@ -168,12 +185,18 @@ class TestLibDummy:
             provider
         ).eth
 
-        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=TestLibDummy.abi()).functions
+        functions = self._web3_eth.contract(
+            address=to_checksum_address(contract_address),
+            abi=TestLibDummy.abi(),
+        ).functions
 
-        self.public_add_constant = PublicAddConstantMethod(provider, contract_address, functions.publicAddConstant, validator)
+        self.public_add_constant = PublicAddConstantMethod(
+            provider, contract_address, functions.publicAddConstant, validator
+        )
 
-        self.public_add_one = PublicAddOneMethod(provider, contract_address, functions.publicAddOne, validator)
-
+        self.public_add_one = PublicAddOneMethod(
+            provider, contract_address, functions.publicAddOne, validator
+        )
 
     @staticmethod
     def abi():
@@ -181,5 +204,6 @@ class TestLibDummy:
         return json.loads(
             '[{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddConstant","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"},{"constant":true,"inputs":[{"name":"x","type":"uint256"}],"name":"publicAddOne","outputs":[{"name":"result","type":"uint256"}],"payable":false,"stateMutability":"pure","type":"function"}]'  # noqa: E501 (line-too-long)
         )
+
 
 # pylint: disable=too-many-lines

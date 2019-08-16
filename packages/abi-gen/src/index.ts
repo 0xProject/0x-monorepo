@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import { execSync } from 'child_process';
+
 import { AbiEncoder, abiUtils, logUtils } from '@0x/utils';
 import chalk from 'chalk';
 import * as changeCase from 'change-case';
@@ -402,5 +404,17 @@ for (const abiFileName of abiFileNames) {
     };
     const renderedCode = template(contextData);
     utils.writeOutputFile(outFilePath, renderedCode);
+
+    if (args.language === 'Python') {
+        // use command-line tool black to reformat, if its available
+        try {
+            execSync(`black --line-length 79 ${outFilePath}`);
+        } catch {
+            logUtils.warn(
+                'Failed to reformat generated Python with black. Do you have it installed? Proceeding anyways...',
+            );
+        }
+    }
+
     logUtils.log(`Created: ${chalk.bold(outFilePath)}`);
 }
