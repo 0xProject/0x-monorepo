@@ -173,6 +173,26 @@
             {
                 "note": "Compile and export all contracts, artifacts, and wrappers by default",
                 "pr": 2055
+            },
+            {
+                "note": "Rename `marketSellOrders` and `marketBuyOrders` back to `marketSellOrdersNoThrow` and `marketBuyOrdersNoThrow`.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Introduce new `marketSellOrdersFillOrKill` and `marketBuyOrdersFillOrKill` functions.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Add new rich error types: `IncompleteMarketBuyError` and `IncompleteMarketSellError`.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Use `abi.decode()` in `LibExchangeRichErrorDecoder` over `LibBytes`.",
+                "pr": "TODO"
+            },
+            {
+                "note": "Overridden functions in `ReentrancyTester` now return sane values.",
+                "pr": "TODO"
             }
         ]
     },
