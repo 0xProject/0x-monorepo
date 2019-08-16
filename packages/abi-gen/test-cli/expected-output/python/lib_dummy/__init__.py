@@ -65,10 +65,6 @@ class LibDummy:
             provider
         ).eth
 
-        functions = self._web3_eth.contract(
-            address=to_checksum_address(contract_address), abi=LibDummy.abi()
-        ).functions
-
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""
