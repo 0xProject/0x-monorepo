@@ -5,8 +5,7 @@ import styled, { css } from 'styled-components';
 
 import { Link } from 'ts/components/documentation/shared/link';
 
-
-import { MobileNav } from 'ts/components/docs/header/mobileNav';
+import { MobileNav } from 'ts/components/docs/header/mobile_nav';
 import { SearchInput } from 'ts/components/docs/search/search_input';
 
 import { Hamburger } from 'ts/components/hamburger';
