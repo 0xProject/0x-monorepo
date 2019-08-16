@@ -1,1 +1,6 @@
 black
+eth_utils
+hexbytes
+mypy_extensions
+pylint
+web3

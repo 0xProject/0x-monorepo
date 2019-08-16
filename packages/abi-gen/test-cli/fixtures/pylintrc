@@ -1,0 +1,7 @@
+[MESSAGES CONTROL]
+disable=C0330,line-too-long,fixme,too-few-public-methods,too-many-ancestors,duplicate-code
+# C0330 is "bad hanging indent". we use indents per `black`.
+
+[BASIC]
+argument-rgx=[a-z_][a-z0-9_]{0,31}$
+# above differs from the default only in that it allows 2-character names

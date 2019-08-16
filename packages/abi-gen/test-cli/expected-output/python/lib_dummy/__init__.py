@@ -40,9 +40,6 @@ except ImportError:
         """No-op input validator."""
 
 
-
-
-
 # pylint: disable=too-many-public-methods,too-many-instance-attributes
 class LibDummy:
     """Wrapper class for LibDummy Solidity contract."""
@@ -68,14 +65,14 @@ class LibDummy:
             provider
         ).eth
 
-        functions = self._web3_eth.contract(address=to_checksum_address(contract_address), abi=LibDummy.abi()).functions
-
+        functions = self._web3_eth.contract(
+            address=to_checksum_address(contract_address), abi=LibDummy.abi()
+        ).functions
 
     @staticmethod
     def abi():
         """Return the ABI to the underlying contract."""
-        return json.loads(
-            '[]'  # noqa: E501 (line-too-long)
-        )
+        return json.loads("[]")  # noqa: E501 (line-too-long)
+
 
 # pylint: disable=too-many-lines
