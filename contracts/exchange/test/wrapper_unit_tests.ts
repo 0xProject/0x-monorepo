@@ -170,10 +170,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 takerAssetAmount: fillAmount.minus(1),
             });
             const signature = createOrderSignature(order);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
-                fillAmount,
-                getExpectedOrderHash(order),
-            );
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(fillAmount, getExpectedOrderHash(order));
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -186,10 +183,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                 takerAssetAmount: fillAmount.plus(1),
             });
             const signature = createOrderSignature(order);
-            const expectedError = new ExchangeRevertErrors.IncompleteFillError(
-                fillAmount,
-                getExpectedOrderHash(order),
-            );
+            const expectedError = new ExchangeRevertErrors.IncompleteFillError(fillAmount, getExpectedOrderHash(order));
             const tx = testContract.fillOrKillOrder.awaitTransactionSuccessAsync(order, fillAmount, signature);
             return expect(tx).to.revertWith(expectedError);
         });
@@ -723,23 +717,13 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount,
                     orders[1].takerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    takerAssetFillAmount,
-                    signatures,
-                );
+                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, takerAssetFillAmount, signatures);
                 return expect(tx).to.revertWith(expectedError);
             });
 
             it('reverts with no orders', async () => {
                 const expectedError = new AnyRevertError(); // Just a generic revert.
-                const tx = txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    [],
-                    constants.ZERO_AMOUNT,
-                    [],
-                );
+                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), [], constants.ZERO_AMOUNT, []);
                 return expect(tx).to.revertWith(expectedError);
             });
         }
@@ -783,7 +767,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
                 );
-                const [expectedResult, expectedCalls] = simulateMarketSellOrders(orders, takerAssetFillAmount, signatures);
+                const [expectedResult, expectedCalls] = simulateMarketSellOrders(
+                    orders,
+                    takerAssetFillAmount,
+                    signatures,
+                );
                 expect(expectedCalls.length).to.eq(COUNT - BAD_ORDERS_COUNT);
                 const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
                     testContract.marketSellOrdersNoThrow,
@@ -804,7 +792,11 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
                 );
-                const [expectedResult, expectedCalls] = simulateMarketSellOrders(orders, takerAssetFillAmount, signatures);
+                const [expectedResult, expectedCalls] = simulateMarketSellOrders(
+                    orders,
+                    takerAssetFillAmount,
+                    signatures,
+                );
                 expect(expectedCalls.length).to.eq(0);
                 const [actualResult, receipt] = await txHelper.getResultAndReceiptAsync(
                     testContract.marketSellOrdersNoThrow,
@@ -855,13 +847,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders,
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(
-                    _.reduce(
-                        badOrders,
-                        (total, o) => o.takerAssetAmount.plus(total),
-                        constants.ZERO_AMOUNT,
-                    ),
-                );
+                ).minus(_.reduce(badOrders, (total, o) => o.takerAssetAmount.plus(total), constants.ZERO_AMOUNT));
                 const [expectedResult, expectedCalls] = simulateMarketSellOrders(
                     orders,
                     takerAssetFillAmount,
@@ -891,13 +877,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders,
                     (total, o) => o.takerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(
-                    _.reduce(
-                        badOrders,
-                        (total, o) => o.takerAssetAmount.plus(total),
-                        constants.ZERO_AMOUNT,
-                    ),
-                ).plus(1);
+                )
+                    .minus(_.reduce(badOrders, (total, o) => o.takerAssetAmount.plus(total), constants.ZERO_AMOUNT))
+                    .plus(1);
                 const expectedError = new ExchangeRevertErrors.IncompleteMarketSellError(
                     takerAssetFillAmount,
                     orders.map(o => getExpectedOrderHash(o)),
@@ -1041,12 +1023,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount,
                     makerAssetFillAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1059,12 +1036,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].takerAssetAmount.times(makerAssetFillAmount),
                     orders[0].makerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1086,12 +1058,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders[0].makerAssetAmount,
                     orders[1].makerAssetAmount,
                 );
-                const tx = txHelper.getResultAndReceiptAsync(
-                    getContractFn(),
-                    orders,
-                    makerAssetFillAmount,
-                    signatures,
-                );
+                const tx = txHelper.getResultAndReceiptAsync(getContractFn(), orders, makerAssetFillAmount, signatures);
                 return expect(tx).to.revertWith(expectedError);
             });
 
@@ -1130,10 +1097,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
         }
 
         describe('marketBuyOrdersNoThrow', () => {
-            defineCommonMarketBuyOrdersTests(
-                () => testContract.marketBuyOrdersNoThrow,
-                simulateMarketBuyOrdersNoThrow,
-            );
+            defineCommonMarketBuyOrdersTests(() => testContract.marketBuyOrdersNoThrow, simulateMarketBuyOrdersNoThrow);
 
             it('works when any fills revert', async () => {
                 const COUNT = 4;
@@ -1232,13 +1196,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders,
                     (total, o) => o.makerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(
-                    _.reduce(
-                        badOrders,
-                        (total, o) => o.makerAssetAmount.plus(total),
-                        constants.ZERO_AMOUNT,
-                    ),
-                );
+                ).minus(_.reduce(badOrders, (total, o) => o.makerAssetAmount.plus(total), constants.ZERO_AMOUNT));
                 const [expectedResult, expectedCalls] = simulateMarketBuyOrdersNoThrow(
                     orders,
                     makerAssetFillAmount,
@@ -1268,13 +1226,9 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
                     orders,
                     (total, o) => o.makerAssetAmount.plus(total),
                     constants.ZERO_AMOUNT,
-                ).minus(
-                    _.reduce(
-                        badOrders,
-                        (total, o) => o.makerAssetAmount.plus(total),
-                        constants.ZERO_AMOUNT,
-                    ),
-                ).plus(1);
+                )
+                    .minus(_.reduce(badOrders, (total, o) => o.makerAssetAmount.plus(total), constants.ZERO_AMOUNT))
+                    .plus(1);
                 const expectedError = new ExchangeRevertErrors.IncompleteMarketBuyError(
                     makerAssetFillAmount,
                     orders.map(o => getExpectedOrderHash(o)),

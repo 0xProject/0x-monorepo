@@ -54,45 +54,45 @@ describe('RevertError', () => {
             expect(revert1.equals(revert2)).to.be.true();
         });
         it('should equate two revert errors with identical array fields', () => {
-            const strings = [ 'foo', 'bar' ];
+            const strings = ['foo', 'bar'];
             const revert1 = new ArrayRevertError(strings);
             const revert2 = new ArrayRevertError(strings);
             expect(revert1.equals(revert2)).to.be.true();
         });
         it('should not equate two revert errors with different sized array fields', () => {
-            const strings = [ 'foo', 'bar' ];
+            const strings = ['foo', 'bar'];
             const revert1 = new ArrayRevertError(strings);
             const revert2 = new ArrayRevertError(strings.slice(0, 1));
             expect(revert1.equals(revert2)).to.be.false();
         });
         it('should not equate two revert errors with different array field values', () => {
-            const strings1 = [ 'foo', 'bar' ];
-            const strings2 = [ 'foo', 'baz' ];
+            const strings1 = ['foo', 'bar'];
+            const strings2 = ['foo', 'baz'];
             const revert1 = new ArrayRevertError(strings1);
             const revert2 = new ArrayRevertError(strings2);
             expect(revert1.equals(revert2)).to.be.false();
         });
         it('should equate two revert errors with identical fixed-size array fields', () => {
-            const strings = [ 'foo', 'bar' ];
+            const strings = ['foo', 'bar'];
             const revert1 = new FixedSizeArrayRevertError(strings);
             const revert2 = new FixedSizeArrayRevertError(strings);
             expect(revert1.equals(revert2)).to.be.true();
         });
         it('should not equate two revert errors with different sized fixed-size array fields', () => {
-            const strings = [ 'foo', 'bar' ];
+            const strings = ['foo', 'bar'];
             const revert1 = new FixedSizeArrayRevertError(strings);
             const revert2 = new FixedSizeArrayRevertError(strings.slice(0, 1));
             expect(revert1.equals(revert2)).to.be.false();
         });
         it('should not equate two revert errors with the wrong sized fixed-size array fields', () => {
-            const strings = [ 'foo', 'bar', 'baz' ];
+            const strings = ['foo', 'bar', 'baz'];
             const revert1 = new FixedSizeArrayRevertError(strings);
             const revert2 = new FixedSizeArrayRevertError(strings);
             expect(revert1.equals(revert2)).to.be.false();
         });
         it('should not equate two revert errors with different fixed-size array field values', () => {
-            const strings1 = [ 'foo', 'bar' ];
-            const strings2 = [ 'foo', 'baz' ];
+            const strings1 = ['foo', 'bar'];
+            const strings2 = ['foo', 'baz'];
             const revert1 = new FixedSizeArrayRevertError(strings1);
             const revert2 = new FixedSizeArrayRevertError(strings2);
             expect(revert1.equals(revert2)).to.be.false();

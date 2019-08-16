@@ -209,11 +209,10 @@ export class TransactionExecutionError extends RevertError {
 
 export class IncompleteFillError extends RevertError {
     constructor(takerAssetFillAmount?: BigNumber, orderHash?: string) {
-        super(
-            'IncompleteFillError',
-            'IncompleteFillError(uint256 takerAssetFillAmount, bytes32 orderHash)',
-            { takerAssetFillAmount, orderHash },
-        );
+        super('IncompleteFillError', 'IncompleteFillError(uint256 takerAssetFillAmount, bytes32 orderHash)', {
+            takerAssetFillAmount,
+            orderHash,
+        });
     }
 }
 
