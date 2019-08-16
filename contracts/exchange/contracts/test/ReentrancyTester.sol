@@ -72,7 +72,7 @@ contract ReentrancyTester is
         address(this).delegatecall(fnCallData);
     }
 
-    /// @dev Overriden to do nothing.
+    /// @dev Overriden to always succeed.
     function _fillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
@@ -80,9 +80,14 @@ contract ReentrancyTester is
     )
         internal
         returns (LibFillResults.FillResults memory fillResults)
-    {}
+    {
+        fillResults.makerAssetFilledAmount = order.makerAssetAmount;
+        fillResults.takerAssetFilledAmount = order.takerAssetAmount;
+        fillResults.makerFeePaid = order.makerFee;
+        fillResults.takerFeePaid = order.takerFee;
+    }
 
-    /// @dev Overriden to do nothing.
+    /// @dev Overriden to always succeed.
     function _fillOrKillOrder(
         LibOrder.Order memory order,
         uint256 takerAssetFillAmount,
@@ -90,9 +95,14 @@ contract ReentrancyTester is
     )
         internal
         returns (LibFillResults.FillResults memory fillResults)
-    {}
+    {
+        fillResults.makerAssetFilledAmount = order.makerAssetAmount;
+        fillResults.takerAssetFilledAmount = order.takerAssetAmount;
+        fillResults.makerFeePaid = order.makerFee;
+        fillResults.takerFeePaid = order.takerFee;
+    }
 
-    /// @dev Overridden to do nothing.
+    /// @dev Overridden to always succeed.
     function _executeTransaction(
         LibZeroExTransaction.ZeroExTransaction memory transaction,
         bytes memory signature
@@ -104,7 +114,7 @@ contract ReentrancyTester is
         return resultData;
     }
 
-    /// @dev Overriden to do nothing.
+    /// @dev Overriden to always succeed.
     function _batchMatchOrders(
         LibOrder.Order[] memory leftOrders,
         LibOrder.Order[] memory rightOrders,
@@ -114,9 +124,27 @@ contract ReentrancyTester is
     )
         internal
         returns (LibFillResults.BatchMatchedFillResults memory batchMatchedFillResults)
-    {}
+    {
+        uint256 numOrders = leftOrders.length;
+        batchMatchedFillResults.left = new LibFillResults.FillResults[](numOrders);
+        batchMatchedFillResults.right = new LibFillResults.FillResults[](numOrders);
+        for (uint256 i = 0; i < numOrders; ++i) {
+            batchMatchedFillResults.left[i] = LibFillResults.FillResults({
+                makerAssetFilledAmount: leftOrders[i].makerAssetAmount,
+                takerAssetFilledAmount: leftOrders[i].takerAssetAmount,
+                makerFeePaid: leftOrders[i].makerFee,
+                takerFeePaid: leftOrders[i].takerFee
+            });
+            batchMatchedFillResults.right[i] = LibFillResults.FillResults({
+                makerAssetFilledAmount: rightOrders[i].makerAssetAmount,
+                takerAssetFilledAmount: rightOrders[i].takerAssetAmount,
+                makerFeePaid: rightOrders[i].makerFee,
+                takerFeePaid: rightOrders[i].takerFee
+            });
+        }
+    }
 
-    /// @dev Overriden to do nothing.
+    /// @dev Overriden to always succeed.
     function _matchOrders(
         LibOrder.Order memory leftOrder,
         LibOrder.Order memory rightOrder,
@@ -126,7 +154,20 @@ contract ReentrancyTester is
     )
         internal
         returns (LibFillResults.MatchedFillResults memory matchedFillResults)
-    {}
+    {
+        matchedFillResults.left = LibFillResults.FillResults({
+            makerAssetFilledAmount: leftOrder.makerAssetAmount,
+            takerAssetFilledAmount: leftOrder.takerAssetAmount,
+            makerFeePaid: leftOrder.makerFee,
+            takerFeePaid: leftOrder.takerFee
+        });
+        matchedFillResults.right = LibFillResults.FillResults({
+            makerAssetFilledAmount: rightOrder.makerAssetAmount,
+            takerAssetFilledAmount: rightOrder.takerAssetAmount,
+            makerFeePaid: rightOrder.makerFee,
+            takerFeePaid: rightOrder.takerFee
+        });
+    }
 
     /// @dev Overriden to do nothing.
     function _cancelOrder(LibOrder.Order memory order)
