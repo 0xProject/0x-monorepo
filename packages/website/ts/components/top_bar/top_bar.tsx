@@ -268,4 +268,7 @@ export class TopBar extends React.Component<TopBarProps, TopBarState> {
     private _isViewingPortal(): boolean {
         return _.includes(this.props.location.pathname, WebsitePaths.Portal);
     }
+    private _shouldDisplayBottomBar(): boolean {
+        return this._isViewingPortal();
+    }
 } // tslint:disable:max-file-line-count
