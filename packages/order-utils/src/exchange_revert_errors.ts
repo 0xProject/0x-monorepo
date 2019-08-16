@@ -208,8 +208,32 @@ export class TransactionExecutionError extends RevertError {
 }
 
 export class IncompleteFillError extends RevertError {
-    constructor(orderHash?: string) {
-        super('IncompleteFillError', 'IncompleteFillError(bytes32 orderHash)', { orderHash });
+    constructor(takerAssetFillAmount?: BigNumber, orderHash?: string) {
+        super(
+            'IncompleteFillError',
+            'IncompleteFillError(uint256 takerAssetFillAmount, bytes32 orderHash)',
+            { takerAssetFillAmount, orderHash },
+        );
+    }
+}
+
+export class IncompleteMarketSellError extends RevertError {
+    constructor(takerAssetFillAmount?: BigNumber, orderHashes?: string[]) {
+        super(
+            'IncompleteMarketSellError',
+            'IncompleteMarketSellError(uint256 takerAssetFillAmount, bytes32[] orderHashes)',
+            { takerAssetFillAmount, orderHashes },
+        );
+    }
+}
+
+export class IncompleteMarketBuyError extends RevertError {
+    constructor(makerAssetFillAmount?: BigNumber, orderHashes?: string[]) {
+        super(
+            'IncompleteMarketBuyError',
+            'IncompleteMarketBuyError(uint256 makerAssetFillAmount, bytes32[] orderHashes)',
+            { makerAssetFillAmount, orderHashes },
+        );
     }
 }
 
@@ -233,6 +257,8 @@ const types = [
     TransactionSignatureError,
     TransactionExecutionError,
     IncompleteFillError,
+    IncompleteMarketSellError,
+    IncompleteMarketBuyError,
 ];
 
 // Register the types we've defined.
