@@ -72,7 +72,7 @@ blockchainTests('Exchange wrapper functions unit tests.', env => {
             takerAssetData: randomAssetData(),
             makerFeeAssetData: randomAssetData(),
             takerFeeAssetData: randomAssetData(),
-            ...fields || {},
+            ...(fields || {}),
         };
     }
 
