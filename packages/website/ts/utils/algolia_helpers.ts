@@ -21,12 +21,18 @@ const meta = require('./algolia_meta.json');
 export async function indexFilesAsync(indexName: string): Promise<void> {
     const files = getFiles(indexName); // Get file objects processed to get their meta information (name, path, versions, etc.)
 
+    const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
+    const algoliaSettings = settings[indexName];
+
+    await clearIndexAsync(algoliaIndex);
+    await setIndexSettingsAsync(algoliaIndex, algoliaSettings);
+
     for (const file of files) {
         if (meta[file.name] === undefined) {
             continue; // ignore
         }
         updateMetaFile(file); // Update the meta file shared between algolia and the page rendering the mdx content on the client
-        await processMdxAsync(indexName, file);
+        await processMdxAsync(algoliaIndex, file);
     }
 }
 
@@ -83,17 +89,17 @@ function updateMetaFile(file: File): void {
     fs.writeFileSync(path.join(__dirname, 'algolia_meta.json'), stringify(meta, { replacer: null, indent: 4 }));
 }
 
-async function processMdxAsync(indexName: string, file: File): Promise<void> {
+async function processMdxAsync(algoliaIndex: any, file: File): Promise<void> {
     const content = await read(file.path);
 
     await remark()
         .use(slug) // slugify heading text as ids
         .use(mdx)
-        .use(() => (tree: Node[]) => processContentTree(tree, file, indexName))
+        .use(() => (tree: Node[]) => processContentTree(tree, file, algoliaIndex))
         .process(content);
 }
 
-function processContentTree(tree: Node[], file: File, indexName: string): void {
+function processContentTree(tree: Node[], file: File, algoliaIndex: any): void {
     const modify = modifyChildren(modifier);
     // We first modify the tree to get slugified ids from headings to all text nodes
     // This is done to be able to link to a certain section in a doc after clicking a search suggestion
@@ -109,10 +115,6 @@ function processContentTree(tree: Node[], file: File, indexName: string): void {
         // Adds meta and formats information on all formatted text nodes
         const content = getContent(file, formattedTextNodes);
 
-        const algoliaIndex = adminClient.initIndex(searchIndices[indexName]);
-        const algoliaSettings = settings[indexName];
-
-        setIndexSettings(algoliaIndex, algoliaSettings);
         void pushObjectsToAlgoliaAsync(algoliaIndex, content);
     }
 }
@@ -146,8 +148,8 @@ function addHashToChildren(item: Node, start: Node): void {
     }
 }
 
-function setIndexSettings(algoliaIndex: any, algoliaSettings: IAlgoliaSettings): void {
-    algoliaIndex.setSettings(algoliaSettings, (err: string) => {
+async function setIndexSettingsAsync(algoliaIndex: any, algoliaSettings: IAlgoliaSettings): Promise<void> {
+    await algoliaIndex.setSettings(algoliaSettings, (err: string) => {
         if (err) {
             throw Error(`Error setting index settings: ${err}`);
         }
@@ -155,9 +157,7 @@ function setIndexSettings(algoliaIndex: any, algoliaSettings: IAlgoliaSettings):
 }
 
 async function pushObjectsToAlgoliaAsync(algoliaIndex: any, content: Content[]): Promise<void> {
-    await clearIndexAsync(algoliaIndex);
-
-    algoliaIndex
+    await algoliaIndex
         .saveObjects(content)
         .then(({ objectIDs }: { objectIDs: string[] }) =>
             console.log(
