@@ -192,8 +192,6 @@ jobs:
                   sh -c "until printf 'POST /\r\nContent-Length: 26\r\n\r\n{\"method\":\"net_listening\"}' | nc localhost 8545 | grep true; do continue; done; node_modules/.bin/forever ts/lib/index.js"
         steps:
             - checkout
-            - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
@@ -262,8 +260,6 @@ jobs:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
         steps:
             - checkout
-            - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - run:
@@ -290,8 +286,6 @@ jobs:
             - image: nikolaik/python-nodejs:python3.7-nodejs8
         steps:
             - checkout
-            - run: sudo chown -R circleci:circleci /usr/local/bin
-            - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7
             - restore_cache:
                   key: installed-py-{{ .Branch }}-{{ .Environment.CIRCLE_SHA1 }}
             - restore_cache:
