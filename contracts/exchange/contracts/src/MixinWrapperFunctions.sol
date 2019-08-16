@@ -183,13 +183,14 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
+            // Calculate the remaining amount of takerAsset to sell
+            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
+
             // The `takerAssetData` must be the same for each order.
             // Rather than checking equality, we point the `takerAssetData` of each order to the same memory location.
             // This is less expensive than checking equality.
+            bytes memory originalTakerAssetData = orders[i].takerAssetData;
             orders[i].takerAssetData = takerAssetData;
-
-            // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = takerAssetFillAmount.safeSub(fillResults.takerAssetFilledAmount);
 
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
@@ -197,6 +198,9 @@ contract MixinWrapperFunctions is
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // Restore the original `takerAssetData` so we're non-destructive.
+            orders[i].takerAssetData = originalTakerAssetData;
 
             // Update amounts filled and fees paid by maker and taker
             fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);
@@ -227,11 +231,6 @@ contract MixinWrapperFunctions is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
 
-            // The `makerAssetData` must be the same for each order.
-            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
-            // This is less expensive than checking equality.
-            orders[i].makerAssetData = makerAssetData;
-
             // Calculate the remaining amount of makerAsset to buy
             uint256 remainingMakerAssetFillAmount = makerAssetFillAmount.safeSub(fillResults.makerAssetFilledAmount);
 
@@ -243,12 +242,21 @@ contract MixinWrapperFunctions is
                 remainingMakerAssetFillAmount
             );
 
+            // The `makerAssetData` must be the same for each order.
+            // Rather than checking equality, we point the `makerAssetData` of each order to the same memory location.
+            // This is less expensive than checking equality.
+            bytes memory originalMakerAssetData = orders[i].makerAssetData;
+            orders[i].makerAssetData = makerAssetData;
+
             // Attempt to sell the remaining amount of takerAsset
             LibFillResults.FillResults memory singleFillResults = fillOrderNoThrow(
                 orders[i],
                 remainingTakerAssetFillAmount,
                 signatures[i]
             );
+
+            // Restore the original `makerAssetData` so we're non-destructive.
+            orders[i].makerAssetData = originalMakerAssetData;
 
             // Update amounts filled and fees paid by maker and taker
             fillResults = LibFillResults.addFillResults(fillResults, singleFillResults);

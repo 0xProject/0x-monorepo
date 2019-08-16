@@ -62,7 +62,7 @@ contract TestWrapperFunctions is
         orderInfo.orderTakerAssetFilledAmount = uint128(order.salt);
         // High byte of `order.salt` is the `orderStatus`.
         orderInfo.orderStatus = uint8(order.salt >> 248) % (MAX_ORDER_STATUS + 1);
-        orderInfo.orderHash = _getTypedDataHash(order);
+        orderInfo.orderHash = order.getTypedDataHash(EIP712_EXCHANGE_DOMAIN_HASH);
     }
 
     /// @dev Overridden to log arguments, be deterministic, and revert with certain inputs.
@@ -108,15 +108,5 @@ contract TestWrapperFunctions is
         if (order.salt == ALWAYS_FAILING_SALT) {
             revert(ALWAYS_FAILING_SALT_REVERT_REASON);
         }
-    }
-
-    /// @dev Simplified order hashing.
-    function _getTypedDataHash(LibOrder.Order memory order)
-        internal
-        pure
-        returns (bytes32 hash)
-    {
-        // `orderHash` is just `keccak256(order.makerFeeAssetData, order.takerAssetData, order.salt)`.
-        hash = keccak256(abi.encodePacked(order.makerAssetData, order.takerAssetData, order.salt));
     }
 }
