@@ -1,6 +1,6 @@
-# AssetBuyer
+> # Class: AssetBuyer
 
-<!-- ## Hierarchy
+## Hierarchy
 
 * **AssetBuyer**
 
@@ -27,11 +27,11 @@
 * [getLiquidityForAssetDataAsync](#getliquidityforassetdataasync)
 * [getOrdersAndFillableAmountsAsync](#getordersandfillableamountsasync)
 * [getAssetBuyerForProvidedOrders](#static-getassetbuyerforprovidedorders)
-* [getAssetBuyerForStandardRelayerAPIUrl](#static-getassetbuyerforstandardrelayerapiurl) -->
+* [getAssetBuyerForStandardRelayerAPIUrl](#static-getassetbuyerforstandardrelayerapiurl)
 
 ## Constructors
 
-Constructor
+###  constructor
 
 \+ **new AssetBuyer**(`supportedProvider`: `SupportedProvider`, `orderProvider`: [OrderProvider](#class-assetbuyer)*
 
@@ -55,7 +55,7 @@ An instance of AssetBuyer
 
 ###  expiryBufferSeconds
 
-`expiryBufferSeconds: number`
+• **expiryBufferSeconds**: *number*
 
 *Defined in [asset_buyer.ts:41](https://github.com/0xProject/0x-monorepo/blob/6dd77d5c8/packages/asset-buyer/src/asset_buyer.ts#L41)*
 
@@ -259,7 +259,7 @@ An instance of AssetBuyer
 
 <hr />
 
-# Class: InsufficientAssetLiquidityError
+> # Class: InsufficientAssetLiquidityError
 
 Error class representing insufficient asset liquidity
 
@@ -351,7 +351,7 @@ Defined in /Users/rickmorty/Documents/projects/0x/0x-monorepo/node_modules/typed
 
 <hr />
 
-# Class: BasicOrderProvider
+> # Class: BasicOrderProvider
 
 ## Hierarchy
 
@@ -446,7 +446,7 @@ An instance of OrderProviderResponse. See type for more information.
 
 <hr />
 
-# Class: StandardRelayerAPIOrderProvider
+> # Class: StandardRelayerAPIOrderProvider
 
 ## Hierarchy
 
@@ -551,7 +551,7 @@ An instance of OrderProviderResponse. See type for more information.
 
 <hr />
 
-# Enumeration: AssetBuyerError
+> # Enumeration: AssetBuyerError
 
 Possible error messages thrown by an AssetBuyer instance or associated static methods.
 
@@ -652,7 +652,7 @@ ___
 
 <hr />
 
-# Interface: AssetBuyerOpts
+> # Interface: AssetBuyerOpts
 
 networkId: The ethereum network id. Defaults to 1 (mainnet).
 orderRefreshIntervalMs: The interval in ms that getBuyQuoteAsync should trigger an refresh of orders and order states. Defaults to 10000ms (10s).
@@ -696,7 +696,7 @@ ___
 
 <hr />
 
-# Interface: BuyQuote
+> # Interface: BuyQuote
 
 assetData: String that represents a specific asset (for more info: https://github.com/0xProject/0x-protocol-specification/blob/master/v2/v2-specification.md).
 assetBuyAmount: The amount of asset to buy.
@@ -780,7 +780,7 @@ ___
 
 <hr />
 
-# Interface: BuyQuoteExecutionOpts
+> # Interface: BuyQuoteExecutionOpts
 
 ethAmount: The desired amount of eth to spend. Defaults to buyQuote.worstCaseQuoteInfo.totalEthAmount.
 takerAddress: The address to perform the buy. Defaults to the first available address from the provider.
@@ -844,7 +844,7 @@ ___
 
 <hr />
 
-# Interface: BuyQuoteInfo
+> # Interface: BuyQuoteInfo
 
 assetEthAmount: The amount of eth required to pay for the requested asset.
 feeEthAmount: The amount of eth required to pay the affiliate fee.
@@ -888,7 +888,7 @@ ___
 
 <hr />
 
-# Interface: BuyQuoteRequestOpts
+> # Interface: BuyQuoteRequestOpts
 
 feePercentage: The affiliate fee percentage. Defaults to 0.
 shouldForceOrderRefresh: If set to true, new orders and state will be fetched instead of waiting for the next orderRefreshIntervalMs. Defaults to false.
@@ -932,7 +932,7 @@ ___
 
 <hr />
 
-# Interface: LiquidityForAssetData
+> # Interface: LiquidityForAssetData
 
 Represents available liquidity for a given assetData
 
@@ -965,7 +965,7 @@ ___
 
 <hr />
 
-# Interface: OrderProvider
+> # Interface: OrderProvider
 
 gerOrdersAsync: Given an OrderProviderRequest, get an OrderProviderResponse.
 getAvailableMakerAssetDatasAsync: Given a taker asset data string, return all availabled paired maker asset data strings.
@@ -1024,7 +1024,7 @@ Name | Type |
 
 <hr />
 
-# Interface: OrderProviderRequest
+> # Interface: OrderProviderRequest
 
 makerAssetData: The assetData representing the desired makerAsset.
 takerAssetData: The assetData representing the desired takerAsset.
@@ -1059,7 +1059,7 @@ ___
 
 <hr />
 
-# Interface: OrderProviderResponse
+> # Interface: OrderProviderResponse
 
 orders: An array of orders with optional remaining fillable makerAsset amounts. See type for more info.
 
@@ -1083,7 +1083,7 @@ orders: An array of orders with optional remaining fillable makerAsset amounts. 
 
 <hr />
 
-# Interface: OrdersAndFillableAmounts
+> # Interface: OrdersAndFillableAmounts
 
 orders: An array of signed orders
 remainingFillableMakerAssetAmounts: A list of fillable amounts for the signed orders. The index of an item in the array associates the amount with the corresponding order.
@@ -1117,7 +1117,7 @@ ___
 
 <hr />
 
-# Interface: SignedOrderWithRemainingFillableMakerAssetAmount
+> # Interface: SignedOrderWithRemainingFillableMakerAssetAmount
 
 A normal SignedOrder with one extra optional property `remainingFillableMakerAssetAmount`
 remainingFillableMakerAssetAmount: The amount of the makerAsset that is available to be filled

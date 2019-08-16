@@ -22,6 +22,9 @@ export async function indexFilesAsync(indexName: string): Promise<void> {
     const files = getFiles(indexName); // Get file objects processed to get their meta information (name, path, versions, etc.)
 
     for (const file of files) {
+        if (meta[file.name] === undefined) {
+            continue; // ignore
+        }
         updateMetaFile(file); // Update the meta file shared between algolia and the page rendering the mdx content on the client
         await processMdxAsync(indexName, file);
     }
