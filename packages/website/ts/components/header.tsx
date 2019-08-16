@@ -9,7 +9,7 @@ import { DropdownProducts } from 'ts/components/dropdowns/dropdown_products';
 import { DropdownResources } from 'ts/components/dropdowns/dropdown_resources';
 import { Hamburger } from 'ts/components/hamburger';
 import { Logo } from 'ts/components/logo';
-import { MobileNav } from 'ts/components/mobileNav';
+import { MobileNav } from 'ts/components/mobile_nav';
 import { FlexWrap } from 'ts/components/newLayout';
 
 import { IThemeValuesInterface } from 'ts/style/theme';

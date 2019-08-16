@@ -61,7 +61,7 @@ yarn lint
 yarn index_docs
 ```
 
-The above script will index all the docs found in the `/mdx` folder. It's possible to pass in arguments that match the directory names to index only those document types, i.e. `yarn index_docs tools core-concepts` will index tools and core concepts.
+The above script will index all the docs found in the `/mdx` folder on [Algolia](https://www.algolia.com/). It's possible to pass in arguments that match the directory names to index only those document types, i.e. `yarn index_docs tools core-concepts` will index tools and core concepts.
 
 Running the script updates some of the meta information about the files (relative paths to files and versions of the doc). For other types of information (i.e. title, subtitle, tags...) you will have to update it yourself.
 
