@@ -405,6 +405,7 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteMarketSellErrorSelector());
+        // solhint-disable-next-line
         (takerAssetFillAmount, orderHashes) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
             (uint256, bytes32[])
@@ -423,6 +424,7 @@ contract LibExchangeRichErrorDecoder {
         )
     {
         _assertSelectorBytes(encoded, LibExchangeRichErrors.IncompleteMarketBuyErrorSelector());
+        // solhint-disable-next-line
         (makerAssetFillAmount, orderHashes) = abi.decode(
             encoded.sliceDestructive(4, encoded.length),
             (uint256, bytes32[])
