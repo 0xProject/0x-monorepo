@@ -1,6 +1,14 @@
-import { addressUtils, blockchainTests, expect, hexRandom, OrderStatus, orderUtils } from '@0x/contracts-test-utils';
+import {
+    addressUtils,
+    blockchainTests,
+    constants,
+    expect,
+    hexRandom,
+    OrderStatus,
+    orderUtils,
+} from '@0x/contracts-test-utils';
 import { ExchangeRevertErrors, generatePseudoRandomSalt } from '@0x/order-utils';
-import { RevertError } from '@0x/utils';
+import { BigNumber, RevertError } from '@0x/utils';
 import * as _ from 'lodash';
 
 import { artifacts, TestLibExchangeRichErrorDecoderContract } from '../src';
@@ -9,6 +17,7 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
     const SIGNATURE_LENGTH = 66;
     const ASSET_DATA_LENGTH = 36;
     const ERROR_DATA_LENGTH = 100;
+    const { WORD_LENGTH } = constants;
     let decoder: TestLibExchangeRichErrorDecoderContract;
 
     before(async () => {
@@ -138,6 +147,19 @@ blockchainTests.resets('LibExchangeRichErrorDecoder', ({ provider, txDefaults })
 
     (() => {
         const orderHash = orderUtils.generatePseudoRandomOrderHash();
-        createDecodeTest(ExchangeRevertErrors.IncompleteFillError, [orderHash]);
+        const amount = new BigNumber(hexRandom(WORD_LENGTH));
+        createDecodeTest(ExchangeRevertErrors.IncompleteFillError, [amount, orderHash]);
+    })();
+
+    (() => {
+        const orderHashes = _.times(3, () => orderUtils.generatePseudoRandomOrderHash());
+        const amount = new BigNumber(hexRandom(WORD_LENGTH));
+        createDecodeTest(ExchangeRevertErrors.IncompleteMarketSellError, [amount, orderHashes]);
+    })();
+
+    (() => {
+        const orderHashes = _.times(3, () => orderUtils.generatePseudoRandomOrderHash());
+        const amount = new BigNumber(hexRandom(WORD_LENGTH));
+        createDecodeTest(ExchangeRevertErrors.IncompleteMarketBuyError, [amount, orderHashes]);
     })();
 });

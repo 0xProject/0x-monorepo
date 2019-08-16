@@ -129,12 +129,12 @@ export class ExchangeWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async marketSellOrdersAsync(
+    public async marketSellOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
         opts: { takerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketSellOrders.sendTransactionAsync(
+        const txHash = await this._exchange.marketSellOrdersNoThrow.sendTransactionAsync(
             orders,
             opts.takerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),
@@ -143,12 +143,40 @@ export class ExchangeWrapper {
         const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
         return tx;
     }
-    public async marketBuyOrdersAsync(
+    public async marketBuyOrdersNoThrowAsync(
         orders: SignedOrder[],
         from: string,
         opts: { makerAssetFillAmount: BigNumber; gas?: number },
     ): Promise<TransactionReceiptWithDecodedLogs> {
-        const txHash = await this._exchange.marketBuyOrders.sendTransactionAsync(
+        const txHash = await this._exchange.marketBuyOrdersNoThrow.sendTransactionAsync(
+            orders,
+            opts.makerAssetFillAmount,
+            orders.map(signedOrder => signedOrder.signature),
+            { from, gas: opts.gas },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async marketSellOrdersFillOrKillAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { takerAssetFillAmount: BigNumber; gas?: number },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.marketSellOrdersFillOrKill.sendTransactionAsync(
+            orders,
+            opts.takerAssetFillAmount,
+            orders.map(signedOrder => signedOrder.signature),
+            { from, gas: opts.gas },
+        );
+        const tx = await this._logDecoder.getTxWithDecodedLogsAsync(txHash);
+        return tx;
+    }
+    public async marketBuyOrdersFillOrKillAsync(
+        orders: SignedOrder[],
+        from: string,
+        opts: { makerAssetFillAmount: BigNumber; gas?: number },
+    ): Promise<TransactionReceiptWithDecodedLogs> {
+        const txHash = await this._exchange.marketBuyOrdersFillOrKill.sendTransactionAsync(
             orders,
             opts.makerAssetFillAmount,
             orders.map(signedOrder => signedOrder.signature),

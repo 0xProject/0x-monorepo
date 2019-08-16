@@ -354,8 +354,10 @@ blockchainTests.resets('Exchange transactions', env => {
                     [
                         ExchangeFunctionName.FillOrderNoThrow,
                         ExchangeFunctionName.BatchFillOrdersNoThrow,
-                        ExchangeFunctionName.MarketBuyOrders,
-                        ExchangeFunctionName.MarketSellOrders,
+                        ExchangeFunctionName.MarketBuyOrdersNoThrow,
+                        ExchangeFunctionName.MarketSellOrdersNoThrow,
+                        ExchangeFunctionName.MarketBuyOrdersFillOrKill,
+                        ExchangeFunctionName.MarketSellOrdersFillOrKill,
                     ].indexOf(fnName) === -1
                 ) {
                     it(`${fnName} should revert and rethrow error if the underlying function reverts`, async () => {
