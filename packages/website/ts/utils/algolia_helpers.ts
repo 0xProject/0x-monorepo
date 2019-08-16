@@ -108,7 +108,7 @@ function processContentTree(tree: Node[], file: File, indexName: string): void {
         const algoliaSettings = settings[indexName];
 
         setIndexSettings(algoliaIndex, algoliaSettings);
-        pushObjectsToAlgolia(algoliaIndex, content);
+        void pushObjectsToAlgoliaAsync(algoliaIndex, content);
     }
 }
 
@@ -144,12 +144,14 @@ function addHashToChildren(item: Node, start: Node): void {
 function setIndexSettings(algoliaIndex: any, algoliaSettings: IAlgoliaSettings): void {
     algoliaIndex.setSettings(algoliaSettings, (err: string) => {
         if (err) {
-            throw Error(`Error: ${err}`);
+            throw Error(`Error setting index settings: ${err}`);
         }
     });
 }
 
-function pushObjectsToAlgolia(algoliaIndex: any, content: Content[]): void {
+async function pushObjectsToAlgoliaAsync(algoliaIndex: any, content: Content[]): Promise<void> {
+    await clearIndexAsync(algoliaIndex);
+
     algoliaIndex
         .saveObjects(content)
         .then(({ objectIDs }: { objectIDs: string[] }) =>
@@ -158,8 +160,16 @@ function pushObjectsToAlgolia(algoliaIndex: any, content: Content[]): void {
             ),
         )
         .catch((err: string) => {
-            throw Error(`Error: ${err}`);
+            throw Error(`Error pushing objects to Algolia: ${err}`);
         });
+}
+
+async function clearIndexAsync(algoliaIndex: any): Promise<void> {
+    await algoliaIndex.clearIndex((err: string, content: any) => {
+        if (err) {
+            throw Error(`Error clearing Algolia index: ${err}`);
+        }
+    });
 }
 
 function getContent(file: File, formattedTextNodes: FormattedNode[]): Content[] {
