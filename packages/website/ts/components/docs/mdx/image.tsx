@@ -9,7 +9,7 @@ export interface IImageProps {
 
 export const Image: React.FC<IImageProps> = props => (
     <ImageWrapper>
-        <ImageElement {...props} />
+        <img {...props} />
     </ImageWrapper>
 );
 
@@ -18,5 +18,3 @@ const ImageWrapper = styled.span`
     align-items: center;
     justify-content: center;
 `;
-
-const ImageElement = styled.img``;
