@@ -247,7 +247,7 @@
             "difficulty": "Intermediate",
             "externalUrl": "https://0x-org.gitbook.io/mesh/json-rpc-clients/typescript",
             "isCommunity": false,
-            "isFeatured": true,
+            "isFeatured": false,
             "tags": ["Relayer", "Trader"],
             "title": "@0x/ts-mesh-client",
             "type": "Typescript Libraries"
@@ -391,6 +391,16 @@
             "tags": ["Relayer", "Trader", "Protocol Developer"],
             "type": "Starter projects",
             "externalUrl": "https://github.com/0xProject/0x-starter-project"
+        },
+        "code-sandbox": {
+            "title": "0x Code Sandbox",
+            "description": "An online code sandbox for playing around with 0x protocol. Mint test tokens, create, fill, cancel 0x orders and much more.",
+            "difficulty": "Beginner",
+            "isCommunity": false,
+            "isFeatured": true,
+            "tags": ["Relayer", "Trader", "Protocol Developer"],
+            "type": "Starter projects",
+            "externalUrl": "https://codesandbox.io/s/github/0xproject/0x-codesandbox"
         },
         "migrations": {
             "title": "@0x/migrations",
