@@ -34,7 +34,7 @@ contract MixinWeth is
         payable
     {
         if (msg.sender != address(ETHER_TOKEN)) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.DefaultFunctionWethContractOnlyError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.DefaultFunctionWethContractOnlyError(
                 msg.sender
             ));
         }
@@ -45,7 +45,7 @@ contract MixinWeth is
         internal
     {
         if (msg.value <= 0) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.InvalidMsgValueError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.InvalidMsgValueError());
         }
         ETHER_TOKEN.deposit.value(msg.value)();
     }
@@ -66,24 +66,24 @@ contract MixinWeth is
     {
         // Ensure feePercentage is less than 5%.
         if (feePercentage > MAX_FEE_PERCENTAGE) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.FeePercentageTooLargeError(
                 feePercentage
             ));
         }
 
         // Ensure that no extra WETH owned by this contract has been sold.
         if (wethSold > msg.value) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.OversoldWethError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.OversoldWethError(
                 wethSold,
                 msg.value
             ));
         }
 
         // Calculate amount of WETH that hasn't been sold.
-        uint256 wethRemaining = _safeSub(msg.value, wethSold);
+        uint256 wethRemaining = msg.value.safeSub(wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        ethFee = _getPartialAmountFloor(
+        ethFee = getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSold
@@ -91,7 +91,7 @@ contract MixinWeth is
 
         // Ensure fee is less than amount of WETH remaining.
         if (ethFee > wethRemaining) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.InsufficientEthForFeeError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.InsufficientEthForFeeError());
         }
 
         // Do nothing if no WETH remaining
@@ -105,7 +105,7 @@ contract MixinWeth is
             }
 
             // Refund remaining ETH to msg.sender.
-            uint256 ethRefund = _safeSub(wethRemaining, ethFee);
+            uint256 ethRefund = wethRemaining.safeSub(ethFee);
             if (ethRefund > 0) {
                 msg.sender.transfer(ethRefund);
             }

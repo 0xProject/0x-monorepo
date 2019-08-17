@@ -51,7 +51,7 @@ contract MixinForwarderCore is
     {
         address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
         if (proxyAddress == address(0)) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
         }
         ETHER_TOKEN.approve(proxyAddress, MAX_UINT);
     }
@@ -81,9 +81,9 @@ contract MixinForwarderCore is
         _convertEthToWeth();
 
         // Calculate amount of WETH that won't be spent on the forwarder fee.
-        uint256 wethSellAmount = _getPartialAmountFloor(
+        uint256 wethSellAmount = getPartialAmountFloor(
             PERCENTAGE_DENOMINATOR,
-            _safeAdd(PERCENTAGE_DENOMINATOR, feePercentage),
+            feePercentage.safeAdd(PERCENTAGE_DENOMINATOR),
             msg.value
         );
 

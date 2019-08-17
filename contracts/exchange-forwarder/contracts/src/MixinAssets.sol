@@ -66,7 +66,7 @@ contract MixinAssets is
         if (proxyId == ERC20_DATA_ID) {
             address proxyAddress = EXCHANGE.getAssetProxy(ERC20_DATA_ID);
             if (proxyAddress == address(0)) {
-                LibRichErrors._rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
+                LibRichErrors.rrevert(LibForwarderRichErrors.UnregisteredAssetProxyError());
             }
             IERC20Token assetToken = IERC20Token(assetData.readAddress(16));
             if (assetToken.allowance(address(this), proxyAddress) != MAX_UINT) {
@@ -91,7 +91,7 @@ contract MixinAssets is
         } else if (proxyId == ERC721_DATA_ID) {
             _transferERC721Token(assetData, amount);
         } else {
-            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedAssetProxyError(
                 proxyId
             ));
         }
@@ -117,7 +117,7 @@ contract MixinAssets is
             amount
         ));
         if (!success) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.TransferFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError());
         }
 
         // Check return data.
@@ -137,7 +137,7 @@ contract MixinAssets is
             }
         }
         if (!success) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.TransferFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.TransferFailedError());
         }
     }
 
@@ -151,7 +151,7 @@ contract MixinAssets is
         internal
     {
         if (amount != 1) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.InvalidErc721AmountError(
+            LibRichErrors.rrevert(LibForwarderRichErrors.InvalidErc721AmountError(
                 amount
             ));
         }

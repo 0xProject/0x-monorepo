@@ -23,14 +23,16 @@ import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
-import "@0x/contracts/exchange/contracts/src/interfaces/IExchange.sol";
+import "@0x/contracts-exchange/contracts/src/interfaces/IExchange.sol";
+import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 
 
+
 contract MixinExchangeWrapper is
+    LibConstants,
     LibFillResults,
-    LibMath,
-    LibConstants
+    LibMath
 {
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
@@ -95,10 +97,7 @@ contract MixinExchangeWrapper is
         returns (FillResults memory singleFillResults)
     {
         // The remaining amount of WETH to sell
-        uint256 remainingTakerAssetFillAmount = _safeSub(
-            wethSellAmount,
-            wethSpentAmount
-        );
+        uint256 remainingTakerAssetFillAmount = wethSellAmount.safeSub(wethSpentAmount);
 
         // Percentage fee
         if (order.makerAssetData.equals(order.takerFeeAssetData)) {
@@ -112,9 +111,9 @@ contract MixinExchangeWrapper is
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
             // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
             // This ensures that we reserve enough to pay the fee.
-            uint256 takerAssetFillAmount = _getPartialAmountCeil(
+            uint256 takerAssetFillAmount = getPartialAmountCeil(
                 order.takerAssetAmount,
-                _safeAdd(order.takerAssetAmount, order.takerFee),
+                order.takerAssetAmount.safeAdd(order.takerFee),
                 remainingTakerAssetFillAmount
             );
 
@@ -124,7 +123,7 @@ contract MixinExchangeWrapper is
                 signature
             );
         } else {
-            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
     }
 
@@ -149,7 +148,7 @@ contract MixinExchangeWrapper is
 
         for (uint256 i = 0; i != ordersLength; i++) {
             if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
-                LibRichErrors._rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
                     orders[0].makerAssetData,
                     orders[i].makerAssetData
                 ));
@@ -165,25 +164,19 @@ contract MixinExchangeWrapper is
             // Percentage fee
             if (orders[i].takerFeeAssetData.equals(orders[i].makerAssetData)) {
                 // Subtract fee from makerAssetFilledAmount for the net amount acquired.
-                makerAssetAcquiredAmount = _safeAdd(
-                    makerAssetAcquiredAmount,
-                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
-                );
+                makerAssetAcquiredAmount = makerAssetAcquiredAmount.safeAdd(
+                    singleFillResults.makerAssetFilledAmount
+                ).safeSub(singleFillResults.takerFeePaid);
 
-                wethSpentAmount = _safeAdd(
-                    wethSpentAmount,
-                    singleFillResults.takerAssetFilledAmount
-                );
+                wethSpentAmount = wethSpentAmount.safeAdd(singleFillResults.takerAssetFilledAmount);
             // WETH fee
             } else {
                 // WETH is also spent on the taker fee, so we add it here.
-                wethSpentAmount = _safeAdd(
-                    wethSpentAmount,
-                    _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
-                );
+                wethSpentAmount = wethSpentAmount.safeAdd(
+                    singleFillResults.takerAssetFilledAmount
+                ).safeAdd(singleFillResults.takerFeePaid);
 
-                makerAssetAcquiredAmount = _safeAdd(
-                    makerAssetAcquiredAmount,
+                makerAssetAcquiredAmount = makerAssetAcquiredAmount.safeAdd(
                     singleFillResults.makerAssetFilledAmount
                 );
             }
@@ -215,10 +208,10 @@ contract MixinExchangeWrapper is
         // Percentage fee
         if (order.takerFeeAssetData.equals(order.makerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
                 order.takerAssetAmount,
-                _safeSub(order.makerAssetAmount, order.takerFee),
-                _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+                order.makerAssetAmount.safeSub(order.takerFee),
+                makerAssetBuyAmount.safeSub(makerAssetAcquiredAmount)
             );
 
             // Attempt to sell the remaining amount of takerAsset
@@ -230,10 +223,10 @@ contract MixinExchangeWrapper is
         // WETH fee
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = _getPartialAmountCeil(
+            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
                 order.takerAssetAmount,
                 order.makerAssetAmount,
-                _safeSub(makerAssetBuyAmount, makerAssetAcquiredAmount)
+                makerAssetBuyAmount.safeSub(makerAssetAcquiredAmount)
             );
 
             // Attempt to sell the remaining amount of takerAsset
@@ -243,7 +236,7 @@ contract MixinExchangeWrapper is
                 signature
             );
         } else {
-            LibRichErrors._rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
+            LibRichErrors.rrevert(LibForwarderRichErrors.UnsupportedFeeError(order.takerFeeAssetData));
         }
     }
 
@@ -269,7 +262,7 @@ contract MixinExchangeWrapper is
         uint256 ordersLength = orders.length;
         for (uint256 i = 0; i != ordersLength; i++) {
             if (!orders[i].makerAssetData.equals(orders[0].makerAssetData)) {
-                LibRichErrors._rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
+                LibRichErrors.rrevert(LibForwarderRichErrors.MakerAssetMismatchError(
                     orders[0].makerAssetData,
                     orders[i].makerAssetData
                 ));
@@ -285,27 +278,23 @@ contract MixinExchangeWrapper is
             // Percentage fee
             if (orders[i].takerFeeAssetData.equals(orders[i].makerAssetData)) {
                 // Subtract fee from makerAssetFilledAmount for the net amount acquired.
-                makerAssetAcquiredAmount = _safeAdd(
-                    makerAssetAcquiredAmount,
-                    _safeSub(singleFillResults.makerAssetFilledAmount, singleFillResults.takerFeePaid)
-                );
+                makerAssetAcquiredAmount = makerAssetAcquiredAmount.safeAdd(
+                    singleFillResults.makerAssetFilledAmount
+                ).safeSub(singleFillResults.takerFeePaid);
 
-                wethSpentAmount = _safeAdd(
-                    wethSpentAmount,
+                wethSpentAmount = wethSpentAmount.safeAdd(
                     singleFillResults.takerAssetFilledAmount
                 );
             // WETH fee
             } else {
-                makerAssetAcquiredAmount = _safeAdd(
-                    makerAssetAcquiredAmount,
+                makerAssetAcquiredAmount = makerAssetAcquiredAmount.safeAdd(
                     singleFillResults.makerAssetFilledAmount
                 );
 
                 // WETH is also spent on the taker fee, so we add it here.
-                wethSpentAmount = _safeAdd(
-                    wethSpentAmount,
-                    _safeAdd(singleFillResults.takerAssetFilledAmount, singleFillResults.takerFeePaid)
-                );
+                wethSpentAmount = wethSpentAmount.safeAdd(
+                    singleFillResults.takerAssetFilledAmount
+                ).safeAdd(singleFillResults.takerFeePaid);
             }
 
             // Stop execution if the entire amount of makerAsset has been bought
@@ -315,7 +304,7 @@ contract MixinExchangeWrapper is
         }
 
         if (makerAssetAcquiredAmount < makerAssetBuyAmount) {
-            LibRichErrors._rrevert(LibForwarderRichErrors.CompleteFillFailedError());
+            LibRichErrors.rrevert(LibForwarderRichErrors.CompleteFillFailedError());
         }
 
         return (wethSpentAmount, makerAssetAcquiredAmount);
