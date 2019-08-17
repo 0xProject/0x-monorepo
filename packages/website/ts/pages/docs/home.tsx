@@ -55,20 +55,20 @@ const shortcutLinks = [
 
 const usefulLinks = [
     {
-        title: 'Core Concepts',
-        url: WebsitePaths.DocsCoreConcepts,
+        title: '0x Cheat Sheet',
+        url: constants.URL_SANDBOX,
     },
     {
-        title: 'API Explorer',
-        url: WebsitePaths.DocsApiExplorer,
+        title: 'Code Sandbox',
+        url: constants.URL_SANDBOX,
     },
     {
-        title: 'Guides',
-        url: WebsitePaths.DocsGuides,
+        title: 'ZEIPs: 0x Improvement Proposals',
+        url: constants.URL_ZEIP_REPO,
     },
     {
-        title: 'Tools',
-        url: WebsitePaths.DocsTools,
+        title: 'Relayer Registry',
+        url: constants.URL_RELAYER_REGISTRY,
     },
 ];
 
