@@ -20,6 +20,7 @@ pragma solidity ^0.5.9;
 pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
@@ -30,10 +31,10 @@ import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinExchangeWrapper is
-    LibConstants,
-    LibFillResults,
-    LibMath
+    LibConstants
 {
+    using LibSafeMath for uint256;
+
     /// @dev Fills the input order.
     ///      Returns false if the transaction would otherwise revert.
     /// @param order Order struct containing order specifications.
@@ -46,7 +47,7 @@ contract MixinExchangeWrapper is
         bytes memory signature
     )
         internal
-        returns (FillResults memory fillResults)
+        returns (LibFillResults.FillResults memory fillResults)
     {
         // ABI encode calldata for `fillOrder`
         bytes memory fillOrderCalldata = abi.encodeWithSelector(
@@ -94,7 +95,7 @@ contract MixinExchangeWrapper is
         uint256 wethSpentAmount
     )
         internal
-        returns (FillResults memory singleFillResults)
+        returns (LibFillResults.FillResults memory singleFillResults)
     {
         // The remaining amount of WETH to sell
         uint256 remainingTakerAssetFillAmount = wethSellAmount.safeSub(wethSpentAmount);
@@ -111,7 +112,7 @@ contract MixinExchangeWrapper is
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
             // We will first sell WETH as the takerAsset, then use it to pay the takerFee.
             // This ensures that we reserve enough to pay the fee.
-            uint256 takerAssetFillAmount = getPartialAmountCeil(
+            uint256 takerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
                 order.takerAssetAmount.safeAdd(order.takerFee),
                 remainingTakerAssetFillAmount
@@ -154,7 +155,7 @@ contract MixinExchangeWrapper is
                 ));
             }
 
-            FillResults memory singleFillResults = _marketSellSingleOrder(
+            LibFillResults.FillResults memory singleFillResults = _marketSellSingleOrder(
                 orders[i],
                 signatures[i],
                 wethSellAmount,
@@ -203,12 +204,12 @@ contract MixinExchangeWrapper is
         uint256 makerAssetAcquiredAmount
     )
         internal
-        returns (FillResults memory singleFillResults)
+        returns (LibFillResults.FillResults memory singleFillResults)
     {
         // Percentage fee
         if (order.takerFeeAssetData.equals(order.makerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
                 order.makerAssetAmount.safeSub(order.takerFee),
                 makerAssetBuyAmount.safeSub(makerAssetAcquiredAmount)
@@ -223,7 +224,7 @@ contract MixinExchangeWrapper is
         // WETH fee
         } else if (order.takerFeeAssetData.equals(order.takerAssetData)) {
             // Calculate the remaining amount of takerAsset to sell
-            uint256 remainingTakerAssetFillAmount = getPartialAmountCeil(
+            uint256 remainingTakerAssetFillAmount = LibMath.getPartialAmountCeil(
                 order.takerAssetAmount,
                 order.makerAssetAmount,
                 makerAssetBuyAmount.safeSub(makerAssetAcquiredAmount)
@@ -268,7 +269,7 @@ contract MixinExchangeWrapper is
                 ));
             }
 
-            FillResults memory singleFillResults = _marketBuySingleOrder(
+            LibFillResults.FillResults memory singleFillResults = _marketBuySingleOrder(
                 orders[i],
                 signatures[i],
                 makerAssetBuyAmount,

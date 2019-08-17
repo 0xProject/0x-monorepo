@@ -19,15 +19,17 @@
 pragma solidity ^0.5.9;
 
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
 
 
 contract MixinWeth is
-    LibMath,
     LibConstants
 {
+    using LibSafeMath for uint256;
+
     /// @dev Default payable function, this allows us to withdraw WETH
     function ()
         external
@@ -83,7 +85,7 @@ contract MixinWeth is
         uint256 wethRemaining = msg.value.safeSub(wethSold);
 
         // Calculate ETH fee to pay to feeRecipient.
-        ethFee = getPartialAmountFloor(
+        ethFee = LibMath.getPartialAmountFloor(
             feePercentage,
             PERCENTAGE_DENOMINATOR,
             wethSold

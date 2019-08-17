@@ -21,8 +21,8 @@ pragma experimental ABIEncoderV2;
 
 import "@0x/contracts-utils/contracts/src/LibBytes.sol";
 import "@0x/contracts-utils/contracts/src/LibRichErrors.sol";
+import "@0x/contracts-utils/contracts/src/LibSafeMath.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibOrder.sol";
-import "@0x/contracts-exchange-libs/contracts/src/LibFillResults.sol";
 import "@0x/contracts-exchange-libs/contracts/src/LibMath.sol";
 import "./libs/LibConstants.sol";
 import "./libs/LibForwarderRichErrors.sol";
@@ -34,8 +34,6 @@ import "./MixinWeth.sol";
 
 
 contract MixinForwarderCore is
-    LibFillResults,
-    LibMath,
     LibConstants,
     IAssets,
     IForwarderCore,
@@ -44,6 +42,7 @@ contract MixinForwarderCore is
     MixinExchangeWrapper
 {
     using LibBytes for bytes;
+    using LibSafeMath for uint256;
 
     /// @dev Constructor approves ERC20 proxy to transfer WETH on this contract's behalf.
     constructor ()
@@ -81,7 +80,7 @@ contract MixinForwarderCore is
         _convertEthToWeth();
 
         // Calculate amount of WETH that won't be spent on the forwarder fee.
-        uint256 wethSellAmount = getPartialAmountFloor(
+        uint256 wethSellAmount = LibMath.getPartialAmountFloor(
             PERCENTAGE_DENOMINATOR,
             feePercentage.safeAdd(PERCENTAGE_DENOMINATOR),
             msg.value
