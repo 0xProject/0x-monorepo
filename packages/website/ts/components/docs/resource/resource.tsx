@@ -16,18 +16,22 @@ export interface IResourceProps {
     title?: string;
     description?: string;
     difficulty?: Difficulty;
+    externalUrl?: string;
     isCommunity?: boolean;
-    url: string;
+    url?: string;
     tags: string[];
 }
 
 export const Resource: React.FC<IHitProps> = ({ hit }) => {
-    const { title, difficulty, description, isCommunity, tags, url } = hit;
+    const { difficulty, description, externalUrl, isCommunity, tags, title, url } = hit;
+    const to = externalUrl ? externalUrl : url;
 
     return (
         <ResourceWrapper>
             <Heading color={colors.brandDark} size="small" marginBottom="8px">
-                <Link to={url}>{title}</Link>
+                <Link shouldOpenInNewTab={externalUrl ? true : false} to={to}>
+                    {title}
+                </Link>
             </Heading>
             <Paragraph size="default" marginBottom="10px">
                 {description}
