@@ -340,8 +340,6 @@ export enum RevertReason {
     TargetNotEven = 'TARGET_NOT_EVEN',
     UnexpectedStaticCallResult = 'UNEXPECTED_STATIC_CALL_RESULT',
     TransfersSuccessful = 'TRANSFERS_SUCCESSFUL',
-    // Forwarder
-    MakerAssetMismatch = 'MAKER_ASSET_MISMATCH',
 }
 
 export enum StatusCodes {
